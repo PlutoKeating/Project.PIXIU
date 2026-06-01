@@ -235,11 +235,18 @@ T3 遗忘："忘记那张4月支出清单"
 
 ## 6. 分布式记忆共享（去中心化）
 
-- **节点对等**：每台麒麟设备运行一个 Memory Daemon，本地完整存储。
-- **同步单元**：knowledge_item / preference 以 CRDT（LWW-Element-Set + 版本向量）合并，天然解决并发冲突。
-- **发现与传输**：局域网 mDNS/Gossip 发现节点，TLS + 设备密钥加密通道。
-- **共享域**：`scope` 字段控制可见性（私有 `user:*` vs 共享 `shared:home`），敏感数据默认不出端。
-- **删除传播**：遗忘生成 tombstone，经 oplog 同步，多设备一致删除。
+这是 PIXIU 的核心创新点（根 `README.md` 第一亮点）。完整管理链路在 `backend/docs/ARCHITECTURE.md` 第 7 章，本节给出总体视图。
+
+- **对等架构与一致性**：每台麒麟设备运行一个 Memory Daemon，本地保存完整副本；采用 **AP + 最终一致**，断网各自可用、重连自动收敛。
+- **同步单元**：`sync_oplog` 中的 op 承载 knowledge_item / preference / entities / relations / tombstone，以 **CRDT（LWW-Element-Set + 版本向量）** 合并。
+- **节点生命周期**：身份初始化 → 设备配对授权（进入共享域）→ mDNS/Gossip 发现上线 → 首次全量对账 → 稳态增量推送 → 离线积累 → 重连对账 → 退出/解绑。
+- **双机制扩散**：**Gossip 实时推送**（低延迟）+ **反熵周期对账**（防丢失），叠加保证最终一致。
+- **发现与传输**：局域网 mDNS/Gossip 发现节点，TLS 1.3 + 设备密钥双向证书加密通道，仅信任库内 peer 可连接。
+- **共享域与敏感管控**：`scope` 是同步准入闸门（私有 `user:*` 永不出端，仅 `shared:*` 入队）；M7 标记的高敏数据默认不参与同步。
+- **删除传播**：遗忘生成 tombstone op，经 oplog 同步保证多设备一致删除，`gc` 在全网确认后回收墓碑。
+- **管理接口**：`/sync/pair`（配对）、`/sync/peers`（节点状态）、`/sync/status`（同步进度）、`/sync/peers/{id}/revoke`（解绑），事件经 WS 推送给前端。
+
+> **与 M4 冲突仲裁的边界（关键）**：CRDT 解决"**同一条记忆**在多设备并发修改"的数据层收敛（机械、确定性）；M4 解决"**不同记忆**在事实上互相矛盾"的知识层裁决（生成可审计 `ConflictRecord`）。二者正交——M4 裁决产出的新版本本身也作为一个 op 经 CRDT 同步。
 
 ---
 
