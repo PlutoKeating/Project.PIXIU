@@ -60,7 +60,8 @@ PIXIU 前端
 └── ③ 记忆管理面板 MemoryPanel     （管理）
       ├── 偏好 Tab（列表 + 版本回溯）
       ├── 冲突 Tab（old/new 审计）
-      └── 同步 Tab（设备节点状态）
+      └── 同步 Tab（节点列表 + 配对/解绑 + 同步进度）
+            └── 配对对话框 PairDialog（扫码/PIN）
 ```
 
 **导航模型**：悬浮球是唯一常驻入口；聊天框与管理面板均为模态/半模态浮层，按需出现、随手关闭。
@@ -124,11 +125,31 @@ PIXIU 前端
 │  └─────────────────────────────────────────┘ │
 │                                               │
 │ 冲突 Tab：old/new 对比 + 裁决结果 + 时间       │
-│ 同步 Tab：设备节点列表 · 在线状态 · 最近同步   │
+│                                               │
+│ 同步 Tab：                          [+ 配对设备]│
+│  ┌─────────────────────────────────────────┐ │
+│  │ 💻 书房工作站(本机)   ●在线  刚刚同步      │ │
+│  │ 🖥 客厅一体机        ●在线  2分钟前  [解绑]│ │
+│  │ 💻 麒麟笔记本        ○离线  1小时前  [解绑]│ │
+│  └─────────────────────────────────────────┘ │
+│  同步进度：待同步 0 条 · 上次对账 14:32        │
 └─────────────────────────────────────────────┘
 ```
 
-### 5.4 遗忘确认对话框（ForgetDialog）
+### 5.4 设备配对对话框（PairDialog）
+
+```
+┌───────────────────────────────────┐
+│  配对新设备 加入共享域 shared:home  │
+│  ┌───────────┐                      │
+│  │  [二维码]  │   或输入 PIN：______ │
+│  └───────────┘                      │
+│  在另一台设备的「同步」面板扫码/输码  │
+│                 [ 取消 ]  [ 完成配对 ]│
+└───────────────────────────────────┘
+```
+
+### 5.5 遗忘确认对话框（ForgetDialog）
 
 ```
 ┌───────────────────────────────────┐
@@ -186,6 +207,25 @@ PIXIU 前端
 点击通知 / 角标
    → 打开 MemoryPanel 冲突 Tab → 查看 old/new 与裁决结果
 ```
+
+### 6.5 多设备同步管理（去中心化网络）
+
+```
+配对：同步 Tab 点「+ 配对设备」
+   → PairDialog 显示本机二维码/PIN（含设备公钥）
+   → 另一台设备扫码/输码 → MemoryClient.pair() → /sync/pair
+   → 双向建立信任、加入共享域 → 节点列表新增该设备
+
+状态：MemoryClient.peers()/syncStatus() 轮询或订阅 WS
+   → 渲染节点在线状态、最近同步时间、待同步条数
+   → 节点上下线 / 同步事件 → kysdk-notification 提醒
+
+解绑：点节点「解绑」→ 二次确认
+   → MemoryClient.revokePeer(id) → /sync/peers/{id}/revoke
+   → 撤销信任、移出共享域
+```
+
+> 前端仅做配对、展示与解绑；CRDT 合并、Gossip/反熵对账等由后端同步层完成（见 `backend/docs/ARCHITECTURE.md` 第 7 章）。
 
 ---
 
@@ -273,9 +313,11 @@ frontend/
 │   │   ├── InputBar.*           # 输入框 + 发送 + 图片拖入（4.1.3）
 │   │   ├── EvidenceCard.*       # 检索结果证据卡（可追溯 source_evidence）
 │   │   ├── MemoryPanel.*        # 记忆/偏好/冲突/同步管理面板
-│   │   └── ForgetDialog.*       # 遗忘确认对话框（4.1.2 Dialog）
+│   │   ├── ForgetDialog.*       # 遗忘确认对话框（4.1.2 Dialog）
+│   │   └── PairDialog.*         # 设备配对对话框（二维码/PIN）
 │   ├── services/
 │   │   ├── MemoryClient.*       # 后端 IPC 客户端（DBus/HTTP/WS）
+│   │   ├── SyncClient.*         # 同步管理客户端（/sync/* 配对/节点/状态/解绑）
 │   │   ├── NotifyService.*      # kysdk-notification 封装
 │   │   └── ThemeService.*       # 8.5 主题跟随 + UkuiStyleHelper
 │   └── models/                  # 消息/记忆/偏好数据模型
@@ -293,6 +335,8 @@ frontend/
 | MessageList | 气泡流 | `KListView` 派生（4.1.x）|
 | InputBar | 输入/发送/拖图 | 输入框模块 4.1.3 |
 | ForgetDialog | 二次确认 | Dialog 4.1.2 |
+| PairDialog | 设备配对（二维码/PIN）| Dialog 4.1.2 + Qt 绘制 |
+| MemoryPanel·同步 Tab | 节点列表/进度/解绑 | `KListView` 派生（4.1.x）|
 | 全局唤起 | 快捷键 | `libkysdk-shortcut` 8.3 |
 | 通知 | 事件弹窗 | `libkysdk-notification` 8.2 |
 | 主题 | 换肤 | Theme 8.5 + `UkuiStyleHelper` 4.2.3 |
@@ -328,11 +372,24 @@ signals:
     void answerReady(const MemoryAtom &atom);   // 含 answer/source_evidence/confidence
     void memoryEvent(const QJsonObject &evt);   // WS/DBus 推送 -> 触发通知
 };
+
+// SyncClient：去中心化同步的管理面（仅配对/状态/解绑，不含同步逻辑）
+class SyncClient : public QObject {
+public:
+    void pair(const QString &token);                 // -> /sync/pair
+    void listPeers();                                // -> GET /sync/peers
+    void syncStatus();                               // -> GET /sync/status
+    void revokePeer(const QString &peerId);          // -> /sync/peers/{id}/revoke
+signals:
+    void peersUpdated(const QList<PeerInfo> &peers);  // 节点列表 + 在线状态
+    void syncStatusChanged(const SyncStatus &st);     // 待同步条数/上次对账
+    void peerEvent(const QJsonObject &evt);           // 节点上下线 -> 触发通知
+};
 ```
 
 - **首选 D-Bus**：`com.kylin.pixiu.Memory`，贴合桌面生态、随会话总线生命周期管理。
 - **回退 HTTP/WS**：`http://127.0.0.1:<port>`，便于跨语言与调试。
-- 事件推送（写入完成/冲突/遗忘确认）经 `NotifyService` 转 `kysdk-notification` 弹窗。
+- 事件推送（写入完成/冲突/遗忘确认/**节点上下线/同步状态**）经 `NotifyService` 转 `kysdk-notification` 弹窗。
 - UI 层永不阻塞：所有后端调用异步，UI 用骨架屏/进度态过渡。
 
 ---
