@@ -53,7 +53,7 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 
 ## 核心亮点
 
-- **去中心化记忆网络** — 每台设备对等运行，基于 CRDT + Gossip 同步，无单点依赖，断网可用。
+- **去中心化记忆网络** — 每台设备对等运行、无中心服务器；设备配对建立信任后，记忆经 **Gossip 实时推送 + 反熵周期对账** 扩散全网，用 **CRDT** 自动合并并发修改，断网各自可用、重连自动收敛。
 - **多源融合接入** — 工具执行结果、用户行为、手动配置、OCR 统一接入，自动清洗、标准化与质量校验。
 - **偏好动态捕捉** — 操作习惯、输出风格、安全策略自动提取，版本化管理，跨场景适配与回溯。
 - **神经-符号混合检索** — BM25 + 向量 ANN + 实体关系图三通道融合，结构化聚合，证据可追溯。
@@ -141,6 +141,39 @@ Project.PIXIU/
 | [验收测试规范](docs/AcceptanceTestSpecification.md) | 功能 / 性能 / 交付逐条验收条目 |
 | [KylinSDK 指南](docs/kylin_sdk_docs/README.md) | 麒麟 V3.0 SDK API 参考 |
 | [赛题原文](docs/OriginProblemDescription.md) | 麒麟软件比赛方案与典型场景 |
+
+---
+
+## 完整文档索引
+
+> 以下为本仓库当前**全部有效文档**的引导链接（相对路径）。空白占位文档暂未列出。
+
+**项目根**
+
+- [`./README.md`](./README.md) — 项目总览（本文档）
+
+**架构设计**
+
+- [`./docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — 总体架构：分层设计、数据模型、端到端流程、分布式同步
+- [`./backend/docs/ARCHITECTURE.md`](./backend/docs/ARCHITECTURE.md) — 后端架构：模块划分、存储 Schema、API、性能预算
+- [`./frontend/docs/ARCHITECTURE.md`](./frontend/docs/ARCHITECTURE.md) — 前端架构：UKUI 交互形态、kysdk 集成、构建适配
+
+**赛题与验收**
+
+- [`./docs/OriginProblemDescription.md`](./docs/OriginProblemDescription.md) — 赛题原文：麒麟软件比赛方案与典型应用场景（附录 A）
+- [`./docs/AcceptanceTestSpecification.md`](./docs/AcceptanceTestSpecification.md) — 验收测试规范：功能 / 性能 / 交付逐条验收条目
+
+**KylinSDK 参考**
+
+- [`./docs/kylin_sdk_docs/README.md`](./docs/kylin_sdk_docs/README.md) — KylinSDK V3.0 开发指南（232 篇 API 文档索引）
+- [`./docs/kylin_sdk_docs/9_AI_SDK/9.4.3_Vectorization.md`](./docs/kylin_sdk_docs/9_AI_SDK/9.4.3_Vectorization.md) — 向量化（embedding）接口
+- [`./docs/kylin_sdk_docs/9_AI_SDK/9.4.1_OCR.md`](./docs/kylin_sdk_docs/9_AI_SDK/9.4.1_OCR.md) — OCR 文字识别接口
+- [`./docs/kylin_sdk_docs/9_AI_SDK/9.5.1_Text_Generation.md`](./docs/kylin_sdk_docs/9_AI_SDK/9.5.1_Text_Generation.md) — 文本生成接口
+- [`./docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.2_Notification_Module.md`](./docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.2_Notification_Module.md) — 桌面通知模块
+- [`./docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.3_Hotkey_Module.md`](./docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.3_Hotkey_Module.md) — 全局快捷键模块
+- [`./docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.5_Theme_Module.md`](./docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.5_Theme_Module.md) — 主题模块
+- [`./docs/kylin_sdk_docs/4_Application_Support_SDK/4.2.3_UkuiStyleHelper.md`](./docs/kylin_sdk_docs/4_Application_Support_SDK/4.2.3_UkuiStyleHelper.md) — UKUI 风格控件
+- [`./docs/kylinos_dev_manual.pdf`](./docs/kylinos_dev_manual.pdf) — 银河麒麟开发者参考手册（PDF 原文）
 
 ---
 
