@@ -1,0 +1,79 @@
+# ==========================================
+# Root .gitignore (Full-Stack Standard)
+# ==========================================
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Compilation / Build outputs
+dist/
+build/
+out/
+target/
+bin/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+bower_components/
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+.gradle/
+.mvn/
+
+# Testing and Coverage
+coverage/
+*.lcov
+.nyc_output/
+.pytest_cache/
+.tox/
+.nox/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local Environment Variables (Crucial!)
+.env
+.env.local
+.env.dev
+.env.prod
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env
+frontend/.env.local
+backend/.env
+backend/.env.local
+
+# Docker local data/caches
+.docker/
+docker-compose.override.yml

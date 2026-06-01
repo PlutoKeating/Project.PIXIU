@@ -1,0 +1,52 @@
+# ==========================================
+# Frontend .dockerignore
+# ==========================================
+
+# Dependencies (always install inside container)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+
+# Git metadata
+.git/
+.gitignore
+
+# Docker config
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+
+# Environment variables (pass via runtime env configuration)
+.env
+.env.*
+!.env.example
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE / Editor configuration
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

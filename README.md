@@ -1,0 +1,132 @@
+<div align="center">
+
+# PIXIU · 貔貅
+
+### 面向银河麒麟 OS Agent 的去中心化分布式记忆系统
+
+*只进不出，聚财守忆 —— 让每一台设备的记忆，彼此相通。*
+
+<br/>
+
+[![Kylin OS](https://img.shields.io/badge/Kylin%20OS-V10-DA291C?style=flat-square&logo=linux&logoColor=white)](https://www.kylinos.cn/)
+[![KylinSDK](https://img.shields.io/badge/KylinSDK-V3.0-0066CC?style=flat-square)](docs/kylin_sdk_docs/README.md)
+[![Backend](https://img.shields.io/badge/Backend-Python%203.10%20%2B%20C%2B%2B-3776AB?style=flat-square&logo=python&logoColor=white)](backend/docs/ARCHITECTURE.md)
+[![Frontend](https://img.shields.io/badge/Frontend-Qt5%20%2F%20UKUI-41CD52?style=flat-square&logo=qt&logoColor=white)](frontend/docs/ARCHITECTURE.md)
+[![Latency](https://img.shields.io/badge/检索延迟-%E2%89%A4500ms-success?style=flat-square)](docs/AcceptanceTestSpecification.md)
+[![Status](https://img.shields.io/badge/status-设计阶段-yellow?style=flat-square)](docs/ARCHITECTURE.md)
+
+[架构设计](docs/ARCHITECTURE.md) · [后端](backend/docs/ARCHITECTURE.md) · [前端](frontend/docs/ARCHITECTURE.md) · [验收规范](docs/AcceptanceTestSpecification.md) · [赛题](docs/OriginProblemDescription.md)
+
+</div>
+
+---
+
+## 这是什么
+
+**PIXIU** 是面向银河麒麟桌面操作系统 OS Agent 的**记忆优化与高效应用解决方案**，参赛于麒麟软件《OSAgent 记忆优化及高效应用研究》赛题。
+
+我们把目光投向**居家 / 办公的多用户协作场景**：你在书房问的问题、客厅大屏记下的待办、办公电脑沉淀的工作流——本应彼此相通，却被困在一台台孤立的设备里。
+
+PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备之间的知识与偏好自由共享、自动同步，并以**神经-符号混合检索**在 500ms 内给出可追溯的精准答案。
+
+> [!NOTE]
+> 全程依托现有 OS Agent 基础架构，调用银河麒麟国产桌面操作系统 **KylinSDK**（embedding / OCR / 桌面环境）进行端侧开发，国产化、可离线、轻量化。
+
+## 核心亮点
+
+- **去中心化记忆网络** — 每台设备对等运行，基于 CRDT + Gossip 同步，无单点依赖，断网可用。
+- **多源融合接入** — 工具执行结果、用户行为、手动配置、OCR 统一接入，自动清洗、标准化与质量校验。
+- **偏好动态捕捉** — 操作习惯、输出风格、安全策略自动提取，版本化管理，跨场景适配与回溯。
+- **神经-符号混合检索** — BM25 + 向量 ANN + 实体关系图三通道融合，结构化聚合，证据可追溯。
+- **冲突智能仲裁** — 新旧知识矛盾自动检测，以新为准并保留完整审计痕迹。
+- **安全与精准遗忘** — 敏感信息识别过滤，自然语言指令驱动级联遗忘（"忘记那张 4 月支出清单"）。
+- **端侧极致轻量** — 调用麒麟 embeddingSDK + INT8 量化 + SQLite，检索 P95 ≤ 500ms。
+- **UKUI 原生体验** — Qt5 桌面悬浮球 + 聊天框，全局快捷键唤起，系统通知与主题深度融合。
+
+## 系统架构
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  UKUI 桌面层 · frontend/   悬浮球 + 聊天框 (Qt5 + kysdk)    │
+└───────────────────────────┬──────────────────────────────┘
+                            │  D-Bus / localhost HTTP+WS
+┌───────────────────────────┴──────────────────────────────┐
+│  记忆服务层 · backend/  (Memory Daemon)                     │
+│  M1 接入 · M2 偏好 · M3 知识 · M4 冲突 · M5 检索 · M7 安全   │
+│  M6 记忆流转总线  ·  M8 评测框架  ·  KylinEmbedding 适配层   │
+└───────────────────────────┬──────────────────────────────┘
+                            │
+┌───────────────────────────┴──────────────────────────────┐
+│  存储层  SQLite + FTS5(BM25) + 向量索引(ANN) + 图(Graph)    │
+└───────────────────────────┬──────────────────────────────┘
+                            │
+┌───────────────────────────┴──────────────────────────────┐
+│  分布式同步层  CRDT 合并 + Gossip 发现 + TLS 加密 (无中心)   │
+└──────────────────────────────────────────────────────────┘
+```
+
+完整设计见 [总体架构](docs/ARCHITECTURE.md)、[后端架构](backend/docs/ARCHITECTURE.md)、[前端架构](frontend/docs/ARCHITECTURE.md)。
+
+## 技术栈
+
+| 层面 | 选型 |
+|------|------|
+| 前端 | C++17 · Qt5 Widgets · UKUI · KylinSDK（快捷键 / 通知 / 主题 / Qt 扩展控件）|
+| 后端 | Python 3.10（编排）· C++（embedding shim）· FastAPI · asyncio |
+| 存储 | SQLite (WAL) · FTS5 · sqlite-vec / hnswlib · 邻接表图 |
+| AI | 麒麟 `coreai/embedding`（文本/图像向量化）· OCR · INT8 量化 |
+| 分布式 | CRDT · mDNS / Gossip · TLS |
+
+## 应用场景：家庭支出全局模糊检索
+
+> [!TIP]
+> 上个月老婆微信发来一张支出清单图片，OS Agent 经 OCR 识别后写入长期记忆。今天你只记得模糊片段——
+
+```
+你：「我们好像在水电燃气方面花了一些钱，花了多少钱来着？」
+
+PIXIU：2026年4月，你们在水电燃气方面共支出 434.50 元，
+       其中电费 210 元、水费 68.50 元、燃气费 156 元。
+       ↳ 来源：2026年4月家庭支出清单（可追溯原始 OCR 证据）
+       ↳ 置信度 0.93 · 延迟 210ms
+```
+
+完整端到端流程见[赛题附录 A](docs/OriginProblemDescription.md#附录-a典型应用场景家庭支出全局模糊检索)。
+
+## 性能指标
+
+| 指标 | 目标 |
+|------|------|
+| 偏好提取准确率 | ≥ 85% |
+| 知识检索召回率 | ≥ 85% |
+| 知识检索响应时间 | ≤ 500ms (P95) |
+| 知识冲突处理正确率 | ≥ 88% |
+
+## 项目结构
+
+```
+Project.PIXIU/
+├── backend/     # 记忆服务守护进程（M1~M8 + KylinEmbedding 适配层）
+├── frontend/    # UKUI 桌面悬浮组件 / 聊天框
+├── docs/        # 赛题、KylinSDK 文档、验收规范、架构设计
+└── scripts/     # 部署与评测脚本
+```
+
+## 文档导航
+
+| 文档 | 说明 |
+|------|------|
+| [总体架构](docs/ARCHITECTURE.md) | 分层设计、数据模型、端到端流程、分布式同步 |
+| [后端架构](backend/docs/ARCHITECTURE.md) | 模块划分、存储 Schema、API、性能预算 |
+| [前端架构](frontend/docs/ARCHITECTURE.md) | UKUI 交互形态、kysdk 集成、构建适配 |
+| [验收测试规范](docs/AcceptanceTestSpecification.md) | 功能 / 性能 / 交付逐条验收条目 |
+| [KylinSDK 指南](docs/kylin_sdk_docs/README.md) | 麒麟 V3.0 SDK API 参考 |
+| [赛题原文](docs/OriginProblemDescription.md) | 麒麟软件比赛方案与典型场景 |
+
+---
+
+<div align="center">
+
+依托银河麒麟国产桌面操作系统与 KylinSDK 构建 · 国产化 · 端侧 · 可离线
+
+</div>

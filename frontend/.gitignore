@@ -1,0 +1,54 @@
+# ==========================================
+# Frontend .gitignore (Web / JS Ecosystem)
+# ==========================================
+
+# Dependencies
+node_modules/
+/jspm_packages/
+/.pnp
+.pnp.js
+
+# Production / Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.vuepress/dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+
+# Environment variables (Do not commit secrets!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs, Editors and OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Vercel / Netlify deployment folders
+.vercel
+.netlify
