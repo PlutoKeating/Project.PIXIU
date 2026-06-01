@@ -331,13 +331,92 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 
 ---
 
-## 7. 分布式同步层（`pixiu/sync/`）
+## 7. 分布式同步层（`pixiu/sync/`）—— 去中心化多节点记忆共享管理链路
 
-- **节点对等**：每台麒麟设备一个 Memory Daemon，本地完整存储，无中心服务器。
-- **同步单元**：`knowledge_item` / `preference` 以 **CRDT（LWW-Element-Set + 版本向量）** 合并，天然解决并发冲突。
-- **发现与传输**：局域网 mDNS/Gossip 发现节点，TLS + 设备密钥加密通道。
-- **共享域**：`scope` 字段控制可见性（私有 `user:*` vs 共享 `shared:home`），高敏数据默认不出端。
-- **删除传播**：遗忘操作生成 tombstone，经 oplog 同步，保证多设备一致删除。
+这是 PIXIU 的核心创新点：**无中心节点**的多设备记忆网络（根 `README.md` 第一亮点）。本节完整阐述其**管理链路**——从设备成为网络一员，到记忆在多设备间一致流转，再到节点退出与删除回收的全过程。
+
+### 7.1 设计定位与一致性模型
+
+- **对等架构**：每台麒麟设备运行一个 Memory Daemon，本地保存**完整副本**，任何节点都可独立读写，无主从、无单点。
+- **一致性模型**：采用 **AP + 最终一致**（CAP 中优先可用性与分区容忍）。断网期间各节点照常读写，恢复后通过 CRDT 自动收敛到一致状态——这正是"断网可用"的底座。
+- **同步粒度**：以 `sync_oplog` 中的操作（op）为最小同步单元，承载 `knowledge_item` / `preference` / `entities` / `relations` / tombstone 的增删改。
+
+### 7.2 同步层内部结构
+
+```
+pixiu/sync/
+├── identity.py     # 节点身份：device_id、密钥对、信任库
+├── discovery.py    # mDNS/Gossip 节点发现，维护 peer 在线表
+├── pairing.py      # 设备配对/授权，建立信任与共享域成员关系
+├── transport.py    # TLS 加密通道，op 批量收发
+├── crdt.py         # LWW-Element-Set + 版本向量(vclock) 合并引擎
+├── anti_entropy.py # 反熵对账：周期性 digest 比对，补齐缺失 op
+├── gc.py           # tombstone 墓碑回收
+└── scheduler.py    # 同步轮次调度、退避与限流
+```
+
+### 7.3 节点生命周期管理链路
+
+```
+① 身份初始化  identity：首次启动生成 device_id + Ed25519 密钥对，写入本地信任库
+② 配对授权    pairing：扫码/PIN 在同一共享域(shared:home)内互换公钥，建立双向信任
+③ 发现上线    discovery：mDNS 广播+Gossip，构建 peer 在线表，标记 ONLINE
+④ 首次全量    anti_entropy：交换 oplog digest（版本向量），补齐双方缺失的历史 op
+⑤ 稳态增量    transport：本地写入产生的新 op 经 gossip 推送给在线 peer（近实时）
+⑥ 离线        discovery 心跳超时 → 标记 OFFLINE，本地继续读写、积累 op
+⑦ 重连对账    anti_entropy：重新比对 digest，双向补齐离线期间的差异 op
+⑧ 退出/解绑   pairing：撤销信任、移出共享域；可选择本地保留或清空副本
+```
+
+### 7.4 同步数据流（写入如何扩散到全网）
+
+```
+本地写入（用例 A 第⑤步）→ sync_oplog 追加一条 op{op_id, entity, payload, vclock, ts}
+   │
+   ▼  scheduler 触发同步轮次
+[transport] 将 synced=0 的 op 批量 + TLS 发送给在线 peer
+   │
+   ▼  对端接收
+[crdt.merge] 按 vclock 判定因果关系：
+     - 新 op 因果靠后 → 应用并更新本地副本
+     - 并发(无因果序) → LWW 按 (ts, device_id) 决胜，保留更高者
+     - 已存在/陈旧 → 丢弃
+   │
+   ▼  对端本地落库 + 标记来源，避免回环重广播
+[anti_entropy] 周期性兜底：交换 digest，补齐 gossip 可能漏掉的 op（防丢失）
+```
+
+> **gossip（实时推送）+ anti-entropy（周期对账）** 双机制叠加：前者保证低延迟扩散，后者保证最终不丢，应对丢包、临时离线与新节点加入。
+
+### 7.5 与 M4 冲突仲裁的职责边界（关键，避免混淆）
+
+| 维度 | 同步层 CRDT | M4 冲突仲裁 |
+|------|-------------|-------------|
+| 处理对象 | **同一条记忆**的并发副本（多设备同时改）| **不同记忆**在语义/事实上的矛盾（如金额 156 vs 186）|
+| 判定依据 | 版本向量 + LWW（机械、确定性）| 实体/字段级语义比对 |
+| 结果 | 收敛到同一份数据，无需人工 | 生成 `ConflictRecord`，旧版 `SUPERSEDED`，可审计 |
+| 触发时机 | 每次 op 合并 | 写入管线结构化后 |
+
+简言之：**CRDT 解决"数据层并发"，M4 解决"知识层矛盾"**，二者正交。一条经 M4 裁决产生的新版本，本身也作为一个 op 经 CRDT 同步出去。
+
+### 7.6 安全与权限管控（执行点）
+
+- **传输安全**：节点间 TLS 1.3 + 双向证书（设备密钥对），仅信任库内 peer 可建立连接。
+- **共享域权限**：`scope` 字段是同步的"准入闸门"——`user:*`（私有）**永不出端**；仅 `shared:<domain>` 的 op 才进入同步队列。
+- **敏感数据管控**：M7 标记 `sensitivity` 高的 evidence/knowledge，默认**不参与同步**（F5-05），即便其 scope 为共享也会被同步过滤器拦截。
+- **最小暴露**：同步只传结构化记忆与向量，不传原始高敏附件，除非用户显式授权。
+
+### 7.7 删除传播与墓碑回收
+
+- 遗忘（用例 D）不物理删行，而是写 **tombstone op**（删除标记 + vclock），保证删除像普通写一样最终扩散到所有节点，避免"删了又被旧副本同步回来"。
+- `gc.py` 在确认 tombstone 已被全网（或超过保留窗口）确认后，物理回收墓碑与残留索引，控制存储膨胀。
+
+### 7.8 故障与边界
+
+- **脑裂/分区**：分区两侧各自可用，合并时 CRDT 收敛，无数据损坏。
+- **时钟漂移**：LWW 依赖 ts，辅以 device_id 决胜并用单调时钟/混合逻辑时钟缓解漂移误判。
+- **新节点冷启动**：通过 §7.3 ④ 全量对账拉齐，不依赖任何中心快照服务。
+- **当前阶段**：同步层为创新增强项，可独立开关；关闭时系统退化为单机记忆，不影响 M1~M8 验收。
 
 ---
 
@@ -352,7 +431,11 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 | POST | `/forget` | M7 | 自然语言遗忘指令（F5-03）|
 | GET | `/conflicts` | M4 | 冲突记录审计 |
 | POST | `/memory/flow/promote` | M6 | 短/中期 → 长期流转 |
-| WS | `/events` | all | 事件推送（供前端通知）|
+| POST | `/sync/pair` | Sync | 设备配对/授权，加入共享域 |
+| GET | `/sync/peers` | Sync | 列出 peer 节点与在线/同步状态 |
+| GET | `/sync/status` | Sync | 同步进度、最近对账时间、待同步 op 数 |
+| POST | `/sync/peers/{id}/revoke` | Sync | 解绑节点、撤销信任 |
+| WS | `/events` | all | 事件推送（含同步状态、节点上下线）|
 
 检索响应体（对应附录 A）：
 
