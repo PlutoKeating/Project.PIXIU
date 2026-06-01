@@ -21,8 +21,6 @@
 - `docs/OriginProblemDescription.md` —— 赛题原文与附录 A 场景
 - `docs/AcceptanceTestSpecification.md` —— 功能/性能/交付验收条目
 
-> 注意：本仓库**无根级** `ARCHITECTURE.md` / `QUICK_START.md` / `.env.example`，这些文件位于各模块目录下（见 §1.2）。
-
 ### 1.2 必读模块文档
 
 本项目当前有两个二级核心模块：**后端记忆服务（`backend/`）** 与 **UKUI 桌面前端（`frontend/`）**。模块文档统一位于各自的 `docs/` 子目录。
@@ -39,8 +37,6 @@
 - `<module>/scripts/` 相关脚本
 
 > 涉及**多设备记忆共享/去中心化同步**的任务（CRDT、Gossip、反熵对账、设备配对、墓碑回收等），必须先读 `backend/docs/ARCHITECTURE.md` 的「分布式同步层」一章，并注意区分：同步层（CRDT）解决数据层并发，M4 模块解决知识层矛盾，二者正交、不可混淆。
->
-> 说明：早期文档曾提及的「开发者前端 `backfrontend/`」模块当前**不存在**，已从规范中移除；如未来新增，再补充对应必读项。
 
 ### 1.3 阅读后的执行要求
 
@@ -70,8 +66,10 @@ Agent 的目标不是“尽快改完”，而是在本地完成可追踪、可�
 Agent 必须经常执行本地 Git 暂存和提交：
 
 ```bash
-git add <changed-files>
+git diff # 注意首先检查现有的所有修改，如果出现预料之外的文件则需要在之后单独创建commit
+git add <files to be committed>
 git commit -m "<clear local commit message>"
+git diff # 注意时刻避免孤儿文件
 ```
 
 执行原则：
