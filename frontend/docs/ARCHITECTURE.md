@@ -2,8 +2,11 @@
 
 > **角色**：运行于银河麒麟桌面环境（UKUI）的原生交互入口——桌面悬浮球 + 聊天框 + 记忆管理面板。
 > **技术栈**：C++17 + Qt5 Widgets + KylinSDK（kysdk）。
-> **后端**：通过本地 IPC 调用 Memory Daemon（详见 `backend/docs/ARCHITECTURE.md`）。
-> **总体架构见**：`docs/ARCHITECTURE.md`；通俗介绍见同目录 `README.md`。
+> **后端通信**：通过 `docs/API.md` 定义的 12 个 REST API 端点 + WS 事件推送（JSON over HTTP/D-Bus）。
+> **总体架构见**：`docs/ARCHITECTURE.md`；通俗介绍见同目录 `README.md`；开发任务见 `DEV_TASKS.md`。
+>
+> **与后端的隔离**：前端是**独立的 C++ Qt5 项目**，与后端（backend/）的代码零交叉、零引用。
+> 所有数据通过固定 API 契约获取，后端升级/替换不影响前端编译。
 >
 > 本文是一份**完整的 UI/UX 设计架构文档**：覆盖设计原则、用户画像、信息架构、界面布局与线框、交互流程、视觉设计系统、状态与反馈、无障碍与主题适配，以及到 kysdk 与代码组件的落地映射。
 

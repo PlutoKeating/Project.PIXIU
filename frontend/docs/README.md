@@ -1,7 +1,11 @@
 # PIXIU 前端 · UKUI 桌面交互入口
 
+> **模块**：A — UKUI 桌面客户端（独立 C++ 项目，与后端零代码耦合）
+> **技术栈**：C++17 · Qt5 Widgets · KylinSDK
+> **与后端通信**：仅通过 `docs/API.md` 定义的 12 个 REST 端点 + WS 事件
+>
 > 本文用通俗语言说明**前端做了哪些事**、**用什么技术实现**、以及**怎么构建运行**。
-> 想了解界面与交互的完整设计，请看同目录的 [`ARCHITECTURE.md`](./ARCHITECTURE.md)；想了解整个产品，请看仓库根目录 [`README.md`](../../README.md)。
+> 想了解界面与交互的完整设计，请看同目录的 [`ARCHITECTURE.md`](./ARCHITECTURE.md)；开发任务清单请看 [`DEV_TASKS.md`](./DEV_TASKS.md)；API 契约请看 [`docs/API.md`](../../docs/API.md)。
 
 ---
 

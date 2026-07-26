@@ -1,0 +1,204 @@
+# 模块 B · 记忆业务引擎架构设计
+
+> **角色**：常驻记忆服务中的业务逻辑层，处理所有"记忆写入→结构化→应用"的流程。
+> **与模块 C 的边界**：引擎**消费** `foundation/core/` 中的 Repository 接口（ABC）和数据模型，**不依赖** `foundation/` 中的任何实现代码。
+
+---
+
+## 1. 设计原则
+
+- **写入可慢，但要稳**：接入、清洗、抽取、向量化都在异步管线里完成，但每条记忆必须能回溯到原始证据。
+- **数据默认不出端**：`scope` 字段控制可见性，`sensitivity` 字段控制是否参与同步。
+- **模块内高内聚**：每个子包对外只暴露一个 Service 类，内部细节不对外可见。
+
+## 2. 子包详解
+
+### 2.1 ingest/ —— 多源数据接入
+
+**入口**：`IngestionService`
+
+管线流程：
+
+```
+Connector（4类来源适配）
+  → Cleaner（去噪·去重·缺失补齐）
+    → Normalizer（格式标准化·实体规范化）
+      → Quality（Schema 校验·quality_score）
+        → 落 evidence（通过 EvidenceRepository 接口）
+```
+
+**Connector 支持的四类来源**：
+
+| source_type | 输入格式 | 示例 |
+|-------------|----------|------|
+| `TOOL_RESULT` | JSON（工具输出） | OS Agent 文件搜索返回 |
+| `USER_BEHAVIOR` | 事件序列 | 用户操作日志 |
+| `MANUAL_CONFIG` | 键值对 | 用户配置内容 |
+| `OCR` | 结构化文本 | OCR 识别的清单数据 |
+
+**Output**：`Evidence` 对象（通过 `EvidenceRepository.save()` 写入）
+
+```python
+class Evidence(BaseModel):
+    id: str
+    source_type: Literal["OCR", "TOOL_RESULT", "USER_BEHAVIOR", "MANUAL_CONFIG"]
+    raw: dict
+    quality_score: float  # 0~1, 由 Quality 模块计算
+    sensitivity: int      # 0~3, 由 Detector 计算（0=无敏感）
+    scope: str            # "user:alice" | "shared:home"
+    created_at: int
+```
+
+### 2.2 preference/ —— 偏好动态捕捉
+
+**入口**：`PreferenceService`
+
+**三类偏好**：
+
+| 类别 | 说明 | 提取信号 |
+|------|------|----------|
+| `OP_HABIT` | 操作习惯（如优先使用快捷键） | 行为频率分析 |
+| `OUTPUT_STYLE` | 输出风格（如简洁/详细） | 对话模式分析 |
+| `SECURITY_POLICY` | 安全策略（如财务数据不外传） | 用户配置+行为 |
+
+**版本化机制**：
+
+```
+用户行为触发 → extractor 提取键值对
+  → versioning 写入 preference 表（version+1）
+  → 旧快照写入 preference_history
+  → /preference/{id}/history 返回回溯
+```
+
+### 2.3 knowledge/ —— 知识结构化整合
+
+**入口**：`KnowledgeService`
+
+**四类知识**：
+
+| kind | 说明 | 示例 |
+|------|------|------|
+| `FACT` | 事实性知识 | "2026年4月国家电网电费210元" |
+| `WORKFLOW` | 工作流程 | "处理报销的步骤" |
+| `CASE` | 历史案例 | "上次的设计稿修改过程" |
+| `TEMPLATE` | 可复用模板 | "报销单填写模板" |
+
+**三索引齐写机制**：
+
+```
+evidence → structurer（结构化）
+  → graph（抽取实体+关系→写 entities/relations 表）
+  → embed_writer（调 KylinEmbedding 生成向量→INT8 量化→写 knowledge_vec）
+  → 同步写 knowledge_fts（FTS5 全文索引）
+```
+
+### 2.4 conflict/ —— 冲突仲裁
+
+**入口**：`ConflictService`
+
+**仲裁流程**：
+
+```
+新知识与既有知识比对
+  → 同实体同字段矛盾判定
+    → 数值/枚举：直接比较
+    → 文本：语义相似度判断反义
+  → 裁决：默认 NEW_WINS（旧版 SUPERSEDED）
+  → 生成 ConflictRecord{old, new, resolution}
+```
+
+### 2.5 security/ —— 安全与遗忘
+
+**入口**：`SecurityService`
+
+**敏感识别**（挂在写入入口前置）：
+
+```python
+# detector 的正则+规则识别
+patterns = {
+    "身份证": r"\d{18}|\d{17}X",
+    "银行卡": r"\d{16}|\d{19}",
+    "手机号": r"1[3-9]\d{9}",
+}
+# 匹配 → sensitivity 评分 (0=无, 1=低, 2=中, 3=高)
+# sensitivity>=2 的内容默认过滤/脱敏，不出端
+```
+
+**自然语言遗忘**：
+
+```
+forget("忘记那张4月支出清单")
+  → 解析意图 + 构造匹配条件（title~"4月" AND source_type=OCR）
+  → 定位目标 knowledge + evidence + entities/relations
+  → 级联清理（标记 FORGOTTEN + 物理清理）
+  → 生成 tombstone → Sync CRDT 传播（由 Module C 执行）
+```
+
+### 2.6 kylin/ —— KylinSDK 适配
+
+**核心类**：`KylinTextEmbedding`
+
+封装麒麟 C 接口 `coreai/embedding`：
+
+```python
+class KylinTextEmbedding:
+    def __init__(self):
+        # text_embedding_create_session + text_embedding_init_session
+        ...
+    def embed(self, text: str) -> list[float]:
+        # 调用 C API 生成向量
+        ...
+```
+
+**MockEmbedding**（非麒麟开发机降级）：
+
+```python
+class MockEmbedding:
+    def embed(self, text: str) -> list[float]:
+        # 返回固定维度随机向量，用于单测
+        return [random.random() for _ in range(256)]
+```
+
+---
+
+## 3. 对外 Service 接口
+
+引擎每个子包暴露一个 Service 类，供 `foundation/api/di.py` 注入：
+
+```python
+class IngestionService:
+    def __init__(self, evidence_repo: EvidenceRepository, ...): ...
+    async def ingest(self, source_type: str, raw: dict, scope: str) -> Evidence: ...
+
+class PreferenceService:
+    def __init__(self, pref_repo: PreferenceRepository): ...
+    async def extract(self, evidence: Evidence) -> list[Preference]: ...
+    async def get_history(self, pref_id: str) -> list[PreferenceSnapshot]: ...
+
+class KnowledgeService:
+    def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository, embedder): ...
+    async def structure(self, evidence: Evidence) -> KnowledgeItem: ...
+
+class ConflictService:
+    def __init__(self, knw_repo: KnowledgeRepository, conflict_repo: ConflictRepository): ...
+    async def arbitrate(self, new_item: KnowledgeItem) -> Optional[ConflictRecord]: ...
+
+class SecurityService:
+    def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository): ...
+    async def detect_sensitivity(self, raw: dict) -> int: ...
+    async def forget(self, command: str, confirm: bool) -> ForgetResult: ...
+```
+
+---
+
+## 4. 参考文档
+
+| 内容 | 路径 |
+|------|------|
+| 开发任务书 | `backend/engine/docs/DEV_TASKS.md` |
+| 快速启动 | `backend/engine/docs/QUICK_START.md` |
+| 共享数据模型 | `backend/foundation/core/models.py`（代码）|
+| Repository 接口 | `backend/foundation/core/repository.py`（代码）|
+| KylinSDK embedding | `docs/kylin_sdk_docs/9_AI_SDK/9.4.3_Vectorization.md` |
+| KylinSDK OCR | `docs/kylin_sdk_docs/9_AI_SDK/9.4.1_OCR.md` |
+| KylinSDK 文本生成 | `docs/kylin_sdk_docs/9_AI_SDK/9.5.1_Text_Generation.md` |
