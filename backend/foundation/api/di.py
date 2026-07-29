@@ -8,10 +8,9 @@
 
 from __future__ import annotations
 
-import os
-
 import aiosqlite
 
+from ..core.config import settings
 from ..core.logger import get_logger
 
 _log = get_logger(__name__)
@@ -22,12 +21,11 @@ _db: aiosqlite.Connection | None = None
 async def get_db() -> aiosqlite.Connection:
     """获取 aiosqlite 数据库连接（惰性初始化）。
 
-    数据库路径从环境变量 PIXIU_DB_PATH 读取，默认 ./pixiu.db。
+    数据库路径由 PIXIU_DB_PATH 环境变量控制，默认 ./pixiu.db。
     """
     global _db
     if _db is None:
-        db_path = os.getenv("PIXIU_DB_PATH", "./pixiu.db")
-        _db = await aiosqlite.connect(db_path)
+        _db = await aiosqlite.connect(settings.db_path)
         _db.row_factory = aiosqlite.Row
         await _db.execute("PRAGMA journal_mode=WAL")
         await _db.execute("PRAGMA foreign_keys=ON")

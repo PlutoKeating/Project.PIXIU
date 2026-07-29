@@ -1,9 +1,10 @@
 """PIXIU Foundation — 共享契约包
 
-导出所有数据模型、抽象接口、ID 生成器和日志工具，
+导出所有数据模型、抽象接口、配置、ID 生成器和日志工具，
 供 Module B（引擎）和 Module C（基础设施）共同引用。
 """
 
+from .config import settings
 from .models import (
     ConflictRecord,
     Entity,
@@ -35,6 +36,8 @@ from .idgen import (
 from .logger import get_logger
 
 __all__ = [
+    # config
+    "settings",
     # models
     "ConflictRecord",
     "Entity",
