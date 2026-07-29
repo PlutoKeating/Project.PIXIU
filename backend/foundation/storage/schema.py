@@ -123,6 +123,7 @@ DDL_STATEMENTS: list[str] = [
     CREATE TABLE IF NOT EXISTS conflict_records (
         id                TEXT PRIMARY KEY,
         target_knowledge  TEXT NOT NULL,
+        field             TEXT NOT NULL DEFAULT '',
         old_value         TEXT NOT NULL DEFAULT 'null',
         new_value         TEXT NOT NULL DEFAULT 'null',
         resolution        TEXT NOT NULL DEFAULT 'NEW_WINS',

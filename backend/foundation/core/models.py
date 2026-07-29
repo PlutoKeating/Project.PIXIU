@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # ─── ID 格式校验 ──────────────────────────────────────────
@@ -45,8 +45,12 @@ class Evidence(BaseModel):
     scope: str
     created_at: int
 
-    class Config:
-        validate_assignment = True
+    @field_validator("id")
+    @classmethod
+    def _validate_id(cls, v: str) -> str:
+        return validate_id("evidence", v)
+
+    model_config = {"validate_assignment": True}
 
 
 # ─── 知识条目 ──────────────────────────────────────────────
@@ -68,8 +72,12 @@ class KnowledgeItem(BaseModel):
     created_at: int
     updated_at: int
 
-    class Config:
-        validate_assignment = True
+    @field_validator("id")
+    @classmethod
+    def _validate_id(cls, v: str) -> str:
+        return validate_id("knowledge", v)
+
+    model_config = {"validate_assignment": True}
 
 
 # ─── 偏好 ──────────────────────────────────────────────────
@@ -87,8 +95,12 @@ class Preference(BaseModel):
     created_at: int
     updated_at: int
 
-    class Config:
-        validate_assignment = True
+    @field_validator("id")
+    @classmethod
+    def _validate_id(cls, v: str) -> str:
+        return validate_id("preference", v)
+
+    model_config = {"validate_assignment": True}
 
 
 class PreferenceSnapshot(BaseModel):
@@ -108,6 +120,11 @@ class Entity(BaseModel):
     name: str
     norm_name: str
     type: str
+
+    @field_validator("id")
+    @classmethod
+    def _validate_id(cls, v: str) -> str:
+        return validate_id("entity", v)
 
 
 class Relation(BaseModel):
@@ -130,6 +147,11 @@ class ConflictRecord(BaseModel):
     new_value: Any = None
     resolution: str = Field(default="NEW_WINS", pattern=r"^(NEW_WINS|MERGE|MANUAL)$")
     created_at: int
+
+    @field_validator("id")
+    @classmethod
+    def _validate_id(cls, v: str) -> str:
+        return validate_id("conflict", v)
 
 
 # ─── 检索结果 ──────────────────────────────────────────────
@@ -154,3 +176,8 @@ class SyncOp(BaseModel):
     payload: dict[str, Any]
     vclock: dict[str, int]
     ts: int
+
+    @field_validator("op_id")
+    @classmethod
+    def _validate_op_id(cls, v: str) -> str:
+        return validate_id("sync_op", v)

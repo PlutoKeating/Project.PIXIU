@@ -147,7 +147,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
         self._db = db
 
     async def save(self, item: KnowledgeItem) -> str:
-        await self._db.execute(
+        cursor = await self._db.execute(
             """INSERT OR REPLACE INTO knowledge_items (id, kind, title, body,
                status, version, scope, created_at, updated_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
@@ -163,12 +163,13 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
                 item.updated_at,
             ),
         )
+        rowid = cursor.lastrowid
 
-        # 同步 FTS5 索引
+        # 同步 FTS5 索引（rowid 必须为整数，匹配 knowledge_items 的内容表 rowid）
         body_text = item.body.get("description", "") if isinstance(item.body, dict) else str(item.body)
         await self._db.execute(
             "INSERT OR REPLACE INTO knowledge_fts(rowid, title, body_text) VALUES (?, ?, ?)",
-            (item.id, item.title, body_text),
+            (rowid, item.title, body_text),
         )
 
         await self._db.commit()
