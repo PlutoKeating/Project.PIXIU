@@ -1,0 +1,22 @@
+# PIXIU Foundation — Python 依赖
+# 安装: pip install -r requirements.txt
+
+# Web 框架
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# 数据验证
+pydantic>=2.6.0
+
+# 异步数据库
+aiosqlite>=0.20.0
+
+# 测试
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+
+# 向量检索（后续阶段启用）
+# hnswlib>=0.8.0
+
+# 麒麟 SDK（仅在麒麟环境下可用）
+# 无需 pip 安装，通过 C 接口调用
