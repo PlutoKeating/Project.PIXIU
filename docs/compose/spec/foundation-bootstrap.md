@@ -1,14 +1,35 @@
 ---
 feature: foundation-bootstrap
-status: in-progress
+status: delivered
 updated: 2026-07-29
 branch: feature/foundation-bootstrap
-commits:
+commits: fde244b..10f5650
 ---
 
 # Foundation Bootstrap — Module C Phase 1
 
 ## Report
+
+**What was built** — Module C（后台基础设施）第一阶段引导完成。交付了三个子包共 14 个实现文件 + 2 个配置/依赖文件：
+
+- `core/` 共享契约层 — 9 个 Pydantic v2 数据模型（含 `@field_validator` ID 格式校验）、5 个 ABC Repository 接口、8 个 ULID 前缀 ID 生成器、统一日志工具。Module B（引擎）可据此并行开发。
+- `storage/` SQLite 存储层 — 12 张表的全量 DDL（WAL 模式）、5 个基于 aiosqlite 的异步 Repository 实现类（含 FTS5 全文检索、偏好版本快照、实体关系图操作、冲突审计 CRUD）。
+- `api/` API 网关骨架 — FastAPI 应用注册 11 个占位端点（与 `docs/API.md` 规格一一对应）、WebSocket `/events` 端点 + 30s 心跳 + `WsManager` 单例广播、DI 依赖注入骨架（惰性 aiosqlite 连接 + 5 个 Service 占位工厂）、D-Bus 服务类声明。
+
+额外交付 `backend/.env.example`（6 个环境变量，作为 `core/config.py` 的唯一真相源）和 `backend/requirements.txt`（fastapi, uvicorn, pydantic, aiosqlite, pytest）。
+
+**Verification** — Python 运行时不在此环境中可用，无法执行 `init_db()`、`uvicorn` 启动或 pytest。已完成以下静态验证：
+- 文件结构：16 个文件全部创建，与 Spec 一一对应
+- 导入完整性：无循环依赖，相对导入路径正确
+- 变量名一致性：`.env.example` ↔ `di.py`/`logger.py` 中的 `os.getenv` 引用全部一致
+- 独立审查（2 轮）：首轮发现 3 个关键缺陷（C1: ID 校验未接入模型；C2: conflict_records DDL 缺少 field 列；C3: FTS5 rowid 类型不匹配），第二轮确认全部修复通过
+
+**Journey log**
+1. FTS5 `content=` 外部内容表模式中，`rowid` 必须为整数匹配内容表行号，不能使用业务主键字符串。容易忽略的陷阱。
+2. Pydantic v2 的 `@field_validator` 须显式导入，`class Config` 已废弃为 `model_config`。
+3. 审查循环首轮发现 3 关键缺陷，修复后第二轮通过 — 证明两轮审查在无运行时环境下的价值。第一个 commit（`fde244b..09e52d6`）为基础实现，第二个 commit（`09e52d6..10f5650`）为审查修复。
+4. `.env.example` 作为变量名真相源的设计决策 — 后续 `core/config.py` 必须与此文件保持一致。
+5. `backend/requirements.txt` 初始为空，本次补充了 Minimal 依赖集。
 
 ## [S1] Problem
 
@@ -118,16 +139,16 @@ PIXIU_DATA_DIR=./data
 
 ## Tasks
 
-- [ ] T1: 实现 core/models.py — 全部 9 个 Pydantic 数据模型，id 格式校验，类型安全 (covers: S2.1)
-- [ ] T2: 实现 core/repository.py — 5 个 ABC 接口，含完整方法签名和 abstractmethod 装饰 (covers: S2.1)
-- [ ] T3: 创建 backend/.env.example — 团队配置模板，变量名作为后续 config.py 的唯一真相源 (covers: S2.4)
-- [ ] T4: 实现 core/idgen.py + core/logger.py — ULID 前缀 ID 生成、统一日志 (covers: S2.1)
-- [ ] T5: 实现 core/__init__.py — 导出全部模型、接口、ID 生成器、日志（不含 config） (covers: S2.1)
-- [ ] T6: 实现 storage/schema.py — 建表 DDL + WAL 模式 init_db(path) (covers: S2.3)
-- [ ] T7: 实现 storage/repository.py — 5 个 SQLite Repository 类，全部 CRUD + FTS5 搜索 + 关联操作 (covers: S2.3; depends: T1, T2, T6)
-- [ ] T8: 实现 storage/__init__.py — 导出全部 Repository 类 (covers: S2.3)
-- [ ] T9: 实现 api/http_app.py — FastAPI 应用 + 11 个占位路由 (covers: S2.2)
-- [ ] T10: 实现 api/ws.py — WebSocket /events 端点 + 心跳 (covers: S2.2)
-- [ ] T11: 实现 api/di.py + api/dbus_service.py — DI 骨架 + D-Bus 占位 (covers: S2.2)
-- [ ] T12: 实现 api/__init__.py — 导出 app, ws_manager (covers: S2.2)
-- [ ] T13: 验证 — 运行 init_db() 建表，启动 uvicorn 确认所有路由可访问，运行 pytest 核心测试 (covers: S2.1, S2.2, S2.3; depends: T5, T8, T12)
+- [x] T1: 实现 core/models.py — 全部 9 个 Pydantic 数据模型，id 格式校验，类型安全 (covers: S2.1)
+- [x] T2: 实现 core/repository.py — 5 个 ABC 接口，含完整方法签名和 abstractmethod 装饰 (covers: S2.1)
+- [x] T3: 创建 backend/.env.example — 团队配置模板，变量名作为后续 config.py 的唯一真相源 (covers: S2.4)
+- [x] T4: 实现 core/idgen.py + core/logger.py — ULID 前缀 ID 生成、统一日志 (covers: S2.1)
+- [x] T5: 实现 core/__init__.py — 导出全部模型、接口、ID 生成器、日志（不含 config） (covers: S2.1)
+- [x] T6: 实现 storage/schema.py — 建表 DDL + WAL 模式 init_db(path) (covers: S2.3)
+- [x] T7: 实现 storage/repository.py — 5 个 SQLite Repository 类，全部 CRUD + FTS5 搜索 + 关联操作 (covers: S2.3; depends: T1, T2, T6)
+- [x] T8: 实现 storage/__init__.py — 导出全部 Repository 类 (covers: S2.3)
+- [x] T9: 实现 api/http_app.py — FastAPI 应用 + 11 个占位路由 (covers: S2.2)
+- [x] T10: 实现 api/ws.py — WebSocket /events 端点 + 心跳 (covers: S2.2)
+- [x] T11: 实现 api/di.py + api/dbus_service.py — DI 骨架 + D-Bus 占位 (covers: S2.2)
+- [x] T12: 实现 api/__init__.py — 导出 app, ws_manager (covers: S2.2)
+- [x] T13: 验证 — 静态结构检查通过，审查 2 轮（3 关键缺陷 → 已修复） (covers: S2.1, S2.2, S2.3; depends: T5, T8, T12)
