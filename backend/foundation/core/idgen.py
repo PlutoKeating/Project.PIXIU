@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import time
 import os
-import hashlib
 
 # ULID 字符集 (Crockford Base32)
 _ENCODING = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
