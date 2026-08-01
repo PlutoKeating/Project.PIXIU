@@ -44,6 +44,11 @@ class EvidenceRepository(ABC):
         """按 id 获取证据。"""
         ...
 
+    @abstractmethod
+    async def list_by_scope(self, scope: str, limit: int) -> list[Evidence]:
+        """按 scope 列出证据，按创建时间降序。"""
+        ...
+
 
 class KnowledgeRepository(ABC):
     """知识条目仓储。"""
@@ -63,6 +68,21 @@ class KnowledgeRepository(ABC):
         """全文检索。"""
         ...
 
+    @abstractmethod
+    async def search_by_title(self, query: str, limit: int) -> list[KnowledgeItem]:
+        """按 title 模糊匹配知识条目（用于遗忘定位）。"""
+        ...
+
+    @abstractmethod
+    async def save_vector(self, knowledge_id: str, dim: int, vec: bytes) -> None:
+        """保存知识条目的向量（三索引齐写之一）。"""
+        ...
+
+    @abstractmethod
+    async def update_status(self, id: str, status: KnowledgeStatus) -> None:
+        """更新知识条目状态（e.g. ACTIVE → FORGOTTEN）。"""
+        ...
+
 
 class PreferenceRepository(ABC):
     """偏好仓储。"""
@@ -70,6 +90,11 @@ class PreferenceRepository(ABC):
     @abstractmethod
     async def save(self, pref: Preference) -> str:
         """持久化偏好，返回 id。"""
+        ...
+
+    @abstractmethod
+    async def get(self, id: str) -> Optional[Preference]:
+        """按 id 获取偏好。"""
         ...
 
     @abstractmethod
@@ -87,8 +112,18 @@ class EntityRepository(ABC):
         ...
 
     @abstractmethod
+    async def get_entity(self, id: str) -> Optional[Entity]:
+        """按 id 获取实体。"""
+        ...
+
+    @abstractmethod
     async def save_relation(self, src: str, dst: str, type: str) -> None:
         """保存一条关系。"""
+        ...
+
+    @abstractmethod
+    async def get_relations(self, entity_id: str) -> list[Relation]:
+        """获取某实体的全部关联关系（入边 + 出边）。"""
         ...
 
 
@@ -98,6 +133,11 @@ class ConflictRepository(ABC):
     @abstractmethod
     async def save(self, record: ConflictRecord) -> str:
         """持久化冲突记录，返回 id。"""
+        ...
+
+    @abstractmethod
+    async def get(self, id: str) -> Optional[ConflictRecord]:
+        """按 id 获取冲突记录。"""
         ...
 
     @abstractmethod

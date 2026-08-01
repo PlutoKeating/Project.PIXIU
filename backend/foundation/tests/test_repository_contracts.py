@@ -136,6 +136,9 @@ class FakeEvidenceRepo(EvidenceRepository):
     async def get(self, id: str) -> Optional[Evidence]:
         return None
 
+    async def list_by_scope(self, scope: str, limit: int) -> list[Evidence]:
+        return []
+
 
 class FakeKnowledgeRepo(KnowledgeRepository):
     async def save(self, item: KnowledgeItem) -> str:
@@ -147,10 +150,22 @@ class FakeKnowledgeRepo(KnowledgeRepository):
     async def search_fts(self, query: str, limit: int) -> list[KnowledgeItem]:
         return []
 
+    async def search_by_title(self, query: str, limit: int) -> list[KnowledgeItem]:
+        return []
+
+    async def save_vector(self, knowledge_id: str, dim: int, vec: bytes) -> None:
+        pass
+
+    async def update_status(self, id: str, status: KnowledgeStatus) -> None:
+        pass
+
 
 class FakePreferenceRepo(PreferenceRepository):
     async def save(self, pref: Preference) -> str:
         return pref.id
+
+    async def get(self, id: str) -> Optional[Preference]:
+        return None
 
     async def get_history(self, pref_id: str) -> list[PreferenceSnapshot]:
         return []
@@ -160,13 +175,22 @@ class FakeEntityRepo(EntityRepository):
     async def save_entity(self, entity: Entity) -> str:
         return entity.id
 
+    async def get_entity(self, id: str) -> Optional[Entity]:
+        return None
+
     async def save_relation(self, src: str, dst: str, type: str) -> None:
         pass
+
+    async def get_relations(self, entity_id: str) -> list[Relation]:
+        return []
 
 
 class FakeConflictRepo(ConflictRepository):
     async def save(self, record: ConflictRecord) -> str:
         return record.id
+
+    async def get(self, id: str) -> Optional[ConflictRecord]:
+        return None
 
     async def list(self) -> list[ConflictRecord]:
         return []
@@ -268,3 +292,62 @@ async def test_fake_conflict_list_returns_list():
     repo = FakeConflictRepo()
     result = await repo.list()
     assert isinstance(result, list)
+
+
+# ─── New methods (audit P0/P1) ────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_fake_evidence_list_by_scope_returns_list():
+    repo = FakeEvidenceRepo()
+    result = await repo.list_by_scope("user:alice", 10)
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_knowledge_save_vector_returns_none():
+    repo = FakeKnowledgeRepo()
+    result = await repo.save_vector("knw_x", 768, b"\x00" * 768)
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_fake_knowledge_search_by_title_returns_list():
+    repo = FakeKnowledgeRepo()
+    result = await repo.search_by_title("四月", 5)
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_knowledge_update_status_returns_none():
+    repo = FakeKnowledgeRepo()
+    result = await repo.update_status("knw_x", KnowledgeStatus.FORGOTTEN)
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_fake_preference_get_returns_optional():
+    repo = FakePreferenceRepo()
+    result = await repo.get("pref_x")
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_fake_entity_get_entity_returns_optional():
+    repo = FakeEntityRepo()
+    result = await repo.get_entity("ent_x")
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_fake_entity_get_relations_returns_list():
+    repo = FakeEntityRepo()
+    result = await repo.get_relations("ent_x")
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_conflict_get_returns_optional():
+    repo = FakeConflictRepo()
+    result = await repo.get("cfl_x")
+    assert result is None

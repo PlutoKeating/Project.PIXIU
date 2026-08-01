@@ -127,10 +127,10 @@ class SqliteEvidenceRepo(EvidenceRepository):
         await self._db.execute("DELETE FROM evidence WHERE id = ?", (id,))
         await self._db.commit()
 
-    async def list_by_scope(self, scope: str, offset: int = 0, limit: int = 50) -> list[Evidence]:
+    async def list_by_scope(self, scope: str, limit: int = 50) -> list[Evidence]:
         cursor = await self._db.execute(
-            "SELECT * FROM evidence WHERE scope = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-            (scope, limit, offset),
+            "SELECT * FROM evidence WHERE scope = ? ORDER BY created_at DESC LIMIT ?",
+            (scope, limit),
         )
         rows = await cursor.fetchall()
         return [_row_to_evidence(r) for r in rows]
