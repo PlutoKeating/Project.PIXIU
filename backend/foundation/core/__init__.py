@@ -7,13 +7,18 @@
 from .config import settings
 from .models import (
     ConflictRecord,
+    ConflictResolution,
     Entity,
     Evidence,
     KnowledgeItem,
+    KnowledgeKind,
+    KnowledgeStatus,
     MemoryAtom,
     Preference,
+    PreferenceCategory,
     PreferenceSnapshot,
     Relation,
+    SourceType,
     SyncOp,
 )
 from .repository import (
@@ -40,13 +45,18 @@ __all__ = [
     "settings",
     # models
     "ConflictRecord",
+    "ConflictResolution",
     "Entity",
     "Evidence",
     "KnowledgeItem",
+    "KnowledgeKind",
+    "KnowledgeStatus",
     "MemoryAtom",
     "Preference",
+    "PreferenceCategory",
     "PreferenceSnapshot",
     "Relation",
+    "SourceType",
     "SyncOp",
     # repository ABCs
     "ConflictRepository",
