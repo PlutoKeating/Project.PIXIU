@@ -1,8 +1,9 @@
 """PIXIU Foundation — 存储层
 
-导出全部 SQLite Repository 实现类。
+导出 SQLite Repository 实现类、Schema 初始化和迁移工具。
 """
 
+from .migrations import apply_pending, latest_version
 from .repository import (
     SqliteConflictRepo,
     SqliteEntityRepo,
@@ -10,13 +11,20 @@ from .repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
-from .schema import init_db
+from .schema import create_connection, init_db, init_db_on_connection
 
 __all__ = [
+    # repos
     "SqliteEvidenceRepo",
     "SqliteKnowledgeRepo",
     "SqlitePreferenceRepo",
     "SqliteEntityRepo",
     "SqliteConflictRepo",
+    # schema
+    "create_connection",
     "init_db",
+    "init_db_on_connection",
+    # migrations
+    "apply_pending",
+    "latest_version",
 ]

@@ -1,30 +1,33 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 12 张表及索引，WAL 模式开启。
+创建全部 9 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+知识向量表和全文索引留待后续阶段（retrieval/ 实现时一并加入）。
 """
 
 from __future__ import annotations
 
 import os
+import sqlite3
 
 SCHEMA_VERSION = 1
 
 DDL_STATEMENTS: list[str] = [
-    # ─── 证据 ──────────────────────────────────────────
+    # ─── evidence (原始证据) ─────────────────────────────
     """
     CREATE TABLE IF NOT EXISTS evidence (
-        id          TEXT PRIMARY KEY,
-        source_type TEXT NOT NULL,
-        raw         TEXT NOT NULL DEFAULT '{}',
+        id            TEXT PRIMARY KEY,
+        source_type   TEXT NOT NULL,
+        raw           TEXT NOT NULL DEFAULT '{}',
         quality_score REAL NOT NULL DEFAULT 0.0,
-        sensitivity  INTEGER NOT NULL DEFAULT 0,
-        scope       TEXT NOT NULL DEFAULT '',
-        created_at  INTEGER NOT NULL
+        sensitivity   INTEGER NOT NULL DEFAULT 0,
+        scope         TEXT NOT NULL DEFAULT '',
+        created_at    INTEGER NOT NULL
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_evidence_scope ON evidence(scope)",
     "CREATE INDEX IF NOT EXISTS idx_evidence_source ON evidence(source_type)",
-    # ─── 知识条目 ──────────────────────────────────────
+
+    # ─── knowledge_items (结构化知识) ────────────────────
     """
     CREATE TABLE IF NOT EXISTS knowledge_items (
         id           TEXT PRIMARY KEY,
@@ -40,35 +43,49 @@ DDL_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS idx_knw_status ON knowledge_items(status)",
     "CREATE INDEX IF NOT EXISTS idx_knw_scope ON knowledge_items(scope)",
-    # ─── 知识-证据关联表 ────────────────────────────────
+
+    # ─── knowledge_evidence (知识-证据关联) ───────────────
     """
     CREATE TABLE IF NOT EXISTS knowledge_evidence (
         knowledge_id TEXT NOT NULL,
         evidence_id  TEXT NOT NULL,
         PRIMARY KEY (knowledge_id, evidence_id),
         FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE CASCADE,
-        FOREIGN KEY (evidence_id) REFERENCES evidence(id) ON DELETE CASCADE
+        FOREIGN KEY (evidence_id)  REFERENCES evidence(id)       ON DELETE CASCADE
     )
     """,
-    # ─── FTS5 全文索引 ─────────────────────────────────
+
+    # ─── preferences (偏好记忆) ──────────────────────────
     """
-    CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_fts USING fts5(
-        title,
-        body_text,
-        content='knowledge_items',
-        content_rowid='rowid'
+    CREATE TABLE IF NOT EXISTS preferences (
+        id          TEXT PRIMARY KEY,
+        category    TEXT NOT NULL,
+        key         TEXT NOT NULL,
+        value       TEXT NOT NULL DEFAULT '{}',
+        confidence  REAL NOT NULL DEFAULT 0.0,
+        version     INTEGER NOT NULL DEFAULT 1,
+        scope       TEXT NOT NULL DEFAULT '',
+        created_at  INTEGER NOT NULL,
+        updated_at  INTEGER NOT NULL
     )
     """,
-    # ─── 向量索引 (INT8) ───────────────────────────────
+    "CREATE INDEX IF NOT EXISTS idx_pref_category ON preferences(category)",
+    "CREATE INDEX IF NOT EXISTS idx_pref_scope ON preferences(scope)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_pref_key_scope ON preferences(key, scope)",
+
+    # ─── preference_history (偏好版本快照) ───────────────
     """
-    CREATE TABLE IF NOT EXISTS knowledge_vec (
-        knowledge_id TEXT PRIMARY KEY,
-        dim          INTEGER NOT NULL,
-        vec          BLOB NOT NULL,
-        FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE CASCADE
+    CREATE TABLE IF NOT EXISTS preference_history (
+        pref_id   TEXT NOT NULL,
+        version   INTEGER NOT NULL,
+        snapshot  TEXT NOT NULL DEFAULT '{}',
+        ts        INTEGER NOT NULL,
+        PRIMARY KEY (pref_id, version),
+        FOREIGN KEY (pref_id) REFERENCES preferences(id) ON DELETE CASCADE
     )
     """,
-    # ─── 实体 ──────────────────────────────────────────
+
+    # ─── entities (命名实体) ─────────────────────────────
     """
     CREATE TABLE IF NOT EXISTS entities (
         id        TEXT PRIMARY KEY,
@@ -78,7 +95,8 @@ DDL_STATEMENTS: list[str] = [
     )
     """,
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_entity_norm ON entities(norm_name)",
-    # ─── 关系 ──────────────────────────────────────────
+
+    # ─── relations (实体关系) ────────────────────────────
     """
     CREATE TABLE IF NOT EXISTS relations (
         src  TEXT NOT NULL,
@@ -91,34 +109,8 @@ DDL_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS idx_rel_src ON relations(src)",
     "CREATE INDEX IF NOT EXISTS idx_rel_dst ON relations(dst)",
-    # ─── 偏好 ──────────────────────────────────────────
-    """
-    CREATE TABLE IF NOT EXISTS preferences (
-        id         TEXT PRIMARY KEY,
-        category   TEXT NOT NULL,
-        key        TEXT NOT NULL,
-        value      TEXT NOT NULL DEFAULT '{}',
-        confidence REAL NOT NULL DEFAULT 0.0,
-        version    INTEGER NOT NULL DEFAULT 1,
-        scope      TEXT NOT NULL DEFAULT '',
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL
-    )
-    """,
-    "CREATE INDEX IF NOT EXISTS idx_pref_category ON preferences(category)",
-    "CREATE INDEX IF NOT EXISTS idx_pref_scope ON preferences(scope)",
-    # ─── 偏好历史版本 ──────────────────────────────────
-    """
-    CREATE TABLE IF NOT EXISTS preference_history (
-        pref_id   TEXT NOT NULL,
-        version   INTEGER NOT NULL,
-        snapshot  TEXT NOT NULL DEFAULT '{}',
-        ts        INTEGER NOT NULL,
-        PRIMARY KEY (pref_id, version),
-        FOREIGN KEY (pref_id) REFERENCES preferences(id) ON DELETE CASCADE
-    )
-    """,
-    # ─── 冲突审计 ──────────────────────────────────────
+
+    # ─── conflict_records (冲突审计) ─────────────────────
     """
     CREATE TABLE IF NOT EXISTS conflict_records (
         id                TEXT PRIMARY KEY,
@@ -131,7 +123,8 @@ DDL_STATEMENTS: list[str] = [
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_cfl_knw ON conflict_records(target_knowledge)",
-    # ─── CRDT 同步日志 ─────────────────────────────────
+
+    # ─── sync_oplog (CRDT 同步日志) ──────────────────────
     """
     CREATE TABLE IF NOT EXISTS sync_oplog (
         op_id    TEXT PRIMARY KEY,
@@ -147,20 +140,37 @@ DDL_STATEMENTS: list[str] = [
 ]
 
 
-def init_db(path: str) -> None:
-    """创建/初始化 SQLite 数据库（WAL 模式）。
+def create_connection(path: str) -> sqlite3.Connection:
+    """创建 SQLite 连接并应用 PIXIU 标准 pragmas。
 
-    幂等：已存在的表不会被重建。
+    - journal_mode=WAL  并发读写不互锁
+    - foreign_keys=ON   外键约束生效
+    - busy_timeout=5000 写入锁等待最多 5 秒
     """
-    import sqlite3
-
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     conn = sqlite3.connect(path)
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute("PRAGMA busy_timeout=5000")
+    return conn
 
+
+def init_db(path: str) -> None:
+    """创建/初始化数据库（幂等）。
+
+    已存在的表不会被重建。
+    """
+    conn = create_connection(path)
+    try:
+        for stmt in DDL_STATEMENTS:
+            conn.execute(stmt)
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def init_db_on_connection(conn: sqlite3.Connection) -> None:
+    """在已有连接上初始化 schema（测试/迁移场景）。"""
     for stmt in DDL_STATEMENTS:
         conn.execute(stmt)
-
     conn.commit()
-    conn.close()
