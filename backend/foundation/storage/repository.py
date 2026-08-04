@@ -96,7 +96,11 @@ def _row_to_conflict(row: aiosqlite.Row) -> ConflictRecord:
 # ══════════════════════════════════════════════════════════
 
 class SqliteEvidenceRepo(EvidenceRepository):
-    """证据仓储 — SQLite 实现。"""
+    """证据仓储 — SQLite 实现。
+
+    实现 EvidenceRepository 契约的全部方法：save / get / list_by_scope。
+    JSON 字段使用 json.dumps/loads 序列化，所有 SQL 使用参数化查询。
+    """
 
     def __init__(self, db: aiosqlite.Connection):
         self._db = db
@@ -107,7 +111,7 @@ class SqliteEvidenceRepo(EvidenceRepository):
                sensitivity, scope, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
                 evidence.id,
-                evidence.source_type,
+                evidence.source_type.value,
                 json.dumps(evidence.raw, ensure_ascii=False),
                 evidence.quality_score,
                 evidence.sensitivity,
@@ -123,16 +127,13 @@ class SqliteEvidenceRepo(EvidenceRepository):
         row = await cursor.fetchone()
         return _row_to_evidence(row) if row else None
 
-    async def delete(self, id: str) -> None:
-        await self._db.execute("DELETE FROM evidence WHERE id = ?", (id,))
-        await self._db.commit()
-
     async def list_by_scope(self, scope: str, limit: int = 50) -> list[Evidence]:
         cursor = await self._db.execute(
             "SELECT * FROM evidence WHERE scope = ? ORDER BY created_at DESC LIMIT ?",
             (scope, limit),
         )
         rows = await cursor.fetchall()
+        return [_row_to_evidence(r) for r in rows]
         return [_row_to_evidence(r) for r in rows]
 
 
