@@ -17,6 +17,7 @@ from ..core.models import (
     Entity,
     Evidence,
     KnowledgeItem,
+    KnowledgeStatus,
     Preference,
     PreferenceSnapshot,
     Relation,
@@ -137,74 +138,168 @@ class SqliteEvidenceRepo(EvidenceRepository):
         return [_row_to_evidence(r) for r in rows]
 
 
+def _knowledge_search_text(item: KnowledgeItem) -> str:
+    """生成 FTS 可搜索文本的明确规则。
+
+    规则：title + body 文本。
+    - body 为 dict 且含 description 字段时，取 description 值。
+    - 否则将整个 body 序列化为 JSON 文本。
+    """
+    parts = [item.title]
+    if isinstance(item.body, dict):
+        desc = item.body.get("description")
+        parts.append(str(desc) if desc else json.dumps(item.body, ensure_ascii=False))
+    else:
+        parts.append(str(item.body))
+    return " ".join(parts)
+
+
 # ══════════════════════════════════════════════════════════
 # KnowledgeRepository
 # ══════════════════════════════════════════════════════════
 
 class SqliteKnowledgeRepo(KnowledgeRepository):
-    """知识条目仓储 — SQLite 实现（含 FTS5）。"""
+    """知识条目仓储 — SQLite 实现（含 FTS5 全文索引）。
+
+    实现 KnowledgeRepository 契约全部方法。
+    save 在同一事务中写入 knowledge_items + knowledge_evidence + knowledge_fts，
+    任一步失败全部回滚。
+    """
 
     def __init__(self, db: aiosqlite.Connection):
         self._db = db
+        self._fts_ready = False
+        self._vec_ready = False
+
+    async def _ensure_fts(self) -> None:
+        """惰性创建 knowledge_fts 表（幂等，仅首次调用执行）。"""
+        if not self._fts_ready:
+            await self._db.execute(
+                "CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_fts USING fts5("
+                "title, body_text, tokenize='trigram')"
+            )
+            await self._db.commit()
+            self._fts_ready = True
+
+    async def _ensure_vec(self) -> None:
+        """惰性创建 knowledge_vec 表（幂等，仅首次调用执行）。"""
+        if not self._vec_ready:
+            await self._db.execute(
+                """CREATE TABLE IF NOT EXISTS knowledge_vec (
+                    knowledge_id TEXT PRIMARY KEY,
+                    dim          INTEGER NOT NULL,
+                    vec          BLOB NOT NULL,
+                    FOREIGN KEY (knowledge_id)
+                        REFERENCES knowledge_items(id) ON DELETE CASCADE
+                )"""
+            )
+            await self._db.commit()
+            self._vec_ready = True
 
     async def save(self, item: KnowledgeItem) -> str:
-        cursor = await self._db.execute(
-            """INSERT OR REPLACE INTO knowledge_items (id, kind, title, body,
-               status, version, scope, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (
-                item.id,
-                item.kind,
-                item.title,
-                json.dumps(item.body, ensure_ascii=False),
-                item.status,
-                item.version,
-                item.scope,
-                item.created_at,
-                item.updated_at,
-            ),
-        )
-        rowid = cursor.lastrowid
+        """事务性保存：knowledge_items + knowledge_evidence + knowledge_fts。
 
-        # 同步 FTS5 索引（rowid 必须为整数，匹配 knowledge_items 的内容表 rowid）
-        body_text = item.body.get("description", "") if isinstance(item.body, dict) else str(item.body)
-        await self._db.execute(
-            "INSERT OR REPLACE INTO knowledge_fts(rowid, title, body_text) VALUES (?, ?, ?)",
-            (rowid, item.title, body_text),
-        )
+        使用 UPSERT（ON CONFLICT DO UPDATE）保持 rowid 稳定，
+        保证 FTS rowid 与内容表 rowid 始终一致。
+        任一步失败则回滚整个事务。
+        """
+        await self._ensure_fts()
+        try:
+            await self._db.execute(
+                """INSERT INTO knowledge_items (id, kind, title, body, status,
+                   version, scope, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   ON CONFLICT(id) DO UPDATE SET
+                       kind=excluded.kind, title=excluded.title, body=excluded.body,
+                       status=excluded.status, version=excluded.version,
+                       scope=excluded.scope, updated_at=excluded.updated_at""",
+                (
+                    item.id,
+                    item.kind.value,
+                    item.title,
+                    json.dumps(item.body, ensure_ascii=False),
+                    item.status.value,
+                    item.version,
+                    item.scope,
+                    item.created_at,
+                    item.updated_at,
+                ),
+            )
 
-        await self._db.commit()
-        return item.id
+            # 同一事务内写证据关联
+            if item.evidence_ids:
+                await self._db.executemany(
+                    "INSERT OR IGNORE INTO knowledge_evidence (knowledge_id, evidence_id) VALUES (?, ?)",
+                    [(item.id, eid) for eid in item.evidence_ids],
+                )
+
+            # 同一事务内同步 FTS 索引（rowid = knowledge_items 的稳定 rowid）
+            cursor = await self._db.execute(
+                "SELECT rowid FROM knowledge_items WHERE id = ?", (item.id,)
+            )
+            row = await cursor.fetchone()
+            if row is None:
+                raise RuntimeError(f"knowledge_items row not found after upsert: {item.id}")
+            search_text = _knowledge_search_text(item)
+            await self._db.execute(
+                "INSERT OR REPLACE INTO knowledge_fts(rowid, title, body_text) VALUES (?, ?, ?)",
+                (row["rowid"], item.title, search_text),
+            )
+
+            await self._db.commit()
+            return item.id
+        except Exception:
+            await self._db.rollback()
+            raise
 
     async def get(self, id: str) -> Optional[KnowledgeItem]:
         cursor = await self._db.execute("SELECT * FROM knowledge_items WHERE id = ?", (id,))
         row = await cursor.fetchone()
         return _row_to_knowledge(row) if row else None
 
-    async def delete(self, id: str) -> None:
-        await self._db.execute("DELETE FROM knowledge_items WHERE id = ?", (id,))
-        await self._db.commit()
-
     async def search_fts(self, query: str, limit: int = 20) -> list[KnowledgeItem]:
+        """FTS5 全文检索，返回 KnowledgeItem 列表（不暴露 SQLite row）。"""
+        await self._ensure_fts()
         cursor = await self._db.execute(
-            """
-            SELECT k.* FROM knowledge_items k
-            JOIN knowledge_fts f ON k.rowid = f.rowid
-            WHERE knowledge_fts MATCH ?
-            ORDER BY rank
-            LIMIT ?
-            """,
+            """SELECT k.* FROM knowledge_items k
+               JOIN knowledge_fts f ON k.rowid = f.rowid
+               WHERE knowledge_fts MATCH ?
+               ORDER BY rank
+               LIMIT ?""",
             (query, limit),
         )
         rows = await cursor.fetchall()
         return [_row_to_knowledge(r) for r in rows]
 
-    async def list_by_status(self, status: str) -> list[KnowledgeItem]:
+    async def search_by_title(self, query: str, limit: int = 20) -> list[KnowledgeItem]:
+        """按 title 子串模糊匹配（用于遗忘定位）。"""
         cursor = await self._db.execute(
-            "SELECT * FROM knowledge_items WHERE status = ? ORDER BY updated_at DESC", (status,)
+            """SELECT * FROM knowledge_items
+               WHERE title LIKE ? ESCAPE '\\'
+               ORDER BY updated_at DESC
+               LIMIT ?""",
+            (f"%{_escape_like(query)}%", limit),
         )
         rows = await cursor.fetchall()
         return [_row_to_knowledge(r) for r in rows]
+
+    async def save_vector(self, knowledge_id: str, dim: int, vec: bytes) -> None:
+        """保存知识条目的向量（仅存储，不做 ANN 检索）。"""
+        await self._ensure_vec()
+        await self._db.execute(
+            """INSERT OR REPLACE INTO knowledge_vec (knowledge_id, dim, vec)
+               VALUES (?, ?, ?)""",
+            (knowledge_id, dim, vec),
+        )
+        await self._db.commit()
+
+    async def update_status(self, id: str, status: KnowledgeStatus) -> None:
+        """更新知识条目状态（e.g. ACTIVE → FORGOTTEN）。"""
+        await self._db.execute(
+            "UPDATE knowledge_items SET status = ? WHERE id = ?",
+            (status.value, id),
+        )
+        await self._db.commit()
 
     async def link_evidence(self, knowledge_id: str, evidence_id: str) -> None:
         await self._db.execute(
@@ -212,6 +307,11 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (knowledge_id, evidence_id),
         )
         await self._db.commit()
+
+
+def _escape_like(value: str) -> str:
+    """转义 LIKE 通配符，防止用户输入注入模式。"""
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
 # ══════════════════════════════════════════════════════════

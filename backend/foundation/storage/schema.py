@@ -1,7 +1,8 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
 创建全部 9 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
-知识向量表和全文索引留待后续阶段（retrieval/ 实现时一并加入）。
+知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
+SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
 
 from __future__ import annotations
@@ -10,6 +11,32 @@ import os
 import sqlite3
 
 SCHEMA_VERSION = 1
+
+# FTS5 全文索引（trigram 分词器，支持中文子串检索）。
+# 独立表（不绑定 content=），rowid 手动对应 knowledge_items.rowid，
+# 由 SqliteKnowledgeRepo 在首次使用时创建。
+FTS_DDL_STATEMENTS: list[str] = [
+    """
+    CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_fts USING fts5(
+        title,
+        body_text,
+        tokenize='trigram'
+    )
+    """,
+]
+
+# 向量表（INT8 BLOB）。仅存储，不做 ANN 检索（检索在 retrieval/ 阶段实现）。
+# 由 SqliteKnowledgeRepo.save_vector 惰性创建。
+VEC_DDL_STATEMENTS: list[str] = [
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_vec (
+        knowledge_id TEXT PRIMARY KEY,
+        dim          INTEGER NOT NULL,
+        vec          BLOB NOT NULL,
+        FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE CASCADE
+    )
+    """,
+]
 
 DDL_STATEMENTS: list[str] = [
     # ─── evidence (原始证据) ─────────────────────────────
@@ -172,5 +199,19 @@ def init_db(path: str) -> None:
 def init_db_on_connection(conn: sqlite3.Connection) -> None:
     """在已有连接上初始化 schema（测试/迁移场景）。"""
     for stmt in DDL_STATEMENTS:
+        conn.execute(stmt)
+    conn.commit()
+
+
+def ensure_knowledge_fts(conn: sqlite3.Connection) -> None:
+    """在已有连接上创建 knowledge_fts（幂等，供仓储惰性调用）。"""
+    for stmt in FTS_DDL_STATEMENTS:
+        conn.execute(stmt)
+    conn.commit()
+
+
+def ensure_knowledge_vec(conn: sqlite3.Connection) -> None:
+    """在已有连接上创建 knowledge_vec（幂等，供仓储惰性调用）。"""
+    for stmt in VEC_DDL_STATEMENTS:
         conn.execute(stmt)
     conn.commit()

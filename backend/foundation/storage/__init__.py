@@ -11,7 +11,13 @@ from .repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
-from .schema import create_connection, init_db, init_db_on_connection
+from .schema import (
+    create_connection,
+    ensure_knowledge_fts,
+    ensure_knowledge_vec,
+    init_db,
+    init_db_on_connection,
+)
 
 __all__ = [
     # repos
@@ -22,6 +28,8 @@ __all__ = [
     "SqliteConflictRepo",
     # schema
     "create_connection",
+    "ensure_knowledge_fts",
+    "ensure_knowledge_vec",
     "init_db",
     "init_db_on_connection",
     # migrations
