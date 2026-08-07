@@ -6,6 +6,15 @@
 
 ---
 
+## 实现状态（2026-08-07）
+
+- ❌ **尚未开始**：`backend/scripts/`、`backend/tests/` 为空目录。
+- 集成期已由团队负责人补齐的部分：foundation + engine 测试共 229 项全绿；
+  `backend/.env.example` 已有内容（6 个变量，见 `backend/foundation/docs/QUICK_START.md`）。
+- 待办清单见下，全部为未实现项。
+
+---
+
 ## 职责
 
 | 领域 | 覆盖路径 | 说明 |
@@ -43,7 +52,7 @@
 |------|----------|------|
 | `backend/Dockerfile` | 空 | 填入 Python + C++ 构建 |
 | `backend/docker-compose.yml` | 空 | 填入编排配置 |
-| `backend/.env.example` | 空 | 填入模板（EMBEDDING_BACKEND=, DB_PATH=, PORT=） |
+| `backend/.env.example` | 已有内容 | 校验/维护模板（当前 6 个变量：DB/API/EMBEDDING/LOG/DATA） |
 | `frontend/Dockerfile` | 空 | 填入 Qt5 构建 |
 | `frontend/docker-compose.yml` | 空 | 填入编排 |
 | `frontend/.env.example` | 空 | 填入模板 |

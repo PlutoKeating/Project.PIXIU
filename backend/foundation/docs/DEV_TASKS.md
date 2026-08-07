@@ -5,6 +5,33 @@
 
 ---
 
+## 实现状态（2026-08-07）
+
+### ✅ 已完成（Phase 1）
+
+- `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
+  含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
+  `config.py`（仅支持 `kylin`，无 mock）、`idgen.py`（8 个 ULID 生成器）、`logger.py`
+  （request_id + 敏感过滤）
+- `storage/`：`schema.py`（9 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（版本化迁移）、
+  `repository.py`（5 个 SQLite 仓储，含证据回填、偏好版本化、冲突读写修复）
+- `api/`：`http_app.py` 真实端点（`/memory/write`、`/preference/extract`、
+  `/preference/{id}/history`、`/forget`、`/conflicts`）、`ws.py` + `ws_manager.py`
+  （`/events` 连接/心跳/广播）、`di.py`（真实注入引擎 Service + SQLite 仓储）
+- 测试：209 项全绿（含契约、仓储、DI、API 端点测试）
+
+### ⬜ 待实现（Phase 2 / Phase 3）
+
+- `retrieval/`：`router/bm25/ann/graph_search/fuse/rerank/assembler` —— 实现 `/memory/query`
+- `flow/`：`promoter/ttl` —— 实现 `/memory/flow/promote`
+- `sync/`：`identity/pairing/crdt/anti_entropy/gc/scheduler` —— 实现 `/sync/*` 与 CRDT 广播
+- `eval/`：评测引擎与指标脚本
+- `api/`：D-Bus 服务（`dbus_service.py`）真实实现
+
+> 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
+
+---
+
 ## 第一阶段：核心契约与骨架
 
 ### core/ —— 共享契约（最先实现，B 和 C 双方都依赖）

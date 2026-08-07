@@ -5,6 +5,23 @@
 
 ---
 
+## 实现状态（2026-08-07）
+
+- ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
+  全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
+  仓储语义 / 偏好版本化），并经 SQLite 全链路集成测试验证。
+- ✅ **已完成**：`kylin/` 真实麒麟 SDK 适配——`embedding.py`（coreai/embedding）、
+  `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本，无 mock 降级。
+- 🟡 **待验证**：麒麟环境构建 `_kylin_text_embedding` / `_kylin_vector_client`
+  并完成真实端到端调用（AI 运行时 / 向量引擎需在线）。
+- ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；OCR（AI SDK 9.4.1）
+  与离线文本生成（AI SDK 9.5.1）接入。
+- 测试：20 项全绿；无麒麟 SDK 环境使用 `tests/fakes.py` 测试桩（仅测试用）。
+
+> 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
+
+---
+
 ## 第一阶段：核心管线
 
 ### ingest/ —— 多源数据接入
