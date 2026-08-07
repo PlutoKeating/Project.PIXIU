@@ -3,23 +3,24 @@
 from __future__ import annotations
 
 import pytest
+import pytest_asyncio
 
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import MockEmbedding
-from backend.engine.mocks import (
-    MockEntityRepository,
-    MockEvidenceRepository,
-    MockKnowledgeRepository,
-)
 from backend.engine.security import SecurityService
+from backend.engine.tests.fakes import StubTextEmbedder
+from backend.foundation.storage.repository import (
+    SqliteEntityRepo,
+    SqliteEvidenceRepo,
+    SqliteKnowledgeRepo,
+)
 
 
-@pytest.fixture
-def security() -> SecurityService:
+@pytest_asyncio.fixture
+async def security(db) -> SecurityService:
     return SecurityService(
-        knw_repo=MockKnowledgeRepository(),
-        entity_repo=MockEntityRepository(),
+        knw_repo=SqliteKnowledgeRepo(db),
+        entity_repo=SqliteEntityRepo(db),
     )
 
 
@@ -44,16 +45,16 @@ async def test_detect_clean(security: SecurityService) -> None:
 
 
 @pytest.mark.asyncio
-async def test_forget_pending_then_confirm() -> None:
-    evidence_repo = MockEvidenceRepository()
-    knw_repo = MockKnowledgeRepository()
-    entity_repo = MockEntityRepository()
+async def test_forget_pending_then_confirm(db) -> None:
+    evidence_repo = SqliteEvidenceRepo(db)
+    knw_repo = SqliteKnowledgeRepo(db)
+    entity_repo = SqliteEntityRepo(db)
 
     ingest = IngestionService(evidence_repo=evidence_repo)
     knowledge = KnowledgeService(
         knw_repo=knw_repo,
         entity_repo=entity_repo,
-        embedder=MockEmbedding(dim=16),
+        embedder=StubTextEmbedder(dim=16),
     )
     security = SecurityService(knw_repo=knw_repo, entity_repo=entity_repo)
 

@@ -3,20 +3,24 @@
 from __future__ import annotations
 
 import pytest
+import pytest_asyncio
 
 from backend.engine.ingest import IngestionService
-from backend.engine.mocks import MockEvidenceRepository, MockPreferenceRepository
 from backend.engine.preference import PreferenceService
+from backend.foundation.storage.repository import (
+    SqliteEvidenceRepo,
+    SqlitePreferenceRepo,
+)
 
 
-@pytest.fixture
-def pref_service() -> PreferenceService:
-    return PreferenceService(pref_repo=MockPreferenceRepository())
+@pytest_asyncio.fixture
+async def pref_service(db) -> PreferenceService:
+    return PreferenceService(pref_repo=SqlitePreferenceRepo(db))
 
 
-@pytest.fixture
-def ingest_service() -> IngestionService:
-    return IngestionService(evidence_repo=MockEvidenceRepository())
+@pytest_asyncio.fixture
+async def ingest_service(db) -> IngestionService:
+    return IngestionService(evidence_repo=SqliteEvidenceRepo(db))
 
 
 @pytest.mark.asyncio

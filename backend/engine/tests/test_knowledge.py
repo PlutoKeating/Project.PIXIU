@@ -1,31 +1,32 @@
-"""Basic tests for knowledge structuring with Mock embedding."""
+"""Basic tests for knowledge structuring."""
 
 from __future__ import annotations
 
 import pytest
+import pytest_asyncio
 
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import MockEmbedding
-from backend.engine.mocks import (
-    MockEntityRepository,
-    MockEvidenceRepository,
-    MockKnowledgeRepository,
+from backend.engine.tests.fakes import StubTextEmbedder
+from backend.foundation.storage.repository import (
+    SqliteEntityRepo,
+    SqliteEvidenceRepo,
+    SqliteKnowledgeRepo,
 )
 
 
-@pytest.fixture
-def knowledge_service() -> KnowledgeService:
+@pytest_asyncio.fixture
+async def knowledge_service(db) -> KnowledgeService:
     return KnowledgeService(
-        knw_repo=MockKnowledgeRepository(),
-        entity_repo=MockEntityRepository(),
-        embedder=MockEmbedding(dim=32),
+        knw_repo=SqliteKnowledgeRepo(db),
+        entity_repo=SqliteEntityRepo(db),
+        embedder=StubTextEmbedder(dim=32),
     )
 
 
-@pytest.fixture
-def ingest_service() -> IngestionService:
-    return IngestionService(evidence_repo=MockEvidenceRepository())
+@pytest_asyncio.fixture
+async def ingest_service(db) -> IngestionService:
+    return IngestionService(evidence_repo=SqliteEvidenceRepo(db))
 
 
 @pytest.mark.asyncio
@@ -60,8 +61,9 @@ async def test_structure_ocr_to_fact(
     stored = await knowledge_service._knw_repo.get(item.id)  # noqa: SLF001
     assert stored is not None
 
-    entities = await knowledge_service._entity_repo.list_entities()  # noqa: SLF001
-    assert any(e.norm_name == "国家电网" for e in entities)
+    found = await knowledge_service._entity_repo.find_entity_by_name("国家电网")  # noqa: SLF001
+    assert found is not None
+    assert found.norm_name == "国家电网"
 
 
 @pytest.mark.asyncio
@@ -80,8 +82,8 @@ async def test_structure_workflow_kind(
     assert item.kind == "WORKFLOW"
 
 
-def test_mock_embedding_deterministic() -> None:
-    emb = MockEmbedding(dim=8)
+def test_stub_embedder_deterministic() -> None:
+    emb = StubTextEmbedder(dim=8)
     a = emb.embed("hello")
     b = emb.embed("hello")
     c = emb.embed("world")

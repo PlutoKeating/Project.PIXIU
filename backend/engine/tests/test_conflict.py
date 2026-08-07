@@ -3,27 +3,28 @@
 from __future__ import annotations
 
 import pytest
+import pytest_asyncio
 
 from backend.engine.conflict import ConflictService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import MockEmbedding
-from backend.engine.mocks import (
-    MockConflictRepository,
-    MockEntityRepository,
-    MockEvidenceRepository,
-    MockKnowledgeRepository,
+from backend.engine.tests.fakes import StubTextEmbedder
+from backend.foundation.storage.repository import (
+    SqliteConflictRepo,
+    SqliteEntityRepo,
+    SqliteEvidenceRepo,
+    SqliteKnowledgeRepo,
 )
 
 
-@pytest.fixture
-def repos() -> dict:
-    knw = MockKnowledgeRepository()
+@pytest_asyncio.fixture
+async def repos(db) -> dict:
+    knw = SqliteKnowledgeRepo(db)
     return {
         "knw": knw,
-        "entity": MockEntityRepository(),
-        "conflict": MockConflictRepository(),
-        "evidence": MockEvidenceRepository(),
+        "entity": SqliteEntityRepo(db),
+        "conflict": SqliteConflictRepo(db),
+        "evidence": SqliteEvidenceRepo(db),
     }
 
 
@@ -33,7 +34,7 @@ async def test_arbitrate_amount_conflict(repos: dict) -> None:
     knowledge = KnowledgeService(
         knw_repo=repos["knw"],
         entity_repo=repos["entity"],
-        embedder=MockEmbedding(dim=16),
+        embedder=StubTextEmbedder(dim=16),
     )
     conflict = ConflictService(
         knw_repo=repos["knw"],
@@ -91,7 +92,7 @@ async def test_arbitrate_no_conflict_different_title(repos: dict) -> None:
     knowledge = KnowledgeService(
         knw_repo=repos["knw"],
         entity_repo=repos["entity"],
-        embedder=MockEmbedding(dim=16),
+        embedder=StubTextEmbedder(dim=16),
     )
     conflict = ConflictService(
         knw_repo=repos["knw"],

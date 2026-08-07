@@ -15,9 +15,9 @@ import pytest_asyncio
 from backend.engine.conflict import ConflictService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import MockEmbedding
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
+from backend.engine.tests.fakes import StubTextEmbedder
 from backend.foundation.core.models import KnowledgeStatus
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
@@ -56,7 +56,7 @@ async def stack(tmp_path: Path):
         "knowledge": KnowledgeService(
             knw_repo=repos["knowledge"],
             entity_repo=repos["entity"],
-            embedder=MockEmbedding(dim=32),
+            embedder=StubTextEmbedder(dim=32),
         ),
         "preference": PreferenceService(pref_repo=repos["preference"]),
         "conflict": ConflictService(

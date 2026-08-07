@@ -7,7 +7,6 @@ import pytest
 import backend.foundation.api.di as di_module
 from backend.engine.conflict import ConflictService
 from backend.engine.ingest import IngestionService
-from backend.engine.knowledge import KnowledgeService
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
 from backend.foundation.api.di import (
@@ -64,7 +63,6 @@ async def test_service_factories_return_real_services(fresh_di):
     try:
         assert isinstance(await get_ingestion_service(db), IngestionService)
         assert isinstance(await get_preference_service(db), PreferenceService)
-        assert isinstance(await get_knowledge_service(db), KnowledgeService)
         assert isinstance(await get_conflict_service(db), ConflictService)
         assert isinstance(await get_security_service(db), SecurityService)
         assert isinstance(await get_evidence_repo(db), SqliteEvidenceRepo)

@@ -1,16 +1,19 @@
-"""Tests for api/http_app.py — REST 端点端到端（临时 SQLite + mock embedding）。"""
+"""Tests for api/http_app.py — REST 端点端到端（临时 SQLite + 测试桩 embedding）。"""
 
 from __future__ import annotations
-
-import os
-
-os.environ.setdefault("PIXIU_EMBEDDING", "mock")
 
 import pytest
 from fastapi.testclient import TestClient
 
 import backend.foundation.api.di as di_module
 from backend.foundation.api import app
+from backend.engine.knowledge import KnowledgeService
+from backend.engine.tests.fakes import StubTextEmbedder
+from backend.foundation.api.di import get_knowledge_service
+from backend.foundation.storage.repository import (
+    SqliteEntityRepo,
+    SqliteKnowledgeRepo,
+)
 
 
 class _FakeSettings:
@@ -22,8 +25,20 @@ class _FakeSettings:
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(di_module, "settings", _FakeSettings(str(tmp_path / "pixiu.db")))
     di_module._db = None
+
+    # 无麒麟 SDK 的开发机上，用测试专用桩注入 KnowledgeService
+    async def _override_knowledge():
+        db = await di_module.get_db()
+        return KnowledgeService(
+            knw_repo=SqliteKnowledgeRepo(db),
+            entity_repo=SqliteEntityRepo(db),
+            embedder=StubTextEmbedder(dim=32),
+        )
+
+    app.dependency_overrides[get_knowledge_service] = _override_knowledge
     with TestClient(app) as c:
         yield c
+    app.dependency_overrides.clear()
     di_module._db = None
 
 

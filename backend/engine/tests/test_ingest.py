@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import pytest
+import pytest_asyncio
 
 from backend.engine.ingest import IngestionService
 from backend.engine.ingest.cleaner import Cleaner
 from backend.engine.ingest.normalizer import Normalizer
 from backend.engine.ingest.quality import Quality, QualityError
-from backend.engine.mocks import MockEvidenceRepository
+from backend.foundation.storage.repository import SqliteEvidenceRepo
 
 
-@pytest.fixture
-def service() -> IngestionService:
-    return IngestionService(evidence_repo=MockEvidenceRepository())
+@pytest_asyncio.fixture
+async def service(db) -> IngestionService:
+    return IngestionService(evidence_repo=SqliteEvidenceRepo(db))
 
 
 @pytest.mark.asyncio
