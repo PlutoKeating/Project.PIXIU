@@ -162,6 +162,9 @@ class FakeKnowledgeRepo(KnowledgeRepository):
     async def list_active(self) -> list[KnowledgeItem]:
         return []
 
+    async def list_vectors(self) -> list[tuple[str, int, bytes]]:
+        return []
+
 
 class FakePreferenceRepo(PreferenceRepository):
     async def save(self, pref: Preference) -> str:

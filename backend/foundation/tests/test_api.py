@@ -143,7 +143,7 @@ def test_conflicts_lists_records(client):
 
 
 def test_unimplemented_endpoints_keep_placeholder(client):
-    assert client.post("/memory/query", json={}).json()["status"] == "not_implemented"
+    # /memory/query 已由 retrieval 阶段实现（见 test_retrieval.py 的 API 用例）
     assert client.post("/memory/flow/promote", json={}).json()["status"] == "not_implemented"
     assert client.post("/sync/pair", json={}).json()["status"] == "not_implemented"
     assert client.get("/sync/peers").json()["status"] == "not_implemented"

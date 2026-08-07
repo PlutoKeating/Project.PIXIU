@@ -22,6 +22,7 @@ from .di import (
     get_knowledge_service,
     get_preference_repo,
     get_preference_service,
+    get_retrieval_service,
     get_security_service,
 )
 from .ws_manager import ws_manager
@@ -57,6 +58,11 @@ class PreferenceExtractRequest(BaseModel):
 class ForgetRequest(BaseModel):
     command: str
     confirm: bool = False
+
+
+class MemoryQueryRequest(BaseModel):
+    text: str
+    context_hint: dict[str, Any] = Field(default_factory=dict)
 
 
 def _placeholder_response(**extra) -> dict:
@@ -105,11 +111,16 @@ async def memory_write(
     }
 
 
-# ─── 混合检索（占位，待 retrieval 阶段）──────────────────
+# ─── 混合检索 ────────────────────────────────────────────
 
 @app.post("/memory/query", tags=["Memory"], summary="混合检索")
-async def memory_query():
-    return _placeholder_response()
+async def memory_query(
+    body: MemoryQueryRequest,
+    retrieval=Depends(get_retrieval_service),
+):
+    """BM25 + ANN + Graph 三通道融合检索，返回 MemoryAtom。"""
+    atom = await retrieval.query(body.text, body.context_hint)
+    return atom.model_dump(mode="json")
 
 
 # ─── 偏好提取 ────────────────────────────────────────────

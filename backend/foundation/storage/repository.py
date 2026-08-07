@@ -340,6 +340,15 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
         rows = await cursor.fetchall()
         return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
 
+    async def list_vectors(self) -> list[tuple[str, int, bytes]]:
+        """列出全部知识向量 (knowledge_id, dim, vec_bytes)（检索 ANN 通道使用）。"""
+        await self._ensure_vec()
+        cursor = await self._db.execute(
+            "SELECT knowledge_id, dim, vec FROM knowledge_vec"
+        )
+        rows = await cursor.fetchall()
+        return [(r["knowledge_id"], r["dim"], r["vec"]) for r in rows]
+
 
 def _escape_like(value: str) -> str:
     """转义 LIKE 通配符，防止用户输入注入模式。"""

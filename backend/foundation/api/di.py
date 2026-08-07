@@ -20,6 +20,7 @@ from backend.engine.security import SecurityService
 
 from ..core.config import settings
 from ..core.logger import get_logger
+from ..retrieval import RetrievalService
 from ..storage.migrations import apply_pending
 from ..storage.repository import (
     SqliteConflictRepo,
@@ -114,4 +115,15 @@ async def get_security_service(
     return SecurityService(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
+    )
+
+
+async def get_retrieval_service(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> RetrievalService:
+    return RetrievalService(
+        knw_repo=SqliteKnowledgeRepo(db),
+        entity_repo=SqliteEntityRepo(db),
+        evidence_repo=SqliteEvidenceRepo(db),
+        embedder=get_embedder(),
     )

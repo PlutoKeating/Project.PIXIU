@@ -88,6 +88,11 @@ class KnowledgeRepository(ABC):
         """列出全部 ACTIVE 状态的知识条目（引擎冲突仲裁/遗忘定位使用）。"""
         ...
 
+    @abstractmethod
+    async def list_vectors(self) -> list[tuple[str, int, bytes]]:
+        """列出全部知识向量的 (knowledge_id, dim, vec_bytes)（检索 ANN 通道使用）。"""
+        ...
+
 
 class PreferenceRepository(ABC):
     """偏好仓储。"""
