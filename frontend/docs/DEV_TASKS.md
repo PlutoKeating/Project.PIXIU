@@ -20,6 +20,22 @@
 
 ---
 
+## 开工要求（本地环境准备）
+
+开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
+
+```bash
+git submodule update --init --recursive
+```
+
+- `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API）
+- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
+
+前端联调依赖后端 API，而后端 embedding 走真实麒麟 SDK，请先确保本地 submodule
+齐全、并按 `backend/engine/kylin/cpp/README.md` 完成 SDK 绑定构建。
+
+---
+
 ## 1. 模块概述
 
 PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。核心交互形态：

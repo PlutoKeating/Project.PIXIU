@@ -22,6 +22,22 @@
 
 ---
 
+## 开工要求（本地环境准备）
+
+开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
+
+```bash
+git submodule update --init --recursive
+```
+
+- `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API，`libkysdk-coreai-embedding`）
+- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
+
+未补齐 submodule 时，`kylin/` 相关代码无法引用 SDK 头文件，pybind11 绑定
+（`backend/engine/kylin/cpp/`）无法构建，请勿跳过此步骤。
+
+---
+
 ## 第一阶段：核心管线
 
 ### ingest/ —— 多源数据接入

@@ -288,6 +288,16 @@ Project.PIXIU/
 
 ## 5. 开发规范
 
+### 5.0 本地环境准备（强制）
+
+所有开发者在本地开工前必须补齐仓库内的官方麒麟 SDK submodule：
+
+```bash
+git submodule update --init --recursive
+```
+
+未补齐 `third_party/` 下 submodule 前，禁止进行涉及 SDK 的构建、测试与提交。
+
 ### 5.1 文件归属铁律
 
 | 开发人员 | 只能修改 | 严禁触碰 |

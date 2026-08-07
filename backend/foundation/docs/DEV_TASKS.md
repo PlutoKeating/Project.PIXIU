@@ -32,6 +32,21 @@
 
 ---
 
+## 开工要求（本地环境准备）
+
+开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
+
+```bash
+git submodule update --init --recursive
+```
+
+- `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API）
+- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
+
+未补齐 submodule 时，依赖 SDK 的绑定构建与验证无法进行，请勿跳过此步骤。
+
+---
+
 ## 第一阶段：核心契约与骨架
 
 ### core/ —— 共享契约（最先实现，B 和 C 双方都依赖）
