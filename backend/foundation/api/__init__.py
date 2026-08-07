@@ -4,6 +4,6 @@
 """
 
 from .http_app import app
-from .ws import ws_manager
+from .ws_manager import ws_manager
 
 __all__ = ["app", "ws_manager"]

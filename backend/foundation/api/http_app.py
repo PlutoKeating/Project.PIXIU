@@ -1,18 +1,35 @@
 """PIXIU Foundation — API 网关 (FastAPI)
 
-注册全部 11 个 REST 端点（按 docs/API.md 规格），
-当前返回占位响应，后续各模块逐步实现业务逻辑。
+按 docs/API.md 注册 REST 端点。已接入引擎 Service 的端点返回真实业务结果；
+依赖后续阶段（retrieval/flow/sync）的端点保持占位。
 """
 
 from __future__ import annotations
 
-from fastapi import FastAPI
+import time
+from typing import Any
+
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+from ..core.models import SourceType
+from .di import (
+    get_conflict_repo,
+    get_conflict_service,
+    get_evidence_repo,
+    get_ingestion_service,
+    get_knowledge_service,
+    get_preference_repo,
+    get_preference_service,
+    get_security_service,
+)
+from .ws_manager import ws_manager
 
 app = FastAPI(
     title="PIXIU Memory API",
     description="面向银河麒麟 OS Agent 的去中心化分布式记忆系统 — API 网关",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.add_middleware(
@@ -24,20 +41,71 @@ app.add_middleware(
 )
 
 
-# ─── 占位响应辅助 ────────────────────────────────────────
+# ─── 请求模型 ────────────────────────────────────────────
+
+class MemoryWriteRequest(BaseModel):
+    source_type: SourceType
+    raw: dict[str, Any] = Field(default_factory=dict)
+    scope: str
+    context: dict[str, Any] = Field(default_factory=dict)
+
+
+class PreferenceExtractRequest(BaseModel):
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class ForgetRequest(BaseModel):
+    command: str
+    confirm: bool = False
+
 
 def _placeholder_response(**extra) -> dict:
     return {"status": "not_implemented", **extra}
 
 
+def _latency_ms(started: float) -> int:
+    return int((time.monotonic() - started) * 1000)
+
+
 # ─── 记忆写入 ────────────────────────────────────────────
 
 @app.post("/memory/write", tags=["Memory"], summary="写入一条记忆")
-async def memory_write():
-    return _placeholder_response()
+async def memory_write(
+    body: MemoryWriteRequest,
+    ingestion=Depends(get_ingestion_service),
+    knowledge=Depends(get_knowledge_service),
+    preference=Depends(get_preference_service),
+    conflict=Depends(get_conflict_service),
+):
+    """同步落 evidence，随后执行结构化/偏好提取/冲突仲裁，并推送 memory_ready 事件。"""
+    started = time.monotonic()
+    evidence = await ingestion.ingest(body.source_type.value, body.raw, body.scope)
+    item = await knowledge.structure(evidence)
+    prefs = await preference.extract(evidence)
+    record = await conflict.arbitrate(item)
+
+    await ws_manager.broadcast(
+        "memory_ready",
+        {
+            "evidence_id": evidence.id,
+            "knowledge_id": item.id,
+            "title": item.title,
+            "scope": evidence.scope,
+        },
+    )
+
+    return {
+        "evidence_id": evidence.id,
+        "status": "accepted",
+        "quality_score": evidence.quality_score,
+        "sensitivity": evidence.sensitivity,
+        "preference_count": len(prefs),
+        "conflict_detected": record is not None,
+        "latency_ms": _latency_ms(started),
+    }
 
 
-# ─── 混合检索 ────────────────────────────────────────────
+# ─── 混合检索（占位，待 retrieval 阶段）──────────────────
 
 @app.post("/memory/query", tags=["Memory"], summary="混合检索")
 async def memory_query():
@@ -47,60 +115,102 @@ async def memory_query():
 # ─── 偏好提取 ────────────────────────────────────────────
 
 @app.post("/preference/extract", tags=["Preference"], summary="触发偏好提取")
-async def preference_extract():
-    return _placeholder_response()
+async def preference_extract(
+    body: PreferenceExtractRequest,
+    preference=Depends(get_preference_service),
+    evidence_repo=Depends(get_evidence_repo),
+):
+    started = time.monotonic()
+    extracted: list[dict[str, Any]] = []
+    for evidence_id in body.evidence_ids:
+        evidence = await evidence_repo.get(evidence_id)
+        if evidence is None:
+            continue
+        for pref in await preference.extract(evidence):
+            extracted.append(
+                {
+                    "id": pref.id,
+                    "category": pref.category.value,
+                    "key": pref.key,
+                    "value": pref.value,
+                    "confidence": pref.confidence,
+                }
+            )
+    return {
+        "extracted_preferences": extracted,
+        "latency_ms": _latency_ms(started),
+    }
 
 
 # ─── 偏好版本回溯 ────────────────────────────────────────
 
 @app.get("/preference/{id}/history", tags=["Preference"], summary="偏好版本回溯")
-async def preference_history(id: str):
-    return _placeholder_response(id=id)
+async def preference_history(id: str, pref_repo=Depends(get_preference_repo)):
+    pref = await pref_repo.get(id)
+    if pref is None:
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    history = await pref_repo.get_history(id)
+    return {
+        "id": pref.id,
+        "key": pref.key,
+        "current_version": pref.version,
+        "history": [
+            {"version": s.version, "value": s.value, "updated_at": s.updated_at}
+            for s in history
+        ],
+    }
 
 
 # ─── 自然语言遗忘 ────────────────────────────────────────
 
 @app.post("/forget", tags=["Memory"], summary="自然语言遗忘")
-async def forget():
-    return _placeholder_response()
+async def forget(body: ForgetRequest, security=Depends(get_security_service)):
+    started = time.monotonic()
+    result = await security.forget(body.command, confirm=body.confirm)
+    if result.status == "pending":
+        return {
+            "targets": result.targets,
+            "cascade": result.cascade,
+            "irreversible": result.irreversible,
+        }
+    return {
+        "status": "forgotten",
+        "forgotten_ids": result.forgotten_ids,
+        "latency_ms": _latency_ms(started),
+    }
 
 
 # ─── 冲突审计 ────────────────────────────────────────────
 
 @app.get("/conflicts", tags=["Memory"], summary="冲突审计列表")
-async def conflicts():
-    return _placeholder_response()
+async def conflicts(conflict_repo=Depends(get_conflict_repo)):
+    records = await conflict_repo.list()
+    return {"conflicts": [r.model_dump(mode="json") for r in records]}
 
 
-# ─── 记忆流转 ────────────────────────────────────────────
+# ─── 记忆流转（占位，待 flow 阶段）───────────────────────
 
 @app.post("/memory/flow/promote", tags=["Flow"], summary="短/中期记忆沉淀到长期")
 async def flow_promote():
     return _placeholder_response()
 
 
-# ─── 设备配对 ────────────────────────────────────────────
+# ─── 设备同步（占位，待 sync 阶段）───────────────────────
 
 @app.post("/sync/pair", tags=["Sync"], summary="设备配对")
 async def sync_pair():
     return _placeholder_response()
 
 
-# ─── 节点列表 ────────────────────────────────────────────
-
 @app.get("/sync/peers", tags=["Sync"], summary="节点列表")
 async def sync_peers():
     return _placeholder_response()
 
 
-# ─── 同步状态 ────────────────────────────────────────────
-
 @app.get("/sync/status", tags=["Sync"], summary="同步状态")
 async def sync_status():
     return _placeholder_response()
 
-
-# ─── 解绑设备 ────────────────────────────────────────────
 
 @app.post("/sync/peers/{id}/revoke", tags=["Sync"], summary="解绑设备")
 async def sync_revoke(id: str):
