@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import re
-from engine.mocks.models import ForgetResult, KnowledgeItem
-from engine.mocks.repository import EntityRepository, KnowledgeRepository
+
+from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
+from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+
+from engine.security.models import ForgetResult
 
 
 class ForgetEngine:
@@ -30,10 +33,14 @@ class ForgetEngine:
         relations = await entity_repo.list_relations()
         related_rel_count = 0
         for t in targets:
-            names = set(t.entities)
-            related_rel_count += sum(
-                1 for r in relations if r.src in names or r.dst in names
-            )
+            for name in t.entities:
+                ent = await entity_repo.find_entity_by_name(name)
+                if ent is not None:
+                    related_rel_count += sum(
+                        1
+                        for r in relations
+                        if r.src == ent.id or r.dst == ent.id
+                    )
 
         cascade = {
             "evidence_count": len(evidence_ids),
@@ -50,8 +57,7 @@ class ForgetEngine:
 
         forgotten_ids: list[str] = []
         for item in targets:
-            item.status = "FORGOTTEN"
-            await knw_repo.save(item)
+            await knw_repo.update_status(item.id, KnowledgeStatus.FORGOTTEN)
             forgotten_ids.append(item.id)
             forgotten_ids.extend(item.evidence_ids)
 

@@ -3,17 +3,10 @@
 from __future__ import annotations
 
 import time
-import uuid
 from typing import Any
 
-from engine.mocks.models import Preference
-
-
-def build_preference_id(category: str, key: str, scope: str) -> str:
-    """Stable id so repeated extracts bump version instead of duplicating rows."""
-    material = f"{scope}|{category}|{key}"
-    digest = uuid.uuid5(uuid.NAMESPACE_URL, material).hex[:16]
-    return f"pref_{digest}"
+from backend.foundation.core.idgen import gen_pref_id
+from backend.foundation.core.models import Preference
 
 
 def to_preference(
@@ -24,13 +17,15 @@ def to_preference(
     confidence: float,
     scope: str,
 ) -> Preference:
+    now = int(time.time())
     return Preference(
-        id=build_preference_id(category, key, scope),
+        id=gen_pref_id(),
         category=category,  # type: ignore[arg-type]
         key=key,
         value=value,
         confidence=float(confidence),
         version=1,
         scope=scope,
-        updated_at=int(time.time()),
+        created_at=now,
+        updated_at=now,
     )

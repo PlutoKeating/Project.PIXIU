@@ -1,11 +1,13 @@
-"""EmbedWriter — Mock embedding → INT8 quantize → attach embedding_ref."""
+"""EmbedWriter — Mock embedding → INT8 quantize → 向量序列化。"""
 
 from __future__ import annotations
 
-from typing import Any
+import struct
+from typing import Any, Optional
+
+from backend.foundation.core.models import KnowledgeItem
 
 from engine.kylin.mock_embedding import TextEmbedder
-from engine.mocks.models import KnowledgeItem
 
 
 def quantize_int8(vector: list[float]) -> list[int]:
@@ -18,21 +20,35 @@ def quantize_int8(vector: list[float]) -> list[int]:
 
 
 class EmbedWriter:
-    """V0.1: produce embedding + INT8 blob and store on the KnowledgeItem (mock)."""
+    """生成 embedding + INT8 量化，并向调用方提供可持久化的 bytes。"""
 
     def __init__(self, embedder: TextEmbedder) -> None:
         self._embedder = embedder
-        # In-memory mock vector store: embedding_ref -> int8 list
-        self.vectors: dict[str, list[int]] = {}
+        # 内存向量缓冲（按知识 id 索引）：embedding_ref 写入 KnowledgeItem，
+        # bytes 由 KnowledgeService 调用 knw_repo.save_vector 持久化。
+        self._vectors: dict[str, list[int]] = {}
+        self._dims: dict[str, int] = {}
 
     def write(self, item: KnowledgeItem) -> KnowledgeItem:
         text = self._to_text(item)
         vec = self._embedder.embed(text)
         q = quantize_int8(vec)
         ref = f"vec_{item.id}"
-        self.vectors[ref] = q
         item.embedding_ref = ref
+        self._vectors[item.id] = q
+        self._dims[item.id] = len(q)
         return item
+
+    def dim(self, item: KnowledgeItem) -> int:
+        """返回已写入向量的维度（未生成时为 0）。"""
+        return self._dims.get(item.id, 0)
+
+    def vector_bytes(self, item: KnowledgeItem) -> Optional[bytes]:
+        """返回 INT8 量化向量的紧凑 bytes（signed int8 pack），未生成时返回 None。"""
+        q = self._vectors.get(item.id)
+        if not q:
+            return None
+        return struct.pack(f"{len(q)}b", *q)
 
     @staticmethod
     def _to_text(item: KnowledgeItem) -> str:

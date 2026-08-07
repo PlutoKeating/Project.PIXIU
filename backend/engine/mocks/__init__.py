@@ -1,20 +1,11 @@
-"""V0.1 temporary contract stand-ins.
+"""V0.2 引擎测试内存仓储 —— 实现 foundation/core Repository ABC。
 
-foundation/core is not implemented yet. Engine services depend on these
-Pydantic models and Mock repositories until Module C freezes core/.
+模型统一来自 ``backend.foundation.core.models``；本包仅提供内存仓储实现。
 """
 
-from engine.mocks.models import (
-    ConflictRecord,
-    Entity,
-    Evidence,
-    ForgetResult,
-    KnowledgeItem,
-    Preference,
-    PreferenceSnapshot,
-    Relation,
-)
-from engine.mocks.repository import (
+from __future__ import annotations
+
+from backend.engine.mocks.repository import (
     MockConflictRepository,
     MockEntityRepository,
     MockEvidenceRepository,
@@ -23,14 +14,6 @@ from engine.mocks.repository import (
 )
 
 __all__ = [
-    "ConflictRecord",
-    "Entity",
-    "Evidence",
-    "ForgetResult",
-    "KnowledgeItem",
-    "Preference",
-    "PreferenceSnapshot",
-    "Relation",
     "MockConflictRepository",
     "MockEntityRepository",
     "MockEvidenceRepository",

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.mocks.models import Evidence
+from backend.foundation.core.models import Evidence
 
 
 class Extractor:

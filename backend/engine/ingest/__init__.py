@@ -1,20 +1,21 @@
 """ingest/ —— 多源数据接入。
 
-对外暴露 IngestionService。V0.1 通过 engine.mocks 注入 Mock Repository。
+对外暴露 IngestionService。通过 foundation/core Repository 契约注入仓储实现。
 """
 
 from __future__ import annotations
 
 import time
-import uuid
 from typing import Any, Optional
+
+from backend.foundation.core.idgen import gen_evidence_id
+from backend.foundation.core.models import Evidence
+from backend.foundation.core.repository import EvidenceRepository
 
 from engine.ingest.cleaner import Cleaner
 from engine.ingest.connectors import get_connector
 from engine.ingest.normalizer import Normalizer
 from engine.ingest.quality import Quality
-from engine.mocks.models import Evidence
-from engine.mocks.repository import EvidenceRepository
 
 
 class IngestionService:
@@ -57,8 +58,8 @@ class IngestionService:
         }
 
         evidence = Evidence(
-            id=f"evd_{uuid.uuid4().hex[:16]}",
-            source_type=source_type,  # type: ignore[arg-type]
+            id=gen_evidence_id(),
+            source_type=source_type,
             raw=persist_raw,
             quality_score=quality_score,
             sensitivity=max(0, min(3, int(sensitivity))),

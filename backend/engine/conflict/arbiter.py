@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import time
-import uuid
 from typing import Any, Optional
 
-from engine.mocks.models import ConflictRecord, KnowledgeItem
+from backend.foundation.core.idgen import gen_conflict_id
+from backend.foundation.core.models import ConflictRecord, KnowledgeItem
 
 
 def _flatten(obj: Any, prefix: str = "") -> dict[str, Any]:
@@ -46,7 +46,7 @@ class Arbiter:
             old_val = old_flat[field]
             if self._is_contradiction(old_val, new_val):
                 return ConflictRecord(
-                    id=f"cfl_{uuid.uuid4().hex[:16]}",
+                    id=gen_conflict_id(),
                     target_knowledge=existing.id,
                     field=field,
                     old_value=old_val,

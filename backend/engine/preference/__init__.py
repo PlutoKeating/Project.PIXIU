@@ -7,8 +7,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from engine.mocks.models import Evidence, Preference, PreferenceSnapshot
-from engine.mocks.repository import PreferenceRepository
+from backend.foundation.core.models import Evidence, Preference, PreferenceSnapshot
+from backend.foundation.core.repository import PreferenceRepository
+
 from engine.preference.adapter import Adapter
 from engine.preference.extractor import Extractor
 from engine.preference.versioning import to_preference
@@ -36,9 +37,10 @@ class PreferenceService:
                 confidence=float(cand["confidence"]),
                 scope=evidence.scope,
             )
-            await self._repo.save(pref)
-            # Re-read to get bumped version if repo versioned it
-            stored = await self._repo.get(pref.id)
+            # 仓储负责版本化（同 key+scope 复用稳定 id 并递增版本），
+            # 保存后按返回的稳定 id 回读。
+            saved_id = await self._repo.save(pref)
+            stored = await self._repo.get(saved_id)
             saved.append(stored if stored is not None else pref)
         return saved
 

@@ -1,19 +1,20 @@
 """knowledge/ —— 知识结构化整合。
 
-对外暴露 KnowledgeService。V0.1 使用 Mock embedding / Mock repositories。
+对外暴露 KnowledgeService。通过 foundation/core Repository 契约注入仓储实现。
 """
 
 from __future__ import annotations
 
 from typing import Optional
 
+from backend.foundation.core.models import Evidence, KnowledgeItem
+from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+
 from engine.knowledge.embed_writer import EmbedWriter
 from engine.knowledge.graph import GraphBuilder
 from engine.knowledge.structurer import Structurer
 from engine.kylin import get_embedder
 from engine.kylin.mock_embedding import TextEmbedder
-from engine.mocks.models import Evidence, KnowledgeItem
-from engine.mocks.repository import EntityRepository, KnowledgeRepository
 
 
 class KnowledgeService:
@@ -37,6 +38,9 @@ class KnowledgeService:
         item = self._structurer.structure(evidence)
         await self._graph.build(item, self._entity_repo)
         item = self._embed_writer.write(item)
+        vec = self._embed_writer.vector_bytes(item)
+        if vec is not None:
+            await self._knw_repo.save_vector(item.id, self._embed_writer.dim(item), vec)
         await self._knw_repo.save(item)
         return item
 

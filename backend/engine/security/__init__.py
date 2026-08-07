@@ -7,10 +7,11 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from engine.mocks.models import ForgetResult
-from engine.mocks.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+
 from engine.security.detector import Detector
 from engine.security.forget import ForgetEngine
+from engine.security.models import ForgetResult
 
 
 class SecurityService:
@@ -38,4 +39,4 @@ class SecurityService:
         )
 
 
-__all__ = ["SecurityService"]
+__all__ = ["SecurityService", "ForgetResult"]

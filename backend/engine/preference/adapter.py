@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from engine.mocks.models import Preference
+from backend.foundation.core.models import Preference
 
 
 class Adapter:

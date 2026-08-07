@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import time
-import uuid
 from typing import Any
 
-from engine.mocks.models import Evidence, KnowledgeItem
+from backend.foundation.core.idgen import gen_knowledge_id
+from backend.foundation.core.models import Evidence, KnowledgeItem
 
 
 class Structurer:
@@ -17,9 +17,10 @@ class Structurer:
         entities = [str(e) for e in (raw.get("entities") or [])]
         relations = list(raw.get("relations") or [])
         kind = self._infer_kind(evidence, body)
+        now = int(time.time())
 
         return KnowledgeItem(
-            id=f"knw_{uuid.uuid4().hex[:16]}",
+            id=gen_knowledge_id(),
             kind=kind,
             title=title,
             body=dict(body),
@@ -29,7 +30,8 @@ class Structurer:
             version=1,
             evidence_ids=[evidence.id],
             scope=evidence.scope,
-            updated_at=int(time.time()),
+            created_at=now,
+            updated_at=now,
         )
 
     def _infer_kind(self, evidence: Evidence, body: dict[str, Any]) -> str:
