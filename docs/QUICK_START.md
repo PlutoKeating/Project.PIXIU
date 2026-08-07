@@ -24,8 +24,8 @@ PIXIU 三个模块可独立开发与测试。
 | 模块 | 快速命令 | 详细文档 |
 |------|----------|----------|
 | 模块 A（前端） | `cd frontend && cmake -B build && cmake --build build` | `frontend/docs/QUICK_START.md` |
-| 模块 B（引擎） | `cd backend && pip install -r requirements.txt && pytest engine/tests/` | `backend/engine/docs/QUICK_START.md` |
-| 模块 C（基础设施） | `cd backend && python -m foundation.api.http_app` | `backend/foundation/docs/QUICK_START.md` |
+| 模块 B（引擎） | `pip install -r backend/requirements.txt && python -m pytest backend/engine/tests` | `backend/engine/docs/QUICK_START.md` |
+| 模块 C（基础设施） | `python -m backend.foundation.api.http_app` | `backend/foundation/docs/QUICK_START.md` |
 
 ### 快速验证
 
@@ -38,7 +38,7 @@ curl -X POST http://127.0.0.1:8765/memory/write \
   -H "Content-Type: application/json" \
   -d '{"source_type":"MANUAL_CONFIG","raw":{"title":"测试"},"scope":"user:test"}'
 
-# 检索
+# 检索（待 retrieval 阶段实现，当前返回 not_implemented）
 curl -X POST http://127.0.0.1:8765/memory/query \
   -H "Content-Type: application/json" \
   -d '{"text":"测试","context_hint":{}}'
