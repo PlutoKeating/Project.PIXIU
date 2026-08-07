@@ -8,6 +8,7 @@ JSON 字段使用 json.dumps/loads 序列化。
 from __future__ import annotations
 
 import json
+import time
 from typing import Optional
 
 import aiosqlite
@@ -333,29 +334,56 @@ class SqlitePreferenceRepo(PreferenceRepository):
         self._db = db
 
     async def save(self, pref: Preference) -> str:
+        """版本化保存：同 key+scope 复用稳定 id，version+1，旧版本写入历史快照。
+
+        首次保存以调用方传入的 id/version 为准；后续保存由仓储统一管理版本。
+        """
+        existing = await self.get_by_key(pref.key, pref.scope)
+        if existing is not None:
+            # 旧版本先入历史
+            await self._db.execute(
+                "INSERT OR REPLACE INTO preference_history (pref_id, version, snapshot, ts) "
+                "VALUES (?, ?, ?, ?)",
+                (
+                    existing.id,
+                    existing.version,
+                    json.dumps(existing.value, ensure_ascii=False),
+                    existing.updated_at,
+                ),
+            )
+            effective = pref.model_copy(
+                update={
+                    "id": existing.id,
+                    "version": existing.version + 1,
+                    "created_at": existing.created_at,
+                    "updated_at": int(time.time()),
+                }
+            )
+        else:
+            effective = pref
+
         await self._db.execute(
-            """INSERT OR REPLACE INTO preferences (id, category, key, value,
-               confidence, version, scope, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            """INSERT INTO preferences (id, category, key, value, confidence,
+               version, scope, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(id) DO UPDATE SET
+                   category=excluded.category, key=excluded.key, value=excluded.value,
+                   confidence=excluded.confidence, version=excluded.version,
+                   scope=excluded.scope, updated_at=excluded.updated_at""",
             (
-                pref.id,
-                pref.category,
-                pref.key,
-                json.dumps(pref.value, ensure_ascii=False),
-                pref.confidence,
-                pref.version,
-                pref.scope,
-                pref.created_at,
-                pref.updated_at,
+                effective.id,
+                effective.category,
+                effective.key,
+                json.dumps(effective.value, ensure_ascii=False),
+                effective.confidence,
+                effective.version,
+                effective.scope,
+                effective.created_at,
+                effective.updated_at,
             ),
         )
-        # 写历史快照
-        await self._db.execute(
-            "INSERT OR REPLACE INTO preference_history (pref_id, version, snapshot, ts) VALUES (?, ?, ?, ?)",
-            (pref.id, pref.version, json.dumps(pref.value, ensure_ascii=False), pref.updated_at),
-        )
         await self._db.commit()
-        return pref.id
+        return effective.id
 
     async def get(self, id: str) -> Optional[Preference]:
         cursor = await self._db.execute("SELECT * FROM preferences WHERE id = ?", (id,))
@@ -368,7 +396,7 @@ class SqlitePreferenceRepo(PreferenceRepository):
             (pref_id,),
         )
         rows = await cursor.fetchall()
-        return [
+        snapshots = [
             PreferenceSnapshot(
                 version=r["version"],
                 value=json.loads(r["snapshot"]),
@@ -376,6 +404,18 @@ class SqlitePreferenceRepo(PreferenceRepository):
             )
             for r in rows
         ]
+        # API 契约：history 含当前版本（旧快照 + 最新值），按版本升序
+        current = await self.get(pref_id)
+        if current is not None and not any(s.version == current.version for s in snapshots):
+            snapshots.append(
+                PreferenceSnapshot(
+                    version=current.version,
+                    value=dict(current.value),
+                    updated_at=current.updated_at,
+                )
+            )
+            snapshots.sort(key=lambda s: s.version)
+        return snapshots
 
     async def get_by_key(self, key: str, scope: str) -> Optional[Preference]:
         """按 key + scope 获取偏好（版本化定位，供 save 时决定是否递增版本）。"""
