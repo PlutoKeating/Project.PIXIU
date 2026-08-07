@@ -32,7 +32,7 @@
 | `knowledge/` | 知识结构化、实体关系图、向量写入 | `KnowledgeService`, `Structurer`, `GraphBuilder`, `EmbedWriter` |
 | `conflict/` | 矛盾检测、裁决、审计 | `ConflictService`, `Arbiter` |
 | `security/` | 敏感识别、自然语言遗忘 | `SecurityService`, `Detector`, `ForgetEngine` |
-| `kylin/` | KylinSDK embedding C++ 封装 + MockEmbedding | `KylinTextEmbedding`, `MockEmbedding` |
+| `kylin/` | KylinSDK embedding C++ 封装（真实 coreai/embedding 调用） | `KylinTextEmbedding` |
 
 ## 数据流
 

@@ -1,0 +1,49 @@
+"""knowledge/ —— 知识结构化整合。
+
+对外暴露 KnowledgeService。通过 foundation/core Repository 契约注入仓储实现。
+"""
+
+from __future__ import annotations
+
+from typing import Optional
+
+from backend.foundation.core.models import Evidence, KnowledgeItem
+from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+
+from backend.engine.knowledge.embed_writer import EmbedWriter
+from backend.engine.knowledge.graph import GraphBuilder
+from backend.engine.knowledge.structurer import Structurer
+from backend.engine.kylin import get_embedder
+from backend.engine.kylin.embedding import TextEmbedder
+
+
+class KnowledgeService:
+    def __init__(
+        self,
+        knw_repo: KnowledgeRepository,
+        entity_repo: EntityRepository,
+        embedder: Optional[TextEmbedder] = None,
+        structurer: Optional[Structurer] = None,
+        graph: Optional[GraphBuilder] = None,
+        embed_writer: Optional[EmbedWriter] = None,
+    ) -> None:
+        self._knw_repo = knw_repo
+        self._entity_repo = entity_repo
+        resolved_embedder = embedder or get_embedder()
+        self._structurer = structurer or Structurer()
+        self._graph = graph or GraphBuilder()
+        self._embed_writer = embed_writer or EmbedWriter(resolved_embedder)
+
+    async def structure(self, evidence: Evidence) -> KnowledgeItem:
+        item = self._structurer.structure(evidence)
+        await self._graph.build(item, self._entity_repo)
+        item = self._embed_writer.write(item)
+        # 先落知识条目（knowledge_vec 外键依赖 knowledge_items.id），再写向量
+        await self._knw_repo.save(item)
+        vec = self._embed_writer.vector_bytes(item)
+        if vec is not None:
+            await self._knw_repo.save_vector(item.id, self._embed_writer.dim(item), vec)
+        return item
+
+
+__all__ = ["KnowledgeService"]

@@ -15,20 +15,23 @@
 
 ## 2. 端点一览
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | `/memory/write` | 写入一条记忆 |
-| POST | `/memory/query` | 混合检索 |
-| POST | `/preference/extract` | 触发偏好提取 |
-| GET | `/preference/{id}/history` | 偏好版本回溯 |
-| POST | `/forget` | 自然语言遗忘 |
-| GET | `/conflicts` | 冲突审计列表 |
-| POST | `/memory/flow/promote` | 短/中期→长期流转 |
-| POST | `/sync/pair` | 设备配对 |
-| GET | `/sync/peers` | 节点列表 |
-| GET | `/sync/status` | 同步状态 |
-| POST | `/sync/peers/{id}/revoke` | 解绑设备 |
-| WS | `/events` | 事件推送 |
+| 方法 | 路径 | 说明 | 实现状态 |
+|------|------|------|----------|
+| POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
+| POST | `/memory/query` | 混合检索 | ⬜ 占位（待 retrieval 阶段） |
+| POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
+| GET | `/preference/{id}/history` | 偏好版本回溯 | ✅ 已实现 |
+| POST | `/forget` | 自然语言遗忘 | ✅ 已实现 |
+| GET | `/conflicts` | 冲突审计列表 | ✅ 已实现 |
+| POST | `/memory/flow/promote` | 短/中期→长期流转 | ⬜ 占位（待 flow 阶段） |
+| POST | `/sync/pair` | 设备配对 | ⬜ 占位（待 sync 阶段） |
+| GET | `/sync/peers` | 节点列表 | ⬜ 占位（待 sync 阶段） |
+| GET | `/sync/status` | 同步状态 | ⬜ 占位（待 sync 阶段） |
+| POST | `/sync/peers/{id}/revoke` | 解绑设备 | ⬜ 占位（待 sync 阶段） |
+| WS | `/events` | 事件推送 | ✅ 已实现（连接/心跳/广播；`memory_ready` 已接入写入链路） |
+
+> 状态说明（2026-08-07）：带 ⬜ 的端点为契约占位，当前返回
+> `{"status": "not_implemented"}`，待对应模块实现后按本文档契约落地。
 
 ---
 
@@ -328,7 +331,7 @@
 
 连接 `ws://127.0.0.1:8765/events`。JSON 行协议。
 
-### 4.1 memory_ready
+### 4.1 memory_ready ✅ 已实现（写入链路已广播）
 
 ```jsonc
 {
@@ -342,7 +345,7 @@
 }
 ```
 
-### 4.2 conflict_detected
+### 4.2 conflict_detected ⬜ 占位（检测到冲突时暂未广播，待接入）
 
 ```jsonc
 {
@@ -357,7 +360,7 @@
 }
 ```
 
-### 4.3 forget_confirmation
+### 4.3 forget_confirmation ⬜ 占位（待接入）
 
 ```jsonc
 {
@@ -374,7 +377,7 @@
 }
 ```
 
-### 4.4 sync_event
+### 4.4 sync_event ⬜ 占位（待 sync 阶段）
 
 ```jsonc
 {

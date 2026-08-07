@@ -1,0 +1,8 @@
+[submodule "third_party/kylin-coreai-embedding"]
+	path = third_party/kylin-coreai-embedding
+	url = https://gitee.com/openkylin/kylin-coreai-embedding.git
+	branch = openkylin/nile-sp2
+[submodule "third_party/libkysdk-vector-engine-client"]
+	path = third_party/libkysdk-vector-engine-client
+	url = https://gitee.com/openkylin/libkysdk-vector-engine-client.git
+	branch = openkylin/nile-sp2

@@ -13,6 +13,25 @@
 - **截止**：2026年9月15日（挑战杯作品提交）
 - **团队**：4人（2-3名开发 + 1-2名支持/测试）
 
+### 1.5 当前进度总览（2026-08-07）
+
+> 本小节随实际开发状态持续更新；各模块详细任务清单见模块内 `DEV_TASKS.md`。
+
+| 模块 | 负责人 | 当前状态 | 已实现 | 待实现 |
+|------|--------|----------|--------|--------|
+| A · frontend | 团队负责人 | ❌ 未开始 | — | 悬浮球/聊天框/记忆面板/设备配对等全部内容（见 `frontend/docs/DEV_TASKS.md`） |
+| B · engine | @Ø是铯 | ✅ 核心管线已实现并集成 | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐（ULID ID、版本化）；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
+| C · foundation | @17% | 🟡 Phase 1 完成 | core 契约 + config/idgen/logger；SQLite 存储（schema/migrations/5 仓储）；API 网关部分真实端点；WS 推送 | retrieval 混合检索（`/memory/query`）；flow 记忆流转；sync CRDT；eval 评测 |
+| D · tests/support | @捌嘎君 | ❌ 未开始 | foundation 侧测试已由集成工作补齐（229 项全绿） | 测试数据集、性能压测、Docker 容器化、评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+
+**已完成的集成工作（integration/backend-v0.2 → main，2026-08-07）**
+
+- 契约扩展：`list_active / get_by_key / find_entity_by_name / list_relations` 已加入 core ABC 与 SQLite 实现
+- 引擎全面切换到 foundation core 契约（core 模型 / ULID ID / 仓储语义 / 偏好版本化）
+- API 网关真实 DI 注入引擎 Service；`/memory/write`、`/preference/extract`、`/preference/{id}/history`、`/forget`、`/conflicts` 已实现真实逻辑
+- 移除全部 mock（`engine/mocks`、`MockEmbedding`、`PIXIU_EMBEDDING=mock`），接入麒麟 SDK（官方仓库以 submodule 纳入 `third_party/`）
+- 测试：229 项通过（含引擎 × SQLite 全链路集成测试与 API 端点测试）
+
 ---
 
 ## 2. 模块划分
@@ -69,7 +88,9 @@
 | 子包 | `ingest/`, `preference/`, `knowledge/`, `conflict/`, `security/`, `kylin/` |
 | 依赖的契约 | `foundation/core/` 中的 Repository 抽象接口和数据模型 |
 
-**职责**：实现全部业务逻辑——多源数据清洗标准化、偏好动态捕捉与版本化、知识结构化整合与实体关系建图、冲突检测与仲裁、敏感识别与自然语言遗忘、KylinSDK embedding C++ 封装。
+**职责**：实现全部业务逻辑——多源数据清洗标准化、偏好动态捕捉与版本化、知识结构化整合与实体关系建图、冲突检测与仲裁、敏感识别与自然语言遗忘、麒麟 coreai/embedding 真实调用（pybind11 绑定，无 mock 降级）。
+
+**状态（2026-08-07）**：核心管线已实现并完成集成；真实 SDK 绑定源码就绪，待麒麟环境构建验证。
 
 ### 2.3 模块 C — 后台基础设施
 
@@ -83,6 +104,8 @@
 
 **职责**：实现全部基础设施——API 网关（HTTP/WS/D-Bus）、SQLite 存储实现（仓储模式）、混合检索管线（BM25∥ANN∥Graph→融合→重排→组装）、短中/长期记忆流转、P2P CRDT 分布式同步、量化评测框架。
 
+**状态（2026-08-07）**：Phase 1（core/storage/api）完成；Phase 2（retrieval）、Phase 3（flow/sync/eval）待实现。
+
 ### 2.4 支持岗 D — 测试与工具
 
 | 属性 | 说明 |
@@ -93,6 +116,8 @@
 | 对其他模块 | 零依赖，可使用 mock 独立工作 |
 
 **职责**：测试数据集构造、单元/集成测试、性能压测、Docker 容器化、环境变量模板、评测脚本、文档补全。
+
+**状态（2026-08-07）**：尚未开工；`backend/.env.example` 已由 foundation 阶段补充。
 
 ---
 
@@ -126,18 +151,32 @@ class KnowledgeRepository(ABC):
     async def get(self, id: str) -> Optional[KnowledgeItem]: ...
     @abstractmethod
     async def search_fts(self, query: str, limit: int) -> list[KnowledgeItem]: ...
+    @abstractmethod
+    async def search_by_title(self, query: str, limit: int) -> list[KnowledgeItem]: ...
+    @abstractmethod
+    async def save_vector(self, knowledge_id: str, dim: int, vec: bytes) -> None: ...
+    @abstractmethod
+    async def update_status(self, id: str, status: KnowledgeStatus) -> None: ...
+    @abstractmethod
+    async def list_active(self) -> list[KnowledgeItem]: ...
 
 class PreferenceRepository(ABC):
     @abstractmethod
     async def save(self, pref: Preference) -> str: ...
     @abstractmethod
     async def get_history(self, pref_id: str) -> list[PreferenceSnapshot]: ...
+    @abstractmethod
+    async def get_by_key(self, key: str, scope: str) -> Optional[Preference]: ...
 
 class EntityRepository(ABC):
     @abstractmethod
     async def save_entity(self, entity: Entity) -> str: ...
     @abstractmethod
     async def save_relation(self, src: str, dst: str, type: str) -> None: ...
+    @abstractmethod
+    async def find_entity_by_name(self, name: str) -> Optional[Entity]: ...
+    @abstractmethod
+    async def list_relations(self) -> list[Relation]: ...
 
 class ConflictRepository(ABC):
     @abstractmethod
@@ -161,7 +200,9 @@ foundation/api/di.py
   → from backend.engine.security import SecurityService
 ```
 
-**约束**：每个 Service 类的构造函数签名必须是 `__init__(self, repo: Repository)`，由 `di.py` 统一注入。
+**约束**：每个 Service 类的构造函数由 `di.py` 统一注入对应 Repository 与 embedder。
+
+**状态（2026-08-07）**：`api/di.py` 已真实注入 5 个引擎 Service 与 SQLite 仓储实现。
 
 ---
 
@@ -195,7 +236,8 @@ Project.PIXIU/
 │   │   ├── knowledge/              # 知识结构化 + 实体关系图
 │   │   ├── conflict/               # 冲突仲裁
 │   │   ├── security/               # 敏感识别 + 精准遗忘
-│   │   ├── kylin/                  # KylinSDK C++ 封装
+│   │   ├── kylin/                  # 麒麟 SDK 适配（embedding + 向量库，cpp/ 为 pybind11 绑定）
+│   │   ├── tests/                  # 引擎测试（SQLite 集成 + 测试桩）
 │   │   └── docs/                   # 本模块开发文档
 │   │       ├── README.md
 │   │       ├── ARCHITECTURE.md
@@ -236,11 +278,25 @@ Project.PIXIU/
 │   ├── Dockerfile
 │   ├── docker-compose.yml
 │   └── .env.example
+
+├── third_party/                    # 第三方依赖（官方麒麟 SDK submodule）
+│   ├── kylin-coreai-embedding/     # 文本向量化 SDK（C API）
+│   └── libkysdk-vector-engine-client/  # 向量数据库客户端（C++/gRPC）
 ```
 
 ---
 
 ## 5. 开发规范
+
+### 5.0 本地环境准备（强制）
+
+所有开发者在本地开工前必须补齐仓库内的官方麒麟 SDK submodule：
+
+```bash
+git submodule update --init --recursive
+```
+
+未补齐 `third_party/` 下 submodule 前，禁止进行涉及 SDK 的构建、测试与提交。
 
 ### 5.1 文件归属铁律
 

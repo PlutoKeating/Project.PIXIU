@@ -8,6 +8,34 @@
 
 ---
 
+## 实现状态（2026-08-07）
+
+- ❌ **尚未开始**：`frontend/` 目前仅有文档，尚无 `src/`、`CMakeLists.txt`、`resources/`。
+- 后端可联调状态：`/memory/write`、`/preference/extract`、`/preference/{id}/history`、
+  `/forget`、`/conflicts` 已实现真实逻辑；`/memory/query`、`/sync/*`、
+  `/memory/flow/promote` 为占位（返回 `not_implemented`）。
+- 开发基线：main（2026-08-07 已合入集成工作），契约以 `docs/API.md` 为准。
+
+> 下文的文件清单为任务定义与优先级，全部为待实现项。
+
+---
+
+## 开工要求（本地环境准备）
+
+开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
+
+```bash
+git submodule update --init --recursive
+```
+
+- `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API）
+- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
+
+前端联调依赖后端 API，而后端 embedding 走真实麒麟 SDK，请先确保本地 submodule
+齐全、并按 `backend/engine/kylin/cpp/README.md` 完成 SDK 绑定构建。
+
+---
+
 ## 1. 模块概述
 
 PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。核心交互形态：
@@ -152,7 +180,8 @@ signals:
 
 1. **编译开关**：`cmake -DPIXIU_HAVE_KYSDK=OFF`
 2. 降级表现：`FloatingBall` 用普通 `QWidget` + `QShortcut` 替代 kysdk 组件；`NotifyService` 用 `QSystemTrayIcon::showMessage` 替代 kysdk-notification
-3. 后端降级：设置 `PIXIU_EMBEDDING=mock` 环境变量
+3. 后端：生产代码无 mock 降级，需要麒麟 SDK 绑定（见 `backend/engine/kylin/cpp/README.md`）；
+   无 SDK 环境可先用后端测试桩数据联调 UI 布局
 4. API 层自动回退：`MemoryClient` 检测无 D-Bus 时自动使用 `http://127.0.0.1:8765`
 
 ---

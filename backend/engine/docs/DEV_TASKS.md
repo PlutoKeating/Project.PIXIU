@@ -5,6 +5,39 @@
 
 ---
 
+## 实现状态（2026-08-07）
+
+- ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
+  全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
+  仓储语义 / 偏好版本化），并经 SQLite 全链路集成测试验证。
+- ✅ **已完成**：`kylin/` 真实麒麟 SDK 适配——`embedding.py`（coreai/embedding）、
+  `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本，无 mock 降级。
+- 🟡 **待验证**：麒麟环境构建 `_kylin_text_embedding` / `_kylin_vector_client`
+  并完成真实端到端调用（AI 运行时 / 向量引擎需在线）。
+- ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；OCR（AI SDK 9.4.1）
+  与离线文本生成（AI SDK 9.5.1）接入。
+- 测试：20 项全绿；无麒麟 SDK 环境使用 `tests/fakes.py` 测试桩（仅测试用）。
+
+> 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
+
+---
+
+## 开工要求（本地环境准备）
+
+开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
+
+```bash
+git submodule update --init --recursive
+```
+
+- `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API，`libkysdk-coreai-embedding`）
+- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
+
+未补齐 submodule 时，`kylin/` 相关代码无法引用 SDK 头文件，pybind11 绑定
+（`backend/engine/kylin/cpp/`）无法构建，请勿跳过此步骤。
+
+---
+
 ## 第一阶段：核心管线
 
 ### ingest/ —— 多源数据接入
@@ -35,8 +68,9 @@
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `kylin/__init__.py` | ★★★ | 导出 `KylinTextEmbedding` |
-| `kylin/embedding.py` | ★★★ | C++ pybind11 封装（麒麟 coreai/embedding C 接口） |
-| `kylin/mock_embedding.py` | ★★★ | MockEmbedding 降级实现（返回固定维度随机向量） |
+| `kylin/embedding.py` | ★★★ | 麒麟 coreai/embedding C API 的 pybind11 封装（无 mock 降级） |
+| `kylin/cpp/` | ★★★ | pybind11 绑定源码 + CMake 构建（SDK 以 third_party submodule 纳入） |
+| `kylin/vector.py` | ★★ | 麒麟向量数据库客户端（libkysdk-vector-engine-client）封装 |
 
 ---
 
@@ -77,6 +111,7 @@
 | `tests/test_knowledge.py` | 四类知识结构化+建图+嵌写入测试 |
 | `tests/test_conflict.py` | 矛盾检测+裁决+审计测试 |
 | `tests/test_security.py` | 敏感识别+遗忘精确性+级联清理测试 |
-| `tests/test_kylin.py` | MockEmbedding 端到端测试 |
+| `tests/test_sqlite_integration.py` | 引擎 × SQLite 全链路集成测试 |
 
-所有测试须在 `PIXIU_EMBEDDING=mock` 环境下可独立运行。
+embedding 相关测试在无麒麟 SDK 的开发机上使用 tests/fakes.py 的测试桩；
+生产代码一律调用真实麒麟 SDK，SDK 缺失时抛出 `KylinSDKUnavailableError`。

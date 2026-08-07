@@ -3,6 +3,9 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
+> **状态（2026-08-07）**：Phase 1（core/storage/api）已完成并通过 209 项测试；
+> retrieval（1.4）、flow（1.5）、sync（1.6）、eval（1.7）尚未实现。
+
 ---
 
 ## 1. 子包详解
@@ -73,12 +76,13 @@ class ConflictRepository(ABC): ...
 **三协议支持**：
 
 ```
-http_app.py  → FastAPI app + 路由（/memory/write, /memory/query, …）
-ws.py        → WebSocket /events（推送事件给前端）
+http_app.py  → FastAPI app + 路由（/memory/write、/preference/*、/forget、/conflicts 已实现；
+               /memory/query、/memory/flow/promote、/sync/* 为占位）
+ws.py + ws_manager.py → WebSocket /events（连接/心跳/广播，memory_ready 已接入写入链路）
 dbus_service.py → com.kylin.pixiu.Memory（桌面 D-Bus）
 ```
 
-**依赖注入**：
+**依赖注入**（`api/di.py`，已真实注入引擎 Service）：
 
 ```python
 # api/di.py —— 唯一跨模块 import 点
@@ -87,25 +91,45 @@ from backend.engine.preference import PreferenceService
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.conflict import ConflictService
 from backend.engine.security import SecurityService
+from backend.engine.kylin import get_embedder
 from backend.foundation.storage.repository import (
-    SqliteEvidenceRepo, SqliteKnowledgeRepo, ...
+    SqliteConflictRepo, SqliteEntityRepo, SqliteEvidenceRepo,
+    SqliteKnowledgeRepo, SqlitePreferenceRepo,
 )
 
-# 依赖注入容器
-services = {
-    "ingestion": IngestionService(evidence_repo=SqliteEvidenceRepo(db)),
-    "preference": PreferenceService(pref_repo=SqlitePreferenceRepo(db)),
-    "knowledge": KnowledgeService(knw_repo=..., entity_repo=..., embedder=...),
-    "conflict": ConflictService(knw_repo=..., conflict_repo=...),
-    "security": SecurityService(knw_repo=..., entity_repo=...),
-}
+# 依赖注入：工厂函数经 FastAPI Depends 组装（get_db 惰性连接 + 迁移）
+async def get_ingestion_service(db=Depends(get_db)) -> IngestionService:
+    return IngestionService(evidence_repo=SqliteEvidenceRepo(db))
+
+async def get_knowledge_service(db=Depends(get_db)) -> KnowledgeService:
+    return KnowledgeService(
+        knw_repo=SqliteKnowledgeRepo(db),
+        entity_repo=SqliteEntityRepo(db),
+        embedder=get_embedder(),   # 真实麒麟 SDK，无 mock
+    )
+
+async def get_conflict_service(db=Depends(get_db)) -> ConflictService:
+    return ConflictService(knw_repo=SqliteKnowledgeRepo(db), conflict_repo=SqliteConflictRepo(db))
+
+async def get_preference_service(db=Depends(get_db)) -> PreferenceService:
+    return PreferenceService(pref_repo=SqlitePreferenceRepo(db))
+
+async def get_security_service(db=Depends(get_db)) -> SecurityService:
+    return SecurityService(knw_repo=SqliteKnowledgeRepo(db), entity_repo=SqliteEntityRepo(db))
 ```
 
 ### 1.3 storage/ —— 存储层
 
 **SQLite 仓储模式**，实现 `core/repository.py` 中定义的所有接口。
 
-**Schema**：
+**Schema**（由 `storage/migrations.py` 版本化迁移创建，`storage/schema.py` 定义）：
+
+基础表 9 张：`evidence`、`knowledge_items`、`knowledge_evidence`、`preferences`、
+`preference_history`、`entities`、`relations`、`conflict_records`、`sync_oplog`；
+`knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
+WAL + foreign_keys + busy_timeout 已启用。
+
+**Schema 概要**：
 
 ```sql
 -- 证据
@@ -147,6 +171,9 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 
 ### 1.4 retrieval/ —— 混合检索
 
+> ⚠️ **尚未实现**（Phase 2）。以下为设计蓝图；当前 `retrieval/` 仅有空包占位，
+> `/memory/query` 返回 `not_implemented`。
+
 **唯一在线、最敏感延迟的模块**。七步流水线：
 
 | 步骤 | 组件 | 机制 | 预算 |
@@ -163,6 +190,8 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 
 ### 1.5 flow/ —— 记忆流转
 
+> ⚠️ **尚未实现**（Phase 3）。
+
 三层模型：
 
 ```
@@ -177,6 +206,8 @@ TTL：短/中期衰减管理，到期 demote 或清除
 ```
 
 ### 1.6 sync/ —— P2P CRDT 同步
+
+> ⚠️ **尚未实现**（Phase 3）。以下为设计蓝图。
 
 **核心创新**：去中心化多设备记忆网络。
 
@@ -213,6 +244,8 @@ sync/
 | 结果 | 数据层收敛 | 生成 ConflictRecord |
 
 ### 1.7 eval/ —— 评测框架
+
+> ⚠️ **尚未实现**（Phase 3）。
 
 **指标脚本**（`scripts/eval.py`）：
 

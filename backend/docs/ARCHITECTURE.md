@@ -2,6 +2,9 @@
 
 > 本文档从后端整体视角阐述系统设计，详细设计分别见 engine/ 和 foundation/ 的子架构文档。
 > 这是两端开发者之间的"接口层"文档。
+>
+> **状态（2026-08-07）**：引擎与基础设施 Phase 1 已完成并集成（229 项测试通过）；
+> 检索（retrieval）、流转（flow）、同步（sync）、评测（eval）尚未实现。
 
 ---
 
@@ -40,10 +43,12 @@
     engine/knowledge: Structurer → Graph → EmbedWriter
     engine/preference: Extractor（若含偏好信号）
     engine/conflict: Arbiter（与既有知识比对）
-  → foundation/sync: CRDT 广播
+  → foundation/sync: CRDT 广播（⚠️ 待实现，Phase 3）
 ```
 
 ### 2.2 检索路径（基础设施主导）
+
+> ⚠️ **尚未实现**（依赖 foundation/retrieval，Phase 2），`/memory/query` 暂返回占位。
 
 ```
 query
