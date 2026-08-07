@@ -38,10 +38,11 @@ class KnowledgeService:
         item = self._structurer.structure(evidence)
         await self._graph.build(item, self._entity_repo)
         item = self._embed_writer.write(item)
+        # 先落知识条目（knowledge_vec 外键依赖 knowledge_items.id），再写向量
+        await self._knw_repo.save(item)
         vec = self._embed_writer.vector_bytes(item)
         if vec is not None:
             await self._knw_repo.save_vector(item.id, self._embed_writer.dim(item), vec)
-        await self._knw_repo.save(item)
         return item
 
 

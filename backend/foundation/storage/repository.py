@@ -196,6 +196,26 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             await self._db.commit()
             self._vec_ready = True
 
+    async def _attach_evidence_ids(
+        self, items: list[KnowledgeItem]
+    ) -> list[KnowledgeItem]:
+        """批量回填 knowledge_evidence 关联，保证读回的 KnowledgeItem 含 evidence_ids。"""
+        if not items:
+            return items
+        placeholders = ",".join("?" * len(items))
+        cursor = await self._db.execute(
+            f"SELECT knowledge_id, evidence_id FROM knowledge_evidence "
+            f"WHERE knowledge_id IN ({placeholders})",
+            [i.id for i in items],
+        )
+        rows = await cursor.fetchall()
+        mapping: dict[str, list[str]] = {i.id: [] for i in items}
+        for r in rows:
+            mapping.setdefault(r["knowledge_id"], []).append(r["evidence_id"])
+        for item in items:
+            item.evidence_ids = mapping.get(item.id, [])
+        return items
+
     async def save(self, item: KnowledgeItem) -> str:
         """事务性保存：knowledge_items + knowledge_evidence + knowledge_fts。
 
@@ -255,7 +275,10 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
     async def get(self, id: str) -> Optional[KnowledgeItem]:
         cursor = await self._db.execute("SELECT * FROM knowledge_items WHERE id = ?", (id,))
         row = await cursor.fetchone()
-        return _row_to_knowledge(row) if row else None
+        if row is None:
+            return None
+        items = await self._attach_evidence_ids([_row_to_knowledge(row)])
+        return items[0]
 
     async def search_fts(self, query: str, limit: int = 20) -> list[KnowledgeItem]:
         """FTS5 全文检索，返回 KnowledgeItem 列表（不暴露 SQLite row）。"""
@@ -269,7 +292,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (query, limit),
         )
         rows = await cursor.fetchall()
-        return [_row_to_knowledge(r) for r in rows]
+        return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
 
     async def search_by_title(self, query: str, limit: int = 20) -> list[KnowledgeItem]:
         """按 title 子串模糊匹配（用于遗忘定位）。"""
@@ -281,7 +304,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (f"%{_escape_like(query)}%", limit),
         )
         rows = await cursor.fetchall()
-        return [_row_to_knowledge(r) for r in rows]
+        return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
 
     async def save_vector(self, knowledge_id: str, dim: int, vec: bytes) -> None:
         """保存知识条目的向量（仅存储，不做 ANN 检索）。"""
@@ -315,7 +338,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (KnowledgeStatus.ACTIVE.value,),
         )
         rows = await cursor.fetchall()
-        return [_row_to_knowledge(r) for r in rows]
+        return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
 
 
 def _escape_like(value: str) -> str:
