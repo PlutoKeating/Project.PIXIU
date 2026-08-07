@@ -215,3 +215,11 @@ async def sync_status():
 @app.post("/sync/peers/{id}/revoke", tags=["Sync"], summary="解绑设备")
 async def sync_revoke(id: str):
     return _placeholder_response(peer_id=id)
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    from ..core.config import settings
+
+    uvicorn.run(app, host=settings.api_host, port=settings.api_port)
