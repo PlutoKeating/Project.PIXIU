@@ -83,6 +83,11 @@ class KnowledgeRepository(ABC):
         """更新知识条目状态（e.g. ACTIVE → FORGOTTEN）。"""
         ...
 
+    @abstractmethod
+    async def list_active(self) -> list[KnowledgeItem]:
+        """列出全部 ACTIVE 状态的知识条目（引擎冲突仲裁/遗忘定位使用）。"""
+        ...
+
 
 class PreferenceRepository(ABC):
     """偏好仓储。"""
@@ -100,6 +105,11 @@ class PreferenceRepository(ABC):
     @abstractmethod
     async def get_history(self, pref_id: str) -> list[PreferenceSnapshot]:
         """获取偏好的全部历史版本快照。"""
+        ...
+
+    @abstractmethod
+    async def get_by_key(self, key: str, scope: str) -> Optional[Preference]:
+        """按 key + scope 获取偏好（版本化定位，供 save 时决定是否递增版本）。"""
         ...
 
 
@@ -124,6 +134,16 @@ class EntityRepository(ABC):
     @abstractmethod
     async def get_relations(self, entity_id: str) -> list[Relation]:
         """获取某实体的全部关联关系（入边 + 出边）。"""
+        ...
+
+    @abstractmethod
+    async def find_entity_by_name(self, name: str) -> Optional[Entity]:
+        """按规范化名称查找实体（引擎建图时用于解析已有实体 id）。"""
+        ...
+
+    @abstractmethod
+    async def list_relations(self) -> list[Relation]:
+        """列出全部关系（引擎遗忘级联统计使用）。"""
         ...
 
 

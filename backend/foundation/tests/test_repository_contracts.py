@@ -159,6 +159,9 @@ class FakeKnowledgeRepo(KnowledgeRepository):
     async def update_status(self, id: str, status: KnowledgeStatus) -> None:
         pass
 
+    async def list_active(self) -> list[KnowledgeItem]:
+        return []
+
 
 class FakePreferenceRepo(PreferenceRepository):
     async def save(self, pref: Preference) -> str:
@@ -169,6 +172,9 @@ class FakePreferenceRepo(PreferenceRepository):
 
     async def get_history(self, pref_id: str) -> list[PreferenceSnapshot]:
         return []
+
+    async def get_by_key(self, key: str, scope: str) -> Optional[Preference]:
+        return None
 
 
 class FakeEntityRepo(EntityRepository):
@@ -182,6 +188,12 @@ class FakeEntityRepo(EntityRepository):
         pass
 
     async def get_relations(self, entity_id: str) -> list[Relation]:
+        return []
+
+    async def find_entity_by_name(self, name: str) -> Optional[Entity]:
+        return None
+
+    async def list_relations(self) -> list[Relation]:
         return []
 
 
@@ -291,6 +303,34 @@ async def test_fake_conflict_save_returns_id():
 async def test_fake_conflict_list_returns_list():
     repo = FakeConflictRepo()
     result = await repo.list()
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_knowledge_list_active_returns_list():
+    repo = FakeKnowledgeRepo()
+    result = await repo.list_active()
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_preference_get_by_key_returns_optional():
+    repo = FakePreferenceRepo()
+    result = await repo.get_by_key("output_style.compact", "user:alice")
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_fake_entity_find_by_name_returns_optional():
+    repo = FakeEntityRepo()
+    result = await repo.find_entity_by_name("国家电网")
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_fake_entity_list_relations_returns_list():
+    repo = FakeEntityRepo()
+    result = await repo.list_relations()
     assert isinstance(result, list)
 
 
