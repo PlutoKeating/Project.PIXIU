@@ -84,7 +84,7 @@ def _row_to_conflict(row: aiosqlite.Row) -> ConflictRecord:
     return ConflictRecord(
         id=row["id"],
         target_knowledge=row["target_knowledge"],
-        field=row.get("field", ""),
+        field=row["field"],
         old_value=json.loads(row["old_value"]),
         new_value=json.loads(row["new_value"]),
         resolution=row["resolution"],
@@ -134,7 +134,6 @@ class SqliteEvidenceRepo(EvidenceRepository):
             (scope, limit),
         )
         rows = await cursor.fetchall()
-        return [_row_to_evidence(r) for r in rows]
         return [_row_to_evidence(r) for r in rows]
 
 
@@ -308,6 +307,15 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
         )
         await self._db.commit()
 
+    async def list_active(self) -> list[KnowledgeItem]:
+        """列出全部 ACTIVE 知识条目（引擎冲突仲裁/遗忘定位使用）。"""
+        cursor = await self._db.execute(
+            "SELECT * FROM knowledge_items WHERE status = ? ORDER BY updated_at DESC",
+            (KnowledgeStatus.ACTIVE.value,),
+        )
+        rows = await cursor.fetchall()
+        return [_row_to_knowledge(r) for r in rows]
+
 
 def _escape_like(value: str) -> str:
     """转义 LIKE 通配符，防止用户输入注入模式。"""
@@ -369,6 +377,15 @@ class SqlitePreferenceRepo(PreferenceRepository):
             for r in rows
         ]
 
+    async def get_by_key(self, key: str, scope: str) -> Optional[Preference]:
+        """按 key + scope 获取偏好（版本化定位，供 save 时决定是否递增版本）。"""
+        cursor = await self._db.execute(
+            "SELECT * FROM preferences WHERE key = ? AND scope = ? ORDER BY version DESC LIMIT 1",
+            (key, scope),
+        )
+        row = await cursor.fetchone()
+        return _row_to_preference(row) if row else None
+
     async def list_by_category(self, category: str) -> list[Preference]:
         cursor = await self._db.execute(
             "SELECT * FROM preferences WHERE category = ? ORDER BY updated_at DESC", (category,)
@@ -410,6 +427,12 @@ class SqliteEntityRepo(EntityRepository):
         cursor = await self._db.execute(
             "SELECT * FROM relations WHERE src = ? OR dst = ?", (entity_id, entity_id)
         )
+        rows = await cursor.fetchall()
+        return [Relation(src=r["src"], dst=r["dst"], type=r["type"]) for r in rows]
+
+    async def list_relations(self) -> list[Relation]:
+        """列出全部关系（引擎遗忘级联统计使用）。"""
+        cursor = await self._db.execute("SELECT * FROM relations")
         rows = await cursor.fetchall()
         return [Relation(src=r["src"], dst=r["dst"], type=r["type"]) for r in rows]
 

@@ -364,6 +364,20 @@ async def test_update_status(repo):
 
 
 @pytest.mark.asyncio
+async def test_list_active_only_returns_active(repo):
+    kr, _, _ = repo
+    await kr.save(_knw(id=_id("act1"), title="活动知识1"))
+    await kr.save(_knw(id=_id("act2"), title="活动知识2"))
+    await kr.save(
+        _knw(id=_id("for1"), title="已遗忘知识", status=KnowledgeStatus.FORGOTTEN)
+    )
+
+    active = await kr.list_active()
+    ids = {item.id for item in active}
+    assert ids == {_id("act1"), _id("act2")}
+
+
+@pytest.mark.asyncio
 async def test_save_vector(repo):
     kr, _, _ = repo
     item_id = _id("vec")
