@@ -8,6 +8,10 @@ commits: fde244b..10f5650
 
 # Foundation Bootstrap — Module C Phase 1
 
+> ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付，部分内容（如 API 占位响应、
+> config 未实现等）已被后续集成工作（integration/backend-v0.2 → main，2026-08-07）取代。
+> 最新状态以 `docs/DEVELOPMENT_PLAN.md`、`docs/API.md` 及各模块 `DEV_TASKS.md` 为准。
+
 ## Report
 
 **What was built** — Module C（后台基础设施）第一阶段引导完成。交付了三个子包共 14 个实现文件 + 2 个配置/依赖文件：

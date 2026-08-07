@@ -8,6 +8,9 @@ commits: c36d0f3..3fa106a
 
 # core/config.py — 配置单例
 
+> ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付；2026-08-07 起 `PIXIU_EMBEDDING`
+> 仅支持 `kylin`（无 mock）。最新状态以 `docs/DEVELOPMENT_PLAN.md` 为准。
+
 ## Report
 
 **What was built** — `core/config.py` 集中管理所有环境变量配置。`Settings` 单例提供 6 个类型安全的只读属性（`db_path`, `api_host`, `api_port`, `embedding`, `log_level`, `data_dir`），变量名与 `backend/.env.example` 完全一致。端口校验 1-65535、embedding 仅支持 `kylin`（真实麒麟 SDK，无 mock 降级）、日志级别限于 DEBUG/INFO/WARNING/ERROR，不合法时抛明确 `ValueError`。同时更新 `api/di.py` 和 `core/logger.py`，移除裸 `os.getenv` 调用，统一通过 `settings` 访问配置。

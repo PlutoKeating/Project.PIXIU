@@ -8,6 +8,8 @@ commits: 3fa106a..0b6f480
 
 # core/idgen.py — 测试与清理
 
+> ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付，内容与当前代码一致。
+
 ## Report
 
 **What was built** — `core/idgen.py` 清理了未使用的 `import hashlib`，补充 14 个专有测试用例。测试覆盖三大维度的正确性：

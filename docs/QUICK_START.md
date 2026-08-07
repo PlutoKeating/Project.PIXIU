@@ -23,7 +23,7 @@ PIXIU 三个模块可独立开发与测试。
 
 | 模块 | 快速命令 | 详细文档 |
 |------|----------|----------|
-| 模块 A（前端） | `cd frontend && cmake -B build && cmake --build build` | `frontend/docs/QUICK_START.md` |
+| 模块 A（前端） | ❌ 未开始（`frontend/` 仅含文档） | `frontend/docs/QUICK_START.md` |
 | 模块 B（引擎） | `pip install -r backend/requirements.txt && python -m pytest backend/engine/tests` | `backend/engine/docs/QUICK_START.md` |
 | 模块 C（基础设施） | `python -m backend.foundation.api.http_app` | `backend/foundation/docs/QUICK_START.md` |
 
@@ -50,7 +50,7 @@ curl -X POST http://127.0.0.1:8765/memory/query \
 
 非麒麟开发机上：
 
-- 前端：`cmake -DPIXIU_HAVE_KYSDK=OFF` 启用 Qt 原生桩
+- 前端：尚未开始；计划支持 `cmake -DPIXIU_HAVE_KYSDK=OFF` 降级构建
 - 后端：生产代码无 mock 降级；测试使用 `backend/engine/tests/fakes.py` 测试桩，
   麒麟 SDK 绑定构建见 `backend/engine/kylin/cpp/README.md`
 - API 通信：自动回退至 `http://127.0.0.1:8765`

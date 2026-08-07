@@ -8,6 +8,8 @@ commits: 52694a2..3ac58c6
 
 # core/logger.py — 结构化日志与安全过滤
 
+> ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付，内容与当前代码一致。
+
 ## Report
 
 **What was built** — 重写 `core/logger.py`，提供两种 logger 获取方式（普通 `get_logger` 返回 `[-]` request_id，`get_request_logger` 注入具体 request_id）、`SafeFormatter`（处理缺失 request_id 回退）、`SensitiveFilter`（6 条正则规则过滤密码/token/secret/api_key/私钥块/卡号）。全栈 stdlib `logging`，零外部依赖。

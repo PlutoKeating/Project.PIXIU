@@ -91,15 +91,21 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
   → 异步：
       engine/knowledge:structurer → 结构化（FACT/WORKFLOW/CASE/TEMPLATE）
       engine/knowledge:graph → 实体关系建图
-      engine/knowledge:embed_writer → 麒麟 embedding → INT8 量化 → 写 knowledge_vec + knowledge_fts
+      engine/knowledge:embed_writer → 麒麟 coreai/embedding（真实 SDK）→ INT8 量化 → 写 knowledge_vec + knowledge_fts
       engine/preference:extractor → 偏好提取
       engine/conflict:arbiter → 与既有知识比对仲裁
-  → foundation/sync:CRDT 广播
+  → foundation/sync:CRDT 广播（⚠️ 待实现，Phase 3）
 ```
 
-**三索引齐写**：一条知识同时进 FTS5（关键词）、向量库（语义）、图（实体关系），这是混合检索的前提。
+> 现状（2026-08-07）：`POST /memory/write` 已在请求内同步执行
+> ingest → knowledge → preference → conflict 整条管线（异步化与 CRDT 广播留待后续）。
+
+**三索引齐写**：一条知识同时进 FTS5（关键词）、向量表（语义）、图（实体关系），这是混合检索的前提。
+当前 FTS 与向量写入已实现（`SqliteKnowledgeRepo.save` / `save_vector`）；ANN 检索依赖 retrieval 阶段。
 
 ### 3.2 在线检索路径：500ms 内给出可信答案
+
+> ⚠️ 该路径依赖 foundation/retrieval 模块，**当前尚未实现**（Phase 2），`/memory/query` 暂返回 `not_implemented`。
 
 ```
 query + context_hint
@@ -116,11 +122,15 @@ query + context_hint
 
 ### 3.3 偏好动态捕捉与版本化（engine/preference）
 
+✅ 已实现：`/preference/extract`、`/preference/{id}/history`。
+
 - 提取三类偏好：操作习惯 / 输出风格 / 安全策略
 - 版本化：每次更新写 preference_history 快照，主表 version+1
 - 回溯与适配：`/preference/{id}/history` 回溯历史版本；偏好带 `scope` 与场景标签
 
 ### 3.4 冲突仲裁（engine/conflict）
+
+✅ 已实现：`GET /conflicts` 审计列表。
 
 - 检测：同实体同字段新旧值做矛盾判定
 - 裁决：默认 NEW_WINS，旧版 SUPERSEDED（保留而非删除），可配 MERGE/MANUAL
@@ -128,10 +138,14 @@ query + context_hint
 
 ### 3.5 安全识别与精准遗忘（engine/security）
 
+✅ 已实现：`POST /forget`（confirm 两段式）。
+
 - 敏感识别：写入入口前置 detector（正则 + 规则识别身份证/银行卡等），sensitivity 评分
 - 自然语言遗忘：解析指令 → 构造匹配条件 → 级联清理 knowledge + evidence + 实体关系
 
 ### 3.6 记忆流转（foundation/flow）
+
+⚠️ **待实现**（Phase 3）。
 
 短期（会话上下文）→ 中期（近期会话摘要）→ 长期（evidence/knowledge）三层模型；promote/demote 双向流转，TTL 衰减管理。
 
@@ -140,6 +154,8 @@ query + context_hint
 ## 4. 分布式记忆共享（去中心化）
 
 核心创新点。完整管理链路由 `foundation/sync/` 实现：
+
+> ⚠️ **当前尚未实现**（Phase 3）。以下为既定设计蓝图，`foundation/sync/` 目前仅有空包占位。
 
 - **对等架构**：每台设备运行完整副本，AP + 最终一致
 - **同步单元**：`sync_oplog` 中的 op，CRDT（LWW-Element-Set + 版本向量）合并
@@ -161,19 +177,26 @@ query + context_hint
 
 详见 `backend/foundation/docs/ARCHITECTURE.md` 第 1.3 节。
 
-核心表：`evidence`, `knowledge_items`, `knowledge_fts`（FTS5）, `knowledge_vec`（INT8）, `entities`, `relations`, `preferences`, `preference_history`, `conflict_records`, `sync_oplog`。
+基础表（9 张，由 `storage/schema.py` 创建）：`evidence`, `knowledge_items`, `knowledge_evidence`,
+`preferences`, `preference_history`, `entities`, `relations`, `conflict_records`, `sync_oplog`。
+`knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
+建表/迁移统一走 `storage/migrations.py` 的版本化迁移。
 
 ## 6. KylinSDK 适配总览
 
-| 能力 | SDK | 用途 | 调用者 |
-|------|-----|------|--------|
-| 文本/图像向量化 | `coreai/embedding`（9.4.3） | ANN 通道、知识 embedding | engine/kylin |
-| OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest |
-| 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference |
-| 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend |
-| 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend |
-| 主题 | 8.5 Theme | 跟随 UKUI 明暗主题 | frontend |
-| Qt 扩展控件 | 应用支撑 SDK 4.1.x | 聊天框 UI 组件 | frontend |
+| 能力 | SDK | 用途 | 调用者 | 状态 |
+|------|-----|------|--------|------|
+| 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 源码就绪，待麒麟环境构建验证 |
+| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin（pybind11 绑定） | 🟡 客户端就绪，检索阶段接入 |
+| OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ⬜ 待接入 |
+| 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference | ⬜ 待接入 |
+| 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | ⬜ 待实现 |
+| 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend | ⬜ 待实现 |
+| 主题 | 8.5 Theme | 跟随 UKUI 明暗主题 | frontend | ⬜ 待实现 |
+| Qt 扩展控件 | 应用支撑 SDK 4.1.x | 聊天框 UI 组件 | frontend | ⬜ 待实现 |
+
+> 官方 SDK 仓库以 submodule 纳入 `third_party/`（openkylin/nile-sp2），绑定构建见
+> `backend/engine/kylin/cpp/README.md`。
 
 ## 7. API 端点
 
@@ -181,15 +204,18 @@ query + context_hint
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/memory/write` | 写入记忆 |
-| POST | `/memory/query` | 混合检索 |
-| POST | `/forget` | 自然语言遗忘 |
-| GET | `/conflicts` | 冲突审计 |
-| POST | `/sync/pair` | 设备配对 |
-| GET | `/sync/peers` | 节点列表 |
-| GET | `/sync/status` | 同步状态 |
-| POST | `/sync/peers/{id}/revoke` | 解绑设备 |
-| WS | `/events` | 事件推送 |
+| POST | `/memory/write` | 写入记忆（✅ 已实现） |
+| POST | `/memory/query` | 混合检索（⬜ 待 retrieval 阶段） |
+| POST | `/preference/extract` | 偏好提取（✅ 已实现） |
+| GET | `/preference/{id}/history` | 偏好回溯（✅ 已实现） |
+| POST | `/forget` | 自然语言遗忘（✅ 已实现） |
+| GET | `/conflicts` | 冲突审计（✅ 已实现） |
+| POST | `/memory/flow/promote` | 记忆流转（⬜ 待 flow 阶段） |
+| POST | `/sync/pair` | 设备配对（⬜ 待 sync 阶段） |
+| GET | `/sync/peers` | 节点列表（⬜ 待 sync 阶段） |
+| GET | `/sync/status` | 同步状态（⬜ 待 sync 阶段） |
+| POST | `/sync/peers/{id}/revoke` | 解绑设备（⬜ 待 sync 阶段） |
+| WS | `/events` | 事件推送（✅ 已实现：连接/心跳/广播，`memory_ready` 已接入） |
 
 ## 8. 仓库结构
 
