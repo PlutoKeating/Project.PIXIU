@@ -1,13 +1,12 @@
-"""EmbedWriter — Mock embedding → INT8 quantize → 向量序列化。"""
+"""EmbedWriter — embedding → INT8 quantize → 向量序列化。"""
 
 from __future__ import annotations
 
 import struct
 from typing import Any, Optional
 
+from backend.engine.kylin.embedding import TextEmbedder
 from backend.foundation.core.models import KnowledgeItem
-
-from backend.engine.kylin.mock_embedding import TextEmbedder
 
 
 def quantize_int8(vector: list[float]) -> list[int]:

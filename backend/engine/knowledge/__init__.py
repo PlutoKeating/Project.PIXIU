@@ -14,7 +14,7 @@ from backend.engine.knowledge.embed_writer import EmbedWriter
 from backend.engine.knowledge.graph import GraphBuilder
 from backend.engine.knowledge.structurer import Structurer
 from backend.engine.kylin import get_embedder
-from backend.engine.kylin.mock_embedding import TextEmbedder
+from backend.engine.kylin.embedding import TextEmbedder
 
 
 class KnowledgeService:
