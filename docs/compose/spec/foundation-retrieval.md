@@ -1,14 +1,24 @@
 ---
 feature: foundation-retrieval
-status: in-progress
+status: delivered
 updated: 2026-08-07
 branch: feat/foundation
-commits:
+commits: 748636b..6de438d
 ---
 
 # Phase 2 — 混合检索管线 (retrieval/)
 
 ## Report
+
+**What was built** — 七步混合检索管线全部实现并接通 `/memory/query`：router（规则意图分类 + 实体抽取）→ bm25（FTS5 trigram + 长句滑动窗口回退）∥ ann（INT8 线性扫描，`asyncio.to_thread` 防阻塞）∥ graph（文本子串匹配 + BELONG_TO 加权）→ fuse（RRF + scope 加权）→ rerank（词面重叠微调）→ assembler（items.amount 聚合 + 证据回溯）→ `MemoryAtom`。新增契约 `KnowledgeRepository.list_vectors()`（含 SQLite 实现与 Fake 补全）。FORGOTTEN/SUPERSEDED 不参与检索。
+
+**Verification** — 全量 243 项测试通过（foundation 222 + engine 21；新增 14 项 retrieval 测试）。延迟粗测（50 条家庭支出知识 + 1000 次 query）：**P50=11.4ms，P95=13.3ms**，远低于 500ms 硬指标。
+
+**Journey log**
+- **trigram 长句陷阱**：FTS5 对长查询串按 AND 语义匹配全部 trigram，整句查询必然 0 命中（"家庭支出清单花了多少钱" 命中 0、短词命中 1）。解决：BM25 通道滑动窗口回退（4 字窗口步长 2）。
+- **knowledge↔entity 关联缺口**：schema 无关联表，`KnowledgeItem.entities` 读回为空。graph 通道改用文本子串匹配 + BELONG_TO 加权（诚实方案），建议团队后续补关联表。
+- **rerank 中文分词**：CJK 连续匹配会把整句当一个 token 导致词面重叠恒为 0，改按字分词。
+- 队友的 `test_unimplemented_endpoints_keep_placeholder` 断言 `/memory/query` 仍为占位——随本次实现移除该断言（其余占位端点断言保留）。
 
 ## [S1] Problem
 
@@ -115,15 +125,15 @@ class RetrievalService:
 
 ## Tasks
 
-- [ ] T1: core/repository.py + storage/repository.py — `KnowledgeRepository.list_vectors()` 契约与 SQLite 实现 (covers: S2.4)
-- [ ] T2: retrieval/router.py — 意图分类 + 实体抽取 + 通道选择 (covers: S2.2)
-- [ ] T3: retrieval/bm25.py — FTS5 通道 + ACTIVE 过滤 (covers: S2.3)
-- [ ] T4: retrieval/ann.py — INT8 线性扫描通道 (covers: S2.4)
-- [ ] T5: retrieval/graph_search.py — 关系图遍历通道 (covers: S2.5)
-- [ ] T6: retrieval/fuse.py — RRF + scope 加权 (covers: S2.6)
-- [ ] T7: retrieval/rerank.py — 词面重叠重排 (covers: S2.7)
-- [ ] T8: retrieval/assembler.py — 聚合 + MemoryAtom 组装 (covers: S2.8)
-- [ ] T9: retrieval/__init__.py — RetrievalService (covers: S2.1; depends: T2-T8)
-- [ ] T10: api/di.py + api/http_app.py — DI 工厂 + /memory/query 接线 (covers: S2.9; depends: T9)
-- [ ] T11: tests/test_retrieval.py — 10 组测试 (covers: S2.10; depends: T9, T10)
-- [ ] T12: 全量测试 + 延迟粗测（1000 次 query P95） (covers: S2.1-S2.9; depends: T11)
+- [x] T1: core/repository.py + storage/repository.py — `KnowledgeRepository.list_vectors()` 契约与 SQLite 实现 (covers: S2.4)
+- [x] T2: retrieval/router.py — 意图分类 + 实体抽取 + 通道选择 (covers: S2.2)
+- [x] T3: retrieval/bm25.py — FTS5 通道 + ACTIVE 过滤 (covers: S2.3)
+- [x] T4: retrieval/ann.py — INT8 线性扫描通道 (covers: S2.4)
+- [x] T5: retrieval/graph_search.py — 关系图遍历通道 (covers: S2.5)
+- [x] T6: retrieval/fuse.py — RRF + scope 加权 (covers: S2.6)
+- [x] T7: retrieval/rerank.py — 词面重叠重排 (covers: S2.7)
+- [x] T8: retrieval/assembler.py — 聚合 + MemoryAtom 组装 (covers: S2.8)
+- [x] T9: retrieval/__init__.py — RetrievalService (covers: S2.1; depends: T2-T8)
+- [x] T10: api/di.py + api/http_app.py — DI 工厂 + /memory/query 接线 (covers: S2.9; depends: T9)
+- [x] T11: tests/test_retrieval.py — 10 组测试 (covers: S2.10; depends: T9, T10)
+- [x] T12: 全量测试 + 延迟粗测（1000 次 query P95） (covers: S2.1-S2.9; depends: T11)
