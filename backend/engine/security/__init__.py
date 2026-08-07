@@ -9,9 +9,9 @@ from typing import Any, Optional
 
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
 
-from engine.security.detector import Detector
-from engine.security.forget import ForgetEngine
-from engine.security.models import ForgetResult
+from backend.engine.security.detector import Detector
+from backend.engine.security.forget import ForgetEngine
+from backend.engine.security.models import ForgetResult
 
 
 class SecurityService:

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from engine.ingest import IngestionService
-from engine.knowledge import KnowledgeService
-from engine.kylin import MockEmbedding
-from engine.mocks import (
+from backend.engine.ingest import IngestionService
+from backend.engine.knowledge import KnowledgeService
+from backend.engine.kylin import MockEmbedding
+from backend.engine.mocks import (
     MockEntityRepository,
     MockEvidenceRepository,
     MockKnowledgeRepository,

@@ -7,7 +7,7 @@ from typing import Any, Optional
 
 from backend.foundation.core.models import KnowledgeItem
 
-from engine.kylin.mock_embedding import TextEmbedder
+from backend.engine.kylin.mock_embedding import TextEmbedder
 
 
 def quantize_int8(vector: list[float]) -> list[int]:

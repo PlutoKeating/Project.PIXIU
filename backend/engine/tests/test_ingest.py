@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from engine.ingest import IngestionService
-from engine.ingest.cleaner import Cleaner
-from engine.ingest.normalizer import Normalizer
-from engine.ingest.quality import Quality, QualityError
-from engine.mocks import MockEvidenceRepository
+from backend.engine.ingest import IngestionService
+from backend.engine.ingest.cleaner import Cleaner
+from backend.engine.ingest.normalizer import Normalizer
+from backend.engine.ingest.quality import Quality, QualityError
+from backend.engine.mocks import MockEvidenceRepository
 
 
 @pytest.fixture

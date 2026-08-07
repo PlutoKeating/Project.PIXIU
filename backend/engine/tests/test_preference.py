@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from engine.ingest import IngestionService
-from engine.mocks import MockEvidenceRepository, MockPreferenceRepository
-from engine.preference import PreferenceService
+from backend.engine.ingest import IngestionService
+from backend.engine.mocks import MockEvidenceRepository, MockPreferenceRepository
+from backend.engine.preference import PreferenceService
 
 
 @pytest.fixture

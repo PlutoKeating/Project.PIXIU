@@ -7,7 +7,7 @@ import re
 from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
 
-from engine.security.models import ForgetResult
+from backend.engine.security.models import ForgetResult
 
 
 class ForgetEngine:

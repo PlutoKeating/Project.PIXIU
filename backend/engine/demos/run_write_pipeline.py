@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Minimal Memory write-pipeline demo (Service layer only + Mock repos).
 
-Run from backend/:
-    python -m engine.demos.run_write_pipeline
+Run from repository root:
+    python -m backend.engine.demos.run_write_pipeline
 
 Does not modify core business modules. Orchestrates existing Services and
 prints a step-by-step log so humans can verify the write chain.
@@ -13,24 +13,18 @@ from __future__ import annotations
 import asyncio
 import json
 import sys
-from pathlib import Path
 from typing import Any
 
-# Allow `python engine/demos/run_write_pipeline.py` as well as -m
-_BACKEND_ROOT = Path(__file__).resolve().parents[2]
-if str(_BACKEND_ROOT) not in sys.path:
-    sys.path.insert(0, str(_BACKEND_ROOT))
-
-from engine.ingest import IngestionService
-from engine.knowledge import KnowledgeService
-from engine.kylin import MockEmbedding
-from engine.mocks import (
+from backend.engine.ingest import IngestionService
+from backend.engine.knowledge import KnowledgeService
+from backend.engine.kylin import MockEmbedding
+from backend.engine.mocks import (
     MockEntityRepository,
     MockEvidenceRepository,
     MockKnowledgeRepository,
     MockPreferenceRepository,
 )
-from engine.preference import PreferenceService
+from backend.engine.preference import PreferenceService
 
 
 USER_UTTERANCE = "以后回答问题尽量简洁，我喜欢先看结论。"

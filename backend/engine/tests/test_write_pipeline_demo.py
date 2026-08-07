@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from engine.demos.run_write_pipeline import USER_UTTERANCE, run_pipeline
+from backend.engine.demos.run_write_pipeline import USER_UTTERANCE, run_pipeline
 
 
 @pytest.mark.asyncio

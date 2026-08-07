@@ -12,10 +12,10 @@ from backend.foundation.core.idgen import gen_evidence_id
 from backend.foundation.core.models import Evidence
 from backend.foundation.core.repository import EvidenceRepository
 
-from engine.ingest.cleaner import Cleaner
-from engine.ingest.connectors import get_connector
-from engine.ingest.normalizer import Normalizer
-from engine.ingest.quality import Quality
+from backend.engine.ingest.cleaner import Cleaner
+from backend.engine.ingest.connectors import get_connector
+from backend.engine.ingest.normalizer import Normalizer
+from backend.engine.ingest.quality import Quality
 
 
 class IngestionService:

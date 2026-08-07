@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from engine.kylin.mock_embedding import KylinTextEmbedding, MockEmbedding, get_embedder
+from backend.engine.kylin.mock_embedding import KylinTextEmbedding, MockEmbedding, get_embedder
 
 __all__ = ["KylinTextEmbedding", "MockEmbedding", "get_embedder"]

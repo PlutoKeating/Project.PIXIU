@@ -5,19 +5,25 @@
 ## 环境
 
 ```bash
-cd backend
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ## 运行测试
 
 ```bash
-# 全部引擎测试（mock embedding）
-PIXIU_EMBEDDING=mock pytest engine/tests/ -v
+# 全部引擎测试（mock embedding，仓库根目录运行）
+PIXIU_EMBEDDING=mock python -m pytest backend/engine/tests -v
 
 # 单模块测试
-PIXIU_EMBEDDING=mock pytest engine/tests/test_ingest.py -v
-PIXIU_EMBEDDING=mock pytest engine/tests/test_knowledge.py -v
+PIXIU_EMBEDDING=mock python -m pytest backend/engine/tests/test_ingest.py -v
+PIXIU_EMBEDDING=mock python -m pytest backend/engine/tests/test_knowledge.py -v
+```
+
+## 运行端到端 demo
+
+```bash
+# 仓库根目录运行（Mock 仓储 + Mock embedding）
+PIXIU_EMBEDDING=mock python -m backend.engine.demos.run_write_pipeline
 ```
 
 ## 依赖关系

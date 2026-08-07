@@ -1,10 +1,4 @@
-"""Pytest path bootstrap: make `backend/` importable as root for `engine.*`."""
+"""Pytest 路径引导：统一从仓库根目录运行，使用 backend.engine.* 导入。
 
-from __future__ import annotations
-
-import sys
-from pathlib import Path
-
-_BACKEND_ROOT = Path(__file__).resolve().parents[2]
-if str(_BACKEND_ROOT) not in sys.path:
-    sys.path.insert(0, str(_BACKEND_ROOT))
+本文件保留以固定 engine 测试的 pytest 根目录行为。
+"""

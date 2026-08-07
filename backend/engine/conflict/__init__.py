@@ -11,7 +11,7 @@ from typing import Optional
 from backend.foundation.core.models import ConflictRecord, KnowledgeItem
 from backend.foundation.core.repository import ConflictRepository, KnowledgeRepository
 
-from engine.conflict.arbiter import Arbiter
+from backend.engine.conflict.arbiter import Arbiter
 
 
 class ConflictService:

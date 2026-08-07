@@ -10,9 +10,9 @@ from typing import Optional
 from backend.foundation.core.models import Evidence, Preference, PreferenceSnapshot
 from backend.foundation.core.repository import PreferenceRepository
 
-from engine.preference.adapter import Adapter
-from engine.preference.extractor import Extractor
-from engine.preference.versioning import to_preference
+from backend.engine.preference.adapter import Adapter
+from backend.engine.preference.extractor import Extractor
+from backend.engine.preference.versioning import to_preference
 
 
 class PreferenceService:

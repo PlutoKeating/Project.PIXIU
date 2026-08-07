@@ -5,10 +5,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from engine.ingest.connectors.manual_config import ManualConfigConnector
-from engine.ingest.connectors.ocr import OcrConnector
-from engine.ingest.connectors.tool_result import ToolResultConnector
-from engine.ingest.connectors.user_behavior import UserBehaviorConnector
+from backend.engine.ingest.connectors.manual_config import ManualConfigConnector
+from backend.engine.ingest.connectors.ocr import OcrConnector
+from backend.engine.ingest.connectors.tool_result import ToolResultConnector
+from backend.engine.ingest.connectors.user_behavior import UserBehaviorConnector
 
 SOURCE_TYPES = ("OCR", "TOOL_RESULT", "USER_BEHAVIOR", "MANUAL_CONFIG")
 

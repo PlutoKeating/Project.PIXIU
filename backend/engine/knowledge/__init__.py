@@ -10,11 +10,11 @@ from typing import Optional
 from backend.foundation.core.models import Evidence, KnowledgeItem
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
 
-from engine.knowledge.embed_writer import EmbedWriter
-from engine.knowledge.graph import GraphBuilder
-from engine.knowledge.structurer import Structurer
-from engine.kylin import get_embedder
-from engine.kylin.mock_embedding import TextEmbedder
+from backend.engine.knowledge.embed_writer import EmbedWriter
+from backend.engine.knowledge.graph import GraphBuilder
+from backend.engine.knowledge.structurer import Structurer
+from backend.engine.kylin import get_embedder
+from backend.engine.kylin.mock_embedding import TextEmbedder
 
 
 class KnowledgeService:
