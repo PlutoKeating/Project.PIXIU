@@ -10,7 +10,7 @@ commits: c36d0f3..3fa106a
 
 ## Report
 
-**What was built** — `core/config.py` 集中管理所有环境变量配置。`Settings` 单例提供 6 个类型安全的只读属性（`db_path`, `api_host`, `api_port`, `embedding`, `log_level`, `data_dir`），变量名与 `backend/.env.example` 完全一致。端口校验 1-65535、embedding 限于 mock/kylin、日志级别限于 DEBUG/INFO/WARNING/ERROR，不合法时抛明确 `ValueError`。同时更新 `api/di.py` 和 `core/logger.py`，移除裸 `os.getenv` 调用，统一通过 `settings` 访问配置。
+**What was built** — `core/config.py` 集中管理所有环境变量配置。`Settings` 单例提供 6 个类型安全的只读属性（`db_path`, `api_host`, `api_port`, `embedding`, `log_level`, `data_dir`），变量名与 `backend/.env.example` 完全一致。端口校验 1-65535、embedding 仅支持 `kylin`（真实麒麟 SDK，无 mock 降级）、日志级别限于 DEBUG/INFO/WARNING/ERROR，不合法时抛明确 `ValueError`。同时更新 `api/di.py` 和 `core/logger.py`，移除裸 `os.getenv` 调用，统一通过 `settings` 访问配置。
 
 **Verification** — `pytest backend/tests/test_config.py -v`: 21/21 passed (0.12s)。覆盖默认值、环境变量读取、非法值拒绝（embedding/port/log_level）、边界值（端口 1/65535）、辅助函数单元测试。
 
@@ -36,7 +36,7 @@ commits: c36d0f3..3fa106a
 | `PIXIU_DB_PATH` | `str` | `"./pixiu.db"` | 非空字符串 |
 | `PIXIU_API_HOST` | `str` | `"127.0.0.1"` | 合法 hostname/IP |
 | `PIXIU_API_PORT` | `int` | `8765` | 1-65535 整数，拒绝 0 |
-| `PIXIU_EMBEDDING` | `str` | `"mock"` | 枚举：`"mock"` 或 `"kylin"`，其余拒绝 |
+| `PIXIU_EMBEDDING` | `str` | `"kylin"` | 枚举：仅 `"kylin"`（无 mock 降级），其余拒绝 |
 | `PIXIU_LOG_LEVEL` | `str` | `"INFO"` | 枚举：`DEBUG/INFO/WARNING/ERROR` |
 | `PIXIU_DATA_DIR` | `str` | `"./data"` | 非空字符串 |
 
@@ -53,7 +53,7 @@ commits: c36d0f3..3fa106a
 测试文件 `backend/tests/test_config.py`，覆盖以下 4 个场景：
 
 1. **默认值** — 不设环境变量时，`PIXIU_API_PORT` 为 `8765`
-2. **embedding=mock 读取** — 设置 `PIXIU_EMBEDDING=mock`，`settings.embedding` 返回 `"mock"`
+2. **embedding=kylin 读取** — 设置 `PIXIU_EMBEDDING=kylin`，`settings.embedding` 返回 `"kylin"`
 3. **非法 embedding 拒绝** — 设置 `PIXIU_EMBEDDING=openai`，初始化应抛 `ValueError`
 4. **临时数据库路径可配置** — 设置 `PIXIU_DB_PATH=/tmp/test.db`，`settings.db_path` 应返回该路径
 
@@ -83,5 +83,5 @@ commits: c36d0f3..3fa106a
 - [x] T1: 实现 core/config.py — Settings 类，6 个属性，含校验逻辑 (covers: S2.1)
 - [x] T2: 更新 api/di.py — 用 settings.db_path 替换 os.getenv (covers: S2.3)
 - [x] T3: 更新 core/logger.py — 用 settings.log_level 替换硬编码值 (covers: S2.3)
-- [x] T4: 实现 tests/test_config.py — 21 个测试用例，含默认值、mock、非法拒绝、路径可配 (covers: S2.2)
+- [x] T4: 实现 tests/test_config.py — 21 个测试用例，含默认值、kylin、非法拒绝（含 mock 拒绝）、路径可配 (covers: S2.2)
 - [x] T5: 运行 pytest 确认全部通过 (covers: S2.2)

@@ -35,8 +35,9 @@
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `kylin/__init__.py` | ★★★ | 导出 `KylinTextEmbedding` |
-| `kylin/embedding.py` | ★★★ | C++ pybind11 封装（麒麟 coreai/embedding C 接口） |
-| `kylin/mock_embedding.py` | ★★★ | MockEmbedding 降级实现（返回固定维度随机向量） |
+| `kylin/embedding.py` | ★★★ | 麒麟 coreai/embedding C API 的 pybind11 封装（无 mock 降级） |
+| `kylin/cpp/` | ★★★ | pybind11 绑定源码 + CMake 构建（SDK 以 third_party submodule 纳入） |
+| `kylin/vector.py` | ★★ | 麒麟向量数据库客户端（libkysdk-vector-engine-client）封装 |
 
 ---
 
@@ -77,6 +78,7 @@
 | `tests/test_knowledge.py` | 四类知识结构化+建图+嵌写入测试 |
 | `tests/test_conflict.py` | 矛盾检测+裁决+审计测试 |
 | `tests/test_security.py` | 敏感识别+遗忘精确性+级联清理测试 |
-| `tests/test_kylin.py` | MockEmbedding 端到端测试 |
+| `tests/test_sqlite_integration.py` | 引擎 × SQLite 全链路集成测试 |
 
-所有测试须在 `PIXIU_EMBEDDING=mock` 环境下可独立运行。
+embedding 相关测试在无麒麟 SDK 的开发机上使用 tests/fakes.py 的测试桩；
+生产代码一律调用真实麒麟 SDK，SDK 缺失时抛出 `KylinSDKUnavailableError`。

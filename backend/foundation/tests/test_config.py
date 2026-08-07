@@ -19,11 +19,11 @@ def test_default_port():
         assert s.api_port == 8765
 
 
-def test_default_embedding_is_mock():
-    """Default PIXIU_EMBEDDING is 'mock'."""
+def test_default_embedding_is_kylin():
+    """Default PIXIU_EMBEDDING is 'kylin'（生产仅支持真实麒麟 SDK）。"""
     with mock.patch.dict(os.environ, {}, clear=True):
         s = Settings()
-        assert s.embedding == "mock"
+        assert s.embedding == "kylin"
 
 
 def test_default_db_path():
@@ -35,11 +35,11 @@ def test_default_db_path():
 
 # ─── Env var reading ─────────────────────────────────────
 
-def test_embedding_mock_explicit():
-    """PIXIU_EMBEDDING=mock should be read correctly."""
+def test_embedding_mock_rejected():
+    """PIXIU_EMBEDDING=mock 已废弃，必须拒绝（无 mock 降级）。"""
     with mock.patch.dict(os.environ, {"PIXIU_EMBEDDING": "mock"}):
-        s = Settings()
-        assert s.embedding == "mock"
+        with pytest.raises(ValueError, match="PIXIU_EMBEDDING"):
+            Settings()
 
 
 def test_embedding_kylin():

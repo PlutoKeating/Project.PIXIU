@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 
-_VALID_EMBEDDING = frozenset({"mock", "kylin"})
+_VALID_EMBEDDING = frozenset({"kylin"})
 _VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR"})
 
 
@@ -53,7 +53,7 @@ class Settings:
         self._db_path = _env_str("PIXIU_DB_PATH", "./pixiu.db")
         self._api_host = _env_str("PIXIU_API_HOST", "127.0.0.1")
         self._api_port = _env_port("PIXIU_API_PORT", 8765)
-        self._embedding = _env_choice("PIXIU_EMBEDDING", "mock", _VALID_EMBEDDING)
+        self._embedding = _env_choice("PIXIU_EMBEDDING", "kylin", _VALID_EMBEDDING)
         self._log_level = _env_choice("PIXIU_LOG_LEVEL", "INFO", _VALID_LOG_LEVELS)
         self._data_dir = _env_str("PIXIU_DATA_DIR", "./data")
 

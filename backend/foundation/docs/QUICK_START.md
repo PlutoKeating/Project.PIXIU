@@ -19,12 +19,12 @@ python -c "import sqlite3; from backend.foundation.storage.migrations import app
 ## 启动 API 网关
 
 ```bash
-# 开发模式（hot reload，仓库根目录运行）
-PIXIU_EMBEDDING=mock uvicorn backend.foundation.api.http_app:app \
+# 开发模式（hot reload，仓库根目录运行；embedding 需已构建麒麟 SDK 绑定）
+uvicorn backend.foundation.api.http_app:app \
   --host 127.0.0.1 --port 8765 --reload
 
 # 或直接运行（http_app 内置 uvicorn 入口）
-PIXIU_EMBEDDING=mock python -m backend.foundation.api.http_app
+python -m backend.foundation.api.http_app
 ```
 
 ## 验证启动

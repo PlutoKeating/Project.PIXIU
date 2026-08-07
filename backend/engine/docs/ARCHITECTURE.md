@@ -150,14 +150,14 @@ class KylinTextEmbedding:
         ...
 ```
 
-**MockEmbedding**（非麒麟开发机降级）：
+底层为 C 接口 SDK `libkysdk-coreai-embedding`（官方仓库以 submodule 纳入
+`third_party/kylin-coreai-embedding`），经 pybind11 绑定
+`_kylin_text_embedding` 暴露给 Python。**无 mock 降级**：SDK 缺失或
+麒麟 AI 运行时不可用时，`get_embedder()` 抛出 `KylinSDKUnavailableError`。
 
-```python
-class MockEmbedding:
-    def embed(self, text: str) -> list[float]:
-        # 返回固定维度随机向量，用于单测
-        return [random.random() for _ in range(256)]
-```
+向量数据库使用 `libkysdk-vector-engine-client`（Milvus 式 gRPC 客户端，
+submodule 位于 `third_party/libkysdk-vector-engine-client`），
+由 `kylin/vector.py` 封装，供检索阶段 ANN 通道使用。
 
 ---
 

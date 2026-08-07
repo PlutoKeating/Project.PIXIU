@@ -5,42 +5,48 @@
 ## 环境
 
 ```bash
+cd /path/to/Project.PIXIU
+git submodule update --init --recursive   # 初始化麒麟 SDK submodule
 pip install -r backend/requirements.txt
 ```
 
 ## 运行测试
 
 ```bash
-# 全部引擎测试（mock embedding，仓库根目录运行）
-PIXIU_EMBEDDING=mock python -m pytest backend/engine/tests -v
+# 全部引擎测试（仓库根目录运行；无麒麟 SDK 时 embedding 测试走测试桩）
+python -m pytest backend/engine/tests -v
 
 # 单模块测试
-PIXIU_EMBEDDING=mock python -m pytest backend/engine/tests/test_ingest.py -v
-PIXIU_EMBEDDING=mock python -m pytest backend/engine/tests/test_knowledge.py -v
+python -m pytest backend/engine/tests/test_ingest.py -v
+python -m pytest backend/engine/tests/test_knowledge.py -v
 ```
 
-## 运行端到端 demo
+## 麒麟 SDK 绑定构建（银河麒麟系统）
+
+生产 embedding 与向量库调用依赖 pybind11 绑定，详见
+`backend/engine/kylin/cpp/README.md`：
 
 ```bash
-# 仓库根目录运行（Mock 仓储 + Mock embedding）
-PIXIU_EMBEDDING=mock python -m backend.engine.demos.run_write_pipeline
+cd backend/engine/kylin/cpp
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --install build
 ```
+
+构建产物安装到 `backend/engine/kylin/`。SDK 缺失时
+`get_embedder()` / `VectorEngineClient()` 抛出 `KylinSDKUnavailableError`，
+生产环境无 mock 降级。
 
 ## 依赖关系
 
-引擎需要 `backend/foundation/core/` 中的两个文件：
+引擎通过 `backend/foundation/core/` 契约消费存储层：
 
 | 文件 | 内容 |
 |------|------|
 | `foundation/core/models.py` | Pydantic 数据模型（Evidence, KnowledgeItem, Preference...） |
 | `foundation/core/repository.py` | Repository ABC 接口 |
 
-确认这两个文件存在后即可独立开发。
+## 麒麟 SDK submodule
 
-## 降级模式
-
-非麒麟开发机上设置环境变量即可完全离线开发：
-
-```bash
-export PIXIU_EMBEDDING=mock
-```
+- `third_party/kylin-coreai-embedding` —— 文本向量化（C API）
+- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）

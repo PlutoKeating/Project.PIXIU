@@ -30,8 +30,8 @@ PIXIU 三个模块可独立开发与测试。
 ### 快速验证
 
 ```bash
-# 启动后端（mock embedding）
-PIXIU_EMBEDDING=mock python -m backend.foundation.api.http_app
+# 启动后端（真实麒麟 SDK，需先构建 kylin 绑定）
+python -m backend.foundation.api.http_app
 
 # 写入测试数据
 curl -X POST http://127.0.0.1:8765/memory/write \
@@ -51,5 +51,6 @@ curl -X POST http://127.0.0.1:8765/memory/query \
 非麒麟开发机上：
 
 - 前端：`cmake -DPIXIU_HAVE_KYSDK=OFF` 启用 Qt 原生桩
-- 后端：`PIXIU_EMBEDDING=mock` 启用 MockEmbedding
+- 后端：生产代码无 mock 降级；测试使用 `backend/engine/tests/fakes.py` 测试桩，
+  麒麟 SDK 绑定构建见 `backend/engine/kylin/cpp/README.md`
 - API 通信：自动回退至 `http://127.0.0.1:8765`
