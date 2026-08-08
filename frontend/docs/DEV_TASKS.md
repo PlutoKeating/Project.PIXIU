@@ -29,6 +29,8 @@
   对应 `MessageList::appendQueryError`/`retryRequested` 与 `t_message_list` 用例。
 - 键盘可达补强：ForgetDialog Esc/关闭触发取消（默认按钮为“取消”）、
   MemoryPanel Esc 隐藏、主要按钮/输入框 accessibleName，均已补测试。
+- 空结果提示行已带“录入知识”引导按钮（点击打开录入对话框），
+  对应 `MessageList::appendEmptyResult`/`importKnowledgeRequested` 与用例。
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 

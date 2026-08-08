@@ -88,6 +88,10 @@
   “取消”；MemoryPanel Esc 隐藏；聊天框顶栏、输入栏按钮与输入框补充
   accessibleName（无障碍读屏）。对应 `t_forget_dialog`/`t_memory_panel`/
   `t_chat_window`/`t_input_bar`/`t_i18n` 用例。
+- 已实现空结果引导（关键状态表“空结果”条目）：空结果提示行附“录入知识”
+  按钮，点击直接打开录入对话框（`MessageList::appendEmptyResult` +
+  `importKnowledgeRequested` → `ImportDialog`）；`t_message_list` 用例与
+  “录入知识”英文翻译已补。
 
 ### 1.2 尚未完成
 
