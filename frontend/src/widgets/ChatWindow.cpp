@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "app/UkuiWindow.h"
 #include "widgets/InputBar.h"
 #include "widgets/MessageList.h"
 
@@ -22,6 +23,8 @@ ChatWindow::ChatWindow(QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(kWindowWidth, kWindowHeight);
+    // UKUI 原生窗口装饰（阴影/圆角）；无 KYSDK 环境为 no-op。
+    pixiu::decorateUkuiWindow(this, 12);
 
     // 顶栏：标题 + 同步状态占位 + 记忆面板 + 关闭。
     QLabel *titleLabel = new QLabel(QStringLiteral("PIXIU 貔貅"), this);

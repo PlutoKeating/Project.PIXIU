@@ -62,6 +62,8 @@ add_executable(pixiu-frontend
     src/app/PreferenceController.cpp
     src/app/ThemeService.h
     src/app/ThemeService.cpp
+    src/app/UkuiWindow.h
+    src/app/UkuiWindow.cpp
 )
 
 target_link_libraries(pixiu-frontend
@@ -206,8 +208,17 @@ if(BUILD_TESTING)
     target_link_libraries(t_theme_service PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME theme_service COMMAND t_theme_service)
 
+    add_executable(t_ukui_window
+        tests/t_ukui_window.cpp
+        src/app/UkuiWindow.h
+        src/app/UkuiWindow.cpp
+    )
+    target_include_directories(t_ukui_window PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_ukui_window PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME ukui_window COMMAND t_ukui_window)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
-        preference_controller shortcut_manager theme_service
+        preference_controller shortcut_manager theme_service ukui_window
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
