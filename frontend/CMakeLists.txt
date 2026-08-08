@@ -32,6 +32,7 @@ add_executable(pixiu-frontend
     src/widgets/MessageList.h
     src/widgets/MessageList.cpp
     src/models/ChatMessage.h
+    src/models/MemoryAtom.h
     src/services/BackendTypes.h
     src/services/BackendTransport.h
     src/services/BackendTransport.cpp
