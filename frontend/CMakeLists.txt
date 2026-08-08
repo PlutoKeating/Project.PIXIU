@@ -225,8 +225,51 @@ if(BUILD_TESTING)
     target_link_libraries(t_ukui_window PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME ukui_window COMMAND t_ukui_window)
 
+    add_executable(t_memory_atom
+        tests/t_memory_atom.cpp
+        src/models/MemoryAtom.h
+    )
+    target_include_directories(t_memory_atom PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_memory_atom PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME memory_atom COMMAND t_memory_atom)
+
+    add_executable(t_query_controller
+        tests/t_query_controller.cpp
+        src/app/QueryController.h
+        src/app/QueryController.cpp
+        src/models/MemoryAtom.h
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+    )
+    target_include_directories(t_query_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_query_controller PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME query_controller COMMAND t_query_controller)
+
+    add_executable(t_write_controller
+        tests/t_write_controller.cpp
+        src/app/WriteController.h
+        src/app/WriteController.cpp
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+    )
+    target_include_directories(t_write_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_write_controller PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME write_controller COMMAND t_write_controller)
+
+    add_executable(t_app_settings
+        tests/t_app_settings.cpp
+        src/app/AppSettings.h
+        src/app/AppSettings.cpp
+    )
+    target_include_directories(t_app_settings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_app_settings PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME app_settings COMMAND t_app_settings)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
+        memory_atom query_controller write_controller app_settings
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
