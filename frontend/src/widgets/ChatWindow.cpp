@@ -28,17 +28,21 @@ ChatWindow::ChatWindow(QWidget *parent)
 
     // 顶栏：标题 + 同步状态占位 + 记忆面板 + 关闭。
     QLabel *titleLabel = new QLabel(QStringLiteral("PIXIU 貔貅"), this);
+    titleLabel->setObjectName(QStringLiteral("titleLabel"));
     titleLabel->setStyleSheet(QStringLiteral("font-size: 14px; font-weight: bold;"));
 
     m_statusLabel = new QLabel(QStringLiteral("● 离线"), this);
+    m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
     m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
 
     QPushButton *panelButton = new QPushButton(QStringLiteral("记忆"), this);
+    panelButton->setObjectName(QStringLiteral("panelButton"));
     panelButton->setFlat(true);
     panelButton->setCursor(Qt::PointingHandCursor);
     connect(panelButton, &QPushButton::clicked, this, &ChatWindow::openPanelRequested);
 
     QPushButton *closeButton = new QPushButton(QStringLiteral("✕"), this);
+    closeButton->setObjectName(QStringLiteral("closeButton"));
     closeButton->setFlat(true);
     closeButton->setCursor(Qt::PointingHandCursor);
     connect(closeButton, &QPushButton::clicked, this, &ChatWindow::closeRequested);

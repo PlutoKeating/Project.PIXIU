@@ -267,9 +267,59 @@ if(BUILD_TESTING)
     target_link_libraries(t_app_settings PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME app_settings COMMAND t_app_settings)
 
+    add_executable(t_chat_window
+        tests/t_chat_window.cpp
+        src/widgets/ChatWindow.h
+        src/widgets/ChatWindow.cpp
+        src/widgets/InputBar.h
+        src/widgets/InputBar.cpp
+        src/widgets/MessageList.h
+        src/widgets/MessageList.cpp
+        src/widgets/EvidenceCard.h
+        src/widgets/EvidenceCard.cpp
+        src/models/ChatMessage.h
+        src/services/BackendTypes.h
+        src/app/UkuiWindow.h
+        src/app/UkuiWindow.cpp
+    )
+    target_include_directories(t_chat_window PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_chat_window PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME chat_window COMMAND t_chat_window)
+
+    add_executable(t_input_bar
+        tests/t_input_bar.cpp
+        src/widgets/InputBar.h
+        src/widgets/InputBar.cpp
+    )
+    target_include_directories(t_input_bar PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_input_bar PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME input_bar COMMAND t_input_bar)
+
+    add_executable(t_message_list
+        tests/t_message_list.cpp
+        src/widgets/MessageList.h
+        src/widgets/MessageList.cpp
+        src/widgets/EvidenceCard.h
+        src/widgets/EvidenceCard.cpp
+        src/models/ChatMessage.h
+    )
+    target_include_directories(t_message_list PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_message_list PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME message_list COMMAND t_message_list)
+
+    add_executable(t_evidence_card
+        tests/t_evidence_card.cpp
+        src/widgets/EvidenceCard.h
+        src/widgets/EvidenceCard.cpp
+    )
+    target_include_directories(t_evidence_card PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_evidence_card PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME evidence_card COMMAND t_evidence_card)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
+        chat_window input_bar message_list evidence_card
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
