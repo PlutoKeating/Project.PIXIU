@@ -27,6 +27,9 @@ add_executable(pixiu-frontend
     src/widgets/ChatWindow.cpp
     src/widgets/InputBar.h
     src/widgets/InputBar.cpp
+    src/widgets/MessageList.h
+    src/widgets/MessageList.cpp
+    src/models/ChatMessage.h
 )
 
 target_link_libraries(pixiu-frontend

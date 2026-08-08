@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 
 #include "widgets/InputBar.h"
+#include "widgets/MessageList.h"
 
 Q_LOGGING_CATEGORY(lcChat, "pixiu.chat-window")
 
@@ -48,9 +49,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(panelButton);
     topBar->addWidget(closeButton);
 
-    QLabel *placeholder = new QLabel(QStringLiteral("聊天内容区域（消息列表即将加入）"), this);
-    placeholder->setAlignment(Qt::AlignCenter);
-    placeholder->setStyleSheet(QStringLiteral("color: #9aa0a6;"));
+    m_messageList = new MessageList(this);
 
     m_inputBar = new InputBar(this);
     connect(m_inputBar, &InputBar::sendRequested, this, &ChatWindow::sendRequested);
@@ -59,8 +58,13 @@ ChatWindow::ChatWindow(QWidget *parent)
     layout->setContentsMargins(16, 12, 16, 16);
     layout->setSpacing(8);
     layout->addLayout(topBar);
-    layout->addWidget(placeholder, 1);
+    layout->addWidget(m_messageList, 1);
     layout->addWidget(m_inputBar);
+}
+
+MessageList *ChatWindow::messageList() const
+{
+    return m_messageList;
 }
 
 void ChatWindow::showAndFocus()

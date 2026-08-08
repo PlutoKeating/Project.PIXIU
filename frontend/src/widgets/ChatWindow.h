@@ -7,6 +7,7 @@ class QLabel;
 class QPushButton;
 class QPropertyAnimation;
 class InputBar;
+class MessageList;
 
 // 聊天主窗口：无边框圆角浮层，顶栏（标题 + 状态 + 面板/关闭）。
 //
@@ -26,6 +27,9 @@ public:
     // 当前是否可见。
     bool isChatVisible() const;
 
+    // 消息列表（供应用层追加消息/设置加载态）。
+    MessageList *messageList() const;
+
 signals:
     void closeRequested();
     void openPanelRequested();
@@ -42,6 +46,7 @@ private:
 
     QLabel *m_statusLabel = nullptr;
     InputBar *m_inputBar = nullptr;
+    MessageList *m_messageList = nullptr;
     QPropertyAnimation *m_opacityAnimation = nullptr;
     QPoint m_rememberedPos;
 

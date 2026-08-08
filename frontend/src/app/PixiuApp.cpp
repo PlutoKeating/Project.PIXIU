@@ -5,6 +5,8 @@
 #include "app/AppSettings.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
+#include "widgets/MessageList.h"
+#include "models/ChatMessage.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
@@ -94,6 +96,14 @@ bool PixiuApp::start()
     });
     connect(m_chatWindow, &ChatWindow::closeRequested,
             m_chatWindow, &ChatWindow::hideAnimated);
+    connect(m_chatWindow, &ChatWindow::sendRequested, this, [this](const QString &text) {
+        ChatMessage message;
+        message.role = MessageRole::User;
+        message.text = text;
+        message.timestamp = QDateTime::currentSecsSinceEpoch();
+        m_chatWindow->messageList()->appendMessage(message);
+        // 答案接入（检索）在 Phase 3 实现；此处仅上屏用户消息。
+    });
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, []() {
         qCInfo(lcApp) << "memory panel requested (Phase 5)";
     });
