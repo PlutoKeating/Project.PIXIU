@@ -83,6 +83,11 @@
   查询文本重新提交（`MessageList::appendQueryError` + `retryRequested`，
   PixiuApp 接线到 `QueryController::submit`），输入同时保留；新增
   `t_message_list` 用例与 `MessageList` 英文翻译。
+- 已实现键盘可达补强（Phase 8 键盘可达条目）：ForgetDialog 的 Esc/窗口关闭
+  统一触发 `cancelled()`（控制器不再残留待确认指令），危险操作默认聚焦
+  “取消”；MemoryPanel Esc 隐藏；聊天框顶栏、输入栏按钮与输入框补充
+  accessibleName（无障碍读屏）。对应 `t_forget_dialog`/`t_memory_panel`/
+  `t_chat_window`/`t_input_bar`/`t_i18n` 用例。
 
 ### 1.2 尚未完成
 
