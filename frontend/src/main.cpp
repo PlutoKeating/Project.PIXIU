@@ -5,6 +5,11 @@
 
 int main(int argc, char *argv[])
 {
+    // 高 DPI 与多屏：必须在 QApplication 构造前启用，保证逻辑坐标按设备
+    // 独立像素计算；UKUI 高分屏下控件与图标按缩放系数正确呈现。
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
     QApplication application(argc, argv);
 
     QCoreApplication::setApplicationName(QStringLiteral("PIXIU"));

@@ -7,7 +7,8 @@
 > 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
 > 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
-> 以及 Phase 7.4 UKUI 窗口装饰已在本机（Kylin V11）完成编译/测试/冒烟验收；
+> 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏已在本机（Kylin V11）
+> 完成编译/测试/冒烟验收；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
@@ -54,6 +55,10 @@
 - 已实现 UKUI 窗口装饰：`UkuiWindow` 适配层在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-qtwidgets `KShadowHelper` 给聊天框应用 UKUI 风格圆角阴影；无 KYSDK 时
   空操作，保持现有 Qt Widgets 表现。
+- 已实现高 DPI 与多屏适配：应用入口在 `QApplication` 构造前启用
+  `AA_EnableHighDpiScaling` / `AA_UseHighDpiPixmaps`；悬浮球位置恢复按所在
+  屏幕 `availableGeometry` 钳制并回退主屏，聊天框/悬浮球默认定位基于主屏
+  可用区域。
 
 ### 1.2 尚未完成
 
@@ -61,21 +66,18 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 7.5~7.7 麒麟桌面能力（高 DPI/多屏、`.desktop` 与 `.deb` 打包）与
-  Phase 8 验收发布尚未完成。
+- Phase 7.6~7.7 麒麟桌面能力（`.desktop` 与 `.deb` 打包）与 Phase 8 验收发布
+  尚未完成。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **`fix(frontend): support high DPI and multiple screens`**（Phase 7.5），
-在应用入口启用 Qt 高 DPI 缩放策略（`AA_EnableHighDpiScaling` /
-`AA_UseHighDpiPixmaps`），并核对悬浮球/聊天框在缩放与多屏下的定位恢复逻辑。
-选择它的原因是：
+下一项为 **`feat(frontend): add desktop entry`**（Phase 7.6），在 `frontend/`
+下提供 `resources/com.kylin.pixiu.desktop` 桌面入口（名称/注释/Exec/图标），
+并在 CMake 增加二进制与 desktop 文件的安装规则。选择它的原因是：
 
-1. 改动收敛在 `main.cpp` 入口与位置恢复逻辑，不依赖 backend、D-Bus 或
-   仍占位的 sync/retrieval 契约。
-2. 高 DPI 声明必须在 `QApplication` 构造前生效，适合作为独立小提交验证。
-3. 本机为单屏环境：多屏行为以代码审查 + offscreen 冒烟验证为主，真机
-   x86/ARM 多屏验证留待目标机型（Phase 8 一并验收）。
+1. 改动收敛在 `frontend/` 资源与 CMake 安装段，不依赖 backend 或仍占位的契约。
+2. 与 Phase 7.7 `.deb` 打包直接衔接，先落地桌面入口便于打包复用。
+3. 本机已具备 `desktop-file-validate`，可用语法校验 + 安装路径检查验证。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -365,6 +367,9 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
    - 悬浮球保持自绘圆形实现（拖动/贴边依赖精确 56px 几何；`KDragWidget` 为
      文件拖拽控件，不适用于窗口拖动），UKUI 窗口装饰收敛在 `UkuiWindow` 适配层。
 5. 高 DPI 与多屏：`fix(frontend): support high DPI and multiple screens`
+   - [x] 本地验收通过（2026-08-08，Kylin V11 本机）：
+     编译通过；OFF/ON 两路径 ctest 11/11 通过；offscreen 冒烟启动无回归；
+     悬浮球/聊天框定位按屏幕可用区域钳制（代码审查确认）。
 6. `.desktop`：`feat(frontend): add desktop entry`
 7. `.deb` 打包：`build(frontend): add Debian packaging`
 
@@ -466,6 +471,15 @@ OFF 路径                 configure/build 通过；ctest 11/11 通过（新增 
 ON 路径                  configure/build 通过；ctest 11/11 通过
 无头冒烟                 offscreen 启动：UKUI window shadow applied（radius 12）；
                          主题信号连接正常；无回归
+```
+
+2026-08-08 追加（Phase 7.5，本机银河麒麟 V11）：
+
+```text
+高 DPI                   入口启用 AA_EnableHighDpiScaling / AA_UseHighDpiPixmaps
+OFF 路径                 configure/build 通过；ctest 11/11 通过
+ON 路径                  configure/build 通过；ctest 11/11 通过
+无头冒烟                 offscreen 启动无回归；定位逻辑按屏幕可用区域钳制
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
