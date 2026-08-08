@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network)
+find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network WebSockets)
 
 add_executable(pixiu-frontend
     src/main.cpp
@@ -46,12 +46,15 @@ add_executable(pixiu-frontend
     src/services/BackendTransport.cpp
     src/services/HttpBackendTransport.h
     src/services/HttpBackendTransport.cpp
+    src/services/WebSocketClient.h
+    src/services/WebSocketClient.cpp
 )
 
 target_link_libraries(pixiu-frontend
     PRIVATE
         Qt5::Widgets
         Qt5::Network
+        Qt5::WebSockets
 )
 
 target_include_directories(pixiu-frontend
