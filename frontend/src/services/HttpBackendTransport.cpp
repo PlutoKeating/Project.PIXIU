@@ -217,10 +217,10 @@ void HttpBackendTransport::handleReply(
             setConnectionState(ConnectionState::Error);
             if (tag != 0) {
                 emit queryFailed(tag, QStringLiteral("INVALID_RESPONSE"),
-                                 QStringLiteral("后端响应不是合法 JSON"));
+                                 tr("后端响应不是合法 JSON"));
             } else {
                 emit errorOccurred(QStringLiteral("INVALID_RESPONSE"),
-                                   QStringLiteral("后端响应不是合法 JSON"),
+                                   tr("后端响应不是合法 JSON"),
                                    QString());
             }
             return;

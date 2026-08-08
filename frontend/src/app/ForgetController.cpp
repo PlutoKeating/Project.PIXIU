@@ -72,5 +72,5 @@ void ForgetController::handleForgetResult(const QJsonObject &response)
     }
 
     emit failed(QStringLiteral("UNKNOWN_RESPONSE"),
-                QStringLiteral("遗忘响应格式无法识别"));
+                tr("遗忘响应格式无法识别"));
 }

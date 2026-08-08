@@ -72,6 +72,14 @@
     </message>
 </context>
 <context>
+    <name>ForgetController</name>
+    <message>
+        <location filename="../../src/app/ForgetController.cpp" line="75"/>
+        <source>遗忘响应格式无法识别</source>
+        <translation>Unrecognized forget response format</translation>
+    </message>
+</context>
+<context>
     <name>ForgetDialog</name>
     <message>
         <location filename="../../src/widgets/ForgetDialog.cpp" line="27"/>
@@ -107,6 +115,15 @@ This action cannot be undone.</translation>
         <location filename="../../src/widgets/ForgetDialog.cpp" line="56"/>
         <source>取消</source>
         <translation>Cancel</translation>
+    </message>
+</context>
+<context>
+    <name>HttpBackendTransport</name>
+    <message>
+        <location filename="../../src/services/HttpBackendTransport.cpp" line="220"/>
+        <location filename="../../src/services/HttpBackendTransport.cpp" line="223"/>
+        <source>后端响应不是合法 JSON</source>
+        <translation>Backend response is not valid JSON</translation>
     </message>
 </context>
 <context>
