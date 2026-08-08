@@ -79,6 +79,10 @@
 - 已实现 WebSocket 断线重连回归测试与自动化回归基线：`t_websocket_client` 新增
   重连回归用例（`1d9dd4b`），`scripts/regression.sh` 一键执行 OFF/ON 双路径
   构建 + ctest 20/20 + offscreen 冒烟 + desktop 校验 + `.deb` 校验。
+- 已实现查询失败重试 UI：失败提示行（红字详情）带“重试”按钮，点击后以原始
+  查询文本重新提交（`MessageList::appendQueryError` + `retryRequested`，
+  PixiuApp 接线到 `QueryController::submit`），输入同时保留；新增
+  `t_message_list` 用例与 `MessageList` 英文翻译。
 
 ### 1.2 尚未完成
 
@@ -302,6 +306,9 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
    `feat(frontend): add memory response models`
 4. 实现查询加载/离线/超时/取消/重试 UI：
    `feat(frontend): add memory query states`
+   - 追加（2026-08-08）：失败提示行增加“重试”按钮
+     （`feat(frontend): add retry button for failed queries`），点击以原输入
+     重新提交，输入不丢失；OFF/ON 两路径 ctest 20/20 通过，真实桌面启动冒烟正常。
 5. 实现 `EvidenceCard`：`feat(frontend): add evidence card`
 6. retrieval 落地后接通真实 `/memory/query`：
    `feat(frontend): connect memory query flow`
