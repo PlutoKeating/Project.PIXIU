@@ -18,7 +18,8 @@ public:
     // 文本录入：source_type=MANUAL_CONFIG。
     void submit(const QString &title,
                 const QString &content,
-                const QString &scope);
+                const QString &scope,
+                const QString &imagePath = QString());
 
 signals:
     void writeAccepted(const QJsonObject &response);

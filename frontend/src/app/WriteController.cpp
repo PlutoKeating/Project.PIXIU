@@ -19,7 +19,8 @@ WriteController::WriteController(BackendTransport *transport, QObject *parent)
 
 void WriteController::submit(const QString &title,
                              const QString &content,
-                             const QString &scope)
+                             const QString &scope,
+                             const QString &imagePath)
 {
     QJsonObject raw;
     raw.insert(QStringLiteral("title"), title);
@@ -30,5 +31,15 @@ void WriteController::submit(const QString &title,
     payload.insert(QStringLiteral("source_type"), QStringLiteral("MANUAL_CONFIG"));
     payload.insert(QStringLiteral("raw"), raw);
     payload.insert(QStringLiteral("scope"), scope);
+
+    QJsonObject context;
+    if (!imagePath.isEmpty()) {
+        // 附件预览信息放入 context（OCR 接入后由后端识别结构化）。
+        context.insert(QStringLiteral("attachment_path"), imagePath);
+        context.insert(QStringLiteral("ocr_pending"), true);
+    }
+    if (!context.isEmpty()) {
+        payload.insert(QStringLiteral("context"), context);
+    }
     m_transport->writeMemory(payload);
 }
