@@ -6,9 +6,11 @@
 #include "app/ShortcutManager.h"
 #include "app/QueryController.h"
 #include "app/WriteController.h"
+#include "app/ForgetController.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
+#include "widgets/ForgetDialog.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
 #include "models/MemoryAtom.h"
@@ -108,6 +110,15 @@ bool PixiuApp::start()
             m_chatWindow, &ChatWindow::hideAnimated);
     connect(m_chatWindow, &ChatWindow::sendRequested, this,
             [this](const QString &text) {
+                if (ForgetController::isForgetIntent(text)) {
+                    ChatMessage user;
+                    user.role = MessageRole::User;
+                    user.text = text;
+                    user.timestamp = QDateTime::currentSecsSinceEpoch();
+                    m_chatWindow->messageList()->appendMessage(user);
+                    m_forgetController->requestConfirmation(text);
+                    return;
+                }
                 if (m_queryController) {
                     m_queryController->submit(text);
                 }
@@ -219,6 +230,42 @@ bool PixiuApp::start()
                 ChatMessage notice;
                 notice.role = MessageRole::System;
                 notice.text = QStringLiteral("录入失败（%1）：%2").arg(code, message);
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+            });
+
+    // 遗忘两段式确认：先展示影响范围，确认后才执行。
+    m_forgetController = new ForgetController(m_transport, this);
+    m_forgetDialog = new ForgetDialog();
+    connect(m_forgetController, &ForgetController::confirmationReady, this,
+            [this](const QString &, const QJsonObject &response) {
+                m_forgetDialog->setForgetTargets(
+                    response.value(QStringLiteral("targets")).toArray(),
+                    response.value(QStringLiteral("cascade")).toObject());
+                m_forgetDialog->show();
+                m_forgetDialog->raise();
+                m_forgetDialog->activateWindow();
+            });
+    connect(m_forgetDialog, &ForgetDialog::confirmed,
+            m_forgetController, &ForgetController::confirm);
+    connect(m_forgetDialog, &ForgetDialog::cancelled,
+            m_forgetController, &ForgetController::cancel);
+    connect(m_forgetController, &ForgetController::forgotten, this,
+            [this](const QJsonObject &response) {
+                const int forgottenCount =
+                    response.value(QStringLiteral("forgotten_ids")).toArray().size();
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("已遗忘 %1 条记忆，相关证据与关系已清理。")
+                                  .arg(forgottenCount);
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+            });
+    connect(m_forgetController, &ForgetController::failed, this,
+            [this](const QString &code, const QString &message) {
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("遗忘操作失败（%1）：%2").arg(code, message);
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
             });
