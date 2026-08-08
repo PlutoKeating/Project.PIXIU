@@ -9,6 +9,9 @@
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
 > 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏、Phase 7.6 桌面入口
 > 与 Phase 7.7 `.deb` 打包已在本机（Kylin V11）完成编译/测试/冒烟验收；
+> Phase 7.3 追加修复：`themeMode()` 仅在启动时缓存，已改为读 QGSettings
+> 实时 `styleName` 判定明暗，并在本机真实桌面会话验证 dark→light→dark
+> 实时跟随（`fix(frontend): read live style name for UKUI theme following`）；
 > Phase 8 本地验收基线已完成（双路径构建 + ctest 20/20 + offscreen 冒烟 +
 > `.deb` 产物校验），已固化为 `frontend/scripts/regression.sh`；中/英文案
 > i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
@@ -84,19 +87,22 @@
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
 - Phase 8 验收发布：本地自动化回归基线已完成（`scripts/regression.sh`，
-  ctest 20/20）；真实桌面会话展示与 x86/ARM 目标机验收依赖人工复测
-  （清单见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节）。
+  ctest 20/20）；本机实时 UKUI 会话已完成真实桌面冒烟（应用启动、窗口
+  出现、托盘、UKUI 阴影、全局快捷键注册、主题 dark→light→dark 实时跟随），
+  剩余快捷键按键触发、通知弹窗、HiDPI/多屏与 x86/ARM 目标机验收依赖
+  人工复测（清单见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节）。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **Phase 8 人工复测与发布**：在带显示的麒麟桌面会话中按
-`frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节清单复测（快捷键唤起、
-通知弹窗、明暗主题切换、窗口装饰、HiDPI/多屏），并在 x86/ARM 目标机安装
-`.deb` 验收。选择它的原因是：
+下一项为 **Phase 8 收尾**：本机实时 UKUI 会话已完成应用启动/窗口/主题
+实时跟随验证；剩余人工复测项为快捷键按键唤起（需按键合成工具或真实按键）、
+通知弹窗展示（依赖后端事件或手动触发）、HiDPI/多屏与 x86/ARM 目标机安装
+验收（见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节清单）。选择它的原因是：
 
 1. 本机自动化基线已收敛（ctest 20/20 + 冒烟 + 打包校验，`regression.sh` 固化）。
-2. 人工复测需要带显示会话与目标机型，无法由 Agent 在本环境代替。
-3. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
+2. 真实桌面冒烟已在本机会话完成（应用启动、窗口、主题实时跟随）。
+3. 剩余人工复测项需要按键合成工具、后端事件或目标机型，无法由 Agent 代替。
+4. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -379,6 +385,16 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      `ThemeController::m_gsetting` 的 `changed` 信号并过滤 `styleName` 键后触发
      `changeTheme()`；KYSDK 链接显式补齐 `gsettings-qt`
      （`fix(frontend): connect UKUI theme switch signal`）。
+   - 追加修复（2026-08-08）：运行时探针确认 kysdk-qtwidgets 2.3.1.0 的
+     `themeMode()`/`widgetTheme()` 只在 `initThemeStyle()` 时缓存一次，
+     运行期切换主题不刷新（ukui-dark→ukui-light 后 `themeMode()` 仍为
+     DarkTheme）；`applyTheme()` 改读 QGSettings 实时 `styleName` 判定明暗
+     （含 dark/black/night 匹配，缺失时回退 `themeMode()`）
+     （`fix(frontend): read live style name for UKUI theme following`）。
+   - 真实桌面验证（2026-08-08，本机 Kylin V11 实时 UKUI 会话，XWayland）：
+     应用启动后 `gsettings set org.ukui.style style-name ukui-light` 触发
+     `restored system palette (light theme)`，切回 `ukui-dark` 再次应用
+     深色 Palette；日志与截图证据留存。
 4. UKUI 悬浮/拖动/窗口能力：`feat(frontend): integrate UKUI window helpers`
    - [x] 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
      编译通过；OFF/ON 两路径 ctest 11/11 通过（新增 ukui_window）；offscreen
@@ -552,6 +568,21 @@ ON 冒烟                  offscreen 启动：PIXIU application started；
                          theme/ukui-window/shortcut 日志正常
 打包                     build/dist/pixiu-frontend_0.1.0-1_amd64.deb（93 KB）
                          dpkg-deb -I/-c 校验通过
+```
+
+2026-08-08 追加（Phase 7.3 真实桌面验证 + Phase 8 真实桌面冒烟）：
+
+```text
+修复                      ThemeService::applyTheme() 改读 QGSettings 实时
+                          styleName 判定明暗（themeMode() 仅缓存启动值，
+                          运行期不刷新——运行时探针确认）
+真实桌面启动              DISPLAY=:0 QT_QPA_PLATFORM=xcb 启动成功：
+                          wmctrl -l 可见 "PIXIU" 窗口；托盘图标、UKUI 阴影
+                          （radius 12）、全局快捷键注册/更新日志正常
+主题实时跟随              ukui-dark -> ukui-light：restored system palette
+                          (light theme)；切回 ukui-dark：applied UKUI dark
+                          palette；桌面截图留存（/tmp/pixiu-verified-*.png）
+回归确认                  OFF/ON 双路径 configure/build 通过；ctest 20/20
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C

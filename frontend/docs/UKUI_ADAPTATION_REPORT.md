@@ -25,7 +25,7 @@
 |------|----------|------|----------|------|
 | A-1 | 全局快捷键唤起 | `ShortcutManager`（kysdk-shortcut `Ctrl+Alt+P`） | 编译 + offscreen 冒烟（注册/残留更新/退出清理）；真实按键待人工 | ✅ 通过（人工复测项） |
 | A-2 | 桌面通知 | `NotifyService`（kysdk-notification `KNotifier`） | 编译 + 无头冒烟（`notify()` 返回有效 id）；真实弹窗待人工 | ✅ 通过（人工复测项） |
-| A-3 | 主题跟随 | `ThemeService`（kysdk-qtwidgets `ThemeController` + `QGSettings` 信号） | 编译 + offscreen 冒烟（深色 Palette 应用、主题变化信号连接）；明暗切换待人工 | ✅ 通过（人工复测项） |
+| A-3 | 主题跟随 | `ThemeService`（kysdk-qtwidgets `ThemeController` + `QGSettings` 信号） | 编译 + offscreen 冒烟 + 本机真实桌面会话 dark→light→dark 实时跟随（2026-08-08，`dc7b0e3`） | ✅ 通过 |
 | A-4 | 窗口装饰 | `UkuiWindow`（kysdk-qtwidgets `KShadowHelper` 圆角阴影） | 编译 + offscreen 冒烟（`UKUI window shadow applied`）；视觉效果待人工 | ✅ 通过（人工复测项） |
 | A-5 | 高 DPI / 多屏 | 入口 `AA_EnableHighDpiScaling` / `AA_UseHighDpiPixmaps`；定位按屏幕可用区域钳制 | 编译 + 代码审查；x86/ARM 目标机多屏待人工 | ✅ 通过（人工复测项） |
 | A-6 | 桌面入口 | `com.kylin.pixiu.desktop` + CMake 安装规则 | `desktop-file-validate` 通过；`cmake --install` 路径校验 | ✅ 通过 |
@@ -59,6 +59,22 @@ pixiu.app: PIXIU application started
 
 后台服务未启动时，HTTP/WS 连接按预期进入离线/退避重连，无崩溃。
 
+2026-08-08 追加：本机实时 UKUI 桌面会话（XWayland `:0`）真实冒烟：
+
+```text
+启动                      DISPLAY=:0 QT_QPA_PLATFORM=xcb 启动成功；
+                          wmctrl -l 可见 "PIXIU" 窗口
+主题实时跟随              ukui-dark -> ukui-light：
+                          "restored system palette (light theme)"
+                          ukui-light -> ukui-dark：
+                          "applied UKUI dark palette"
+桌面截图                  /tmp/pixiu-verified-dark.png / -light.png
+```
+
+说明：本机 kysdk-qtwidgets 2.3.1.0 的 `themeMode()` 仅在启动时缓存一次，
+运行期不刷新（运行时探针确认），`ThemeService::applyTheme()` 已改读
+QGSettings 实时 `styleName` 判定明暗（`dc7b0e3`）。
+
 ### 3.3 打包产物
 
 ```text
@@ -72,14 +88,17 @@ build/dist/pixiu-frontend_0.1.0-1_amd64.deb
 
 - 桌面会话中按下 `Ctrl+Alt+P` 唤起聊天框（含第二实例激活）。
 - UKUI 系统通知弹窗展示与点击行为。
-- UKUI 明暗主题切换时应用 Palette 实时跟随。
 - 聊天框阴影/圆角视觉效果；悬浮球在桌面边缘的贴边行为。
 - 高分屏（HiDPI）与多屏下悬浮球/聊天框位置与缩放。
 - `.deb` 在干净麒麟环境（含 x86/ARM）安装与启动。
 
 ## 5. 已知限制
 
-- 真实桌面会话验证需要带显示环境，本报告自动化部分均在 offscreen 下完成。
+- 真实桌面会话冒烟已在本机完成（应用启动、窗口、主题实时跟随）；快捷键
+  按键触发、通知弹窗展示、HiDPI/多屏与 x86/ARM 目标机仍需人工复测。
+- 本机会话经 XWayland 运行，日志出现 `MESA: error: ZINK: failed to choose
+  pdev` / `glx: failed to create drisw screen`（软件 GL 降级提示），不影响
+  应用启动与功能，真机硬件 GL 环境应无此提示。
 - `resources/` 尚无自定义图标资源，desktop 入口暂用系统主题图标。
 - `WebSocketClient` 真实事件联调依赖 Module C 修复 `/events` 注册与
   WebSocket 导入（见 `frontend/docs/BACKEND_ISSUES.md`）。
@@ -93,4 +112,5 @@ d02ad64 feat(frontend): integrate UKUI window helpers
 248d985 fix(frontend): support high DPI and multiple screens
 45ed0ec feat(frontend): add desktop entry
 9e79f64 build(frontend): add Debian packaging
+dc7b0e3 fix(frontend): read live style name for UKUI theme following
 ```
