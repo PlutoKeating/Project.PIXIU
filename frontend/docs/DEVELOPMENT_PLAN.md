@@ -5,7 +5,9 @@
 > 技术栈：C++17、Qt5 Widgets、KylinSDK
 > 计划周期：2026-08-07 至 2026-09-15
 > 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
-> 当前状态：Phase 1A 工程骨架已完成；真实配置、编译和启动验证待补
+> 当前状态：Phase 1A 工程骨架已完成；WebSocketClient 已完成本地验收（编译/链接通过），
+> 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
+> （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
 ## 1. 当前进度摘要
 
@@ -18,6 +20,12 @@
 - 已建立 `frontend/CMakeLists.txt`，设置 C++17、Qt5 Widgets 和
   `PIXIU_HAVE_KYSDK` 构建选项。
 - 已确认构建产物、缓存、`.env` 和 IDE 临时文件不得进入 Git。
+- 已实现 `frontend/src/services/WebSocketClient.{h,cpp}` 并接入 `CMakeLists.txt`
+  （新增 `Qt5::WebSockets` 组件与链接），本地编译/链接验收通过（2026-08-08，
+  Qt 5.15.19）。
+- 后端联调发现的 2 项问题（`/events` 未注册、`ws.py` WebSocket 导入缺失）已记录于
+  `frontend/docs/BACKEND_ISSUES.md` 交接 Module C；WebSocketClient 的真实环境
+  验收依赖其修复。
 
 ### 1.2 尚未完成
 
@@ -27,6 +35,8 @@
 - `PIXIU_HAVE_KYSDK` 当前只有编译选项，尚未接入任何麒麟桌面 SDK，也尚未验证
   `ON`/`OFF` 两条构建路径。
 - 未开始 `MemoryClient`、`SyncClient`、REST、WebSocket 或 D-Bus 客户端实现。
+- WebSocketClient 的真实环境冒烟（连接 `/events`、`connected`/`ping`/`memory_ready`）
+  未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 
 ### 1.3 下一项最小独立 feature
 
@@ -136,8 +146,10 @@ WebSocket 客户端必须：
 - 依据顶层 `event` 分发，`data` 缺失或类型错误时记录可脱敏诊断并安全忽略。
 - 对未知事件保持前向兼容：不得崩溃、断开连接或弹出错误，只记录并忽略。
 - 实现退避重连，避免断线后高频重试；心跳/ACK 语义在后端确认前不自行发明。
-- 在正式实现 WebSocket feature 前，由后端负责人确认 `/events` 已被实际启动入口注册，并完成
-  一次真实连接、`connected`、`ping` 和 `memory_ready` 冒烟验证。
+- WebSocketClient 已实现并完成本地编译/链接验收；但真实连接冒烟验证
+  （`connected`/`ping`/`memory_ready`）仍未完成——后端存在两项阻塞问题：
+  `/events` 未被实际启动入口注册、`ws.py` 的 `WebSocket` 标注缺少导入，
+  详见 `frontend/docs/BACKEND_ISSUES.md`，修复后由 Module C 负责人确认并复测。
 
 ### 3.3 D-Bus 状态
 
@@ -252,8 +264,12 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 
 1. 对接已实现的 `/memory/write` 文本写入：`feat(frontend): add memory write flow`
 2. 增加图片拖入与录入预览：`feat(frontend): add memory import preview`
-3. 实现 WS 连接、控制事件、未知事件兼容和退避重连：
+3. [x] 实现 WS 连接、控制事件、未知事件兼容和退避重连：
    `feat(frontend): add websocket event client`
+   - 本地验收通过（2026-08-08：CMake configure/build 成功，Qt5WebSockets 已链接）。
+   - 真实环境验收阻塞：Module C 需修复 `/events` 注册与 WebSocket 导入问题
+     （见 `frontend/docs/BACKEND_ISSUES.md`），修复后再做连接/心跳/`memory_ready`
+     冒烟验证。
 4. 将已接入的 `memory_ready` 映射到应用状态：
    `feat(frontend): handle memory ready events`
 5. 实现桌面通知抽象及普通 Qt 降级：
@@ -340,6 +356,19 @@ cmake --build frontend/build --parallel
 - `git diff --check`、`git diff`、`git status`；
 - 确认只修改 `frontend/` 且没有生成物、缓存、`.env` 或绝对路径。
 
+### 6.3 本地验证记录（2026-08-08，Linux + Qt 5.15）
+
+```text
+cmake --version       3.28.3
+Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
+链接库                libQt5WebSockets.so.5.15.19
+构建产物              frontend/build/pixiu-frontend（含 WebSocketClient.cpp.o）
+```
+
+WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
+两项后端问题阻塞（`/events` 注册、`ws.py` WebSocket 导入），详见
+`frontend/docs/BACKEND_ISSUES.md`。
+
 ## 7. Git 工作流
 
 所有工作遵循根目录 `AGENTS.md` 和 `HUMANS.md`：
@@ -361,7 +390,7 @@ cmake --build frontend/build --parallel
 | `/memory/query` 仍占位 | 查询 MVP 无真实结果 | 客户端与 UI 可用测试 fixture 验证；不在生产路径假成功 |
 | `/sync/*` 和 flow 仍占位 | 同步/流转 UI 无法真实联调 | 延后真实集成，不猜测实现 |
 | D-Bus 只有占位 | 暂不可作为主 transport | 先抽象接口并走 HTTP/WS，等待后端契约 |
-| WS 启动级可用性未冒烟确认 | 实时事件联调有风险 | 实现客户端前与 foundation 负责人共同验证入口和事件 |
+| WS 启动级可用性未冒烟确认（`/events` 未注册 + `ws.py` WebSocket 导入缺失） | 实时事件联调有风险 | 已记录于 `BACKEND_ISSUES.md`，待 Module C 修复后共同复测 |
 | 证据详情、偏好列表接口缺失 | 对应页面无法闭环 | 提交接口需求，由双方确认后再实现 |
 | SDK/UKUI 版本与目标机差异 | Kylin 集成可能编译或行为不一致 | 使用适配层，并在真实 x86/ARM UKUI 环境留证 |
 | 根/模块部分状态文档仍可能写“前端未开始” | 进度认知不一致 | 本文件以提交 `9cebaa8` 为事实基线；其他文档由对应负责人另行对齐 |
