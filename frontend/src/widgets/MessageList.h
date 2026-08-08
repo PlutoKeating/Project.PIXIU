@@ -23,11 +23,17 @@ public:
     // 携带原始查询文本上抛（UI 不直接调用 controller）。
     void appendQueryError(const QString &retryText, const QString &detail);
 
+    // 空结果提示行：友好文案 + “录入知识”引导按钮；点击时以
+    // importKnowledgeRequested 上抛（由应用层打开录入对话框）。
+    void appendEmptyResult(const QString &detail);
+
 signals:
     // 点击证据卡（回溯原文）。
     void evidenceClicked(const QString &evidenceId);
     // 点击失败提示行的“重试”按钮（携带原始查询文本）。
     void retryRequested(const QString &text);
+    // 点击空结果提示行的“录入知识”按钮。
+    void importKnowledgeRequested();
 
 private:
     QWidget *createUserBubble(const ChatMessage &message) const;

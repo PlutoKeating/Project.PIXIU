@@ -109,6 +109,38 @@ void MessageList::appendQueryError(const QString &retryText, const QString &deta
     scrollToBottom();
 }
 
+void MessageList::appendEmptyResult(const QString &detail)
+{
+    QWidget *container = new QWidget();
+    QVBoxLayout *layout = new QVBoxLayout(container);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(4);
+
+    QLabel *hint = new QLabel(detail);
+    hint->setObjectName(QStringLiteral("emptyHint"));
+    hint->setAlignment(Qt::AlignCenter);
+    hint->setWordWrap(true);
+    layout->addWidget(hint);
+
+    QPushButton *importButton = new QPushButton(tr("录入知识"));
+    importButton->setObjectName(QStringLiteral("importKnowledgeButton"));
+    importButton->setCursor(Qt::PointingHandCursor);
+    importButton->setFlat(true);
+    connect(importButton, &QPushButton::clicked, this, [this]() {
+        emit importKnowledgeRequested();
+    });
+
+    QHBoxLayout *buttonRow = new QHBoxLayout();
+    buttonRow->setContentsMargins(0, 0, 0, 0);
+    buttonRow->addStretch(1);
+    buttonRow->addWidget(importButton);
+    buttonRow->addStretch(1);
+    layout->addLayout(buttonRow);
+
+    appendRow(container, Qt::AlignCenter);
+    scrollToBottom();
+}
+
 QWidget *MessageList::createUserBubble(const ChatMessage &message) const
 {
     QLabel *bubble =

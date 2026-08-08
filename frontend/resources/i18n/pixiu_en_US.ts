@@ -334,6 +334,11 @@ This action cannot be undone.</translation>
         <source>重试</source>
         <translation>Retry</translation>
     </message>
+    <message>
+        <location filename="../../src/widgets/MessageList.cpp" line="140"/>
+        <source>录入知识</source>
+        <translation>Import knowledge</translation>
+    </message>
 </context>
 <context>
     <name>PixiuApp</name>

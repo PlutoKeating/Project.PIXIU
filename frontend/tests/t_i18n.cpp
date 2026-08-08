@@ -29,6 +29,8 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Thinking…"));
     QCOMPARE(QCoreApplication::translate("MessageList", "重试"),
              QStringLiteral("Retry"));
+    QCOMPARE(QCoreApplication::translate("MessageList", "录入知识"),
+             QStringLiteral("Import knowledge"));
     QCOMPARE(QCoreApplication::translate("ChatWindow", "打开记忆面板"),
              QStringLiteral("Open memory panel"));
     QCOMPARE(QCoreApplication::translate("InputBar", "录入图片或文件"),

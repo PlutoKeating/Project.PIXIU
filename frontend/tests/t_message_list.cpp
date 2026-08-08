@@ -19,6 +19,7 @@ private slots:
     void clearMessagesEmptiesList();
     void evidenceClickIsForwarded();
     void queryErrorShowsDetailAndRetryEmitsRequest();
+    void emptyResultShowsImportButtonAndEmitsRequest();
 };
 
 static ChatMessage makeMessage(MessageRole role, const QString &text)
@@ -124,6 +125,30 @@ void TestMessageList::queryErrorShowsDetailAndRetryEmitsRequest()
     QTest::mouseClick(retry, Qt::LeftButton);
     QCOMPARE(spy.count(), 1);
     QCOMPARE(spy.takeFirst().at(0).toString(), QStringLiteral("燃气费是多少"));
+}
+
+void TestMessageList::emptyResultShowsImportButtonAndEmitsRequest()
+{
+    MessageList list;
+    QSignalSpy spy(&list, &MessageList::importKnowledgeRequested);
+
+    list.appendEmptyResult(QStringLiteral("未找到相关记忆，换个说法试试。"));
+    QCOMPARE(list.count(), 1);
+
+    QWidget *content = list.itemWidget(list.item(0));
+    QVERIFY(content != nullptr);
+
+    QLabel *hint = content->findChild<QLabel *>(QStringLiteral("emptyHint"));
+    QVERIFY(hint != nullptr);
+    QVERIFY(hint->text().contains(QStringLiteral("未找到相关记忆")));
+
+    QPushButton *import =
+        content->findChild<QPushButton *>(QStringLiteral("importKnowledgeButton"));
+    QVERIFY(import != nullptr);
+    QCOMPARE(import->text(), QStringLiteral("录入知识"));
+
+    QTest::mouseClick(import, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
 }
 
 QTEST_MAIN(TestMessageList)

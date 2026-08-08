@@ -188,11 +188,8 @@ bool PixiuApp::start()
             });
     connect(m_queryController, &QueryController::emptyResultReady, this,
             [this]() {
-                ChatMessage notice;
-                notice.role = MessageRole::System;
-                notice.text = tr("未找到相关记忆，换个说法试试，或录入新知识。");
-                notice.timestamp = QDateTime::currentSecsSinceEpoch();
-                m_chatWindow->messageList()->appendMessage(notice);
+                m_chatWindow->messageList()->appendEmptyResult(
+                    tr("未找到相关记忆，换个说法试试，或录入新知识。"));
             });
     connect(m_queryController, &QueryController::queryFailed, this,
             [this](const QString &text, const QString &code, const QString &message) {
@@ -225,6 +222,12 @@ bool PixiuApp::start()
     m_importDialog = new ImportDialog();
     connect(m_chatWindow, &ChatWindow::attachRequested,
             m_importDialog, &QDialog::show);
+    connect(m_chatWindow->messageList(), &MessageList::importKnowledgeRequested, this,
+            [this]() {
+                m_importDialog->show();
+                m_importDialog->raise();
+                m_importDialog->activateWindow();
+            });
     connect(m_importDialog, &ImportDialog::importRequested,
             m_writeController, &WriteController::submit);
     connect(m_writeController, &WriteController::writeAccepted, this,
