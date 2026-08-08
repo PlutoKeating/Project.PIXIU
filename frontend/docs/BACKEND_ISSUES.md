@@ -75,3 +75,7 @@
 - Module A 侧 `WebSocketClient` 已完成本地编译/链接验收，真实环境联调待上述修复后复测。
 - 复现说明：本记录基于代码路径静态确认（开发机未安装 fastapi/uvicorn，未做运行时
   复现）；建议 Module C 在已安装依赖的环境执行上述命令复核。
+- 补充（2026-08-08）：Module A 已用测试专用 WS 桩（`frontend/scripts/ws_smoke_server.py`，
+  仅 UI 冒烟、不参与生产路径）在真实 UKUI 会话完成 `memory_ready` → 通知弹窗
+  UI 链路冒烟（`kysdk notification sent, id: 5`），确认前端事件分发可用；
+  后端 `/events` 修复后仍需按问题 1/2 的验收建议完成真实连接复测。

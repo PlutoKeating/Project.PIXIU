@@ -35,6 +35,12 @@
   套件 21 例全绿。
 - 悬浮球已带右键菜单（打开聊天框 / 记忆面板 / 退出），与托盘/聊天框
   入口统一接线。
+- Phase 8 真实桌面收尾（2026-08-08）：第二实例激活通道、通知弹窗（测试
+  专用 WS 桩驱动 `memory_ready` → KNotifier id 有效）、窗口阴影应用已在本机
+  实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发需在全新登录会话
+  复测（当前运行会话未加载 grab，详见 `UKUI_ADAPTATION_REPORT.md` 第 5 节）。
+- 新增测试专用 WS 事件桩 `scripts/ws_smoke_server.py`（仅用于前端 UI 事件
+  冒烟，不参与生产路径；后端 `/events` 修复后以真实后端复测）。
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 

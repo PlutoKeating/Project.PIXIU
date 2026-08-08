@@ -17,7 +17,12 @@
 > i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
 > 适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
-> （见 `frontend/docs/BACKEND_ISSUES.md`）。
+> （见 `frontend/docs/BACKEND_ISSUES.md`）；
+> Phase 8 真实桌面收尾（2026-08-08）：第二实例激活通道、通知弹窗
+> （测试专用 WS 桩驱动 `memory_ready` → KNotifier id 有效）、窗口阴影应用
+> 均已在本机实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发在当前
+> 运行会话未复现（注册 API 与 dconf 配置正确，但 kylin-wlcom 运行期未加载
+> grab），列为全新登录会话人工复测项（见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
 
 ## 1. 当前进度摘要
 
@@ -108,22 +113,27 @@
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
 - Phase 8 验收发布：本地自动化回归基线已完成（`scripts/regression.sh`，
-  ctest 20/20）；本机实时 UKUI 会话已完成真实桌面冒烟（应用启动、窗口
-  出现、托盘、UKUI 阴影、全局快捷键注册、主题 dark→light→dark 实时跟随），
-  剩余快捷键按键触发、通知弹窗、HiDPI/多屏与 x86/ARM 目标机验收依赖
-  人工复测（清单见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节）。
+  ctest 21/21）；本机实时 UKUI 会话已完成真实桌面冒烟与收尾验证（应用
+  启动、窗口、托盘、UKUI 阴影、全局快捷键注册、主题 dark→light→dark
+  实时跟随、第二实例激活通道、WS 桩驱动通知弹窗）。剩余项：全局快捷键
+  真实按键触发需在全新登录会话复测（当前运行会话未加载 grab，见
+  `UKUI_ADAPTATION_REPORT.md` 第 5 节）、通知弹窗点击行为、HiDPI/多屏
+  与 x86/ARM 目标机验收依赖人工复测（清单见该报告第 4 节）。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **Phase 8 收尾**：本机实时 UKUI 会话已完成应用启动/窗口/主题
-实时跟随验证；剩余人工复测项为快捷键按键唤起（需按键合成工具或真实按键）、
-通知弹窗展示（依赖后端事件或手动触发）、HiDPI/多屏与 x86/ARM 目标机安装
-验收（见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节清单）。选择它的原因是：
+**Phase 8 收尾（本机可完成部分）已完成**：第二实例激活通道、通知弹窗
+（WS 桩驱动 `memory_ready` → `kysdk notification sent, id: 5`）、窗口阴影
+应用均已在本机实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发经
+运行时探针确认当前会话未加载 grab（注册 API 与 dconf 配置正确），需在
+全新登录会话/合成器重启后人工复测，并已记录复测步骤与失败时的备选方案
+（见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
 
-1. 本机自动化基线已收敛（ctest 21/21 + 冒烟 + 打包校验，`regression.sh` 固化）。
-2. 真实桌面冒烟已在本机会话完成（应用启动、窗口、主题实时跟随）。
-3. 剩余人工复测项需要按键合成工具、后端事件或目标机型，无法由 Agent 代替。
-4. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
+后续可执行项全部被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
+Phase 6 等待 `foundation/sync`、WS 真实事件联调等待 Module C 修复
+`/events` 注册与 WebSocket 导入（见 `BACKEND_ISSUES.md`）。阻塞期间
+Module A 以测试专用 WS 桩（`frontend/scripts/ws_smoke_server.py`）维持
+事件 UI 链路冒烟，不修改 `backend/`。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -616,10 +626,31 @@ t_import_dialog           新增 5 例：OK 按钮门控、确认载荷与清空
                           隐藏、图片拖入预览与载荷；OFF/ON ctest 21/21
 ```
 
+2026-08-08 追加（Phase 8 真实桌面收尾，本机 Kylin V11 实时 UKUI 会话）：
+
+```text
+第二实例激活              第二实例 exit=1；主实例日志 "activation requested
+                          by secondary instance"；wmctrl 出现两个 PIXIU
+                          窗口（悬浮球 + 聊天框）
+                          （截图 /tmp/pixiu-phase8-04-second-activation.png）
+通知弹窗                  测试专用 WS 桩（scripts/ws_smoke_server.py）驱动
+                          memory_ready："memory ready: knw_smoke_001" +
+                          "kysdk notification sent, id: 5"
+                          （截图 /tmp/pixiu-phase8-05-notification.png）
+窗口阴影                  "UKUI window shadow applied, radius: 12" +
+                          聊天框截图供人工确认视觉效果
+快捷键按键触发            注册 API 成功、dconf 配置正确（custom0 的
+                          name/binding/action），但运行期 kglobalaccel
+                          查询 Ctrl+Alt+P 返回 ENXIO（未加载 grab）；
+                          uinput 合成按键（合成器已挂载虚拟键盘）未触发；
+                          判定需全新登录会话/合成器重启后人工复测
+```
+
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
 两项后端问题阻塞（`/events` 注册、`ws.py` WebSocket 导入），详见
 `frontend/docs/BACKEND_ISSUES.md`。`memory_ready` 事件映射与角标联动已通过本地
-测试与冒烟验证，端到端真实事件仍待 Module C 修复后复测。
+测试与冒烟验证，端到端真实事件仍待 Module C 修复后复测；Module A 侧已用
+测试专用 WS 桩完成 UI 链路冒烟（见上文记录）。
 
 ## 7. Git 工作流
 
