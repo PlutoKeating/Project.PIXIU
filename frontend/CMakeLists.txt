@@ -85,6 +85,9 @@ install(TARGETS pixiu-frontend
 install(FILES resources/com.kylin.pixiu.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
+install(FILES resources/icons/pixiu.svg
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
+)
 
 if(PIXIU_HAVE_KYSDK)
     # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）与
