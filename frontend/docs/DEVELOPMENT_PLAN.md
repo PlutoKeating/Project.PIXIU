@@ -12,7 +12,7 @@
 > Phase 7.3 追加修复：`themeMode()` 仅在启动时缓存，已改为读 QGSettings
 > 实时 `styleName` 判定明暗，并在本机真实桌面会话验证 dark→light→dark
 > 实时跟随（`fix(frontend): read live style name for UKUI theme following`）；
-> Phase 8 本地验收基线已完成（双路径构建 + ctest 20/20 + offscreen 冒烟 +
+> Phase 8 本地验收基线已完成（双路径构建 + ctest 21/21 + offscreen 冒烟 +
 > `.deb` 产物校验），已固化为 `frontend/scripts/regression.sh`；中/英文案
 > i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
 > 适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
@@ -92,6 +92,8 @@
   按钮，点击直接打开录入对话框（`MessageList::appendEmptyResult` +
   `importKnowledgeRequested` → `ImportDialog`）；`t_message_list` 用例与
   “录入知识”英文翻译已补。
+- 已补 ImportDialog 专属测试（`t_import_dialog`：按钮门控、确认载荷与清空、
+  取消/Esc 隐藏、图片拖入预览与载荷路径），套件由 20 增至 21。
 
 ### 1.2 尚未完成
 
@@ -112,7 +114,7 @@
 通知弹窗展示（依赖后端事件或手动触发）、HiDPI/多屏与 x86/ARM 目标机安装
 验收（见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节清单）。选择它的原因是：
 
-1. 本机自动化基线已收敛（ctest 20/20 + 冒烟 + 打包校验，`regression.sh` 固化）。
+1. 本机自动化基线已收敛（ctest 21/21 + 冒烟 + 打包校验，`regression.sh` 固化）。
 2. 真实桌面冒烟已在本机会话完成（应用启动、窗口、主题实时跟随）。
 3. 剩余人工复测项需要按键合成工具、后端事件或目标机型，无法由 Agent 代替。
 4. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
@@ -599,6 +601,13 @@ ON 冒烟                  offscreen 启动：PIXIU application started；
                           (light theme)；切回 ukui-dark：applied UKUI dark
                           palette；桌面截图留存（/tmp/pixiu-verified-*.png）
 回归确认                  OFF/ON 双路径 configure/build 通过；ctest 20/20
+```
+
+2026-08-08 追加（ImportDialog 测试补强）：
+
+```text
+t_import_dialog           新增 5 例：OK 按钮门控、确认载荷与清空、取消/Esc
+                          隐藏、图片拖入预览与载荷；OFF/ON ctest 21/21
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C

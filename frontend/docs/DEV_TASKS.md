@@ -22,7 +22,7 @@
 
 - 第一阶段~第三阶段及第四阶段的 i18n 已完成：全部用户可见文案经 Qt `tr()` 包装，
   `resources/i18n/pixiu_en_US.ts`/`.qm` 内嵌，应用入口按 `LANGUAGE`/系统语言加载英文翻译。
-- 双路径（`PIXIU_HAVE_KYSDK=OFF/ON`）ctest 20/20 通过；自动化回归脚本
+- 双路径（`PIXIU_HAVE_KYSDK=OFF/ON`）ctest 21/21 通过；自动化回归脚本
   `scripts/regression.sh`（OFF/ON 构建+测试、offscreen 冒烟、desktop 校验、`.deb` 校验）
   已纳入 Phase 8 本地基线。
 - 查询失败提示行已带“重试”按钮（点击以原输入重新提交，输入保留），
@@ -31,6 +31,8 @@
   MemoryPanel Esc 隐藏、主要按钮/输入框 accessibleName，均已补测试。
 - 空结果提示行已带“录入知识”引导按钮（点击打开录入对话框），
   对应 `MessageList::appendEmptyResult`/`importKnowledgeRequested` 与用例。
+- 新增 `t_import_dialog`（按钮门控/确认载荷/取消/Esc/图片拖入预览），
+  套件 21 例全绿。
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 

@@ -40,10 +40,12 @@
 ```text
 websocket_client / floating_ball / notify_service / forget_controller /
 forget_dialog / memory_panel / conflict_controller / preference_controller /
-shortcut_manager / theme_service / ukui_window
+shortcut_manager / theme_service / ukui_window / memory_atom / query_controller /
+write_controller / app_settings / chat_window / input_bar / message_list /
+import_dialog / evidence_card / i18n
 ```
 
-结果：**ctest 11/11 通过**（`PIXIU_HAVE_KYSDK=OFF` 与 `ON` 两路径一致）。
+结果：**ctest 21/21 通过**（`PIXIU_HAVE_KYSDK=OFF` 与 `ON` 两路径一致）。
 
 ### 3.2 冒烟
 
