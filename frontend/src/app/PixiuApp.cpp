@@ -366,6 +366,9 @@ void PixiuApp::shutdown()
     if (m_instanceGuard) {
         m_instanceGuard->stop();
     }
+    if (m_shortcutManager) {
+        m_shortcutManager->releaseToggleShortcut();
+    }
     if (m_wsClient) {
         m_wsClient->disconnectFromBackend();
     }

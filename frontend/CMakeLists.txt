@@ -75,7 +75,13 @@ target_include_directories(pixiu-frontend
 )
 
 if(PIXIU_HAVE_KYSDK)
+    # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）；
+    # kysdk-notification 等在对应 feature 提交时按模块追加。
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(KYSDK_SHORTCUT REQUIRED kysdk-shortcut)
     target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_KYSDK=1)
+    target_include_directories(pixiu-frontend PRIVATE ${KYSDK_SHORTCUT_INCLUDE_DIRS})
+    target_link_libraries(pixiu-frontend PRIVATE ${KYSDK_SHORTCUT_LIBRARIES})
 endif()
 
 # ─── 测试（Qt Test，offscreen 平台运行）──────────────────────
@@ -164,8 +170,20 @@ if(BUILD_TESTING)
     target_link_libraries(t_preference_controller PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME preference_controller COMMAND t_preference_controller)
 
+    # 快捷键测试始终编译 Qt 降级路径（不注入 PIXIU_HAVE_KYSDK 宏）：
+    # kysdk 全局快捷键依赖桌面会话，无法在 offscreen 测试中确定性断言；
+    # KYSDK 路径由 PIXIU_HAVE_KYSDK=ON 的应用构建与冒烟验证覆盖。
+    add_executable(t_shortcut_manager
+        tests/t_shortcut_manager.cpp
+        src/app/ShortcutManager.h
+        src/app/ShortcutManager.cpp
+    )
+    target_include_directories(t_shortcut_manager PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_shortcut_manager PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME shortcut_manager COMMAND t_shortcut_manager)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
-        preference_controller
+        preference_controller shortcut_manager
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

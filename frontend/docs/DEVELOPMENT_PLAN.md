@@ -5,8 +5,9 @@
 > 技术栈：C++17、Qt5 Widgets、KylinSDK
 > 计划周期：2026-08-07 至 2026-09-15
 > 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
-> 当前状态：Phase 1A 工程骨架已完成；WebSocketClient 已完成本地验收（编译/链接通过），
-> 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
+> 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
+> Phase 7.1 麒麟全局快捷键已在本机（Kylin V11）完成编译/测试/冒烟验收；
+> WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
 ## 1. 当前进度摘要
@@ -39,35 +40,28 @@
   展示 old/new 对比与裁决结果；面板每次打开时刷新。
 - 已实现偏好历史视图：面板偏好 Tab 支持输入偏好 ID 加载
   `GET /preference/{id}/history` 的版本历史（偏好列表接口落地后替换为选择入口）。
+- 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
+  kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
+  SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
 
 ### 1.2 尚未完成
 
-- 当前 Windows 环境未发现 `cmake`、`qmake`、`g++`、`clang++` 或 `cl`，因此
-  **尚未执行成功的 CMake configure、编译或启动验证**；不得把骨架标记为“已构建通过”。
-- `PixiuApp`、单实例、系统托盘、配置持久化及任何界面组件尚未实现。
-- `PIXIU_HAVE_KYSDK` 当前只有编译选项，尚未接入任何麒麟桌面 SDK，也尚未验证
-  `ON`/`OFF` 两条构建路径。
-- 未开始 `MemoryClient`、`SyncClient`、REST、WebSocket 或 D-Bus 客户端实现。
 - WebSocketClient 的真实环境冒烟（连接 `/events`、`connected`/`ping`/`memory_ready`）
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
+- Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
+- Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
+- Phase 7.2~7.7 麒麟桌面能力（kysdk-notification、UKUI 主题跟随、窗口辅助、
+  高 DPI/多屏、`.desktop` 与 `.deb` 打包）与 Phase 8 验收发布尚未完成。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **`PixiuApp` application lifecycle**，建议提交：
+下一项为 **`feat(frontend): integrate Kylin notifications`**（Phase 7.2），
+将 `NotifyService` 的 `QSystemTrayIcon::showMessage` 替换为 kysdk-notification，
+无托盘时仍降级为日志。选择它的原因是：
 
-```text
-feat(frontend): add application lifecycle
-```
-
-本 feature 只负责应用对象的创建、启动、退出以及 QObject 所有权边界，不混入单实例、
-托盘、设置、窗口、网络或 KylinSDK。选择它的原因是：
-
-1. 工程骨架完成后，需要先建立统一的生命周期所有者，后续窗口和服务才能有稳定挂载点。
-2. 它不依赖仍为占位的 retrieval、sync、D-Bus，也不需要 embedding/vector SDK。
-3. 它可以独立编译、启动、退出和回滚，符合“一个 feature 一个 commit”。
-
-若目标 Qt5/CMake/C++ 工具链仍不可用，可以先写代码和做静态审查，但该 feature 在目标环境
-完成 configure/build/run 前不得宣称验收通过。
+1. 本机即目标银河麒麟 V11 环境，`libkysdk-notification` 开发包已安装，可独立编译验证。
+2. 不依赖 backend、D-Bus 或仍占位的 sync/retrieval 契约。
+3. `NotifyService` 已有明确接口与 QtTest 覆盖，替换实现不改变调用方。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -209,7 +203,7 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 - [x] 初始化两个官方 SDK submodule，并核对 gitlink。
 - [x] 重读根规范、项目计划/API、全部前端文档及 foundation 最新文档/实现。
 - [x] 记录 REST、WebSocket、D-Bus 当前实现状态与职责边界。
-- [ ] 在具备目标工具链的环境补齐 Qt5/CMake/C++ 版本与构建记录。
+- [x] 在具备目标工具链的环境补齐 Qt5/CMake/C++ 版本与构建记录。
 
 ### Phase 1：应用基础
 
@@ -217,7 +211,8 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 
 - Commit：`9cebaa8 chore(frontend): scaffold Qt5 application`
 - 内容：目录、`CMakeLists.txt`、`main.cpp`、资源占位、`PIXIU_HAVE_KYSDK` 选项。
-- 待补验证：`PIXIU_HAVE_KYSDK=OFF` 的 configure/build/run；之后再验证 ON 路径。
+- 验证记录：OFF 路径 configure/build/ctest 已通过（2026-08-08，Linux + Qt 5.15）；
+  ON 路径自 Phase 7.1 起接入 kysdk-shortcut，并在本机（Kylin V11）验证通过。
 
 #### Phase 1B — PixiuApp application lifecycle（下一 feature）
 
@@ -328,7 +323,13 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 
 ### Phase 7：UKUI/KylinSDK 桌面集成
 
-1. Kylin 全局快捷键适配：`feat(frontend): integrate Kylin global shortcut`
+1. [x] Kylin 全局快捷键适配：`feat(frontend): integrate Kylin global shortcut`
+   - 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
+     编译通过；ctest 9/9 通过；offscreen 冒烟确认系统级全局快捷键注册、
+     残留注册更新（异常退出后 `EXISTED`→`set`）与第二实例激活通道正常；
+     退出清理与残留删除验证完成。
+   - 真实按键触发（桌面会话中按下 `Ctrl+Alt+P` 拉起应用并唤起主窗口）
+     仍需在带显示的麒麟桌面会话中人工复测。
 2. Kylin 通知适配：`feat(frontend): integrate Kylin notifications`
 3. UKUI 主题实时跟随：`feat(frontend): follow UKUI theme changes`
 4. UKUI 悬浮/拖动/窗口能力：`feat(frontend): integrate UKUI window helpers`
@@ -394,6 +395,18 @@ Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
                      conflict_controller / preference_controller）
 ```
 
+2026-08-08 追加（Phase 7.1，本机银河麒麟 V11）：
+
+```text
+PIXIU_HAVE_KYSDK=ON  configure 通过（pkg-config kysdk-shortcut 3.0.1.0）
+构建产物              frontend/build/kysdk/pixiu-frontend（链接 libkysdk-shortcut）
+测试                  ctest 9/9 通过（新增 shortcut_manager）
+冒烟                  offscreen 启动：registered/updated Kylin global shortcut
+                     Ctrl+Alt+P -> <binary>；第二实例 exit=1 并触发主实例激活；
+                     SIGTERM 残留后再次启动走 EXISTED→set 更新路径；
+                     退出后 kdk_shortcut_delete_global_shortcut 清理成功
+```
+
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
 两项后端问题阻塞（`/events` 注册、`ws.py` WebSocket 导入），详见
 `frontend/docs/BACKEND_ISSUES.md`。`memory_ready` 事件映射与角标联动已通过本地
@@ -425,5 +438,6 @@ WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收�
 | SDK/UKUI 版本与目标机差异 | Kylin 集成可能编译或行为不一致 | 使用适配层，并在真实 x86/ARM UKUI 环境留证 |
 | 根/模块部分状态文档仍可能写“前端未开始” | 进度认知不一致 | 本文件以提交 `9cebaa8` 为事实基线；其他文档由对应负责人另行对齐 |
 
-在上述阻塞中，`PixiuApp` application lifecycle 不依赖 backend、D-Bus、submodule 或麒麟专有
-桌面能力，因此仍是当前真正应该执行的下一项最小独立 feature。
+在上述阻塞中，Phase 7.2 的 kysdk-notification 集成不依赖 backend、D-Bus 或仍占位的
+同步契约，且本机（银河麒麟 V11）已安装 `libkysdk-notification` 开发包，因此是当前
+真正应该执行的下一项最小独立 feature。
