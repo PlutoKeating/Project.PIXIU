@@ -33,6 +33,8 @@ add_executable(pixiu-frontend
     src/widgets/InputBar.cpp
     src/widgets/MessageList.h
     src/widgets/MessageList.cpp
+    src/widgets/EvidenceCard.h
+    src/widgets/EvidenceCard.cpp
     src/models/ChatMessage.h
     src/models/MemoryAtom.h
     src/services/BackendTypes.h

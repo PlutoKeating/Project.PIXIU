@@ -3,6 +3,9 @@
 #include <QDateTime>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QVBoxLayout>
+
+#include "widgets/EvidenceCard.h"
 
 namespace {
 constexpr int kBubbleMaxWidth = 300;
@@ -106,6 +109,13 @@ QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
         QLabel *metaLabel = new QLabel(meta);
         metaLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 9px;"));
         layout->addWidget(metaLabel);
+    }
+    if (!message.evidenceId.isEmpty()) {
+        EvidenceCard *card =
+            new EvidenceCard(message.evidenceId, message.confidence, message.latencyMs);
+        connect(card, &EvidenceCard::evidenceClicked,
+                this, &MessageList::evidenceClicked);
+        layout->addWidget(card);
     }
     return container;
 }

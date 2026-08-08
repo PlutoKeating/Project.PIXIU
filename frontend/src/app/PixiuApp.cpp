@@ -168,6 +168,15 @@ bool PixiuApp::start()
                 m_chatWindow->messageList()->appendMessage(notice);
                 m_chatWindow->restoreInput(text);
             });
+    connect(m_chatWindow->messageList(), &MessageList::evidenceClicked, this,
+            [this](const QString &evidenceId) {
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("证据详情接口待后端提供（source_evidence=%1）")
+                                  .arg(evidenceId);
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+            });
     connect(m_transport, &BackendTransport::queryResult, m_queryController,
             &QueryController::handleQueryResult);
     connect(m_transport, &BackendTransport::queryFailed, m_queryController,

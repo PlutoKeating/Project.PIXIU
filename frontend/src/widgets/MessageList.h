@@ -19,6 +19,10 @@ public:
     // 答案加载占位（骨架屏）。
     void setThinking(bool thinking);
 
+signals:
+    // 点击证据卡（回溯原文）。
+    void evidenceClicked(const QString &evidenceId);
+
 private:
     QWidget *createUserBubble(const ChatMessage &message) const;
     QWidget *createAssistantBubble(const ChatMessage &message) const;
