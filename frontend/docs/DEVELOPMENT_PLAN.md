@@ -43,6 +43,9 @@
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
+- 已实现麒麟桌面通知：`NotifyService` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
+  kysdk-notification `KNotifier` 弹系统通知（不依赖托盘）；无 KYSDK 时保持
+  托盘 `showMessage` / 日志降级。
 
 ### 1.2 尚未完成
 
@@ -50,18 +53,18 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 7.2~7.7 麒麟桌面能力（kysdk-notification、UKUI 主题跟随、窗口辅助、
-  高 DPI/多屏、`.desktop` 与 `.deb` 打包）与 Phase 8 验收发布尚未完成。
+- Phase 7.3~7.7 麒麟桌面能力（UKUI 主题跟随、窗口辅助、高 DPI/多屏、
+  `.desktop` 与 `.deb` 打包）与 Phase 8 验收发布尚未完成。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **`feat(frontend): integrate Kylin notifications`**（Phase 7.2），
-将 `NotifyService` 的 `QSystemTrayIcon::showMessage` 替换为 kysdk-notification，
-无托盘时仍降级为日志。选择它的原因是：
+下一项为 **`feat(frontend): follow UKUI theme changes`**（Phase 7.3），
+通过 kysdk-qtwidgets 的 `themeController` 跟随 UKUI 明暗主题切换并同步应用
+Palette；无 KYSDK 时保持 Qt Palette/QSS 静态降级。选择它的原因是：
 
-1. 本机即目标银河麒麟 V11 环境，`libkysdk-notification` 开发包已安装，可独立编译验证。
+1. 本机即目标银河麒麟 V11 环境，`libkysdk-qtwidgets` 开发包已安装，可独立编译验证。
 2. 不依赖 backend、D-Bus 或仍占位的 sync/retrieval 契约。
-3. `NotifyService` 已有明确接口与 QtTest 覆盖，替换实现不改变调用方。
+3. 现有 UI 组件均使用 Qt 标准 Palette，接入面收敛在应用层。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -330,7 +333,11 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      退出清理与残留删除验证完成。
    - 真实按键触发（桌面会话中按下 `Ctrl+Alt+P` 拉起应用并唤起主窗口）
      仍需在带显示的麒麟桌面会话中人工复测。
-2. Kylin 通知适配：`feat(frontend): integrate Kylin notifications`
+2. [x] Kylin 通知适配：`feat(frontend): integrate Kylin notifications`
+   - 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
+     编译通过；ctest 9/9 通过；无头冒烟 `KNotifier::notify()` 返回有效 id、
+     无崩溃（`isAvailable()=true`）；应用 offscreen 启动无回归。
+   - 真实弹窗展示仍需在带显示的麒麟桌面会话中人工复测。
 3. UKUI 主题实时跟随：`feat(frontend): follow UKUI theme changes`
 4. UKUI 悬浮/拖动/窗口能力：`feat(frontend): integrate UKUI window helpers`
 5. 高 DPI 与多屏：`fix(frontend): support high DPI and multiple screens`
@@ -407,6 +414,15 @@ PIXIU_HAVE_KYSDK=ON  configure 通过（pkg-config kysdk-shortcut 3.0.1.0）
                      退出后 kdk_shortcut_delete_global_shortcut 清理成功
 ```
 
+2026-08-08 追加（Phase 7.2，本机银河麒麟 V11）：
+
+```text
+KYSDK 通知               kysdk-notification KNotifier（libkysdk-notification 3.0.1.0）
+无头冒烟                 NotifyService(KYSDK) notify() 返回有效 id、无崩溃；
+                         isAvailable()=true
+应用冒烟                 offscreen 启动无回归（快捷键注册 + 通知服务挂载正常）
+```
+
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
 两项后端问题阻塞（`/events` 注册、`ws.py` WebSocket 导入），详见
 `frontend/docs/BACKEND_ISSUES.md`。`memory_ready` 事件映射与角标联动已通过本地
@@ -438,6 +454,6 @@ WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收�
 | SDK/UKUI 版本与目标机差异 | Kylin 集成可能编译或行为不一致 | 使用适配层，并在真实 x86/ARM UKUI 环境留证 |
 | 根/模块部分状态文档仍可能写“前端未开始” | 进度认知不一致 | 本文件以提交 `9cebaa8` 为事实基线；其他文档由对应负责人另行对齐 |
 
-在上述阻塞中，Phase 7.2 的 kysdk-notification 集成不依赖 backend、D-Bus 或仍占位的
-同步契约，且本机（银河麒麟 V11）已安装 `libkysdk-notification` 开发包，因此是当前
-真正应该执行的下一项最小独立 feature。
+在上述阻塞中，Phase 7.3 的 UKUI 主题跟随不依赖 backend、D-Bus 或仍占位的同步契约，
+且本机（银河麒麟 V11）已安装 `libkysdk-qtwidgets` 开发包（含 `themeController`），
+因此是当前真正应该执行的下一项最小独立 feature。

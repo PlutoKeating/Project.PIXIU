@@ -75,13 +75,20 @@ target_include_directories(pixiu-frontend
 )
 
 if(PIXIU_HAVE_KYSDK)
-    # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）；
-    # kysdk-notification 等在对应 feature 提交时按模块追加。
+    # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）与
+    # kysdk-notification（桌面通知）。
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(KYSDK_SHORTCUT REQUIRED kysdk-shortcut)
+    pkg_check_modules(KYSDK_NOTIFY REQUIRED kysdk-notification)
     target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_KYSDK=1)
-    target_include_directories(pixiu-frontend PRIVATE ${KYSDK_SHORTCUT_INCLUDE_DIRS})
-    target_link_libraries(pixiu-frontend PRIVATE ${KYSDK_SHORTCUT_LIBRARIES})
+    target_include_directories(pixiu-frontend PRIVATE
+        ${KYSDK_SHORTCUT_INCLUDE_DIRS}
+        ${KYSDK_NOTIFY_INCLUDE_DIRS}
+    )
+    target_link_libraries(pixiu-frontend PRIVATE
+        ${KYSDK_SHORTCUT_LIBRARIES}
+        ${KYSDK_NOTIFY_LIBRARIES}
+    )
 endif()
 
 # ─── 测试（Qt Test，offscreen 平台运行）──────────────────────

@@ -6,11 +6,16 @@
 
 class QSystemTrayIcon;
 
+namespace kdk {
+class KNotifier;
+}
+
 // 桌面通知服务：memory_ready/冲突/遗忘/同步事件 → 用户可见通知。
 //
-// 当前实现（普通 Qt 降级）：系统托盘可用时走 QSystemTrayIcon::showMessage；
+// 麒麟环境（PIXIU_HAVE_KYSDK）：通过 kysdk-notification 的 KNotifier 弹出
+// 系统通知；通知不依赖托盘。
+// 开发态/降级（无 KYSDK）：系统托盘可用时走 QSystemTrayIcon::showMessage；
 // 托盘不可用（无桌面/headless 开发环境）时记录日志并返回 false，不阻塞调用方。
-// Phase 7 在此接口下接入 kysdk-notification。
 class NotifyService : public QObject
 {
     Q_OBJECT
@@ -28,6 +33,9 @@ public:
     bool isAvailable() const;
 
 private:
+#ifdef PIXIU_HAVE_KYSDK
+    kdk::KNotifier *m_notifier = nullptr;
+#endif
     QSystemTrayIcon *m_tray = nullptr;
 };
 
