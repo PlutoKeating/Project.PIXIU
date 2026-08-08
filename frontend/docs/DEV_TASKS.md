@@ -18,6 +18,16 @@
 
 > 下文的文件清单为任务定义与优先级，全部为待实现项。
 
+## 实现状态（2026-08-08 更新）
+
+- 第一阶段~第三阶段及第四阶段的 i18n 已完成：全部用户可见文案经 Qt `tr()` 包装，
+  `resources/i18n/pixiu_en_US.ts`/`.qm` 内嵌，应用入口按 `LANGUAGE`/系统语言加载英文翻译。
+- 双路径（`PIXIU_HAVE_KYSDK=OFF/ON`）ctest 20/20 通过；自动化回归脚本
+  `scripts/regression.sh`（OFF/ON 构建+测试、offscreen 冒烟、desktop 校验、`.deb` 校验）
+  已纳入 Phase 8 本地基线。
+- 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
+  x86/ARM 目标机验收仍需人工执行。
+
 ---
 
 ## 开工要求（本地环境准备）
@@ -89,7 +99,7 @@ PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。�
 | `src/models/` | ★★ | 消息、记忆、偏好数据模型（QObject 派生） |
 | `resources/icons/` | ★ | 图标资源（明/暗两套，跟随 UKUI 系统图标） |
 | `resources/styles.qss` | ★ | QSS 样式（圆角、阴影、配色跟随主题） |
-| `resources/i18n/` | ★ | 中/英文翻译（Qt .ts 文件） |
+| `resources/i18n/` | ★ | 中/英文翻译（Qt .ts 文件）——已实现（2026-08-08） |
 
 ---
 

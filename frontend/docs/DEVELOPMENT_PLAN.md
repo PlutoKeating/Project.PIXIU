@@ -9,8 +9,10 @@
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
 > 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏、Phase 7.6 桌面入口
 > 与 Phase 7.7 `.deb` 打包已在本机（Kylin V11）完成编译/测试/冒烟验收；
-> Phase 8 本地验收基线已完成（双路径构建 + ctest 11/11 + offscreen 冒烟 +
-> `.deb` 产物校验），适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
+> Phase 8 本地验收基线已完成（双路径构建 + ctest 20/20 + offscreen 冒烟 +
+> `.deb` 产物校验），已固化为 `frontend/scripts/regression.sh`；中/英文案
+> i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
+> 适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
@@ -67,6 +69,13 @@
 - 已实现 `.deb` 打包：`debian/`（control/rules/postinst）+ `scripts/build-deb.sh`
   基于 `dpkg-deb --build` 产出 `pixiu-frontend_<version>_<arch>.deb`，包含
   `/usr/bin/pixiu-frontend` 与桌面入口；`dpkg-buildpackage` 的 rules 委托同一脚本。
+- 已实现 i18n：全部用户可见文案经 `tr()` 包装（提交
+  `7a3eb07`/`33967de`），`resources/i18n/pixiu_en_US.ts`/`.qm` 内嵌进 qrc，
+  入口按 `LANGUAGE`/系统语言加载英文翻译，其余环境保持中文源码文本；新增
+  `t_i18n` 测试校验内嵌翻译加载与生效。
+- 已实现 WebSocket 断线重连回归测试与自动化回归基线：`t_websocket_client` 新增
+  重连回归用例（`1d9dd4b`），`scripts/regression.sh` 一键执行 OFF/ON 双路径
+  构建 + ctest 20/20 + offscreen 冒烟 + desktop 校验 + `.deb` 校验。
 
 ### 1.2 尚未完成
 
@@ -74,8 +83,9 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 8 验收发布：本地回归基线已完成；真实桌面会话展示与 x86/ARM 目标机
-  验收依赖人工复测（清单见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节）。
+- Phase 8 验收发布：本地自动化回归基线已完成（`scripts/regression.sh`，
+  ctest 20/20）；真实桌面会话展示与 x86/ARM 目标机验收依赖人工复测
+  （清单见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节）。
 
 ### 1.3 下一项最小独立 feature
 
@@ -84,7 +94,7 @@
 通知弹窗、明暗主题切换、窗口装饰、HiDPI/多屏），并在 x86/ARM 目标机安装
 `.deb` 验收。选择它的原因是：
 
-1. 本机自动化基线已收敛（ctest 11/11 + 冒烟 + 打包校验）。
+1. 本机自动化基线已收敛（ctest 20/20 + 冒烟 + 打包校验，`regression.sh` 固化）。
 2. 人工复测需要带显示会话与目标机型，无法由 Agent 在本环境代替。
 3. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
 
@@ -401,6 +411,15 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 - 形成 D-08 麒麟适配记录、演示说明和已知问题清单。
 - 每类修复仍按一个可复现问题一个 commit，避免发布前大包提交。
 
+已完成的本地自动化基线：
+
+- `scripts/regression.sh`：OFF/ON 双路径 configure + build + ctest（offscreen）
+  + ON 路径冒烟 + `desktop-file-validate` + `.deb` 打包与 `dpkg-deb` 内容校验。
+- i18n 回归：`t_i18n` 校验内嵌 `pixiu_en_US.qm` 可从 qrc 加载并对
+  `ChatWindow`/`InputBar`/`ForgetDialog`/`MessageList` 等上下文生效。
+- WebSocket 重连回归：`t_websocket_client` 覆盖断线后按退避策略重连、心跳
+  与未知事件兼容（不崩溃）。
+
 ## 6. 构建与验证门禁
 
 ### 6.1 当前真实验证结果
@@ -518,6 +537,21 @@ ON 路径                  configure/build 通过；ctest 11/11 通过
 依赖声明                 libqt5widgets5t64/libqt5network5t64/libqt5websockets5/
                          libkysdk-shortcut/libkysdk-notification/libkysdk-qtwidgets/
                          libgsettings-qt1
+```
+
+2026-08-08 追加（i18n + Phase 8 本地自动化基线，本机银河麒麟 V11）：
+
+```text
+i18n                     全部用户可见文案 tr() 包装；en_US.ts/.qm 内嵌 qrc；
+                         LANGUAGE/LANG/系统语言检测（main.cpp）
+翻译内容                 pixiu_en_US.ts：12 个上下文、0 个未完成条目
+回归脚本                 scripts/regression.sh（OFF/ON 构建+ctest+冒烟+deb 校验）
+OFF 路径                 configure/build 通过；ctest 20/20 通过（含新增 i18n）
+ON 路径                  configure/build 通过；ctest 20/20 通过
+ON 冒烟                  offscreen 启动：PIXIU application started；
+                         theme/ukui-window/shortcut 日志正常
+打包                     build/dist/pixiu-frontend_0.1.0-1_amd64.deb（93 KB）
+                         dpkg-deb -I/-c 校验通过
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
