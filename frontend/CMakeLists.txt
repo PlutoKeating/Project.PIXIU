@@ -35,6 +35,8 @@ add_executable(pixiu-frontend
     src/services/BackendTypes.h
     src/services/BackendTransport.h
     src/services/BackendTransport.cpp
+    src/services/HttpBackendTransport.h
+    src/services/HttpBackendTransport.cpp
 )
 
 target_link_libraries(pixiu-frontend
