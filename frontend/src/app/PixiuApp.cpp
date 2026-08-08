@@ -1,6 +1,7 @@
 #include "app/PixiuApp.h"
 
 #include "app/SingleInstanceGuard.h"
+#include "app/TrayIcon.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
@@ -34,6 +35,19 @@ bool PixiuApp::start()
     connect(m_instanceGuard, &SingleInstanceGuard::activationRequested, this, []() {
         qCInfo(lcApp) << "activation requested; main window will be raised (Phase 2+)";
     });
+
+    // 系统托盘：打开主入口 + 显式退出。
+    m_tray = new TrayIcon(this);
+    if (m_tray->show()) {
+        connect(m_tray, &TrayIcon::openRequested, this, []() {
+            qCInfo(lcApp) << "open requested; main window will be shown (Phase 2+)";
+        });
+        connect(m_tray, &TrayIcon::quitRequested, this, &PixiuApp::shutdown);
+        connect(m_tray, &TrayIcon::quitRequested, QCoreApplication::quit);
+    } else {
+        m_tray->deleteLater();
+        m_tray = nullptr;
+    }
 
     // 后续 feature 在此创建服务与窗口（以 this 为 parent）。
 

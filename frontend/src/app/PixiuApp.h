@@ -5,6 +5,7 @@
 #include <QScopedPointer>
 
 class SingleInstanceGuard;
+class TrayIcon;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -37,6 +38,7 @@ signals:
 
 private:
     SingleInstanceGuard *m_instanceGuard = nullptr;
+    TrayIcon *m_tray = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 };

@@ -17,6 +17,8 @@ add_executable(pixiu-frontend
     src/app/PixiuApp.cpp
     src/app/SingleInstanceGuard.h
     src/app/SingleInstanceGuard.cpp
+    src/app/TrayIcon.h
+    src/app/TrayIcon.cpp
 )
 
 target_link_libraries(pixiu-frontend
