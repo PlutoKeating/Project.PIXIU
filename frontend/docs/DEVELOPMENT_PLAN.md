@@ -7,8 +7,8 @@
 > 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
 > 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
-> 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏已在本机（Kylin V11）
-> 完成编译/测试/冒烟验收；
+> 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏、Phase 7.6 桌面入口
+> 已在本机（Kylin V11）完成编译/测试/冒烟验收；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
@@ -59,6 +59,9 @@
   `AA_EnableHighDpiScaling` / `AA_UseHighDpiPixmaps`；悬浮球位置恢复按所在
   屏幕 `availableGeometry` 钳制并回退主屏，聊天框/悬浮球默认定位基于主屏
   可用区域。
+- 已实现桌面入口：`resources/com.kylin.pixiu.desktop`（名称/注释/Exec/图标），
+  CMake 增加 `GNUInstallDirs` 安装规则（二进制 → `bin/`，desktop → 
+  `share/applications/`），`desktop-file-validate` 校验通过。
 
 ### 1.2 尚未完成
 
@@ -66,18 +69,18 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 7.6~7.7 麒麟桌面能力（`.desktop` 与 `.deb` 打包）与 Phase 8 验收发布
-  尚未完成。
+- Phase 7.7 `.deb` 打包与 Phase 8 验收发布尚未完成。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **`feat(frontend): add desktop entry`**（Phase 7.6），在 `frontend/`
-下提供 `resources/com.kylin.pixiu.desktop` 桌面入口（名称/注释/Exec/图标），
-并在 CMake 增加二进制与 desktop 文件的安装规则。选择它的原因是：
+下一项为 **`build(frontend): add Debian packaging`**（Phase 7.7），在
+`frontend/` 下增加 `debian/` 打包目录（control、rules、postinst）与打包脚本，
+产出 `pixiu-frontend` 的 `.deb` 安装包（含 desktop 入口与 `libkysdk-*`、
+Qt5 依赖声明）。选择它的原因是：
 
-1. 改动收敛在 `frontend/` 资源与 CMake 安装段，不依赖 backend 或仍占位的契约。
-2. 与 Phase 7.7 `.deb` 打包直接衔接，先落地桌面入口便于打包复用。
-3. 本机已具备 `desktop-file-validate`，可用语法校验 + 安装路径检查验证。
+1. 桌面入口与 CMake 安装规则（Phase 7.6）已就绪，打包可直接复用。
+2. 不依赖 backend 或仍占位的契约，可独立用 `dpkg-deb --build` 验证产物结构。
+3. 产物供 Phase 8 麒麟目标机（x86/ARM）安装验收复用。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -371,6 +374,10 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      编译通过；OFF/ON 两路径 ctest 11/11 通过；offscreen 冒烟启动无回归；
      悬浮球/聊天框定位按屏幕可用区域钳制（代码审查确认）。
 6. `.desktop`：`feat(frontend): add desktop entry`
+   - [x] 本地验收通过（2026-08-08，Kylin V11 本机）：
+     `desktop-file-validate` 无错误/提示；`cmake --install` 安装到临时前缀
+     验证 `bin/pixiu-frontend` 与 `share/applications/com.kylin.pixiu.desktop`
+     路径正确；OFF 路径 ctest 11/11 通过。
 7. `.deb` 打包：`build(frontend): add Debian packaging`
 
 每项需在目标银河麒麟/UKUI 环境验证；不得以 Windows 降级路径代替适配结论。
@@ -480,6 +487,15 @@ ON 路径                  configure/build 通过；ctest 11/11 通过
 OFF 路径                 configure/build 通过；ctest 11/11 通过
 ON 路径                  configure/build 通过；ctest 11/11 通过
 无头冒烟                 offscreen 启动无回归；定位逻辑按屏幕可用区域钳制
+```
+
+2026-08-08 追加（Phase 7.6，本机银河麒麟 V11）：
+
+```text
+桌面入口                 resources/com.kylin.pixiu.desktop（desktop-file-validate 通过）
+安装规则                 GNUInstallDirs：bin/ + share/applications/
+安装验证                 cmake --install --prefix <temp> 产出两文件路径正确
+测试                     ctest 11/11 通过
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C

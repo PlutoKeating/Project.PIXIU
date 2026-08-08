@@ -78,6 +78,14 @@ target_include_directories(pixiu-frontend
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+include(GNUInstallDirs)
+install(TARGETS pixiu-frontend
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(FILES resources/com.kylin.pixiu.desktop
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+)
+
 if(PIXIU_HAVE_KYSDK)
     # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）与
     # kysdk-notification（桌面通知）。
