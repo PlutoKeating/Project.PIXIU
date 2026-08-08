@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "services/BackendTypes.h"
+
 class QLabel;
 class QPushButton;
 class QPropertyAnimation;
@@ -29,6 +31,12 @@ public:
 
     // 消息列表（供应用层追加消息/设置加载态）。
     MessageList *messageList() const;
+
+    // 后端连接状态 -> 顶栏状态与输入可用性。
+    void setBackendState(ConnectionState state);
+
+    // 恢复用户输入（查询失败重试）。
+    void restoreInput(const QString &text);
 
 signals:
     void closeRequested();

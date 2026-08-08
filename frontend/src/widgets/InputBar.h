@@ -22,6 +22,9 @@ public:
     // 清空输入内容。
     void clearInput();
 
+    // 恢复/预填输入内容（失败重试场景）。
+    void setInputText(const QString &text);
+
 signals:
     void sendRequested(const QString &text);
     void attachRequested();

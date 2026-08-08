@@ -4,10 +4,14 @@
 #include "app/TrayIcon.h"
 #include "app/AppSettings.h"
 #include "app/ShortcutManager.h"
+#include "app/QueryController.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
+#include "models/MemoryAtom.h"
+#include "services/BackendTransport.h"
+#include "services/HttpBackendTransport.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
@@ -91,14 +95,12 @@ bool PixiuApp::start()
     connect(m_floatingBall, &FloatingBall::clicked, this, &PixiuApp::toggleChatWindow);
     connect(m_chatWindow, &ChatWindow::closeRequested,
             m_chatWindow, &ChatWindow::hideAnimated);
-    connect(m_chatWindow, &ChatWindow::sendRequested, this, [this](const QString &text) {
-        ChatMessage message;
-        message.role = MessageRole::User;
-        message.text = text;
-        message.timestamp = QDateTime::currentSecsSinceEpoch();
-        m_chatWindow->messageList()->appendMessage(message);
-        // 答案接入（检索）在 Phase 3 实现；此处仅上屏用户消息。
-    });
+    connect(m_chatWindow, &ChatWindow::sendRequested, this,
+            [this](const QString &text) {
+                if (m_queryController) {
+                    m_queryController->submit(text);
+                }
+            });
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, []() {
         qCInfo(lcApp) << "memory panel requested (Phase 5)";
     });
@@ -115,6 +117,62 @@ bool PixiuApp::start()
         connect(m_shortcutManager, &ShortcutManager::toggleRequested,
                 this, &PixiuApp::toggleChatWindow);
     }
+
+    // 后端传输：HTTP transport（查询/写入/管理端点）。
+    m_transport = new HttpBackendTransport(this);
+    connect(m_transport, &BackendTransport::connectionStateChanged,
+            m_chatWindow, &ChatWindow::setBackendState);
+
+    // 查询状态机：加载/取消/失败/重试。
+    m_queryController = new QueryController(m_transport, this);
+    connect(m_queryController, &QueryController::userMessageReady, this,
+            [this](const QString &text) {
+                ChatMessage message;
+                message.role = MessageRole::User;
+                message.text = text;
+                message.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(message);
+            });
+    connect(m_queryController, &QueryController::thinkingChanged, this,
+            [this](bool thinking) {
+                m_chatWindow->messageList()->setThinking(thinking);
+            });
+    connect(m_queryController, &QueryController::answerReady, this,
+            [this](const MemoryAtom &memory) {
+                ChatMessage reply;
+                reply.role = MessageRole::Assistant;
+                reply.text = memory.answer;
+                reply.evidenceId = memory.sourceEvidence.isEmpty()
+                                       ? QString()
+                                       : memory.sourceEvidence.first();
+                reply.confidence = memory.confidence;
+                reply.latencyMs = memory.latencyMs;
+                reply.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(reply);
+            });
+    connect(m_queryController, &QueryController::emptyResultReady, this,
+            [this]() {
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("未找到相关记忆，换个说法试试，或录入新知识。");
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+            });
+    connect(m_queryController, &QueryController::queryFailed, this,
+            [this](const QString &text, const QString &code, const QString &message) {
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("查询失败（%1）：%2\n输入已保留，可修改后重试。")
+                                  .arg(code, message);
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+                m_chatWindow->restoreInput(text);
+            });
+    connect(m_transport, &BackendTransport::queryResult, m_queryController,
+            &QueryController::handleQueryResult);
+    connect(m_transport, &BackendTransport::queryFailed, m_queryController,
+            &QueryController::handleQueryError);
+    m_transport->connectToBackend();
 
     emit started();
     qCInfo(lcApp) << "PIXIU application started";

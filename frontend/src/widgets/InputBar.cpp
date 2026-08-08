@@ -47,6 +47,12 @@ void InputBar::clearInput()
     m_lineEdit->clear();
 }
 
+void InputBar::setInputText(const QString &text)
+{
+    m_lineEdit->setText(text);
+    m_lineEdit->setFocus(Qt::OtherFocusReason);
+}
+
 void InputBar::onSendClicked()
 {
     const QString text = m_lineEdit->text().trimmed();

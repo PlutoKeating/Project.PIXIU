@@ -43,4 +43,6 @@ struct MemoryAtom
     }
 };
 
+Q_DECLARE_METATYPE(MemoryAtom)
+
 #endif // PIXIU_MEMORY_ATOM_H

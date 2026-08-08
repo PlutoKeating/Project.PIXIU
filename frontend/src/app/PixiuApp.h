@@ -10,6 +10,8 @@ class AppSettings;
 class FloatingBall;
 class ChatWindow;
 class ShortcutManager;
+class BackendTransport;
+class QueryController;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -47,6 +49,8 @@ private:
     FloatingBall *m_floatingBall = nullptr;
     ChatWindow *m_chatWindow = nullptr;
     ShortcutManager *m_shortcutManager = nullptr;
+    BackendTransport *m_transport = nullptr;
+    QueryController *m_queryController = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 

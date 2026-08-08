@@ -24,7 +24,8 @@ public:
     virtual void disconnectFromBackend() = 0;
 
     // REST 操作（实现异步发出请求，结果经信号返回）。
-    virtual void queryMemory(const QString &text, const QJsonObject &contextHint) = 0;
+    // 提交查询并返回请求 ID（用于取消/过期响应判定）。
+    virtual quint64 queryMemory(const QString &text, const QJsonObject &contextHint) = 0;
     virtual void writeMemory(const QJsonObject &payload) = 0;
     virtual void forget(const QString &command, bool confirm) = 0;
     virtual void listConflicts() = 0;
@@ -41,8 +42,8 @@ public:
 signals:
     void connectionStateChanged(ConnectionState state);
 
-    // 查询响应（/memory/query）。
-    void queryResult(const QJsonObject &atom);
+    // 查询响应（/memory/query），携带请求 ID。
+    void queryResult(quint64 requestId, const QJsonObject &atom);
     // 写入响应（/memory/write）。
     void writeAcknowledged(const QJsonObject &response);
     // 遗忘响应（/forget，confirm=false 为待确认、confirm=true 为已执行）。
@@ -64,6 +65,8 @@ signals:
 
     // 通用错误；code 取 API 错误码或 NETWORK_ERROR / TIMEOUT。
     void errorOccurred(const QString &code, const QString &message, const QString &requestId);
+    // 查询请求失败（携带请求 ID，供取消/过期判定）。
+    void queryFailed(quint64 requestId, const QString &code, const QString &message);
 
     // WebSocket 业务事件（Phase 4 接入）。
     void backendEvent(const QJsonObject &event);

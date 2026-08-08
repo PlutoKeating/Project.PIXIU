@@ -23,6 +23,8 @@ add_executable(pixiu-frontend
     src/app/AppSettings.cpp
     src/app/ShortcutManager.h
     src/app/ShortcutManager.cpp
+    src/app/QueryController.h
+    src/app/QueryController.cpp
     src/widgets/FloatingBall.h
     src/widgets/FloatingBall.cpp
     src/widgets/ChatWindow.h

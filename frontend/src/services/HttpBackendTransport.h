@@ -28,7 +28,7 @@ public:
     void connectToBackend() override;
     void disconnectFromBackend() override;
 
-    void queryMemory(const QString &text, const QJsonObject &contextHint) override;
+    quint64 queryMemory(const QString &text, const QJsonObject &contextHint) override;
     void writeMemory(const QJsonObject &payload) override;
     void forget(const QString &command, bool confirm) override;
     void listConflicts() override;
@@ -48,19 +48,23 @@ private:
     QUrl endpoint(const QString &path) const;
 
     void getJson(const QString &path,
-                 const std::function<void(const QJsonObject &)> &onSuccess);
+                 const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                 quint64 tag = 0);
     void postJson(const QString &path,
                   const QJsonObject &body,
-                  const std::function<void(const QJsonObject &)> &onSuccess);
+                  const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                  quint64 tag = 0);
 
     void handleReply(QNetworkReply *reply,
-                     const std::function<void(const QJsonObject &)> &onSuccess,
-                     const QString &fallbackErrorCode);
+                     const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                     const QString &fallbackErrorCode,
+                     quint64 tag);
     void setConnectionState(ConnectionState state);
 
     QNetworkAccessManager *m_network = nullptr;
     QString m_baseUrl;
     ConnectionState m_state = ConnectionState::Disconnected;
+    quint64 m_nextRequestId = 1;
 };
 
 #endif // PIXIU_HTTP_BACKEND_TRANSPORT_H

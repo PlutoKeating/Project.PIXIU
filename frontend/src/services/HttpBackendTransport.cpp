@@ -40,21 +40,26 @@ void HttpBackendTransport::disconnectFromBackend()
     setConnectionState(ConnectionState::Disconnected);
 }
 
-void HttpBackendTransport::queryMemory(const QString &text, const QJsonObject &contextHint)
+quint64 HttpBackendTransport::queryMemory(const QString &text, const QJsonObject &contextHint)
 {
+    const quint64 requestId = m_nextRequestId++;
     QJsonObject body;
     body.insert(QStringLiteral("text"), text);
     if (!contextHint.isEmpty()) {
         body.insert(QStringLiteral("context_hint"), contextHint);
     }
     postJson(QStringLiteral("/memory/query"), body,
-             [this](const QJsonObject &obj) { emit queryResult(obj); });
+             [this, requestId](quint64, const QJsonObject &obj) {
+                 emit queryResult(requestId, obj);
+             },
+             requestId);
+    return requestId;
 }
 
 void HttpBackendTransport::writeMemory(const QJsonObject &payload)
 {
     postJson(QStringLiteral("/memory/write"), payload,
-             [this](const QJsonObject &obj) { emit writeAcknowledged(obj); });
+             [this](quint64, const QJsonObject &obj) { emit writeAcknowledged(obj); });
 }
 
 void HttpBackendTransport::forget(const QString &command, bool confirm)
@@ -63,13 +68,13 @@ void HttpBackendTransport::forget(const QString &command, bool confirm)
     body.insert(QStringLiteral("command"), command);
     body.insert(QStringLiteral("confirm"), confirm);
     postJson(QStringLiteral("/forget"), body,
-             [this](const QJsonObject &obj) { emit forgetResult(obj); });
+             [this](quint64, const QJsonObject &obj) { emit forgetResult(obj); });
 }
 
 void HttpBackendTransport::listConflicts()
 {
     getJson(QStringLiteral("/conflicts"),
-            [this](const QJsonObject &obj) {
+            [this](quint64, const QJsonObject &obj) {
                 emit conflictsResult(
                     obj.value(QStringLiteral("conflicts")).toArray());
             });
@@ -78,25 +83,25 @@ void HttpBackendTransport::listConflicts()
 void HttpBackendTransport::preferenceHistory(const QString &preferenceId)
 {
     getJson(QStringLiteral("/preference/") + preferenceId + QStringLiteral("/history"),
-            [this](const QJsonObject &obj) { emit preferenceHistoryResult(obj); });
+            [this](quint64, const QJsonObject &obj) { emit preferenceHistoryResult(obj); });
 }
 
 void HttpBackendTransport::promoteMemory(const QJsonObject &payload)
 {
     postJson(QStringLiteral("/memory/flow/promote"), payload,
-             [this](const QJsonObject &obj) { emit promoteResult(obj); });
+             [this](quint64, const QJsonObject &obj) { emit promoteResult(obj); });
 }
 
 void HttpBackendTransport::pairDevice(const QJsonObject &payload)
 {
     postJson(QStringLiteral("/sync/pair"), payload,
-             [this](const QJsonObject &obj) { emit pairResult(obj); });
+             [this](quint64, const QJsonObject &obj) { emit pairResult(obj); });
 }
 
 void HttpBackendTransport::listPeers()
 {
     getJson(QStringLiteral("/sync/peers"),
-            [this](const QJsonObject &obj) {
+            [this](quint64, const QJsonObject &obj) {
                 emit peersResult(obj.value(QStringLiteral("peers")).toArray());
             });
 }
@@ -104,14 +109,14 @@ void HttpBackendTransport::listPeers()
 void HttpBackendTransport::syncStatus()
 {
     getJson(QStringLiteral("/sync/status"),
-            [this](const QJsonObject &obj) { emit syncStatusResult(obj); });
+            [this](quint64, const QJsonObject &obj) { emit syncStatusResult(obj); });
 }
 
 void HttpBackendTransport::revokePeer(const QString &peerId)
 {
     postJson(QStringLiteral("/sync/peers/") + peerId + QStringLiteral("/revoke"),
              QJsonObject(),
-             [this](const QJsonObject &obj) { emit revokeResult(obj); });
+             [this](quint64, const QJsonObject &obj) { emit revokeResult(obj); });
 }
 
 ConnectionState HttpBackendTransport::connectionState() const
@@ -130,18 +135,20 @@ QUrl HttpBackendTransport::endpoint(const QString &path) const
 }
 
 void HttpBackendTransport::getJson(const QString &path,
-                                   const std::function<void(const QJsonObject &)> &onSuccess)
+                                   const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                                   quint64 tag)
 {
     QNetworkRequest request(endpoint(path));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
     request.setTransferTimeout(kTransferTimeoutMs);
     QNetworkReply *reply = m_network->get(request);
-    handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"));
+    handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"), tag);
 }
 
 void HttpBackendTransport::postJson(const QString &path,
                                     const QJsonObject &body,
-                                    const std::function<void(const QJsonObject &)> &onSuccess)
+                                    const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                                    quint64 tag)
 {
     QNetworkRequest request(endpoint(path));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
@@ -150,15 +157,16 @@ void HttpBackendTransport::postJson(const QString &path,
     request.setTransferTimeout(kTransferTimeoutMs);
     const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
     QNetworkReply *reply = m_network->post(request, payload);
-    handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"));
+    handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"), tag);
 }
 
 void HttpBackendTransport::handleReply(
     QNetworkReply *reply,
-    const std::function<void(const QJsonObject &)> &onSuccess,
-    const QString &fallbackErrorCode)
+    const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+    const QString &fallbackErrorCode,
+    quint64 tag)
 {
-    connect(reply, &QNetworkReply::finished, this, [this, reply, onSuccess, fallbackErrorCode]() {
+    connect(reply, &QNetworkReply::finished, this, [this, reply, onSuccess, fallbackErrorCode, tag]() {
         reply->deleteLater();
 
         const QByteArray raw = reply->readAll();
@@ -171,10 +179,17 @@ void HttpBackendTransport::handleReply(
             qCWarning(lcHttp) << "backend error:" << status
                               << error.code << error.message;
             setConnectionState(ConnectionState::Connected); // HTTP 层可达
-            emit errorOccurred(error.code.isEmpty() ? QStringLiteral("HTTP_%1").arg(status)
-                                                    : error.code,
-                               error.message,
-                               error.requestId);
+            if (tag != 0) {
+                emit queryFailed(tag,
+                                 error.code.isEmpty() ? QStringLiteral("HTTP_%1").arg(status)
+                                                      : error.code,
+                                 error.message);
+            } else {
+                emit errorOccurred(error.code.isEmpty() ? QStringLiteral("HTTP_%1").arg(status)
+                                                        : error.code,
+                                   error.message,
+                                   error.requestId);
+            }
             return;
         }
 
@@ -186,7 +201,11 @@ void HttpBackendTransport::handleReply(
             const QString code = isTimeout ? QStringLiteral("TIMEOUT") : fallbackErrorCode;
             qCWarning(lcHttp) << "request failed:" << code << reply->errorString();
             setConnectionState(ConnectionState::Error);
-            emit errorOccurred(code, reply->errorString(), QString());
+            if (tag != 0) {
+                emit queryFailed(tag, code, reply->errorString());
+            } else {
+                emit errorOccurred(code, reply->errorString(), QString());
+            }
             return;
         }
 
@@ -196,14 +215,19 @@ void HttpBackendTransport::handleReply(
         if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
             qCWarning(lcHttp) << "invalid JSON from backend:" << parseError.errorString();
             setConnectionState(ConnectionState::Error);
-            emit errorOccurred(QStringLiteral("INVALID_RESPONSE"),
-                               QStringLiteral("后端响应不是合法 JSON"),
-                               QString());
+            if (tag != 0) {
+                emit queryFailed(tag, QStringLiteral("INVALID_RESPONSE"),
+                                 QStringLiteral("后端响应不是合法 JSON"));
+            } else {
+                emit errorOccurred(QStringLiteral("INVALID_RESPONSE"),
+                                   QStringLiteral("后端响应不是合法 JSON"),
+                                   QString());
+            }
             return;
         }
 
         setConnectionState(ConnectionState::Connected);
-        onSuccess(doc.object());
+        onSuccess(tag, doc.object());
     });
 }
 

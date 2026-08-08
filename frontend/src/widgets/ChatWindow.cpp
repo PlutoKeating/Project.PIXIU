@@ -78,6 +78,38 @@ void ChatWindow::showAndFocus()
     m_inputBar->focusInput();
 }
 
+void ChatWindow::setBackendState(ConnectionState state)
+{
+    switch (state) {
+    case ConnectionState::Connected:
+        m_statusLabel->setText(QStringLiteral("● 在线"));
+        m_statusLabel->setStyleSheet(QStringLiteral("color: #188038; font-size: 11px;"));
+        m_inputBar->setEnabled(true);
+        break;
+    case ConnectionState::Connecting:
+        m_statusLabel->setText(QStringLiteral("● 连接中…"));
+        m_statusLabel->setStyleSheet(QStringLiteral("color: #b06000; font-size: 11px;"));
+        m_inputBar->setEnabled(false);
+        break;
+    case ConnectionState::Error:
+        m_statusLabel->setText(QStringLiteral("● 服务异常"));
+        m_statusLabel->setStyleSheet(QStringLiteral("color: #d93025; font-size: 11px;"));
+        m_inputBar->setEnabled(false);
+        break;
+    case ConnectionState::Disconnected:
+    default:
+        m_statusLabel->setText(QStringLiteral("● 离线"));
+        m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+        m_inputBar->setEnabled(false);
+        break;
+    }
+}
+
+void ChatWindow::restoreInput(const QString &text)
+{
+    m_inputBar->setInputText(text);
+}
+
 void ChatWindow::hideAnimated()
 {
     if (!isVisible()) {
