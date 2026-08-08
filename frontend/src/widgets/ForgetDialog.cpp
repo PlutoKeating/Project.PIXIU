@@ -67,6 +67,13 @@ ForgetDialog::ForgetDialog(QWidget *parent)
         emit confirmed();
         hide();
     });
+    // 键盘可达：Esc / 窗口关闭（QDialog::reject）同样视为取消，避免
+    // ForgetController 残留待确认指令。
+    connect(this, &QDialog::rejected, this, [this]() {
+        emit cancelled();
+    });
+    // 危险操作默认聚焦“取消”，Enter 不误触确认。
+    cancelButton->setDefault(true);
 
     QHBoxLayout *buttonRow = new QHBoxLayout();
     buttonRow->addStretch(1);

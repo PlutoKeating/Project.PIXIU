@@ -8,6 +8,7 @@
 class QLabel;
 class QLineEdit;
 class QListWidget;
+class QKeyEvent;
 class QPushButton;
 class QTabWidget;
 
@@ -34,6 +35,10 @@ public:
 signals:
     // 用户请求加载指定偏好 ID 的历史。
     void historyRequested(const QString &preferenceId);
+
+protected:
+    // Esc 关闭面板（键盘可达）。
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     QWidget *createPlaceholderTab(const QString &title, const QString &description) const;

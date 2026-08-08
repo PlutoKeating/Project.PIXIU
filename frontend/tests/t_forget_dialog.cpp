@@ -16,6 +16,8 @@ private slots:
     void summaryShowsTargetsAndCascade();
     void confirmEmitsConfirmed();
     void cancelEmitsCancelled();
+    void escEmitsCancelled();
+    void cancelIsDefaultButton();
 };
 
 QJsonObject sampleConfirmation()
@@ -75,6 +77,39 @@ void TestForgetDialog::cancelEmitsCancelled()
     QPushButton *cancel = buttons.at(0);
     QTest::mouseClick(cancel, Qt::LeftButton);
     QCOMPARE(spy.count(), 1);
+}
+
+void TestForgetDialog::escEmitsCancelled()
+{
+    ForgetDialog dialog;
+    QSignalSpy spy(&dialog, &ForgetDialog::cancelled);
+
+    dialog.show();
+    QVERIFY(dialog.isVisible());
+    QTest::keyClick(&dialog, Qt::Key_Escape);
+
+    QCOMPARE(spy.count(), 1);
+    QVERIFY(!dialog.isVisible());
+}
+
+void TestForgetDialog::cancelIsDefaultButton()
+{
+    ForgetDialog dialog;
+
+    const QList<QPushButton *> buttons = dialog.findChildren<QPushButton *>();
+    QPushButton *cancel = nullptr;
+    QPushButton *confirm = nullptr;
+    for (QPushButton *button : buttons) {
+        if (button->text() == QStringLiteral("取消")) {
+            cancel = button;
+        } else if (button->text() == QStringLiteral("确认遗忘")) {
+            confirm = button;
+        }
+    }
+    QVERIFY(cancel != nullptr);
+    QVERIFY(confirm != nullptr);
+    QVERIFY(cancel->isDefault());
+    QVERIFY(!confirm->isDefault());
 }
 
 QTEST_MAIN(TestForgetDialog)

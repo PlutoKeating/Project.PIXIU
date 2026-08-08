@@ -17,6 +17,7 @@ private slots:
     void returnKeyEmits();
     void attachButtonEmits();
     void setInputTextPrefills();
+    void controlsHaveAccessibleNames();
 };
 
 void TestInputBar::emptyTextDoesNotEmit()
@@ -96,6 +97,23 @@ void TestInputBar::setInputTextPrefills()
         bar.findChild<QLineEdit *>(QStringLiteral("lineEdit"));
     bar.setInputText(QStringLiteral("预填内容"));
     QCOMPARE(lineEdit->text(), QStringLiteral("预填内容"));
+}
+
+void TestInputBar::controlsHaveAccessibleNames()
+{
+    InputBar bar;
+    QLineEdit *lineEdit =
+        bar.findChild<QLineEdit *>(QStringLiteral("lineEdit"));
+    QPushButton *attach =
+        bar.findChild<QPushButton *>(QStringLiteral("attachButton"));
+    QPushButton *send =
+        bar.findChild<QPushButton *>(QStringLiteral("sendButton"));
+    QVERIFY(lineEdit != nullptr);
+    QVERIFY(attach != nullptr);
+    QVERIFY(send != nullptr);
+    QVERIFY(!lineEdit->accessibleName().isEmpty());
+    QVERIFY(!attach->accessibleName().isEmpty());
+    QVERIFY(!send->accessibleName().isEmpty());
 }
 
 QTEST_MAIN(TestInputBar)

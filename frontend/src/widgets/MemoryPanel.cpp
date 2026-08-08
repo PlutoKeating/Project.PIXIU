@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
@@ -38,6 +39,16 @@ void MemoryPanel::showAndFocus()
     show();
     raise();
     activateWindow();
+}
+
+void MemoryPanel::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape) {
+        hide();
+        event->accept();
+        return;
+    }
+    QWidget::keyPressEvent(event);
 }
 
 void MemoryPanel::setConflicts(const QJsonArray &conflicts)

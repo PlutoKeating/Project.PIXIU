@@ -21,6 +21,7 @@ private slots:
     void setConflictsShowsEmptyState();
     void loadButtonEmitsHistoryRequested();
     void setPreferenceHistoryPopulatesList();
+    void escHidesPanel();
 };
 
 void TestMemoryPanel::hasThreeTabs()
@@ -126,6 +127,16 @@ void TestMemoryPanel::setPreferenceHistoryPopulatesList()
     QVERIFY(list->item(0)->text().contains(QStringLiteral("v1")));
     QVERIFY(list->item(0)->text().contains(QStringLiteral("\"enabled\":false")));
     QVERIFY(!list->isHidden());
+}
+
+void TestMemoryPanel::escHidesPanel()
+{
+    MemoryPanel panel;
+    panel.show();
+    QVERIFY(panel.isVisible());
+
+    QTest::keyClick(&panel, Qt::Key_Escape);
+    QVERIFY(!panel.isVisible());
 }
 
 QTEST_MAIN(TestMemoryPanel)

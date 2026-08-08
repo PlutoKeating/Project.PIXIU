@@ -9,6 +9,7 @@ InputBar::InputBar(QWidget *parent)
 {
     QPushButton *attachButton = new QPushButton(tr("📎"), this);
     attachButton->setObjectName(QStringLiteral("attachButton"));
+    attachButton->setAccessibleName(tr("录入图片或文件"));
     attachButton->setFlat(true);
     attachButton->setToolTip(tr("录入图片/文件（后续 feature）"));
     attachButton->setCursor(Qt::PointingHandCursor);
@@ -16,12 +17,14 @@ InputBar::InputBar(QWidget *parent)
 
     m_lineEdit = new QLineEdit(this);
     m_lineEdit->setObjectName(QStringLiteral("lineEdit"));
+    m_lineEdit->setAccessibleName(tr("问题输入框"));
     m_lineEdit->setPlaceholderText(tr("输入问题，或拖入图片录入…"));
     m_lineEdit->setClearButtonEnabled(true);
     connect(m_lineEdit, &QLineEdit::returnPressed, this, &InputBar::onReturnPressed);
 
     m_sendButton = new QPushButton(tr("发送"), this);
     m_sendButton->setObjectName(QStringLiteral("sendButton"));
+    m_sendButton->setAccessibleName(tr("发送"));
     m_sendButton->setCursor(Qt::PointingHandCursor);
     m_sendButton->setEnabled(false);
     connect(m_sendButton, &QPushButton::clicked, this, &InputBar::onSendClicked);

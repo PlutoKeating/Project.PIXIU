@@ -22,6 +22,7 @@ private slots:
     void offlineStateDisablesInput();
     void panelButtonEmitsOpenPanelRequested();
     void closeButtonEmitsCloseRequested();
+    void buttonsHaveAccessibleNames();
     void sendButtonForwardsTextAndClears();
     void restoreInputPrefillsLineEdit();
 };
@@ -99,6 +100,19 @@ void TestChatWindow::closeButtonEmitsCloseRequested()
     QVERIFY(button != nullptr);
     QTest::mouseClick(button, Qt::LeftButton);
     QCOMPARE(spy.count(), 1);
+}
+
+void TestChatWindow::buttonsHaveAccessibleNames()
+{
+    ChatWindow window;
+    QPushButton *panel =
+        window.findChild<QPushButton *>(QStringLiteral("panelButton"));
+    QPushButton *close =
+        window.findChild<QPushButton *>(QStringLiteral("closeButton"));
+    QVERIFY(panel != nullptr);
+    QVERIFY(close != nullptr);
+    QVERIFY(!panel->accessibleName().isEmpty());
+    QVERIFY(!close->accessibleName().isEmpty());
 }
 
 void TestChatWindow::sendButtonForwardsTextAndClears()

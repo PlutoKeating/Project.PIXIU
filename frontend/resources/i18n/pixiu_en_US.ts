@@ -25,6 +25,16 @@
         <translation>✕</translation>
     </message>
     <message>
+        <location filename="../../src/widgets/ChatWindow.cpp" line="42"/>
+        <source>打开记忆面板</source>
+        <translation>Open memory panel</translation>
+    </message>
+    <message>
+        <location filename="../../src/widgets/ChatWindow.cpp" line="48"/>
+        <source>关闭聊天框</source>
+        <translation>Close chat window</translation>
+    </message>
+    <message>
         <location filename="../../src/widgets/ChatWindow.cpp" line="95"/>
         <source>● 在线</source>
         <translation>● Online</translation>
@@ -178,6 +188,16 @@ This action cannot be undone.</translation>
 </context>
 <context>
     <name>InputBar</name>
+    <message>
+        <location filename="../../src/widgets/InputBar.cpp" line="12"/>
+        <source>录入图片或文件</source>
+        <translation>Import image or file</translation>
+    </message>
+    <message>
+        <location filename="../../src/widgets/InputBar.cpp" line="16"/>
+        <source>问题输入框</source>
+        <translation>Question input</translation>
+    </message>
     <message>
         <location filename="../../src/widgets/InputBar.cpp" line="10"/>
         <source>📎</source>

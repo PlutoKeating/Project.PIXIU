@@ -38,12 +38,14 @@ ChatWindow::ChatWindow(QWidget *parent)
 
     QPushButton *panelButton = new QPushButton(tr("记忆"), this);
     panelButton->setObjectName(QStringLiteral("panelButton"));
+    panelButton->setAccessibleName(tr("打开记忆面板"));
     panelButton->setFlat(true);
     panelButton->setCursor(Qt::PointingHandCursor);
     connect(panelButton, &QPushButton::clicked, this, &ChatWindow::openPanelRequested);
 
     QPushButton *closeButton = new QPushButton(tr("✕"), this);
     closeButton->setObjectName(QStringLiteral("closeButton"));
+    closeButton->setAccessibleName(tr("关闭聊天框"));
     closeButton->setFlat(true);
     closeButton->setCursor(Qt::PointingHandCursor);
     connect(closeButton, &QPushButton::clicked, this, &ChatWindow::closeRequested);
