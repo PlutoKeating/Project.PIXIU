@@ -22,6 +22,9 @@ public:
     // 隐藏托盘图标。
     void hide();
 
+    // 底层 QSystemTrayIcon（供 NotifyService 展示通知）；无托盘时为 nullptr。
+    QSystemTrayIcon *trayIcon() const;
+
 signals:
     // 用户点击“打开 PIXIU 主窗口”。
     void openRequested();

@@ -14,6 +14,7 @@
 #include "models/MemoryAtom.h"
 #include "services/BackendTransport.h"
 #include "services/HttpBackendTransport.h"
+#include "services/NotifyService.h"
 #include "services/WebSocketClient.h"
 
 #include <QLoggingCategory>
@@ -58,6 +59,12 @@ bool PixiuApp::start()
     } else {
         m_tray->deleteLater();
         m_tray = nullptr;
+    }
+
+    // 桌面通知：托盘可用时展示系统通知，否则降级为日志。
+    m_notify = new NotifyService(this);
+    if (m_tray) {
+        m_notify->setTrayIcon(m_tray->trayIcon());
     }
 
     // 基础设置持久化：记录最近一次启动时间，验证读写链路。
@@ -261,6 +268,10 @@ void PixiuApp::handleBackendEvent(const QJsonObject &event)
                       << data.value(QStringLiteral("title")).toString();
         if (m_floatingBall) {
             m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
+        }
+        if (m_notify) {
+            m_notify->notify(QStringLiteral("记忆已沉淀"),
+                             data.value(QStringLiteral("title")).toString());
         }
         return;
     }

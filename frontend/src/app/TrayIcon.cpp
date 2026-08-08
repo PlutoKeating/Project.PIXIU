@@ -58,6 +58,11 @@ void TrayIcon::hide()
     }
 }
 
+QSystemTrayIcon *TrayIcon::trayIcon() const
+{
+    return m_tray;
+}
+
 void TrayIcon::buildMenu()
 {
     QMenu *menu = new QMenu();

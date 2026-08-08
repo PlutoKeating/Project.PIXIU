@@ -29,6 +29,8 @@
 - 已实现 `memory_ready` 事件映射：WebSocketClient 接入应用生命周期，业务事件驱动
   悬浮球未读角标；新增 QtTest 测试基础设施（`tests/t_websocket_client`、
   `tests/t_floating_ball`）。
+- 已实现桌面通知服务 `NotifyService`（托盘 `QSystemTrayIcon::showMessage`，无托盘
+  降级为日志），`memory_ready` 已联动“记忆已沉淀”通知。
 
 ### 1.2 尚未完成
 
@@ -279,8 +281,10 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      正常，WS 连接状态与退避重连日志符合预期）。
    - 真实环境端到端（连接 `/events` 收到真实 `memory_ready`）仍依赖 Module C 修复
      `/events` 注册与 WebSocket 导入问题（见 `BACKEND_ISSUES.md`）。
-5. 实现桌面通知抽象及普通 Qt 降级：
+5. [x] 实现桌面通知抽象及普通 Qt 降级：
    `feat(frontend): add desktop notification service`
+   - 本地验收通过（2026-08-08：编译通过；ctest 3/3 通过；offscreen 冒烟无托盘
+     降级路径正常，不崩溃）。Phase 7 再接入 kysdk-notification。
 6. 实现 `/forget` 两段式确认：`feat(frontend): add forget confirmation flow`
 
 `conflict_detected`、`forget_confirmation` 和 `sync_event` 只有在后端开始真实广播后才做
@@ -370,7 +374,7 @@ cmake --version       3.28.3
 Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
 链接库                libQt5WebSockets.so.5.15.19
 构建产物              frontend/build/pixiu-frontend（含 WebSocketClient.cpp.o）
-测试                  ctest 2/2 通过（websocket_client / floating_ball，Qt Test）
+测试                  ctest 3/3 通过（websocket_client / floating_ball / notify_service）
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C

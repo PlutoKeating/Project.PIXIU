@@ -48,6 +48,8 @@ add_executable(pixiu-frontend
     src/services/HttpBackendTransport.cpp
     src/services/WebSocketClient.h
     src/services/WebSocketClient.cpp
+    src/services/NotifyService.h
+    src/services/NotifyService.cpp
 )
 
 target_link_libraries(pixiu-frontend
@@ -89,6 +91,15 @@ if(BUILD_TESTING)
     target_link_libraries(t_floating_ball PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME floating_ball COMMAND t_floating_ball)
 
-    set_tests_properties(websocket_client floating_ball
+    add_executable(t_notify_service
+        tests/t_notify_service.cpp
+        src/services/NotifyService.h
+        src/services/NotifyService.cpp
+    )
+    target_include_directories(t_notify_service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_notify_service PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME notify_service COMMAND t_notify_service)
+
+    set_tests_properties(websocket_client floating_ball notify_service
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
