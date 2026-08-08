@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network WebSockets)
+find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network WebSockets Test)
 
 add_executable(pixiu-frontend
     src/main.cpp
@@ -64,4 +64,31 @@ target_include_directories(pixiu-frontend
 
 if(PIXIU_HAVE_KYSDK)
     target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_KYSDK=1)
+endif()
+
+# ─── 测试（Qt Test，offscreen 平台运行）──────────────────────
+include(CTest)
+
+if(BUILD_TESTING)
+    add_executable(t_websocket_client
+        tests/t_websocket_client.cpp
+        src/services/BackendTypes.h
+        src/services/WebSocketClient.h
+        src/services/WebSocketClient.cpp
+    )
+    target_include_directories(t_websocket_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_websocket_client PRIVATE Qt5::Test Qt5::WebSockets)
+    add_test(NAME websocket_client COMMAND t_websocket_client)
+
+    add_executable(t_floating_ball
+        tests/t_floating_ball.cpp
+        src/widgets/FloatingBall.h
+        src/widgets/FloatingBall.cpp
+    )
+    target_include_directories(t_floating_ball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_floating_ball PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME floating_ball COMMAND t_floating_ball)
+
+    set_tests_properties(websocket_client floating_ball
+        PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

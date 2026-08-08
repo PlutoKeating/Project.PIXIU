@@ -26,6 +26,9 @@
 - 后端联调发现的 2 项问题（`/events` 未注册、`ws.py` WebSocket 导入缺失）已记录于
   `frontend/docs/BACKEND_ISSUES.md` 交接 Module C；WebSocketClient 的真实环境
   验收依赖其修复。
+- 已实现 `memory_ready` 事件映射：WebSocketClient 接入应用生命周期，业务事件驱动
+  悬浮球未读角标；新增 QtTest 测试基础设施（`tests/t_websocket_client`、
+  `tests/t_floating_ball`）。
 
 ### 1.2 尚未完成
 
@@ -272,6 +275,10 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      冒烟验证。
 4. 将已接入的 `memory_ready` 映射到应用状态：
    `feat(frontend): handle memory ready events`
+   - [x] 本地验收通过（2026-08-08：编译通过；ctest 2/2 通过；offscreen 冒烟启动
+     正常，WS 连接状态与退避重连日志符合预期）。
+   - 真实环境端到端（连接 `/events` 收到真实 `memory_ready`）仍依赖 Module C 修复
+     `/events` 注册与 WebSocket 导入问题（见 `BACKEND_ISSUES.md`）。
 5. 实现桌面通知抽象及普通 Qt 降级：
    `feat(frontend): add desktop notification service`
 6. 实现 `/forget` 两段式确认：`feat(frontend): add forget confirmation flow`
@@ -363,11 +370,13 @@ cmake --version       3.28.3
 Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
 链接库                libQt5WebSockets.so.5.15.19
 构建产物              frontend/build/pixiu-frontend（含 WebSocketClient.cpp.o）
+测试                  ctest 2/2 通过（websocket_client / floating_ball，Qt Test）
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
 两项后端问题阻塞（`/events` 注册、`ws.py` WebSocket 导入），详见
-`frontend/docs/BACKEND_ISSUES.md`。
+`frontend/docs/BACKEND_ISSUES.md`。`memory_ready` 事件映射与角标联动已通过本地
+测试与冒烟验证，端到端真实事件仍待 Module C 修复后复测。
 
 ## 7. Git 工作流
 

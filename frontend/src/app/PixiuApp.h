@@ -1,6 +1,7 @@
 #ifndef PIXIU_APP_H
 #define PIXIU_APP_H
 
+#include <QJsonObject>
 #include <QObject>
 #include <QScopedPointer>
 
@@ -14,6 +15,7 @@ class BackendTransport;
 class QueryController;
 class WriteController;
 class ImportDialog;
+class WebSocketClient;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -55,11 +57,13 @@ private:
     QueryController *m_queryController = nullptr;
     WriteController *m_writeController = nullptr;
     ImportDialog *m_importDialog = nullptr;
+    WebSocketClient *m_wsClient = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 
 private:
     void toggleChatWindow();
+    void handleBackendEvent(const QJsonObject &event);
 };
 
 #endif // PIXIU_APP_H

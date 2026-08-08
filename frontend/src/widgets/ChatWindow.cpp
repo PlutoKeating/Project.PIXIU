@@ -73,6 +73,7 @@ void ChatWindow::showAndFocus()
     if (!isVisible()) {
         show();
         animateOpacity(1.0);
+        emit shown();
     }
     raise();
     activateWindow();

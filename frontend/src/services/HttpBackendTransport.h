@@ -42,7 +42,7 @@ public:
     ConnectionState connectionState() const override;
 
     // 后端基础地址（测试/诊断用）。
-    QString baseUrl() const;
+    QString baseUrl() const override;
 
 private:
     QUrl endpoint(const QString &path) const;

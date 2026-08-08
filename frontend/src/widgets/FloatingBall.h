@@ -24,6 +24,11 @@ public:
     // 恢复到保存位置；位置越界时钳制到最近屏幕的有效区域。
     void restorePosition(const QPoint &savedPos);
 
+    // 未读业务事件数（memory_ready 等触发的右上角标）。
+    int unreadCount() const;
+    void setUnreadCount(int count);
+    void clearUnread();
+
 signals:
     // 无拖动位移的单击。
     void clicked();
@@ -49,6 +54,7 @@ private:
     bool m_wasDrag = false;
     QPoint m_expandedPos;
     bool m_collapsed = false;
+    int m_unreadCount = 0;
 
     static constexpr int kDragThresholdPx = 4;
     static constexpr int kEdgeSnapPx = 12;

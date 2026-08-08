@@ -14,11 +14,13 @@
 #include "models/MemoryAtom.h"
 #include "services/BackendTransport.h"
 #include "services/HttpBackendTransport.h"
+#include "services/WebSocketClient.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QGuiApplication>
+#include <QJsonObject>
 #include <QScreen>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
@@ -214,7 +216,24 @@ bool PixiuApp::start()
                 m_chatWindow->messageList()->appendMessage(notice);
             });
 
+    // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
+    m_wsClient = new WebSocketClient(this);
+    m_wsClient->setBackendUrl(m_transport->baseUrl());
+    connect(m_wsClient, &WebSocketClient::connectionStateChanged, this,
+            [](ConnectionState state) {
+                qCInfo(lcApp) << "websocket state:" << connectionStateName(state);
+            });
+    connect(m_wsClient, &WebSocketClient::eventReceived,
+            this, &PixiuApp::handleBackendEvent);
+    // 聊天窗口可见时视为已读，清除悬浮球角标。
+    connect(m_chatWindow, &ChatWindow::shown, this, [this]() {
+        if (m_floatingBall) {
+            m_floatingBall->clearUnread();
+        }
+    });
+
     m_transport->connectToBackend();
+    m_wsClient->connectToBackend();
 
     emit started();
     qCInfo(lcApp) << "PIXIU application started";
@@ -233,11 +252,32 @@ void PixiuApp::toggleChatWindow()
     }
 }
 
+void PixiuApp::handleBackendEvent(const QJsonObject &event)
+{
+    const QString name = event.value(QStringLiteral("event")).toString();
+    if (name == QStringLiteral("memory_ready")) {
+        const QJsonObject data = event.value(QStringLiteral("data")).toObject();
+        qCInfo(lcApp) << "memory ready:" << data.value(QStringLiteral("knowledge_id")).toString()
+                      << data.value(QStringLiteral("title")).toString();
+        if (m_floatingBall) {
+            m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
+        }
+        return;
+    }
+
+    // conflict_detected / forget_confirmation / sync_event 待对应后端广播与
+    // 前端 feature 就绪后再接入；此处仅记录，保持前向兼容。
+    qCInfo(lcApp) << "business event not yet handled:" << name;
+}
+
 void PixiuApp::shutdown()
 {
     qCInfo(lcApp) << "PIXIU application shutting down";
     if (m_instanceGuard) {
         m_instanceGuard->stop();
+    }
+    if (m_wsClient) {
+        m_wsClient->disconnectFromBackend();
     }
     emit aboutToShutdown();
 }

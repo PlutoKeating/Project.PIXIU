@@ -1,10 +1,12 @@
 #include "widgets/FloatingBall.h"
 
+#include <QFont>
 #include <QMouseEvent>
 #include <QGuiApplication>
 #include <QPainter>
 #include <QPainterPath>
 #include <QScreen>
+#include <QString>
 
 namespace {
 int collapsedVisibleWidth()
@@ -27,6 +29,26 @@ QSize FloatingBall::sizeHint() const
     return QSize(kSize, kSize);
 }
 
+int FloatingBall::unreadCount() const
+{
+    return m_unreadCount;
+}
+
+void FloatingBall::setUnreadCount(int count)
+{
+    const int clamped = qMax(0, count);
+    if (m_unreadCount == clamped) {
+        return;
+    }
+    m_unreadCount = clamped;
+    update();
+}
+
+void FloatingBall::clearUnread()
+{
+    setUnreadCount(0);
+}
+
 void FloatingBall::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
@@ -46,6 +68,27 @@ void FloatingBall::paintEvent(QPaintEvent *event)
     painter.setFont(font);
     painter.setPen(Qt::white);
     painter.drawText(rect(), Qt::AlignCenter, QStringLiteral("貔"));
+
+    // 未读事件角标：右上角红色圆形 + 数字（超过 99 显示 99+）。
+    if (m_unreadCount > 0) {
+        const int badgeRadius = 10;
+        const QPointF center(width() - badgeRadius - 2, badgeRadius + 2);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QColor(0xD9, 0x30, 0x25));
+        painter.drawEllipse(center, badgeRadius, badgeRadius);
+
+        QFont badgeFont = font;
+        badgeFont.setPixelSize(11);
+        badgeFont.setBold(true);
+        painter.setFont(badgeFont);
+        painter.setPen(Qt::white);
+        const QString text = m_unreadCount > 99
+                                 ? QStringLiteral("99+")
+                                 : QString::number(m_unreadCount);
+        painter.drawText(QRectF(center.x() - badgeRadius, center.y() - badgeRadius,
+                                badgeRadius * 2, badgeRadius * 2),
+                         Qt::AlignCenter, text);
+    }
 }
 
 void FloatingBall::mousePressEvent(QMouseEvent *event)

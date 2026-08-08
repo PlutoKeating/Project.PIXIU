@@ -38,6 +38,8 @@ public:
 
     // 当前连接状态。
     virtual ConnectionState connectionState() const = 0;
+    // 后端基础地址（如 http://127.0.0.1:8765），供 WS/D-Bus 等通道派生端点。
+    virtual QString baseUrl() const = 0;
 
 signals:
     void connectionStateChanged(ConnectionState state);
