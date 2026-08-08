@@ -9,6 +9,7 @@ class TrayIcon;
 class AppSettings;
 class FloatingBall;
 class ChatWindow;
+class ShortcutManager;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -45,8 +46,12 @@ private:
     AppSettings *m_settings = nullptr;
     FloatingBall *m_floatingBall = nullptr;
     ChatWindow *m_chatWindow = nullptr;
+    ShortcutManager *m_shortcutManager = nullptr;
     struct Private;
     QScopedPointer<Private> d;
+
+private:
+    void toggleChatWindow();
 };
 
 #endif // PIXIU_APP_H

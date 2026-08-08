@@ -21,6 +21,8 @@ add_executable(pixiu-frontend
     src/app/TrayIcon.cpp
     src/app/AppSettings.h
     src/app/AppSettings.cpp
+    src/app/ShortcutManager.h
+    src/app/ShortcutManager.cpp
     src/widgets/FloatingBall.h
     src/widgets/FloatingBall.cpp
     src/widgets/ChatWindow.h

@@ -3,6 +3,7 @@
 #include "app/SingleInstanceGuard.h"
 #include "app/TrayIcon.h"
 #include "app/AppSettings.h"
+#include "app/ShortcutManager.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/MessageList.h"
@@ -87,13 +88,7 @@ bool PixiuApp::start()
     }
 
     // 各入口统一唤起聊天框。
-    connect(m_floatingBall, &FloatingBall::clicked, this, [this]() {
-        if (m_chatWindow->isChatVisible()) {
-            m_chatWindow->hideAnimated();
-        } else {
-            m_chatWindow->showAndFocus();
-        }
-    });
+    connect(m_floatingBall, &FloatingBall::clicked, this, &PixiuApp::toggleChatWindow);
     connect(m_chatWindow, &ChatWindow::closeRequested,
             m_chatWindow, &ChatWindow::hideAnimated);
     connect(m_chatWindow, &ChatWindow::sendRequested, this, [this](const QString &text) {
@@ -114,9 +109,28 @@ bool PixiuApp::start()
                 m_chatWindow, &ChatWindow::showAndFocus);
     }
 
+    // 开发态全局快捷键唤起。
+    m_shortcutManager = new ShortcutManager(m_chatWindow, this);
+    if (m_shortcutManager->registerToggleShortcut()) {
+        connect(m_shortcutManager, &ShortcutManager::toggleRequested,
+                this, &PixiuApp::toggleChatWindow);
+    }
+
     emit started();
     qCInfo(lcApp) << "PIXIU application started";
     return true;
+}
+
+void PixiuApp::toggleChatWindow()
+{
+    if (!m_chatWindow) {
+        return;
+    }
+    if (m_chatWindow->isChatVisible()) {
+        m_chatWindow->hideAnimated();
+    } else {
+        m_chatWindow->showAndFocus();
+    }
 }
 
 void PixiuApp::shutdown()
