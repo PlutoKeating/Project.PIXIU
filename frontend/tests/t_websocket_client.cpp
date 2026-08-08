@@ -6,6 +6,7 @@
 #include <QWebSocket>
 #include <QWebSocketServer>
 
+#include "services/BackendTypes.h"
 #include "services/WebSocketClient.h"
 
 // WebSocketClient 契约测试：以本地 QWebSocketServer 模拟后端 /events。
@@ -25,6 +26,8 @@ private slots:
     void memoryReadyIsForwarded();
     void unknownEventIsIgnored();
     void malformedFrameIsIgnored();
+    void reconnectAfterServerDrop();
+    void duplicateEventIsForwarded();
 
 private:
     void connectClientAndWaitServer();
@@ -37,6 +40,8 @@ private:
 
 void TestWebSocketClient::init()
 {
+    qRegisterMetaType<ConnectionState>("ConnectionState");
+
     m_server = new QWebSocketServer(QStringLiteral("pixiu-test"),
                                     QWebSocketServer::NonSecureMode, this);
     QVERIFY(m_server->listen(QHostAddress::LocalHost, 0));
@@ -132,6 +137,36 @@ void TestWebSocketClient::malformedFrameIsIgnored()
     sendFrame("this is not json");
     QTest::qWait(200);
     QCOMPARE(spy.count(), 0);
+}
+
+void TestWebSocketClient::reconnectAfterServerDrop()
+{
+    connectClientAndWaitServer();
+
+    // 服务端硬断开（abort）模拟掉线；客户端应进入 Disconnected 并按退避重连。
+    m_serverSocket->abort();
+    m_serverSocket = nullptr;
+
+    // 1) 客户端感知掉线。
+    QTRY_VERIFY_WITH_TIMEOUT(!m_client->isConnected(), 3000);
+    // 2) 退避重连后重新建立连接（服务端再次 accept）。
+    QTRY_VERIFY_WITH_TIMEOUT(m_client->isConnected(), 8000);
+    QVERIFY(m_serverSocket != nullptr);
+}
+
+void TestWebSocketClient::duplicateEventIsForwarded()
+{
+    QSignalSpy spy(m_client, &WebSocketClient::eventReceived);
+    connectClientAndWaitServer();
+
+    // 重复投递由客户端原样上抛（去重属于应用层策略，契约未定义去重）。
+    sendFrame("{\"event\":\"memory_ready\",\"data\":{"
+              "\"evidence_id\":\"evd_1\",\"knowledge_id\":\"knw_1\","
+              "\"title\":\"测试记忆\",\"scope\":\"user:alice\"}}");
+    sendFrame("{\"event\":\"memory_ready\",\"data\":{"
+              "\"evidence_id\":\"evd_1\",\"knowledge_id\":\"knw_1\","
+              "\"title\":\"测试记忆\",\"scope\":\"user:alice\"}}");
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 2, 3000);
 }
 
 QTEST_MAIN(TestWebSocketClient)
