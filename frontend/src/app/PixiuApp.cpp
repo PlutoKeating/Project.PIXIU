@@ -7,6 +7,7 @@
 #include "app/QueryController.h"
 #include "app/WriteController.h"
 #include "app/ForgetController.h"
+#include "app/ConflictController.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
@@ -126,6 +127,9 @@ bool PixiuApp::start()
             });
     m_memoryPanel = new MemoryPanel();
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, [this]() {
+        if (m_conflictController) {
+            m_conflictController->refresh();
+        }
         m_memoryPanel->showAndFocus();
     });
     connect(m_instanceGuard, &SingleInstanceGuard::activationRequested,
@@ -271,6 +275,18 @@ bool PixiuApp::start()
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
             });
+
+    // 冲突审计：面板每次打开时刷新 GET /conflicts。
+    m_conflictController = new ConflictController(m_transport, this);
+    connect(m_conflictController, &ConflictController::conflictsLoaded, this,
+            [this](const QJsonArray &conflicts) {
+                m_memoryPanel->setConflicts(conflicts);
+            });
+    connect(m_conflictController, &ConflictController::failed, this,
+            [](const QString &code, const QString &message) {
+                qCWarning(lcApp) << "conflicts load failed:" << code << message;
+            });
+    m_conflictController->refresh();
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
     m_wsClient = new WebSocketClient(this);

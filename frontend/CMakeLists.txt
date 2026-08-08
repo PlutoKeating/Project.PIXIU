@@ -56,6 +56,8 @@ add_executable(pixiu-frontend
     src/widgets/ForgetDialog.cpp
     src/widgets/MemoryPanel.h
     src/widgets/MemoryPanel.cpp
+    src/app/ConflictController.h
+    src/app/ConflictController.cpp
 )
 
 target_link_libraries(pixiu-frontend
@@ -136,7 +138,19 @@ if(BUILD_TESTING)
     target_link_libraries(t_memory_panel PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME memory_panel COMMAND t_memory_panel)
 
+    add_executable(t_conflict_controller
+        tests/t_conflict_controller.cpp
+        src/app/ConflictController.h
+        src/app/ConflictController.cpp
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+    )
+    target_include_directories(t_conflict_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_conflict_controller PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME conflict_controller COMMAND t_conflict_controller)
+
     set_tests_properties(websocket_client floating_ball notify_service
-        forget_controller forget_dialog memory_panel
+        forget_controller forget_dialog memory_panel conflict_controller
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

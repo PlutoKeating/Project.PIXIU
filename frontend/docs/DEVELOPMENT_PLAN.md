@@ -35,6 +35,8 @@
   `ForgetDialog` 展示影响范围，确认后才执行第二阶段。
 - 已实现 `MemoryPanel` 壳：偏好 / 冲突 / 同步 三个 Tab 及占位页，聊天框“记忆”
   入口已联动打开。
+- 已实现冲突审计视图：`ConflictController` 拉取 `GET /conflicts`，面板冲突 Tab
+  展示 old/new 对比与裁决结果；面板每次打开时刷新。
 
 ### 1.2 尚未完成
 
@@ -301,7 +303,9 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 1. `MemoryPanel` 壳和 Tab 状态：`feat(frontend): add memory management panel`
    - [x] 本地验收通过（2026-08-08：编译通过；ctest 6/6 通过；offscreen 冒烟正常）。
 2. 偏好历史：`feat(frontend): add preference history view`
-3. 冲突审计：`feat(frontend): add conflict audit view`
+3. [x] 冲突审计：`feat(frontend): add conflict audit view`
+   - 本地验收通过（2026-08-08：编译通过；ctest 7/7 通过；offscreen 冒烟正常；
+     后端不可达时降级为日志，不崩溃）。
 4. 偏好列表：等待列表契约后独立实现。
 5. 证据原文：等待详情契约后独立实现。
 
@@ -381,8 +385,9 @@ cmake --version       3.28.3
 Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
 链接库                libQt5WebSockets.so.5.15.19
 构建产物              frontend/build/pixiu-frontend（含 WebSocketClient.cpp.o）
-测试                  ctest 6/6 通过（websocket / floating_ball / notify /
-                     forget_controller / forget_dialog / memory_panel）
+测试                  ctest 7/7 通过（websocket / floating_ball / notify /
+                     forget_controller / forget_dialog / memory_panel /
+                     conflict_controller）
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
