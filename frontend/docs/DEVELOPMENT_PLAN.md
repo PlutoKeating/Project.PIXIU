@@ -9,6 +9,8 @@
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
 > 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏、Phase 7.6 桌面入口
 > 与 Phase 7.7 `.deb` 打包已在本机（Kylin V11）完成编译/测试/冒烟验收；
+> Phase 8 本地验收基线已完成（双路径构建 + ctest 11/11 + offscreen 冒烟 +
+> `.deb` 产物校验），适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
@@ -72,16 +74,18 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 8 验收发布尚未完成（真实桌面会话展示与 x86/ARM 目标机验收依赖人工复测）。
+- Phase 8 验收发布：本地回归基线已完成；真实桌面会话展示与 x86/ARM 目标机
+  验收依赖人工复测（清单见 `frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节）。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **Phase 8 验收基线**：对已交付的全部前端功能做回归（OFF/ON 两路径
-configure/build/ctest、KYSDK offscreen 冒烟、`.deb` 产物校验），并整理
-麒麟适配记录与已知问题清单。选择它的原因是：
+下一项为 **Phase 8 人工复测与发布**：在带显示的麒麟桌面会话中按
+`frontend/docs/UKUI_ADAPTATION_REPORT.md` 第 4 节清单复测（快捷键唤起、
+通知弹窗、明暗主题切换、窗口装饰、HiDPI/多屏），并在 x86/ARM 目标机安装
+`.deb` 验收。选择它的原因是：
 
-1. Phase 7 各能力已全部落地，下一步是收敛为可复现的验收基线。
-2. 不引入新契约；真实桌面会话与 x86/ARM 目标机验证仍属人工步骤。
+1. 本机自动化基线已收敛（ctest 11/11 + 冒烟 + 打包校验）。
+2. 人工复测需要带显示会话与目标机型，无法由 Agent 在本环境代替。
 3. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
 
 ## 2. 职责边界与 SDK 策略
