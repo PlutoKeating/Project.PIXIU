@@ -11,6 +11,7 @@
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
 #include "widgets/ForgetDialog.h"
+#include "widgets/MemoryPanel.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
 #include "models/MemoryAtom.h"
@@ -123,8 +124,9 @@ bool PixiuApp::start()
                     m_queryController->submit(text);
                 }
             });
-    connect(m_chatWindow, &ChatWindow::openPanelRequested, this, []() {
-        qCInfo(lcApp) << "memory panel requested (Phase 5)";
+    m_memoryPanel = new MemoryPanel();
+    connect(m_chatWindow, &ChatWindow::openPanelRequested, this, [this]() {
+        m_memoryPanel->showAndFocus();
     });
     connect(m_instanceGuard, &SingleInstanceGuard::activationRequested,
             m_chatWindow, &ChatWindow::showAndFocus);

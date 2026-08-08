@@ -19,6 +19,7 @@ class WebSocketClient;
 class NotifyService;
 class ForgetController;
 class ForgetDialog;
+class MemoryPanel;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -64,6 +65,7 @@ private:
     NotifyService *m_notify = nullptr;
     ForgetController *m_forgetController = nullptr;
     ForgetDialog *m_forgetDialog = nullptr;
+    MemoryPanel *m_memoryPanel = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 

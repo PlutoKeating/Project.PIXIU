@@ -33,6 +33,8 @@
   降级为日志），`memory_ready` 已联动“记忆已沉淀”通知。
 - 已实现 `/forget` 两段式确认：`ForgetController` 识别“忘记/遗忘/忘了”指令，
   `ForgetDialog` 展示影响范围，确认后才执行第二阶段。
+- 已实现 `MemoryPanel` 壳：偏好 / 冲突 / 同步 三个 Tab 及占位页，聊天框“记忆”
+  入口已联动打开。
 
 ### 1.2 尚未完成
 
@@ -297,6 +299,7 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 ### Phase 5：记忆管理
 
 1. `MemoryPanel` 壳和 Tab 状态：`feat(frontend): add memory management panel`
+   - [x] 本地验收通过（2026-08-08：编译通过；ctest 6/6 通过；offscreen 冒烟正常）。
 2. 偏好历史：`feat(frontend): add preference history view`
 3. 冲突审计：`feat(frontend): add conflict audit view`
 4. 偏好列表：等待列表契约后独立实现。
@@ -378,8 +381,8 @@ cmake --version       3.28.3
 Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
 链接库                libQt5WebSockets.so.5.15.19
 构建产物              frontend/build/pixiu-frontend（含 WebSocketClient.cpp.o）
-测试                  ctest 5/5 通过（websocket / floating_ball / notify /
-                     forget_controller / forget_dialog）
+测试                  ctest 6/6 通过（websocket / floating_ball / notify /
+                     forget_controller / forget_dialog / memory_panel）
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C

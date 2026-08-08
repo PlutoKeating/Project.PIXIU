@@ -54,6 +54,8 @@ add_executable(pixiu-frontend
     src/app/ForgetController.cpp
     src/widgets/ForgetDialog.h
     src/widgets/ForgetDialog.cpp
+    src/widgets/MemoryPanel.h
+    src/widgets/MemoryPanel.cpp
 )
 
 target_link_libraries(pixiu-frontend
@@ -125,7 +127,16 @@ if(BUILD_TESTING)
     target_link_libraries(t_forget_dialog PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME forget_dialog COMMAND t_forget_dialog)
 
+    add_executable(t_memory_panel
+        tests/t_memory_panel.cpp
+        src/widgets/MemoryPanel.h
+        src/widgets/MemoryPanel.cpp
+    )
+    target_include_directories(t_memory_panel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_memory_panel PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME memory_panel COMMAND t_memory_panel)
+
     set_tests_properties(websocket_client floating_ball notify_service
-        forget_controller forget_dialog
+        forget_controller forget_dialog memory_panel
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
