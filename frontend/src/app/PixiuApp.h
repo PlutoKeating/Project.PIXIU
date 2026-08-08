@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QScopedPointer>
 
+class SingleInstanceGuard;
+
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
 // Phase 1B 职责边界：
@@ -34,6 +36,7 @@ signals:
     void aboutToShutdown();
 
 private:
+    SingleInstanceGuard *m_instanceGuard = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 };

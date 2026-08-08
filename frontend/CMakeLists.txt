@@ -9,17 +9,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network)
 
 add_executable(pixiu-frontend
     src/main.cpp
     src/app/PixiuApp.h
     src/app/PixiuApp.cpp
+    src/app/SingleInstanceGuard.h
+    src/app/SingleInstanceGuard.cpp
 )
 
 target_link_libraries(pixiu-frontend
     PRIVATE
         Qt5::Widgets
+        Qt5::Network
 )
 
 target_include_directories(pixiu-frontend
