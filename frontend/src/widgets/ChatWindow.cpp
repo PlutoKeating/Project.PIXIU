@@ -28,21 +28,21 @@ ChatWindow::ChatWindow(QWidget *parent)
     pixiu::decorateUkuiWindow(this, 12);
 
     // 顶栏：标题 + 同步状态占位 + 记忆面板 + 关闭。
-    QLabel *titleLabel = new QLabel(QStringLiteral("PIXIU 貔貅"), this);
+    QLabel *titleLabel = new QLabel(tr("PIXIU 貔貅"), this);
     titleLabel->setObjectName(QStringLiteral("titleLabel"));
     titleLabel->setStyleSheet(QStringLiteral("font-size: 14px; font-weight: bold;"));
 
-    m_statusLabel = new QLabel(QStringLiteral("● 离线"), this);
+    m_statusLabel = new QLabel(tr("● 离线"), this);
     m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
     m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
 
-    QPushButton *panelButton = new QPushButton(QStringLiteral("记忆"), this);
+    QPushButton *panelButton = new QPushButton(tr("记忆"), this);
     panelButton->setObjectName(QStringLiteral("panelButton"));
     panelButton->setFlat(true);
     panelButton->setCursor(Qt::PointingHandCursor);
     connect(panelButton, &QPushButton::clicked, this, &ChatWindow::openPanelRequested);
 
-    QPushButton *closeButton = new QPushButton(QStringLiteral("✕"), this);
+    QPushButton *closeButton = new QPushButton(tr("✕"), this);
     closeButton->setObjectName(QStringLiteral("closeButton"));
     closeButton->setFlat(true);
     closeButton->setCursor(Qt::PointingHandCursor);
@@ -92,23 +92,23 @@ void ChatWindow::setBackendState(ConnectionState state)
 {
     switch (state) {
     case ConnectionState::Connected:
-        m_statusLabel->setText(QStringLiteral("● 在线"));
+        m_statusLabel->setText(tr("● 在线"));
         m_statusLabel->setStyleSheet(QStringLiteral("color: #188038; font-size: 11px;"));
         m_inputBar->setEnabled(true);
         break;
     case ConnectionState::Connecting:
-        m_statusLabel->setText(QStringLiteral("● 连接中…"));
+        m_statusLabel->setText(tr("● 连接中…"));
         m_statusLabel->setStyleSheet(QStringLiteral("color: #b06000; font-size: 11px;"));
         m_inputBar->setEnabled(false);
         break;
     case ConnectionState::Error:
-        m_statusLabel->setText(QStringLiteral("● 服务异常"));
+        m_statusLabel->setText(tr("● 服务异常"));
         m_statusLabel->setStyleSheet(QStringLiteral("color: #d93025; font-size: 11px;"));
         m_inputBar->setEnabled(false);
         break;
     case ConnectionState::Disconnected:
     default:
-        m_statusLabel->setText(QStringLiteral("● 离线"));
+        m_statusLabel->setText(tr("● 离线"));
         m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
         m_inputBar->setEnabled(false);
         break;

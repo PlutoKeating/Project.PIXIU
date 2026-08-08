@@ -190,7 +190,7 @@ bool PixiuApp::start()
             [this]() {
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("未找到相关记忆，换个说法试试，或录入新知识。");
+                notice.text = tr("未找到相关记忆，换个说法试试，或录入新知识。");
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
             });
@@ -198,7 +198,7 @@ bool PixiuApp::start()
             [this](const QString &text, const QString &code, const QString &message) {
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("查询失败（%1）：%2\n输入已保留，可修改后重试。")
+                notice.text = tr("查询失败（%1）：%2\n输入已保留，可修改后重试。")
                                   .arg(code, message);
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
@@ -208,7 +208,7 @@ bool PixiuApp::start()
             [this](const QString &evidenceId) {
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("证据详情接口待后端提供（source_evidence=%1）")
+                notice.text = tr("证据详情接口待后端提供（source_evidence=%1）")
                                   .arg(evidenceId);
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
@@ -229,7 +229,7 @@ bool PixiuApp::start()
             [this](const QJsonObject &response) {
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("已沉淀：证据 %1 · 质量评分 %2 · 敏感度 %3")
+                notice.text = tr("已沉淀：证据 %1 · 质量评分 %2 · 敏感度 %3")
                                   .arg(response.value(QStringLiteral("evidence_id")).toString(),
                                        QString::number(
                                            response.value(QStringLiteral("quality_score")).toDouble(),
@@ -243,7 +243,7 @@ bool PixiuApp::start()
             [this](const QString &code, const QString &message) {
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("录入失败（%1）：%2").arg(code, message);
+                notice.text = tr("录入失败（%1）：%2").arg(code, message);
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
             });
@@ -270,7 +270,7 @@ bool PixiuApp::start()
                     response.value(QStringLiteral("forgotten_ids")).toArray().size();
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("已遗忘 %1 条记忆，相关证据与关系已清理。")
+                notice.text = tr("已遗忘 %1 条记忆，相关证据与关系已清理。")
                                   .arg(forgottenCount);
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
@@ -279,7 +279,7 @@ bool PixiuApp::start()
             [this](const QString &code, const QString &message) {
                 ChatMessage notice;
                 notice.role = MessageRole::System;
-                notice.text = QStringLiteral("遗忘操作失败（%1）：%2").arg(code, message);
+                notice.text = tr("遗忘操作失败（%1）：%2").arg(code, message);
                 notice.timestamp = QDateTime::currentSecsSinceEpoch();
                 m_chatWindow->messageList()->appendMessage(notice);
             });
@@ -356,7 +356,7 @@ void PixiuApp::handleBackendEvent(const QJsonObject &event)
             m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
         }
         if (m_notify) {
-            m_notify->notify(QStringLiteral("记忆已沉淀"),
+            m_notify->notify(tr("记忆已沉淀"),
                              data.value(QStringLiteral("title")).toString());
         }
         return;

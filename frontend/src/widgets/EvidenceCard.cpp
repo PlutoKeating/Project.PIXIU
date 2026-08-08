@@ -14,19 +14,19 @@ EvidenceCard::EvidenceCard(const QString &evidenceId,
 {
     setObjectName(QStringLiteral("evidenceCard"));
     setCursor(Qt::PointingHandCursor);
-    setToolTip(QStringLiteral("点击查看原文（详情接口待后端提供）"));
+    setToolTip(tr("点击查看原文（详情接口待后端提供）"));
 
-    QLabel *title = new QLabel(QStringLiteral("📄 原始证据"), this);
+    QLabel *title = new QLabel(tr("📄 原始证据"), this);
     title->setObjectName(QStringLiteral("evidenceTitle"));
 
-    QString meta = QStringLiteral("证据 %1 · 置信度 %2 · 延迟 %3ms")
+    QString meta = tr("证据 %1 · 置信度 %2 · 延迟 %3ms")
                        .arg(m_evidenceId,
                             QString::number(confidence, 'f', 2))
                        .arg(latencyMs);
     QLabel *metaLabel = new QLabel(meta, this);
     metaLabel->setObjectName(QStringLiteral("evidenceMeta"));
 
-    QLabel *action = new QLabel(QStringLiteral("查看原文 →"), this);
+    QLabel *action = new QLabel(tr("查看原文 →"), this);
     action->setObjectName(QStringLiteral("evidenceAction"));
 
     QHBoxLayout *top = new QHBoxLayout();

@@ -17,25 +17,27 @@
 ImportDialog::ImportDialog(QWidget *parent)
     : QDialog(parent)
 {
-    setWindowTitle(QStringLiteral("录入记忆"));
+    setWindowTitle(tr("录入记忆"));
     setModal(false);
     resize(420, 320);
     setAcceptDrops(true);
 
-    QLabel *titleLabel = new QLabel(QStringLiteral("标题"), this);
+    QLabel *titleLabel = new QLabel(tr("标题"), this);
     m_titleEdit = new QLineEdit(this);
-    m_titleEdit->setPlaceholderText(QStringLiteral("如：2026年4月家庭支出清单"));
+    m_titleEdit->setPlaceholderText(tr("如：2026年4月家庭支出清单"));
 
-    QLabel *contentLabel = new QLabel(QStringLiteral("内容"), this);
+    QLabel *contentLabel = new QLabel(tr("内容"), this);
     m_contentEdit = new QPlainTextEdit(this);
-    m_contentEdit->setPlaceholderText(QStringLiteral("粘贴文本内容，或后续拖入图片走 OCR 识别…"));
+    m_contentEdit->setPlaceholderText(
+        tr("粘贴文本内容，或后续拖入图片走 OCR 识别…"));
 
-    QLabel *scopeLabel = new QLabel(QStringLiteral("作用域"), this);
+    QLabel *scopeLabel = new QLabel(tr("作用域"), this);
     m_scopeCombo = new QComboBox(this);
-    m_scopeCombo->addItem(QStringLiteral("本机（user:local）"), QStringLiteral("user:local"));
-    m_scopeCombo->addItem(QStringLiteral("家庭共享（shared:home）"), QStringLiteral("shared:home"));
+    m_scopeCombo->addItem(tr("本机（user:local）"), QStringLiteral("user:local"));
+    m_scopeCombo->addItem(tr("家庭共享（shared:home）"), QStringLiteral("shared:home"));
 
-    m_previewLabel = new QLabel(QStringLiteral("可拖入图片，录入时附带附件预览（OCR 接入后自动识别）"), this);
+    m_previewLabel = new QLabel(
+        tr("可拖入图片，录入时附带附件预览（OCR 接入后自动识别）"), this);
     m_previewLabel->setObjectName(QStringLiteral("previewLabel"));
     m_previewLabel->setAlignment(Qt::AlignCenter);
     m_previewLabel->setMinimumHeight(64);
@@ -51,7 +53,7 @@ ImportDialog::ImportDialog(QWidget *parent)
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel
                                                      | QDialogButtonBox::Ok, this);
     QPushButton *okButton = buttons->button(QDialogButtonBox::Ok);
-    okButton->setText(QStringLiteral("录入记忆"));
+    okButton->setText(tr("录入记忆"));
     okButton->setEnabled(false);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::hide);
     connect(buttons, &QDialogButtonBox::accepted, this, &ImportDialog::onConfirmClicked);
@@ -83,7 +85,8 @@ void ImportDialog::onConfirmClicked()
     m_titleEdit->clear();
     m_contentEdit->clear();
     m_imagePath.clear();
-    m_previewLabel->setText(QStringLiteral("可拖入图片，录入时附带附件预览（OCR 接入后自动识别）"));
+    m_previewLabel->setText(
+        tr("可拖入图片，录入时附带附件预览（OCR 接入后自动识别）"));
 }
 
 void ImportDialog::dragEnterEvent(QDragEnterEvent *event)

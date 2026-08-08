@@ -17,16 +17,16 @@ Q_LOGGING_CATEGORY(lcPanel, "pixiu.memory-panel")
 MemoryPanel::MemoryPanel(QWidget *parent)
     : QWidget(parent)
 {
-    setWindowTitle(QStringLiteral("记忆管理"));
+    setWindowTitle(tr("记忆管理"));
     setFixedSize(520, 420);
 
     m_tabs = new QTabWidget(this);
-    m_tabs->addTab(createPreferenceTab(), QStringLiteral("偏好"));
-    m_tabs->addTab(createConflictTab(), QStringLiteral("冲突"));
+    m_tabs->addTab(createPreferenceTab(), tr("偏好"));
+    m_tabs->addTab(createConflictTab(), tr("冲突"));
     m_tabs->addTab(createPlaceholderTab(
-                       QStringLiteral("同步"),
-                       QStringLiteral("节点列表与设备配对（Phase 6）")),
-                   QStringLiteral("同步"));
+                       tr("同步"),
+                       tr("节点列表与设备配对（Phase 6）")),
+                   tr("同步"));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -48,20 +48,20 @@ void MemoryPanel::setConflicts(const QJsonArray &conflicts)
 
         QStringList lines;
         const QString title = item.value(QStringLiteral("knowledge_title")).toString();
-        lines << (title.isEmpty() ? QStringLiteral("（未命名知识）") : title);
-        lines << QStringLiteral("字段：%1")
+        lines << (title.isEmpty() ? tr("（未命名知识）") : title);
+        lines << tr("字段：%1")
                      .arg(item.value(QStringLiteral("field")).toString());
-        lines << QStringLiteral("%1 → %2")
+        lines << tr("%1 → %2")
                      .arg(item.value(QStringLiteral("old_value")).toVariant().toString(),
                           item.value(QStringLiteral("new_value")).toVariant().toString());
-        lines << QStringLiteral("裁决：%1")
+        lines << tr("裁决：%1")
                      .arg(item.value(QStringLiteral("resolution")).toString());
 
         const QJsonValue timestamp = item.value(QStringLiteral("created_at"));
         if (timestamp.isDouble()) {
-            lines << QStringLiteral("时间：%1").arg(qint64(timestamp.toDouble()));
+            lines << tr("时间：%1").arg(qint64(timestamp.toDouble()));
         } else if (timestamp.isString()) {
-            lines << QStringLiteral("时间：%1").arg(timestamp.toString());
+            lines << tr("时间：%1").arg(timestamp.toString());
         }
         m_conflictList->addItem(lines.join(QStringLiteral("\n")));
     }
@@ -78,8 +78,8 @@ void MemoryPanel::setPreferenceHistory(const QJsonObject &response)
         response.value(QStringLiteral("current_version")).toInt();
     m_prefHeaderLabel->setText(
         key.isEmpty()
-            ? QStringLiteral("偏好历史")
-            : QStringLiteral("%1 · v%2").arg(key).arg(currentVersion));
+            ? tr("偏好历史")
+            : tr("%1 · v%2").arg(key).arg(currentVersion));
 
     m_prefHistoryList->clear();
     const QJsonArray history = response.value(QStringLiteral("history")).toArray();
@@ -87,12 +87,12 @@ void MemoryPanel::setPreferenceHistory(const QJsonObject &response)
         const QJsonObject snapshot = value.toObject();
 
         QStringList line;
-        line << QStringLiteral("v%1").arg(snapshot.value(QStringLiteral("version")).toInt());
+        line << tr("v%1").arg(snapshot.value(QStringLiteral("version")).toInt());
         const QJsonValue updated = snapshot.value(QStringLiteral("updated_at"));
         if (updated.isDouble()) {
-            line << QStringLiteral("时间 %1").arg(qint64(updated.toDouble()));
+            line << tr("时间 %1").arg(qint64(updated.toDouble()));
         } else if (updated.isString()) {
-            line << QStringLiteral("时间 %1").arg(updated.toString());
+            line << tr("时间 %1").arg(updated.toString());
         }
         const QByteArray valueJson =
             QJsonDocument(snapshot.value(QStringLiteral("value")).toObject())
@@ -113,15 +113,15 @@ QWidget *MemoryPanel::createPreferenceTab()
     QVBoxLayout *layout = new QVBoxLayout(page);
     layout->setContentsMargins(8, 8, 8, 8);
 
-    m_prefHeaderLabel = new QLabel(QStringLiteral("偏好历史"), page);
+    m_prefHeaderLabel = new QLabel(tr("偏好历史"), page);
     QFont headerFont = m_prefHeaderLabel->font();
     headerFont.setPixelSize(14);
     headerFont.setBold(true);
     m_prefHeaderLabel->setFont(headerFont);
 
     m_prefIdInput = new QLineEdit(page);
-    m_prefIdInput->setPlaceholderText(QStringLiteral("偏好 ID（如 pref_…）"));
-    QPushButton *loadButton = new QPushButton(QStringLiteral("加载历史"), page);
+    m_prefIdInput->setPlaceholderText(tr("偏好 ID（如 pref_…）"));
+    QPushButton *loadButton = new QPushButton(tr("加载历史"), page);
     connect(loadButton, &QPushButton::clicked, this, [this]() {
         emit historyRequested(m_prefIdInput->text().trimmed());
     });
@@ -133,7 +133,7 @@ QWidget *MemoryPanel::createPreferenceTab()
     inputRow->addWidget(m_prefIdInput, 1);
     inputRow->addWidget(loadButton);
 
-    m_prefEmptyLabel = new QLabel(QStringLiteral("暂无历史记录"), page);
+    m_prefEmptyLabel = new QLabel(tr("暂无历史记录"), page);
     m_prefEmptyLabel->setAlignment(Qt::AlignCenter);
     m_prefHistoryList = new QListWidget(page);
     m_prefHistoryList->setObjectName(QStringLiteral("prefHistoryList"));
@@ -152,13 +152,13 @@ QWidget *MemoryPanel::createConflictTab()
     QVBoxLayout *layout = new QVBoxLayout(page);
     layout->setContentsMargins(8, 8, 8, 8);
 
-    QLabel *titleLabel = new QLabel(QStringLiteral("冲突"), page);
+    QLabel *titleLabel = new QLabel(tr("冲突"), page);
     QFont titleFont = titleLabel->font();
     titleFont.setPixelSize(14);
     titleFont.setBold(true);
     titleLabel->setFont(titleFont);
 
-    m_conflictEmptyLabel = new QLabel(QStringLiteral("暂无冲突记录"), page);
+    m_conflictEmptyLabel = new QLabel(tr("暂无冲突记录"), page);
     m_conflictEmptyLabel->setAlignment(Qt::AlignCenter);
     m_conflictList = new QListWidget(page);
     m_conflictList->setObjectName(QStringLiteral("conflictList"));

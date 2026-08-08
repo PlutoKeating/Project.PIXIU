@@ -1,0 +1,33 @@
+#include <QCoreApplication>
+#include <QSignalSpy>
+#include <QTest>
+#include <QTranslator>
+
+// i18n 资源测试：内嵌英文翻译可从 qrc 加载并生效。
+class TestI18n : public QObject
+{
+    Q_OBJECT
+
+private slots:
+    void englishTranslationLoadsAndApplies();
+};
+
+void TestI18n::englishTranslationLoadsAndApplies()
+{
+    QTranslator translator;
+    QVERIFY2(translator.load(QStringLiteral(":/i18n/pixiu_en_US.qm")),
+             "embedded en_US translation must be present in qrc");
+    QCoreApplication::installTranslator(&translator);
+
+    QCOMPARE(QCoreApplication::translate("ChatWindow", "记忆"),
+             QStringLiteral("Memory"));
+    QCOMPARE(QCoreApplication::translate("InputBar", "发送"),
+             QStringLiteral("Send"));
+    QCOMPARE(QCoreApplication::translate("ForgetDialog", "取消"),
+             QStringLiteral("Cancel"));
+    QCOMPARE(QCoreApplication::translate("MessageList", "思考中…"),
+             QStringLiteral("Thinking…"));
+}
+
+QTEST_MAIN(TestI18n)
+#include "t_i18n.moc"

@@ -1,5 +1,6 @@
 #include "widgets/ForgetDialog.h"
 
+#include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -23,19 +24,23 @@ QString buildSummary(const QJsonArray &targets, const QJsonObject &cascade)
 
     QString summary;
     if (names.isEmpty()) {
-        summary = QStringLiteral("即将遗忘 %1 个目标。").arg(targets.size());
+        summary = QCoreApplication::translate(
+                      "ForgetDialog", "即将遗忘 %1 个目标。")
+                      .arg(targets.size());
     } else {
-        summary = QStringLiteral("即将遗忘：%1。").arg(names.join(QStringLiteral("；")));
+        summary = QCoreApplication::translate("ForgetDialog", "即将遗忘：%1。")
+                      .arg(names.join(QStringLiteral("；")));
     }
 
     const int evidenceCount = cascade.value(QStringLiteral("evidence_count")).toInt();
     const int relationCount = cascade.value(QStringLiteral("relation_count")).toInt();
     if (evidenceCount > 0 || relationCount > 0) {
-        summary += QStringLiteral("\n将级联清理：证据 %1 条 · 关系 %2 条。")
+        summary += QCoreApplication::translate(
+                       "ForgetDialog", "\n将级联清理：证据 %1 条 · 关系 %2 条。")
                        .arg(evidenceCount)
                        .arg(relationCount);
     }
-    summary += QStringLiteral("\n此操作不可撤销。");
+    summary += QCoreApplication::translate("ForgetDialog", "\n此操作不可撤销。");
     return summary;
 }
 }
@@ -43,13 +48,13 @@ QString buildSummary(const QJsonArray &targets, const QJsonObject &cascade)
 ForgetDialog::ForgetDialog(QWidget *parent)
     : QDialog(parent)
 {
-    setWindowTitle(QStringLiteral("确认遗忘"));
+    setWindowTitle(tr("确认遗忘"));
 
     m_summaryLabel = new QLabel(this);
     m_summaryLabel->setWordWrap(true);
 
-    QPushButton *cancelButton = new QPushButton(QStringLiteral("取消"), this);
-    QPushButton *confirmButton = new QPushButton(QStringLiteral("确认遗忘"), this);
+    QPushButton *cancelButton = new QPushButton(tr("取消"), this);
+    QPushButton *confirmButton = new QPushButton(tr("确认遗忘"), this);
     confirmButton->setStyleSheet(QStringLiteral(
         "background-color: #d93025; color: white; border-radius: 4px;"
         "padding: 4px 12px;"));

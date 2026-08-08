@@ -22,7 +22,7 @@ FloatingBall::FloatingBall(QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(kSize, kSize);
-    setToolTip(QStringLiteral("PIXIU 貔貅"));
+    setToolTip(tr("PIXIU 貔貅"));
 }
 
 QSize FloatingBall::sizeHint() const

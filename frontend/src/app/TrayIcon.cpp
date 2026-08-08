@@ -42,7 +42,7 @@ bool TrayIcon::show()
     }
 
     m_tray = new QSystemTrayIcon(createPlaceholderIcon(), this);
-    m_tray->setToolTip(QStringLiteral("PIXIU 貔貅"));
+    m_tray->setToolTip(tr("PIXIU 貔貅"));
     buildMenu();
     m_tray->show();
     qCInfo(lcTray) << "tray icon shown";
@@ -67,8 +67,8 @@ void TrayIcon::buildMenu()
 {
     QMenu *menu = new QMenu();
 
-    QAction *openAction = menu->addAction(QStringLiteral("打开 PIXIU"));
-    QAction *quitAction = menu->addAction(QStringLiteral("退出"));
+    QAction *openAction = menu->addAction(tr("打开 PIXIU"));
+    QAction *quitAction = menu->addAction(tr("退出"));
 
     connect(openAction, &QAction::triggered, this, &TrayIcon::openRequested);
     connect(quitAction, &QAction::triggered, this, &TrayIcon::quitRequested);

@@ -321,10 +321,18 @@ if(BUILD_TESTING)
     target_link_libraries(t_evidence_card PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME evidence_card COMMAND t_evidence_card)
 
+    add_executable(t_i18n
+        tests/t_i18n.cpp
+        resources/resources.qrc
+    )
+    target_include_directories(t_i18n PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_i18n PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME i18n COMMAND t_i18n)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
-        chat_window input_bar message_list evidence_card
+        chat_window input_bar message_list evidence_card i18n
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

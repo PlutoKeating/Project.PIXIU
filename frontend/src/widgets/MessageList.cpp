@@ -68,7 +68,7 @@ void MessageList::setThinking(bool thinking)
     if (thinking) {
         ChatMessage hint;
         hint.role = MessageRole::System;
-        hint.text = QStringLiteral("思考中…");
+        hint.text = tr("思考中…");
         hint.timestamp = QDateTime::currentSecsSinceEpoch();
         appendRow(createSystemBubble(hint), Qt::AlignCenter);
         scrollToBottom();
@@ -101,7 +101,7 @@ QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
 
     // 证据卡占位行（置信度 + 延迟 + 证据 ID）。
     if (message.confidence > 0.0 || !message.evidenceId.isEmpty()) {
-        QString meta = QStringLiteral("置信度 %1 · 延迟 %2ms")
+        QString meta = tr("置信度 %1 · 延迟 %2ms")
                            .arg(QString::number(message.confidence, 'f', 2))
                            .arg(message.latencyMs);
         QLabel *metaLabel = new QLabel(meta);
