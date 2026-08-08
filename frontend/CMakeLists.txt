@@ -7,16 +7,24 @@ option(PIXIU_HAVE_KYSDK "Build with KylinSDK integration" OFF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets)
 
 add_executable(pixiu-frontend
     src/main.cpp
+    src/app/PixiuApp.h
+    src/app/PixiuApp.cpp
 )
 
 target_link_libraries(pixiu-frontend
     PRIVATE
         Qt5::Widgets
+)
+
+target_include_directories(pixiu-frontend
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 if(PIXIU_HAVE_KYSDK)
