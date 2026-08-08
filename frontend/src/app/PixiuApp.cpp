@@ -67,7 +67,10 @@ bool PixiuApp::start()
 
     // 悬浮球：常驻桌面入口（默认屏幕右下角；位置持久化在下一 feature）。
     m_floatingBall = new FloatingBall();
-    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+    const QVariant savedPos = m_settings->value(AppSettings::keyBallPosition);
+    if (savedPos.isValid()) {
+        m_floatingBall->restorePosition(savedPos.toPoint());
+    } else if (QScreen *screen = QGuiApplication::primaryScreen()) {
         const QRect screenRect = screen->availableGeometry();
         m_floatingBall->move(screenRect.right() - m_floatingBall->width() - 24,
                              screenRect.bottom() - m_floatingBall->height() - 24);
@@ -75,8 +78,9 @@ bool PixiuApp::start()
     connect(m_floatingBall, &FloatingBall::clicked, this, []() {
         qCInfo(lcApp) << "floating ball clicked; chat window will be toggled (next feature)";
     });
-    connect(m_floatingBall, &FloatingBall::movedTo, this, [](const QPoint &pos) {
-        qCInfo(lcApp) << "floating ball moved to" << pos;
+    connect(m_floatingBall, &FloatingBall::movedTo, this, [this](const QPoint &pos) {
+        m_settings->setValue(AppSettings::keyBallPosition, pos);
+        m_settings->sync();
     });
     m_floatingBall->show();
 
