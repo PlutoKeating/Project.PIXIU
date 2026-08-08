@@ -99,7 +99,21 @@ bool ThemeService::start()
 void ThemeService::applyTheme()
 {
 #ifdef PIXIU_HAVE_KYSDK
-    const bool dark = (ThemeController::themeMode() == DarkTheme);
+    // 本机 kysdk-qtwidgets 2.3.1.0 中 themeMode()/widgetTheme() 只在
+    // initThemeStyle() 时缓存一次，运行期切换主题不会刷新缓存（运行时
+    // 探针确认：ukui-dark -> ukui-light 后 themeMode() 仍返回 DarkTheme）。
+    // 因此明暗判定改读 QGSettings 实时 styleName；styleName 缺失时回退
+    // themeMode()（启动时缓存值）。
+    bool dark = (ThemeController::themeMode() == DarkTheme);
+    if (m_controller->m_gsetting) {
+        const QString styleName =
+            m_controller->m_gsetting->get(QStringLiteral("styleName")).toString();
+        if (!styleName.isEmpty()) {
+            dark = styleName.contains(QStringLiteral("dark"), Qt::CaseInsensitive)
+                || styleName.contains(QStringLiteral("black"), Qt::CaseInsensitive)
+                || styleName.contains(QStringLiteral("night"), Qt::CaseInsensitive);
+        }
+    }
     if (dark) {
         QApplication::setPalette(darkPalette());
         m_darkApplied = true;

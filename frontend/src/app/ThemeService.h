@@ -7,7 +7,8 @@
 // 主题服务：跟随 UKUI 明暗主题切换并同步应用 QApplication Palette。
 //
 // 麒麟环境（PIXIU_HAVE_KYSDK）：基于 kysdk-qtwidgets ThemeController 监听
-// org.ukui.style 主题变化；changeTheme() 时按 themeMode() 应用明暗 Palette。
+// org.ukui.style 主题变化；changeTheme() 时按 QGSettings 实时 styleName
+// 判定明暗（kysdk 2.3.1.0 的 themeMode() 仅缓存启动值，运行期不刷新）。
 // 浅色主题恢复启动时捕获的系统 Palette，深色主题应用 UKUI 深色近似值。
 // 开发态/降级（无 KYSDK）：不监听系统主题，保持 Qt 默认 Palette 静态降级。
 class ThemeService : public QObject
