@@ -35,6 +35,10 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Open memory panel"));
     QCOMPARE(QCoreApplication::translate("InputBar", "录入图片或文件"),
              QStringLiteral("Import image or file"));
+    QCOMPARE(QCoreApplication::translate("FloatingBall", "打开聊天框"),
+             QStringLiteral("Open chat window"));
+    QCOMPARE(QCoreApplication::translate("FloatingBall", "退出"),
+             QStringLiteral("Quit"));
 }
 
 QTEST_MAIN(TestI18n)

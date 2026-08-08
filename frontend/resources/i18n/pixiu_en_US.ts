@@ -76,6 +76,24 @@
 <context>
     <name>FloatingBall</name>
     <message>
+        <location filename="../../src/widgets/FloatingBall.cpp" line="23"/>
+        <source>打开聊天框</source>
+        <translation>Open chat window</translation>
+    </message>
+    <message>
+        <location filename="../../src/widgets/FloatingBall.cpp" line="27"/>
+        <source>记忆面板</source>
+        <translation>Memory panel</translation>
+    </message>
+    <message>
+        <location filename="../../src/widgets/FloatingBall.cpp" line="35"/>
+        <source>退出</source>
+        <translation>Quit</translation>
+    </message>
+</context>
+<context>
+    <name>FloatingBall</name>
+    <message>
         <location filename="../../src/widgets/FloatingBall.cpp" line="25"/>
         <source>PIXIU 貔貅</source>
         <translation>PIXIU</translation>

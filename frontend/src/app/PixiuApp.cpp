@@ -134,12 +134,16 @@ bool PixiuApp::start()
                 }
             });
     m_memoryPanel = new MemoryPanel();
-    connect(m_chatWindow, &ChatWindow::openPanelRequested, this, [this]() {
+    const auto openMemoryPanel = [this]() {
         if (m_conflictController) {
             m_conflictController->refresh();
         }
         m_memoryPanel->showAndFocus();
-    });
+    };
+    connect(m_chatWindow, &ChatWindow::openPanelRequested, this, openMemoryPanel);
+    connect(m_floatingBall, &FloatingBall::openPanelRequested, this, openMemoryPanel);
+    connect(m_floatingBall, &FloatingBall::quitRequested, this, &PixiuApp::shutdown);
+    connect(m_floatingBall, &FloatingBall::quitRequested, QCoreApplication::quit);
     connect(m_instanceGuard, &SingleInstanceGuard::activationRequested,
             m_chatWindow, &ChatWindow::showAndFocus);
     if (m_tray) {

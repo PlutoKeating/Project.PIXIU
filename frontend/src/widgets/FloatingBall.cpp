@@ -1,7 +1,10 @@
 #include "widgets/FloatingBall.h"
 
 #include <QApplication>
+#include <QAction>
+#include <QContextMenuEvent>
 #include <QFont>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QGuiApplication>
 #include <QPainter>
@@ -23,6 +26,7 @@ FloatingBall::FloatingBall(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(kSize, kSize);
     setToolTip(tr("PIXIU 貔貅"));
+    buildContextMenu();
 }
 
 QSize FloatingBall::sizeHint() const
@@ -150,6 +154,36 @@ void FloatingBall::leaveEvent(QEvent *event)
         snapToEdge();
     }
     QWidget::leaveEvent(event);
+}
+
+void FloatingBall::contextMenuEvent(QContextMenuEvent *event)
+{
+    if (m_contextMenu) {
+        m_contextMenu->popup(event->globalPos());
+        event->accept();
+        return;
+    }
+    QWidget::contextMenuEvent(event);
+}
+
+void FloatingBall::buildContextMenu()
+{
+    m_contextMenu = new QMenu(this);
+
+    QAction *toggleAction = m_contextMenu->addAction(tr("打开聊天框"));
+    toggleAction->setObjectName(QStringLiteral("toggleChatAction"));
+    // “打开聊天框”语义与左键单击一致（统一走 toggleChatWindow）。
+    connect(toggleAction, &QAction::triggered, this, &FloatingBall::clicked);
+
+    QAction *panelAction = m_contextMenu->addAction(tr("记忆面板"));
+    panelAction->setObjectName(QStringLiteral("openPanelAction"));
+    connect(panelAction, &QAction::triggered, this, &FloatingBall::openPanelRequested);
+
+    m_contextMenu->addSeparator();
+
+    QAction *quitAction = m_contextMenu->addAction(tr("退出"));
+    quitAction->setObjectName(QStringLiteral("quitAction"));
+    connect(quitAction, &QAction::triggered, this, &FloatingBall::quitRequested);
 }
 
 void FloatingBall::restorePosition(const QPoint &savedPos)

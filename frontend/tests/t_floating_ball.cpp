@@ -1,3 +1,6 @@
+#include <QAction>
+#include <QMenu>
+#include <QSignalSpy>
 #include <QTest>
 
 #include "widgets/FloatingBall.h"
@@ -11,6 +14,7 @@ private slots:
     void unreadStartsAtZero();
     void unreadCanBeSetAndCleared();
     void unreadClampsNegative();
+    void contextMenuActionsEmitSignals();
 };
 
 void TestFloatingBall::unreadStartsAtZero()
@@ -35,6 +39,31 @@ void TestFloatingBall::unreadClampsNegative()
     FloatingBall ball;
     ball.setUnreadCount(-5);
     QCOMPARE(ball.unreadCount(), 0);
+}
+
+void TestFloatingBall::contextMenuActionsEmitSignals()
+{
+    FloatingBall ball;
+    QVERIFY(ball.findChild<QMenu *>() != nullptr);
+
+    QSignalSpy clicked(&ball, &FloatingBall::clicked);
+    QSignalSpy panel(&ball, &FloatingBall::openPanelRequested);
+    QSignalSpy quit(&ball, &FloatingBall::quitRequested);
+
+    QAction *toggle = ball.findChild<QAction *>(QStringLiteral("toggleChatAction"));
+    QAction *panelAction =
+        ball.findChild<QAction *>(QStringLiteral("openPanelAction"));
+    QAction *quitAction = ball.findChild<QAction *>(QStringLiteral("quitAction"));
+    QVERIFY(toggle != nullptr);
+    QVERIFY(panelAction != nullptr);
+    QVERIFY(quitAction != nullptr);
+
+    toggle->trigger();
+    QCOMPARE(clicked.count(), 1);
+    panelAction->trigger();
+    QCOMPARE(panel.count(), 1);
+    quitAction->trigger();
+    QCOMPARE(quit.count(), 1);
 }
 
 QTEST_MAIN(TestFloatingBall)

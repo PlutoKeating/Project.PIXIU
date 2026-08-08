@@ -4,6 +4,9 @@
 #include <QPoint>
 #include <QWidget>
 
+class QAction;
+class QContextMenuEvent;
+class QMenu;
 class QScreen;
 
 // 桌面悬浮球：半透明圆形常驻入口。
@@ -32,6 +35,10 @@ public:
 signals:
     // 无拖动位移的单击。
     void clicked();
+    // 右键菜单“记忆面板”。
+    void openPanelRequested();
+    // 右键菜单“退出”。
+    void quitRequested();
     // 拖动结束、贴边收起或悬停展开后发射（供位置持久化）。
     void movedTo(const QPoint &topLeft);
 
@@ -42,8 +49,10 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
 private:
+    void buildContextMenu();
     QScreen *screenFor(const QPoint &globalPos) const;
     void snapToEdge();
     void collapseToEdge();
@@ -55,6 +64,7 @@ private:
     QPoint m_expandedPos;
     bool m_collapsed = false;
     int m_unreadCount = 0;
+    QMenu *m_contextMenu = nullptr;
 
     static constexpr int kDragThresholdPx = 4;
     static constexpr int kEdgeSnapPx = 12;
