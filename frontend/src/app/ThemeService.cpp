@@ -6,6 +6,7 @@
 
 #ifdef PIXIU_HAVE_KYSDK
 #include <themeController.h>
+#include <QGSettings/QGSettings>
 #endif
 
 Q_LOGGING_CATEGORY(lcTheme, "pixiu.theme")
@@ -73,6 +74,19 @@ bool ThemeService::start()
 
     m_controller = new KylinThemeController(this);
     m_controller->initThemeStyle();
+    // 本机库版本（kysdk-qtwidgets 2.3.1.0）中 initThemeStyle() 不会自动连接
+    // 主题变化信号；按 Kylin 惯例直连其公开的 m_gsetting，过滤 styleName
+    // 键（库内监听的键名为 camelCase）后触发 changeTheme()。
+    if (m_controller->m_gsetting) {
+        connect(m_controller->m_gsetting, &QGSettings::changed, this,
+                [this](const QString &key) {
+                    if (key == QStringLiteral("styleName")) {
+                        m_controller->changeTheme();
+                    }
+                });
+    } else {
+        qCWarning(lcTheme) << "QGSettings unavailable; theme following disabled";
+    }
     applyTheme();
     qCInfo(lcTheme) << "UKUI theme following enabled";
     return true;

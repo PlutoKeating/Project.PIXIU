@@ -83,16 +83,19 @@ if(PIXIU_HAVE_KYSDK)
     pkg_check_modules(KYSDK_SHORTCUT REQUIRED kysdk-shortcut)
     pkg_check_modules(KYSDK_NOTIFY REQUIRED kysdk-notification)
     pkg_check_modules(KYSDK_QTWIDGETS REQUIRED kysdk-qtwidgets)
+    pkg_check_modules(KYSDK_QGSETTINGS REQUIRED gsettings-qt)
     target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_KYSDK=1)
     target_include_directories(pixiu-frontend PRIVATE
         ${KYSDK_SHORTCUT_INCLUDE_DIRS}
         ${KYSDK_NOTIFY_INCLUDE_DIRS}
         ${KYSDK_QTWIDGETS_INCLUDE_DIRS}
+        ${KYSDK_QGSETTINGS_INCLUDE_DIRS}
     )
     target_link_libraries(pixiu-frontend PRIVATE
         ${KYSDK_SHORTCUT_LIBRARIES}
         ${KYSDK_NOTIFY_LIBRARIES}
         ${KYSDK_QTWIDGETS_LIBRARIES}
+        ${KYSDK_QGSETTINGS_LIBRARIES}
     )
 endif()
 
