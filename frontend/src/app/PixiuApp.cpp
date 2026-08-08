@@ -3,10 +3,13 @@
 #include "app/SingleInstanceGuard.h"
 #include "app/TrayIcon.h"
 #include "app/AppSettings.h"
+#include "widgets/FloatingBall.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QGuiApplication>
+#include <QScreen>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
 
@@ -61,6 +64,21 @@ bool PixiuApp::start()
     m_settings->setValue(AppSettings::keyLastLaunched,
                          QDateTime::currentSecsSinceEpoch());
     m_settings->sync();
+
+    // 悬浮球：常驻桌面入口（默认屏幕右下角；位置持久化在下一 feature）。
+    m_floatingBall = new FloatingBall();
+    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+        const QRect screenRect = screen->availableGeometry();
+        m_floatingBall->move(screenRect.right() - m_floatingBall->width() - 24,
+                             screenRect.bottom() - m_floatingBall->height() - 24);
+    }
+    connect(m_floatingBall, &FloatingBall::clicked, this, []() {
+        qCInfo(lcApp) << "floating ball clicked; chat window will be toggled (next feature)";
+    });
+    connect(m_floatingBall, &FloatingBall::movedTo, this, [](const QPoint &pos) {
+        qCInfo(lcApp) << "floating ball moved to" << pos;
+    });
+    m_floatingBall->show();
 
     // 后续 feature 在此创建服务与窗口（以 this 为 parent）。
 
