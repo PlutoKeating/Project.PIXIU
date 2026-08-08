@@ -22,6 +22,7 @@ class ForgetDialog;
 class MemoryPanel;
 class ConflictController;
 class PreferenceController;
+class ThemeService;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -70,6 +71,7 @@ private:
     MemoryPanel *m_memoryPanel = nullptr;
     ConflictController *m_conflictController = nullptr;
     PreferenceController *m_preferenceController = nullptr;
+    ThemeService *m_themeService = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 

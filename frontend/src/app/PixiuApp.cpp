@@ -9,6 +9,7 @@
 #include "app/ForgetController.h"
 #include "app/ConflictController.h"
 #include "app/PreferenceController.h"
+#include "app/ThemeService.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
@@ -54,6 +55,12 @@ bool PixiuApp::start()
     if (!m_instanceGuard->tryStart()) {
         qCInfo(lcApp) << "exiting: another instance is already running";
         return false;
+    }
+
+    // 主题跟随：UKUI 明暗切换时同步应用 Palette；无 KYSDK 时静态降级。
+    m_themeService = new ThemeService(this);
+    if (!m_themeService->start()) {
+        qCInfo(lcApp) << "theme following disabled; using Qt default palette";
     }
 
     // 系统托盘：打开主入口 + 显式退出。

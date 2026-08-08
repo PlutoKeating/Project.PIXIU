@@ -6,7 +6,8 @@
 > 计划周期：2026-08-07 至 2026-09-15
 > 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
 > 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
-> Phase 7.1 麒麟全局快捷键已在本机（Kylin V11）完成编译/测试/冒烟验收；
+> Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
+> 已在本机（Kylin V11）完成编译/测试/冒烟验收；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
@@ -46,6 +47,10 @@
 - 已实现麒麟桌面通知：`NotifyService` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-notification `KNotifier` 弹系统通知（不依赖托盘）；无 KYSDK 时保持
   托盘 `showMessage` / 日志降级。
+- 已实现 UKUI 主题实时跟随：`ThemeService` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
+  kysdk-qtwidgets `ThemeController` 监听 UKUI 明暗主题变化，深色主题应用 UKUI
+  深色近似 Palette，浅色主题恢复启动时捕获的系统 Palette；无 KYSDK 时保持
+  Qt Palette 静态降级（不触碰应用调色板）。
 
 ### 1.2 尚未完成
 
@@ -53,18 +58,20 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 7.3~7.7 麒麟桌面能力（UKUI 主题跟随、窗口辅助、高 DPI/多屏、
-  `.desktop` 与 `.deb` 打包）与 Phase 8 验收发布尚未完成。
+- Phase 7.4~7.7 麒麟桌面能力（窗口辅助、高 DPI/多屏、`.desktop` 与 `.deb` 打包）
+  与 Phase 8 验收发布尚未完成。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **`feat(frontend): follow UKUI theme changes`**（Phase 7.3），
-通过 kysdk-qtwidgets 的 `themeController` 跟随 UKUI 明暗主题切换并同步应用
-Palette；无 KYSDK 时保持 Qt Palette/QSS 静态降级。选择它的原因是：
+下一项为 **`feat(frontend): integrate UKUI window helpers`**（Phase 7.4），
+通过 kysdk-qtwidgets 的 `KTranslucentFloor` 把悬浮球与聊天框升级为 UKUI
+半透明圆角底窗（含阴影/毛玻璃能力），保留现有拖动、贴边收起、淡入淡出行为；
+无 KYSDK 时维持当前 Qt Widgets 实现。选择它的原因是：
 
 1. 本机即目标银河麒麟 V11 环境，`libkysdk-qtwidgets` 开发包已安装，可独立编译验证。
 2. 不依赖 backend、D-Bus 或仍占位的 sync/retrieval 契约。
-3. 现有 UI 组件均使用 Qt 标准 Palette，接入面收敛在应用层。
+3. FloatingBall / ChatWindow 已有完整 Qt Widgets 行为，接入面收敛在两个
+   Widget 的平台分支与 CMake 的 KYSDK 链接。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -339,6 +346,10 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      无崩溃（`isAvailable()=true`）；应用 offscreen 启动无回归。
    - 真实弹窗展示仍需在带显示的麒麟桌面会话中人工复测。
 3. UKUI 主题实时跟随：`feat(frontend): follow UKUI theme changes`
+   - [x] 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
+     编译通过；OFF/ON 两路径 ctest 10/10 通过（新增 theme_service，固定测试
+     无 KYSDK 降级路径）；offscreen 冒烟 `themeMode()` 返回深色时应用 UKUI
+     深色 Palette、`UKUI theme following enabled`，应用无回归。
 4. UKUI 悬浮/拖动/窗口能力：`feat(frontend): integrate UKUI window helpers`
 5. 高 DPI 与多屏：`fix(frontend): support high DPI and multiple screens`
 6. `.desktop`：`feat(frontend): add desktop entry`
@@ -421,6 +432,16 @@ KYSDK 通知               kysdk-notification KNotifier（libkysdk-notification 
 无头冒烟                 NotifyService(KYSDK) notify() 返回有效 id、无崩溃；
                          isAvailable()=true
 应用冒烟                 offscreen 启动无回归（快捷键注册 + 通知服务挂载正常）
+```
+
+2026-08-08 追加（Phase 7.3，本机银河麒麟 V11）：
+
+```text
+KYSDK 主题               kysdk-qtwidgets ThemeController（libkysdk-qtwidgets 2.3.1.0）
+OFF 路径                 configure/build 通过；ctest 10/10 通过（新增 theme_service）
+ON 路径                  configure/build 通过（链接 kysdk-qtwidgets）；ctest 10/10 通过
+无头冒烟                 offscreen 启动：themeMode() 返回深色时应用 UKUI 深色 Palette；
+                         pixiu.theme: UKUI theme following enabled；无回归
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C

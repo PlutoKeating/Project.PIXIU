@@ -60,6 +60,8 @@ add_executable(pixiu-frontend
     src/app/ConflictController.cpp
     src/app/PreferenceController.h
     src/app/PreferenceController.cpp
+    src/app/ThemeService.h
+    src/app/ThemeService.cpp
 )
 
 target_link_libraries(pixiu-frontend
@@ -80,14 +82,17 @@ if(PIXIU_HAVE_KYSDK)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(KYSDK_SHORTCUT REQUIRED kysdk-shortcut)
     pkg_check_modules(KYSDK_NOTIFY REQUIRED kysdk-notification)
+    pkg_check_modules(KYSDK_QTWIDGETS REQUIRED kysdk-qtwidgets)
     target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_KYSDK=1)
     target_include_directories(pixiu-frontend PRIVATE
         ${KYSDK_SHORTCUT_INCLUDE_DIRS}
         ${KYSDK_NOTIFY_INCLUDE_DIRS}
+        ${KYSDK_QTWIDGETS_INCLUDE_DIRS}
     )
     target_link_libraries(pixiu-frontend PRIVATE
         ${KYSDK_SHORTCUT_LIBRARIES}
         ${KYSDK_NOTIFY_LIBRARIES}
+        ${KYSDK_QTWIDGETS_LIBRARIES}
     )
 endif()
 
@@ -189,8 +194,17 @@ if(BUILD_TESTING)
     target_link_libraries(t_shortcut_manager PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME shortcut_manager COMMAND t_shortcut_manager)
 
+    add_executable(t_theme_service
+        tests/t_theme_service.cpp
+        src/app/ThemeService.h
+        src/app/ThemeService.cpp
+    )
+    target_include_directories(t_theme_service PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_theme_service PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME theme_service COMMAND t_theme_service)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
-        preference_controller shortcut_manager
+        preference_controller shortcut_manager theme_service
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
