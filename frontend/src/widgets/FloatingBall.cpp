@@ -1,5 +1,6 @@
 #include "widgets/FloatingBall.h"
 
+#include <QApplication>
 #include <QFont>
 #include <QMouseEvent>
 #include <QGuiApplication>
@@ -59,7 +60,10 @@ void FloatingBall::paintEvent(QPaintEvent *event)
     // 半透明圆形主体。
     QPainterPath path;
     path.addEllipse(rect().adjusted(1, 1, -1, -1));
-    painter.fillPath(path, QColor(0x35, 0x87, 0xF6, 210));
+    // 主色跟随主题高亮色（明暗主题下均为系统强调色）。
+    QColor accent = QApplication::palette().color(QPalette::Highlight);
+    accent.setAlpha(210);
+    painter.fillPath(path, accent);
 
     // 中央字符（后续替换为资源图标）。
     QFont font = painter.font();

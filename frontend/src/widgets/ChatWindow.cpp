@@ -1,5 +1,6 @@
 #include "widgets/ChatWindow.h"
 
+#include <QApplication>
 #include <QCloseEvent>
 #include <QEasingCurve>
 #include <QHBoxLayout>
@@ -149,7 +150,10 @@ void ChatWindow::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(0xFC, 0xFC, 0xFC, 245));
+    // 窗口底色跟随主题 Palette（明暗切换时自动联动）。
+    QColor background = QApplication::palette().color(QPalette::Window);
+    background.setAlpha(245);
+    painter.setBrush(background);
     painter.drawRoundedRect(rect(), 12, 12);
 }
 

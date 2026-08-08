@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>styles.qss</file>
+        <file>icons/pixiu.svg</file>
+    </qresource>
+</RCC>

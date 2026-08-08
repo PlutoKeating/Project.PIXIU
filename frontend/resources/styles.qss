@@ -1,0 +1,59 @@
+/* PIXIU 全局样式：颜色全部使用 palette 角色，跟随 UKUI 明暗主题；禁止硬编码颜色。 */
+
+QToolTip {
+    background-color: palette(tooltip-base);
+    color: palette(tooltip-text);
+    border: 1px solid palette(mid);
+    border-radius: 4px;
+    padding: 4px;
+}
+
+QListWidget#messageList {
+    background: transparent;
+}
+
+QLabel#userBubble {
+    background-color: palette(highlight);
+    color: palette(highlighted-text);
+    border-radius: 10px;
+    padding: 4px 10px;
+}
+
+QLabel#assistantBubble {
+    background-color: palette(base);
+    color: palette(text);
+    border-radius: 10px;
+    padding: 4px 10px;
+}
+
+QLabel#assistantMeta {
+    color: palette(mid);
+    font-size: 9px;
+}
+
+QLabel#systemHint {
+    color: palette(mid);
+    font-size: 11px;
+}
+
+QFrame#evidenceCard {
+    background-color: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 8px;
+}
+
+QLabel#evidenceTitle {
+    font-size: 10px;
+    font-weight: bold;
+    color: palette(text);
+}
+
+QLabel#evidenceMeta {
+    color: palette(mid);
+    font-size: 9px;
+}
+
+QLabel#evidenceAction {
+    color: palette(highlight);
+    font-size: 9px;
+}

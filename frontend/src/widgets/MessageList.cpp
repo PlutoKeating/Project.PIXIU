@@ -15,14 +15,13 @@ QString formatTimestamp(qint64 ts)
     return QDateTime::fromSecsSinceEpoch(ts).toString(QStringLiteral("HH:mm"));
 }
 
-QLabel *makeBubbleLabel(const QString &text, const QString &style, int maxWidth)
+QLabel *makeBubbleLabel(const QString &text, const QString &objectName, int maxWidth)
 {
     QLabel *label = new QLabel(text);
     label->setWordWrap(true);
     label->setMaximumWidth(maxWidth);
     label->setTextFormat(Qt::PlainText);
-    label->setStyleSheet(style);
-    label->setMargin(10);
+    label->setObjectName(objectName);
     return label;
 }
 }
@@ -34,6 +33,7 @@ MessageList::MessageList(QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setSelectionMode(QAbstractItemView::NoSelection);
     setFocusPolicy(Qt::NoFocus);
+    setObjectName(QStringLiteral("messageList"));
 }
 
 void MessageList::appendMessage(const ChatMessage &message)
@@ -77,9 +77,8 @@ void MessageList::setThinking(bool thinking)
 
 QWidget *MessageList::createUserBubble(const ChatMessage &message) const
 {
-    const QString style =
-        QStringLiteral("background-color: #3587F6; color: white; border-radius: 10px;");
-    QLabel *bubble = makeBubbleLabel(message.text, style, kBubbleMaxWidth);
+    QLabel *bubble =
+        makeBubbleLabel(message.text, QStringLiteral("userBubble"), kBubbleMaxWidth);
 
     QWidget *container = new QWidget();
     QHBoxLayout *layout = new QHBoxLayout(container);
@@ -91,9 +90,8 @@ QWidget *MessageList::createUserBubble(const ChatMessage &message) const
 
 QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
 {
-    const QString style =
-        QStringLiteral("background-color: #F1F3F4; color: #202124; border-radius: 10px;");
-    QLabel *bubble = makeBubbleLabel(message.text, style, kBubbleMaxWidth);
+    QLabel *bubble =
+        makeBubbleLabel(message.text, QStringLiteral("assistantBubble"), kBubbleMaxWidth);
 
     QWidget *container = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(container);
@@ -107,7 +105,7 @@ QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
                            .arg(QString::number(message.confidence, 'f', 2))
                            .arg(message.latencyMs);
         QLabel *metaLabel = new QLabel(meta);
-        metaLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 9px;"));
+        metaLabel->setObjectName(QStringLiteral("assistantMeta"));
         layout->addWidget(metaLabel);
     }
     if (!message.evidenceId.isEmpty()) {
@@ -123,7 +121,7 @@ QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
 QWidget *MessageList::createSystemBubble(const ChatMessage &message) const
 {
     QLabel *label = new QLabel(message.text);
-    label->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+    label->setObjectName(QStringLiteral("systemHint"));
     label->setAlignment(Qt::AlignCenter);
     return label;
 }

@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network WebSockets Test)
 
@@ -64,6 +65,7 @@ add_executable(pixiu-frontend
     src/app/ThemeService.cpp
     src/app/UkuiWindow.h
     src/app/UkuiWindow.cpp
+    resources/resources.qrc
 )
 
 target_link_libraries(pixiu-frontend
