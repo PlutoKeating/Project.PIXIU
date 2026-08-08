@@ -8,6 +8,7 @@ class SingleInstanceGuard;
 class TrayIcon;
 class AppSettings;
 class FloatingBall;
+class ChatWindow;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -43,6 +44,7 @@ private:
     TrayIcon *m_tray = nullptr;
     AppSettings *m_settings = nullptr;
     FloatingBall *m_floatingBall = nullptr;
+    ChatWindow *m_chatWindow = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 };

@@ -4,6 +4,7 @@
 #include "app/TrayIcon.h"
 #include "app/AppSettings.h"
 #include "widgets/FloatingBall.h"
+#include "widgets/ChatWindow.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
@@ -37,16 +38,10 @@ bool PixiuApp::start()
         qCInfo(lcApp) << "exiting: another instance is already running";
         return false;
     }
-    connect(m_instanceGuard, &SingleInstanceGuard::activationRequested, this, []() {
-        qCInfo(lcApp) << "activation requested; main window will be raised (Phase 2+)";
-    });
 
     // 系统托盘：打开主入口 + 显式退出。
     m_tray = new TrayIcon(this);
     if (m_tray->show()) {
-        connect(m_tray, &TrayIcon::openRequested, this, []() {
-            qCInfo(lcApp) << "open requested; main window will be shown (Phase 2+)";
-        });
         connect(m_tray, &TrayIcon::quitRequested, this, &PixiuApp::shutdown);
         connect(m_tray, &TrayIcon::quitRequested, QCoreApplication::quit);
     } else {
@@ -75,16 +70,39 @@ bool PixiuApp::start()
         m_floatingBall->move(screenRect.right() - m_floatingBall->width() - 24,
                              screenRect.bottom() - m_floatingBall->height() - 24);
     }
-    connect(m_floatingBall, &FloatingBall::clicked, this, []() {
-        qCInfo(lcApp) << "floating ball clicked; chat window will be toggled (next feature)";
-    });
     connect(m_floatingBall, &FloatingBall::movedTo, this, [this](const QPoint &pos) {
         m_settings->setValue(AppSettings::keyBallPosition, pos);
         m_settings->sync();
     });
     m_floatingBall->show();
 
-    // 后续 feature 在此创建服务与窗口（以 this 为 parent）。
+    // 聊天主窗口：默认屏幕右下角弹出（悬浮球附近）。
+    m_chatWindow = new ChatWindow();
+    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+        const QRect screenRect = screen->availableGeometry();
+        m_chatWindow->move(screenRect.right() - m_chatWindow->width() - 24,
+                           screenRect.bottom() - m_chatWindow->height() - 24);
+    }
+
+    // 各入口统一唤起聊天框。
+    connect(m_floatingBall, &FloatingBall::clicked, this, [this]() {
+        if (m_chatWindow->isChatVisible()) {
+            m_chatWindow->hideAnimated();
+        } else {
+            m_chatWindow->showAndFocus();
+        }
+    });
+    connect(m_chatWindow, &ChatWindow::closeRequested,
+            m_chatWindow, &ChatWindow::hideAnimated);
+    connect(m_chatWindow, &ChatWindow::openPanelRequested, this, []() {
+        qCInfo(lcApp) << "memory panel requested (Phase 5)";
+    });
+    connect(m_instanceGuard, &SingleInstanceGuard::activationRequested,
+            m_chatWindow, &ChatWindow::showAndFocus);
+    if (m_tray) {
+        connect(m_tray, &TrayIcon::openRequested,
+                m_chatWindow, &ChatWindow::showAndFocus);
+    }
 
     emit started();
     qCInfo(lcApp) << "PIXIU application started";

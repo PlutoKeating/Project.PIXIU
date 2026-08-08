@@ -23,6 +23,8 @@ add_executable(pixiu-frontend
     src/app/AppSettings.cpp
     src/widgets/FloatingBall.h
     src/widgets/FloatingBall.cpp
+    src/widgets/ChatWindow.h
+    src/widgets/ChatWindow.cpp
 )
 
 target_link_libraries(pixiu-frontend
