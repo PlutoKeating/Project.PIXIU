@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 #include "widgets/EvidenceCard.h"
@@ -73,6 +74,39 @@ void MessageList::setThinking(bool thinking)
         appendRow(createSystemBubble(hint), Qt::AlignCenter);
         scrollToBottom();
     }
+}
+
+void MessageList::appendQueryError(const QString &retryText, const QString &detail)
+{
+    QWidget *container = new QWidget();
+    QVBoxLayout *layout = new QVBoxLayout(container);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(4);
+
+    QLabel *hint = new QLabel(detail);
+    hint->setObjectName(QStringLiteral("queryErrorHint"));
+    hint->setAlignment(Qt::AlignCenter);
+    hint->setWordWrap(true);
+    hint->setStyleSheet(QStringLiteral("color: #d93025; font-size: 12px;"));
+    layout->addWidget(hint);
+
+    QPushButton *retry = new QPushButton(tr("重试"));
+    retry->setObjectName(QStringLiteral("retryButton"));
+    retry->setCursor(Qt::PointingHandCursor);
+    retry->setFlat(true);
+    connect(retry, &QPushButton::clicked, this, [this, retryText]() {
+        emit retryRequested(retryText);
+    });
+
+    QHBoxLayout *buttonRow = new QHBoxLayout();
+    buttonRow->setContentsMargins(0, 0, 0, 0);
+    buttonRow->addStretch(1);
+    buttonRow->addWidget(retry);
+    buttonRow->addStretch(1);
+    layout->addLayout(buttonRow);
+
+    appendRow(container, Qt::AlignCenter);
+    scrollToBottom();
 }
 
 QWidget *MessageList::createUserBubble(const ChatMessage &message) const

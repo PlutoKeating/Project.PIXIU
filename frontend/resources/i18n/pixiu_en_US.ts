@@ -309,6 +309,11 @@ This action cannot be undone.</translation>
         <source>置信度 %1 · 延迟 %2ms</source>
         <translation>Confidence %1 · Latency %2ms</translation>
     </message>
+    <message>
+        <location filename="../../src/widgets/MessageList.cpp" line="118"/>
+        <source>重试</source>
+        <translation>Retry</translation>
+    </message>
 </context>
 <context>
     <name>PixiuApp</name>

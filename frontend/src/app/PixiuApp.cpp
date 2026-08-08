@@ -196,13 +196,15 @@ bool PixiuApp::start()
             });
     connect(m_queryController, &QueryController::queryFailed, this,
             [this](const QString &text, const QString &code, const QString &message) {
-                ChatMessage notice;
-                notice.role = MessageRole::System;
-                notice.text = tr("查询失败（%1）：%2\n输入已保留，可修改后重试。")
-                                  .arg(code, message);
-                notice.timestamp = QDateTime::currentSecsSinceEpoch();
-                m_chatWindow->messageList()->appendMessage(notice);
+                const QString detail =
+                    tr("查询失败（%1）：%2\n输入已保留，可修改后重试。")
+                        .arg(code, message);
+                m_chatWindow->messageList()->appendQueryError(text, detail);
                 m_chatWindow->restoreInput(text);
+            });
+    connect(m_chatWindow->messageList(), &MessageList::retryRequested, this,
+            [this](const QString &text) {
+                m_queryController->submit(text);
             });
     connect(m_chatWindow->messageList(), &MessageList::evidenceClicked, this,
             [this](const QString &evidenceId) {

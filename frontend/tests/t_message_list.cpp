@@ -1,4 +1,5 @@
 #include <QLabel>
+#include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
 
@@ -17,6 +18,7 @@ private slots:
     void thinkingPlaceholderIsReplacedByNextMessage();
     void clearMessagesEmptiesList();
     void evidenceClickIsForwarded();
+    void queryErrorShowsDetailAndRetryEmitsRequest();
 };
 
 static ChatMessage makeMessage(MessageRole role, const QString &text)
@@ -97,6 +99,31 @@ void TestMessageList::evidenceClickIsForwarded()
     QTest::mouseClick(card, Qt::LeftButton);
     QCOMPARE(spy.count(), 1);
     QCOMPARE(spy.takeFirst().at(0).toString(), QStringLiteral("evd_42"));
+}
+
+void TestMessageList::queryErrorShowsDetailAndRetryEmitsRequest()
+{
+    MessageList list;
+    QSignalSpy spy(&list, &MessageList::retryRequested);
+
+    list.appendQueryError(QStringLiteral("燃气费是多少"),
+                          QStringLiteral("查询失败（timeout）：连接超时\n输入已保留。"));
+    QCOMPARE(list.count(), 1);
+
+    QWidget *content = list.itemWidget(list.item(0));
+    QVERIFY(content != nullptr);
+
+    QLabel *hint = content->findChild<QLabel *>(QStringLiteral("queryErrorHint"));
+    QVERIFY(hint != nullptr);
+    QVERIFY(hint->text().contains(QStringLiteral("timeout")));
+
+    QPushButton *retry = content->findChild<QPushButton *>(QStringLiteral("retryButton"));
+    QVERIFY(retry != nullptr);
+    QCOMPARE(retry->text(), QStringLiteral("重试"));
+
+    QTest::mouseClick(retry, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.takeFirst().at(0).toString(), QStringLiteral("燃气费是多少"));
 }
 
 QTEST_MAIN(TestMessageList)

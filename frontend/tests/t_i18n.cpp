@@ -27,6 +27,8 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Cancel"));
     QCOMPARE(QCoreApplication::translate("MessageList", "思考中…"),
              QStringLiteral("Thinking…"));
+    QCOMPARE(QCoreApplication::translate("MessageList", "重试"),
+             QStringLiteral("Retry"));
 }
 
 QTEST_MAIN(TestI18n)

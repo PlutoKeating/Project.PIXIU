@@ -19,9 +19,15 @@ public:
     // 答案加载占位（骨架屏）。
     void setThinking(bool thinking);
 
+    // 查询失败提示行：红字详情 + 重试按钮；点击重试时以 retryRequested
+    // 携带原始查询文本上抛（UI 不直接调用 controller）。
+    void appendQueryError(const QString &retryText, const QString &detail);
+
 signals:
     // 点击证据卡（回溯原文）。
     void evidenceClicked(const QString &evidenceId);
+    // 点击失败提示行的“重试”按钮（携带原始查询文本）。
+    void retryRequested(const QString &text);
 
 private:
     QWidget *createUserBubble(const ChatMessage &message) const;
