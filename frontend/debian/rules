@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+# PIXIU 前端打包规则（不依赖 debhelper）。
+#
+# 本机未安装 debhelper，打包走 scripts/build-deb.sh 的 dpkg-deb 路径。
+# dpkg-buildpackage 调用本 rules 的 clean/build/binary 目标时，
+# binary 目标直接委托给打包脚本产出 .deb。
+
+export DH_VERBOSE = 1
+
+.PHONY: clean build binary
+
+clean:
+	@echo "clean: build artifacts kept (use scripts/build-deb.sh -r to clean)"
+
+build:
+	@echo "build: delegated to scripts/build-deb.sh"
+
+binary:
+	./scripts/build-deb.sh

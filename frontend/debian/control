@@ -1,0 +1,16 @@
+Package: pixiu-frontend
+Version: 0.1.0-1
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: PIXIU Team <pixiu@example.invalid>
+Depends: libqt5widgets5t64,
+         libqt5network5t64,
+         libqt5websockets5,
+         libkysdk-shortcut,
+         libkysdk-notification,
+         libkysdk-qtwidgets,
+         libgsettings-qt1
+Description: PIXIU UKUI desktop client
+  Decentralized memory assistant for the Kylin desktop: floating ball,
+  chat window and memory management panel. Built with Qt5 and KylinSDK.

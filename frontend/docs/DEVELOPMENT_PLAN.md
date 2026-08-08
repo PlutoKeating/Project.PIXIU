@@ -8,7 +8,7 @@
 > 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
 > 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏、Phase 7.6 桌面入口
-> 已在本机（Kylin V11）完成编译/测试/冒烟验收；
+> 与 Phase 7.7 `.deb` 打包已在本机（Kylin V11）完成编译/测试/冒烟验收；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）。
 
@@ -62,6 +62,9 @@
 - 已实现桌面入口：`resources/com.kylin.pixiu.desktop`（名称/注释/Exec/图标），
   CMake 增加 `GNUInstallDirs` 安装规则（二进制 → `bin/`，desktop → 
   `share/applications/`），`desktop-file-validate` 校验通过。
+- 已实现 `.deb` 打包：`debian/`（control/rules/postinst）+ `scripts/build-deb.sh`
+  基于 `dpkg-deb --build` 产出 `pixiu-frontend_<version>_<arch>.deb`，包含
+  `/usr/bin/pixiu-frontend` 与桌面入口；`dpkg-buildpackage` 的 rules 委托同一脚本。
 
 ### 1.2 尚未完成
 
@@ -69,18 +72,17 @@
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
 - Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
-- Phase 7.7 `.deb` 打包与 Phase 8 验收发布尚未完成。
+- Phase 8 验收发布尚未完成（真实桌面会话展示与 x86/ARM 目标机验收依赖人工复测）。
 
 ### 1.3 下一项最小独立 feature
 
-下一项为 **`build(frontend): add Debian packaging`**（Phase 7.7），在
-`frontend/` 下增加 `debian/` 打包目录（control、rules、postinst）与打包脚本，
-产出 `pixiu-frontend` 的 `.deb` 安装包（含 desktop 入口与 `libkysdk-*`、
-Qt5 依赖声明）。选择它的原因是：
+下一项为 **Phase 8 验收基线**：对已交付的全部前端功能做回归（OFF/ON 两路径
+configure/build/ctest、KYSDK offscreen 冒烟、`.deb` 产物校验），并整理
+麒麟适配记录与已知问题清单。选择它的原因是：
 
-1. 桌面入口与 CMake 安装规则（Phase 7.6）已就绪，打包可直接复用。
-2. 不依赖 backend 或仍占位的契约，可独立用 `dpkg-deb --build` 验证产物结构。
-3. 产物供 Phase 8 麒麟目标机（x86/ARM）安装验收复用。
+1. Phase 7 各能力已全部落地，下一步是收敛为可复现的验收基线。
+2. 不引入新契约；真实桌面会话与 x86/ARM 目标机验证仍属人工步骤。
+3. 阻塞项不变：Phase 5.4/5.5 等待后端契约、Phase 6 等待 `foundation/sync`。
 
 ## 2. 职责边界与 SDK 策略
 
@@ -379,6 +381,11 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
      验证 `bin/pixiu-frontend` 与 `share/applications/com.kylin.pixiu.desktop`
      路径正确；OFF 路径 ctest 11/11 通过。
 7. `.deb` 打包：`build(frontend): add Debian packaging`
+   - [x] 本地验收通过（2026-08-08，Kylin V11 本机）：
+     `scripts/build-deb.sh`（KYSDK=ON Release）产出
+     `build/dist/pixiu-frontend_0.1.0-1_amd64.deb`；`dpkg-deb -I/-c` 校验
+     control、postinst、`/usr/bin/pixiu-frontend` 与 desktop 路径正确；
+     `debian/rules binary` 委托路径可用。
 
 每项需在目标银河麒麟/UKUI 环境验证；不得以 Windows 降级路径代替适配结论。
 
@@ -496,6 +503,17 @@ ON 路径                  configure/build 通过；ctest 11/11 通过
 安装规则                 GNUInstallDirs：bin/ + share/applications/
 安装验证                 cmake --install --prefix <temp> 产出两文件路径正确
 测试                     ctest 11/11 通过
+```
+
+2026-08-08 追加（Phase 7.7，本机银河麒麟 V11）：
+
+```text
+打包方式                 dpkg-deb --build（本机无 debhelper）；rules 委托脚本
+产物                     build/dist/pixiu-frontend_0.1.0-1_amd64.deb（88 KB）
+内容校验                 dpkg-deb -I/-c：control/postinst/usr/bin/desktop 正确
+依赖声明                 libqt5widgets5t64/libqt5network5t64/libqt5websockets5/
+                         libkysdk-shortcut/libkysdk-notification/libkysdk-qtwidgets/
+                         libgsettings-qt1
 ```
 
 WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
