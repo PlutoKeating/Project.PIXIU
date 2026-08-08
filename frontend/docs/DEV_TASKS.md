@@ -33,6 +33,8 @@
   对应 `MessageList::appendEmptyResult`/`importKnowledgeRequested` 与用例。
 - 新增 `t_import_dialog`（按钮门控/确认载荷/取消/Esc/图片拖入预览），
   套件 21 例全绿。
+- 悬浮球已带右键菜单（打开聊天框 / 记忆面板 / 退出），与托盘/聊天框
+  入口统一接线。
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 
