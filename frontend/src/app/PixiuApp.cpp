@@ -2,9 +2,11 @@
 
 #include "app/SingleInstanceGuard.h"
 #include "app/TrayIcon.h"
+#include "app/AppSettings.h"
 
 #include <QLoggingCategory>
 #include <QCoreApplication>
+#include <QDateTime>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
 
@@ -48,6 +50,17 @@ bool PixiuApp::start()
         m_tray->deleteLater();
         m_tray = nullptr;
     }
+
+    // 基础设置持久化：记录最近一次启动时间，验证读写链路。
+    m_settings = new AppSettings(this);
+    const qint64 lastLaunched =
+        m_settings->value(AppSettings::keyLastLaunched, QVariant::fromValue(qint64(0))).toLongLong();
+    if (lastLaunched > 0) {
+        qCInfo(lcApp) << "previous launch timestamp:" << lastLaunched;
+    }
+    m_settings->setValue(AppSettings::keyLastLaunched,
+                         QDateTime::currentSecsSinceEpoch());
+    m_settings->sync();
 
     // 后续 feature 在此创建服务与窗口（以 this 为 parent）。
 
