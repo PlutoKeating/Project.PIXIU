@@ -12,6 +12,8 @@ class ChatWindow;
 class ShortcutManager;
 class BackendTransport;
 class QueryController;
+class WriteController;
+class ImportDialog;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -51,6 +53,8 @@ private:
     ShortcutManager *m_shortcutManager = nullptr;
     BackendTransport *m_transport = nullptr;
     QueryController *m_queryController = nullptr;
+    WriteController *m_writeController = nullptr;
+    ImportDialog *m_importDialog = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 

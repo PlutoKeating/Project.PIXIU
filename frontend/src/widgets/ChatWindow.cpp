@@ -53,6 +53,7 @@ ChatWindow::ChatWindow(QWidget *parent)
 
     m_inputBar = new InputBar(this);
     connect(m_inputBar, &InputBar::sendRequested, this, &ChatWindow::sendRequested);
+    connect(m_inputBar, &InputBar::attachRequested, this, &ChatWindow::attachRequested);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(16, 12, 16, 16);

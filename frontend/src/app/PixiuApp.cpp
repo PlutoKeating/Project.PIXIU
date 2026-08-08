@@ -5,8 +5,10 @@
 #include "app/AppSettings.h"
 #include "app/ShortcutManager.h"
 #include "app/QueryController.h"
+#include "app/WriteController.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
+#include "widgets/ImportDialog.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
 #include "models/MemoryAtom.h"
@@ -181,6 +183,37 @@ bool PixiuApp::start()
             &QueryController::handleQueryResult);
     connect(m_transport, &BackendTransport::queryFailed, m_queryController,
             &QueryController::handleQueryError);
+
+    // 写入控制器 + 录入对话框。
+    m_writeController = new WriteController(m_transport, this);
+    m_importDialog = new ImportDialog();
+    connect(m_chatWindow, &ChatWindow::attachRequested,
+            m_importDialog, &QDialog::show);
+    connect(m_importDialog, &ImportDialog::importRequested,
+            m_writeController, &WriteController::submit);
+    connect(m_writeController, &WriteController::writeAccepted, this,
+            [this](const QJsonObject &response) {
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("已沉淀：证据 %1 · 质量评分 %2 · 敏感度 %3")
+                                  .arg(response.value(QStringLiteral("evidence_id")).toString(),
+                                       QString::number(
+                                           response.value(QStringLiteral("quality_score")).toDouble(),
+                                           'f', 2),
+                                       QString::number(
+                                           response.value(QStringLiteral("sensitivity")).toInt()));
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+            });
+    connect(m_writeController, &WriteController::writeFailed, this,
+            [this](const QString &code, const QString &message) {
+                ChatMessage notice;
+                notice.role = MessageRole::System;
+                notice.text = QStringLiteral("录入失败（%1）：%2").arg(code, message);
+                notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                m_chatWindow->messageList()->appendMessage(notice);
+            });
+
     m_transport->connectToBackend();
 
     emit started();

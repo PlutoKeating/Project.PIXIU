@@ -42,6 +42,7 @@ signals:
     void closeRequested();
     void openPanelRequested();
     void sendRequested(const QString &text);
+    void attachRequested();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

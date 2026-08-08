@@ -25,6 +25,8 @@ add_executable(pixiu-frontend
     src/app/ShortcutManager.cpp
     src/app/QueryController.h
     src/app/QueryController.cpp
+    src/app/WriteController.h
+    src/app/WriteController.cpp
     src/widgets/FloatingBall.h
     src/widgets/FloatingBall.cpp
     src/widgets/ChatWindow.h
@@ -35,6 +37,8 @@ add_executable(pixiu-frontend
     src/widgets/MessageList.cpp
     src/widgets/EvidenceCard.h
     src/widgets/EvidenceCard.cpp
+    src/widgets/ImportDialog.h
+    src/widgets/ImportDialog.cpp
     src/models/ChatMessage.h
     src/models/MemoryAtom.h
     src/services/BackendTypes.h
