@@ -6,6 +6,7 @@
 class QLabel;
 class QPushButton;
 class QPropertyAnimation;
+class InputBar;
 
 // 聊天主窗口：无边框圆角浮层，顶栏（标题 + 状态 + 面板/关闭）。
 //
@@ -28,6 +29,7 @@ public:
 signals:
     void closeRequested();
     void openPanelRequested();
+    void sendRequested(const QString &text);
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
@@ -39,6 +41,7 @@ private:
     void animateOpacity(qreal target);
 
     QLabel *m_statusLabel = nullptr;
+    InputBar *m_inputBar = nullptr;
     QPropertyAnimation *m_opacityAnimation = nullptr;
     QPoint m_rememberedPos;
 

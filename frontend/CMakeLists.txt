@@ -25,6 +25,8 @@ add_executable(pixiu-frontend
     src/widgets/FloatingBall.cpp
     src/widgets/ChatWindow.h
     src/widgets/ChatWindow.cpp
+    src/widgets/InputBar.h
+    src/widgets/InputBar.cpp
 )
 
 target_link_libraries(pixiu-frontend

@@ -11,6 +11,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "widgets/InputBar.h"
+
 Q_LOGGING_CATEGORY(lcChat, "pixiu.chat-window")
 
 ChatWindow::ChatWindow(QWidget *parent)
@@ -46,15 +48,19 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(panelButton);
     topBar->addWidget(closeButton);
 
-    QLabel *placeholder = new QLabel(QStringLiteral("聊天内容区域（消息列表与输入栏即将加入）"), this);
+    QLabel *placeholder = new QLabel(QStringLiteral("聊天内容区域（消息列表即将加入）"), this);
     placeholder->setAlignment(Qt::AlignCenter);
     placeholder->setStyleSheet(QStringLiteral("color: #9aa0a6;"));
+
+    m_inputBar = new InputBar(this);
+    connect(m_inputBar, &InputBar::sendRequested, this, &ChatWindow::sendRequested);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(16, 12, 16, 16);
     layout->setSpacing(8);
     layout->addLayout(topBar);
     layout->addWidget(placeholder, 1);
+    layout->addWidget(m_inputBar);
 }
 
 void ChatWindow::showAndFocus()
@@ -65,7 +71,7 @@ void ChatWindow::showAndFocus()
     }
     raise();
     activateWindow();
-    setFocus(Qt::ActiveWindowFocusReason);
+    m_inputBar->focusInput();
 }
 
 void ChatWindow::hideAnimated()
