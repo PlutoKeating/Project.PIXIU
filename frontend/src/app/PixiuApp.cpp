@@ -8,6 +8,7 @@
 #include "app/WriteController.h"
 #include "app/ForgetController.h"
 #include "app/ConflictController.h"
+#include "app/PreferenceController.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
@@ -287,6 +288,19 @@ bool PixiuApp::start()
                 qCWarning(lcApp) << "conflicts load failed:" << code << message;
             });
     m_conflictController->refresh();
+
+    // 偏好历史：面板内输入偏好 ID 后加载版本历史。
+    m_preferenceController = new PreferenceController(m_transport, this);
+    connect(m_memoryPanel, &MemoryPanel::historyRequested,
+            m_preferenceController, &PreferenceController::loadHistory);
+    connect(m_preferenceController, &PreferenceController::historyLoaded, this,
+            [this](const QJsonObject &response) {
+                m_memoryPanel->setPreferenceHistory(response);
+            });
+    connect(m_preferenceController, &PreferenceController::failed, this,
+            [](const QString &code, const QString &message) {
+                qCWarning(lcApp) << "preference history failed:" << code << message;
+            });
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
     m_wsClient = new WebSocketClient(this);

@@ -1,6 +1,9 @@
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QLineEdit>
 #include <QListWidget>
+#include <QPushButton>
+#include <QSignalSpy>
 #include <QTabWidget>
 #include <QTest>
 
@@ -16,6 +19,8 @@ private slots:
     void tabTitlesMatchPlan();
     void setConflictsPopulatesList();
     void setConflictsShowsEmptyState();
+    void loadButtonEmitsHistoryRequested();
+    void setPreferenceHistoryPopulatesList();
 };
 
 void TestMemoryPanel::hasThreeTabs()
@@ -52,7 +57,7 @@ void TestMemoryPanel::setConflictsPopulatesList()
 
     panel.setConflicts(conflicts);
 
-    QListWidget *list = panel.findChild<QListWidget *>();
+    QListWidget *list = panel.findChild<QListWidget *>(QStringLiteral("conflictList"));
     QVERIFY(list != nullptr);
     QCOMPARE(list->count(), 2);
     QVERIFY(list->item(0)->text().contains(
@@ -66,10 +71,61 @@ void TestMemoryPanel::setConflictsShowsEmptyState()
     MemoryPanel panel;
     panel.setConflicts(QJsonArray());
 
-    QListWidget *list = panel.findChild<QListWidget *>();
+    QListWidget *list = panel.findChild<QListWidget *>(QStringLiteral("conflictList"));
     QVERIFY(list != nullptr);
     QCOMPARE(list->count(), 0);
     QVERIFY(list->isHidden());
+}
+
+void TestMemoryPanel::loadButtonEmitsHistoryRequested()
+{
+    MemoryPanel panel;
+    QSignalSpy spy(&panel, &MemoryPanel::historyRequested);
+
+    QLineEdit *input = panel.findChild<QLineEdit *>();
+    QVERIFY(input != nullptr);
+    input->setText(QStringLiteral("pref_abc"));
+
+    QPushButton *button = nullptr;
+    const QList<QPushButton *> buttons = panel.findChildren<QPushButton *>();
+    for (QPushButton *candidate : buttons) {
+        if (candidate->text() == QStringLiteral("加载历史")) {
+            button = candidate;
+            break;
+        }
+    }
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.takeFirst().at(0).toString(), QStringLiteral("pref_abc"));
+}
+
+void TestMemoryPanel::setPreferenceHistoryPopulatesList()
+{
+    MemoryPanel panel;
+    QJsonObject response;
+    response.insert(QStringLiteral("id"), QStringLiteral("pref_abc"));
+    response.insert(QStringLiteral("key"), QStringLiteral("output_style.compact"));
+    response.insert(QStringLiteral("current_version"), 3);
+    response.insert(QStringLiteral("history"), QJsonArray{
+        QJsonObject{
+            {QStringLiteral("version"), 1},
+            {QStringLiteral("updated_at"), 1714435200},
+            {QStringLiteral("value"), QJsonObject{{QStringLiteral("enabled"), false}}}},
+        QJsonObject{
+            {QStringLiteral("version"), 2},
+            {QStringLiteral("updated_at"), 1714521600},
+            {QStringLiteral("value"), QJsonObject{{QStringLiteral("enabled"), true}}}}});
+
+    panel.setPreferenceHistory(response);
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("prefHistoryList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 2);
+    QVERIFY(list->item(0)->text().contains(QStringLiteral("v1")));
+    QVERIFY(list->item(0)->text().contains(QStringLiteral("\"enabled\":false")));
+    QVERIFY(!list->isHidden());
 }
 
 QTEST_MAIN(TestMemoryPanel)

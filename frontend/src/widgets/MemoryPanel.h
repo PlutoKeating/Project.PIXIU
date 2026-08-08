@@ -2,10 +2,13 @@
 #define PIXIU_MEMORY_PANEL_H
 
 #include <QJsonArray>
+#include <QJsonObject>
 #include <QWidget>
 
 class QLabel;
+class QLineEdit;
 class QListWidget;
+class QPushButton;
 class QTabWidget;
 
 // 记忆管理面板：偏好 / 冲突 / 同步 三个 Tab。
@@ -25,13 +28,25 @@ public:
     // 更新冲突审计 Tab 内容（来自 GET /conflicts）。
     void setConflicts(const QJsonArray &conflicts);
 
+    // 更新偏好历史 Tab 内容（来自 GET /preference/{id}/history）。
+    void setPreferenceHistory(const QJsonObject &response);
+
+signals:
+    // 用户请求加载指定偏好 ID 的历史。
+    void historyRequested(const QString &preferenceId);
+
 private:
     QWidget *createPlaceholderTab(const QString &title, const QString &description) const;
     QWidget *createConflictTab();
+    QWidget *createPreferenceTab();
 
     QTabWidget *m_tabs = nullptr;
     QListWidget *m_conflictList = nullptr;
     QLabel *m_conflictEmptyLabel = nullptr;
+    QLineEdit *m_prefIdInput = nullptr;
+    QListWidget *m_prefHistoryList = nullptr;
+    QLabel *m_prefHeaderLabel = nullptr;
+    QLabel *m_prefEmptyLabel = nullptr;
 };
 
 #endif // PIXIU_MEMORY_PANEL_H
