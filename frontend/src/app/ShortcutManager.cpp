@@ -12,9 +12,6 @@
 Q_LOGGING_CATEGORY(lcShortcut, "pixiu.shortcut")
 
 namespace {
-
-const QString kToggleKeySequence = QStringLiteral("Ctrl+Alt+P");
-
 #ifdef PIXIU_HAVE_KYSDK
 // 系统级全局快捷键名称：全局唯一，用于创建/更新/删除。
 const char kToggleShortcutName[] = "pixiu-frontend.toggle-chat";
@@ -33,8 +30,12 @@ ShortcutManager::~ShortcutManager()
     releaseToggleShortcut();
 }
 
-bool ShortcutManager::registerToggleShortcut()
+bool ShortcutManager::registerToggleShortcut(const QKeySequence &sequence)
 {
+    m_sequence = sequence.isEmpty()
+                     ? QKeySequence(QStringLiteral("Ctrl+Alt+P"))
+                     : sequence;
+
 #ifdef PIXIU_HAVE_KYSDK
     // 优先使用 kysdk 系统级全局快捷键；失败（按键冲突、无桌面服务等）时
     // 降级到 Qt ApplicationShortcut，保证唤起功能可用。
@@ -48,14 +49,19 @@ bool ShortcutManager::registerToggleShortcut()
         return false;
     }
 
-    m_shortcut = new QShortcut(QKeySequence(kToggleKeySequence),
-                               m_contextWidget, nullptr, nullptr,
+    m_shortcut = new QShortcut(m_sequence, m_contextWidget, nullptr, nullptr,
                                Qt::ApplicationShortcut);
     m_shortcut->setObjectName(QStringLiteral("toggleChatShortcut"));
     connect(m_shortcut, &QShortcut::activated, this, &ShortcutManager::toggleRequested);
 
-    qCInfo(lcShortcut) << "registered Qt fallback shortcut" << kToggleKeySequence;
+    qCInfo(lcShortcut) << "registered Qt fallback shortcut"
+                       << m_sequence.toString(QKeySequence::PortableText);
     return true;
+}
+
+QKeySequence ShortcutManager::currentSequence() const
+{
+    return m_sequence;
 }
 
 void ShortcutManager::releaseToggleShortcut()
@@ -82,7 +88,7 @@ bool ShortcutManager::registerKylinGlobalShortcut()
 {
     const QByteArray name(kToggleShortcutName);
     const QByteArray key =
-        QKeySequence(kToggleKeySequence).toString(QKeySequence::PortableText).toUtf8();
+        m_sequence.toString(QKeySequence::PortableText).toUtf8();
     const QByteArray action = QCoreApplication::applicationFilePath().toUtf8();
 
     int result = kdk_shortcut_create_global_shortcut(name.constData(),

@@ -46,6 +46,12 @@
 > PixiuApp 将 `ConflictController`/`PreferenceController` 失败上抛到面板
 > 并记录最近偏好 ID 供重试重发；`t_memory_panel` 新增 4 例，套件 27 例
 > 全绿（OFF/ON 双路径），i18n 147 条、0 未完成。
+> 全局快捷键自定义（2026-08-09）已完成：`SettingsDialog` 增加
+> `QKeySequenceEdit`（默认 Ctrl+Alt+P，需含 Ctrl/Alt/Meta 修饰键），
+> `ShortcutManager` 支持自定义序列（空值回退默认），`keyToggleShortcut`
+> 持久化，启动按已存序列注册、设置确认后即时重注册；`t_shortcut_manager`/
+> `t_settings_dialog`/`t_app_settings`/`t_i18n` 扩展，套件 27 例全绿
+> （OFF/ON 双路径），i18n 149 条、0 未完成。
 
 ## 1. 当前进度摘要
 
@@ -110,6 +116,15 @@
   `PreferenceController::failed` 时把错误上抛到对应 Tab，并记录最近一次
   偏好 ID 供重试重发；`t_memory_panel` 新增 4 例，`t_i18n` 扩展，套件
   27 例全绿（OFF/ON 双路径），i18n 147 条、0 未完成。
+- 已实现全局快捷键自定义（2026-08-09，ARCHITECTURE §9）：`SettingsDialog`
+  增加 `QKeySequenceEdit`（默认 `Ctrl+Alt+P`，要求包含 Ctrl/Alt/Meta 修饰键，
+  否则禁用“确定”）；`ShortcutManager::registerToggleShortcut(sequence)` 支持
+  自定义序列（空序列回退默认，KYSDK 与 Qt 降级路径一致）；
+  `AppSettings::keyToggleShortcut` 持久化 PortableText；`PixiuApp` 启动时按
+  已存序列注册，设置确认后序列变化则释放旧注册并即时重注册。
+  `t_shortcut_manager` 新增 3 例、`t_settings_dialog` 新增 4 例，
+  `t_app_settings`/`t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），
+  i18n 149 条、0 未完成。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -199,6 +214,12 @@ feature 完成（`feat(frontend): add settings dialog and language preference`�
 已完成（`feat(frontend): distinguish load failure from empty state with
 retry`）：MemoryPanel 两个 Tab 显示失败原因 + 重试按钮，成功加载后自动
 恢复；套件 27 例全绿（OFF/ON 双路径）。
+
+2026-08-09 追加：全局快捷键自定义（不依赖后端，对应 ARCHITECTURE §9）已完成
+（`feat(frontend): make toggle shortcut customizable in settings`）：设置页
+`QKeySequenceEdit` 门控（需含修饰键），`ShortcutManager` 自定义序列 + 空值
+回退，`keyToggleShortcut` 持久化，启动读取/确认后即时重注册；套件 27 例
+全绿（OFF/ON 双路径），i18n 149 条、0 未完成。
 
 其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
@@ -791,6 +812,27 @@ i18n                   pixiu_en_US.ts 增补 MemoryPanel/PixiuApp 条目
 冒烟                   offscreen 启动 "PIXIU application started" 无回归
 提交                   feat(frontend): distinguish load failure from empty
                        state with retry（文档随 feature 提交一并更新）
+```
+
+2026-08-09 追加（全局快捷键自定义，OFF/ON 本机验证）：
+
+```text
+设置页                 SettingsDialog 新增 QKeySequenceEdit（默认 Ctrl+Alt+P，
+                       需含 Ctrl/Alt/Meta 修饰键，否则“确定”禁用）
+注册                  ShortcutManager::registerToggleShortcut(sequence)：
+                       空序列回退默认；KYSDK 与 Qt 降级路径统一使用自定义序列
+持久化                 AppSettings::keyToggleShortcut（PortableText）
+应用时                 PixiuApp 启动按已存序列注册；设置确认后序列变化时
+                       释放旧注册并即时重注册
+i18n                   pixiu_en_US.ts 增补 SettingsDialog 条目
+                       （149 条，0 未完成），.qm 重新生成
+测试                   OFF/ON 双路径 ctest 27/27 通过（t_shortcut_manager
+                       新增自定义/回退/旧序列失效 3 例；t_settings_dialog
+                       新增默认/回退/门控 4 例；t_app_settings / t_i18n 扩展）
+冒烟                   offscreen 启动 "PIXIU application started" 无回归
+                       （offscreen 下 KYSDK 注册失败按设计降级 Qt）
+提交                   feat(frontend): make toggle shortcut customizable
+                       in settings（文档随 feature 提交一并更新）
 ```
 
 ## 7. Git 工作流

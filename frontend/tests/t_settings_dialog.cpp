@@ -1,4 +1,5 @@
 #include <QComboBox>
+#include <QKeySequenceEdit>
 #include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
@@ -14,6 +15,10 @@ private slots:
     void defaultLanguageFollowsSystem();
     void setLanguageSelectsSavedValue();
     void languageOptionsCarryStableCodes();
+    void defaultShortcutIsDefaultSequence();
+    void setShortcutRoundTrip();
+    void okDisabledForEmptyOrPlainKeyShortcut();
+    void okEnabledForModifiedShortcut();
     void okAcceptsWithSelectedLanguage();
     void escapeCancels();
     void closeCancels();
@@ -47,6 +52,57 @@ void TestSettingsDialog::languageOptionsCarryStableCodes()
     QCOMPARE(combo->findData(QStringLiteral("system")), 0);
     QCOMPARE(combo->findData(QStringLiteral("zh_CN")), 1);
     QCOMPARE(combo->findData(QStringLiteral("en_US")), 2);
+}
+
+void TestSettingsDialog::defaultShortcutIsDefaultSequence()
+{
+    SettingsDialog dialog;
+    QCOMPARE(dialog.selectedShortcut(),
+             QKeySequence(QStringLiteral("Ctrl+Alt+P")));
+}
+
+void TestSettingsDialog::setShortcutRoundTrip()
+{
+    SettingsDialog dialog;
+    dialog.setShortcut(QKeySequence(QStringLiteral("Ctrl+Alt+K")));
+    QCOMPARE(dialog.selectedShortcut(),
+             QKeySequence(QStringLiteral("Ctrl+Alt+K")));
+    // 空值回退默认序列，保证旧配置兼容。
+    dialog.setShortcut(QKeySequence());
+    QCOMPARE(dialog.selectedShortcut(),
+             QKeySequence(QStringLiteral("Ctrl+Alt+P")));
+}
+
+void TestSettingsDialog::okDisabledForEmptyOrPlainKeyShortcut()
+{
+    SettingsDialog dialog;
+    QKeySequenceEdit *edit =
+        dialog.findChild<QKeySequenceEdit *>(QStringLiteral("shortcutEdit"));
+    QPushButton *ok =
+        dialog.findChild<QPushButton *>(QStringLiteral("settingsOkButton"));
+    QVERIFY(edit != nullptr);
+    QVERIFY(ok != nullptr);
+
+    edit->setKeySequence(QKeySequence());
+    QVERIFY(!ok->isEnabled());
+    // 裸键（无修饰键）会劫持桌面输入，不允许保存。
+    edit->setKeySequence(QKeySequence(QStringLiteral("P")));
+    QVERIFY(!ok->isEnabled());
+}
+
+void TestSettingsDialog::okEnabledForModifiedShortcut()
+{
+    SettingsDialog dialog;
+    QKeySequenceEdit *edit =
+        dialog.findChild<QKeySequenceEdit *>(QStringLiteral("shortcutEdit"));
+    QPushButton *ok =
+        dialog.findChild<QPushButton *>(QStringLiteral("settingsOkButton"));
+    QVERIFY(edit != nullptr);
+    QVERIFY(ok != nullptr);
+    QVERIFY(ok->isEnabled());
+
+    edit->setKeySequence(QKeySequence(QStringLiteral("Ctrl+P")));
+    QVERIFY(ok->isEnabled());
 }
 
 void TestSettingsDialog::okAcceptsWithSelectedLanguage()

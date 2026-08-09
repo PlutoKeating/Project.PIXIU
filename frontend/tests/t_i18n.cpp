@@ -47,6 +47,12 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Language"));
     QCOMPARE(QCoreApplication::translate("SettingsDialog", "跟随系统"),
              QStringLiteral("Follow system"));
+    QCOMPARE(QCoreApplication::translate("SettingsDialog", "全局快捷键"),
+             QStringLiteral("Global shortcut"));
+    QCOMPARE(QCoreApplication::translate("SettingsDialog",
+             "快捷键需包含 Ctrl / Alt / Meta 修饰键；修改后立即生效。"),
+             QStringLiteral("Shortcut must include a Ctrl / Alt / Meta "
+                            "modifier; changes apply immediately."));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("PixiuApp", "冲突加载失败（%1）：%2"),

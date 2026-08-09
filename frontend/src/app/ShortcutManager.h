@@ -1,6 +1,7 @@
 #ifndef PIXIU_SHORTCUT_MANAGER_H
 #define PIXIU_SHORTCUT_MANAGER_H
 
+#include <QKeySequence>
 #include <QObject>
 
 class QWidget;
@@ -22,11 +23,15 @@ public:
     explicit ShortcutManager(QWidget *contextWidget, QObject *parent = nullptr);
     ~ShortcutManager() override;
 
-    // 注册唤起快捷键；失败返回 false。
-    bool registerToggleShortcut();
+    // 注册唤起快捷键（默认 Ctrl+Alt+P）；空序列回退默认值；失败返回 false。
+    bool registerToggleShortcut(
+        const QKeySequence &sequence = QKeySequence(QStringLiteral("Ctrl+Alt+P")));
 
     // 释放已注册的快捷键（KYSDK 全局快捷键与 Qt 降级快捷键）；可重复调用。
     void releaseToggleShortcut();
+
+    // 最近一次注册的序列（用于变化检测/测试）。
+    QKeySequence currentSequence() const;
 
 signals:
     void toggleRequested();
@@ -38,6 +43,7 @@ private:
 
     QWidget *m_contextWidget = nullptr;
     QShortcut *m_shortcut = nullptr;
+    QKeySequence m_sequence;
 };
 
 #endif // PIXIU_SHORTCUT_MANAGER_H

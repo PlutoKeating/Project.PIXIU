@@ -16,6 +16,9 @@ class TestShortcutManager : public QObject
 
 private slots:
     void registerToggleShortcutSucceeds();
+    void registerCustomSequenceSucceeds();
+    void customSequenceActivatesAndDefaultDoesNot();
+    void emptySequenceFallsBackToDefault();
     void activationEmitsToggleRequested();
     void releaseDisablesActivation();
     void releaseIsIdempotent();
@@ -26,6 +29,45 @@ void TestShortcutManager::registerToggleShortcutSucceeds()
     QWidget context;
     ShortcutManager manager(&context);
     QVERIFY(manager.registerToggleShortcut());
+}
+
+void TestShortcutManager::registerCustomSequenceSucceeds()
+{
+    QWidget context;
+    ShortcutManager manager(&context);
+    QVERIFY(manager.registerToggleShortcut(
+        QKeySequence(QStringLiteral("Ctrl+Alt+K"))));
+    QCOMPARE(manager.currentSequence(),
+             QKeySequence(QStringLiteral("Ctrl+Alt+K")));
+}
+
+void TestShortcutManager::customSequenceActivatesAndDefaultDoesNot()
+{
+    QWidget context;
+    context.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&context));
+
+    ShortcutManager manager(&context);
+    QVERIFY(manager.registerToggleShortcut(
+        QKeySequence(QStringLiteral("Ctrl+Alt+K"))));
+
+    QSignalSpy spy(&manager, &ShortcutManager::toggleRequested);
+    QTest::keyClick(&context, Qt::Key_K,
+                    Qt::ControlModifier | Qt::AltModifier);
+    QCOMPARE(spy.count(), 1);
+    // 旧默认序列不再触发自定义快捷键。
+    QTest::keyClick(&context, Qt::Key_P,
+                    Qt::ControlModifier | Qt::AltModifier);
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestShortcutManager::emptySequenceFallsBackToDefault()
+{
+    QWidget context;
+    ShortcutManager manager(&context);
+    QVERIFY(manager.registerToggleShortcut(QKeySequence()));
+    QCOMPARE(manager.currentSequence(),
+             QKeySequence(QStringLiteral("Ctrl+Alt+P")));
 }
 
 void TestShortcutManager::activationEmitsToggleRequested()

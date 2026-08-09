@@ -569,6 +569,14 @@ Your input is kept; edit and retry.</translation>
         <translation>Language</translation>
     </message>
     <message>
+        <source>全局快捷键</source>
+        <translation>Global shortcut</translation>
+    </message>
+    <message>
+        <source>快捷键需包含 Ctrl / Alt / Meta 修饰键；修改后立即生效。</source>
+        <translation>Shortcut must include a Ctrl / Alt / Meta modifier; changes apply immediately.</translation>
+    </message>
+    <message>
         <source>跟随系统</source>
         <translation>Follow system</translation>
     </message>

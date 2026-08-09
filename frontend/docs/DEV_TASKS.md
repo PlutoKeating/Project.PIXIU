@@ -91,6 +91,15 @@
   上抛到对应 Tab，并记录最近一次偏好 ID 供重试重发。`t_memory_panel` 新增
   失败态/重试/成功恢复 4 例，`t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），
   i18n `.ts` 增至 147 条、0 未完成。
+- 全局唤起快捷键自定义已完成（2026-08-09，对应 ARCHITECTURE §9“快捷键可在
+  设置中自定义”与“设置持久化：位置/快捷键/语言”）：`SettingsDialog` 新增
+  `QKeySequenceEdit`（默认 `Ctrl+Alt+P`，要求包含 Ctrl/Alt/Meta 修饰键，
+  无修饰键时禁用“确定”）；`ShortcutManager::registerToggleShortcut` 支持传入
+  `QKeySequence`（空序列回退默认），`AppSettings::keyToggleShortcut` 持久化
+  PortableText；`PixiuApp` 启动时按已存序列注册，设置页确认后若序列变化则
+  释放旧注册并按新序列即时重注册。`t_shortcut_manager` 新增自定义序列/
+  空值回退/旧序列不再触发 3 例，`t_settings_dialog` 新增默认/回退/门控 4 例，
+  `t_app_settings`/`t_i18n` 扩展；i18n `.ts` 增至 149 条、0 未完成。
 
 ---
 

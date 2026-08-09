@@ -163,7 +163,10 @@ bool PixiuApp::start()
 
     // 开发态全局快捷键唤起。
     m_shortcutManager = new ShortcutManager(m_chatWindow, this);
-    if (m_shortcutManager->registerToggleShortcut()) {
+    const QKeySequence toggleShortcut(
+        m_settings->value(AppSettings::keyToggleShortcut,
+                          QStringLiteral("Ctrl+Alt+P")).toString());
+    if (m_shortcutManager->registerToggleShortcut(toggleShortcut)) {
         connect(m_shortcutManager, &ShortcutManager::toggleRequested,
                 this, &PixiuApp::toggleChatWindow);
     }
@@ -532,13 +535,30 @@ void PixiuApp::openSettings()
         connect(m_settingsDialog, &QDialog::accepted, this, [this]() {
             m_settings->setValue(AppSettings::keyLanguage,
                                  m_settingsDialog->selectedLanguage());
+            const QKeySequence shortcut = m_settingsDialog->selectedShortcut();
+            m_settings->setValue(
+                AppSettings::keyToggleShortcut,
+                shortcut.toString(QKeySequence::PortableText));
             m_settings->sync();
             qCInfo(lcApp) << "language preference saved:"
                           << m_settingsDialog->selectedLanguage();
+            // 快捷键修改即时生效：先释放旧序列，再按新序列注册。
+            if (m_shortcutManager
+                && shortcut != m_shortcutManager->currentSequence()) {
+                m_shortcutManager->releaseToggleShortcut();
+                m_shortcutManager->registerToggleShortcut(shortcut);
+                qCInfo(lcApp) << "toggle shortcut re-registered:"
+                              << shortcut.toString(QKeySequence::PortableText);
+            }
         });
     }
     m_settingsDialog->setLanguage(
         m_settings->value(AppSettings::keyLanguage).toString());
+    m_settingsDialog->setShortcut(
+        QKeySequence(m_settings->value(
+                         AppSettings::keyToggleShortcut,
+                         QStringLiteral("Ctrl+Alt+P"))
+                         .toString()));
     m_settingsDialog->showAndFocus();
 }
 
