@@ -9,6 +9,7 @@
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QTimer;
 class QUrl;
 
 // HTTP/JSON 后端传输：对齐 docs/API.md 的 12 个 REST 端点。
@@ -23,7 +24,9 @@ class HttpBackendTransport : public BackendTransport
     Q_OBJECT
 
 public:
-    explicit HttpBackendTransport(QObject *parent = nullptr);
+    // healthProbeIntervalMs：周期健康探测间隔（默认 10s，测试可注入更短间隔）。
+    explicit HttpBackendTransport(QObject *parent = nullptr,
+                                  int healthProbeIntervalMs = 10000);
 
     void connectToBackend() override;
     void disconnectFromBackend() override;
@@ -47,6 +50,10 @@ public:
 private:
     QUrl endpoint(const QString &path) const;
 
+    // 周期健康探测：GET /conflicts，仅驱动连接状态，不广播业务信号。
+    // 用于后端中途挂掉/事后恢复时顶栏状态与离线引导能及时刷新。
+    void probeHealth();
+
     void getJson(const QString &path,
                  const std::function<void(quint64, const QJsonObject &)> &onSuccess,
                  quint64 tag = 0);
@@ -64,6 +71,8 @@ private:
     QNetworkAccessManager *m_network = nullptr;
     QString m_baseUrl;
     ConnectionState m_state = ConnectionState::Disconnected;
+    QTimer *m_healthTimer = nullptr;
+    bool m_healthInFlight = false;
     quint64 m_nextRequestId = 1;
 };
 

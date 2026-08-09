@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QTimer>
 #include <QUrl>
 
 Q_LOGGING_CATEGORY(lcHttp, "pixiu.http")
@@ -14,15 +15,20 @@ namespace {
 constexpr int kTransferTimeoutMs = 10000;
 }
 
-HttpBackendTransport::HttpBackendTransport(QObject *parent)
+HttpBackendTransport::HttpBackendTransport(QObject *parent, int healthProbeIntervalMs)
     : BackendTransport(parent)
     , m_network(new QNetworkAccessManager(this))
+    , m_healthTimer(new QTimer(this))
     , m_baseUrl(qEnvironmentVariable(
         "PIXIU_BACKEND_URL", QStringLiteral("http://127.0.0.1:8765")))
 {
     if (m_baseUrl.endsWith(QLatin1Char('/'))) {
         m_baseUrl.chop(1);
     }
+    // 周期健康探测：后端未连接时静默跳过；Disconnected 状态由
+    // disconnectFromBackend() 停止，connectToBackend() 恢复。
+    m_healthTimer->setInterval(healthProbeIntervalMs);
+    connect(m_healthTimer, &QTimer::timeout, this, &HttpBackendTransport::probeHealth);
 }
 
 void HttpBackendTransport::connectToBackend()
@@ -31,13 +37,38 @@ void HttpBackendTransport::connectToBackend()
         return;
     }
     setConnectionState(ConnectionState::Connecting);
-    // 健康探测：GET /conflicts（已实现端点，开销小）。
-    listConflicts();
+    if (!m_healthTimer->isActive()) {
+        m_healthTimer->start();
+    }
+    probeHealth();
 }
 
 void HttpBackendTransport::disconnectFromBackend()
 {
+    m_healthTimer->stop();
     setConnectionState(ConnectionState::Disconnected);
+}
+
+void HttpBackendTransport::probeHealth()
+{
+    // 显式断开后不探测；上一轮探测未返回（后端黑洞/慢响应）时不叠加请求。
+    if (m_state == ConnectionState::Disconnected || m_healthInFlight) {
+        return;
+    }
+    m_healthInFlight = true;
+    QNetworkRequest request(endpoint(QStringLiteral("/conflicts")));
+    request.setTransferTimeout(kTransferTimeoutMs);
+    QNetworkReply *reply = m_network->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        reply->deleteLater();
+        m_healthInFlight = false;
+        // HTTP 4xx/5xx 也说明后端可达（服务在跑），仅传输层失败才算离线。
+        if (reply->error() == QNetworkReply::NoError) {
+            setConnectionState(ConnectionState::Connected);
+        } else {
+            setConnectionState(ConnectionState::Error);
+        }
+    });
 }
 
 quint64 HttpBackendTransport::queryMemory(const QString &text, const QJsonObject &contextHint)

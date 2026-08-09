@@ -140,6 +140,18 @@ if(BUILD_TESTING)
     target_link_libraries(t_websocket_client PRIVATE Qt5::Test Qt5::WebSockets)
     add_test(NAME websocket_client COMMAND t_websocket_client)
 
+    add_executable(t_http_backend
+        tests/t_http_backend.cpp
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+        src/services/HttpBackendTransport.h
+        src/services/HttpBackendTransport.cpp
+    )
+    target_include_directories(t_http_backend PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_http_backend PRIVATE Qt5::Test Qt5::Network)
+    add_test(NAME http_backend COMMAND t_http_backend)
+
     add_executable(t_floating_ball
         tests/t_floating_ball.cpp
         src/widgets/FloatingBall.h

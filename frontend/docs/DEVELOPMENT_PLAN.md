@@ -71,6 +71,10 @@
 > 拉伸与记忆面板尺寸复核；OFF/ON 双路径回归通过，离屏渲染核对截图见
 > `docs/screenshots/ui-polish-2026-08-09/`，逐项状态与剩余人工复测/后端
 > 阻塞项见 `UI_UX_POLISH.md`。
+> 周期健康探测（2026-08-09，健壮性收尾）已完成：`HttpBackendTransport`
+> 独立静默周期探测（GET /conflicts，默认 10s），后端中途挂掉/事后启动时
+> 顶栏状态与离线引导无需用户操作即自动刷新；新增 `t_http_backend`，
+> 套件 28 例 OFF/ON 全绿，本机真实 UKUI 桌面验证通过（详见 §6.3）。
 
 ## 1. 当前进度摘要
 
@@ -162,6 +166,13 @@
   持久化到 `AppSettings::keyWindowGeometry`，启动时恢复并按屏幕可用区域
   钳制（与悬浮球策略一致）；`t_chat_window` 新增拖动用例 1 例；套件 27 例
   全绿（OFF/ON 双路径）。
+- 已实现周期健康探测（2026-08-09，健壮性收尾）：`HttpBackendTransport`
+  增加独立、静默的周期健康探测（GET /conflicts，默认 10s，测试可注入短
+  间隔）：仅驱动连接状态（Connected/Error），不广播 `conflictsResult`/
+  `errorOccurred`，在途防重、显式断开停止；后端中途挂掉/事后启动时顶栏
+  “● 在线/服务异常”与离线引导自动刷新，无需等下一次用户操作。新增
+  `t_http_backend`（3 例），套件 28 例 OFF/ON 双路径全绿，`.deb` 校验
+  通过；本机真实 UKUI 桌面验证通过（见 §6.3）。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -275,6 +286,11 @@ i18n 152 条、0 未完成。
 已完成（`feat(frontend): make chat window draggable and remember position`）：
 空白区域按住拖动 + `keyWindowGeometry` 持久化 + 启动恢复与屏幕钳制；
 套件 27 例全绿（OFF/ON 双路径）。
+
+2026-08-09 追加：周期健康探测（健壮性收尾，不依赖后端）已完成
+（`feat(frontend): probe backend health periodically`）：后端中途挂掉/
+事后启动时，顶栏状态与离线引导无需用户操作即自动刷新；新增
+`t_http_backend`，套件 28 例 OFF/ON 全绿，真实 UKUI 桌面验证通过。
 
 其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
@@ -950,6 +966,26 @@ i18n                   pixiu_en_US.ts 增补 PixiuApp 条目
 冒烟                   offscreen 启动 "PIXIU application started" 无回归
 提交                   feat(frontend): make chat window draggable and
                        remember position（文档随 feature 提交一并更新）
+```
+
+2026-08-09 追加（周期健康探测 + 断点恢复后真实桌面复验，OFF/ON 本机验证）：
+
+```text
+健康探测               HttpBackendTransport 独立静默周期探测：GET /conflicts
+                       （默认 10s，测试可注入短间隔）；仅 setConnectionState，
+                       不广播 conflictsResult/errorOccurred；在途防重；显式
+                       断开停止、连接恢复重启
+效果                   后端中途挂掉：无需用户操作，数个探测间隔内顶栏转
+                       “● 服务异常”并出现离线引导；后端事后启动：自动转回
+                       “● 在线”（此前两种状态都需等下一次用户请求）
+测试                   t_http_backend 新增 3 例（初始连接 / 掉线→自动恢复 /
+                       探测静默不干扰控制器）；OFF/ON 双路径 ctest 28/28
+冒烟                   offscreen 启动 "PIXIU application started" 无回归
+桌面验证               本机实时 UKUI 会话：后端在线→杀后端→约 10s 无交互
+                       自动转“服务异常”（OCR 与日志一致）→重启后端→约
+                       10s 无交互自动转回“● 在线”
+提交                   feat(frontend): probe backend health periodically
+                       （文档随 feature 提交一并更新）
 ```
 
 ## 7. Git 工作流
