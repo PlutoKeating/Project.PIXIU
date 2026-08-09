@@ -988,6 +988,21 @@ i18n                   pixiu_en_US.ts 增补 PixiuApp 条目
                        （文档随 feature 提交一并更新）
 ```
 
+2026-08-09 追加（断点恢复会话真实桌面复验：英文路径 + WS 通知链路）：
+
+```text
+英文路径               本机实时 UKUI 会话 LANGUAGE=en_US 启动：translation
+                       loaded for en_US；聊天框顶栏/状态/按钮/离线引导/
+                       输入占位均为英文（Service error / Memory /
+                       Backend service is offline… / Ask a question…），
+                       与中文字体同渲染正常
+WS 通知链路             scripts/ws_smoke_server.py 桩驱动 memory_ready：
+                       connected → ping → business event memory_ready →
+                       "memory ready: knw_smoke_reconn" →
+                       "kysdk notification sent, id: 3"；悬浮球角标出现
+                       （红点像素核对），与断线前验收行为一致，无回归
+```
+
 ## 7. Git 工作流
 
 所有工作遵循根目录 `AGENTS.md` 和 `HUMANS.md`：
