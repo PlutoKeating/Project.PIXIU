@@ -41,6 +41,14 @@
   复测（当前运行会话未加载 grab，详见 `UKUI_ADAPTATION_REPORT.md` 第 5 节）。
 - 新增测试专用 WS 事件桩 `scripts/ws_smoke_server.py`（仅用于前端 UI 事件
   冒烟，不参与生产路径；后端 `/events` 修复后以真实后端复测）。
+- Phase 6 设备配对 UI 壳（非阻塞部分，2026-08-09）：新增 `PairDialog`
+  （PIN/二维码方式切换、6 位 PIN 门控、Esc/取消语义、契约载荷
+  `{"method","pin","token"}`）、记忆面板同步 Tab 配对入口与状态行，
+  PixiuApp 已接线 `/sync/pair` 并如实呈现 `not_implemented`/网络错误/未知状态
+  （仅契约 `paired` 判成功，不伪造成功）；窗口与托盘图标改用内嵌
+  `pixiu.svg`；新增 `t_pair_dialog`/`t_app_icon`，套件由 21 增至 23 例全绿，
+  双路径回归脚本（OFF/ON 构建 + ctest + offscreen 冒烟 + desktop 校验 + `.deb`）
+  通过。真实配对闭环、节点列表/状态/解绑仍待 `foundation/sync` 契约落地。
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 

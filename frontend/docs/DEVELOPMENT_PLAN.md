@@ -12,10 +12,15 @@
 > Phase 7.3 追加修复：`themeMode()` 仅在启动时缓存，已改为读 QGSettings
 > 实时 `styleName` 判定明暗，并在本机真实桌面会话验证 dark→light→dark
 > 实时跟随（`fix(frontend): read live style name for UKUI theme following`）；
-> Phase 8 本地验收基线已完成（双路径构建 + ctest 21/21 + offscreen 冒烟 +
+> Phase 8 本地验收基线已完成（双路径构建 + ctest 23/23 + offscreen 冒烟 +
 > `.deb` 产物校验），已固化为 `frontend/scripts/regression.sh`；中/英文案
 > i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
 > 适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
+> Phase 6 设备配对 UI 壳（非阻塞部分，2026-08-09）已完成：`PairDialog`、
+> 同步 Tab 配对入口与状态行、`/sync/pair` 接线（如实呈现占位/错误，仅
+> `paired` 判成功）、窗口/托盘内嵌 `pixiu.svg` 图标；新增 `t_pair_dialog`/
+> `t_app_icon`，套件增至 23 例全绿，双路径回归通过；真实配对闭环与
+> 节点列表/状态/解绑仍待 `foundation/sync` 契约落地；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）；
 > Phase 8 真实桌面收尾（2026-08-08）：第二实例激活通道、通知弹窗
@@ -54,6 +59,13 @@
   展示 old/new 对比与裁决结果；面板每次打开时刷新。
 - 已实现偏好历史视图：面板偏好 Tab 支持输入偏好 ID 加载
   `GET /preference/{id}/history` 的版本历史（偏好列表接口落地后替换为选择入口）。
+- 已实现 Phase 6 设备配对 UI 壳（非阻塞部分，2026-08-09）：`PairDialog`
+  （PIN/二维码方式、6 位 PIN 门控、Esc/取消语义、契约载荷）、记忆面板同步
+  Tab 配对入口与状态行；PixiuApp 经 `HttpBackendTransport::pairDevice` 发
+  `POST /sync/pair`，`not_implemented`/网络错误/未知状态如实呈现，仅契约
+  `paired` 判成功；窗口与托盘图标改用内嵌 `pixiu.svg`；新增
+  `t_pair_dialog`/`t_app_icon`（套件由 21 增至 23 例），双路径回归
+  （OFF/ON 构建 + ctest + offscreen 冒烟 + desktop 校验 + `.deb`）通过。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -111,14 +123,17 @@
 - WebSocketClient 的真实环境冒烟（连接 `/events`、`connected`/`ping`/`memory_ready`）
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
-- Phase 6 设备同步管理：`foundation/sync` 与 `/sync/*` 仍为占位，整阶段阻塞。
+- Phase 6 设备同步管理剩余部分（节点列表、同步状态、解绑与真实配对闭环）：
+  `foundation/sync` 与 `/sync/*` 仍为占位，剩余项阻塞（配对对话框 UI 壳
+  已先行完成，见 1.1）。
 - Phase 8 验收发布：本地自动化回归基线已完成（`scripts/regression.sh`，
-  ctest 21/21）；本机实时 UKUI 会话已完成真实桌面冒烟与收尾验证（应用
+  ctest 23/23）；本机实时 UKUI 会话已完成真实桌面冒烟与收尾验证（应用
   启动、窗口、托盘、UKUI 阴影、全局快捷键注册、主题 dark→light→dark
   实时跟随、第二实例激活通道、WS 桩驱动通知弹窗）。剩余项：全局快捷键
   真实按键触发需在全新登录会话复测（当前运行会话未加载 grab，见
   `UKUI_ADAPTATION_REPORT.md` 第 5 节）、通知弹窗点击行为、HiDPI/多屏
-  与 x86/ARM 目标机验收依赖人工复测（清单见该报告第 4 节）。
+  与 x86/ARM 目标机验收、配对对话框真实桌面视觉验收依赖人工复测
+  （清单见该报告第 4 节）。
 
 ### 1.3 下一项最小独立 feature
 
@@ -130,10 +145,11 @@
 （见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
 
 后续可执行项全部被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
-Phase 6 等待 `foundation/sync`、WS 真实事件联调等待 Module C 修复
-`/events` 注册与 WebSocket 导入（见 `BACKEND_ISSUES.md`）。阻塞期间
-Module A 以测试专用 WS 桩（`frontend/scripts/ws_smoke_server.py`）维持
-事件 UI 链路冒烟，不修改 `backend/`。
+Phase 6 剩余部分（节点列表/状态/解绑/真实配对闭环）等待 `foundation/sync`、
+WS 真实事件联调等待 Module C 修复 `/events` 注册与 WebSocket 导入
+（见 `BACKEND_ISSUES.md`）。阻塞期间 Module A 以测试专用 WS 桩
+（`frontend/scripts/ws_smoke_server.py`）维持事件 UI 链路冒烟，不修改
+`backend/`。
 
 ## 2. 职责边界与 SDK 策略
 
