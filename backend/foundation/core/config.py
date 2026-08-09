@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import os
+import socket
 
 _VALID_EMBEDDING = frozenset({"kylin"})
 _VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR"})
@@ -39,6 +40,13 @@ def _env_choice(key: str, default: str, valid: frozenset[str]) -> str:
     return val
 
 
+def _env_shared_scope(key: str, default: str) -> str:
+    value = _env_str(key, default)
+    if not value.startswith("shared:") or len(value) == len("shared:"):
+        raise ValueError(f"{key} must use shared:<domain> format")
+    return value
+
+
 # ─── Settings ────────────────────────────────────────────
 
 class Settings:
@@ -56,6 +64,11 @@ class Settings:
         self._embedding = _env_choice("PIXIU_EMBEDDING", "kylin", _VALID_EMBEDDING)
         self._log_level = _env_choice("PIXIU_LOG_LEVEL", "INFO", _VALID_LOG_LEVELS)
         self._data_dir = _env_str("PIXIU_DATA_DIR", "./data")
+        self._sync_device_name = _env_str(
+            "PIXIU_SYNC_DEVICE_NAME", socket.gethostname()
+        )
+        self._sync_domain = _env_shared_scope("PIXIU_SYNC_DOMAIN", "shared:home")
+        self._sync_key_passphrase = os.getenv("PIXIU_SYNC_KEY_PASSPHRASE")
 
     @property
     def db_path(self) -> str:
@@ -80,6 +93,22 @@ class Settings:
     @property
     def data_dir(self) -> str:
         return self._data_dir
+
+    @property
+    def sync_device_name(self) -> str:
+        return self._sync_device_name
+
+    @property
+    def sync_domain(self) -> str:
+        return self._sync_domain
+
+    @property
+    def sync_key_passphrase(self) -> str:
+        if self._sync_key_passphrase is None or len(self._sync_key_passphrase) < 16:
+            raise ValueError(
+                "PIXIU_SYNC_KEY_PASSPHRASE must contain at least 16 characters"
+            )
+        return self._sync_key_passphrase
 
 
 # ─── 模块级单例 ──────────────────────────────────────────

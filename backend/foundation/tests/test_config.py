@@ -33,6 +33,78 @@ def test_default_db_path():
         assert s.db_path == "./pixiu.db"
 
 
+def test_default_sync_domain_and_device_name():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        assert settings.sync_domain == "shared:home"
+        assert settings.sync_device_name
+
+
+def test_sync_passphrase_is_required_only_when_sync_is_used():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        with pytest.raises(ValueError, match="PIXIU_SYNC_KEY_PASSPHRASE"):
+            _ = settings.sync_key_passphrase
+
+
+def test_sync_configuration_from_environment():
+    with mock.patch.dict(
+        os.environ,
+        {
+            "PIXIU_SYNC_DEVICE_NAME": "客厅一体机",
+            "PIXIU_SYNC_DOMAIN": "shared:family",
+            "PIXIU_SYNC_KEY_PASSPHRASE": "a-secure-test-passphrase",
+        },
+        clear=True,
+    ):
+        settings = Settings()
+        assert settings.sync_device_name == "客厅一体机"
+        assert settings.sync_domain == "shared:family"
+        assert settings.sync_key_passphrase == "a-secure-test-passphrase"
+
+
+def test_sync_domain_rejects_private_scope():
+    with mock.patch.dict(os.environ, {"PIXIU_SYNC_DOMAIN": "user:alice"}):
+        with pytest.raises(ValueError, match="PIXIU_SYNC_DOMAIN"):
+            Settings()
+
+
+def test_default_sync_domain_and_device_name():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        assert settings.sync_domain == "shared:home"
+        assert settings.sync_device_name
+
+
+def test_sync_passphrase_is_required_only_when_sync_is_used():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        with pytest.raises(ValueError, match="PIXIU_SYNC_KEY_PASSPHRASE"):
+            _ = settings.sync_key_passphrase
+
+
+def test_sync_configuration_from_environment():
+    with mock.patch.dict(
+        os.environ,
+        {
+            "PIXIU_SYNC_DEVICE_NAME": "客厅一体机",
+            "PIXIU_SYNC_DOMAIN": "shared:family",
+            "PIXIU_SYNC_KEY_PASSPHRASE": "a-secure-test-passphrase",
+        },
+        clear=True,
+    ):
+        settings = Settings()
+        assert settings.sync_device_name == "客厅一体机"
+        assert settings.sync_domain == "shared:family"
+        assert settings.sync_key_passphrase == "a-secure-test-passphrase"
+
+
+def test_sync_domain_rejects_private_scope():
+    with mock.patch.dict(os.environ, {"PIXIU_SYNC_DOMAIN": "user:alice"}):
+        with pytest.raises(ValueError, match="PIXIU_SYNC_DOMAIN"):
+            Settings()
+
+
 # ─── Env var reading ─────────────────────────────────────
 
 def test_embedding_mock_rejected():

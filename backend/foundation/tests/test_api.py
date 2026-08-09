@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import sqlite3
 import time
+from pathlib import Path
 
+import aiosqlite
 import pytest
 from fastapi.testclient import TestClient
 
@@ -19,11 +22,16 @@ from backend.foundation.storage.repository import (
     SqliteEntityRepo,
     SqliteKnowledgeRepo,
 )
+from backend.foundation.storage.schema import init_db_on_connection
+from backend.foundation.sync import PairingMethod, SqliteSyncStore, SyncService
 
 
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        self.sync_device_name = "书房工作站"
+        self.sync_domain = "shared:home"
+        self.sync_key_passphrase = "phase3-api-test-passphrase"
 
 
 @pytest.fixture()
@@ -230,8 +238,67 @@ def test_flow_promote_rejects_empty_context_ids(client):
     assert response.status_code == 422
 
 
-def test_unimplemented_sync_endpoints_keep_placeholder(client):
-    # /memory/query 已由 retrieval 阶段实现（见 test_retrieval.py 的 API 用例）
-    assert client.post("/sync/pair", json={}).json()["status"] == "not_implemented"
-    assert client.get("/sync/peers").json()["status"] == "not_implemented"
-    assert client.get("/sync/status").json()["status"] == "not_implemented"
+def _create_remote_pairing_token(db_path: str) -> str:
+    async def _create() -> str:
+        db = await aiosqlite.connect(db_path)
+        db.row_factory = aiosqlite.Row
+        try:
+            service = SyncService(
+                SqliteSyncStore(db),
+                device_name="客厅一体机",
+                domain="shared:home",
+                key_passphrase="phase3-remote-test-passphrase",
+            )
+            return await service.create_pairing_token(PairingMethod.QR)
+        finally:
+            await db.close()
+
+    sync_db = sqlite3.connect(db_path)
+    init_db_on_connection(sync_db)
+    sync_db.close()
+    return asyncio.run(_create())
+
+
+def test_sync_pair_peers_status_and_revoke(client):
+    initial = client.get("/sync/status")
+    assert initial.status_code == 200
+    assert initial.json() == {
+        "domain": "shared:home",
+        "peers_online": 1,
+        "peers_total": 1,
+        "pending_outgoing_ops": 0,
+        "last_anti_entropy_ts": None,
+        "total_ops_synced": 0,
+    }
+
+    remote_path = str(Path(di_module.settings.db_path).with_name("remote.db"))
+    token = _create_remote_pairing_token(remote_path)
+    paired = client.post(
+        "/sync/pair", json={"method": "QR", "token": token, "pin": None}
+    )
+    assert paired.status_code == 200
+    peer = paired.json()
+    assert peer["device_name"] == "客厅一体机"
+    assert peer["domain"] == "shared:home"
+    assert peer["status"] == "paired"
+
+    peers = client.get("/sync/peers").json()["peers"]
+    assert len(peers) == 2
+    assert sum(item["is_self"] for item in peers) == 1
+
+    revoked = client.post(f"/sync/peers/{peer['peer_id']}/revoke")
+    assert revoked.status_code == 200
+    assert revoked.json() == {
+        "status": "revoked",
+        "peer_id": peer["peer_id"],
+        "domain": "shared:home",
+    }
+    assert client.post(f"/sync/peers/{peer['peer_id']}/revoke").status_code == 404
+
+
+def test_sync_pair_maps_invalid_token(client):
+    response = client.post(
+        "/sync/pair", json={"method": "QR", "token": "not-a-token"}
+    )
+    assert response.status_code == 422
+    assert response.json()["detail"] == "PAIRING_FAILED"

@@ -20,8 +20,10 @@ from backend.foundation.api.di import (
     get_preference_repo,
     get_preference_service,
     get_security_service,
+    get_sync_service,
 )
 from backend.foundation.flow import FlowService
+from backend.foundation.sync import SyncService
 from backend.foundation.storage.migrations import latest_version
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
@@ -33,6 +35,9 @@ from backend.foundation.storage.repository import (
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        self.sync_device_name = "test-device"
+        self.sync_domain = "shared:test"
+        self.sync_key_passphrase = "phase3-di-test-passphrase"
 
 
 @pytest.fixture()
@@ -87,5 +92,17 @@ async def test_flow_factory_composes_real_service(fresh_di):
 
         flow = await get_flow_service(db, ingestion, _Knowledge())
         assert isinstance(flow, FlowService)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_sync_factory_composes_real_service(fresh_di):
+    db = await get_db()
+    try:
+        sync = await get_sync_service(db)
+        assert isinstance(sync, SyncService)
+        identity = await sync.initialize()
+        assert identity.domain == "shared:test"
     finally:
         await db.close()

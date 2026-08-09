@@ -1,7 +1,7 @@
 """PIXIU Foundation — API 网关 (FastAPI)
 
 按 docs/API.md 注册 REST 端点。已接入引擎 Service 的端点返回真实业务结果；
-依赖后续阶段（sync）的端点保持占位。
+已实现端点均返回真实持久化业务结果。
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from ..core.models import SourceType
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
+from ..sync import PairingError, PairingMethod, PeerNotFound
 from .di import (
     get_conflict_repo,
     get_conflict_service,
@@ -26,6 +27,7 @@ from .di import (
     get_preference_service,
     get_retrieval_service,
     get_security_service,
+    get_sync_service,
 )
 from .ws_manager import ws_manager
 
@@ -73,8 +75,10 @@ class FlowPromoteRequest(BaseModel):
     scope: str
 
 
-def _placeholder_response(**extra) -> dict:
-    return {"status": "not_implemented", **extra}
+class SyncPairRequest(BaseModel):
+    method: PairingMethod
+    token: str = Field(min_length=1, max_length=16 * 1024)
+    pin: str | None = Field(default=None, min_length=6, max_length=6)
 
 
 def _latency_ms(started: float) -> int:
@@ -232,26 +236,58 @@ async def flow_promote(
     }
 
 
-# ─── 设备同步（占位，待 sync 阶段）───────────────────────
+# ─── 设备同步 ────────────────────────────────────────────
 
 @app.post("/sync/pair", tags=["Sync"], summary="设备配对")
-async def sync_pair():
-    return _placeholder_response()
+async def sync_pair(body: SyncPairRequest, sync=Depends(get_sync_service)):
+    try:
+        peer = await sync.pair(body.method, body.token, pin=body.pin)
+    except PairingError as exc:
+        raise HTTPException(status_code=422, detail="PAIRING_FAILED") from exc
+    await ws_manager.broadcast(
+        "sync_event",
+        {
+            "type": "PEER_ONLINE",
+            "peer_id": peer.id,
+            "peer_name": peer.name,
+            "timestamp": int(time.time()),
+        },
+    )
+    return {
+        "peer_id": peer.id,
+        "device_name": peer.name,
+        "domain": peer.domain,
+        "status": "paired",
+    }
 
 
 @app.get("/sync/peers", tags=["Sync"], summary="节点列表")
-async def sync_peers():
-    return _placeholder_response()
+async def sync_peers(sync=Depends(get_sync_service)):
+    return {"peers": await sync.peers()}
 
 
 @app.get("/sync/status", tags=["Sync"], summary="同步状态")
-async def sync_status():
-    return _placeholder_response()
+async def sync_status(sync=Depends(get_sync_service)):
+    status = await sync.status()
+    return status.model_dump(mode="json")
 
 
 @app.post("/sync/peers/{id}/revoke", tags=["Sync"], summary="解绑设备")
-async def sync_revoke(id: str):
-    return _placeholder_response(peer_id=id)
+async def sync_revoke(id: str, sync=Depends(get_sync_service)):
+    try:
+        peer = await sync.revoke(id)
+    except PeerNotFound as exc:
+        raise HTTPException(status_code=404, detail="PEER_NOT_FOUND") from exc
+    await ws_manager.broadcast(
+        "sync_event",
+        {
+            "type": "PEER_OFFLINE",
+            "peer_id": peer.id,
+            "peer_name": peer.name,
+            "timestamp": int(time.time()),
+        },
+    )
+    return {"status": "revoked", "peer_id": peer.id, "domain": peer.domain}
 
 
 if __name__ == "__main__":

@@ -30,6 +30,7 @@ from ..storage.repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
+from ..sync import SqliteSyncStore, SyncService
 
 _log = get_logger(__name__)
 
@@ -152,4 +153,15 @@ async def get_flow_service(
         store,
         _promote_context,
         knowledge_repo=SqliteKnowledgeRepo(db),
+    )
+
+
+async def get_sync_service(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> SyncService:
+    return SyncService(
+        SqliteSyncStore(db),
+        device_name=settings.sync_device_name,
+        domain=settings.sync_domain,
+        key_passphrase=settings.sync_key_passphrase,
     )
