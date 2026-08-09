@@ -59,10 +59,14 @@ add_executable(pixiu-frontend
     src/widgets/MemoryPanel.cpp
     src/widgets/PairDialog.h
     src/widgets/PairDialog.cpp
+    src/widgets/RevokeDialog.h
+    src/widgets/RevokeDialog.cpp
     src/app/ConflictController.h
     src/app/ConflictController.cpp
     src/app/PreferenceController.h
     src/app/PreferenceController.cpp
+    src/app/SyncController.h
+    src/app/SyncController.cpp
     src/app/ThemeService.h
     src/app/ThemeService.cpp
     src/app/UkuiWindow.h
@@ -175,6 +179,8 @@ if(BUILD_TESTING)
         src/widgets/MemoryPanel.cpp
         src/widgets/PairDialog.h
         src/widgets/PairDialog.cpp
+        src/widgets/RevokeDialog.h
+        src/widgets/RevokeDialog.cpp
     )
     target_include_directories(t_memory_panel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(t_memory_panel PRIVATE Qt5::Test Qt5::Widgets)
@@ -189,6 +195,31 @@ if(BUILD_TESTING)
     target_link_libraries(t_pair_dialog PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME pair_dialog COMMAND t_pair_dialog)
     set_tests_properties(pair_dialog PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+    add_executable(t_revoke_dialog
+        tests/t_revoke_dialog.cpp
+        src/widgets/RevokeDialog.h
+        src/widgets/RevokeDialog.cpp
+    )
+    target_include_directories(t_revoke_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_revoke_dialog PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME revoke_dialog COMMAND t_revoke_dialog)
+    set_tests_properties(revoke_dialog PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+    add_executable(t_sync_controller
+        tests/t_sync_controller.cpp
+        src/app/SyncController.h
+        src/app/SyncController.cpp
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+    )
+    target_include_directories(t_sync_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_sync_controller PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME sync_controller COMMAND t_sync_controller)
+    set_tests_properties(sync_controller PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
     add_executable(t_app_icon
@@ -368,5 +399,6 @@ if(BUILD_TESTING)
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
         chat_window input_bar message_list import_dialog evidence_card i18n
+        revoke_dialog sync_controller
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

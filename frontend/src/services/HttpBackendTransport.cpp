@@ -101,9 +101,7 @@ void HttpBackendTransport::pairDevice(const QJsonObject &payload)
 void HttpBackendTransport::listPeers()
 {
     getJson(QStringLiteral("/sync/peers"),
-            [this](quint64, const QJsonObject &obj) {
-                emit peersResult(obj.value(QStringLiteral("peers")).toArray());
-            });
+            [this](quint64, const QJsonObject &obj) { emit peersResult(obj); });
 }
 
 void HttpBackendTransport::syncStatus()

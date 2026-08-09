@@ -58,8 +58,9 @@ signals:
     void promoteResult(const QJsonObject &response);
     // 设备配对（POST /sync/pair）。
     void pairResult(const QJsonObject &response);
-    // 节点列表（GET /sync/peers → {"peers": [...]}）。
-    void peersResult(const QJsonArray &peers);
+    // 节点列表响应（GET /sync/peers）。携带完整响应体，便于上层区分契约
+    // 成功态（{"peers":[...]}）与后端占位态（{"status":"not_implemented"}）。
+    void peersResult(const QJsonObject &response);
     // 同步状态（GET /sync/status）。
     void syncStatusResult(const QJsonObject &status);
     // 解绑（POST /sync/peers/{id}/revoke）。

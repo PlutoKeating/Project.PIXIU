@@ -260,10 +260,6 @@ This action cannot be undone.</translation>
         <translation>No conflicts yet</translation>
     </message>
     <message>
-        <source>节点列表与同步状态待 foundation/sync 契约</source>
-        <translation>Peer list and sync status pending foundation/sync contract</translation>
-    </message>
-    <message>
         <source>配对后设备加入共享域，记忆经后端 CRDT 跨设备同步。</source>
         <translation>Paired devices join the shared domain; memories sync across devices via backend CRDT.</translation>
     </message>
@@ -274,6 +270,74 @@ This action cannot be undone.</translation>
     <message>
         <source>打开设备配对</source>
         <translation>Open device pairing</translation>
+    </message>
+    <message>
+        <source>正在加载同步状态…</source>
+        <translation>Loading sync status…</translation>
+    </message>
+    <message>
+        <source>暂无节点</source>
+        <translation>No devices yet</translation>
+    </message>
+    <message>
+        <source>（未命名设备）</source>
+        <translation>(Unnamed device)</translation>
+    </message>
+    <message>
+        <source>本机</source>
+        <translation>This device</translation>
+    </message>
+    <message>
+        <source>在线</source>
+        <translation>Online</translation>
+    </message>
+    <message>
+        <source>离线</source>
+        <translation>Offline</translation>
+    </message>
+    <message>
+        <source>状态未知</source>
+        <translation>Unknown status</translation>
+    </message>
+    <message>
+        <source>上次同步 %1</source>
+        <translation>Last sync %1</translation>
+    </message>
+    <message>
+        <source>待同步 %1 条</source>
+        <translation>%1 ops pending</translation>
+    </message>
+    <message>
+        <source>解绑</source>
+        <translation>Unbind</translation>
+    </message>
+    <message>
+        <source>解绑设备 %1</source>
+        <translation>Unbind device %1</translation>
+    </message>
+    <message>
+        <source>共享域 %1</source>
+        <translation>Domain %1</translation>
+    </message>
+    <message>
+        <source>在线 %1/%2</source>
+        <translation>Online %1/%2</translation>
+    </message>
+    <message>
+        <source>上次对账 %1</source>
+        <translation>Last reconciliation %1</translation>
+    </message>
+    <message>
+        <source>累计同步 %1 条</source>
+        <translation>%1 ops synced</translation>
+    </message>
+    <message>
+        <source>刷新</source>
+        <translation>Refresh</translation>
+    </message>
+    <message>
+        <source>刷新节点与同步状态</source>
+        <translation>Refresh peers and sync status</translation>
     </message>
 </context>
 <context>
@@ -401,6 +465,76 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>未知响应</source>
         <translation>Unknown response</translation>
+    </message>
+    <message>
+        <source>同步状态已刷新</source>
+        <translation>Sync status refreshed</translation>
+    </message>
+    <message>
+        <source>已解绑设备 %1</source>
+        <translation>Unbound device %1</translation>
+    </message>
+    <message>
+        <source>解绑接口待后端实现（Phase 6）</source>
+        <translation>Unbind API pending backend implementation (Phase 6)</translation>
+    </message>
+    <message>
+        <source>节点列表与同步状态待后端实现（Phase 6）</source>
+        <translation>Peer list and sync status pending backend implementation (Phase 6)</translation>
+    </message>
+    <message>
+        <source>同步刷新失败（%1）：%2</source>
+        <translation>Sync refresh failed (%1): %2</translation>
+    </message>
+</context>
+<context>
+    <name>RevokeDialog</name>
+    <message>
+        <source>确认解绑设备</source>
+        <translation>Confirm device unbind</translation>
+    </message>
+    <message>
+        <source>即将解绑设备：%1</source>
+        <translation>Unbind device: %1</translation>
+    </message>
+    <message>
+        <source>解绑后该设备将退出共享域，记忆同步停止；可重新配对恢复。</source>
+        <translation>The device will leave the shared domain and stop syncing. You can pair it again later.</translation>
+    </message>
+    <message>
+        <source>取消</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <source>取消解绑</source>
+        <translation>Cancel unbind</translation>
+    </message>
+    <message>
+        <source>解绑</source>
+        <translation>Unbind</translation>
+    </message>
+    <message>
+        <source>确认解绑</source>
+        <translation>Confirm unbind</translation>
+    </message>
+</context>
+<context>
+    <name>SyncController</name>
+    <message>
+        <source>节点列表响应格式无法识别</source>
+        <translation>Unrecognized peer list response</translation>
+    </message>
+    <message>
+        <source>同步状态响应格式无法识别</source>
+        <translation>Unrecognized sync status response</translation>
+    </message>
+    <message>
+        <source>解绑响应格式无法识别</source>
+        <translation>Unrecognized unbind response</translation>
+    </message>
+    <message>
+        <source>解绑失败：%1</source>
+        <translation>Unbind failed: %1</translation>
     </message>
 </context>
 <context>

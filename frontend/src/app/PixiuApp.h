@@ -23,6 +23,7 @@ class MemoryPanel;
 class ConflictController;
 class PreferenceController;
 class ThemeService;
+class SyncController;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -71,6 +72,7 @@ private:
     MemoryPanel *m_memoryPanel = nullptr;
     ConflictController *m_conflictController = nullptr;
     PreferenceController *m_preferenceController = nullptr;
+    SyncController *m_syncController = nullptr;
     ThemeService *m_themeService = nullptr;
     // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
     // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。

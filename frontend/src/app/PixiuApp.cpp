@@ -9,6 +9,7 @@
 #include "app/ForgetController.h"
 #include "app/ConflictController.h"
 #include "app/PreferenceController.h"
+#include "app/SyncController.h"
 #include "app/ThemeService.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
@@ -138,6 +139,9 @@ bool PixiuApp::start()
         if (m_conflictController) {
             m_conflictController->refresh();
         }
+        if (m_syncController) {
+            m_syncController->refresh();
+        }
         m_memoryPanel->showAndFocus();
     };
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, openMemoryPanel);
@@ -202,6 +206,43 @@ bool PixiuApp::start()
                 m_pairPending = false;
                 m_memoryPanel->setSyncStatus(
                     tr("配对请求失败（%1）：%2").arg(code, message));
+            });
+
+    // 同步管理：节点列表 / 同步状态 / 解绑（Phase 6）。
+    // 后端占位返回 not_implemented 时如实呈现，不伪造节点或成功状态。
+    m_syncController = new SyncController(m_transport, this);
+    connect(m_memoryPanel, &MemoryPanel::syncRefreshRequested,
+            m_syncController, &SyncController::refresh);
+    connect(m_memoryPanel, &MemoryPanel::revokeConfirmed,
+            m_syncController, &SyncController::revokePeer);
+    connect(m_syncController, &SyncController::peersLoaded, this,
+            [this](const QJsonArray &peers) {
+                m_memoryPanel->setPeers(peers);
+                m_memoryPanel->setSyncStatus(tr("同步状态已刷新"), true);
+            });
+    connect(m_syncController, &SyncController::syncStatusLoaded, this,
+            [this](const QJsonObject &status) {
+                m_memoryPanel->setSyncSummary(status);
+            });
+    connect(m_syncController, &SyncController::revoked, this,
+            [this](const QString &peerId) {
+                m_memoryPanel->setSyncStatus(tr("已解绑设备 %1").arg(peerId), true);
+                m_syncController->refresh();
+            });
+    connect(m_syncController, &SyncController::notImplemented, this,
+            [this](const QString &feature) {
+                if (feature == QStringLiteral("revoke")) {
+                    m_memoryPanel->setSyncStatus(
+                        tr("解绑接口待后端实现（Phase 6）"));
+                } else {
+                    m_memoryPanel->setSyncStatus(
+                        tr("节点列表与同步状态待后端实现（Phase 6）"));
+                }
+            });
+    connect(m_syncController, &SyncController::failed, this,
+            [this](const QString &code, const QString &message) {
+                m_memoryPanel->setSyncStatus(
+                    tr("同步刷新失败（%1）：%2").arg(code, message));
             });
 
     // 查询状态机：加载/取消/失败/重试。

@@ -10,6 +10,7 @@
 
 #include "widgets/MemoryPanel.h"
 #include "widgets/PairDialog.h"
+#include "widgets/RevokeDialog.h"
 
 // MemoryPanel 壳测试：三个 Tab 及标题。
 class TestMemoryPanel : public QObject
@@ -25,6 +26,11 @@ private slots:
     void setPreferenceHistoryPopulatesList();
     void syncTabHasPairButtonOpensDialog();
     void setSyncStatusUpdatesLabel();
+    void syncTabRefreshButtonEmitsRequest();
+    void setPeersPopulatesList();
+    void setPeersShowsEmptyState();
+    void revokeFlowOpensDialogAndConfirms();
+    void setSyncSummaryUpdatesLabel();
     void escHidesPanel();
 };
 
@@ -158,6 +164,132 @@ void TestMemoryPanel::setSyncStatusUpdatesLabel()
     panel.setSyncStatus(QStringLiteral("配对成功：客厅一体机"), true);
     QCOMPARE(status->text(), QStringLiteral("配对成功：客厅一体机"));
     QVERIFY(!status->isHidden());
+}
+
+void TestMemoryPanel::syncTabRefreshButtonEmitsRequest()
+{
+    MemoryPanel panel;
+    QSignalSpy refreshSpy(&panel, &MemoryPanel::syncRefreshRequested);
+
+    QPushButton *refreshButton =
+        panel.findChild<QPushButton *>(QStringLiteral("syncRefreshButton"));
+    QVERIFY(refreshButton != nullptr);
+    QTest::mouseClick(refreshButton, Qt::LeftButton);
+    QCOMPARE(refreshSpy.count(), 1);
+}
+
+void TestMemoryPanel::setPeersPopulatesList()
+{
+    MemoryPanel panel;
+    QJsonArray peers;
+    peers.append(QJsonObject{
+        {QStringLiteral("id"), QStringLiteral("dev_self")},
+        {QStringLiteral("name"), QStringLiteral("书房工作站")},
+        {QStringLiteral("is_self"), true},
+        {QStringLiteral("status"), QStringLiteral("ONLINE")}});
+    peers.append(QJsonObject{
+        {QStringLiteral("id"), QStringLiteral("dev_guest")},
+        {QStringLiteral("name"), QStringLiteral("客厅一体机")},
+        {QStringLiteral("is_self"), false},
+        {QStringLiteral("status"), QStringLiteral("ONLINE")},
+        {QStringLiteral("last_sync_ts"), 1714608000},
+        {QStringLiteral("pending_ops"), 3}});
+
+    panel.setPeers(peers);
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("peerList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 2);
+    QWidget *row = list->itemWidget(list->item(0));
+    QVERIFY(row != nullptr);
+    bool hasSelfName = false;
+    const QList<QLabel *> labels = row->findChildren<QLabel *>();
+    for (QLabel *label : labels) {
+        if (label->text().contains(QStringLiteral("书房工作站"))) {
+            hasSelfName = true;
+            break;
+        }
+    }
+    QVERIFY(hasSelfName);
+    QVERIFY(!list->isHidden());
+
+    // 本机不提供解绑入口；非本机设备恰好一个“解绑”按钮。
+    const QList<QPushButton *> revokeButtons =
+        panel.findChildren<QPushButton *>(QStringLiteral("revokeButton"));
+    QCOMPARE(revokeButtons.size(), 1);
+
+    QLabel *emptyLabel =
+        panel.findChild<QLabel *>(QStringLiteral("syncEmptyLabel"));
+    QVERIFY(emptyLabel != nullptr);
+    QVERIFY(emptyLabel->isHidden());
+}
+
+void TestMemoryPanel::setPeersShowsEmptyState()
+{
+    MemoryPanel panel;
+    panel.setPeers(QJsonArray());
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("peerList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 0);
+    QVERIFY(list->isHidden());
+
+    QLabel *emptyLabel =
+        panel.findChild<QLabel *>(QStringLiteral("syncEmptyLabel"));
+    QVERIFY(emptyLabel != nullptr);
+    QVERIFY(!emptyLabel->isHidden());
+}
+
+void TestMemoryPanel::revokeFlowOpensDialogAndConfirms()
+{
+    MemoryPanel panel;
+    QSignalSpy revokeSpy(&panel, &MemoryPanel::revokeConfirmed);
+
+    panel.setPeers(QJsonArray{
+        QJsonObject{
+            {QStringLiteral("id"), QStringLiteral("dev_guest")},
+            {QStringLiteral("name"), QStringLiteral("客厅一体机")},
+            {QStringLiteral("is_self"), false},
+            {QStringLiteral("status"), QStringLiteral("ONLINE")}}});
+
+    QPushButton *revokeButton =
+        panel.findChild<QPushButton *>(QStringLiteral("revokeButton"));
+    QVERIFY(revokeButton != nullptr);
+    QTest::mouseClick(revokeButton, Qt::LeftButton);
+
+    RevokeDialog *dialog = panel.findChild<RevokeDialog *>();
+    QVERIFY(dialog != nullptr);
+    QVERIFY(dialog->isVisible());
+
+    QPushButton *confirmButton =
+        dialog->findChild<QPushButton *>(QStringLiteral("revokeConfirmButton"));
+    QVERIFY(confirmButton != nullptr);
+    QTest::mouseClick(confirmButton, Qt::LeftButton);
+
+    QCOMPARE(revokeSpy.count(), 1);
+    QCOMPARE(revokeSpy.takeFirst().at(0).toString(),
+             QStringLiteral("dev_guest"));
+}
+
+void TestMemoryPanel::setSyncSummaryUpdatesLabel()
+{
+    MemoryPanel panel;
+    panel.setSyncSummary(QJsonObject{
+        {QStringLiteral("domain"), QStringLiteral("shared:home")},
+        {QStringLiteral("peers_online"), 2},
+        {QStringLiteral("peers_total"), 3},
+        {QStringLiteral("pending_outgoing_ops"), 0},
+        {QStringLiteral("last_anti_entropy_ts"), 1714608000},
+        {QStringLiteral("total_ops_synced"), 1285}});
+
+    QLabel *summary =
+        panel.findChild<QLabel *>(QStringLiteral("syncSummaryLabel"));
+    QVERIFY(summary != nullptr);
+    QVERIFY(summary->text().contains(QStringLiteral("shared:home")));
+    QVERIFY(summary->text().contains(QStringLiteral("在线 2/3")));
+    QVERIFY(!summary->isHidden());
 }
 
 void TestMemoryPanel::escHidesPanel()
