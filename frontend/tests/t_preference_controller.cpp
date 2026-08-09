@@ -39,6 +39,7 @@ class TestPreferenceController : public QObject
 
 private slots:
     void loadHistoryRequestsEndpoint();
+    void loadWhilePendingIsIgnored();
     void historyIsForwarded();
     void staleResultsAreIgnored();
 };
@@ -50,6 +51,28 @@ void TestPreferenceController::loadHistoryRequestsEndpoint()
     controller.loadHistory(QStringLiteral(" pref_abc "));
     QCOMPARE(transport.historyCalls, 1);
     QCOMPARE(transport.lastPreferenceId, QStringLiteral("pref_abc"));
+}
+
+void TestPreferenceController::loadWhilePendingIsIgnored()
+{
+    FakeTransport transport;
+    PreferenceController controller(&transport);
+    QSignalSpy loadedSpy(&controller, &PreferenceController::historyLoaded);
+
+    controller.loadHistory(QStringLiteral("pref_a"));
+    controller.loadHistory(QStringLiteral("pref_b"));
+    QCOMPARE(transport.historyCalls, 1);
+    QCOMPARE(transport.lastPreferenceId, QStringLiteral("pref_a"));
+
+    // 在途响应正常上抛（不会被误配到被忽略的第二次请求）。
+    emit transport.preferenceHistoryResult(
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("pref_a")}});
+    QCOMPARE(loadedSpy.count(), 1);
+
+    // 完成后新的加载请求放行。
+    controller.loadHistory(QStringLiteral("pref_b"));
+    QCOMPARE(transport.historyCalls, 2);
+    QCOMPARE(transport.lastPreferenceId, QStringLiteral("pref_b"));
 }
 
 void TestPreferenceController::historyIsForwarded()

@@ -34,6 +34,9 @@ void PreferenceController::loadHistory(const QString &preferenceId)
     if (id.isEmpty()) {
         return;
     }
+    if (!m_pendingId.isEmpty()) {
+        return; // 在途防重：避免过期响应被误配到新请求
+    }
     m_pendingId = id;
     qCInfo(lcPreference) << "loading preference history:" << id;
     m_transport->preferenceHistory(id);

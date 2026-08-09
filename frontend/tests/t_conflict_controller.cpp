@@ -35,6 +35,7 @@ class TestConflictController : public QObject
 
 private slots:
     void refreshRequestsConflicts();
+    void refreshWhileInFlightIsIgnored();
     void conflictsAreForwarded();
     void staleResultsAreIgnored();
     void errorsAreForwarded();
@@ -46,6 +47,21 @@ void TestConflictController::refreshRequestsConflicts()
     ConflictController controller(&transport);
     controller.refresh();
     QCOMPARE(transport.listConflictsCalls, 1);
+}
+
+void TestConflictController::refreshWhileInFlightIsIgnored()
+{
+    FakeTransport transport;
+    ConflictController controller(&transport);
+
+    controller.refresh();
+    controller.refresh();
+    QCOMPARE(transport.listConflictsCalls, 1);
+
+    // 在途响应返回后，新的刷新可再次发起。
+    emit transport.conflictsResult(QJsonArray());
+    controller.refresh();
+    QCOMPARE(transport.listConflictsCalls, 2);
 }
 
 void TestConflictController::conflictsAreForwarded()

@@ -30,6 +30,9 @@ ConflictController::ConflictController(BackendTransport *transport, QObject *par
 
 void ConflictController::refresh()
 {
+    if (m_inFlight) {
+        return; // 在途防重：避免重复拉取；在途响应会刷新面板
+    }
     m_inFlight = true;
     m_transport->listConflicts();
 }
