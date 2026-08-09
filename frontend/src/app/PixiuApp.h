@@ -24,6 +24,7 @@ class ConflictController;
 class PreferenceController;
 class ThemeService;
 class SyncController;
+class EventRouter;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -73,10 +74,13 @@ private:
     ConflictController *m_conflictController = nullptr;
     PreferenceController *m_preferenceController = nullptr;
     SyncController *m_syncController = nullptr;
+    EventRouter *m_eventRouter = nullptr;
     ThemeService *m_themeService = nullptr;
     // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
     // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。
     bool m_pairPending = false;
+    // WS forget_confirmation 事件携带的待确认指令（确认后执行第二阶段）。
+    QString m_remoteForgetCommand;
     struct Private;
     QScopedPointer<Private> d;
 

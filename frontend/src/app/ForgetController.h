@@ -25,6 +25,9 @@ public:
     void requestConfirmation(const QString &command);
     // 第二阶段：确认执行（confirm=true）。
     void confirm();
+    // 远端遗忘确认（WS forget_confirmation 事件）：后端已完成匹配并推送影响
+    // 范围，用户确认后直接执行第二阶段，不重复请求 confirm=false。
+    void confirmRemote(const QString &command);
     // 用户取消：丢弃待确认指令。
     void cancel();
 

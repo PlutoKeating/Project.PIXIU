@@ -45,6 +45,7 @@ private slots:
     void requestConfirmationSendsFirstPhase();
     void confirmSendsSecondPhase();
     void cancelClearsPendingCommand();
+    void confirmRemoteSendsSecondPhaseOnly();
 };
 
 void TestForgetController::isForgetIntentRecognizesCommands()
@@ -115,6 +116,30 @@ void TestForgetController::cancelClearsPendingCommand()
     controller.requestConfirmation(QStringLiteral("忘记那张4月支出清单"));
     controller.cancel();
     controller.confirm(); // 取消后不应发送第二阶段请求
+    QCOMPARE(transport.forgetCalls, 1);
+}
+
+void TestForgetController::confirmRemoteSendsSecondPhaseOnly()
+{
+    FakeTransport transport;
+    ForgetController controller(&transport);
+    QSignalSpy forgottenSpy(&controller, &ForgetController::forgotten);
+
+    // 远端确认：不经过 confirm=false 第一阶段，直接以 confirm=true 执行。
+    controller.confirmRemote(QStringLiteral("忘记那张4月支出清单"));
+    QCOMPARE(transport.forgetCalls, 1);
+    QVERIFY(transport.lastConfirm);
+    QCOMPARE(transport.lastCommand, QStringLiteral("忘记那张4月支出清单"));
+
+    QJsonObject result;
+    result.insert(QStringLiteral("status"), QStringLiteral("forgotten"));
+    result.insert(QStringLiteral("forgotten_ids"),
+                  QJsonArray{QStringLiteral("knw_1"), QStringLiteral("evd_1")});
+    emit transport.forgetResult(result);
+    QCOMPARE(forgottenSpy.count(), 1);
+
+    // 空指令不发请求。
+    controller.confirmRemote(QString());
     QCOMPARE(transport.forgetCalls, 1);
 }
 

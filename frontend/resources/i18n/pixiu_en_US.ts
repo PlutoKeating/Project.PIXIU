@@ -486,6 +486,14 @@ Your input is kept; edit and retry.</translation>
         <source>同步刷新失败（%1）：%2</source>
         <translation>Sync refresh failed (%1): %2</translation>
     </message>
+    <message>
+        <source>检测到记忆冲突</source>
+        <translation>Memory conflict detected</translation>
+    </message>
+    <message>
+        <source>同步事件</source>
+        <translation>Sync event</translation>
+    </message>
 </context>
 <context>
     <name>RevokeDialog</name>

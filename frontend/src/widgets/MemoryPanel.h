@@ -27,6 +27,8 @@ public:
 
     // 显示并前置。
     void showAndFocus();
+    // 切换到冲突 Tab（conflict_detected 事件到达且面板可见时使用）。
+    void showConflictTab();
 
     // 更新冲突审计 Tab 内容（来自 GET /conflicts）。
     void setConflicts(const QJsonArray &conflicts);

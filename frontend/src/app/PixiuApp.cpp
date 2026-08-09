@@ -10,6 +10,7 @@
 #include "app/ConflictController.h"
 #include "app/PreferenceController.h"
 #include "app/SyncController.h"
+#include "app/EventRouter.h"
 #include "app/ThemeService.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
@@ -355,6 +356,17 @@ bool PixiuApp::start()
             m_forgetController, &ForgetController::confirm);
     connect(m_forgetDialog, &ForgetDialog::cancelled,
             m_forgetController, &ForgetController::cancel);
+    // 远端遗忘确认（WS forget_confirmation）：确认后直接执行第二阶段。
+    connect(m_forgetDialog, &ForgetDialog::confirmed, this, [this]() {
+        if (m_remoteForgetCommand.isEmpty()) {
+            return;
+        }
+        m_forgetController->confirmRemote(m_remoteForgetCommand);
+        m_remoteForgetCommand.clear();
+    });
+    connect(m_forgetDialog, &ForgetDialog::cancelled, this, [this]() {
+        m_remoteForgetCommand.clear();
+    });
     connect(m_forgetController, &ForgetController::forgotten, this,
             [this](const QJsonObject &response) {
                 const int forgottenCount =
@@ -409,6 +421,58 @@ bool PixiuApp::start()
             });
     connect(m_wsClient, &WebSocketClient::eventReceived,
             this, &PixiuApp::handleBackendEvent);
+
+    // 业务事件路由：WS 帧 → 语义信号 → 应用行为（通知/角标/面板刷新）。
+    m_eventRouter = new EventRouter(this);
+    connect(m_eventRouter, &EventRouter::memoryReady, this,
+            [this](const QJsonObject &data) {
+                qCInfo(lcApp) << "memory ready:"
+                              << data.value(QStringLiteral("knowledge_id")).toString()
+                              << data.value(QStringLiteral("title")).toString();
+                if (m_floatingBall) {
+                    m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
+                }
+                if (m_notify) {
+                    m_notify->notify(tr("记忆已沉淀"),
+                                     data.value(QStringLiteral("title")).toString());
+                }
+            });
+    connect(m_eventRouter, &EventRouter::conflictDetected, this,
+            [this](const QString &title, const QString &, const QString &, const QString &) {
+                if (m_floatingBall) {
+                    m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
+                }
+                if (m_notify) {
+                    m_notify->notify(tr("检测到记忆冲突"), title);
+                }
+                if (m_conflictController) {
+                    m_conflictController->refresh();
+                }
+                if (m_memoryPanel && m_memoryPanel->isVisible()) {
+                    m_memoryPanel->showConflictTab();
+                }
+            });
+    connect(m_eventRouter, &EventRouter::forgetConfirmationReady, this,
+            [this](const QString &command, const QJsonArray &targets,
+                   const QJsonObject &cascade, qint64) {
+                m_remoteForgetCommand = command;
+                m_forgetDialog->setForgetTargets(targets, cascade);
+                m_forgetDialog->show();
+                m_forgetDialog->raise();
+                m_forgetDialog->activateWindow();
+            });
+    connect(m_eventRouter, &EventRouter::syncEvent, this,
+            [this](const QJsonObject &data) {
+                const QString type = data.value(QStringLiteral("type")).toString();
+                const QString peer = data.value(QStringLiteral("peer_name")).toString();
+                if (m_notify) {
+                    m_notify->notify(tr("同步事件"),
+                                     peer.isEmpty() ? type : peer);
+                }
+                if (m_syncController) {
+                    m_syncController->refresh();
+                }
+            });
     // 聊天窗口可见时视为已读，清除悬浮球角标。
     connect(m_chatWindow, &ChatWindow::shown, this, [this]() {
         if (m_floatingBall) {
@@ -438,24 +502,10 @@ void PixiuApp::toggleChatWindow()
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)
 {
-    const QString name = event.value(QStringLiteral("event")).toString();
-    if (name == QStringLiteral("memory_ready")) {
-        const QJsonObject data = event.value(QStringLiteral("data")).toObject();
-        qCInfo(lcApp) << "memory ready:" << data.value(QStringLiteral("knowledge_id")).toString()
-                      << data.value(QStringLiteral("title")).toString();
-        if (m_floatingBall) {
-            m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
-        }
-        if (m_notify) {
-            m_notify->notify(tr("记忆已沉淀"),
-                             data.value(QStringLiteral("title")).toString());
-        }
-        return;
+    // 语义分发交由 EventRouter；未知/畸形事件在路由层安全忽略。
+    if (m_eventRouter) {
+        m_eventRouter->handleEvent(event);
     }
-
-    // conflict_detected / forget_confirmation / sync_event 待对应后端广播与
-    // 前端 feature 就绪后再接入；此处仅记录，保持前向兼容。
-    qCInfo(lcApp) << "business event not yet handled:" << name;
 }
 
 void PixiuApp::shutdown()

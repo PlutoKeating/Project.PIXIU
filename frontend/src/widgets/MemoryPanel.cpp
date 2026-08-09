@@ -67,6 +67,13 @@ void MemoryPanel::showAndFocus()
     activateWindow();
 }
 
+void MemoryPanel::showConflictTab()
+{
+    if (m_tabs) {
+        m_tabs->setCurrentIndex(1);
+    }
+}
+
 void MemoryPanel::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {

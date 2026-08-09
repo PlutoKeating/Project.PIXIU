@@ -25,6 +25,7 @@ private slots:
     void loadButtonEmitsHistoryRequested();
     void setPreferenceHistoryPopulatesList();
     void syncTabHasPairButtonOpensDialog();
+    void showConflictTabSelectsTab();
     void setSyncStatusUpdatesLabel();
     void syncTabRefreshButtonEmitsRequest();
     void setPeersPopulatesList();
@@ -152,6 +153,17 @@ void TestMemoryPanel::syncTabHasPairButtonOpensDialog()
     PairDialog *dialog = panel.findChild<PairDialog *>();
     QVERIFY(dialog != nullptr);
     QVERIFY(dialog->isVisible());
+}
+
+void TestMemoryPanel::showConflictTabSelectsTab()
+{
+    MemoryPanel panel;
+    QTabWidget *tabs = panel.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    QCOMPARE(tabs->currentIndex(), 0);
+
+    panel.showConflictTab();
+    QCOMPARE(tabs->currentIndex(), 1);
 }
 
 void TestMemoryPanel::setSyncStatusUpdatesLabel()
