@@ -52,6 +52,30 @@
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 
+## 实现状态（2026-08-09 更新）
+
+- 同步管理客户端与 UI（Phase 6 非阻塞部分）已完成：新增 `SyncController`
+  （`/sync/peers`、`/sync/status`、`/sync/peers/{id}/revoke` 的请求状态机：
+  在途防重、`not_implemented`/未知响应如实上报、仅契约成功态放行）与
+  `RevokeDialog`（解绑二次确认：默认聚焦取消、Esc 视为取消）；记忆面板同步
+  Tab 新增节点列表（本机/在线/离线/上次同步/待同步条数）、同步摘要
+  （共享域/在线数/待同步/上次对账/累计同步）、刷新按钮与非本机设备“解绑”
+  入口。`BackendTransport::peersResult` 改为携带完整响应体，客户端可区分
+  占位态 `{"status":"not_implemented"}` 与成功态 `{"peers":[...]}`，不伪造
+  节点或成功状态。
+- WS 业务事件路由已完成：新增 `EventRouter`，将 `conflict_detected`（通知 +
+  悬浮球角标 + 冲突列表刷新 + 面板可见时切冲突 Tab）、`forget_confirmation`
+  （弹出 ForgetDialog，确认后经 `ForgetController::confirmRemote` 直接执行
+  第二阶段）、`sync_event`（通知 + 同步刷新）映射为应用行为；`memory_ready`
+  行为迁入路由层且语义不变。真实端到端广播仍待后端事件接入后复测。
+- 测试套件 26 例全绿（OFF 路径本机验证）：新增 `t_sync_controller`（9 例）、
+  `t_revoke_dialog`（5 例）、`t_event_router`（7 例），扩展 `t_memory_panel`
+  （同步 Tab 刷新/节点渲染/解绑流/摘要/冲突 Tab 切换）与 `t_forget_controller`
+  （远端确认第二阶段）。i18n `.ts` 增至 127 条、0 未完成，`.qm` 已重新生成。
+- 仍被后端契约阻塞（记录待 Module C）：偏好列表、证据详情、二维码配对令牌、
+  `/memory/flow/promote` 的上下文来源、真实配对闭环/节点真实数据/真实事件
+  广播（见 `frontend/docs/DEVELOPMENT_PLAN.md` §1.3 与 §4 风险表）。
+
 ---
 
 ## 开工要求（本地环境准备）

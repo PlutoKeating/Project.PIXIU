@@ -21,6 +21,13 @@
 > `paired` 判成功）、窗口/托盘内嵌 `pixiu.svg` 图标；新增 `t_pair_dialog`/
 > `t_app_icon`，套件增至 23 例全绿，双路径回归通过；真实配对闭环与
 > 节点列表/状态/解绑仍待 `foundation/sync` 契约落地；
+> Phase 6 同步管理 UI 与 WS 业务事件路由（2026-08-09）已完成：`SyncController`
+> + 同步 Tab 节点列表/同步摘要/刷新/解绑二次确认（`RevokeDialog`），
+> `BackendTransport::peersResult` 改为携带完整响应体以如实识别占位态；
+> `EventRouter` 将 `conflict_detected`/`forget_confirmation`/`sync_event`
+> 路由为通知、角标、面板刷新与远端遗忘确认（`ForgetController::confirmRemote`）；
+> 新增 `t_sync_controller`/`t_revoke_dialog`/`t_event_router`，套件增至 26 例
+> 全绿；真实节点/状态/解绑闭环仍待 `foundation/sync` 契约落地；
 > WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
 > （见 `frontend/docs/BACKEND_ISSUES.md`）；
 > Phase 8 真实桌面收尾（2026-08-08）：第二实例激活通道、通知弹窗
@@ -66,6 +73,18 @@
   `paired` 判成功；窗口与托盘图标改用内嵌 `pixiu.svg`；新增
   `t_pair_dialog`/`t_app_icon`（套件由 21 增至 23 例），双路径回归
   （OFF/ON 构建 + ctest + offscreen 冒烟 + desktop 校验 + `.deb`）通过。
+- 已实现 Phase 6 同步管理 UI（2026-08-09）：`SyncController` 封装
+  `/sync/peers`、`/sync/status` 与 `/sync/peers/{id}/revoke`（在途防重、
+  `not_implemented`/未知响应如实上报、仅契约成功态放行）；同步 Tab 新增
+  节点列表（本机/在线/离线/上次同步/待同步条数）、同步摘要（共享域/在线数/
+  待同步/上次对账/累计同步）、刷新按钮与非本机设备“解绑”入口；`RevokeDialog`
+  危险操作二次确认（默认聚焦取消、Esc 视为取消）；`BackendTransport::peersResult`
+  改携完整响应体，便于上层区分 `{"peers":[...]}` 与占位 `{"status":...}`。
+- 已实现 WS 业务事件路由（2026-08-09）：`EventRouter` 将 `conflict_detected`
+  （通知 + 角标 + 冲突列表刷新 + 面板可见时切冲突 Tab）、`forget_confirmation`
+  （弹出 ForgetDialog，确认后经 `ForgetController::confirmRemote` 直接执行
+  第二阶段）、`sync_event`（通知 + 同步刷新）路由为应用行为；`memory_ready`
+  逻辑一并迁入路由层，原有角标/通知行为不变。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -123,11 +142,13 @@
 - WebSocketClient 的真实环境冒烟（连接 `/events`、`connected`/`ping`/`memory_ready`）
   未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
 - Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
-- Phase 6 设备同步管理剩余部分（节点列表、同步状态、解绑与真实配对闭环）：
-  `foundation/sync` 与 `/sync/*` 仍为占位，剩余项阻塞（配对对话框 UI 壳
-  已先行完成，见 1.1）。
+- Phase 6 设备同步管理真实闭环：节点列表/同步状态/解绑的 UI 与客户端已
+  完成（见 1.1），但 `foundation/sync` 与 `/sync/*` 仍为占位，真实联调阻塞；
+  二维码配对展示等待令牌生成契约（Phase 6 第 5 项）。
+- `conflict_detected`/`forget_confirmation`/`sync_event` 的客户端路由已完成
+  （见 1.1），真实端到端广播验证等待后端事件接入（`docs/API.md` §4 占位项）。
 - Phase 8 验收发布：本地自动化回归基线已完成（`scripts/regression.sh`，
-  ctest 23/23）；本机实时 UKUI 会话已完成真实桌面冒烟与收尾验证（应用
+  ctest 26/26）；本机实时 UKUI 会话已完成真实桌面冒烟与收尾验证（应用
   启动、窗口、托盘、UKUI 阴影、全局快捷键注册、主题 dark→light→dark
   实时跟随、第二实例激活通道、WS 桩驱动通知弹窗）。剩余项：全局快捷键
   真实按键触发需在全新登录会话复测（当前运行会话未加载 grab，见
@@ -145,9 +166,10 @@
 （见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
 
 后续可执行项全部被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
-Phase 6 剩余部分（节点列表/状态/解绑/真实配对闭环）等待 `foundation/sync`、
+Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
 WS 真实事件联调等待 Module C 修复 `/events` 注册与 WebSocket 导入
-（见 `BACKEND_ISSUES.md`）。阻塞期间 Module A 以测试专用 WS 桩
+（见 `BACKEND_ISSUES.md`）；`/memory/flow/promote` 等待 flow 契约与上下文
+来源端点。阻塞期间 Module A 以测试专用 WS 桩
 （`frontend/scripts/ws_smoke_server.py`）维持事件 UI 链路冒烟，不修改
 `backend/`。
 
@@ -401,14 +423,23 @@ HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，
 
 ### Phase 6：设备同步管理
 
-该阶段受 `foundation/sync` 和 `/sync/*` 占位阻塞。后端契约落地后按以下独立 feature 实现：
+该阶段受 `foundation/sync` 和 `/sync/*` 占位阻塞。客户端侧非阻塞部分已完成
+（2026-08-09），后端契约落地后按以下独立 feature 闭环：
 
-1. `SyncClient` 数据模型和 transport：`feat(frontend): add sync client`
-2. 节点列表：`feat(frontend): add peer list`
-3. 同步状态：`feat(frontend): add sync status view`
-4. PIN 配对：`feat(frontend): add device PIN pairing`
+1. [x] `SyncClient` 数据模型和 transport：`feat(frontend): add sync client`
+   - transport 端点（pair/peers/status/revoke）已就绪，见
+     `HttpBackendTransport`；客户端状态机见 `SyncController`（2026-08-09）。
+2. [x] 节点列表：`feat(frontend): add peer list`
+   - 同步 Tab 渲染节点（本机/在线/离线/上次同步/待同步），`not_implemented`
+     如实呈现；真实数据等待 `/sync/peers` 落地（2026-08-09）。
+3. [x] 同步状态：`feat(frontend): add sync status view`
+   - 同步摘要行渲染共享域/在线数/待同步/对账时间/累计同步（2026-08-09）。
+4. [x] PIN 配对：`feat(frontend): add device PIN pairing`
+   - `PairDialog` 契约载荷与结果反馈已完成；真实闭环等待 `/sync/pair` 落地。
 5. 二维码展示：等待令牌生成契约后 `feat(frontend): add device QR pairing`
-6. 解绑确认：`feat(frontend): add peer revoke flow`
+6. [x] 解绑确认：`feat(frontend): add peer revoke flow`
+   - `RevokeDialog` 二次确认 + `SyncController::revokePeer` 已就绪；真实闭环
+     等待 `/sync/peers/{id}/revoke` 落地（2026-08-09）。
 
 前端只管理配对和展示状态，不参与 CRDT 或传输实现。
 
@@ -667,6 +698,29 @@ WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收�
 `frontend/docs/BACKEND_ISSUES.md`。`memory_ready` 事件映射与角标联动已通过本地
 测试与冒烟验证，端到端真实事件仍待 Module C 修复后复测；Module A 侧已用
 测试专用 WS 桩完成 UI 链路冒烟（见上文记录）。
+
+2026-08-09 追加（同步管理 UI + WS 业务事件路由，OFF 路径本机验证）：
+
+```text
+同步管理                SyncController（peers/status/revoke 在途防重、占位/未知
+                        响应如实上报）；MemoryPanel 同步 Tab 节点列表/摘要/刷新/
+                        解绑入口；RevokeDialog 二次确认（默认取消、Esc 取消）
+事件路由                EventRouter：conflict_detected/forget_confirmation/
+                        sync_event → 通知/角标/面板刷新/远端遗忘确认；
+                        memory_ready 行为迁移至路由层且语义不变
+传输契约                BackendTransport::peersResult 携完整响应体，占位态
+                        {"status":"not_implemented"} 与成功态 {"peers":[...]}
+                        可在客户端正确区分（不伪造成功）
+i18n                    pixiu_en_US.ts 增补同步/解绑/事件路由文案（127 条，0 未完成）
+测试                    OFF 路径 ctest 26/26 通过（新增 t_sync_controller /
+                        t_revoke_dialog / t_event_router；扩展 t_memory_panel /
+                        t_forget_controller）
+冒烟                    offscreen 启动 "PIXIU application started" 无回归
+提交                    a330a6d feat(frontend): add sync peer list, status and
+                        revoke flow
+                        3fda460 feat(frontend): route websocket business events
+                        to UI actions
+```
 
 ## 7. Git 工作流
 
