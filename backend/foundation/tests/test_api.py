@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import json
+import sqlite3
+import time
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,7 +13,8 @@ import backend.foundation.api.di as di_module
 from backend.foundation.api import app
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.tests.fakes import StubTextEmbedder
-from backend.foundation.api.di import get_knowledge_service
+from backend.foundation.api.di import get_flow_service, get_knowledge_service
+from backend.foundation.flow import FlowContextNotFound, InvalidFlowTransition
 from backend.foundation.storage.repository import (
     SqliteEntityRepo,
     SqliteKnowledgeRepo,
@@ -142,9 +147,91 @@ def test_conflicts_lists_records(client):
     assert "amount" in conflicts[0]["field"]
 
 
-def test_unimplemented_endpoints_keep_placeholder(client):
+def test_flow_promote_contract(client):
+    # 先触发数据库迁移，再从会话生产者边界写入一个短期上下文。
+    assert client.get("/conflicts").status_code == 200
+    context_id = "ctx_AAAAAAAAAAAAAAAAAAAAAAAAAA"
+    now = int(time.time())
+    conn = sqlite3.connect(di_module.settings.db_path)
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute(
+        """INSERT INTO memory_contexts
+           (id, tier, payload, scope, status, created_at, updated_at, expires_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            context_id,
+            "SHORT_TERM",
+            json.dumps({"source_type": "MANUAL_CONFIG", "raw": {"title": "沉淀测试"}}),
+            "user:alice",
+            "ACTIVE",
+            now,
+            now,
+            now + 60,
+        ),
+    )
+    conn.commit()
+    conn.close()
+
+    response = client.post(
+        "/memory/flow/promote",
+        json={
+            "source": "SHORT_TERM",
+            "context_ids": [context_id],
+            "scope": "user:alice",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["promoted_count"] == 1
+    assert response.json()["knowledge_ids"][0].startswith("knw_")
+    assert response.json()["latency_ms"] >= 0
+
+    conn = sqlite3.connect(di_module.settings.db_path)
+    row = conn.execute(
+        "SELECT status, knowledge_id, expires_at FROM memory_contexts WHERE id = ?",
+        (context_id,),
+    ).fetchone()
+    conn.close()
+    assert row == ("PROMOTED", response.json()["knowledge_ids"][0], None)
+
+
+@pytest.mark.parametrize(
+    ("error", "status", "detail"),
+    [
+        (FlowContextNotFound("ctx_missing"), 404, "NOT_FOUND"),
+        (InvalidFlowTransition("expired"), 400, "INVALID_REQUEST"),
+    ],
+)
+def test_flow_promote_maps_domain_errors(client, error, status, detail):
+    class _Flow:
+        async def promote(self, source, context_ids, scope):
+            raise error
+
+    async def _override_flow():
+        return _Flow()
+
+    app.dependency_overrides[get_flow_service] = _override_flow
+    response = client.post(
+        "/memory/flow/promote",
+        json={
+            "source": "MID_TERM",
+            "context_ids": ["ctx_AAAAAAAAAAAAAAAAAAAAAAAAAA"],
+            "scope": "shared:home",
+        },
+    )
+    assert response.status_code == status
+    assert response.json()["detail"] == detail
+
+
+def test_flow_promote_rejects_empty_context_ids(client):
+    response = client.post(
+        "/memory/flow/promote",
+        json={"source": "SHORT_TERM", "context_ids": [], "scope": "user:alice"},
+    )
+    assert response.status_code == 422
+
+
+def test_unimplemented_sync_endpoints_keep_placeholder(client):
     # /memory/query 已由 retrieval 阶段实现（见 test_retrieval.py 的 API 用例）
-    assert client.post("/memory/flow/promote", json={}).json()["status"] == "not_implemented"
     assert client.post("/sync/pair", json={}).json()["status"] == "not_implemented"
     assert client.get("/sync/peers").json()["status"] == "not_implemented"
     assert client.get("/sync/status").json()["status"] == "not_implemented"

@@ -1,7 +1,7 @@
 """PIXIU Foundation — API 网关 (FastAPI)
 
 按 docs/API.md 注册 REST 端点。已接入引擎 Service 的端点返回真实业务结果；
-依赖后续阶段（retrieval/flow/sync）的端点保持占位。
+依赖后续阶段（sync）的端点保持占位。
 """
 
 from __future__ import annotations
@@ -14,10 +14,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from ..core.models import SourceType
+from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from .di import (
     get_conflict_repo,
     get_conflict_service,
     get_evidence_repo,
+    get_flow_service,
     get_ingestion_service,
     get_knowledge_service,
     get_preference_repo,
@@ -63,6 +65,12 @@ class ForgetRequest(BaseModel):
 class MemoryQueryRequest(BaseModel):
     text: str
     context_hint: dict[str, Any] = Field(default_factory=dict)
+
+
+class FlowPromoteRequest(BaseModel):
+    source: MemoryTier
+    context_ids: list[str] = Field(min_length=1)
+    scope: str
 
 
 def _placeholder_response(**extra) -> dict:
@@ -199,11 +207,29 @@ async def conflicts(conflict_repo=Depends(get_conflict_repo)):
     return {"conflicts": [r.model_dump(mode="json") for r in records]}
 
 
-# ─── 记忆流转（占位，待 flow 阶段）───────────────────────
+# ─── 记忆流转 ───────────────────────────────────────────
 
 @app.post("/memory/flow/promote", tags=["Flow"], summary="短/中期记忆沉淀到长期")
-async def flow_promote():
-    return _placeholder_response()
+async def flow_promote(
+    body: FlowPromoteRequest,
+    flow=Depends(get_flow_service),
+):
+    started = time.monotonic()
+    try:
+        knowledge_ids = await flow.promote(
+            body.source,
+            body.context_ids,
+            body.scope,
+        )
+    except FlowContextNotFound as exc:
+        raise HTTPException(status_code=404, detail="NOT_FOUND") from exc
+    except InvalidFlowTransition as exc:
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+    return {
+        "promoted_count": len(knowledge_ids),
+        "knowledge_ids": knowledge_ids,
+        "latency_ms": _latency_ms(started),
+    }
 
 
 # ─── 设备同步（占位，待 sync 阶段）───────────────────────

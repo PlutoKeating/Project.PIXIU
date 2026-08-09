@@ -14,12 +14,14 @@ from backend.foundation.api.di import (
     get_conflict_service,
     get_db,
     get_evidence_repo,
+    get_flow_service,
     get_ingestion_service,
     get_knowledge_service,
     get_preference_repo,
     get_preference_service,
     get_security_service,
 )
+from backend.foundation.flow import FlowService
 from backend.foundation.storage.migrations import latest_version
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
@@ -69,5 +71,21 @@ async def test_service_factories_return_real_services(fresh_di):
         assert isinstance(await get_evidence_repo(db), SqliteEvidenceRepo)
         assert isinstance(await get_preference_repo(db), SqlitePreferenceRepo)
         assert isinstance(await get_conflict_repo(db), SqliteConflictRepo)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_flow_factory_composes_real_service(fresh_di):
+    db = await get_db()
+    try:
+        ingestion = await get_ingestion_service(db)
+        # 避免在无麒麟 SDK 的测试机调用默认 get_knowledge_service；这里只验证装配边界。
+        class _Knowledge:
+            async def structure(self, evidence):
+                raise AssertionError("not called during composition")
+
+        flow = await get_flow_service(db, ingestion, _Knowledge())
+        assert isinstance(flow, FlowService)
     finally:
         await db.close()

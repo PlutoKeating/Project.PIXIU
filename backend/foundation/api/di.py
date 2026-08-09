@@ -20,6 +20,7 @@ from backend.engine.security import SecurityService
 
 from ..core.config import settings
 from ..core.logger import get_logger
+from ..flow import FlowService, SqliteFlowStore
 from ..retrieval import RetrievalService
 from ..storage.migrations import apply_pending
 from ..storage.repository import (
@@ -126,4 +127,29 @@ async def get_retrieval_service(
         entity_repo=SqliteEntityRepo(db),
         evidence_repo=SqliteEvidenceRepo(db),
         embedder=get_embedder(),
+    )
+
+
+async def get_flow_service(
+    db: aiosqlite.Connection = Depends(get_db),
+    ingestion: IngestionService = Depends(get_ingestion_service),
+    knowledge: KnowledgeService = Depends(get_knowledge_service),
+) -> FlowService:
+    """组装短/中期持久化与长期知识沉淀流水线。"""
+    store = SqliteFlowStore(db)
+
+    async def _promote_context(context):
+        payload = dict(context.payload)
+        source_type = str(payload.pop("source_type", "MANUAL_CONFIG"))
+        raw = payload.pop("raw", payload)
+        if not isinstance(raw, dict):
+            raise ValueError("flow context raw payload must be an object")
+        evidence = await ingestion.ingest(source_type, raw, context.scope)
+        item = await knowledge.structure(evidence)
+        return item.id
+
+    return FlowService(
+        store,
+        _promote_context,
+        knowledge_repo=SqliteKnowledgeRepo(db),
     )
