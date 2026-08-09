@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from backend.foundation.core.idgen import (
     gen_conflict_id,
+    gen_context_id,
     gen_device_id,
     gen_entity_id,
     gen_evidence_id,
@@ -22,6 +23,7 @@ ALL_GENERATORS = {
     gen_sync_op_id: "sync_",
     gen_entity_id: "ent_",
     gen_request_id: "req_",
+    gen_context_id: "ctx_",
 }
 
 
@@ -77,6 +79,12 @@ def test_request_prefix():
     assert len(result) == 30
 
 
+def test_context_prefix():
+    result = gen_context_id()
+    assert result.startswith("ctx_")
+    assert len(result) == 30
+
+
 # ═══════════════════════════════════════════════════════
 # Group 2: no duplicates on consecutive generation
 # ═══════════════════════════════════════════════════════
@@ -89,11 +97,11 @@ def test_no_duplicates_within_generator():
 
 
 def test_no_duplicates_across_generators():
-    """800 IDs from 8 generators all go into one set — no collisions."""
+    """900 IDs from 9 generators all go into one set — no collisions."""
     all_ids: list[str] = []
     for gen_func in ALL_GENERATORS:
         all_ids.extend(gen_func() for _ in range(100))
-    assert len(set(all_ids)) == 800, "cross-generator collision detected"
+    assert len(set(all_ids)) == 900, "cross-generator collision detected"
 
 
 def test_id_length_consistent():

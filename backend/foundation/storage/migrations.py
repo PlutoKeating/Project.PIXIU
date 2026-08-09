@@ -37,9 +37,39 @@ def _add_knowledge_entities(conn: sqlite3.Connection) -> None:
     )
 
 
+def _add_memory_contexts(conn: sqlite3.Connection) -> None:
+    """迁移 #3：持久化短/中期记忆及其 TTL/沉淀状态。"""
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS memory_contexts (
+            id           TEXT PRIMARY KEY,
+            tier         TEXT NOT NULL CHECK (tier IN ('SHORT_TERM', 'MID_TERM')),
+            payload      TEXT NOT NULL DEFAULT '{}',
+            scope        TEXT NOT NULL,
+            status       TEXT NOT NULL DEFAULT 'ACTIVE'
+                         CHECK (status IN ('ACTIVE', 'PROMOTED', 'EXPIRED')),
+            created_at   INTEGER NOT NULL,
+            updated_at   INTEGER NOT NULL,
+            expires_at   INTEGER,
+            knowledge_id TEXT,
+            FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE SET NULL
+        )
+        """
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_ctx_scope_tier "
+        "ON memory_contexts(scope, tier)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_ctx_expiry "
+        "ON memory_contexts(status, expires_at)"
+    )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
+    (3, "memory_contexts", _add_memory_contexts),
 ]
 
 

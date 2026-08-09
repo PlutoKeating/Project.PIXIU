@@ -28,6 +28,7 @@ EXPECTED_TABLES = {
     "entities",
     "relations",
     "knowledge_entities",
+    "memory_contexts",
     "conflict_records",
     "sync_oplog",
 }
@@ -118,6 +119,21 @@ def test_preferences_has_unique_key_scope(tmp_path: Path):
         r[1] for r in conn.execute("PRAGMA index_list('preferences')").fetchall()
     }
     assert "idx_pref_key_scope" in indexes
+
+
+def test_memory_contexts_has_lifecycle_columns_and_fk(tmp_path: Path):
+    conn = sqlite3.connect(str(tmp_path / "test.db"))
+    init_db_on_connection(conn)
+    cols = {
+        row[1] for row in conn.execute("PRAGMA table_info('memory_contexts')").fetchall()
+    }
+    assert {
+        "id", "tier", "payload", "scope", "status", "created_at",
+        "updated_at", "expires_at", "knowledge_id",
+    } == cols
+    fks = conn.execute("PRAGMA foreign_key_list('memory_contexts')").fetchall()
+    assert {row[2] for row in fks} == {"knowledge_items"}
+    conn.close()
 
 
 # ═══════════════════════════════════════════════════════
@@ -238,7 +254,7 @@ def test_latest_version_matches_schema(tmp_path: Path):
     assert db_version == SCHEMA_VERSION
 
 
-def test_migration_two_adds_knowledge_entities_to_v1_database(tmp_path: Path):
+def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn = create_connection(str(tmp_path / "test.db"))
     conn.execute(
         "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)"
@@ -248,10 +264,11 @@ def test_migration_two_adds_knowledge_entities_to_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 1
+    assert apply_pending(conn) == 2
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 2
+    assert "memory_contexts" in _table_names(conn)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 3
     conn.close()
 
 

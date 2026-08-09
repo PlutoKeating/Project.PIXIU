@@ -1,6 +1,6 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 10 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+创建全部 11 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
 知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
 SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # FTS5 全文索引（trigram 分词器，支持中文子串检索）。
 # 独立表（不绑定 content=），rowid 手动对应 knowledge_items.rowid，
@@ -148,6 +148,25 @@ DDL_STATEMENTS: list[str] = [
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_knw_entity_entity ON knowledge_entities(entity_id)",
+
+    # ─── memory_contexts (短/中期记忆上下文) ─────────────
+    """
+    CREATE TABLE IF NOT EXISTS memory_contexts (
+        id           TEXT PRIMARY KEY,
+        tier         TEXT NOT NULL CHECK (tier IN ('SHORT_TERM', 'MID_TERM')),
+        payload      TEXT NOT NULL DEFAULT '{}',
+        scope        TEXT NOT NULL,
+        status       TEXT NOT NULL DEFAULT 'ACTIVE'
+                     CHECK (status IN ('ACTIVE', 'PROMOTED', 'EXPIRED')),
+        created_at   INTEGER NOT NULL,
+        updated_at   INTEGER NOT NULL,
+        expires_at   INTEGER,
+        knowledge_id TEXT,
+        FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE SET NULL
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_ctx_scope_tier ON memory_contexts(scope, tier)",
+    "CREATE INDEX IF NOT EXISTS idx_ctx_expiry ON memory_contexts(status, expires_at)",
 
     # ─── conflict_records (冲突审计) ─────────────────────
     """
