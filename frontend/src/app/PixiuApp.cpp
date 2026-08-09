@@ -176,6 +176,26 @@ bool PixiuApp::start()
     m_transport = new HttpBackendTransport(this);
     connect(m_transport, &BackendTransport::connectionStateChanged,
             m_chatWindow, &ChatWindow::setBackendState);
+    // 后端未连接引导（关键状态表）：离线/异常时提示启动服务；每次断线
+    // 仅提示一次，恢复在线后复位，避免反复刷屏。
+    connect(m_transport, &BackendTransport::connectionStateChanged, this,
+            [this](ConnectionState state) {
+                const bool offline =
+                    state == ConnectionState::Disconnected
+                    || state == ConnectionState::Error;
+                if (offline && !m_offlineGuidanceShown) {
+                    m_offlineGuidanceShown = true;
+                    ChatMessage notice;
+                    notice.role = MessageRole::System;
+                    notice.text = tr(
+                        "后端服务未连接，请先启动 PIXIU 后端服务后重试。");
+                    notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                    m_chatWindow->messageList()->appendMessage(notice);
+                    qCInfo(lcApp) << "offline guidance shown";
+                } else if (state == ConnectionState::Connected) {
+                    m_offlineGuidanceShown = false;
+                }
+            });
 
     // 设备配对（Phase 6 壳）：UI 与契约载荷已就绪；后端 /sync/pair 落地后
     // 真实闭环，当前如实呈现 not_implemented / 网络错误，不伪造成功。

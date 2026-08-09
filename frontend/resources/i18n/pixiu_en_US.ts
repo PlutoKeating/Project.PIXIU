@@ -471,6 +471,10 @@ Your input is kept; edit and retry.</translation>
         <translation>Previous memory is still being stored; this import was skipped. Please retry shortly.</translation>
     </message>
     <message>
+        <source>后端服务未连接，请先启动 PIXIU 后端服务后重试。</source>
+        <translation>Backend service is offline. Please start the PIXIU backend service and retry.</translation>
+    </message>
+    <message>
         <source>冲突加载失败（%1）：%2</source>
         <translation>Conflict load failed (%1): %2</translation>
     </message>

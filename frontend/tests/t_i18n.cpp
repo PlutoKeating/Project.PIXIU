@@ -63,6 +63,10 @@ void TestI18n::englishTranslationLoadsAndApplies()
                  "PixiuApp", "上一条记忆仍在写入，本次录入已跳过，请稍候重试。"),
              QStringLiteral("Previous memory is still being stored; this "
                             "import was skipped. Please retry shortly."));
+    QCOMPARE(QCoreApplication::translate(
+                 "PixiuApp", "后端服务未连接，请先启动 PIXIU 后端服务后重试。"),
+             QStringLiteral("Backend service is offline. Please start the "
+                            "PIXIU backend service and retry."));
 }
 
 QTEST_MAIN(TestI18n)
