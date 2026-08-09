@@ -15,11 +15,14 @@ class WriteController : public QObject
 public:
     explicit WriteController(BackendTransport *transport, QObject *parent = nullptr);
 
-    // 文本录入：source_type=MANUAL_CONFIG。
-    void submit(const QString &title,
+    // 文本录入：source_type=MANUAL_CONFIG；存在在途写入时返回 false（防重复）。
+    bool submit(const QString &title,
                 const QString &content,
                 const QString &scope,
                 const QString &imagePath = QString());
+
+    // 当前是否存在在途写入。
+    bool isBusy() const;
 
 signals:
     void writeAccepted(const QJsonObject &response);
@@ -27,6 +30,7 @@ signals:
 
 private:
     BackendTransport *m_transport = nullptr;
+    bool m_busy = false;
 };
 
 #endif // PIXIU_WRITE_CONTROLLER_H

@@ -35,6 +35,10 @@ class TestWriteController : public QObject
 private slots:
     void submitBuildsContractPayload();
     void submitWithImageAddsOcrContext();
+    void submitRejectedWhileBusy();
+    void ackClearsBusyState();
+    void errorClearsBusyState();
+    void idleTransportErrorDoesNotEmitWriteFailed();
     void writeAcknowledgedIsForwarded();
     void transportErrorBecomesWriteFailed();
 };
@@ -78,6 +82,71 @@ void TestWriteController::submitWithImageAddsOcrContext()
     QCOMPARE(context.value(QStringLiteral("ocr_pending")).toBool(), true);
 }
 
+void TestWriteController::submitRejectedWhileBusy()
+{
+    FakeTransport transport;
+    WriteController controller(&transport);
+
+    QVERIFY(controller.submit(QStringLiteral("标题"),
+                              QStringLiteral("内容"),
+                              QStringLiteral("shared:home")));
+    QVERIFY(controller.isBusy());
+    // 在途期间再次提交被拒绝，防止重复写入。
+    QVERIFY(!controller.submit(QStringLiteral("标题2"),
+                               QStringLiteral("内容2"),
+                               QStringLiteral("shared:home")));
+    // 载荷保持为第一次提交的内容。
+    QCOMPARE(transport.lastPayload.value(QStringLiteral("raw"))
+                 .toObject()
+                 .value(QStringLiteral("title"))
+                 .toString(),
+             QStringLiteral("标题"));
+}
+
+void TestWriteController::ackClearsBusyState()
+{
+    FakeTransport transport;
+    WriteController controller(&transport);
+
+    QVERIFY(controller.submit(QStringLiteral("标题"),
+                              QStringLiteral("内容"),
+                              QStringLiteral("shared:home")));
+    emit transport.writeAcknowledged(
+        QJsonObject{{QStringLiteral("evidence_id"), QStringLiteral("evd_01H")}});
+    QVERIFY(!controller.isBusy());
+    // 恢复后可再次提交。
+    QVERIFY(controller.submit(QStringLiteral("标题2"),
+                              QStringLiteral("内容2"),
+                              QStringLiteral("user:local")));
+}
+
+void TestWriteController::errorClearsBusyState()
+{
+    FakeTransport transport;
+    WriteController controller(&transport);
+
+    QVERIFY(controller.submit(QStringLiteral("标题"),
+                              QStringLiteral("内容"),
+                              QStringLiteral("shared:home")));
+    emit transport.errorOccurred(QStringLiteral("TIMEOUT"),
+                                 QStringLiteral("request timed out"), QString());
+    QVERIFY(!controller.isBusy());
+}
+
+void TestWriteController::idleTransportErrorDoesNotEmitWriteFailed()
+{
+    FakeTransport transport;
+    WriteController controller(&transport);
+    QSignalSpy failedSpy(&controller, &WriteController::writeFailed);
+
+    // 无在途写入时，其他端点（冲突/偏好/配对）的通用错误不得误报录入失败。
+    emit transport.errorOccurred(QStringLiteral("NETWORK_ERROR"),
+                                 QStringLiteral("connection refused"), QString());
+
+    QCOMPARE(failedSpy.count(), 0);
+    QVERIFY(!controller.isBusy());
+}
+
 void TestWriteController::writeAcknowledgedIsForwarded()
 {
     FakeTransport transport;
@@ -102,6 +171,9 @@ void TestWriteController::transportErrorBecomesWriteFailed()
     WriteController controller(&transport);
     QSignalSpy failedSpy(&controller, &WriteController::writeFailed);
 
+    QVERIFY(controller.submit(QStringLiteral("标题"),
+                              QStringLiteral("内容"),
+                              QStringLiteral("shared:home")));
     emit transport.errorOccurred(QStringLiteral("NETWORK_ERROR"),
                                  QStringLiteral("connection refused"), QString());
 

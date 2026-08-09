@@ -224,6 +224,10 @@ This action cannot be undone.</translation>
         <translation>Retry</translation>
     </message>
     <message>
+        <source>正在加载…</source>
+        <translation>Loading…</translation>
+    </message>
+    <message>
         <source>重试加载冲突列表</source>
         <translation>Retry loading conflicts</translation>
     </message>
@@ -461,6 +465,10 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>遗忘操作失败（%1）：%2</source>
         <translation>Forget failed (%1): %2</translation>
+    </message>
+    <message>
+        <source>上一条记忆仍在写入，本次录入已跳过，请稍候重试。</source>
+        <translation>Previous memory is still being stored; this import was skipped. Please retry shortly.</translation>
     </message>
     <message>
         <source>冲突加载失败（%1）：%2</source>

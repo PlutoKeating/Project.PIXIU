@@ -55,8 +55,14 @@ void TestI18n::englishTranslationLoadsAndApplies()
                             "modifier; changes apply immediately."));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),
              QStringLiteral("Retry"));
+    QCOMPARE(QCoreApplication::translate("MemoryPanel", "正在加载…"),
+             QStringLiteral("Loading…"));
     QCOMPARE(QCoreApplication::translate("PixiuApp", "冲突加载失败（%1）：%2"),
              QStringLiteral("Conflict load failed (%1): %2"));
+    QCOMPARE(QCoreApplication::translate(
+                 "PixiuApp", "上一条记忆仍在写入，本次录入已跳过，请稍候重试。"),
+             QStringLiteral("Previous memory is still being stored; this "
+                            "import was skipped. Please retry shortly."));
 }
 
 QTEST_MAIN(TestI18n)

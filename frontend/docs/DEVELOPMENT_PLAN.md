@@ -52,6 +52,11 @@
 > 持久化，启动按已存序列注册、设置确认后即时重注册；`t_shortcut_manager`/
 > `t_settings_dialog`/`t_app_settings`/`t_i18n` 扩展，套件 27 例全绿
 > （OFF/ON 双路径），i18n 149 条、0 未完成。
+> 管理面板加载态与写入防重（2026-08-09）已完成：冲突/偏好历史 Tab 增加
+> “正在加载…”态（与空态/失败态互斥），`WriteController` 在途防重且
+> `writeFailed` 仅在写入在途时上抛（修复通用错误串扰）；`t_memory_panel`/
+> `t_write_controller`/`t_i18n` 扩展，套件 27 例全绿（OFF/ON 双路径），
+> i18n 151 条、0 未完成。
 
 ## 1. 当前进度摘要
 
@@ -125,6 +130,12 @@
   `t_shortcut_manager` 新增 3 例、`t_settings_dialog` 新增 4 例，
   `t_app_settings`/`t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），
   i18n 149 条、0 未完成。
+- 已实现管理面板加载态与写入在途防重（2026-08-09）：冲突 Tab 与偏好历史
+  Tab 增加“正在加载…”态（打开面板/刷新/重试时进入，与空态/失败态互斥）；
+  `WriteController::submit` 在途防重（在途返回 false），`writeFailed` 仅在
+  在途时上抛（修复其他端点错误串扰为“录入失败”），重复提交时应用层给出
+  明确提示；`t_memory_panel` 新增 2 例、`t_write_controller` 新增 4 例、
+  `t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），i18n 151 条、0 未完成。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -220,6 +231,12 @@ retry`）：MemoryPanel 两个 Tab 显示失败原因 + 重试按钮，成功加
 `QKeySequenceEdit` 门控（需含修饰键），`ShortcutManager` 自定义序列 + 空值
 回退，`keyToggleShortcut` 持久化，启动读取/确认后即时重注册；套件 27 例
 全绿（OFF/ON 双路径），i18n 149 条、0 未完成。
+
+2026-08-09 追加：管理面板加载态与写入在途防重（不依赖后端）已完成
+（`feat(frontend): add management loading states and write in-flight guard`）：
+冲突/偏好历史 Tab “正在加载…”态；`WriteController` 在途防重 +
+`writeFailed` 仅在有写入在途时上抛（修复通用错误串扰）；套件 27 例全绿
+（OFF/ON 双路径），i18n 151 条、0 未完成。
 
 其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
@@ -833,6 +850,26 @@ i18n                   pixiu_en_US.ts 增补 SettingsDialog 条目
                        （offscreen 下 KYSDK 注册失败按设计降级 Qt）
 提交                   feat(frontend): make toggle shortcut customizable
                        in settings（文档随 feature 提交一并更新）
+```
+
+2026-08-09 追加（管理面板加载态与写入在途防重，OFF/ON 本机验证）：
+
+```text
+加载态                 MemoryPanel 冲突/偏好历史 Tab：“正在加载…”与空态/
+                       失败态互斥；打开面板/刷新/重试/加载时进入，成功或
+                       失败后自动切换回空态/列表/错误行
+写入防重               WriteController::submit 在途返回 false；writeAccepted/
+                       errorOccurred（仅写入在途）后清空忙态；空闲时通用
+                       错误不再误报“录入失败”
+应用层                 重复提交时聊天框提示“上一条记忆仍在写入…已跳过”
+i18n                   pixiu_en_US.ts 增补 MemoryPanel/PixiuApp 条目
+                       （151 条，0 未完成），.qm 重新生成
+测试                   OFF/ON 双路径 ctest 27/27 通过（t_memory_panel
+                       新增加载态 2 例；t_write_controller 新增防重/忙态
+                       清理/空闲错误隔离 4 例；t_i18n 扩展）
+冒烟                   offscreen 启动 "PIXIU application started" 无回归
+提交                   feat(frontend): add management loading states and
+                       write in-flight guard（文档随 feature 提交一并更新）
 ```
 
 ## 7. Git 工作流

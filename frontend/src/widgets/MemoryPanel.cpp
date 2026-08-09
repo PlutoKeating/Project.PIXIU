@@ -111,8 +111,18 @@ void MemoryPanel::setConflicts(const QJsonArray &conflicts)
     }
 
     const bool hasConflicts = !conflicts.isEmpty();
+    m_conflictEmptyLabel->setText(tr("暂无冲突记录"));
     m_conflictEmptyLabel->setVisible(!hasConflicts);
     m_conflictList->setVisible(hasConflicts);
+    m_conflictErrorLabel->setVisible(false);
+    m_conflictRetryButton->setVisible(false);
+}
+
+void MemoryPanel::setConflictsLoading()
+{
+    m_conflictEmptyLabel->setText(tr("正在加载…"));
+    m_conflictEmptyLabel->setVisible(true);
+    m_conflictList->setVisible(false);
     m_conflictErrorLabel->setVisible(false);
     m_conflictRetryButton->setVisible(false);
 }
@@ -158,8 +168,18 @@ void MemoryPanel::setPreferenceHistory(const QJsonObject &response)
     }
 
     const bool hasHistory = !history.isEmpty();
+    m_prefEmptyLabel->setText(tr("暂无历史记录"));
     m_prefEmptyLabel->setVisible(!hasHistory);
     m_prefHistoryList->setVisible(hasHistory);
+    m_prefErrorLabel->setVisible(false);
+    m_prefRetryButton->setVisible(false);
+}
+
+void MemoryPanel::setPreferenceHistoryLoading()
+{
+    m_prefEmptyLabel->setText(tr("正在加载…"));
+    m_prefEmptyLabel->setVisible(true);
+    m_prefHistoryList->setVisible(false);
     m_prefErrorLabel->setVisible(false);
     m_prefRetryButton->setVisible(false);
 }

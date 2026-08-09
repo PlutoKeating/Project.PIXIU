@@ -32,11 +32,15 @@ public:
 
     // 更新冲突审计 Tab 内容（来自 GET /conflicts）。
     void setConflicts(const QJsonArray &conflicts);
+    // 切换冲突 Tab 加载中态（与空态/失败态互斥）。
+    void setConflictsLoading();
     // 更新冲突 Tab 加载失败态（与空态区分，附带“重试”入口）。
     void setConflictsError(const QString &message);
 
     // 更新偏好历史 Tab 内容（来自 GET /preference/{id}/history）。
     void setPreferenceHistory(const QJsonObject &response);
+    // 切换偏好历史 Tab 加载中态。
+    void setPreferenceHistoryLoading();
     // 更新偏好历史 Tab 加载失败态。
     void setPreferenceHistoryError(const QString &message);
 

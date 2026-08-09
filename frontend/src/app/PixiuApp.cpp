@@ -139,6 +139,7 @@ bool PixiuApp::start()
     m_memoryPanel = new MemoryPanel();
     const auto openMemoryPanel = [this]() {
         if (m_conflictController) {
+            m_memoryPanel->setConflictsLoading();
             m_conflictController->refresh();
         }
         if (m_syncController) {
@@ -323,8 +324,20 @@ bool PixiuApp::start()
                 m_importDialog->raise();
                 m_importDialog->activateWindow();
             });
-    connect(m_importDialog, &ImportDialog::importRequested,
-            m_writeController, &WriteController::submit);
+    connect(m_importDialog, &ImportDialog::importRequested, this,
+            [this](const QString &title, const QString &content,
+                   const QString &scope, const QString &imagePath) {
+                if (!m_writeController->submit(
+                        title, content, scope, imagePath)) {
+                    // 上一条仍在写入：不重复提交，给出明确反馈。
+                    ChatMessage notice;
+                    notice.role = MessageRole::System;
+                    notice.text = tr(
+                        "上一条记忆仍在写入，本次录入已跳过，请稍候重试。");
+                    notice.timestamp = QDateTime::currentSecsSinceEpoch();
+                    m_chatWindow->messageList()->appendMessage(notice);
+                }
+            });
     connect(m_writeController, &WriteController::writeAccepted, this,
             [this](const QJsonObject &response) {
                 ChatMessage notice;
@@ -410,6 +423,7 @@ bool PixiuApp::start()
     connect(m_memoryPanel, &MemoryPanel::conflictRetryRequested, this,
             [this]() {
                 if (m_conflictController) {
+                    m_memoryPanel->setConflictsLoading();
                     m_conflictController->refresh();
                 }
             });
@@ -420,6 +434,7 @@ bool PixiuApp::start()
     connect(m_memoryPanel, &MemoryPanel::historyRequested, this,
             [this](const QString &preferenceId) {
                 m_lastPreferenceId = preferenceId;
+                m_memoryPanel->setPreferenceHistoryLoading();
                 m_preferenceController->loadHistory(preferenceId);
             });
     connect(m_preferenceController, &PreferenceController::historyLoaded, this,
@@ -435,6 +450,7 @@ bool PixiuApp::start()
     connect(m_memoryPanel, &MemoryPanel::preferenceRetryRequested, this,
             [this]() {
                 if (m_preferenceController && !m_lastPreferenceId.isEmpty()) {
+                    m_memoryPanel->setPreferenceHistoryLoading();
                     m_preferenceController->loadHistory(m_lastPreferenceId);
                 }
             });
@@ -473,6 +489,7 @@ bool PixiuApp::start()
                     m_notify->notify(tr("检测到记忆冲突"), title);
                 }
                 if (m_conflictController) {
+                    m_memoryPanel->setConflictsLoading();
                     m_conflictController->refresh();
                 }
                 if (m_memoryPanel && m_memoryPanel->isVisible()) {

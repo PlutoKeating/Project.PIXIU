@@ -22,10 +22,12 @@ private slots:
     void tabTitlesMatchPlan();
     void setConflictsPopulatesList();
     void setConflictsShowsEmptyState();
+    void setConflictsLoadingShowsLoadingState();
     void setConflictsErrorShowsErrorAndRetry();
     void setConflictsSuccessHidesErrorState();
     void loadButtonEmitsHistoryRequested();
     void setPreferenceHistoryPopulatesList();
+    void setPreferenceHistoryLoadingShowsLoadingState();
     void setPreferenceHistoryErrorShowsErrorAndRetry();
     void setPreferenceHistorySuccessHidesErrorState();
     void syncTabHasPairButtonOpensDialog();
@@ -91,6 +93,32 @@ void TestMemoryPanel::setConflictsShowsEmptyState()
     QVERIFY(list != nullptr);
     QCOMPARE(list->count(), 0);
     QVERIFY(list->isHidden());
+}
+
+void TestMemoryPanel::setConflictsLoadingShowsLoadingState()
+{
+    MemoryPanel panel;
+    panel.setConflictsLoading();
+
+    QLabel *emptyLabel =
+        panel.findChild<QLabel *>(QStringLiteral("conflictEmptyLabel"));
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("conflictList"));
+    QLabel *errorLabel =
+        panel.findChild<QLabel *>(QStringLiteral("conflictErrorLabel"));
+    QVERIFY(emptyLabel != nullptr);
+    QVERIFY(list != nullptr);
+    QVERIFY(errorLabel != nullptr);
+
+    QCOMPARE(emptyLabel->text(), QStringLiteral("正在加载…"));
+    QVERIFY(!emptyLabel->isHidden());
+    QVERIFY(list->isHidden());
+    QVERIFY(errorLabel->isHidden());
+
+    // 成功加载后恢复空态文案，不再残留“正在加载”。
+    panel.setConflicts(QJsonArray());
+    QCOMPARE(emptyLabel->text(), QStringLiteral("暂无冲突记录"));
+    QVERIFY(!emptyLabel->isHidden());
 }
 
 void TestMemoryPanel::setConflictsErrorShowsErrorAndRetry()
@@ -190,6 +218,35 @@ void TestMemoryPanel::setPreferenceHistoryPopulatesList()
     QVERIFY(list->item(0)->text().contains(QStringLiteral("v1")));
     QVERIFY(list->item(0)->text().contains(QStringLiteral("\"enabled\":false")));
     QVERIFY(!list->isHidden());
+}
+
+void TestMemoryPanel::setPreferenceHistoryLoadingShowsLoadingState()
+{
+    MemoryPanel panel;
+    panel.setPreferenceHistoryLoading();
+
+    QLabel *emptyLabel =
+        panel.findChild<QLabel *>(QStringLiteral("prefEmptyLabel"));
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("prefHistoryList"));
+    QLabel *errorLabel =
+        panel.findChild<QLabel *>(QStringLiteral("prefErrorLabel"));
+    QVERIFY(emptyLabel != nullptr);
+    QVERIFY(list != nullptr);
+    QVERIFY(errorLabel != nullptr);
+
+    QCOMPARE(emptyLabel->text(), QStringLiteral("正在加载…"));
+    QVERIFY(!emptyLabel->isHidden());
+    QVERIFY(list->isHidden());
+    QVERIFY(errorLabel->isHidden());
+
+    // 成功加载后恢复空态文案。
+    panel.setPreferenceHistory(QJsonObject{
+        {QStringLiteral("key"), QStringLiteral("output_style.compact")},
+        {QStringLiteral("current_version"), 0},
+        {QStringLiteral("history"), QJsonArray()}});
+    QCOMPARE(emptyLabel->text(), QStringLiteral("暂无历史记录"));
+    QVERIFY(!emptyLabel->isHidden());
 }
 
 void TestMemoryPanel::setPreferenceHistoryErrorShowsErrorAndRetry()
