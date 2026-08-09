@@ -31,6 +31,11 @@ EXPECTED_TABLES = {
     "memory_contexts",
     "conflict_records",
     "sync_oplog",
+    "sync_identity",
+    "sync_peers",
+    "sync_state",
+    "sync_peer_acks",
+    "sync_meta",
 }
 
 
@@ -133,6 +138,21 @@ def test_memory_contexts_has_lifecycle_columns_and_fk(tmp_path: Path):
     } == cols
     fks = conn.execute("PRAGMA foreign_key_list('memory_contexts')").fetchall()
     assert {row[2] for row in fks} == {"knowledge_items"}
+    conn.close()
+
+
+def test_sync_foundation_tables_protect_identity_and_relations(tmp_path: Path):
+    conn = sqlite3.connect(str(tmp_path / "test.db"))
+    init_db_on_connection(conn)
+    identity_cols = {
+        row[1] for row in conn.execute("PRAGMA table_info('sync_identity')").fetchall()
+    }
+    assert "encrypted_private_key" in identity_cols
+    assert "private_key" not in identity_cols
+    state_fks = conn.execute("PRAGMA foreign_key_list('sync_state')").fetchall()
+    ack_fks = conn.execute("PRAGMA foreign_key_list('sync_peer_acks')").fetchall()
+    assert {row[2] for row in state_fks} == {"sync_oplog"}
+    assert {row[2] for row in ack_fks} == {"sync_peers", "sync_oplog"}
     conn.close()
 
 
@@ -264,11 +284,12 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 2
+    assert apply_pending(conn) == 3
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 3
+    assert "sync_identity" in _table_names(conn)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 4
     conn.close()
 
 

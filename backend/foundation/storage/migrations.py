@@ -66,10 +66,49 @@ def _add_memory_contexts(conn: sqlite3.Connection) -> None:
     )
 
 
+def _add_sync_foundation(conn: sqlite3.Connection) -> None:
+    """迁移 #4：加密设备身份、peer、CRDT 状态、ACK 与同步元数据。"""
+    statements = [
+        """CREATE TABLE IF NOT EXISTS sync_identity (
+            singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+            device_id TEXT NOT NULL UNIQUE, name TEXT NOT NULL, domain TEXT NOT NULL,
+            encrypted_private_key BLOB NOT NULL, public_key BLOB NOT NULL,
+            created_at INTEGER NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS sync_peers (
+            id TEXT PRIMARY KEY, name TEXT NOT NULL, domain TEXT NOT NULL,
+            public_key BLOB NOT NULL,
+            status TEXT NOT NULL DEFAULT 'OFFLINE'
+                   CHECK (status IN ('ONLINE', 'OFFLINE', 'REVOKED')),
+            paired_at INTEGER NOT NULL, last_seen_ts INTEGER, last_sync_ts INTEGER,
+            total_ops_synced INTEGER NOT NULL DEFAULT 0
+        )""",
+        "CREATE INDEX IF NOT EXISTS idx_sync_peer_domain ON sync_peers(domain, status)",
+        """CREATE TABLE IF NOT EXISTS sync_state (
+            entity TEXT PRIMARY KEY, payload TEXT NOT NULL DEFAULT '{}',
+            vclock TEXT NOT NULL DEFAULT '{}', ts INTEGER NOT NULL, op_id TEXT NOT NULL,
+            tombstone INTEGER NOT NULL DEFAULT 0 CHECK (tombstone IN (0, 1)),
+            FOREIGN KEY (op_id) REFERENCES sync_oplog(op_id) ON DELETE CASCADE
+        )""",
+        "CREATE INDEX IF NOT EXISTS idx_sync_state_tombstone ON sync_state(tombstone, ts)",
+        """CREATE TABLE IF NOT EXISTS sync_peer_acks (
+            peer_id TEXT NOT NULL, op_id TEXT NOT NULL, acked_at INTEGER NOT NULL,
+            PRIMARY KEY (peer_id, op_id),
+            FOREIGN KEY (peer_id) REFERENCES sync_peers(id) ON DELETE CASCADE,
+            FOREIGN KEY (op_id) REFERENCES sync_oplog(op_id) ON DELETE CASCADE
+        )""",
+        "CREATE INDEX IF NOT EXISTS idx_sync_ack_op ON sync_peer_acks(op_id)",
+        "CREATE TABLE IF NOT EXISTS sync_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)",
+    ]
+    for statement in statements:
+        conn.execute(statement)
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
     (3, "memory_contexts", _add_memory_contexts),
+    (4, "sync_foundation", _add_sync_foundation),
 ]
 
 

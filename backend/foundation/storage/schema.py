@@ -1,6 +1,6 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 11 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+创建全部 16 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
 知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
 SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 # FTS5 全文索引（trigram 分词器，支持中文子串检索）。
 # 独立表（不绑定 content=），rowid 手动对应 knowledge_items.rowid，
@@ -195,6 +195,71 @@ DDL_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS idx_sync_ts ON sync_oplog(ts)",
     "CREATE INDEX IF NOT EXISTS idx_sync_synced ON sync_oplog(synced)",
+
+    # ─── sync_identity (本机 Ed25519 身份，私钥加密存储) ─
+    """
+    CREATE TABLE IF NOT EXISTS sync_identity (
+        singleton            INTEGER PRIMARY KEY CHECK (singleton = 1),
+        device_id            TEXT NOT NULL UNIQUE,
+        name                 TEXT NOT NULL,
+        domain               TEXT NOT NULL,
+        encrypted_private_key BLOB NOT NULL,
+        public_key           BLOB NOT NULL,
+        created_at           INTEGER NOT NULL
+    )
+    """,
+
+    # ─── sync_peers (已配对设备) ─────────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS sync_peers (
+        id               TEXT PRIMARY KEY,
+        name             TEXT NOT NULL,
+        domain           TEXT NOT NULL,
+        public_key       BLOB NOT NULL,
+        status           TEXT NOT NULL DEFAULT 'OFFLINE'
+                         CHECK (status IN ('ONLINE', 'OFFLINE', 'REVOKED')),
+        paired_at        INTEGER NOT NULL,
+        last_seen_ts     INTEGER,
+        last_sync_ts     INTEGER,
+        total_ops_synced INTEGER NOT NULL DEFAULT 0
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_sync_peer_domain ON sync_peers(domain, status)",
+
+    # ─── sync_state (LWW-Element-Set 物化状态) ───────────
+    """
+    CREATE TABLE IF NOT EXISTS sync_state (
+        entity    TEXT PRIMARY KEY,
+        payload   TEXT NOT NULL DEFAULT '{}',
+        vclock    TEXT NOT NULL DEFAULT '{}',
+        ts        INTEGER NOT NULL,
+        op_id     TEXT NOT NULL,
+        tombstone INTEGER NOT NULL DEFAULT 0 CHECK (tombstone IN (0, 1)),
+        FOREIGN KEY (op_id) REFERENCES sync_oplog(op_id) ON DELETE CASCADE
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_sync_state_tombstone ON sync_state(tombstone, ts)",
+
+    # ─── sync_peer_acks (按 peer 的 op 确认) ──────────────
+    """
+    CREATE TABLE IF NOT EXISTS sync_peer_acks (
+        peer_id  TEXT NOT NULL,
+        op_id    TEXT NOT NULL,
+        acked_at INTEGER NOT NULL,
+        PRIMARY KEY (peer_id, op_id),
+        FOREIGN KEY (peer_id) REFERENCES sync_peers(id) ON DELETE CASCADE,
+        FOREIGN KEY (op_id) REFERENCES sync_oplog(op_id) ON DELETE CASCADE
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_sync_ack_op ON sync_peer_acks(op_id)",
+
+    # ─── sync_meta (反熵/调度游标) ───────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS sync_meta (
+        key   TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    )
+    """,
 ]
 
 
