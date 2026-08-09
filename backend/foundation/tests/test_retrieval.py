@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import random
 import struct
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import aiosqlite
@@ -101,6 +103,7 @@ async def _save_knowledge(knw_repo, embedder, **kwargs) -> KnowledgeItem:
         body=kwargs.pop("body", {"description": "水电燃气支出记录"}),
         scope=kwargs.pop("scope", "shared:home"),
         entities=kwargs.pop("entities", []),
+        relations=kwargs.pop("relations", []),
         evidence_ids=kwargs.pop("evidence_ids", []),
         created_at=kwargs.pop("created_at", NOW),
         updated_at=kwargs.pop("updated_at", NOW),
@@ -191,20 +194,61 @@ async def test_ann_channel_misses_unrelated(svc):
 @pytest.mark.asyncio
 async def test_graph_channel_entity_hit(svc):
     _, knw_repo, ent_repo, _, _ = svc
-    await _save_knowledge(
-        knw_repo, StubTextEmbedder(), tag="g1", title="国家电网电费支出记录",
-        body={"description": "水电燃气支出明细"},
-    )
     await ent_repo.save_entity(Entity(id=_ent_id("gd"), name="国家电网", norm_name="国家电网", type="ORG"))
     await ent_repo.save_entity(Entity(id=_ent_id("sd"), name="水电燃气", norm_name="水电燃气", type="CATEGORY"))
     await ent_repo.save_relation(_ent_id("gd"), _ent_id("sd"), "BELONG_TO")
+    await _save_knowledge(
+        knw_repo, StubTextEmbedder(), tag="g1", title="四月账单",
+        body={"description": "家庭费用明细"},
+        entities=["国家电网"],
+        relations=[{"from": "国家电网", "to": "水电燃气", "type": "BELONG_TO"}],
+    )
 
     from backend.foundation.retrieval.graph_search import GraphChannel
 
     results = await GraphChannel(knw_repo, ent_repo).search(["国家电网"], limit=10)
     assert len(results) == 1
     assert results[0][0].id == _knw_id("g1")
-    assert results[0][1] >= 1.0  # 文本命中 1 + BELONG_TO 关联实体加权 0.5
+    assert results[0][1] == 1.5  # 精确实体关联 1 + BELONG_TO 一跳关联 0.5
+
+
+@pytest.mark.asyncio
+async def test_graph_channel_survives_database_restart(tmp_path):
+    from backend.foundation.retrieval.graph_search import GraphChannel
+
+    db_path = str(tmp_path / "graph-restart.db")
+    import sqlite3 as _sqlite3
+
+    sync_conn = _sqlite3.connect(db_path)
+    init_db_on_connection(sync_conn)
+    sync_conn.close()
+
+    first_db = await aiosqlite.connect(db_path)
+    first_db.row_factory = aiosqlite.Row
+    first_knw = SqliteKnowledgeRepo(first_db)
+    first_entities = SqliteEntityRepo(first_db)
+    await first_entities.save_entity(
+        Entity(id=_ent_id("vendor"), name="国家电网", norm_name="国家电网", type="ORG")
+    )
+    await first_entities.save_entity(
+        Entity(id=_ent_id("category"), name="水电燃气", norm_name="水电燃气", type="CATEGORY")
+    )
+    await first_entities.save_relation(_ent_id("vendor"), _ent_id("category"), "BELONG_TO")
+    item = await _save_knowledge(
+        first_knw, StubTextEmbedder(), tag="restart", title="四月账单",
+        entities=["国家电网"],
+        relations=[{"from": "国家电网", "to": "水电燃气", "type": "BELONG_TO"}],
+    )
+    await first_db.close()
+
+    reopened_db = await aiosqlite.connect(db_path)
+    reopened_db.row_factory = aiosqlite.Row
+    results = await GraphChannel(
+        SqliteKnowledgeRepo(reopened_db), SqliteEntityRepo(reopened_db)
+    ).search(["水电燃气"], limit=10)
+    await reopened_db.close()
+
+    assert [knowledge.id for knowledge, _ in results] == [item.id]
 
 
 # ═══════════════════════════════════════════════════════
@@ -218,6 +262,48 @@ def test_fuse_rrf_merges_rankings():
     fused = fuse_rrf({"bm25": ["knw_a", "knw_b", "knw_c"], "ann": ["knw_b"]})
     assert fused["knw_b"] > fused["knw_a"] > fused["knw_c"]
     assert "knw_c" in fused
+
+
+def test_fuse_scope_is_hard_filter():
+    from backend.foundation.retrieval.fuse import fuse_candidates
+
+    allowed = KnowledgeItem(
+        id=_knw_id("scopeok"), kind=KnowledgeKind.FACT, title="允许",
+        scope="user:alice", created_at=NOW, updated_at=NOW,
+    )
+    forbidden = KnowledgeItem(
+        id=_knw_id("scopeno"), kind=KnowledgeKind.FACT, title="禁止",
+        scope="user:bob", created_at=NOW, updated_at=NOW,
+    )
+    result = fuse_candidates(
+        bm25=[(forbidden, 1.0), (allowed, 0.5)],
+        scope="user:alice",
+    )
+    assert [item.id for item, _ in result] == [allowed.id]
+
+
+def test_fuse_time_range_filters_structured_dates():
+    from backend.foundation.retrieval.fuse import fuse_candidates, matches_time_range
+
+    april = KnowledgeItem(
+        id=_knw_id("april"), kind=KnowledgeKind.FACT, title="四月账单",
+        body={"items": [{"date": "2026-04-10", "amount": 1}]},
+        scope="shared:home", created_at=NOW, updated_at=NOW,
+    )
+    march = KnowledgeItem(
+        id=_knw_id("march"), kind=KnowledgeKind.FACT, title="三月账单",
+        body={"items": [{"date": "2026-03-10", "amount": 1}]},
+        scope="shared:home", created_at=NOW, updated_at=NOW,
+    )
+    now_ts = datetime(2026, 5, 15, tzinfo=timezone.utc).timestamp()
+    assert matches_time_range(april, "last_month", now_ts=now_ts)
+    assert not matches_time_range(march, "last_month", now_ts=now_ts)
+
+    result = fuse_candidates(
+        bm25=[(march, 1.0), (april, 0.5)],
+        time_range={"start": "2026-04-01", "end": "2026-05-01"},
+    )
+    assert [item.id for item, _ in result] == [april.id]
 
 
 # ═══════════════════════════════════════════════════════
@@ -256,9 +342,10 @@ async def test_assembler_aggregates_amount(svc):
     item = await _save_knowledge(
         knw_repo, StubTextEmbedder(), tag="agg", title="家庭支出清单",
         body={"items": [
-            {"category": "电费", "amount": 210.0},
-            {"category": "水费", "amount": 68.5},
-            {"category": "燃气费", "amount": 156.0},
+            {"category": "食品", "amount": 328.5, "tags": ["生鲜"]},
+            {"category": "水电燃气", "amount": 210.0, "tags": ["电费"]},
+            {"category": "水电燃气", "amount": 68.5, "tags": ["水费"]},
+            {"category": "水电燃气", "amount": 156.0, "tags": ["燃气费"]},
         ]},
         evidence_ids=[evd.id],
     )
@@ -267,6 +354,7 @@ async def test_assembler_aggregates_amount(svc):
 
     atom = await Assembler(evd_repo).assemble(item, 0.9, "水电燃气花了多少钱", 42)
     assert "434.50" in atom.answer
+    assert "763.00" not in atom.answer
     assert "电费 210.00 元" in atom.answer
     assert atom.source_evidence == [evd.id]
     assert atom.source_knowledge == item.id
@@ -318,6 +406,45 @@ async def test_service_filters_forgotten(svc):
 
     atom = await service.query("应被遗忘的内容")
     assert atom.source_knowledge != item.id
+
+
+@pytest.mark.asyncio
+async def test_service_runs_three_channels_concurrently(svc, monkeypatch):
+    service, _, _, _, _ = svc
+    from backend.foundation import retrieval as retrieval_module
+
+    started = 0
+    all_started = asyncio.Event()
+
+    async def wait_for_other_channels(*_args, **_kwargs):
+        nonlocal started
+        started += 1
+        if started == 3:
+            all_started.set()
+        await all_started.wait()
+        return []
+
+    monkeypatch.setattr(retrieval_module.BM25Channel, "search", wait_for_other_channels)
+    monkeypatch.setattr(retrieval_module.ANNChannel, "search", wait_for_other_channels)
+    monkeypatch.setattr(retrieval_module.GraphChannel, "search", wait_for_other_channels)
+
+    atom = await asyncio.wait_for(service.query("并发事实查询"), timeout=0.5)
+    assert started == 3
+    assert atom.answer == ""
+
+
+@pytest.mark.asyncio
+async def test_service_never_returns_other_scope(svc):
+    service, knw_repo, _, _, embedder = svc
+    allowed = await _save_knowledge(
+        knw_repo, embedder, tag="alice", title="隔离账单", scope="user:alice"
+    )
+    await _save_knowledge(
+        knw_repo, embedder, tag="bob", title="隔离账单", scope="user:bob"
+    )
+
+    atom = await service.query("隔离账单", {"scope": "user:alice"})
+    assert atom.source_knowledge == allowed.id
 
 
 # ═══════════════════════════════════════════════════════

@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from typing import Any
 
@@ -55,27 +56,32 @@ class RetrievalService:
         """执行混合检索，返回 MemoryAtom。"""
         started = time.monotonic()
         hint = context_hint or {}
-        top_k = int(hint.get("top_k", 5))
+        top_k = max(1, min(100, int(hint.get("top_k", 5))))
         scope = hint.get("scope")
+        time_range = hint.get("time_range")
 
         intent = route(text, await self._entity_names())
         search_limit = max(top_k * 4, 20)
 
-        results: dict[str, list] = {}
+        searches: dict[str, Any] = {}
         if "bm25" in intent.channels:
-            results["bm25"] = await BM25Channel(self._knw_repo).search(text, search_limit)
+            searches["bm25"] = BM25Channel(self._knw_repo).search(text, search_limit)
         if "ann" in intent.channels:
-            results["ann"] = await ANNChannel(self._knw_repo, self._embedder).search(text, search_limit)
+            searches["ann"] = ANNChannel(self._knw_repo, self._embedder).search(text, search_limit)
         if "graph" in intent.channels:
-            results["graph"] = await GraphChannel(self._knw_repo, self._entity_repo).search(
+            searches["graph"] = GraphChannel(self._knw_repo, self._entity_repo).search(
                 intent.entities, search_limit
             )
+        channel_names = list(searches)
+        channel_results = await asyncio.gather(*(searches[name] for name in channel_names))
+        results = dict(zip(channel_names, channel_results))
 
         fused = fuse_candidates(
             bm25=results.get("bm25"),
             ann=results.get("ann"),
             graph=results.get("graph"),
             scope=scope,
+            time_range=time_range,
             top_k=top_k,
         )
         reranked = rerank(fused, text)

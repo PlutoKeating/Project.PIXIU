@@ -1,26 +1,18 @@
 """实体关系图检索通道。
 
-依赖实体表（entities）+ 关系表（relations）与知识文本。
-
-⚠️ 已知架构缺口：knowledge ↔ entity 关联未持久化（schema 无关联表），
-KnowledgeItem.entities 读回为空。本通道采用务实方案：
-- 在 ACTIVE 知识的 title/body 文本中对查询实体做子串匹配（等价实体命中）
-- 命中实体的 BELONG_TO 关联实体（relations 表）也出现在该知识文本中时加权
-待团队决策后补 knowledge↔entity 关联表，可切换为精确图遍历。
+依赖 entities、relations 与 knowledge_entities。知识读取时已回填实体名，
+本通道通过 EntityRepository 将查询实体解析为稳定 ID，再沿 BELONG_TO 边
+扩展一跳，避免依赖标题/body 的偶然文本命中。
 """
 
 from __future__ import annotations
-
-import json
-from typing import Any
 
 from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
 
 
-def _knowledge_text(item: KnowledgeItem) -> str:
-    parts: list[Any] = [item.title, item.body]
-    return " ".join(str(p) for p in parts)
+def _norm(value: str) -> str:
+    return value.strip().casefold()
 
 
 class GraphChannel:
@@ -33,37 +25,49 @@ class GraphChannel:
     async def search(self, entities: list[str], limit: int = 20) -> list[tuple[KnowledgeItem, float]]:
         """返回 [(KnowledgeItem, score)]。
 
-        score = 知识文本中命中的查询实体数；命中实体的 BELONG_TO
-        关联实体也出现在该知识文本中时，每条 +0.5。
+        score = 知识关联中命中的查询实体数；命中实体沿 BELONG_TO
+        一跳可达的关联实体若也属于该知识，每个 +0.5。
         """
         if not entities:
             return []
 
-        active = await self._knw_repo.list_active()
-        relations = await self._entity_repo.list_relations()
-        related_edges = [
-            (r.src, r.dst) for r in relations if r.src in entities or r.dst in entities
-        ]
-        # 关联实体的实体名（用于文本匹配加分）
-        related_names: list[str] = []
-        for edge_src, edge_dst in related_edges:
-            other = edge_dst if edge_src in entities else edge_src
-            if other not in entities:
-                related_names.append(other)
-        related_names = list(dict.fromkeys(related_names))
+        query_entities = []
+        for name in entities:
+            entity = await self._entity_repo.find_entity_by_name(name)
+            if entity is not None:
+                query_entities.append(entity)
+        if not query_entities:
+            return []
 
+        query_ids = {entity.id for entity in query_entities}
+        query_names = {_norm(entity.name) for entity in query_entities}
+        relations = await self._entity_repo.list_relations()
+        related_ids: set[str] = set()
+        for relation in relations:
+            if relation.type != "BELONG_TO":
+                continue
+            if relation.src in query_ids:
+                related_ids.add(relation.dst)
+            if relation.dst in query_ids:
+                related_ids.add(relation.src)
+
+        related_names: set[str] = set()
+        for entity_id in related_ids - query_ids:
+            related = await self._entity_repo.get_entity(entity_id)
+            if related is not None:
+                related_names.add(_norm(related.name))
+
+        active = await self._knw_repo.list_active()
         scored: list[tuple[KnowledgeItem, float]] = []
         for item in active:
             if item.status != KnowledgeStatus.ACTIVE:
                 continue
-            text = _knowledge_text(item)
-            hits = [e for e in entities if e and e in text]
+            associated = {_norm(name) for name in item.entities if name.strip()}
+            hits = associated & query_names
             if not hits:
                 continue
             score = float(len(hits))
-            for name in related_names:
-                if name and name in text:
-                    score += 0.5
+            score += 0.5 * len(associated & related_names)
             scored.append((item, score))
 
         scored.sort(key=lambda t: t[1], reverse=True)

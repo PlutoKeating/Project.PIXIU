@@ -9,35 +9,56 @@ from backend.foundation.core.models import Evidence, KnowledgeItem, MemoryAtom
 from backend.foundation.core.repository import EvidenceRepository
 
 _AGGREGATE_HINT = re.compile(r"花|多少|金额|费用|支出|总共|合计")
-_AMOUNT_HINT = re.compile(r"amount|金额")
 
 
-def _sum_items(body: dict[str, Any]) -> float | None:
-    """若 body 含 items 列表且每项有 amount，返回金额总和，否则 None。"""
+def _amount_items(body: dict[str, Any]) -> list[dict[str, Any]]:
     items = body.get("items")
-    if not isinstance(items, list) or not items:
-        return None
-    total = 0.0
+    if not isinstance(items, list):
+        return []
+    return [
+        item
+        for item in items
+        if isinstance(item, dict) and isinstance(item.get("amount"), (int, float))
+    ]
+
+
+def _matching_items(body: dict[str, Any], query: str) -> list[dict[str, Any]]:
+    """按查询中的 category 优先过滤，未命中时再匹配 tag/vendor。"""
+    items = _amount_items(body)
+    normalized_query = query.casefold()
+
+    category_matches = [
+        item
+        for item in items
+        if item.get("category")
+        and str(item["category"]).casefold() in normalized_query
+    ]
+    if category_matches:
+        return category_matches
+
+    detail_matches: list[dict[str, Any]] = []
     for item in items:
-        if not isinstance(item, dict):
-            return None
-        amount = item.get("amount")
-        if not isinstance(amount, (int, float)):
-            return None
-        total += float(amount)
-    return total
+        labels = [item.get("vendor")]
+        tags = item.get("tags")
+        if isinstance(tags, list):
+            labels.extend(tags)
+        if any(label and str(label).casefold() in normalized_query for label in labels):
+            detail_matches.append(item)
+    return detail_matches or items
 
 
-def _group_summary(body: dict[str, Any]) -> list[tuple[str, float]]:
+def _sum_items(items: list[dict[str, Any]]) -> float | None:
+    """汇总已按查询过滤且包含有效 amount 的条目。"""
+    if not items:
+        return None
+    return sum(float(item["amount"]) for item in items)
+
+
+def _group_summary(items: list[dict[str, Any]]) -> list[tuple[str, float]]:
     """按 category/tags 对 items 金额分组汇总（用于回答模板）。"""
     groups: dict[str, float] = {}
-    items = body.get("items") if isinstance(body.get("items"), list) else []
     for item in items:
-        if not isinstance(item, dict):
-            continue
         amount = item.get("amount")
-        if not isinstance(amount, (int, float)):
-            continue
         label = None
         if isinstance(item.get("tags"), list) and item["tags"]:
             label = str(item["tags"][0])
@@ -73,9 +94,13 @@ class Assembler:
     def _build_answer(self, item: KnowledgeItem, query: str) -> str:
         """聚合计算：query 含金额意图且 body 可聚合时生成汇总答案。"""
         if _AGGREGATE_HINT.search(query) and isinstance(item.body, dict):
-            total = _sum_items(item.body)
+            matched_items = _matching_items(item.body, query)
+            total = _sum_items(matched_items)
             if total is not None:
-                summary = "、".join(f"{label} {amount:.2f} 元" for label, amount in _group_summary(item.body))
+                summary = "、".join(
+                    f"{label} {amount:.2f} 元"
+                    for label, amount in _group_summary(matched_items)
+                )
                 if summary:
                     return f"共支出 {total:.2f} 元，其中{summary}。"
                 return f"共支出 {total:.2f} 元。"
