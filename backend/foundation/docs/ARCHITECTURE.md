@@ -3,9 +3,9 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
-> **状态（2026-08-09）**：core/storage/api 与 retrieval 加固已完成；
-> `/memory/query` 已接入，Foundation 231 项 + Engine 21 项测试全部通过。
-> flow（1.5）、sync（1.6）、eval（1.7）尚未实现；真实麒麟 SDK 性能待银河麒麟环境验收。
+> **状态（2026-08-09）**：core/storage/api、retrieval 加固与 flow 生命周期已完成；
+> `/memory/query`、`/memory/flow/promote` 已接入，Foundation 247 项 + Engine 21 项测试全部通过。
+> sync（1.6）、eval（1.7）尚未实现；真实麒麟 SDK 性能待银河麒麟环境验收。
 
 ---
 
@@ -77,8 +77,8 @@ class ConflictRepository(ABC): ...
 **三协议支持**：
 
 ```
-http_app.py  → FastAPI app + 路由（/memory/write、/memory/query、/preference/*、/forget、/conflicts 已实现；
-               /memory/flow/promote、/sync/* 为占位）
+http_app.py  → FastAPI app + 路由（/memory/write、/memory/query、/preference/*、/forget、
+               /conflicts、/memory/flow/promote 已实现；/sync/* 为占位）
 ws.py + ws_manager.py → WebSocket /events（连接/心跳/广播，memory_ready 已接入写入链路）
 dbus_service.py → com.kylin.pixiu.Memory（桌面 D-Bus）
 ```
@@ -125,8 +125,9 @@ async def get_security_service(db=Depends(get_db)) -> SecurityService:
 
 **Schema**（由 `storage/migrations.py` 版本化迁移创建，`storage/schema.py` 定义）：
 
-基础表 10 张：`evidence`、`knowledge_items`、`knowledge_evidence`、`knowledge_entities`、
-`preferences`、`preference_history`、`entities`、`relations`、`conflict_records`、`sync_oplog`；
+基础表 11 张：`evidence`、`knowledge_items`、`knowledge_evidence`、`knowledge_entities`、
+`preferences`、`preference_history`、`entities`、`relations`、`memory_contexts`、
+`conflict_records`、`sync_oplog`；
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
 WAL + foreign_keys + busy_timeout 已启用。
 
@@ -163,6 +164,11 @@ CREATE TABLE preference_history (pref_id TEXT, version INTEGER, snapshot JSON, t
 -- 冲突审计
 CREATE TABLE conflict_records (id TEXT PRIMARY KEY, target_knowledge TEXT,
   old JSON, new JSON, resolution TEXT, created_at INTEGER);
+
+-- 短/中期上下文
+CREATE TABLE memory_contexts (id TEXT PRIMARY KEY, tier TEXT, payload JSON,
+  scope TEXT, status TEXT, created_at INTEGER, updated_at INTEGER,
+  expires_at INTEGER, knowledge_id TEXT);
 
 -- CRDT 同步日志
 CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
@@ -202,7 +208,8 @@ scope/time_range 硬过滤；RRF 融合；词法重排；查询类别聚合与�
 
 ### 1.5 flow/ —— 记忆流转
 
-> ⚠️ **尚未实现**（Phase 3）。
+> ✅ **Phase 2 已实现**。上下文使用 `ctx_` ULID 和 `memory_contexts` 持久化，
+> `/memory/flow/promote` 已复用引擎 `ingest → knowledge` 真实链路。
 
 三层模型：
 
@@ -213,9 +220,14 @@ scope/time_range 硬过滤；RRF 融合；词法重排；查询类别聚合与�
       → promote
         → 长期（evidence + knowledge）
 
-demote：长期 → 召回至上下文
-TTL：短/中期衰减管理，到期 demote 或清除
+demote：长期 → 短/中期快照（原长期知识保持 ACTIVE）
+TTL：短期默认 30 分钟，中期默认 7 天；到期保留审计行、清空 payload
 ```
+
+`promote` 在任何业务写入前对整批 ID、scope、来源层级和状态进行校验；重复沉淀已
+`PROMOTED` 上下文时直接返回原 `knowledge_id`。成功后取消该上下文的 TTL，避免长期知识
+已生成后上下文记录被清理。scope 不匹配与不存在统一按 NOT_FOUND 处理，避免跨 scope
+探测。
 
 ### 1.6 sync/ —— P2P CRDT 同步
 
@@ -279,6 +291,7 @@ sync/
 | 开发任务书 | `backend/foundation/docs/DEV_TASKS.md` |
 | 快速启动 | `backend/foundation/docs/QUICK_START.md` |
 | Phase 1 加固报告 | `backend/foundation/docs/PHASE1.md` |
+| Phase 2 流转报告 | `backend/foundation/docs/PHASE2.md` |
 | 总体架构 | `docs/ARCHITECTURE.md` |
 | 开发计划 | `docs/DEVELOPMENT_PLAN.md` |
 | API 规格 | `docs/API.md` |

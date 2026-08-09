@@ -43,10 +43,16 @@ curl http://127.0.0.1:8765/conflicts
 
 # 查询记忆（真实链路：路由 → 多通道召回 → 融合/重排 → 组装）
 curl -X POST http://127.0.0.1:8765/memory/query -H "Content-Type: application/json" -d '{"text":"上个月水电燃气支出是多少？","context_hint":{"scope":"user:test","time_range":"last_month"}}'
+
+# 将 FlowService.remember 生成的短期上下文沉淀为长期知识
+curl -X POST http://127.0.0.1:8765/memory/flow/promote \
+  -H "Content-Type: application/json" \
+  -d '{"source":"SHORT_TERM","context_ids":["ctx_..."],"scope":"user:test"}'
+# → {"promoted_count":1,"knowledge_ids":["knw_..."],"latency_ms":...}
 ```
 
-> `/memory/flow/promote`、`/sync/*` 当前返回 `{"status":"not_implemented"}`，
-> 待 flow/sync 阶段实现。
+> `context_ids` 由后端会话/摘要流程调用 `FlowService.remember(...)` 创建；当前公开 API
+> 只承担沉淀动作。`/sync/*` 仍返回 `{"status":"not_implemented"}`，待 sync 阶段实现。
 
 ## 运行测试
 

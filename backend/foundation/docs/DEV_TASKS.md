@@ -7,26 +7,28 @@
 
 ## 实现状态（2026-08-09）
 
-### ✅ 已完成（Phase 1 + Phase 2 MVP）
+### ✅ 已完成（Phase 0～Phase 2）
 
 - `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
-  `config.py`（仅支持 `kylin`，无 mock）、`idgen.py`（8 个 ULID 生成器）、`logger.py`
+  `config.py`（仅支持 `kylin`，无 mock）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
-- `storage/`：`schema.py`（10 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v2 版本化迁移）、
+- `storage/`：`schema.py`（11 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v3 版本化迁移）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
 - `api/`：`http_app.py` 真实端点（`/memory/write`、`/preference/extract`、
-  `/preference/{id}/history`、`/forget`、`/conflicts`、`/memory/query`）、`ws.py` + `ws_manager.py`
+  `/preference/{id}/history`、`/forget`、`/conflicts`、`/memory/query`、
+  `/memory/flow/promote`）、`ws.py` + `ws_manager.py`
   （`/events` 连接/心跳/广播）、`di.py`（真实注入引擎 Service + SQLite 仓储）
 - `retrieval/`：路由、FTS5 BM25、INT8 向量召回、持久化图召回、三通道并发、
   scope/time_range 硬过滤、RRF 融合、词法重排、查询类别聚合与 evidence 回溯
-- 测试：Foundation 231 项 + Engine 21 项，共 252 项全绿
+- `flow/`：短/中期上下文持久化、批量预校验与幂等 promote、长期知识可逆 demote、
+  分层 TTL 和到期内容清理
+- 测试：Foundation 247 项 + Engine 21 项，共 268 项全绿
 
 ### ⬜ 待实现 / 加固
 
 - `retrieval/` 环境验收：在银河麒麟机器上使用真实麒麟 embedding 与正式数据集完成
   top-1 召回率≥85%、P95≤500ms 验证（当前 Windows 环境无原生扩展）
-- `flow/`：`promoter/ttl` —— 实现 `/memory/flow/promote`
 - `sync/`：`identity/pairing/crdt/anti_entropy/gc/scheduler` —— 实现 `/sync/*` 与 CRDT 广播
 - `eval/`：评测引擎与指标脚本
 - `api/`：D-Bus 服务（`dbus_service.py`）真实实现
@@ -109,8 +111,10 @@ git submodule update --init --recursive
 
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
-| `flow/__init__.py` | ★★ | 导出 `FlowService` |
-| `flow/promoter.py` | ★★ | promote/demote 逻辑 |
+| `flow/__init__.py` | ★★ | `FlowService` 门面与 demote 快照 |
+| `flow/models.py` | ★★ | 短/中期上下文、层级与状态模型 |
+| `flow/store.py` | ★★ | `memory_contexts` SQLite 持久化 |
+| `flow/promoter.py` | ★★ | promote 预校验、沉淀与幂等逻辑 |
 | `flow/ttl.py` | ★ | TTL 衰减策略 |
 
 ### sync/ —— P2P 同步
