@@ -27,6 +27,7 @@ EXPECTED_TABLES = {
     "preference_history",
     "entities",
     "relations",
+    "knowledge_entities",
     "conflict_records",
     "sync_oplog",
 }
@@ -100,6 +101,14 @@ def test_knowledge_evidence_fk_columns(tmp_path: Path):
     targets = {r[2] for r in fks}
     assert "knowledge_items" in targets
     assert "evidence" in targets
+
+
+def test_knowledge_entities_fk_columns(tmp_path: Path):
+    conn = sqlite3.connect(str(tmp_path / "test.db"))
+    init_db_on_connection(conn)
+    fks = conn.execute("PRAGMA foreign_key_list('knowledge_entities')").fetchall()
+    targets = {row[2] for row in fks}
+    assert targets == {"knowledge_items", "entities"}
 
 
 def test_preferences_has_unique_key_scope(tmp_path: Path):
@@ -229,12 +238,29 @@ def test_latest_version_matches_schema(tmp_path: Path):
     assert db_version == SCHEMA_VERSION
 
 
+def test_migration_two_adds_knowledge_entities_to_v1_database(tmp_path: Path):
+    conn = create_connection(str(tmp_path / "test.db"))
+    conn.execute(
+        "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)"
+    )
+    conn.execute("INSERT INTO _schema_version VALUES (1, 1)")
+    conn.execute("CREATE TABLE knowledge_items (id TEXT PRIMARY KEY)")
+    conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
+    conn.commit()
+
+    assert apply_pending(conn) == 1
+    conn.commit()
+    assert "knowledge_entities" in _table_names(conn)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 2
+    conn.close()
+
+
 # ═══════════════════════════════════════════════════════
 # Group 6: no knowledge_fts / knowledge_vec tables
 # ═══════════════════════════════════════════════════════
 
 def test_no_fts_or_vec_tables(tmp_path: Path):
-    """knowledge_fts and knowledge_vec deferred to Phase 2."""
+    """knowledge_fts and knowledge_vec remain lazily created by repositories."""
     db_path = str(tmp_path / "test.db")
     init_db(db_path)
     conn = sqlite3.connect(db_path)

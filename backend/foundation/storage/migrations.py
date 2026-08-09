@@ -18,8 +18,28 @@ def _apply_initial_schema(conn: sqlite3.Connection) -> None:
         conn.execute(stmt)
 
 
+def _add_knowledge_entities(conn: sqlite3.Connection) -> None:
+    """迁移 #2：持久化知识与实体的多对多关联。"""
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS knowledge_entities (
+            knowledge_id TEXT NOT NULL,
+            entity_id    TEXT NOT NULL,
+            PRIMARY KEY (knowledge_id, entity_id),
+            FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE CASCADE,
+            FOREIGN KEY (entity_id)    REFERENCES entities(id)        ON DELETE CASCADE
+        )
+        """
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_knw_entity_entity "
+        "ON knowledge_entities(entity_id)"
+    )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
+    (2, "knowledge_entity_links", _add_knowledge_entities),
 ]
 
 

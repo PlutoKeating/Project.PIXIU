@@ -1,6 +1,6 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 9 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+创建全部 10 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
 知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
 SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # FTS5 全文索引（trigram 分词器，支持中文子串检索）。
 # 独立表（不绑定 content=），rowid 手动对应 knowledge_items.rowid，
@@ -136,6 +136,18 @@ DDL_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS idx_rel_src ON relations(src)",
     "CREATE INDEX IF NOT EXISTS idx_rel_dst ON relations(dst)",
+
+    # ─── knowledge_entities (知识-实体关联) ───────────────
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_entities (
+        knowledge_id TEXT NOT NULL,
+        entity_id    TEXT NOT NULL,
+        PRIMARY KEY (knowledge_id, entity_id),
+        FOREIGN KEY (knowledge_id) REFERENCES knowledge_items(id) ON DELETE CASCADE,
+        FOREIGN KEY (entity_id)    REFERENCES entities(id)        ON DELETE CASCADE
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_knw_entity_entity ON knowledge_entities(entity_id)",
 
     # ─── conflict_records (冲突审计) ─────────────────────
     """

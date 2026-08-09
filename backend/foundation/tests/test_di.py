@@ -20,6 +20,7 @@ from backend.foundation.api.di import (
     get_preference_service,
     get_security_service,
 )
+from backend.foundation.storage.migrations import latest_version
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
     SqliteEvidenceRepo,
@@ -52,7 +53,7 @@ async def test_get_db_runs_migrations(fresh_di, tmp_path):
         version_rows = await db.execute_fetchall(
             "SELECT MAX(version) FROM _schema_version"
         )
-        assert version_rows[0][0] == 1
+        assert version_rows[0][0] == latest_version()
     finally:
         await db.close()
 
