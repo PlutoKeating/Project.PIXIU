@@ -8,6 +8,7 @@
 
 #include "app/UiTokens.h"
 #include "widgets/EvidenceCard.h"
+#include "widgets/ThinkingSkeleton.h"
 
 namespace {
 constexpr int kBubbleMaxWidth = 300;
@@ -68,11 +69,10 @@ void MessageList::setThinking(bool thinking)
 {
     m_thinking = thinking;
     if (thinking) {
-        ChatMessage hint;
-        hint.role = MessageRole::System;
-        hint.text = tr("思考中…");
-        hint.timestamp = QDateTime::currentSecsSinceEpoch();
-        appendRow(createSystemBubble(hint), Qt::AlignCenter);
+        // 骨架屏替代纯文本占位；无障碍名沿用既有 i18n 文案。
+        ThinkingSkeleton *skeleton = new ThinkingSkeleton();
+        skeleton->setAccessibleName(tr("思考中…"));
+        appendRow(skeleton, Qt::AlignCenter);
         scrollToBottom();
     }
 }

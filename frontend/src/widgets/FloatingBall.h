@@ -8,6 +8,7 @@ class QAction;
 class QContextMenuEvent;
 class QMenu;
 class QScreen;
+class QVariantAnimation;
 
 // 桌面悬浮球：半透明圆形常驻入口。
 //
@@ -67,7 +68,10 @@ private:
     bool m_collapsed = false;
     int m_unreadCount = 0;
     QMenu *m_contextMenu = nullptr;
+    QVariantAnimation *m_badgePulseAnim = nullptr;
+    qreal m_badgePulse = 1.0;
 
+    void startBadgePulse();
     static constexpr int kDragThresholdPx = 4;
     static constexpr int kEdgeSnapPx = 12;
     static constexpr qreal kCollapsedVisibleRatio = 1.0 / 3.0;

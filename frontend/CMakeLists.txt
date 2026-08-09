@@ -36,6 +36,8 @@ add_executable(pixiu-frontend
     src/widgets/InputBar.cpp
     src/widgets/MessageList.h
     src/widgets/MessageList.cpp
+    src/widgets/ThinkingSkeleton.h
+    src/widgets/ThinkingSkeleton.cpp
     src/widgets/EvidenceCard.h
     src/widgets/EvidenceCard.cpp
     src/widgets/ImportDialog.h
@@ -362,6 +364,8 @@ if(BUILD_TESTING)
         src/widgets/InputBar.cpp
         src/widgets/MessageList.h
         src/widgets/MessageList.cpp
+        src/widgets/ThinkingSkeleton.h
+        src/widgets/ThinkingSkeleton.cpp
         src/widgets/EvidenceCard.h
         src/widgets/EvidenceCard.cpp
         src/models/ChatMessage.h
@@ -386,6 +390,8 @@ if(BUILD_TESTING)
         tests/t_message_list.cpp
         src/widgets/MessageList.h
         src/widgets/MessageList.cpp
+        src/widgets/ThinkingSkeleton.h
+        src/widgets/ThinkingSkeleton.cpp
         src/widgets/EvidenceCard.h
         src/widgets/EvidenceCard.cpp
         src/models/ChatMessage.h

@@ -13,6 +13,7 @@
 #include <QPainterPath>
 #include <QScreen>
 #include <QString>
+#include <QVariantAnimation>
 
 namespace {
 int collapsedVisibleWidth()
@@ -48,6 +49,12 @@ void FloatingBall::setUnreadCount(int count)
         return;
     }
     m_unreadCount = clamped;
+    if (m_unreadCount > 0) {
+        startBadgePulse();
+    } else if (m_badgePulseAnim) {
+        m_badgePulseAnim->stop();
+        m_badgePulse = 1.0;
+    }
     update();
 }
 
@@ -92,7 +99,7 @@ void FloatingBall::paintEvent(QPaintEvent *event)
 
     // 未读事件角标：右上角红色圆形 + 数字（超过 99 显示 99+）。
     if (m_unreadCount > 0) {
-        const int badgeRadius = 10;
+        const qreal badgeRadius = 10.0 * m_badgePulse;
         const QPointF center(width() - badgeRadius - 2, badgeRadius + 2);
         painter.setPen(Qt::NoPen);
         painter.setBrush(ui::semanticColor(ui::Role::Badge));
@@ -106,10 +113,44 @@ void FloatingBall::paintEvent(QPaintEvent *event)
         const QString text = m_unreadCount > 99
                                  ? QStringLiteral("99+")
                                  : QString::number(m_unreadCount);
-        painter.drawText(QRectF(center.x() - badgeRadius, center.y() - badgeRadius,
-                                badgeRadius * 2, badgeRadius * 2),
+        const QRectF badgeRect(center.x() - badgeRadius, center.y() - badgeRadius,
+                               badgeRadius * 2, badgeRadius * 2);
+        painter.drawText(badgeRect,
                          Qt::AlignCenter, text);
     }
+}
+
+void FloatingBall::startBadgePulse()
+{
+    if (!m_badgePulseAnim) {
+        m_badgePulseAnim = new QVariantAnimation(this);
+        connect(m_badgePulseAnim, &QVariantAnimation::valueChanged, this,
+                [this](const QVariant &value) {
+                    m_badgePulse = value.toReal();
+                    update();
+                });
+        connect(m_badgePulseAnim, &QVariantAnimation::finished, this, [this]() {
+            if (m_unreadCount <= 0) {
+                m_badgePulse = 1.0;
+                update();
+                return;
+            }
+            // 弹入结束后转为持续呼吸（1.0 ↔ 1.06），直到角标清除。
+            const qreal current = m_badgePulse;
+            m_badgePulseAnim->setDuration(800);
+            m_badgePulseAnim->setEasingCurve(QEasingCurve::InOutSine);
+            m_badgePulseAnim->setStartValue(current);
+            m_badgePulseAnim->setEndValue(current <= 1.03 ? 1.06 : 1.0);
+            m_badgePulseAnim->start();
+        });
+    }
+    m_badgePulseAnim->stop();
+    m_badgePulse = 1.45;
+    m_badgePulseAnim->setDuration(180);
+    m_badgePulseAnim->setEasingCurve(QEasingCurve::OutBack);
+    m_badgePulseAnim->setStartValue(1.45);
+    m_badgePulseAnim->setEndValue(1.0);
+    m_badgePulseAnim->start();
 }
 
 void FloatingBall::mousePressEvent(QMouseEvent *event)
