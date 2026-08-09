@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 #include <QApplication>
 #include <QFile>
+#include <QIcon>
 #include <QLocale>
 #include <QTranslator>
 
@@ -18,6 +19,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(QStringLiteral("PIXIU"));
     QCoreApplication::setApplicationVersion(QStringLiteral("0.1.0"));
     QCoreApplication::setOrganizationName(QStringLiteral("Project.PIXIU"));
+    // 应用窗口/任务栏图标：内嵌 pixiu.svg（desktop 入口与托盘共用同一资源）。
+    application.setWindowIcon(QIcon(QStringLiteral(":/icons/pixiu.svg")));
 
     // 语言本地化：英文环境加载内嵌翻译，其余环境保持中文源码文本。
     QTranslator translator;

@@ -41,7 +41,15 @@ bool TrayIcon::show()
         return false;
     }
 
-    m_tray = new QSystemTrayIcon(createPlaceholderIcon(), this);
+    // 优先使用内嵌的 pixiu.svg 应用图标；资源缺失时回退到运行时占位图标。
+    QIcon icon(QStringLiteral(":/icons/pixiu.svg"));
+    if (icon.isNull()) {
+        qCWarning(lcTray) << "custom icon resource missing; using placeholder icon";
+        icon = createPlaceholderIcon();
+    } else {
+        qCInfo(lcTray) << "using custom pixiu icon";
+    }
+    m_tray = new QSystemTrayIcon(icon, this);
     m_tray->setToolTip(tr("PIXIU 貔貅"));
     buildMenu();
     m_tray->show();
