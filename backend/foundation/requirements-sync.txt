@@ -1,3 +1,2 @@
-# Module C Phase 3 — P2P sync security and mDNS discovery
+# Module C Phase 3 — Ed25519 identity and signing
 cryptography>=42.0.0
-zeroconf>=0.132.0

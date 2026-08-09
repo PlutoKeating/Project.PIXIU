@@ -71,9 +71,14 @@ class LWWElementSet:
             return candidate
         relation = compare_clocks(candidate.vclock, current.vclock)
         if relation == ClockRelation.AFTER:
-            return candidate
-        if relation == ClockRelation.BEFORE:
-            return current
-        if (candidate.ts, candidate.op_id) > (current.ts, current.op_id):
-            return candidate
-        return current
+            winner = candidate
+        elif relation == ClockRelation.BEFORE:
+            winner = current
+        elif (candidate.ts, candidate.op_id) > (current.ts, current.op_id):
+            winner = candidate
+        else:
+            winner = current
+        # 内容采用 LWW 胜者，但因果上下文必须吸收所有已见分支。
+        return winner.model_copy(
+            update={"vclock": merge_clocks(current.vclock, candidate.vclock)}
+        )
