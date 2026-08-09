@@ -1,5 +1,7 @@
 #include "widgets/PairDialog.h"
 
+#include "app/UiTokens.h"
+
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QIntValidator>
@@ -122,8 +124,7 @@ void PairDialog::setResultFeedback(bool ok, const QString &message)
 {
     m_statusLabel->setText(message);
     m_statusLabel->setStyleSheet(
-        ok ? QStringLiteral("color: #1a7f37;")
-           : QStringLiteral("color: #d93025;"));
+        ui::textStyle(ok ? ui::Role::Success : ui::Role::Error));
     m_statusLabel->show();
 }
 

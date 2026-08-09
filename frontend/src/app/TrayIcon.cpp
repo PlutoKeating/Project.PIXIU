@@ -1,5 +1,7 @@
 #include "app/TrayIcon.h"
 
+#include "app/UiTokens.h"
+
 #include <QApplication>
 #include <QIcon>
 #include <QLoggingCategory>
@@ -19,7 +21,7 @@ QIcon createPlaceholderIcon()
 
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(0x35, 0x87, 0xF6));
+    painter.setBrush(ui::semanticColor(ui::Role::Accent));
     painter.setPen(Qt::NoPen);
     painter.drawRoundedRect(2, 2, 60, 60, 14, 14);
     painter.setBrush(Qt::white);

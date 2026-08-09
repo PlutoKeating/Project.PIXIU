@@ -1,8 +1,9 @@
 #include "widgets/SettingsDialog.h"
 
+#include "app/UiTokens.h"
+
 #include <QComboBox>
 #include <QCoreApplication>
-#include <QFont>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -18,10 +19,8 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     setFixedSize(400, 330);
 
     QLabel *titleLabel = new QLabel(tr("PIXIU 设置"), this);
-    QFont titleFont = titleLabel->font();
-    titleFont.setPixelSize(14);
-    titleFont.setBold(true);
-    titleLabel->setFont(titleFont);
+    titleLabel->setObjectName(QStringLiteral("settingsTitleLabel"));
+    titleLabel->setFont(ui::Font::title());
 
     m_languageCombo = new QComboBox(this);
     m_languageCombo->setObjectName(QStringLiteral("languageCombo"));

@@ -1,11 +1,11 @@
 #include "widgets/MemoryPanel.h"
 
+#include "app/UiTokens.h"
 #include "widgets/PairDialog.h"
 #include "widgets/RevokeDialog.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QFont>
 #include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -200,8 +200,7 @@ void MemoryPanel::setSyncStatus(const QString &status, bool ok)
     }
     m_syncStatusLabel->setText(status);
     m_syncStatusLabel->setStyleSheet(
-        ok ? QStringLiteral("color: #1a7f37;")
-           : QStringLiteral("color: #d93025;"));
+        ui::textStyle(ok ? ui::Role::Success : ui::Role::Error));
     m_syncStatusLabel->show();
 }
 
@@ -218,23 +217,22 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
 
         QWidget *container = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(container);
-        layout->setContentsMargins(4, 4, 4, 4);
-        layout->setSpacing(2);
+        layout->setContentsMargins(ui::Spacing::XS, ui::Spacing::XS,
+                                   ui::Spacing::XS, ui::Spacing::XS);
+        layout->setSpacing(ui::Spacing::XS);
 
         QHBoxLayout *nameRow = new QHBoxLayout();
         QLabel *nameLabel = new QLabel(
             name.isEmpty() ? tr("（未命名设备）") : name, container);
-        QFont nameFont = nameLabel->font();
-        nameFont.setBold(true);
-        nameLabel->setFont(nameFont);
+        nameLabel->setObjectName(QStringLiteral("peerNameLabel"));
+        nameLabel->setFont(ui::Font::body());
 
         QLabel *stateLabel = new QLabel(peerStateText(isSelf, state), container);
+        stateLabel->setObjectName(QStringLiteral("peerStateLabel"));
         if (isSelf || state == QStringLiteral("ONLINE")) {
-            stateLabel->setStyleSheet(
-                QStringLiteral("color: #1a7f37; font-size: 11px;"));
+            stateLabel->setStyleSheet(ui::textStyle(ui::Role::Success));
         } else if (state == QStringLiteral("OFFLINE")) {
-            stateLabel->setStyleSheet(
-                QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+            stateLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
         }
 
         nameRow->addWidget(nameLabel);
@@ -255,8 +253,8 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
         }
         if (!meta.isEmpty()) {
             QLabel *metaLabel = new QLabel(meta.join(QStringLiteral(" · ")), container);
-            metaLabel->setStyleSheet(
-                QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+            metaLabel->setObjectName(QStringLiteral("peerMetaLabel"));
+            metaLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
             layout->addWidget(metaLabel);
         }
 
@@ -323,13 +321,12 @@ QWidget *MemoryPanel::createPreferenceTab()
 {
     QWidget *page = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(page);
-    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setContentsMargins(ui::Spacing::S, ui::Spacing::S,
+                               ui::Spacing::S, ui::Spacing::S);
 
     m_prefHeaderLabel = new QLabel(tr("偏好历史"), page);
-    QFont headerFont = m_prefHeaderLabel->font();
-    headerFont.setPixelSize(14);
-    headerFont.setBold(true);
-    m_prefHeaderLabel->setFont(headerFont);
+    m_prefHeaderLabel->setObjectName(QStringLiteral("prefHeaderLabel"));
+    m_prefHeaderLabel->setFont(ui::Font::title());
 
     m_prefIdInput = new QLineEdit(page);
     m_prefIdInput->setPlaceholderText(tr("偏好 ID（如 pref_…）"));
@@ -347,6 +344,7 @@ QWidget *MemoryPanel::createPreferenceTab()
 
     m_prefErrorLabel = new QLabel(page);
     m_prefErrorLabel->setObjectName(QStringLiteral("prefErrorLabel"));
+    m_prefErrorLabel->setStyleSheet(ui::textStyle(ui::Role::Error));
     m_prefErrorLabel->setWordWrap(true);
     m_prefErrorLabel->setVisible(false);
     m_prefRetryButton = new QPushButton(tr("重试"), page);
@@ -380,13 +378,12 @@ QWidget *MemoryPanel::createConflictTab()
 {
     QWidget *page = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(page);
-    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setContentsMargins(ui::Spacing::S, ui::Spacing::S,
+                               ui::Spacing::S, ui::Spacing::S);
 
     QLabel *titleLabel = new QLabel(tr("冲突"), page);
-    QFont titleFont = titleLabel->font();
-    titleFont.setPixelSize(14);
-    titleFont.setBold(true);
-    titleLabel->setFont(titleFont);
+    titleLabel->setObjectName(QStringLiteral("panelTitleLabel"));
+    titleLabel->setFont(ui::Font::title());
 
     m_conflictEmptyLabel = new QLabel(tr("暂无冲突记录"), page);
     m_conflictEmptyLabel->setObjectName(QStringLiteral("conflictEmptyLabel"));
@@ -398,6 +395,7 @@ QWidget *MemoryPanel::createConflictTab()
 
     m_conflictErrorLabel = new QLabel(page);
     m_conflictErrorLabel->setObjectName(QStringLiteral("conflictErrorLabel"));
+    m_conflictErrorLabel->setStyleSheet(ui::textStyle(ui::Role::Error));
     m_conflictErrorLabel->setWordWrap(true);
     m_conflictErrorLabel->setVisible(false);
     m_conflictRetryButton = new QPushButton(tr("重试"), page);
@@ -423,20 +421,18 @@ QWidget *MemoryPanel::createSyncTab()
 {
     QWidget *page = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(page);
-    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setContentsMargins(ui::Spacing::S, ui::Spacing::S,
+                               ui::Spacing::S, ui::Spacing::S);
 
     QLabel *titleLabel = new QLabel(tr("同步"), page);
-    QFont titleFont = titleLabel->font();
-    titleFont.setPixelSize(14);
-    titleFont.setBold(true);
-    titleLabel->setFont(titleFont);
+    titleLabel->setObjectName(QStringLiteral("panelTitleLabel"));
+    titleLabel->setFont(ui::Font::title());
 
     m_syncStatusLabel = new QLabel(
         tr("正在加载同步状态…"), page);
     m_syncStatusLabel->setObjectName(QStringLiteral("syncStatusLabel"));
     m_syncStatusLabel->setWordWrap(true);
-    m_syncStatusLabel->setStyleSheet(
-        QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+    m_syncStatusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
 
     QLabel *descLabel = new QLabel(
         tr("配对后设备加入共享域，记忆经后端 CRDT 跨设备同步。"), page);
@@ -472,8 +468,7 @@ QWidget *MemoryPanel::createSyncTab()
     refreshButton->setAccessibleName(tr("刷新节点与同步状态"));
     connect(refreshButton, &QPushButton::clicked, this, [this]() {
         m_syncStatusLabel->setText(tr("正在加载同步状态…"));
-        m_syncStatusLabel->setStyleSheet(
-            QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+        m_syncStatusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
         m_syncStatusLabel->show();
         emit syncRefreshRequested();
     });

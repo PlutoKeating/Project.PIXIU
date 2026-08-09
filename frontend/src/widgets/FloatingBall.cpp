@@ -1,5 +1,7 @@
 #include "widgets/FloatingBall.h"
 
+#include "app/UiTokens.h"
+
 #include <QApplication>
 #include <QAction>
 #include <QContextMenuEvent>
@@ -82,7 +84,7 @@ void FloatingBall::paintEvent(QPaintEvent *event)
         const int badgeRadius = 10;
         const QPointF center(width() - badgeRadius - 2, badgeRadius + 2);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(0xD9, 0x30, 0x25));
+        painter.setBrush(ui::semanticColor(ui::Role::Badge));
         painter.drawEllipse(center, badgeRadius, badgeRadius);
 
         QFont badgeFont = font;

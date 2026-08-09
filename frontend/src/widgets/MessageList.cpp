@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "app/UiTokens.h"
 #include "widgets/EvidenceCard.h"
 
 namespace {
@@ -81,13 +82,13 @@ void MessageList::appendQueryError(const QString &retryText, const QString &deta
     QWidget *container = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(container);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(4);
+    layout->setSpacing(ui::Spacing::XS);
 
     QLabel *hint = new QLabel(detail);
     hint->setObjectName(QStringLiteral("queryErrorHint"));
     hint->setAlignment(Qt::AlignCenter);
     hint->setWordWrap(true);
-    hint->setStyleSheet(QStringLiteral("color: #d93025; font-size: 12px;"));
+    hint->setStyleSheet(ui::textStyle(ui::Role::Error));
     layout->addWidget(hint);
 
     QPushButton *retry = new QPushButton(tr("重试"));
@@ -114,7 +115,7 @@ void MessageList::appendEmptyResult(const QString &detail)
     QWidget *container = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(container);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(4);
+    layout->setSpacing(ui::Spacing::XS);
 
     QLabel *hint = new QLabel(detail);
     hint->setObjectName(QStringLiteral("emptyHint"));
@@ -162,7 +163,7 @@ QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
     QWidget *container = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(container);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(2);
+    layout->setSpacing(ui::Spacing::XS);
     layout->addWidget(bubble);
 
     // 证据卡占位行（置信度 + 延迟 + 证据 ID）。

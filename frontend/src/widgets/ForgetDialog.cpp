@@ -1,5 +1,7 @@
 #include "widgets/ForgetDialog.h"
 
+#include "app/UiTokens.h"
+
 #include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -55,9 +57,8 @@ ForgetDialog::ForgetDialog(QWidget *parent)
 
     QPushButton *cancelButton = new QPushButton(tr("取消"), this);
     QPushButton *confirmButton = new QPushButton(tr("确认遗忘"), this);
-    confirmButton->setStyleSheet(QStringLiteral(
-        "background-color: #d93025; color: white; border-radius: 4px;"
-        "padding: 4px 12px;"));
+    confirmButton->setObjectName(QStringLiteral("dangerConfirmButton"));
+    confirmButton->setStyleSheet(ui::dangerButtonStyle());
 
     connect(cancelButton, &QPushButton::clicked, this, [this]() {
         emit cancelled();

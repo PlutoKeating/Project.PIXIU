@@ -1,59 +1,251 @@
-/* PIXIU 全局样式：颜色全部使用 palette 角色，跟随 UKUI 明暗主题；禁止硬编码颜色。 */
+/* PIXIU 全局样式：颜色全部使用 palette 角色（语义色由 UiTokens 生成，
+   明暗主题切换随 Palette 联动）；禁止在 QSS 中硬编码颜色。
+   字号分级与间距/圆角见 frontend/docs/ARCHITECTURE.md §7。 */
 
+QWidget {
+    font-size: 11pt;
+}
+
+/* ── 通用控件状态 ─────────────────────────────────────── */
+QPushButton {
+    background-color: palette(button);
+    border: 1px solid palette(mid);
+    border-radius: 8px;
+    padding: 5px 14px;
+}
+QPushButton:hover {
+    background-color: palette(alternate-base);
+}
+QPushButton:pressed {
+    background-color: palette(midlight);
+}
+QPushButton:disabled {
+    color: palette(mid);
+}
+QPushButton:flat {
+    background: transparent;
+    border: none;
+    padding: 4px;
+}
+QPushButton:flat:hover {
+    background-color: palette(alternate-base);
+    border-radius: 8px;
+}
+QPushButton:flat:pressed {
+    background-color: palette(midlight);
+    border-radius: 8px;
+}
+
+QLineEdit, QPlainTextEdit, QComboBox, QKeySequenceEdit {
+    background-color: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 6px;
+    padding: 4px 8px;
+    selection-background-color: palette(highlight);
+    selection-color: palette(highlighted-text);
+}
+QLineEdit:focus, QPlainTextEdit:focus, QComboBox:focus, QKeySequenceEdit:focus {
+    border-color: palette(highlight);
+}
+QLineEdit:disabled, QPlainTextEdit:disabled {
+    color: palette(mid);
+    background-color: palette(window);
+}
+
+/* ── 列表与滚动条 ─────────────────────────────────────── */
+QListWidget {
+    background-color: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 8px;
+    outline: none;
+}
+QListWidget::item {
+    padding: 4px;
+}
+QListWidget::item:selected {
+    background: transparent;
+}
+QListWidget#messageList {
+    background: transparent;
+    border: none;
+}
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    margin: 2px;
+}
+QScrollBar::handle:vertical {
+    background: palette(mid);
+    border-radius: 3px;
+    min-height: 24px;
+}
+QScrollBar::handle:vertical:hover {
+    background: palette(midlight);
+}
+QScrollBar:horizontal {
+    background: transparent;
+    height: 6px;
+    margin: 2px;
+}
+QScrollBar::handle:horizontal {
+    background: palette(mid);
+    border-radius: 3px;
+    min-width: 24px;
+}
+QScrollBar::handle:horizontal:hover {
+    background: palette(midlight);
+}
+QScrollBar::add-line, QScrollBar::sub-line {
+    width: 0;
+    height: 0;
+}
+QScrollBar::add-page, QScrollBar::sub-page {
+    background: transparent;
+}
+
+/* ── Tab 页 ───────────────────────────────────────────── */
+QTabWidget::pane {
+    border: 1px solid palette(mid);
+    border-radius: 8px;
+    top: -1px;
+}
+QTabBar::tab {
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 11pt;
+}
+QTabBar::tab:hover {
+    background-color: palette(alternate-base);
+}
+QTabBar::tab:selected {
+    color: palette(highlight);
+    font-weight: bold;
+}
+
+/* ── 菜单与提示 ───────────────────────────────────────── */
+QMenu {
+    background-color: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 8px;
+    padding: 4px;
+}
+QMenu::item {
+    padding: 6px 16px;
+    border-radius: 4px;
+}
+QMenu::item:selected {
+    background-color: palette(highlight);
+    color: palette(highlighted-text);
+}
 QToolTip {
     background-color: palette(tooltip-base);
     color: palette(tooltip-text);
     border: 1px solid palette(mid);
     border-radius: 4px;
-    padding: 4px;
+    padding: 4px 8px;
 }
 
-QListWidget#messageList {
-    background: transparent;
+/* ── 标题与顶栏（ARCHITECTURE §7.2：标题 14pt）────────── */
+QLabel#titleLabel,
+QLabel#panelTitleLabel,
+QLabel#prefHeaderLabel,
+QLabel#settingsTitleLabel {
+    font-size: 14pt;
+    font-weight: bold;
+}
+QLabel#statusLabel,
+QLabel#syncStatusLabel,
+QLabel#pairStatusLabel,
+QLabel#syncSummaryLabel {
+    font-size: 11pt;
+}
+QLabel#versionLabel {
+    color: palette(mid);
+    font-size: 9pt;
 }
 
+/* ── 消息气泡（§7.2/7.3：气泡内边距 12px，圆角 10px）──── */
 QLabel#userBubble {
     background-color: palette(highlight);
     color: palette(highlighted-text);
     border-radius: 10px;
-    padding: 4px 10px;
+    padding: 12px;
+    font-size: 11pt;
 }
-
 QLabel#assistantBubble {
     background-color: palette(base);
     color: palette(text);
+    border: 1px solid palette(mid);
     border-radius: 10px;
-    padding: 4px 10px;
+    padding: 12px;
+    font-size: 11pt;
 }
-
 QLabel#assistantMeta {
     color: palette(mid);
-    font-size: 9px;
+    font-size: 9pt;
 }
-
 QLabel#systemHint {
     color: palette(mid);
-    font-size: 11px;
+    font-size: 11pt;
 }
 
+/* ── 证据卡（§7.3：内边距 10px，圆角 8px）─────────────── */
 QFrame#evidenceCard {
     background-color: palette(base);
     border: 1px solid palette(mid);
     border-radius: 8px;
 }
-
 QLabel#evidenceTitle {
-    font-size: 10px;
+    font-size: 10pt;
     font-weight: bold;
     color: palette(text);
 }
-
 QLabel#evidenceMeta {
     color: palette(mid);
-    font-size: 9px;
+    font-size: 9pt;
 }
-
 QLabel#evidenceAction {
     color: palette(highlight);
-    font-size: 9px;
+    font-size: 9pt;
+}
+
+/* ── 同步 Tab 节点行 ──────────────────────────────────── */
+QLabel#peerNameLabel {
+    font-size: 11pt;
+    font-weight: bold;
+}
+QLabel#peerStateLabel,
+QLabel#peerMetaLabel {
+    color: palette(mid);
+    font-size: 9pt;
+}
+
+/* ── 加载 / 空 / 错误状态 ─────────────────────────────── */
+QLabel#conflictEmptyLabel,
+QLabel#prefEmptyLabel,
+QLabel#syncEmptyLabel {
+    color: palette(mid);
+    font-size: 11pt;
+    padding: 16px;
+}
+QLabel#queryErrorHint,
+QLabel#emptyHint {
+    font-size: 11pt;
+}
+QLabel#emptyHint {
+    color: palette(mid);
+}
+
+/* ── 录入拖入占位框 ───────────────────────────────────── */
+QLabel#previewLabel {
+    border: 1px dashed palette(mid);
+    border-radius: 8px;
+    color: palette(mid);
+    font-size: 11pt;
+}
+
+/* ── 思考骨架屏（加载占位）────────────────────────────── */
+QWidget#thinkingSkeleton {
+    background: transparent;
 }

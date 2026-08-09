@@ -1,5 +1,7 @@
 #include "widgets/ImportDialog.h"
 
+#include "app/UiTokens.h"
+
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QDragEnterEvent>
@@ -41,8 +43,6 @@ ImportDialog::ImportDialog(QWidget *parent)
     m_previewLabel->setObjectName(QStringLiteral("previewLabel"));
     m_previewLabel->setAlignment(Qt::AlignCenter);
     m_previewLabel->setMinimumHeight(64);
-    m_previewLabel->setStyleSheet(QStringLiteral(
-        "border: 1px dashed #DADCE0; border-radius: 8px; color: #9aa0a6;"));
 
     QFormLayout *form = new QFormLayout();
     form->addRow(titleLabel, m_titleEdit);

@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 
 #include "app/UkuiWindow.h"
+#include "app/UiTokens.h"
 #include "widgets/InputBar.h"
 #include "widgets/MessageList.h"
 
@@ -26,16 +27,15 @@ ChatWindow::ChatWindow(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(kWindowWidth, kWindowHeight);
     // UKUI 原生窗口装饰（阴影/圆角）；无 KYSDK 环境为 no-op。
-    pixiu::decorateUkuiWindow(this, 12);
+    pixiu::decorateUkuiWindow(this, ui::Radius::Window);
 
     // 顶栏：标题 + 同步状态占位 + 记忆面板 + 关闭。
     QLabel *titleLabel = new QLabel(tr("PIXIU 貔貅"), this);
     titleLabel->setObjectName(QStringLiteral("titleLabel"));
-    titleLabel->setStyleSheet(QStringLiteral("font-size: 14px; font-weight: bold;"));
 
     m_statusLabel = new QLabel(tr("● 离线"), this);
     m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
-    m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+    m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
 
     QPushButton *settingsButton = new QPushButton(tr("⚙"), this);
     settingsButton->setObjectName(QStringLiteral("settingsButton"));
@@ -60,7 +60,7 @@ ChatWindow::ChatWindow(QWidget *parent)
 
     QHBoxLayout *topBar = new QHBoxLayout();
     topBar->setContentsMargins(0, 0, 0, 0);
-    topBar->setSpacing(8);
+    topBar->setSpacing(ui::Spacing::S);
     topBar->addWidget(titleLabel);
     topBar->addStretch(1);
     topBar->addWidget(m_statusLabel);
@@ -75,8 +75,9 @@ ChatWindow::ChatWindow(QWidget *parent)
     connect(m_inputBar, &InputBar::attachRequested, this, &ChatWindow::attachRequested);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(16, 12, 16, 16);
-    layout->setSpacing(8);
+    layout->setContentsMargins(ui::Spacing::L, ui::Spacing::M,
+                               ui::Spacing::L, ui::Spacing::L);
+    layout->setSpacing(ui::Spacing::S);
     layout->addLayout(topBar);
     layout->addWidget(m_messageList, 1);
     layout->addWidget(m_inputBar);
@@ -104,23 +105,23 @@ void ChatWindow::setBackendState(ConnectionState state)
     switch (state) {
     case ConnectionState::Connected:
         m_statusLabel->setText(tr("● 在线"));
-        m_statusLabel->setStyleSheet(QStringLiteral("color: #188038; font-size: 11px;"));
+        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Success));
         m_inputBar->setEnabled(true);
         break;
     case ConnectionState::Connecting:
         m_statusLabel->setText(tr("● 连接中…"));
-        m_statusLabel->setStyleSheet(QStringLiteral("color: #b06000; font-size: 11px;"));
+        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Warning));
         m_inputBar->setEnabled(false);
         break;
     case ConnectionState::Error:
         m_statusLabel->setText(tr("● 服务异常"));
-        m_statusLabel->setStyleSheet(QStringLiteral("color: #d93025; font-size: 11px;"));
+        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Error));
         m_inputBar->setEnabled(false);
         break;
     case ConnectionState::Disconnected:
     default:
         m_statusLabel->setText(tr("● 离线"));
-        m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
+        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
         m_inputBar->setEnabled(false);
         break;
     }
@@ -201,7 +202,7 @@ void ChatWindow::paintEvent(QPaintEvent *event)
     QColor background = QApplication::palette().color(QPalette::Window);
     background.setAlpha(245);
     painter.setBrush(background);
-    painter.drawRoundedRect(rect(), 12, 12);
+    painter.drawRoundedRect(rect(), ui::Radius::Window, ui::Radius::Window);
 }
 
 void ChatWindow::moveEvent(QMoveEvent *event)

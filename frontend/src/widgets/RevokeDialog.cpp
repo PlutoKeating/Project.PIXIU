@@ -1,5 +1,7 @@
 #include "widgets/RevokeDialog.h"
 
+#include "app/UiTokens.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -24,9 +26,7 @@ RevokeDialog::RevokeDialog(QWidget *parent)
     QPushButton *confirmButton = new QPushButton(tr("解绑"), this);
     confirmButton->setObjectName(QStringLiteral("revokeConfirmButton"));
     confirmButton->setAccessibleName(tr("确认解绑"));
-    confirmButton->setStyleSheet(QStringLiteral(
-        "background-color: #d93025; color: white; border-radius: 4px;"
-        "padding: 4px 12px;"));
+    confirmButton->setStyleSheet(ui::dangerButtonStyle());
 
     connect(cancelButton, &QPushButton::clicked, this, [this]() {
         emit cancelled();
