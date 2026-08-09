@@ -3,8 +3,9 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
-> **状态（2026-08-07）**：Phase 1（core/storage/api）已完成并通过 209 项测试；
-> retrieval（1.4）、flow（1.5）、sync（1.6）、eval（1.7）尚未实现。
+> **状态（2026-08-09）**：Phase 1（core/storage/api）与 retrieval MVP 已完成；
+> `/memory/query` 已接入，Foundation 222 项 + Engine 21 项测试全部通过。
+> retrieval 仍需完成安全与正确性加固；flow（1.5）、sync（1.6）、eval（1.7）尚未实现。
 
 ---
 
@@ -76,8 +77,8 @@ class ConflictRepository(ABC): ...
 **三协议支持**：
 
 ```
-http_app.py  → FastAPI app + 路由（/memory/write、/preference/*、/forget、/conflicts 已实现；
-               /memory/query、/memory/flow/promote、/sync/* 为占位）
+http_app.py  → FastAPI app + 路由（/memory/write、/memory/query、/preference/*、/forget、/conflicts 已实现；
+               /memory/flow/promote、/sync/* 为占位）
 ws.py + ws_manager.py → WebSocket /events（连接/心跳/广播，memory_ready 已接入写入链路）
 dbus_service.py → com.kylin.pixiu.Memory（桌面 D-Bus）
 ```
@@ -171,8 +172,8 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 
 ### 1.4 retrieval/ —— 混合检索
 
-> ⚠️ **尚未实现**（Phase 2）。以下为设计蓝图；当前 `retrieval/` 仅有空包占位，
-> `/memory/query` 返回 `not_implemented`。
+> ✅ **MVP 已实现**。`/memory/query` 已接入 `RetrievalService`，当前实现覆盖路由、
+> 三通道召回、融合、重排、结果组装和 evidence 回溯；进入加固阶段。
 
 **唯一在线、最敏感延迟的模块**。七步流水线：
 
@@ -186,7 +187,20 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 | 重排 | `rerank.py` | INT8 reranker 细粒度 relevance | ~150ms |
 | 组装 | `assembler.py` | 结构化过滤 + 聚合计算 + evidence_ids 回溯 | ~30ms |
 
-**三通道 asyncio.gather 并行**，P50≈200ms / P95≈380ms。
+**当前 MVP 机制**：规则路由；FTS5 trigram（含 CJK 回退）；INT8 向量线性扫描；
+实体文本命中与 `BELONG_TO` 加权；RRF + scope 权重融合；词法重排；聚合与证据组装。
+
+开发基线（50 条记录、1000 次查询、测试 stub embedding）为 P50=11.4ms、P95=13.3ms。
+该数据仅用于回归，不代表真实麒麟 SDK 和正式验收数据下的最终性能。
+
+**进入下一阶段前必须补齐的加固项**：
+
+1. 持久化并恢复 knowledge↔entity 关联，保证 SQLite 重启后图召回仍有效；
+2. 使用 `asyncio.gather` 并行执行 BM25、ANN、Graph 三通道；
+3. 将 scope 从软加权改为硬过滤，避免跨 scope 泄漏；
+4. 落实 `time_range` 过滤；
+5. 聚合仅计算与查询匹配的类别，覆盖 434.50 标准金额场景；
+6. 使用真实麒麟 embedding 与正式数据集重新验证召回率和 P95≤500ms。
 
 ### 1.5 flow/ —— 记忆流转
 

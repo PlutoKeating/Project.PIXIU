@@ -5,9 +5,9 @@
 
 ---
 
-## 实现状态（2026-08-07）
+## 实现状态（2026-08-09）
 
-### ✅ 已完成（Phase 1）
+### ✅ 已完成（Phase 1 + Phase 2 MVP）
 
 - `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
@@ -16,13 +16,16 @@
 - `storage/`：`schema.py`（9 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（版本化迁移）、
   `repository.py`（5 个 SQLite 仓储，含证据回填、偏好版本化、冲突读写修复）
 - `api/`：`http_app.py` 真实端点（`/memory/write`、`/preference/extract`、
-  `/preference/{id}/history`、`/forget`、`/conflicts`）、`ws.py` + `ws_manager.py`
+  `/preference/{id}/history`、`/forget`、`/conflicts`、`/memory/query`）、`ws.py` + `ws_manager.py`
   （`/events` 连接/心跳/广播）、`di.py`（真实注入引擎 Service + SQLite 仓储）
-- 测试：209 项全绿（含契约、仓储、DI、API 端点测试）
+- `retrieval/`：路由、FTS5 BM25、INT8 向量召回、图召回、RRF 融合、词法重排、
+  聚合与 evidence 回溯已形成可调用 MVP
+- 测试：Foundation 222 项 + Engine 21 项，共 243 项全绿
 
-### ⬜ 待实现（Phase 2 / Phase 3）
+### ⬜ 待实现 / 加固
 
-- `retrieval/`：`router/bm25/ann/graph_search/fuse/rerank/assembler` —— 实现 `/memory/query`
+- `retrieval/`：补齐 knowledge↔entity 持久化、三通道并发、scope 硬过滤、
+  `time_range`、查询类别聚合，并用真实麒麟 embedding 完成验收基准
 - `flow/`：`promoter/ttl` —— 实现 `/memory/flow/promote`
 - `sync/`：`identity/pairing/crdt/anti_entropy/gc/scheduler` —— 实现 `/sync/*` 与 CRDT 广播
 - `eval/`：评测引擎与指标脚本
@@ -82,6 +85,8 @@ git submodule update --init --recursive
 ---
 
 ## 第二阶段：检索引擎
+
+> 下列文件均已存在并完成 MVP；下一轮工作以“加固”清单为准，不重复搭建空骨架。
 
 ### retrieval/ —— 混合检索
 

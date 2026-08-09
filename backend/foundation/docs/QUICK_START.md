@@ -6,6 +6,7 @@
 
 ```bash
 cd /path/to/Project.PIXIU
+conda activate pixiu
 pip install -r backend/requirements.txt
 ```
 
@@ -39,14 +40,20 @@ curl -X POST http://127.0.0.1:8765/memory/write \
 # 冲突审计
 curl http://127.0.0.1:8765/conflicts
 # → {"conflicts":[...]}
+
+# 查询记忆（真实链路：路由 → 多通道召回 → 融合/重排 → 组装）
+curl -X POST http://127.0.0.1:8765/memory/query -H "Content-Type: application/json" -d '{"query":"本月餐饮支出是多少？","context_hint":{"scope":"user:test"}}'
 ```
 
-> `/memory/query`、`/memory/flow/promote`、`/sync/*` 当前返回
-> `{"status":"not_implemented"}`，待 retrieval/flow/sync 阶段实现。
+> `/memory/flow/promote`、`/sync/*` 当前返回 `{"status":"not_implemented"}`，
+> 待 flow/sync 阶段实现。
 
 ## 运行测试
 
 ```bash
 # 全部 foundation 测试（仓库根目录运行）
 python -m pytest backend/foundation/tests -v
+
+# Foundation 与 Engine 联合集成基线
+python -m pytest backend/foundation/tests backend/engine/tests -q -ra
 ```
