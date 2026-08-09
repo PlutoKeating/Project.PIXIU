@@ -189,8 +189,8 @@ This action cannot be undone.</translation>
         <translation>📎</translation>
     </message>
     <message>
-        <source>录入图片/文件（后续 feature）</source>
-        <translation>Import image/file (later feature)</translation>
+        <source>录入图片/文件</source>
+        <translation>Import image/file</translation>
     </message>
     <message>
         <source>输入问题，或拖入图片录入…</source>

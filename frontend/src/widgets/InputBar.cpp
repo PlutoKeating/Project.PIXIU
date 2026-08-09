@@ -11,7 +11,8 @@ InputBar::InputBar(QWidget *parent)
     attachButton->setObjectName(QStringLiteral("attachButton"));
     attachButton->setAccessibleName(tr("录入图片或文件"));
     attachButton->setFlat(true);
-    attachButton->setToolTip(tr("录入图片/文件（后续 feature）"));
+    // 录入对话框已实现（图片拖入预览 + MANUAL_CONFIG 载荷），文案不再标注“后续”。
+    attachButton->setToolTip(tr("录入图片/文件"));
     attachButton->setCursor(Qt::PointingHandCursor);
     connect(attachButton, &QPushButton::clicked, this, &InputBar::attachRequested);
 
