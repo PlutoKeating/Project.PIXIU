@@ -3,9 +3,9 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
-> **状态（2026-08-09）**：Phase 1（core/storage/api）与 retrieval MVP 已完成；
-> `/memory/query` 已接入，Foundation 222 项 + Engine 21 项测试全部通过。
-> retrieval 仍需完成安全与正确性加固；flow（1.5）、sync（1.6）、eval（1.7）尚未实现。
+> **状态（2026-08-09）**：core/storage/api 与 retrieval 加固已完成；
+> `/memory/query` 已接入，Foundation 231 项 + Engine 21 项测试全部通过。
+> flow（1.5）、sync（1.6）、eval（1.7）尚未实现；真实麒麟 SDK 性能待银河麒麟环境验收。
 
 ---
 
@@ -125,8 +125,8 @@ async def get_security_service(db=Depends(get_db)) -> SecurityService:
 
 **Schema**（由 `storage/migrations.py` 版本化迁移创建，`storage/schema.py` 定义）：
 
-基础表 9 张：`evidence`、`knowledge_items`、`knowledge_evidence`、`preferences`、
-`preference_history`、`entities`、`relations`、`conflict_records`、`sync_oplog`；
+基础表 10 张：`evidence`、`knowledge_items`、`knowledge_evidence`、`knowledge_entities`、
+`preferences`、`preference_history`、`entities`、`relations`、`conflict_records`、`sync_oplog`；
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
 WAL + foreign_keys + busy_timeout 已启用。
 
@@ -143,6 +143,7 @@ CREATE TABLE knowledge_items (
   id TEXT PRIMARY KEY, kind TEXT, title TEXT, body JSON,
   status TEXT, version INTEGER, scope TEXT, updated_at INTEGER);
 CREATE TABLE knowledge_evidence (knowledge_id TEXT, evidence_id TEXT);
+CREATE TABLE knowledge_entities (knowledge_id TEXT, entity_id TEXT);
 
 -- BM25 全文索引
 CREATE VIRTUAL TABLE knowledge_fts USING fts5(title, body_text);
@@ -187,20 +188,17 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 | 重排 | `rerank.py` | INT8 reranker 细粒度 relevance | ~150ms |
 | 组装 | `assembler.py` | 结构化过滤 + 聚合计算 + evidence_ids 回溯 | ~30ms |
 
-**当前 MVP 机制**：规则路由；FTS5 trigram（含 CJK 回退）；INT8 向量线性扫描；
-实体文本命中与 `BELONG_TO` 加权；RRF + scope 权重融合；词法重排；聚合与证据组装。
+**当前机制**：规则路由；FTS5 trigram（含 CJK 回退）；INT8 向量线性扫描；
+持久化 knowledge↔entity 与 `BELONG_TO` 一跳图召回；三通道 `asyncio.gather` 并发；
+scope/time_range 硬过滤；RRF 融合；词法重排；查询类别聚合与证据组装。
 
 开发基线（50 条记录、1000 次查询、测试 stub embedding）为 P50=11.4ms、P95=13.3ms。
 该数据仅用于回归，不代表真实麒麟 SDK 和正式验收数据下的最终性能。
 
-**进入下一阶段前必须补齐的加固项**：
-
-1. 持久化并恢复 knowledge↔entity 关联，保证 SQLite 重启后图召回仍有效；
-2. 使用 `asyncio.gather` 并行执行 BM25、ANN、Graph 三通道；
-3. 将 scope 从软加权改为硬过滤，避免跨 scope 泄漏；
-4. 落实 `time_range` 过滤；
-5. 聚合仅计算与查询匹配的类别，覆盖 434.50 标准金额场景；
-6. 使用真实麒麟 embedding 与正式数据集重新验证召回率和 P95≤500ms。
+**Phase 1 加固结果**：前五项代码与回归测试已完成，包括 SQLite 关闭重开后的图召回、
+三通道并发、scope 隔离、结构化业务日期过滤，以及附录 A 的 434.50 聚合。
+真实麒麟 embedding + 正式数据集的召回率/P95 验收无法在 Windows 环境执行，必须在安装
+原生扩展与 AI 运行时的银河麒麟机器上完成。
 
 ### 1.5 flow/ —— 记忆流转
 
@@ -280,6 +278,7 @@ sync/
 |------|------|
 | 开发任务书 | `backend/foundation/docs/DEV_TASKS.md` |
 | 快速启动 | `backend/foundation/docs/QUICK_START.md` |
+| Phase 1 加固报告 | `backend/foundation/docs/PHASE1.md` |
 | 总体架构 | `docs/ARCHITECTURE.md` |
 | 开发计划 | `docs/DEVELOPMENT_PLAN.md` |
 | API 规格 | `docs/API.md` |
