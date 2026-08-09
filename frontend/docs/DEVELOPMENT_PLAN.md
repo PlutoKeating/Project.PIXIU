@@ -972,6 +972,10 @@ i18n                   pixiu_en_US.ts 增补 PixiuApp 条目
 | SDK/UKUI 版本与目标机差异 | Kylin 集成可能编译或行为不一致 | 使用适配层，并在真实 x86/ARM UKUI 环境留证 |
 | 根/模块部分状态文档仍可能写“前端未开始” | 进度认知不一致 | 本文件以提交 `9cebaa8` 为事实基线；其他文档由对应负责人另行对齐 |
 
-在上述阻塞中，Phase 7.3 的 UKUI 主题跟随不依赖 backend、D-Bus 或仍占位的同步契约，
-且本机（银河麒麟 V11）已安装 `libkysdk-qtwidgets` 开发包（含 `themeController`），
-因此是当前真正应该执行的下一项最小独立 feature。
+2026-08-09 断点恢复结论：Module A 可独立完成的功能已全部完成（最后一项为聊天框
+拖动与位置记忆，提交 `4eb8377`）；剩余实现项全部被后端契约阻塞（偏好列表、证据
+详情、同步真实数据、二维码配对令牌、`/memory/flow/promote` 上下文、WS 真实事件，
+见 §1.2 与 `BACKEND_ISSUES.md`），不再为制造进度扩需求。下一阶段进入统一
+UI/UX polish，待办已全部登记于 `frontend/docs/UI_UX_POLISH.md`（颜色语义化、
+字号间距、图标、动效、布局），其后转人工验收项（全局快捷键新会话复测、
+HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉）。

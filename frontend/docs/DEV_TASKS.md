@@ -120,6 +120,9 @@
   拖动结束经 `moved` 信号由 PixiuApp 持久化到 `AppSettings::keyWindowGeometry`
   （原已定义未用），启动时恢复并按屏幕可用区域钳制（与悬浮球策略一致）。
   `t_chat_window` 新增拖动移动与信号 1 例；套件 27 例全绿（OFF/ON 双路径）。
+- Module A 独立功能全部完成或明确阻塞（2026-08-09）：剩余实现项均依赖后端契约
+  （偏好列表/证据详情/同步真实数据/二维码令牌/flow/WS 真实事件），不再扩需求；
+  进入统一 UI/UX polish 阶段，待办见 `frontend/docs/UI_UX_POLISH.md`。
 
 ---
 
