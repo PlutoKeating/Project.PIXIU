@@ -26,7 +26,8 @@ ChatWindow::ChatWindow(QWidget *parent)
 {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
-    setFixedSize(kWindowWidth, kWindowHeight);
+    resize(kWindowWidth, kWindowHeight);
+    setMinimumSize(kMinWidth, kMinHeight);
     // UKUI 原生窗口装饰（阴影/圆角）；无 KYSDK 环境为 no-op。
     pixiu::decorateUkuiWindow(this, ui::Radius::Window);
 
@@ -93,6 +94,8 @@ ChatWindow::ChatWindow(QWidget *parent)
     layout->addLayout(topBar);
     layout->addWidget(m_messageList, 1);
     layout->addWidget(m_inputBar);
+
+    updateResizeCursor(QPoint(0, 0));
 }
 
 MessageList *ChatWindow::messageList() const
@@ -169,6 +172,14 @@ void ChatWindow::keyPressEvent(QKeyEvent *event)
 
 void ChatWindow::mousePressEvent(QMouseEvent *event)
 {
+    m_resizeEdge = resizeEdgeAt(event->pos());
+    if (m_resizeEdge != ResizeEdge::None) {
+        m_resizing = true;
+        m_resizeStartGeometry = geometry();
+        m_resizeStartGlobalPos = event->globalPos();
+        event->accept();
+        return;
+    }
     // 无边框窗口：按住空白区域拖动（子控件自行消费事件，不影响按钮/输入）。
     if (event->button() == Qt::LeftButton) {
         m_dragging = true;
@@ -181,18 +192,75 @@ void ChatWindow::mousePressEvent(QMouseEvent *event)
 
 void ChatWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    if (m_resizing) {
+        const QPoint delta = event->globalPos() - m_resizeStartGlobalPos;
+        QRect geometry = m_resizeStartGeometry;
+        switch (m_resizeEdge) {
+        case ResizeEdge::Left:
+        case ResizeEdge::TopLeft:
+        case ResizeEdge::BottomLeft:
+            geometry.setLeft(geometry.left() + delta.x());
+            break;
+        case ResizeEdge::Right:
+        case ResizeEdge::TopRight:
+        case ResizeEdge::BottomRight:
+            geometry.setRight(geometry.right() + delta.x());
+            break;
+        default:
+            break;
+        }
+        switch (m_resizeEdge) {
+        case ResizeEdge::Top:
+        case ResizeEdge::TopLeft:
+        case ResizeEdge::TopRight:
+            geometry.setTop(geometry.top() + delta.y());
+            break;
+        case ResizeEdge::Bottom:
+        case ResizeEdge::BottomLeft:
+        case ResizeEdge::BottomRight:
+            geometry.setBottom(geometry.bottom() + delta.y());
+            break;
+        default:
+            break;
+        }
+        // 最小尺寸钳制（拖动左/上边缘时锚定对边）。
+        if (geometry.width() < kMinWidth) {
+            if (m_resizeEdge == ResizeEdge::Left
+                || m_resizeEdge == ResizeEdge::TopLeft
+                || m_resizeEdge == ResizeEdge::BottomLeft) {
+                geometry.setLeft(geometry.right() - kMinWidth + 1);
+            } else {
+                geometry.setRight(geometry.left() + kMinWidth - 1);
+            }
+        }
+        if (geometry.height() < kMinHeight) {
+            if (m_resizeEdge == ResizeEdge::Top
+                || m_resizeEdge == ResizeEdge::TopLeft
+                || m_resizeEdge == ResizeEdge::TopRight) {
+                geometry.setTop(geometry.bottom() - kMinHeight + 1);
+            } else {
+                geometry.setBottom(geometry.top() + kMinHeight - 1);
+            }
+        }
+        setGeometry(geometry);
+        event->accept();
+        return;
+    }
     if (m_dragging) {
         move(event->globalPos() - m_dragGlobalOffset);
         emit moved(frameGeometry().topLeft());
         event->accept();
         return;
     }
+    updateResizeCursor(event->pos());
     QWidget::mouseMoveEvent(event);
 }
 
 void ChatWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     m_dragging = false;
+    m_resizing = false;
+    updateResizeCursor(event->pos());
     QWidget::mouseReleaseEvent(event);
 }
 
@@ -246,4 +314,49 @@ void ChatWindow::animateOpacity(qreal target)
     m_opacityAnimation->setStartValue(windowOpacity());
     m_opacityAnimation->setEndValue(target);
     m_opacityAnimation->start();
+}
+
+ChatWindow::ResizeEdge ChatWindow::resizeEdgeAt(const QPoint &pos) const
+{
+    const bool left = pos.x() <= kResizeMargin;
+    const bool right = pos.x() >= width() - 1 - kResizeMargin;
+    const bool top = pos.y() <= kResizeMargin;
+    const bool bottom = pos.y() >= height() - 1 - kResizeMargin;
+    if (left && top) return ResizeEdge::TopLeft;
+    if (right && top) return ResizeEdge::TopRight;
+    if (left && bottom) return ResizeEdge::BottomLeft;
+    if (right && bottom) return ResizeEdge::BottomRight;
+    if (left) return ResizeEdge::Left;
+    if (right) return ResizeEdge::Right;
+    if (top) return ResizeEdge::Top;
+    if (bottom) return ResizeEdge::Bottom;
+    return ResizeEdge::None;
+}
+
+void ChatWindow::updateResizeCursor(const QPoint &pos)
+{
+    if (m_resizing) {
+        return;
+    }
+    switch (resizeEdgeAt(pos)) {
+    case ResizeEdge::Left:
+    case ResizeEdge::Right:
+        setCursor(Qt::SizeHorCursor);
+        break;
+    case ResizeEdge::Top:
+    case ResizeEdge::Bottom:
+        setCursor(Qt::SizeVerCursor);
+        break;
+    case ResizeEdge::TopLeft:
+    case ResizeEdge::BottomRight:
+        setCursor(Qt::SizeFDiagCursor);
+        break;
+    case ResizeEdge::TopRight:
+    case ResizeEdge::BottomLeft:
+        setCursor(Qt::SizeBDiagCursor);
+        break;
+    default:
+        unsetCursor();
+        break;
+    }
 }

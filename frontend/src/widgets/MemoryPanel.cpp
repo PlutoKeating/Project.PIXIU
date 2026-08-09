@@ -48,7 +48,8 @@ MemoryPanel::MemoryPanel(QWidget *parent)
     : QWidget(parent)
 {
     setWindowTitle(tr("记忆管理"));
-    setFixedSize(520, 420);
+    resize(560, 480);
+    setMinimumSize(480, 400);
 
     m_tabs = new QTabWidget(this);
     m_tabs->addTab(createPreferenceTab(), tr("偏好"));
@@ -217,8 +218,8 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
 
         QWidget *container = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(container);
-        layout->setContentsMargins(ui::Spacing::XS, ui::Spacing::XS,
-                                   ui::Spacing::XS, ui::Spacing::XS);
+        layout->setContentsMargins(ui::Spacing::S, ui::Spacing::XS,
+                                   ui::Spacing::S, ui::Spacing::XS);
         layout->setSpacing(ui::Spacing::XS);
 
         QHBoxLayout *nameRow = new QHBoxLayout();

@@ -62,6 +62,12 @@ protected:
 
 private:
     void animateOpacity(qreal target);
+    enum class ResizeEdge {
+        None, Left, Right, Top, Bottom,
+        TopLeft, TopRight, BottomLeft, BottomRight
+    };
+    ResizeEdge resizeEdgeAt(const QPoint &pos) const;
+    void updateResizeCursor(const QPoint &pos);
 
     QLabel *m_statusLabel = nullptr;
     QPushButton *m_settingsButton = nullptr;
@@ -71,9 +77,16 @@ private:
     QPoint m_rememberedPos;
     QPoint m_dragGlobalOffset;
     bool m_dragging = false;
+    ResizeEdge m_resizeEdge = ResizeEdge::None;
+    QRect m_resizeStartGeometry;
+    QPoint m_resizeStartGlobalPos;
+    bool m_resizing = false;
 
     static constexpr int kWindowWidth = 420;
     static constexpr int kWindowHeight = 560;
+    static constexpr int kMinWidth = 360;
+    static constexpr int kMinHeight = 440;
+    static constexpr int kResizeMargin = 6;
     static constexpr int kAnimationMs = 150;
 };
 
