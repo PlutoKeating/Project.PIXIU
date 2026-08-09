@@ -163,6 +163,47 @@ bool PixiuApp::start()
     connect(m_transport, &BackendTransport::connectionStateChanged,
             m_chatWindow, &ChatWindow::setBackendState);
 
+    // 设备配对（Phase 6 壳）：UI 与契约载荷已就绪；后端 /sync/pair 落地后
+    // 真实闭环，当前如实呈现 not_implemented / 网络错误，不伪造成功。
+    connect(m_memoryPanel, &MemoryPanel::pairRequested, this,
+            [this](const QJsonObject &payload) {
+                m_pairPending = true;
+                m_transport->pairDevice(payload);
+            });
+    connect(m_transport, &BackendTransport::pairResult, this,
+            [this](const QJsonObject &response) {
+                m_pairPending = false;
+                const QString status =
+                    response.value(QStringLiteral("status")).toString();
+                if (status == QStringLiteral("not_implemented")) {
+                    m_memoryPanel->setSyncStatus(
+                        tr("配对接口待后端实现（Phase 6）"));
+                    return;
+                }
+                // 契约成功态为 "paired"（docs/API.md §3.8）；其余状态如实
+                // 呈现为失败，避免把后端错误响应误报为成功。
+                if (status != QStringLiteral("paired")) {
+                    m_memoryPanel->setSyncStatus(
+                        tr("配对请求失败：%1").arg(
+                            status.isEmpty() ? tr("未知响应") : status));
+                    return;
+                }
+                const QString peer =
+                    response.value(QStringLiteral("device_name")).toString();
+                m_memoryPanel->setSyncStatus(
+                    tr("配对成功：%1").arg(peer.isEmpty() ? tr("设备") : peer),
+                    true);
+            });
+    connect(m_transport, &BackendTransport::errorOccurred, this,
+            [this](const QString &code, const QString &message, const QString &) {
+                if (!m_pairPending) {
+                    return;
+                }
+                m_pairPending = false;
+                m_memoryPanel->setSyncStatus(
+                    tr("配对请求失败（%1）：%2").arg(code, message));
+            });
+
     // 查询状态机：加载/取消/失败/重试。
     m_queryController = new QueryController(m_transport, this);
     connect(m_queryController, &QueryController::userMessageReady, this,

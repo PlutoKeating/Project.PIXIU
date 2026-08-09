@@ -1,5 +1,7 @@
 #include "widgets/MemoryPanel.h"
 
+#include "widgets/PairDialog.h"
+
 #include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -24,10 +26,7 @@ MemoryPanel::MemoryPanel(QWidget *parent)
     m_tabs = new QTabWidget(this);
     m_tabs->addTab(createPreferenceTab(), tr("偏好"));
     m_tabs->addTab(createConflictTab(), tr("冲突"));
-    m_tabs->addTab(createPlaceholderTab(
-                       tr("同步"),
-                       tr("节点列表与设备配对（Phase 6）")),
-                   tr("同步"));
+    m_tabs->addTab(createSyncTab(), tr("同步"));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(8, 8, 8, 8);
@@ -118,6 +117,18 @@ void MemoryPanel::setPreferenceHistory(const QJsonObject &response)
     m_prefHistoryList->setVisible(hasHistory);
 }
 
+void MemoryPanel::setSyncStatus(const QString &status, bool ok)
+{
+    if (!m_syncStatusLabel) {
+        return;
+    }
+    m_syncStatusLabel->setText(status);
+    m_syncStatusLabel->setStyleSheet(
+        ok ? QStringLiteral("color: #1a7f37;")
+           : QStringLiteral("color: #d93025;"));
+    m_syncStatusLabel->show();
+}
+
 QWidget *MemoryPanel::createPreferenceTab()
 {
     QWidget *page = new QWidget();
@@ -182,22 +193,47 @@ QWidget *MemoryPanel::createConflictTab()
     return page;
 }
 
-QWidget *MemoryPanel::createPlaceholderTab(const QString &title,
-                                           const QString &description) const
+QWidget *MemoryPanel::createSyncTab()
 {
     QWidget *page = new QWidget();
-    QLabel *titleLabel = new QLabel(title, page);
-    QFont font = titleLabel->font();
-    font.setPixelSize(14);
-    font.setBold(true);
-    titleLabel->setFont(font);
+    QVBoxLayout *layout = new QVBoxLayout(page);
+    layout->setContentsMargins(8, 8, 8, 8);
 
-    QLabel *descLabel = new QLabel(description, page);
+    QLabel *titleLabel = new QLabel(tr("同步"), page);
+    QFont titleFont = titleLabel->font();
+    titleFont.setPixelSize(14);
+    titleFont.setBold(true);
+    titleLabel->setFont(titleFont);
+
+    m_syncStatusLabel = new QLabel(
+        tr("节点列表与同步状态待 foundation/sync 契约"), page);
+    m_syncStatusLabel->setObjectName(QStringLiteral("syncStatusLabel"));
+    m_syncStatusLabel->setWordWrap(true);
+
+    QLabel *descLabel = new QLabel(
+        tr("配对后设备加入共享域，记忆经后端 CRDT 跨设备同步。"), page);
     descLabel->setWordWrap(true);
 
-    QVBoxLayout *layout = new QVBoxLayout(page);
+    QPushButton *pairButton = new QPushButton(tr("配对设备"), page);
+    pairButton->setObjectName(QStringLiteral("pairDeviceButton"));
+    pairButton->setAccessibleName(tr("打开设备配对"));
+    connect(pairButton, &QPushButton::clicked, this, [this]() {
+        if (!m_pairDialog) {
+            m_pairDialog = new PairDialog(this);
+            connect(m_pairDialog, &PairDialog::pairRequested,
+                    this, &MemoryPanel::pairRequested);
+        }
+        m_pairDialog->showAndFocus();
+    });
+
+    QHBoxLayout *buttonRow = new QHBoxLayout();
+    buttonRow->addWidget(pairButton);
+    buttonRow->addStretch(1);
+
     layout->addWidget(titleLabel);
+    layout->addWidget(m_syncStatusLabel);
     layout->addWidget(descLabel);
     layout->addStretch(1);
+    layout->addLayout(buttonRow);
     return page;
 }

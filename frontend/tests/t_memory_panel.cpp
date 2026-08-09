@@ -1,5 +1,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
@@ -8,6 +9,7 @@
 #include <QTest>
 
 #include "widgets/MemoryPanel.h"
+#include "widgets/PairDialog.h"
 
 // MemoryPanel 壳测试：三个 Tab 及标题。
 class TestMemoryPanel : public QObject
@@ -21,6 +23,8 @@ private slots:
     void setConflictsShowsEmptyState();
     void loadButtonEmitsHistoryRequested();
     void setPreferenceHistoryPopulatesList();
+    void syncTabHasPairButtonOpensDialog();
+    void setSyncStatusUpdatesLabel();
     void escHidesPanel();
 };
 
@@ -127,6 +131,33 @@ void TestMemoryPanel::setPreferenceHistoryPopulatesList()
     QVERIFY(list->item(0)->text().contains(QStringLiteral("v1")));
     QVERIFY(list->item(0)->text().contains(QStringLiteral("\"enabled\":false")));
     QVERIFY(!list->isHidden());
+}
+
+void TestMemoryPanel::syncTabHasPairButtonOpensDialog()
+{
+    MemoryPanel panel;
+    QPushButton *pairButton =
+        panel.findChild<QPushButton *>(QStringLiteral("pairDeviceButton"));
+    QVERIFY(pairButton != nullptr);
+
+    // PairDialog 在首次点击时懒创建；先点击再查找并验证可见。
+    panel.show();
+    QTest::mouseClick(pairButton, Qt::LeftButton);
+    PairDialog *dialog = panel.findChild<PairDialog *>();
+    QVERIFY(dialog != nullptr);
+    QVERIFY(dialog->isVisible());
+}
+
+void TestMemoryPanel::setSyncStatusUpdatesLabel()
+{
+    MemoryPanel panel;
+    QLabel *status =
+        panel.findChild<QLabel *>(QStringLiteral("syncStatusLabel"));
+    QVERIFY(status != nullptr);
+
+    panel.setSyncStatus(QStringLiteral("配对成功：客厅一体机"), true);
+    QCOMPARE(status->text(), QStringLiteral("配对成功：客厅一体机"));
+    QVERIFY(!status->isHidden());
 }
 
 void TestMemoryPanel::escHidesPanel()

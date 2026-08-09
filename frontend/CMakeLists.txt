@@ -57,6 +57,8 @@ add_executable(pixiu-frontend
     src/widgets/ForgetDialog.cpp
     src/widgets/MemoryPanel.h
     src/widgets/MemoryPanel.cpp
+    src/widgets/PairDialog.h
+    src/widgets/PairDialog.cpp
     src/app/ConflictController.h
     src/app/ConflictController.cpp
     src/app/PreferenceController.h
@@ -171,10 +173,33 @@ if(BUILD_TESTING)
         tests/t_memory_panel.cpp
         src/widgets/MemoryPanel.h
         src/widgets/MemoryPanel.cpp
+        src/widgets/PairDialog.h
+        src/widgets/PairDialog.cpp
     )
     target_include_directories(t_memory_panel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(t_memory_panel PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME memory_panel COMMAND t_memory_panel)
+
+    add_executable(t_pair_dialog
+        tests/t_pair_dialog.cpp
+        src/widgets/PairDialog.h
+        src/widgets/PairDialog.cpp
+    )
+    target_include_directories(t_pair_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_pair_dialog PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME pair_dialog COMMAND t_pair_dialog)
+    set_tests_properties(pair_dialog PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+    add_executable(t_app_icon
+        tests/t_app_icon.cpp
+        resources/resources.qrc
+    )
+    target_include_directories(t_app_icon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_app_icon PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME app_icon COMMAND t_app_icon)
+    set_tests_properties(app_icon PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
     add_executable(t_conflict_controller
         tests/t_conflict_controller.cpp

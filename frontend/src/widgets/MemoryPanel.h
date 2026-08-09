@@ -11,6 +11,7 @@ class QListWidget;
 class QKeyEvent;
 class QPushButton;
 class QTabWidget;
+class PairDialog;
 
 // 记忆管理面板：偏好 / 冲突 / 同步 三个 Tab。
 //
@@ -32,18 +33,23 @@ public:
     // 更新偏好历史 Tab 内容（来自 GET /preference/{id}/history）。
     void setPreferenceHistory(const QJsonObject &response);
 
+    // 更新同步 Tab 状态行（配对结果 / 后端契约状态）。
+    void setSyncStatus(const QString &status, bool ok = false);
+
 signals:
     // 用户请求加载指定偏好 ID 的历史。
     void historyRequested(const QString &preferenceId);
+    // 用户请求设备配对（载荷见 PairDialog::pairRequested）。
+    void pairRequested(const QJsonObject &payload);
 
 protected:
     // Esc 关闭面板（键盘可达）。
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    QWidget *createPlaceholderTab(const QString &title, const QString &description) const;
     QWidget *createConflictTab();
     QWidget *createPreferenceTab();
+    QWidget *createSyncTab();
 
     QTabWidget *m_tabs = nullptr;
     QListWidget *m_conflictList = nullptr;
@@ -52,6 +58,8 @@ private:
     QListWidget *m_prefHistoryList = nullptr;
     QLabel *m_prefHeaderLabel = nullptr;
     QLabel *m_prefEmptyLabel = nullptr;
+    QLabel *m_syncStatusLabel = nullptr;
+    PairDialog *m_pairDialog = nullptr;
 };
 
 #endif // PIXIU_MEMORY_PANEL_H

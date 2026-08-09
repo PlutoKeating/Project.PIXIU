@@ -72,6 +72,9 @@ private:
     ConflictController *m_conflictController = nullptr;
     PreferenceController *m_preferenceController = nullptr;
     ThemeService *m_themeService = nullptr;
+    // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
+    // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。
+    bool m_pairPending = false;
     struct Private;
     QScopedPointer<Private> d;
 
