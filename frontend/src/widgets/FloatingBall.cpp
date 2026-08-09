@@ -71,13 +71,24 @@ void FloatingBall::paintEvent(QPaintEvent *event)
     accent.setAlpha(210);
     painter.fillPath(path, accent);
 
-    // 中央字符（后续替换为资源图标）。
-    QFont font = painter.font();
-    font.setPixelSize(24);
-    font.setBold(true);
-    painter.setFont(font);
-    painter.setPen(Qt::white);
-    painter.drawText(rect(), Qt::AlignCenter, QStringLiteral("貔"));
+    // 中央 PIXIU 网络标记：三个白色节点 + 互联线段（与 pixiu.svg 图形一致）。
+    // 白色在高亮底色上于明暗主题均清晰，无需明暗两套资源。
+    const QPointF left(width() * 0.5 - 13, height() * 0.5 - 4);
+    const QPointF right(width() * 0.5 + 13, height() * 0.5 - 4);
+    const QPointF bottom(width() * 0.5, height() * 0.5 + 11);
+    QPen linkPen(Qt::white, 2.4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    painter.setPen(linkPen);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawLine(left, right);
+    painter.drawLine(left, bottom);
+    painter.drawLine(right, bottom);
+
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::white);
+    const qreal nodeRadius = 4.6;
+    painter.drawEllipse(left, nodeRadius, nodeRadius);
+    painter.drawEllipse(right, nodeRadius, nodeRadius);
+    painter.drawEllipse(bottom, nodeRadius, nodeRadius);
 
     // 未读事件角标：右上角红色圆形 + 数字（超过 99 显示 99+）。
     if (m_unreadCount > 0) {
@@ -87,7 +98,7 @@ void FloatingBall::paintEvent(QPaintEvent *event)
         painter.setBrush(ui::semanticColor(ui::Role::Badge));
         painter.drawEllipse(center, badgeRadius, badgeRadius);
 
-        QFont badgeFont = font;
+        QFont badgeFont = painter.font();
         badgeFont.setPixelSize(11);
         badgeFont.setBold(true);
         painter.setFont(badgeFont);

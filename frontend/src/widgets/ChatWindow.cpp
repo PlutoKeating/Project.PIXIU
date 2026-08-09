@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 
 #include "app/UkuiWindow.h"
+#include "app/UiIcons.h"
 #include "app/UiTokens.h"
 #include "widgets/InputBar.h"
 #include "widgets/MessageList.h"
@@ -37,12 +38,23 @@ ChatWindow::ChatWindow(QWidget *parent)
     m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
     m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
 
-    QPushButton *settingsButton = new QPushButton(tr("⚙"), this);
-    settingsButton->setObjectName(QStringLiteral("settingsButton"));
-    settingsButton->setAccessibleName(tr("打开设置"));
-    settingsButton->setFlat(true);
-    settingsButton->setCursor(Qt::PointingHandCursor);
-    connect(settingsButton, &QPushButton::clicked, this, &ChatWindow::settingsRequested);
+    m_settingsButton = new QPushButton(this);
+    m_settingsButton->setObjectName(QStringLiteral("settingsButton"));
+    m_settingsButton->setAccessibleName(tr("打开设置"));
+    m_settingsButton->setFlat(true);
+    m_settingsButton->setCursor(Qt::PointingHandCursor);
+    // 设置入口统一使用运行时绘制齿轮图标：颜色跟随主题 Palette，HiDPI 多倍图。
+    m_settingsButton->setIcon(ui::gearIcon(QApplication::palette()));
+    m_settingsButton->setIconSize(QSize(16, 16));
+    connect(m_settingsButton, &QPushButton::clicked,
+            this, &ChatWindow::settingsRequested);
+    // 明暗主题切换时重建图标颜色（ThemeService 应用 Palette 后触发）。
+    connect(qApp, &QApplication::paletteChanged, this,
+            [this](const QPalette &palette) {
+                if (m_settingsButton) {
+                    m_settingsButton->setIcon(ui::gearIcon(palette));
+                }
+            });
 
     QPushButton *panelButton = new QPushButton(tr("记忆"), this);
     panelButton->setObjectName(QStringLiteral("panelButton"));
@@ -64,7 +76,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(titleLabel);
     topBar->addStretch(1);
     topBar->addWidget(m_statusLabel);
-    topBar->addWidget(settingsButton);
+    topBar->addWidget(m_settingsButton);
     topBar->addWidget(panelButton);
     topBar->addWidget(closeButton);
 

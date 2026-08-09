@@ -64,6 +64,7 @@ private:
     void animateOpacity(qreal target);
 
     QLabel *m_statusLabel = nullptr;
+    QPushButton *m_settingsButton = nullptr;
     InputBar *m_inputBar = nullptr;
     MessageList *m_messageList = nullptr;
     QPropertyAnimation *m_opacityAnimation = nullptr;
