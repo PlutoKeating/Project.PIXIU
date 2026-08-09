@@ -113,6 +113,17 @@ void MemoryPanel::setConflicts(const QJsonArray &conflicts)
     const bool hasConflicts = !conflicts.isEmpty();
     m_conflictEmptyLabel->setVisible(!hasConflicts);
     m_conflictList->setVisible(hasConflicts);
+    m_conflictErrorLabel->setVisible(false);
+    m_conflictRetryButton->setVisible(false);
+}
+
+void MemoryPanel::setConflictsError(const QString &message)
+{
+    m_conflictErrorLabel->setText(message);
+    m_conflictErrorLabel->setVisible(true);
+    m_conflictRetryButton->setVisible(true);
+    m_conflictEmptyLabel->setVisible(false);
+    m_conflictList->setVisible(false);
 }
 
 void MemoryPanel::setPreferenceHistory(const QJsonObject &response)
@@ -149,6 +160,17 @@ void MemoryPanel::setPreferenceHistory(const QJsonObject &response)
     const bool hasHistory = !history.isEmpty();
     m_prefEmptyLabel->setVisible(!hasHistory);
     m_prefHistoryList->setVisible(hasHistory);
+    m_prefErrorLabel->setVisible(false);
+    m_prefRetryButton->setVisible(false);
+}
+
+void MemoryPanel::setPreferenceHistoryError(const QString &message)
+{
+    m_prefErrorLabel->setText(message);
+    m_prefErrorLabel->setVisible(true);
+    m_prefRetryButton->setVisible(true);
+    m_prefEmptyLabel->setVisible(false);
+    m_prefHistoryList->setVisible(false);
 }
 
 void MemoryPanel::setSyncStatus(const QString &status, bool ok)
@@ -303,7 +325,24 @@ QWidget *MemoryPanel::createPreferenceTab()
     inputRow->addWidget(m_prefIdInput, 1);
     inputRow->addWidget(loadButton);
 
+    m_prefErrorLabel = new QLabel(page);
+    m_prefErrorLabel->setObjectName(QStringLiteral("prefErrorLabel"));
+    m_prefErrorLabel->setWordWrap(true);
+    m_prefErrorLabel->setVisible(false);
+    m_prefRetryButton = new QPushButton(tr("重试"), page);
+    m_prefRetryButton->setObjectName(QStringLiteral("prefRetryButton"));
+    m_prefRetryButton->setAccessibleName(tr("重试加载偏好历史"));
+    m_prefRetryButton->setFlat(true);
+    m_prefRetryButton->setVisible(false);
+    connect(m_prefRetryButton, &QPushButton::clicked, this,
+            &MemoryPanel::preferenceRetryRequested);
+
+    QHBoxLayout *prefErrorRow = new QHBoxLayout();
+    prefErrorRow->addWidget(m_prefErrorLabel, 1);
+    prefErrorRow->addWidget(m_prefRetryButton);
+
     m_prefEmptyLabel = new QLabel(tr("暂无历史记录"), page);
+    m_prefEmptyLabel->setObjectName(QStringLiteral("prefEmptyLabel"));
     m_prefEmptyLabel->setAlignment(Qt::AlignCenter);
     m_prefHistoryList = new QListWidget(page);
     m_prefHistoryList->setObjectName(QStringLiteral("prefHistoryList"));
@@ -311,6 +350,7 @@ QWidget *MemoryPanel::createPreferenceTab()
 
     layout->addWidget(m_prefHeaderLabel);
     layout->addLayout(inputRow);
+    layout->addLayout(prefErrorRow);
     layout->addWidget(m_prefEmptyLabel);
     layout->addWidget(m_prefHistoryList, 1);
     return page;
@@ -329,13 +369,31 @@ QWidget *MemoryPanel::createConflictTab()
     titleLabel->setFont(titleFont);
 
     m_conflictEmptyLabel = new QLabel(tr("暂无冲突记录"), page);
+    m_conflictEmptyLabel->setObjectName(QStringLiteral("conflictEmptyLabel"));
     m_conflictEmptyLabel->setAlignment(Qt::AlignCenter);
     m_conflictList = new QListWidget(page);
     m_conflictList->setObjectName(QStringLiteral("conflictList"));
     m_conflictList->setWordWrap(true);
     m_conflictList->setVisible(false);
 
+    m_conflictErrorLabel = new QLabel(page);
+    m_conflictErrorLabel->setObjectName(QStringLiteral("conflictErrorLabel"));
+    m_conflictErrorLabel->setWordWrap(true);
+    m_conflictErrorLabel->setVisible(false);
+    m_conflictRetryButton = new QPushButton(tr("重试"), page);
+    m_conflictRetryButton->setObjectName(QStringLiteral("conflictRetryButton"));
+    m_conflictRetryButton->setAccessibleName(tr("重试加载冲突列表"));
+    m_conflictRetryButton->setFlat(true);
+    m_conflictRetryButton->setVisible(false);
+    connect(m_conflictRetryButton, &QPushButton::clicked, this,
+            &MemoryPanel::conflictRetryRequested);
+
+    QHBoxLayout *conflictErrorRow = new QHBoxLayout();
+    conflictErrorRow->addWidget(m_conflictErrorLabel, 1);
+    conflictErrorRow->addWidget(m_conflictRetryButton);
+
     layout->addWidget(titleLabel);
+    layout->addLayout(conflictErrorRow);
     layout->addWidget(m_conflictEmptyLabel);
     layout->addWidget(m_conflictList, 1);
     return page;

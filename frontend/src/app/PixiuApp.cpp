@@ -399,22 +399,41 @@ bool PixiuApp::start()
                 m_memoryPanel->setConflicts(conflicts);
             });
     connect(m_conflictController, &ConflictController::failed, this,
-            [](const QString &code, const QString &message) {
+            [this](const QString &code, const QString &message) {
                 qCWarning(lcApp) << "conflicts load failed:" << code << message;
+                m_memoryPanel->setConflictsError(
+                    tr("冲突加载失败（%1）：%2").arg(code, message));
+            });
+    connect(m_memoryPanel, &MemoryPanel::conflictRetryRequested, this,
+            [this]() {
+                if (m_conflictController) {
+                    m_conflictController->refresh();
+                }
             });
     m_conflictController->refresh();
 
     // 偏好历史：面板内输入偏好 ID 后加载版本历史。
     m_preferenceController = new PreferenceController(m_transport, this);
-    connect(m_memoryPanel, &MemoryPanel::historyRequested,
-            m_preferenceController, &PreferenceController::loadHistory);
+    connect(m_memoryPanel, &MemoryPanel::historyRequested, this,
+            [this](const QString &preferenceId) {
+                m_lastPreferenceId = preferenceId;
+                m_preferenceController->loadHistory(preferenceId);
+            });
     connect(m_preferenceController, &PreferenceController::historyLoaded, this,
             [this](const QJsonObject &response) {
                 m_memoryPanel->setPreferenceHistory(response);
             });
     connect(m_preferenceController, &PreferenceController::failed, this,
-            [](const QString &code, const QString &message) {
+            [this](const QString &code, const QString &message) {
                 qCWarning(lcApp) << "preference history failed:" << code << message;
+                m_memoryPanel->setPreferenceHistoryError(
+                    tr("偏好历史加载失败（%1）：%2").arg(code, message));
+            });
+    connect(m_memoryPanel, &MemoryPanel::preferenceRetryRequested, this,
+            [this]() {
+                if (m_preferenceController && !m_lastPreferenceId.isEmpty()) {
+                    m_preferenceController->loadHistory(m_lastPreferenceId);
+                }
             });
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。

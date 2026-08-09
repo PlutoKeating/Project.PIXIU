@@ -84,6 +84,13 @@
   下次启动时生效（对话框内如实提示）。新增 `t_settings_dialog`（7 例），
   扩展 `t_chat_window`/`t_floating_ball`/`t_i18n`，套件增至 27 例全绿
   （OFF/ON 双路径）；i18n `.ts` 增至 142 条、0 未完成，`.qm` 已重新生成。
+- 冲突/偏好历史“加载失败 vs 空结果”区分与重试已完成（2026-08-09）：
+  `MemoryPanel` 冲突 Tab 与偏好历史 Tab 分别呈现失败原因与“重试”按钮，
+  成功加载后自动隐藏错误行（不再把后端不可达误显示为“暂无记录”）；PixiuApp
+  在 `ConflictController::failed`/`PreferenceController::failed` 时把错误
+  上抛到对应 Tab，并记录最近一次偏好 ID 供重试重发。`t_memory_panel` 新增
+  失败态/重试/成功恢复 4 例，`t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），
+  i18n `.ts` 增至 147 条、0 未完成。
 
 ---
 

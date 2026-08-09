@@ -220,6 +220,18 @@ This action cannot be undone.</translation>
         <translation>Sync</translation>
     </message>
     <message>
+        <source>重试</source>
+        <translation>Retry</translation>
+    </message>
+    <message>
+        <source>重试加载冲突列表</source>
+        <translation>Retry loading conflicts</translation>
+    </message>
+    <message>
+        <source>重试加载偏好历史</source>
+        <translation>Retry loading preference history</translation>
+    </message>
+    <message>
         <source>（未命名知识）</source>
         <translation>(Unnamed knowledge)</translation>
     </message>
@@ -449,6 +461,14 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>遗忘操作失败（%1）：%2</source>
         <translation>Forget failed (%1): %2</translation>
+    </message>
+    <message>
+        <source>冲突加载失败（%1）：%2</source>
+        <translation>Conflict load failed (%1): %2</translation>
+    </message>
+    <message>
+        <source>偏好历史加载失败（%1）：%2</source>
+        <translation>Preference history load failed (%1): %2</translation>
     </message>
     <message>
         <source>记忆已沉淀</source>

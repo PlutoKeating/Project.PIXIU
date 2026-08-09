@@ -47,6 +47,10 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Language"));
     QCOMPARE(QCoreApplication::translate("SettingsDialog", "跟随系统"),
              QStringLiteral("Follow system"));
+    QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),
+             QStringLiteral("Retry"));
+    QCOMPARE(QCoreApplication::translate("PixiuApp", "冲突加载失败（%1）：%2"),
+             QStringLiteral("Conflict load failed (%1): %2"));
 }
 
 QTEST_MAIN(TestI18n)

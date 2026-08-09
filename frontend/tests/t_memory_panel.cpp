@@ -22,8 +22,12 @@ private slots:
     void tabTitlesMatchPlan();
     void setConflictsPopulatesList();
     void setConflictsShowsEmptyState();
+    void setConflictsErrorShowsErrorAndRetry();
+    void setConflictsSuccessHidesErrorState();
     void loadButtonEmitsHistoryRequested();
     void setPreferenceHistoryPopulatesList();
+    void setPreferenceHistoryErrorShowsErrorAndRetry();
+    void setPreferenceHistorySuccessHidesErrorState();
     void syncTabHasPairButtonOpensDialog();
     void showConflictTabSelectsTab();
     void setSyncStatusUpdatesLabel();
@@ -89,6 +93,54 @@ void TestMemoryPanel::setConflictsShowsEmptyState()
     QVERIFY(list->isHidden());
 }
 
+void TestMemoryPanel::setConflictsErrorShowsErrorAndRetry()
+{
+    MemoryPanel panel;
+    panel.setConflictsError(QStringLiteral("后端不可达"));
+
+    QLabel *errorLabel =
+        panel.findChild<QLabel *>(QStringLiteral("conflictErrorLabel"));
+    QPushButton *retryButton =
+        panel.findChild<QPushButton *>(QStringLiteral("conflictRetryButton"));
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("conflictList"));
+    QLabel *emptyLabel =
+        panel.findChild<QLabel *>(QStringLiteral("conflictEmptyLabel"));
+    QVERIFY(errorLabel != nullptr);
+    QVERIFY(retryButton != nullptr);
+    QVERIFY(list != nullptr);
+    QVERIFY(emptyLabel != nullptr);
+
+    QCOMPARE(errorLabel->text(), QStringLiteral("后端不可达"));
+    QVERIFY(!errorLabel->isHidden());
+    QVERIFY(!retryButton->isHidden());
+    // 失败态与空态互斥：错误展示时不得显示“暂无冲突记录”。
+    QVERIFY(list->isHidden());
+    QVERIFY(emptyLabel->isHidden());
+
+    QSignalSpy retrySpy(&panel, &MemoryPanel::conflictRetryRequested);
+    QTest::mouseClick(retryButton, Qt::LeftButton);
+    QCOMPARE(retrySpy.count(), 1);
+}
+
+void TestMemoryPanel::setConflictsSuccessHidesErrorState()
+{
+    MemoryPanel panel;
+    panel.setConflictsError(QStringLiteral("后端不可达"));
+    panel.setConflicts(QJsonArray{
+        QJsonObject{{QStringLiteral("knowledge_title"),
+                     QStringLiteral("2026年4月家庭支出清单")}}});
+
+    QLabel *errorLabel =
+        panel.findChild<QLabel *>(QStringLiteral("conflictErrorLabel"));
+    QPushButton *retryButton =
+        panel.findChild<QPushButton *>(QStringLiteral("conflictRetryButton"));
+    QVERIFY(errorLabel != nullptr);
+    QVERIFY(retryButton != nullptr);
+    QVERIFY(errorLabel->isHidden());
+    QVERIFY(retryButton->isHidden());
+}
+
 void TestMemoryPanel::loadButtonEmitsHistoryRequested()
 {
     MemoryPanel panel;
@@ -138,6 +190,59 @@ void TestMemoryPanel::setPreferenceHistoryPopulatesList()
     QVERIFY(list->item(0)->text().contains(QStringLiteral("v1")));
     QVERIFY(list->item(0)->text().contains(QStringLiteral("\"enabled\":false")));
     QVERIFY(!list->isHidden());
+}
+
+void TestMemoryPanel::setPreferenceHistoryErrorShowsErrorAndRetry()
+{
+    MemoryPanel panel;
+    panel.setPreferenceHistoryError(QStringLiteral("服务异常"));
+
+    QLabel *errorLabel =
+        panel.findChild<QLabel *>(QStringLiteral("prefErrorLabel"));
+    QPushButton *retryButton =
+        panel.findChild<QPushButton *>(QStringLiteral("prefRetryButton"));
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("prefHistoryList"));
+    QLabel *emptyLabel =
+        panel.findChild<QLabel *>(QStringLiteral("prefEmptyLabel"));
+    QVERIFY(errorLabel != nullptr);
+    QVERIFY(retryButton != nullptr);
+    QVERIFY(list != nullptr);
+    QVERIFY(emptyLabel != nullptr);
+
+    QCOMPARE(errorLabel->text(), QStringLiteral("服务异常"));
+    QVERIFY(!errorLabel->isHidden());
+    QVERIFY(!retryButton->isHidden());
+    QVERIFY(list->isHidden());
+    QVERIFY(emptyLabel->isHidden());
+
+    QSignalSpy retrySpy(&panel, &MemoryPanel::preferenceRetryRequested);
+    QTest::mouseClick(retryButton, Qt::LeftButton);
+    QCOMPARE(retrySpy.count(), 1);
+}
+
+void TestMemoryPanel::setPreferenceHistorySuccessHidesErrorState()
+{
+    MemoryPanel panel;
+    panel.setPreferenceHistoryError(QStringLiteral("服务异常"));
+    panel.setPreferenceHistory(QJsonObject{
+        {QStringLiteral("key"), QStringLiteral("output_style.compact")},
+        {QStringLiteral("current_version"), 3},
+        {QStringLiteral("history"), QJsonArray{
+            QJsonObject{
+                {QStringLiteral("version"), 1},
+                {QStringLiteral("updated_at"), 1714435200},
+                {QStringLiteral("value"),
+                 QJsonObject{{QStringLiteral("enabled"), false}}}}}}});
+
+    QLabel *errorLabel =
+        panel.findChild<QLabel *>(QStringLiteral("prefErrorLabel"));
+    QPushButton *retryButton =
+        panel.findChild<QPushButton *>(QStringLiteral("prefRetryButton"));
+    QVERIFY(errorLabel != nullptr);
+    QVERIFY(retryButton != nullptr);
+    QVERIFY(errorLabel->isHidden());
+    QVERIFY(retryButton->isHidden());
 }
 
 void TestMemoryPanel::syncTabHasPairButtonOpensDialog()

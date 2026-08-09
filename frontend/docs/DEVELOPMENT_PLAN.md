@@ -41,6 +41,11 @@
 > 偏好加载翻译（`en_US`/`zh_CN`/跟随系统）；新增 `t_settings_dialog` 并
 > 扩展 chat_window/floating_ball/i18n 用例，套件增至 27 例全绿（OFF/ON
 > 双路径），offscreen 冒烟通过。
+> 加载失败态与重试（2026-08-09）已完成：`MemoryPanel` 冲突/偏好历史 Tab
+> 区分“空结果”与“加载失败”（失败原因 + 重试按钮，成功加载后自动隐藏），
+> PixiuApp 将 `ConflictController`/`PreferenceController` 失败上抛到面板
+> 并记录最近偏好 ID 供重试重发；`t_memory_panel` 新增 4 例，套件 27 例
+> 全绿（OFF/ON 双路径），i18n 147 条、0 未完成。
 
 ## 1. 当前进度摘要
 
@@ -99,6 +104,12 @@
   `t_settings_dialog`（7 例），扩展 `t_chat_window`/`t_floating_ball`/
   `t_i18n`，套件增至 27 例全绿，OFF/ON 双路径构建 + ctest + offscreen
   冒烟通过。
+- 已实现加载失败态与重试（2026-08-09）：`MemoryPanel` 冲突/偏好历史 Tab
+  将“空结果”与“加载失败”分开呈现（失败原因 + “重试”按钮，成功加载后
+  自动隐藏错误行）；PixiuApp 在 `ConflictController::failed` /
+  `PreferenceController::failed` 时把错误上抛到对应 Tab，并记录最近一次
+  偏好 ID 供重试重发；`t_memory_panel` 新增 4 例，`t_i18n` 扩展，套件
+  27 例全绿（OFF/ON 双路径），i18n 147 条、0 未完成。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -183,6 +194,11 @@
 feature 完成（`feat(frontend): add settings dialog and language preference`）：
 顶栏 ⚙ / 悬浮球菜单“设置” → `SettingsDialog`，语言三选持久化并在下次启动
 时生效；套件 27 例全绿（OFF/ON 双路径），offscreen 冒烟通过。
+
+2026-08-09 追加：冲突/偏好历史“加载失败 vs 空结果”区分与重试（不依赖后端）
+已完成（`feat(frontend): distinguish load failure from empty state with
+retry`）：MemoryPanel 两个 Tab 显示失败原因 + 重试按钮，成功加载后自动
+恢复；套件 27 例全绿（OFF/ON 双路径）。
 
 其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
@@ -758,6 +774,23 @@ i18n                   pixiu_en_US.ts 增补 SettingsDialog/ChatWindow/
 冒烟                   offscreen 启动 "PIXIU application started" 无回归
 提交                   feat(frontend): add settings dialog and language
                        preference（文档随 feature 提交一并更新）
+```
+
+2026-08-09 追加（加载失败态与重试，OFF/ON 本机验证）：
+
+```text
+失败态区分             MemoryPanel 冲突/偏好历史 Tab：空结果与加载失败
+                       分开呈现；失败原因 + “重试”按钮；成功加载自动隐藏
+应用层                  ConflictController::failed / PreferenceController::
+                       failed → setConflictsError / setPreferenceHistoryError；
+                       preferenceRetryRequested 以最近一次 ID 重发
+i18n                   pixiu_en_US.ts 增补 MemoryPanel/PixiuApp 条目
+                       （147 条，0 未完成），.qm 重新生成
+测试                   OFF/ON 双路径 ctest 27/27 通过（t_memory_panel
+                       新增失败态/重试/恢复 4 例；t_i18n 扩展）
+冒烟                   offscreen 启动 "PIXIU application started" 无回归
+提交                   feat(frontend): distinguish load failure from empty
+                       state with retry（文档随 feature 提交一并更新）
 ```
 
 ## 7. Git 工作流

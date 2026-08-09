@@ -32,9 +32,13 @@ public:
 
     // 更新冲突审计 Tab 内容（来自 GET /conflicts）。
     void setConflicts(const QJsonArray &conflicts);
+    // 更新冲突 Tab 加载失败态（与空态区分，附带“重试”入口）。
+    void setConflictsError(const QString &message);
 
     // 更新偏好历史 Tab 内容（来自 GET /preference/{id}/history）。
     void setPreferenceHistory(const QJsonObject &response);
+    // 更新偏好历史 Tab 加载失败态。
+    void setPreferenceHistoryError(const QString &message);
 
     // 更新同步 Tab 状态行（配对结果 / 后端契约状态）。
     void setSyncStatus(const QString &status, bool ok = false);
@@ -48,6 +52,10 @@ public:
 signals:
     // 用户请求加载指定偏好 ID 的历史。
     void historyRequested(const QString &preferenceId);
+    // 用户请求重试加载冲突列表。
+    void conflictRetryRequested();
+    // 用户请求重试加载偏好历史（应用层以最近一次 ID 重发）。
+    void preferenceRetryRequested();
     // 用户请求设备配对（载荷见 PairDialog::pairRequested）。
     void pairRequested(const QJsonObject &payload);
     // 用户请求刷新节点列表与同步状态。
@@ -67,10 +75,14 @@ private:
     QTabWidget *m_tabs = nullptr;
     QListWidget *m_conflictList = nullptr;
     QLabel *m_conflictEmptyLabel = nullptr;
+    QLabel *m_conflictErrorLabel = nullptr;
+    QPushButton *m_conflictRetryButton = nullptr;
     QLineEdit *m_prefIdInput = nullptr;
     QListWidget *m_prefHistoryList = nullptr;
     QLabel *m_prefHeaderLabel = nullptr;
     QLabel *m_prefEmptyLabel = nullptr;
+    QLabel *m_prefErrorLabel = nullptr;
+    QPushButton *m_prefRetryButton = nullptr;
     QLabel *m_syncStatusLabel = nullptr;
     QLabel *m_syncSummaryLabel = nullptr;
     QLabel *m_syncEmptyLabel = nullptr;
