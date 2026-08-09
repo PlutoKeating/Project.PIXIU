@@ -115,6 +115,11 @@
   PIXIU 后端服务（每次断线仅提示一次，恢复在线后复位，避免刷屏）。
   `t_conflict_controller`/`t_preference_controller` 各新增 1 例，
   `t_i18n` 扩展；i18n `.ts` 增至 152 条、0 未完成。
+- 聊天框拖动与位置记忆已完成（2026-08-09，ARCHITECTURE §5.2“记忆上次
+  位置”）：无边框聊天框支持按住空白区域拖动（子控件不干扰按钮/输入），
+  拖动结束经 `moved` 信号由 PixiuApp 持久化到 `AppSettings::keyWindowGeometry`
+  （原已定义未用），启动时恢复并按屏幕可用区域钳制（与悬浮球策略一致）。
+  `t_chat_window` 新增拖动移动与信号 1 例；套件 27 例全绿（OFF/ON 双路径）。
 
 ---
 

@@ -31,6 +31,7 @@
 #include <QDateTime>
 #include <QGuiApplication>
 #include <QJsonObject>
+#include <QRect>
 #include <QScreen>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
@@ -111,11 +112,34 @@ bool PixiuApp::start()
 
     // 聊天主窗口：默认屏幕右下角弹出（悬浮球附近）。
     m_chatWindow = new ChatWindow();
-    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+    const QVariant savedWindowGeometry =
+        m_settings->value(AppSettings::keyWindowGeometry);
+    if (savedWindowGeometry.isValid()) {
+        const QRect savedRect = savedWindowGeometry.toRect();
+        // 恢复上次位置并钳制到屏幕可用区域（与悬浮球策略一致）。
+        if (QScreen *screen = QGuiApplication::screenAt(savedRect.topLeft())) {
+            const QRect area = screen->availableGeometry();
+            const int x = qBound(area.left(), savedRect.x(),
+                                 area.right() - m_chatWindow->width() + 1);
+            const int y = qBound(area.top(), savedRect.y(),
+                                 area.bottom() - m_chatWindow->height() + 1);
+            m_chatWindow->move(x, y);
+        } else {
+            m_chatWindow->move(savedRect.topLeft());
+        }
+    } else if (QScreen *screen = QGuiApplication::primaryScreen()) {
         const QRect screenRect = screen->availableGeometry();
         m_chatWindow->move(screenRect.right() - m_chatWindow->width() - 24,
                            screenRect.bottom() - m_chatWindow->height() - 24);
     }
+    // 用户拖动后持久化位置（ARCHITECTURE §5.2“记忆上次位置”）。
+    connect(m_chatWindow, &ChatWindow::moved, this,
+            [this](const QPoint &topLeft) {
+                m_settings->setValue(
+                    AppSettings::keyWindowGeometry,
+                    QRect(topLeft, m_chatWindow->size()));
+                m_settings->sync();
+            });
 
     // 各入口统一唤起聊天框。
     connect(m_floatingBall, &FloatingBall::clicked, this, &PixiuApp::toggleChatWindow);

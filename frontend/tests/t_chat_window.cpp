@@ -1,5 +1,6 @@
 #include <QLabel>
 #include <QLineEdit>
+#include <QMouseEvent>
 #include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
@@ -23,6 +24,7 @@ private slots:
     void panelButtonEmitsOpenPanelRequested();
     void settingsButtonEmitsSettingsRequested();
     void closeButtonEmitsCloseRequested();
+    void dragMovesWindowAndEmitsMoved();
     void buttonsHaveAccessibleNames();
     void sendButtonForwardsTextAndClears();
     void restoreInputPrefillsLineEdit();
@@ -112,6 +114,34 @@ void TestChatWindow::closeButtonEmitsCloseRequested()
     QVERIFY(button != nullptr);
     QTest::mouseClick(button, Qt::LeftButton);
     QCOMPARE(spy.count(), 1);
+}
+
+void TestChatWindow::dragMovesWindowAndEmitsMoved()
+{
+    ChatWindow window;
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+
+    const QPoint before = window.pos();
+    QSignalSpy moved(&window, &ChatWindow::moved);
+    // offscreen 平台下 QTest::mouseMove 不带按键状态，直接合成拖动事件。
+    QMouseEvent press(QEvent::MouseButtonPress, QPoint(10, 10),
+                      window.mapToGlobal(QPoint(10, 10)),
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(&window, &press);
+
+    QMouseEvent move(QEvent::MouseMove, QPoint(40, 35),
+                     window.mapToGlobal(QPoint(40, 35)),
+                     Qt::NoButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(&window, &move);
+
+    QMouseEvent release(QEvent::MouseButtonRelease, QPoint(40, 35),
+                        window.mapToGlobal(QPoint(40, 35)),
+                        Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+    QApplication::sendEvent(&window, &release);
+
+    QVERIFY(window.pos() != before);
+    QVERIFY(moved.count() >= 1);
 }
 
 void TestChatWindow::buttonsHaveAccessibleNames()

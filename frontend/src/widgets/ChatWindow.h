@@ -43,6 +43,8 @@ signals:
     void openPanelRequested();
     // 顶栏“设置”入口。
     void settingsRequested();
+    // 用户拖动窗口后发射（供应用层持久化位置）。
+    void moved(const QPoint &topLeft);
     void sendRequested(const QString &text);
     void attachRequested();
     // 窗口从隐藏变为可见时发射（用于角标清除等状态复位）。
@@ -50,6 +52,10 @@ signals:
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void leaveEvent(QEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void moveEvent(QMoveEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
@@ -62,6 +68,8 @@ private:
     MessageList *m_messageList = nullptr;
     QPropertyAnimation *m_opacityAnimation = nullptr;
     QPoint m_rememberedPos;
+    QPoint m_dragGlobalOffset;
+    bool m_dragging = false;
 
     static constexpr int kWindowWidth = 420;
     static constexpr int kWindowHeight = 560;

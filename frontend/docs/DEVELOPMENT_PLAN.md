@@ -61,6 +61,10 @@
 > `PreferenceController` 在途防重（避免重复请求与过期响应误配）；后端未
 > 连接时聊天框引导启动 PIXIU 后端服务（每次断线提示一次）；套件 27 例
 > 全绿（OFF/ON 双路径），i18n 152 条、0 未完成。
+> 聊天框拖动与位置记忆（2026-08-09，ARCHITECTURE §5.2）已完成：无边框
+> 聊天框按住空白区域拖动，位置经 `keyWindowGeometry` 持久化并在启动时
+> 恢复（屏幕可用区域钳制）；`t_chat_window` 新增 1 例，套件 27 例全绿
+> （OFF/ON 双路径）。
 
 ## 1. 当前进度摘要
 
@@ -147,6 +151,11 @@
   （每次断线仅提示一次，恢复在线后复位）；`t_conflict_controller`/
   `t_preference_controller` 各新增 1 例，`t_i18n` 扩展；套件 27 例全绿
   （OFF/ON 双路径），i18n 152 条、0 未完成。
+- 已实现聊天框拖动与位置记忆（2026-08-09，ARCHITECTURE §5.2）：无边框
+  聊天框支持按住空白区域拖动（子控件自行消费事件），拖动经 `moved` 信号
+  持久化到 `AppSettings::keyWindowGeometry`，启动时恢复并按屏幕可用区域
+  钳制（与悬浮球策略一致）；`t_chat_window` 新增拖动用例 1 例；套件 27 例
+  全绿（OFF/ON 双路径）。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -255,6 +264,11 @@ requests` + `feat(frontend): guide user when backend service is offline`）：
 `ConflictController`/`PreferenceController` 在途防重；后端未连接时聊天框
 引导启动服务（断线仅提示一次）；套件 27 例全绿（OFF/ON 双路径），
 i18n 152 条、0 未完成。
+
+2026-08-09 追加：聊天框拖动与位置记忆（不依赖后端，ARCHITECTURE §5.2）
+已完成（`feat(frontend): make chat window draggable and remember position`）：
+空白区域按住拖动 + `keyWindowGeometry` 持久化 + 启动恢复与屏幕钳制；
+套件 27 例全绿（OFF/ON 双路径）。
 
 其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
@@ -912,6 +926,24 @@ i18n                   pixiu_en_US.ts 增补 PixiuApp 条目
                        offline
                        docs(frontend): record management guards and offline
                        guidance（文档独立提交）
+```
+
+2026-08-09 追加（聊天框拖动与位置记忆，OFF/ON 本机验证）：
+
+```text
+拖动                    无边框聊天框 mousePress/mouseMove/mouseRelease：
+                       按住空白区域拖动，子控件（顶栏按钮/输入栏）不干扰；
+                       leaveEvent 清除拖动状态防残留
+持久化                 拖动发射 moved(topLeft) → PixiuApp 写入
+                       AppSettings::keyWindowGeometry（QRect）
+恢复                    启动时读取并钳制到屏幕 availableGeometry
+                       （同悬浮球策略），无记录时保持右下默认位
+测试                   OFF/ON 双路径 ctest 27/27 通过（t_chat_window
+                       新增拖动移动与信号 1 例；offscreen 平台改用合成
+                       QMouseEvent 验证）
+冒烟                   offscreen 启动 "PIXIU application started" 无回归
+提交                   feat(frontend): make chat window draggable and
+                       remember position（文档随 feature 提交一并更新）
 ```
 
 ## 7. Git 工作流

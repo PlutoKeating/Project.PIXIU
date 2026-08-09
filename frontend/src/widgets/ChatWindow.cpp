@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLoggingCategory>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QPushButton>
@@ -151,6 +152,42 @@ void ChatWindow::keyPressEvent(QKeyEvent *event)
         return;
     }
     QWidget::keyPressEvent(event);
+}
+
+void ChatWindow::mousePressEvent(QMouseEvent *event)
+{
+    // 无边框窗口：按住空白区域拖动（子控件自行消费事件，不影响按钮/输入）。
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragGlobalOffset = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+        return;
+    }
+    QWidget::mousePressEvent(event);
+}
+
+void ChatWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragging) {
+        move(event->globalPos() - m_dragGlobalOffset);
+        emit moved(frameGeometry().topLeft());
+        event->accept();
+        return;
+    }
+    QWidget::mouseMoveEvent(event);
+}
+
+void ChatWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_dragging = false;
+    QWidget::mouseReleaseEvent(event);
+}
+
+void ChatWindow::leaveEvent(QEvent *event)
+{
+    // 防止拖动期间鼠标意外离开窗口后状态残留。
+    m_dragging = false;
+    QWidget::leaveEvent(event);
 }
 
 void ChatWindow::paintEvent(QPaintEvent *event)
