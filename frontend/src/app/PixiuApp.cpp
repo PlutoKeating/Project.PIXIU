@@ -16,6 +16,7 @@
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
 #include "widgets/ForgetDialog.h"
+#include "widgets/SettingsDialog.h"
 #include "widgets/MemoryPanel.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
@@ -147,6 +148,10 @@ bool PixiuApp::start()
     };
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, openMemoryPanel);
     connect(m_floatingBall, &FloatingBall::openPanelRequested, this, openMemoryPanel);
+    connect(m_chatWindow, &ChatWindow::settingsRequested,
+            this, &PixiuApp::openSettings);
+    connect(m_floatingBall, &FloatingBall::settingsRequested,
+            this, &PixiuApp::openSettings);
     connect(m_floatingBall, &FloatingBall::quitRequested, this, &PixiuApp::shutdown);
     connect(m_floatingBall, &FloatingBall::quitRequested, QCoreApplication::quit);
     connect(m_instanceGuard, &SingleInstanceGuard::activationRequested,
@@ -498,6 +503,24 @@ void PixiuApp::toggleChatWindow()
     } else {
         m_chatWindow->showAndFocus();
     }
+}
+
+void PixiuApp::openSettings()
+{
+    if (!m_settingsDialog) {
+        m_settingsDialog = new SettingsDialog();
+        // 语言偏好持久化；界面语言在下次启动时按显式偏好生效（main.cpp 读取）。
+        connect(m_settingsDialog, &QDialog::accepted, this, [this]() {
+            m_settings->setValue(AppSettings::keyLanguage,
+                                 m_settingsDialog->selectedLanguage());
+            m_settings->sync();
+            qCInfo(lcApp) << "language preference saved:"
+                          << m_settingsDialog->selectedLanguage();
+        });
+    }
+    m_settingsDialog->setLanguage(
+        m_settings->value(AppSettings::keyLanguage).toString());
+    m_settingsDialog->showAndFocus();
 }
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)

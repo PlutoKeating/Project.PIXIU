@@ -41,6 +41,8 @@ public:
 signals:
     void closeRequested();
     void openPanelRequested();
+    // 顶栏“设置”入口。
+    void settingsRequested();
     void sendRequested(const QString &text);
     void attachRequested();
     // 窗口从隐藏变为可见时发射（用于角标清除等状态复位）。

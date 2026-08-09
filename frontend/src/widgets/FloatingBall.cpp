@@ -179,6 +179,10 @@ void FloatingBall::buildContextMenu()
     panelAction->setObjectName(QStringLiteral("openPanelAction"));
     connect(panelAction, &QAction::triggered, this, &FloatingBall::openPanelRequested);
 
+    QAction *settingsAction = m_contextMenu->addAction(tr("设置"));
+    settingsAction->setObjectName(QStringLiteral("settingsAction"));
+    connect(settingsAction, &QAction::triggered, this, &FloatingBall::settingsRequested);
+
     m_contextMenu->addSeparator();
 
     QAction *quitAction = m_contextMenu->addAction(tr("退出"));

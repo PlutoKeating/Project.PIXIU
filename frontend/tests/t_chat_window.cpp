@@ -21,6 +21,7 @@ private slots:
     void backendStateUpdatesStatusLabel();
     void offlineStateDisablesInput();
     void panelButtonEmitsOpenPanelRequested();
+    void settingsButtonEmitsSettingsRequested();
     void closeButtonEmitsCloseRequested();
     void buttonsHaveAccessibleNames();
     void sendButtonForwardsTextAndClears();
@@ -91,6 +92,17 @@ void TestChatWindow::panelButtonEmitsOpenPanelRequested()
     QCOMPARE(spy.count(), 1);
 }
 
+void TestChatWindow::settingsButtonEmitsSettingsRequested()
+{
+    ChatWindow window;
+    QSignalSpy spy(&window, &ChatWindow::settingsRequested);
+    QPushButton *button =
+        window.findChild<QPushButton *>(QStringLiteral("settingsButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+}
+
 void TestChatWindow::closeButtonEmitsCloseRequested()
 {
     ChatWindow window;
@@ -105,12 +117,16 @@ void TestChatWindow::closeButtonEmitsCloseRequested()
 void TestChatWindow::buttonsHaveAccessibleNames()
 {
     ChatWindow window;
+    QPushButton *settings =
+        window.findChild<QPushButton *>(QStringLiteral("settingsButton"));
     QPushButton *panel =
         window.findChild<QPushButton *>(QStringLiteral("panelButton"));
     QPushButton *close =
         window.findChild<QPushButton *>(QStringLiteral("closeButton"));
     QVERIFY(panel != nullptr);
     QVERIFY(close != nullptr);
+    QVERIFY(settings != nullptr);
+    QVERIFY(!settings->accessibleName().isEmpty());
     QVERIFY(!panel->accessibleName().isEmpty());
     QVERIFY(!close->accessibleName().isEmpty());
 }

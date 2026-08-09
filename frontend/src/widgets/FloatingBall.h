@@ -35,6 +35,8 @@ public:
 signals:
     // 无拖动位移的单击。
     void clicked();
+    // 右键菜单“设置”。
+    void settingsRequested();
     // 右键菜单“记忆面板”。
     void openPanelRequested();
     // 右键菜单“退出”。

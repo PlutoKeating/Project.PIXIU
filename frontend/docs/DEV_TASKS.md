@@ -75,6 +75,15 @@
 - 仍被后端契约阻塞（记录待 Module C）：偏好列表、证据详情、二维码配对令牌、
   `/memory/flow/promote` 的上下文来源、真实配对闭环/节点真实数据/真实事件
   广播（见 `frontend/docs/DEVELOPMENT_PLAN.md` §1.3 与 §4 风险表）。
+- 设置入口与界面语言偏好已完成（2026-08-09）：新增 `SettingsDialog`
+  （跟随系统/中文/English 三选、OK/取消/Esc/窗口关闭语义、关于与版本信息），
+  聊天框顶栏新增 ⚙ 设置按钮、悬浮球右键菜单新增“设置”项，统一经
+  `PixiuApp::openSettings` 打开；语言偏好持久化到 `AppSettings::keyLanguage`
+  （仅 accepted 后写入），`main.cpp` 启动时按显式偏好选择翻译（`en_US`
+  强制英文、`zh_CN` 强制中文、未设置时按 LANGUAGE/系统语言回退），切换在
+  下次启动时生效（对话框内如实提示）。新增 `t_settings_dialog`（7 例），
+  扩展 `t_chat_window`/`t_floating_ball`/`t_i18n`，套件增至 27 例全绿
+  （OFF/ON 双路径）；i18n `.ts` 增至 142 条、0 未完成，`.qm` 已重新生成。
 
 ---
 

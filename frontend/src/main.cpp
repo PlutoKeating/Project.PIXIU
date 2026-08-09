@@ -5,6 +5,7 @@
 #include <QLocale>
 #include <QTranslator>
 
+#include "app/AppSettings.h"
 #include "app/PixiuApp.h"
 
 int main(int argc, char *argv[])
@@ -22,17 +23,23 @@ int main(int argc, char *argv[])
     // 应用窗口/任务栏图标：内嵌 pixiu.svg（desktop 入口与托盘共用同一资源）。
     application.setWindowIcon(QIcon(QStringLiteral(":/icons/pixiu.svg")));
 
-    // 语言本地化：英文环境加载内嵌翻译，其余环境保持中文源码文本。
+    // 语言本地化：优先遵循设置对话框的显式偏好（en_US / zh_CN），未设置时
+    // 按 LANGUAGE/系统语言判定；英文环境加载内嵌翻译，其余保持中文源码文本。
+    AppSettings settings;
+    const QString languageSetting =
+        settings.value(AppSettings::keyLanguage).toString();
+
     QTranslator translator;
-    // 麒麟/桌面环境可能通过 LANGUAGE 优先指定界面语言，QLocale::system()
-    // 在本机优先读取 LANGUAGE；这里同时兼容 LANGUAGE/LANG/系统语言。
     const QLocale systemLocale = QLocale::system();
     const QString languageEnv = qEnvironmentVariable("LANGUAGE");
     const bool englishLocale =
         systemLocale.language() == QLocale::English
         || systemLocale.name().startsWith(QLatin1String("en"), Qt::CaseInsensitive)
         || languageEnv.startsWith(QLatin1String("en"), Qt::CaseInsensitive);
-    if (englishLocale
+    const bool useEnglish =
+        languageSetting == QStringLiteral("en_US")
+        || (languageSetting.isEmpty() && englishLocale);
+    if (useEnglish
         && translator.load(QStringLiteral(":/i18n/pixiu_en_US.qm"))) {
         QCoreApplication::installTranslator(&translator);
         qInfo() << "translation loaded for" << systemLocale.name();

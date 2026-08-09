@@ -39,6 +39,14 @@
         <source>● 服务异常</source>
         <translation>● Service error</translation>
     </message>
+    <message>
+        <source>⚙</source>
+        <translation>⚙</translation>
+    </message>
+    <message>
+        <source>打开设置</source>
+        <translation>Open settings</translation>
+    </message>
 </context>
 <context>
     <name>EvidenceCard</name>
@@ -68,6 +76,10 @@
     <message>
         <source>记忆面板</source>
         <translation>Memory panel</translation>
+    </message>
+    <message>
+        <source>设置</source>
+        <translation>Settings</translation>
     </message>
     <message>
         <source>退出</source>
@@ -524,6 +536,57 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>确认解绑</source>
         <translation>Confirm unbind</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <source>PIXIU 设置</source>
+        <translation>PIXIU Settings</translation>
+    </message>
+    <message>
+        <source>界面语言</source>
+        <translation>Language</translation>
+    </message>
+    <message>
+        <source>跟随系统</source>
+        <translation>Follow system</translation>
+    </message>
+    <message>
+        <source>中文</source>
+        <translation>Chinese</translation>
+    </message>
+    <message>
+        <source>English</source>
+        <translation>English</translation>
+    </message>
+    <message>
+        <source>语言偏好将在下次启动时生效。</source>
+        <translation>Language preference takes effect on next launch.</translation>
+    </message>
+    <message>
+        <source>PIXIU 貔貅 · 记忆管家</source>
+        <translation>PIXIU · Memory Butler</translation>
+    </message>
+    <message>
+        <source>版本 %1</source>
+        <translation>Version %1</translation>
+    </message>
+    <message>
+        <source>确定</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>保存设置</source>
+        <translation>Save settings</translation>
+    </message>
+    <message>
+        <source>取消</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <source>取消设置</source>
+        <translation>Cancel settings</translation>
     </message>
 </context>
 <context>

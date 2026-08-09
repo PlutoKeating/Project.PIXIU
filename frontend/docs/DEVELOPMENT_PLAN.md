@@ -35,6 +35,12 @@
 > 均已在本机实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发在当前
 > 运行会话未复现（注册 API 与 dconf 配置正确，但 kylin-wlcom 运行期未加载
 > grab），列为全新登录会话人工复测项（见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
+> 设置入口与界面语言偏好（2026-08-09）已完成：`SettingsDialog`（跟随系统/
+> 中文/English、OK/取消/Esc/关闭语义、关于与版本）、聊天框顶栏 ⚙ 与悬浮球
+> 右键菜单“设置”入口、`AppSettings::keyLanguage` 持久化与启动时按显式
+> 偏好加载翻译（`en_US`/`zh_CN`/跟随系统）；新增 `t_settings_dialog` 并
+> 扩展 chat_window/floating_ball/i18n 用例，套件增至 27 例全绿（OFF/ON
+> 双路径），offscreen 冒烟通过。
 
 ## 1. 当前进度摘要
 
@@ -85,6 +91,14 @@
   （弹出 ForgetDialog，确认后经 `ForgetController::confirmRemote` 直接执行
   第二阶段）、`sync_event`（通知 + 同步刷新）路由为应用行为；`memory_ready`
   逻辑一并迁入路由层，原有角标/通知行为不变。
+- 已实现设置入口与界面语言偏好（2026-08-09）：`SettingsDialog`
+  （跟随系统/中文/English、OK/取消/Esc/关闭语义、关于与版本信息），聊天框
+  顶栏 ⚙ 按钮与悬浮球右键菜单“设置”统一接入 `PixiuApp::openSettings`；
+  语言偏好经 `AppSettings::keyLanguage` 持久化（仅 accepted 后写入），
+  `main.cpp` 启动时按显式偏好加载翻译，切换在下次启动生效；新增
+  `t_settings_dialog`（7 例），扩展 `t_chat_window`/`t_floating_ball`/
+  `t_i18n`，套件增至 27 例全绿，OFF/ON 双路径构建 + ctest + offscreen
+  冒烟通过。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -165,7 +179,12 @@
 全新登录会话/合成器重启后人工复测，并已记录复测步骤与失败时的备选方案
 （见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
 
-后续可执行项全部被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
+2026-08-09 追加：设置入口与界面语言偏好（不依赖后端）已作为下一项独立
+feature 完成（`feat(frontend): add settings dialog and language preference`）：
+顶栏 ⚙ / 悬浮球菜单“设置” → `SettingsDialog`，语言三选持久化并在下次启动
+时生效；套件 27 例全绿（OFF/ON 双路径），offscreen 冒烟通过。
+
+其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
 WS 真实事件联调等待 Module C 修复 `/events` 注册与 WebSocket 导入
 （见 `BACKEND_ISSUES.md`）；`/memory/flow/promote` 等待 flow 契约与上下文
@@ -720,6 +739,25 @@ i18n                    pixiu_en_US.ts 增补同步/解绑/事件路由文案（
                         revoke flow
                         3fda460 feat(frontend): route websocket business events
                         to UI actions
+```
+
+2026-08-09 追加（设置入口与界面语言偏好，OFF/ON 本机验证）：
+
+```text
+设置对话框             SettingsDialog：跟随系统/中文/English、OK/取消/
+                       Esc/关闭语义、关于与版本信息
+入口接入               聊天框顶栏 ⚙（settingsButton）与悬浮球右键菜单
+                       “设置”（settingsAction）→ PixiuApp::openSettings
+持久化                 AppSettings::keyLanguage 仅 accepted 后写入；
+                       main.cpp 启动时按 en_US / zh_CN / 跟随系统 选择翻译
+i18n                   pixiu_en_US.ts 增补 SettingsDialog/ChatWindow/
+                       FloatingBall 条目（142 条，0 未完成），.qm 重新生成
+测试                   OFF/ON 双路径 ctest 27/27 通过（新增
+                       t_settings_dialog 7 例；扩展 t_chat_window /
+                       t_floating_ball / t_i18n）
+冒烟                   offscreen 启动 "PIXIU application started" 无回归
+提交                   feat(frontend): add settings dialog and language
+                       preference（文档随 feature 提交一并更新）
 ```
 
 ## 7. Git 工作流

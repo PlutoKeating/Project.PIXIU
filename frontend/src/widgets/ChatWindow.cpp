@@ -36,6 +36,13 @@ ChatWindow::ChatWindow(QWidget *parent)
     m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
     m_statusLabel->setStyleSheet(QStringLiteral("color: #9aa0a6; font-size: 11px;"));
 
+    QPushButton *settingsButton = new QPushButton(tr("⚙"), this);
+    settingsButton->setObjectName(QStringLiteral("settingsButton"));
+    settingsButton->setAccessibleName(tr("打开设置"));
+    settingsButton->setFlat(true);
+    settingsButton->setCursor(Qt::PointingHandCursor);
+    connect(settingsButton, &QPushButton::clicked, this, &ChatWindow::settingsRequested);
+
     QPushButton *panelButton = new QPushButton(tr("记忆"), this);
     panelButton->setObjectName(QStringLiteral("panelButton"));
     panelButton->setAccessibleName(tr("打开记忆面板"));
@@ -56,6 +63,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(titleLabel);
     topBar->addStretch(1);
     topBar->addWidget(m_statusLabel);
+    topBar->addWidget(settingsButton);
     topBar->addWidget(panelButton);
     topBar->addWidget(closeButton);
 

@@ -19,6 +19,7 @@ class WebSocketClient;
 class NotifyService;
 class ForgetController;
 class ForgetDialog;
+class SettingsDialog;
 class MemoryPanel;
 class ConflictController;
 class PreferenceController;
@@ -70,6 +71,7 @@ private:
     NotifyService *m_notify = nullptr;
     ForgetController *m_forgetController = nullptr;
     ForgetDialog *m_forgetDialog = nullptr;
+    SettingsDialog *m_settingsDialog = nullptr;
     MemoryPanel *m_memoryPanel = nullptr;
     ConflictController *m_conflictController = nullptr;
     PreferenceController *m_preferenceController = nullptr;
@@ -86,6 +88,7 @@ private:
 
 private:
     void toggleChatWindow();
+    void openSettings();
     void handleBackendEvent(const QJsonObject &event);
 };
 

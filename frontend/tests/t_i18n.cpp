@@ -39,6 +39,14 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Open chat window"));
     QCOMPARE(QCoreApplication::translate("FloatingBall", "退出"),
              QStringLiteral("Quit"));
+    QCOMPARE(QCoreApplication::translate("FloatingBall", "设置"),
+             QStringLiteral("Settings"));
+    QCOMPARE(QCoreApplication::translate("ChatWindow", "打开设置"),
+             QStringLiteral("Open settings"));
+    QCOMPARE(QCoreApplication::translate("SettingsDialog", "界面语言"),
+             QStringLiteral("Language"));
+    QCOMPARE(QCoreApplication::translate("SettingsDialog", "跟随系统"),
+             QStringLiteral("Follow system"));
 }
 
 QTEST_MAIN(TestI18n)
