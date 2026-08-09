@@ -57,6 +57,10 @@
 > `writeFailed` 仅在写入在途时上抛（修复通用错误串扰）；`t_memory_panel`/
 > `t_write_controller`/`t_i18n` 扩展，套件 27 例全绿（OFF/ON 双路径），
 > i18n 151 条、0 未完成。
+> 管理控制器防重与离线引导（2026-08-09）已完成：`ConflictController`/
+> `PreferenceController` 在途防重（避免重复请求与过期响应误配）；后端未
+> 连接时聊天框引导启动 PIXIU 后端服务（每次断线提示一次）；套件 27 例
+> 全绿（OFF/ON 双路径），i18n 152 条、0 未完成。
 
 ## 1. 当前进度摘要
 
@@ -136,6 +140,13 @@
   在途时上抛（修复其他端点错误串扰为“录入失败”），重复提交时应用层给出
   明确提示；`t_memory_panel` 新增 2 例、`t_write_controller` 新增 4 例、
   `t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），i18n 151 条、0 未完成。
+- 已实现管理控制器在途防重与后端离线引导（2026-08-09）：
+  `ConflictController::refresh`/`PreferenceController::loadHistory` 在途
+  防重（避免重复请求与偏好历史过期响应误配）；后端未连接
+  （`Disconnected`/`Error`）时聊天框追加系统提示引导启动 PIXIU 后端服务
+  （每次断线仅提示一次，恢复在线后复位）；`t_conflict_controller`/
+  `t_preference_controller` 各新增 1 例，`t_i18n` 扩展；套件 27 例全绿
+  （OFF/ON 双路径），i18n 152 条、0 未完成。
 - 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
   kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
   SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
@@ -237,6 +248,13 @@ retry`）：MemoryPanel 两个 Tab 显示失败原因 + 重试按钮，成功加
 冲突/偏好历史 Tab “正在加载…”态；`WriteController` 在途防重 +
 `writeFailed` 仅在有写入在途时上抛（修复通用错误串扰）；套件 27 例全绿
 （OFF/ON 双路径），i18n 151 条、0 未完成。
+
+2026-08-09 追加：管理控制器在途防重与后端离线引导（不依赖后端）已完成
+（`feat(frontend): guard management controllers against duplicate in-flight
+requests` + `feat(frontend): guide user when backend service is offline`）：
+`ConflictController`/`PreferenceController` 在途防重；后端未连接时聊天框
+引导启动服务（断线仅提示一次）；套件 27 例全绿（OFF/ON 双路径），
+i18n 152 条、0 未完成。
 
 其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
 Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
@@ -870,6 +888,30 @@ i18n                   pixiu_en_US.ts 增补 MemoryPanel/PixiuApp 条目
 冒烟                   offscreen 启动 "PIXIU application started" 无回归
 提交                   feat(frontend): add management loading states and
                        write in-flight guard（文档随 feature 提交一并更新）
+```
+
+2026-08-09 追加（管理控制器防重 + 后端离线引导，OFF/ON 本机验证）：
+
+```text
+控制器防重             ConflictController::refresh / PreferenceController::
+                       loadHistory 在途防重：重复调用被忽略；在途响应返回后
+                       放行下一次；偏好历史过期响应不再误配到新请求
+离线引导               后端 Disconnected/Error 时聊天框追加系统提示
+                       “后端服务未连接，请先启动 PIXIU 后端服务后重试。”；
+                       每次断线仅提示一次，恢复 Connected 后复位
+i18n                   pixiu_en_US.ts 增补 PixiuApp 条目
+                       （152 条，0 未完成），.qm 重新生成
+测试                   OFF/ON 双路径 ctest 27/27 通过（t_conflict_controller /
+                       t_preference_controller 各新增在途防重 1 例；
+                       t_i18n 扩展）
+冒烟                   offscreen 启动：连接探测失败 → connection state:
+                       error → "offline guidance shown"；应用无回归
+提交                   feat(frontend): guard management controllers against
+                       duplicate in-flight requests
+                       feat(frontend): guide user when backend service is
+                       offline
+                       docs(frontend): record management guards and offline
+                       guidance（文档独立提交）
 ```
 
 ## 7. Git 工作流

@@ -108,6 +108,13 @@
   明确提示。`t_memory_panel` 新增加载态 2 例，`t_write_controller` 新增
   在途防重/忙态清理/空闲错误隔离 4 例，`t_i18n` 扩展；i18n `.ts` 增至
   151 条、0 未完成。
+- 管理控制器在途防重与后端离线引导已完成（2026-08-09）：
+  `ConflictController::refresh` 与 `PreferenceController::loadHistory`
+  增加在途防重（避免重复请求，也避免偏好历史过期响应被误配到新请求）；
+  后端未连接（`Disconnected`/`Error`）时聊天框追加系统提示，引导启动
+  PIXIU 后端服务（每次断线仅提示一次，恢复在线后复位，避免刷屏）。
+  `t_conflict_controller`/`t_preference_controller` 各新增 1 例，
+  `t_i18n` 扩展；i18n `.ts` 增至 152 条、0 未完成。
 
 ---
 
