@@ -148,6 +148,17 @@
 
 ## 实现状态（2026-08-10 更新）
 
+- 快捷入口首击回归修复（2026-08-10）：修复聊天窗「未激活/刚唤起」时第一次
+  直接点击 记忆/设置/录入/同步 chip 可能被当作“仅激活窗口”而失效的问题。
+  `ChatWindow::showAndFocus` 唤起后在同步 `QApplication::setActiveWindow` 的
+  基础上，于窗口映射完成后延迟 60ms 再 raise/activate 一次，保证首击直达
+  控件；同时修复上次窗口位置整体位于屏外时恢复窗口不可见、导致快捷入口
+  无法点击的问题（恢复位置统一按全部屏幕可用区域并集钳制）。新增
+  `t_app_navigation`（含“窗口未激活时首击即可响应”回归）与
+  `t_window_restore`（屏外几何恢复回归）两个端到端测试；真实桌面手动复验
+  步骤固化为 `scripts/desktop_first_click_check.sh`（唤起聊天窗 → 焦点让给
+  其他窗口 → 逐个 chip 首击并判定目标窗口出现）。OFF 路径构建 + ctest
+  30/30 全绿。
 - 第一批主窗口细节补齐（2026-08-10 Round 6，详见 `UI_UX_POLISH.md`）：顶栏
   改为 Logo/应用入口 + 置顶/更多/关闭三个主题感知图标（`UiIcons` 新增
   pin/more/close/memory/sync/import/chat 图标），状态胶囊移入输入区左下角

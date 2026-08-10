@@ -116,13 +116,26 @@ bool PixiuApp::start()
         m_settings->value(AppSettings::keyWindowGeometry);
     if (savedWindowGeometry.isValid()) {
         const QRect savedRect = savedWindowGeometry.toRect();
-        // 恢复上次位置并钳制到屏幕可用区域（与悬浮球策略一致）。
-        if (QScreen *screen = QGuiApplication::screenAt(savedRect.topLeft())) {
-            const QRect area = screen->availableGeometry();
-            const int x = qBound(area.left(), savedRect.x(),
-                                 area.right() - m_chatWindow->width() + 1);
-            const int y = qBound(area.top(), savedRect.y(),
-                                 area.bottom() - m_chatWindow->height() + 1);
+        // 恢复上次位置并钳制到当前可用屏幕区域内（与悬浮球策略一致）。
+        // 注意：不能只按 savedRect.topLeft() 是否落在屏幕上决定是否钳制——
+        // 显示器分辨率/数量变化后，上次保存的位置可能整体位于屏外
+        // （screenAt 对屏外点返回 null），直接 move 会把窗口放到完全不可见、
+        // 快捷入口无法点击的位置。统一取所有屏幕可用区域并集做钳制，
+        // 保证恢复后的窗口始终完整落在可视区域内。
+        QRect area;
+        const auto screens = QGuiApplication::screens();
+        for (QScreen *screen : screens) {
+            area = area.united(screen->availableGeometry());
+        }
+        if (area.isValid() && !area.isNull()) {
+            // 窗口比屏幕还大时（极小分辨率/极大窗口），上限取 max(top, …)
+            // 而非负数，保证窗口顶端仍然落在可见区域内、入口可点。
+            const int maxX = qMax(area.left(),
+                                  area.right() - m_chatWindow->width() + 1);
+            const int maxY = qMax(area.top(),
+                                  area.bottom() - m_chatWindow->height() + 1);
+            const int x = qBound(area.left(), savedRect.x(), maxX);
+            const int y = qBound(area.top(), savedRect.y(), maxY);
             m_chatWindow->move(x, y);
         } else {
             m_chatWindow->move(savedRect.topLeft());

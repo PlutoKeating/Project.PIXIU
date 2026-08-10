@@ -301,6 +301,19 @@ void ChatWindow::showAndFocus()
     }
     raise();
     activateWindow();
+    // XWayland + UKUI 合成器下窗口 map/激活是异步的：用户点击悬浮球唤出后
+    // 立即点击 chip 时，窗口表面可能尚未映射，平台层可能把该次点击当作
+    // “激活点击”处理而不投递给控件，表现为首击失效、次击正常。这里显式
+    // 同步 Qt 的活动窗口状态，并在映射完成后延迟重试一次激活，尽量保证
+    // 用户首次点击落在已激活的窗口上、直达快捷入口控件。
+    QApplication::setActiveWindow(this);
+    QTimer::singleShot(60, this, [this]() {
+        raise();
+        activateWindow();
+        QApplication::setActiveWindow(this);
+        qCInfo(lcChat) << "deferred activation; active window:"
+                       << (QApplication::activeWindow() == this);
+    });
     m_inputBar->focusInput();
 }
 

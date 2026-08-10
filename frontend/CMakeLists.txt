@@ -438,11 +438,166 @@ if(BUILD_TESTING)
     target_link_libraries(t_i18n PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME i18n COMMAND t_i18n)
 
+    add_executable(t_app_navigation
+        tests/t_app_navigation.cpp
+        src/app/PixiuApp.h
+        src/app/PixiuApp.cpp
+        src/app/SingleInstanceGuard.h
+        src/app/SingleInstanceGuard.cpp
+        src/app/TrayIcon.h
+        src/app/TrayIcon.cpp
+        src/app/AppSettings.h
+        src/app/AppSettings.cpp
+        src/app/ShortcutManager.h
+        src/app/ShortcutManager.cpp
+        src/app/QueryController.h
+        src/app/QueryController.cpp
+        src/app/WriteController.h
+        src/app/WriteController.cpp
+        src/widgets/FloatingBall.h
+        src/widgets/FloatingBall.cpp
+        src/widgets/ChatWindow.h
+        src/widgets/ChatWindow.cpp
+        src/widgets/InputBar.h
+        src/widgets/InputBar.cpp
+        src/widgets/MessageList.h
+        src/widgets/MessageList.cpp
+        src/widgets/ThinkingSkeleton.h
+        src/widgets/ThinkingSkeleton.cpp
+        src/widgets/EvidenceCard.h
+        src/widgets/EvidenceCard.cpp
+        src/widgets/ImportDialog.h
+        src/widgets/ImportDialog.cpp
+        src/models/ChatMessage.h
+        src/models/MemoryAtom.h
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+        src/services/HttpBackendTransport.h
+        src/services/HttpBackendTransport.cpp
+        src/services/WebSocketClient.h
+        src/services/WebSocketClient.cpp
+        src/services/NotifyService.h
+        src/services/NotifyService.cpp
+        src/app/ForgetController.h
+        src/app/ForgetController.cpp
+        src/widgets/ForgetDialog.h
+        src/widgets/ForgetDialog.cpp
+        src/widgets/MemoryPanel.h
+        src/widgets/MemoryPanel.cpp
+        src/widgets/PairDialog.h
+        src/widgets/PairDialog.cpp
+        src/widgets/RevokeDialog.h
+        src/widgets/RevokeDialog.cpp
+        src/widgets/SettingsDialog.h
+        src/widgets/SettingsDialog.cpp
+        src/app/ConflictController.h
+        src/app/ConflictController.cpp
+        src/app/PreferenceController.h
+        src/app/PreferenceController.cpp
+        src/app/SyncController.h
+        src/app/SyncController.cpp
+        src/app/EventRouter.h
+        src/app/EventRouter.cpp
+        src/app/ThemeService.h
+        src/app/ThemeService.cpp
+        src/app/UkuiWindow.h
+        src/app/UkuiWindow.cpp
+        resources/resources.qrc
+    )
+    target_include_directories(t_app_navigation PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_app_navigation
+        PRIVATE
+            Qt5::Test
+            Qt5::Widgets
+            Qt5::Network
+            Qt5::WebSockets
+    )
+    add_test(NAME app_navigation COMMAND t_app_navigation)
+
+    add_executable(t_window_restore
+        tests/t_window_restore.cpp
+        src/app/PixiuApp.h
+        src/app/PixiuApp.cpp
+        src/app/SingleInstanceGuard.h
+        src/app/SingleInstanceGuard.cpp
+        src/app/TrayIcon.h
+        src/app/TrayIcon.cpp
+        src/app/AppSettings.h
+        src/app/AppSettings.cpp
+        src/app/ShortcutManager.h
+        src/app/ShortcutManager.cpp
+        src/app/QueryController.h
+        src/app/QueryController.cpp
+        src/app/WriteController.h
+        src/app/WriteController.cpp
+        src/widgets/FloatingBall.h
+        src/widgets/FloatingBall.cpp
+        src/widgets/ChatWindow.h
+        src/widgets/ChatWindow.cpp
+        src/widgets/InputBar.h
+        src/widgets/InputBar.cpp
+        src/widgets/MessageList.h
+        src/widgets/MessageList.cpp
+        src/widgets/ThinkingSkeleton.h
+        src/widgets/ThinkingSkeleton.cpp
+        src/widgets/EvidenceCard.h
+        src/widgets/EvidenceCard.cpp
+        src/widgets/ImportDialog.h
+        src/widgets/ImportDialog.cpp
+        src/models/ChatMessage.h
+        src/models/MemoryAtom.h
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+        src/services/HttpBackendTransport.h
+        src/services/HttpBackendTransport.cpp
+        src/services/WebSocketClient.h
+        src/services/WebSocketClient.cpp
+        src/services/NotifyService.h
+        src/services/NotifyService.cpp
+        src/app/ForgetController.h
+        src/app/ForgetController.cpp
+        src/widgets/ForgetDialog.h
+        src/widgets/ForgetDialog.cpp
+        src/widgets/MemoryPanel.h
+        src/widgets/MemoryPanel.cpp
+        src/widgets/PairDialog.h
+        src/widgets/PairDialog.cpp
+        src/widgets/RevokeDialog.h
+        src/widgets/RevokeDialog.cpp
+        src/widgets/SettingsDialog.h
+        src/widgets/SettingsDialog.cpp
+        src/app/ConflictController.h
+        src/app/ConflictController.cpp
+        src/app/PreferenceController.h
+        src/app/PreferenceController.cpp
+        src/app/SyncController.h
+        src/app/SyncController.cpp
+        src/app/EventRouter.h
+        src/app/EventRouter.cpp
+        src/app/ThemeService.h
+        src/app/ThemeService.cpp
+        src/app/UkuiWindow.h
+        src/app/UkuiWindow.cpp
+        resources/resources.qrc
+    )
+    target_include_directories(t_window_restore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_window_restore
+        PRIVATE
+            Qt5::Test
+            Qt5::Widgets
+            Qt5::Network
+            Qt5::WebSockets
+    )
+    add_test(NAME window_restore COMMAND t_window_restore)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
         chat_window input_bar message_list import_dialog evidence_card i18n
         revoke_dialog sync_controller event_router settings_dialog
+        app_navigation window_restore
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
