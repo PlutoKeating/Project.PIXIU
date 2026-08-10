@@ -20,6 +20,7 @@ from backend.engine.security import SecurityService
 
 from ..core.config import settings
 from ..core.logger import get_logger
+from .dbus_service import PixiuMemoryHandler
 from ..flow import FlowService, SqliteFlowStore
 from ..retrieval import RetrievalService
 from ..storage.migrations import apply_pending
@@ -215,3 +216,25 @@ async def stop_sync_runtime() -> None:
         await _sync_runtime.stop()
         _sync_runtime = None
         _log.info("Sync networking stopped")
+
+
+async def get_dbus_handler(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> PixiuMemoryHandler:
+    """组装 D-Bus 业务 handler（复用与 HTTP 相同的 Service 实例注入）。"""
+    ingestion = await get_ingestion_service(db)
+    knowledge = await get_knowledge_service(db)
+    preference = await get_preference_service(db)
+    conflict = await get_conflict_service(db)
+    security = await get_security_service(db)
+    retrieval = await get_retrieval_service(db)
+    sync = await get_optional_sync_service(db)
+    return PixiuMemoryHandler(
+        ingestion=ingestion,
+        knowledge=knowledge,
+        preference=preference,
+        conflict=conflict,
+        security=security,
+        retrieval=retrieval,
+        sync_status=sync.status if sync is not None else None,
+    )
