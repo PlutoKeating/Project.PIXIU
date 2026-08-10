@@ -38,6 +38,13 @@ PairDialog::PairDialog(QWidget *parent)
     QVBoxLayout *pinLayout = new QVBoxLayout(pinPage);
     pinLayout->setContentsMargins(0, 0, 0, 0);
 
+    m_tokenInput = new QLineEdit(pinPage);
+    m_tokenInput->setObjectName(QStringLiteral("pairTokenInput"));
+    m_tokenInput->setAccessibleName(tr("配对令牌输入框"));
+    m_tokenInput->setPlaceholderText(
+        tr("另一台设备生成的配对令牌（必填）"));
+    pinLayout->addWidget(m_tokenInput);
+
     m_pinInput = new QLineEdit(pinPage);
     m_pinInput->setObjectName(QStringLiteral("pairPinInput"));
     m_pinInput->setAccessibleName(tr("PIN 输入框"));
@@ -46,6 +53,9 @@ PairDialog::PairDialog(QWidget *parent)
     m_pinInput->setPlaceholderText(tr("输入 6 位 PIN"));
     m_pinInput->setEchoMode(QLineEdit::Password);
     pinLayout->addWidget(m_pinInput);
+
+    connect(m_tokenInput, &QLineEdit::textChanged,
+            this, &PairDialog::updateConfirmEnabled);
 
     // 二维码页（令牌契约待后端落地，占位提示）。
     QWidget *qrPage = new QWidget(this);
@@ -83,7 +93,8 @@ PairDialog::PairDialog(QWidget *parent)
         QJsonObject payload;
         payload.insert(QStringLiteral("method"), QStringLiteral("PIN"));
         payload.insert(QStringLiteral("pin"), m_pinInput->text().trimmed());
-        payload.insert(QStringLiteral("token"), QString());
+        payload.insert(QStringLiteral("token"),
+                       m_tokenInput->text().trimmed());
         emit pairRequested(payload);
         hide();
     });
@@ -143,7 +154,10 @@ void PairDialog::updateMethodState()
 void PairDialog::updateConfirmEnabled()
 {
     const bool pinMode = m_methodCombo->currentIndex() == 0;
-    // 二维码令牌契约未落地前禁用确认；PIN 模式要求恰好 6 位数字。
+    // 二维码令牌契约未落地前禁用确认；PIN 模式要求令牌非空且 PIN 恰好 6 位数字
+    //（后端 /sync/pair 校验 token 必填、pin 6 位 ASCII 数字）。
     m_confirmButton->setEnabled(
-        pinMode && m_pinInput->text().trimmed().length() == kPinLength);
+        pinMode
+        && !m_tokenInput->text().trimmed().isEmpty()
+        && m_pinInput->text().trimmed().length() == kPinLength);
 }

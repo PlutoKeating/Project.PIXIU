@@ -41,6 +41,7 @@ private slots:
 private:
     QComboBox *m_methodCombo = nullptr;
     QStackedWidget *m_methodStack = nullptr;
+    QLineEdit *m_tokenInput = nullptr;
     QLineEdit *m_pinInput = nullptr;
     QPushButton *m_confirmButton = nullptr;
     QLabel *m_statusLabel = nullptr;

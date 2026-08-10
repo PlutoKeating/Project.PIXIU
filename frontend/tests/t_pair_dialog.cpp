@@ -31,6 +31,11 @@ QLineEdit *pinInput(PairDialog *dialog)
     return dialog->findChild<QLineEdit *>(QStringLiteral("pairPinInput"));
 }
 
+QLineEdit *tokenInput(PairDialog *dialog)
+{
+    return dialog->findChild<QLineEdit *>(QStringLiteral("pairTokenInput"));
+}
+
 QPushButton *confirmButton(PairDialog *dialog)
 {
     return dialog->findChild<QPushButton *>(QStringLiteral("pairConfirmButton"));
@@ -50,6 +55,11 @@ void TestPairDialog::confirmDisabledWithoutValidPin()
     QVERIFY(!confirmButton(&dialog)->isEnabled());
     pinInput(&dialog)->setText(QStringLiteral("12345"));
     QVERIFY(!confirmButton(&dialog)->isEnabled());
+    pinInput(&dialog)->setText(QStringLiteral("123456"));
+    // PIN 合法但缺少令牌：后端 /sync/pair 要求 token 必填，前端保持禁用。
+    QVERIFY(!confirmButton(&dialog)->isEnabled());
+    tokenInput(&dialog)->setText(QStringLiteral("remote-token"));
+    QVERIFY(confirmButton(&dialog)->isEnabled());
 }
 
 void TestPairDialog::confirmEmitsPayloadAndHides()
@@ -59,6 +69,7 @@ void TestPairDialog::confirmEmitsPayloadAndHides()
     QSignalSpy spy(&dialog, &PairDialog::pairRequested);
 
     pinInput(&dialog)->setText(QStringLiteral("123456"));
+    tokenInput(&dialog)->setText(QStringLiteral("remote-token"));
     QVERIFY(confirmButton(&dialog)->isEnabled());
     QTest::mouseClick(confirmButton(&dialog), Qt::LeftButton);
 
@@ -68,7 +79,8 @@ void TestPairDialog::confirmEmitsPayloadAndHides()
              QStringLiteral("PIN"));
     QCOMPARE(payload.value(QStringLiteral("pin")).toString(),
              QStringLiteral("123456"));
-    QCOMPARE(payload.value(QStringLiteral("token")).toString(), QString());
+    QCOMPARE(payload.value(QStringLiteral("token")).toString(),
+             QStringLiteral("remote-token"));
     QVERIFY(!dialog.isVisible());
 }
 
@@ -115,6 +127,7 @@ void TestPairDialog::qrModeDisablesConfirm()
 
     combo->setCurrentIndex(0);
     pinInput(&dialog)->setText(QStringLiteral("123456"));
+    tokenInput(&dialog)->setText(QStringLiteral("remote-token"));
     QVERIFY(confirmButton(&dialog)->isEnabled());
 }
 
@@ -135,6 +148,7 @@ void TestPairDialog::accessibilityNamesPresent()
 {
     PairDialog dialog;
     QVERIFY(!pinInput(&dialog)->accessibleName().isEmpty());
+    QVERIFY(!tokenInput(&dialog)->accessibleName().isEmpty());
     QVERIFY(!confirmButton(&dialog)->accessibleName().isEmpty());
     QVERIFY(!cancelButton(&dialog)->accessibleName().isEmpty());
     QCOMPARE(confirmButton(&dialog)->cursor().shape(), Qt::PointingHandCursor);
