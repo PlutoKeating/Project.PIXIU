@@ -32,6 +32,61 @@
 - 移除全部 mock（`engine/mocks`、`MockEmbedding`、`PIXIU_EMBEDDING=mock`），接入麒麟 SDK（官方仓库以 submodule 纳入 `third_party/`）
 - 测试：229 项通过（含引擎 × SQLite 全链路集成测试与 API 端点测试）
 
+### 1.6 当前进度总览（2026-08-10 更新）
+
+> 本节为最新状态快照（2026-08-10），覆盖 `feat/foundation` 与 `feature/frontend`
+> 两个远端分支的新提交；§1.5 为 2026-08-07 历史基线。
+
+| 模块 | 负责人 | 当前状态 | 已实现 | 待实现 / 阻塞 |
+|------|--------|----------|--------|--------|
+| A · frontend | 团队负责人 | ✅ 独立功能完成 + UI/UX polish 完成 | Qt5/CMake 应用骨架；悬浮球/聊天框/记忆面板/遗忘/录入/设置/配对/解绑/同步 Tab；WS 事件路由；i18n（180 条）；UKUI 主题跟随/通知/快捷键/`.deb` 打包；双路径 ctest 30/30 全绿；真实桌面截图留证 | 真实麒麟会话人工复测（全局快捷键等）；后端契约阻塞：偏好列表/证据详情/二维码令牌/真实配对闭环/真实 WS 事件广播 |
+| B · engine | @Ø是铯 | ✅ 核心管线已实现并集成（较 08-07 无新增） | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
+| C · foundation | @17% | ✅ Phase 0~5 全部完成 | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务；同步/流转 API 全部真实接入；测试全绿（Module C 报告口径 354 项） | 麒麟真实环境性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
+| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（函数级统计 342+21 个）；frontend ctest 30/30；自动回归脚本 `frontend/scripts/regression.sh` | 测试数据集、性能压测、Docker 容器化、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+
+### 1.7 2026-08-10 分支同步摘要
+
+> 以下两个分支相对 `main`（748636b）各有新提交，均已 fetch 到本地 `origin/*`，
+> 尚未合入 main，也尚未同步到本地工作分支（`feat/foundation` 落后 23、
+> `feature/frontend` 落后 102）。
+
+#### feat/foundation（Module C · @17%，作者 xzy，23 commits，2026-08-07 ~ 08-10）
+
+| 更新位置 | 内容 |
+|----------|------|
+| `backend/foundation/retrieval/` | 混合检索 MVP 落地并加固：路由/FTS5 BM25/INT8 ANN/图召回/三通道并发/RRF 融合/词法重排/组装；`/memory/query` 已真实上线；实体-知识链接持久化 |
+| `backend/foundation/flow/` | 记忆流转 Phase 2：短/中期上下文持久化、批量预校验与幂等 promote、长期知识 demote、TTL 清理；`/memory/flow/promote` 真实接入 |
+| `backend/foundation/sync/` | P2P CRDT 同步 Phase 3 全部组件：Ed25519 身份、QR/PIN 配对、mDNS 信任过滤、TLS 1.3 mTLS、签名协议、Gossip、反熵、LWW+版本向量、墓碑回收、物化器、运行时与调度；`/sync/*` 4 个端点真实接入 |
+| `backend/foundation/eval/` | 评测框架 Phase 4/5：6 项验收指标 + recall@1/3/5、P50/P95/P99、scope 隔离；同步收敛与系统资源基准；stub 自检：收敛率 1.0、同步 P95 55ms |
+| `backend/foundation/api/` | D-Bus 服务 `com.kylin.pixiu.Memory` 实现（Write/Query/Forget/SyncStatus 镜像 HTTP）；桌面传输与共享服务对齐；`/events` 广播扩展至 sync/conflict 事件 |
+| `backend/foundation/storage/` `core/` | schema 扩至 16 张表（sync_identity/peers/state/acks/meta）；仓储持久化 knowledge↔entity 链接；核心契约加固 |
+| 测试与文档 | foundation+engine 测试全绿（函数级统计 342+21 个；Module C 报告口径 354 项）；PHASE0~4、BASELINE、任务书/架构更新；`docs/compose/spec/` 阶段规格 6 份 |
+
+**未完成 / 遗留**：麒麟真实 embedding + 正式数据集的召回率/P95 验收（当前为 stub
+基线 P95=13.3ms）；真实局域网多设备互操作；**WS `/events` 注册问题仍未修复**（见下方阻塞项）。
+
+#### feature/frontend（Module A · 团队负责人，作者 2728113182-ship-it，102 commits，2026-08-07 ~ 08-10）
+
+| 更新位置 | 内容 |
+|----------|------|
+| `frontend/src/`（70 个文件） | Qt5 应用全量实现：悬浮球（自由拖拽/角标/右键菜单）、侧边聊天窗（欢迎页/建议卡/多行输入/证据卡/骨架屏）、记忆面板（偏好/冲突/同步三 Tab）、遗忘/录入/设置/配对/解绑对话框、EventRouter、SyncController、健康探测、主题感知图标 |
+| `frontend/tests/`（30 个文件） | QtTest 双路径（KYSDK OFF/ON）30/30 全绿；端到端回归（首击、窗口恢复等）；自动回归脚本 `scripts/regression.sh` |
+| `frontend/resources/` | 设计令牌/全局 QSS/主题感知图标/内嵌 pixiu.svg/i18n（en_US 180 条 0 未完成） |
+| `frontend/docs/`（85 个文件） | 任务书/架构/执行计划/UI_UX_POLISH/适配报告更新 + 真实桌面截图（明暗主题、UI 演示 36 张） |
+| `frontend/debian/` `scripts/` | `.deb` 打包 + desktop 入口；WS 演示桩与桌面复验脚本 |
+
+**未完成 / 阻塞**：真实麒麟会话人工复测（全局快捷键真实按键触发、HiDPI/多屏）；
+后端契约未落地部分（偏好列表、证据详情、二维码配对令牌、flow 上下文来源、真实
+同步数据、真实 WS 事件广播）。
+
+#### 跨模块阻塞项（Module A → C 交接，状态核实于 2026-08-10）
+
+`frontend/docs/BACKEND_ISSUES.md` 记录的两项 `/events` 问题——`http_app.py` 未导入
+`ws.py` 导致路由未注册（问题 1）、`ws.py` 未导入 `fastapi.WebSocket`（问题 2）——在
+`feat/foundation` 最新提交（b2d6abe）中**仍未修复**（`ws.py` 不在该分支改动列表中）。
+前端真实事件链路（`memory_ready`/`conflict_detected`/`sync_event` 广播）仍依赖
+Module C 修复后复测；Module A 已用测试桩完成 UI 侧冒烟。
+
 ---
 
 ## 2. 模块划分
@@ -78,6 +133,10 @@
 
 **对外契约**：`docs/API.md` 中定义的 12 个端点及其请求/响应 JSON 结构。
 
+**状态（2026-08-10）**：独立功能与 UI/UX polish 全部完成（双路径 ctest 30/30、
+i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与后端契约阻塞，
+详见 §1.7。
+
 ### 2.2 模块 B — 记忆业务引擎
 
 | 属性 | 说明 |
@@ -104,7 +163,10 @@
 
 **职责**：实现全部基础设施——API 网关（HTTP/WS/D-Bus）、SQLite 存储实现（仓储模式）、混合检索管线（BM25∥ANN∥Graph→融合→重排→组装）、短中/长期记忆流转、P2P CRDT 分布式同步、量化评测框架。
 
-**状态（2026-08-07）**：Phase 1（core/storage/api）完成；Phase 2（retrieval）、Phase 3（flow/sync/eval）待实现。
+**状态（2026-08-10）**：Phase 0~5 全部完成——retrieval（`/memory/query`）、
+flow（`/memory/flow/promote`）、sync（`/sync/*`）、eval（评测框架+基准）、
+D-Bus 服务均已落地，354 项测试通过；剩余为麒麟真实环境性能验收与真实局域网
+互操作。
 
 ### 2.4 支持岗 D — 测试与工具
 
@@ -117,7 +179,9 @@
 
 **职责**：测试数据集构造、单元/集成测试、性能压测、Docker 容器化、环境变量模板、评测脚本、文档补全。
 
-**状态（2026-08-07）**：尚未开工；`backend/.env.example` 已由 foundation 阶段补充。
+**状态（2026-08-10）**：测试侧已由 A/C 模块补齐（foundation 342 项 + engine 21 项、
+frontend ctest 30/30）；正式支持工作（测试数据集、性能压测、Docker 容器化、
+验收评测报告）尚未开工。
 
 ---
 
