@@ -1,0 +1,20 @@
+{
+  "benchmark": "phase7-1000-query-pressure",
+  "runtime": "stub",
+  "samples": 1000,
+  "errors": 0,
+  "error_rate": 0.0,
+  "latency_ms": {
+    "p50": 16.99,
+    "p95": 19.18,
+    "p99": 20.73,
+    "max": 22.99,
+    "mean": 17.07
+  },
+  "throughput_qps": 58.6,
+  "acceptance": {
+    "p95_le_500ms": true,
+    "hit_rate": 1.0
+  },
+  "generated_at": 1786372182
+}
