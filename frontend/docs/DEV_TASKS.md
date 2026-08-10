@@ -146,6 +146,17 @@
 
 ---
 
+## 实现状态（2026-08-10 更新）
+
+- UI/UX Polish Round 2（2026-08-10）已完成：按钮/Tab 统一指针光标与焦点
+  高亮描边（`styles.qss`）；聊天框顶栏状态文案固定最小宽度防止切换抖动，
+  顶栏按钮补 tooltip/accessibleName；`ForgetDialog`/`RevokeDialog` 打开
+  默认聚焦“取消”（回车即取消，Esc/关闭语义不变）；`ImportDialog` 占位文案
+  改为“粘贴文本内容；也可拖入图片作为附件预览…”，i18n 同步。OFF/ON 双路径
+  ctest 28/28 全绿，offscreen 冒烟无回归；离屏核对截图见
+  `docs/screenshots/ui-polish-round2-2026-08-10/`。剩余项仍为人工复测与
+  后端契约阻塞（见 `UI_UX_POLISH.md` §4-§6）。
+
 ## 开工要求（本地环境准备）
 
 开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：

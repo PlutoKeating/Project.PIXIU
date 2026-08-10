@@ -1036,3 +1036,29 @@ WS 通知链路             scripts/ws_smoke_server.py 桩驱动 memory_ready：
 UI/UX polish，待办已全部登记于 `frontend/docs/UI_UX_POLISH.md`（颜色语义化、
 字号间距、图标、动效、布局），其后转人工验收项（全局快捷键新会话复测、
 HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉）。
+
+2026-08-10 追加（UI/UX Polish Round 2，OFF/ON 本机验证）：
+
+```text
+指针/焦点态             按钮与 Tab 统一 cursor:pointer；QPushButton:focus
+                        描边取主题高亮色（styles.qss），键盘焦点可见且
+                        明暗主题一致
+顶栏稳定                ChatWindow 状态文案按最宽项设最小宽度，在线/连接中/
+                        服务异常/离线切换不再引起右侧按钮抖动；设置/记忆/
+                        关闭补 tooltip 与 accessibleName
+危险对话框               ForgetDialog/RevokeDialog 打开默认聚焦“取消”，
+                        回车即取消（Esc/关闭语义不变），防误触不可逆操作
+导入提示                ImportDialog 占位文案改为“粘贴文本内容；也可拖入
+                        图片作为附件预览…”，i18n 同步（152 条，0 未完成）
+测试                    OFF/ON 双路径 ctest 28/28 通过（t_chat_window /
+                        t_memory_panel / t_forget_dialog / t_revoke_dialog
+                        扩展）；offscreen 冒烟无回归
+截图                    离屏核对截图 frontend/docs/screenshots/
+                        ui-polish-round2-2026-08-10/（12 张，offscreen）
+提交                    feat(frontend): unify pointer/focus states and
+                        stabilize chat top bar
+                        feat(frontend): focus cancel on danger dialogs and
+                        refresh import hint
+                        docs(frontend): record UI/UX polish round 2
+                        completion and screenshots
+```
