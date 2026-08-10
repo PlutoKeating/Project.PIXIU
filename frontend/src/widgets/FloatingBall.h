@@ -12,7 +12,8 @@ class QVariantAnimation;
 
 // 桌面悬浮球：半透明圆形常驻入口。
 //
-// 支持拖动、点击唤起聊天框、贴边收起（悬停展开）与位置恢复。
+// 支持鼠标左键拖拽自由移动（小球停留在用户放置的位置）、点击唤起聊天框
+// 与位置恢复；默认初始位于屏幕可用区域右下角。
 // 本阶段不依赖 KylinSDK（普通 QWidget 实现，Phase 7 再接入 UKUI 能力）。
 class FloatingBall : public QWidget
 {
@@ -42,7 +43,7 @@ signals:
     void openPanelRequested();
     // 右键菜单“退出”。
     void quitRequested();
-    // 拖动结束、贴边收起或悬停展开后发射（供位置持久化）。
+    // 拖动结束或位置恢复后发射（供位置持久化）。
     void movedTo(const QPoint &topLeft);
 
 protected:
@@ -50,22 +51,15 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void enterEvent(QEvent *event) override;
-    void leaveEvent(QEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
 
 private:
     void buildContextMenu();
     QScreen *screenFor(const QPoint &globalPos) const;
-    void snapToEdge();
-    void collapseToEdge();
-    void expandFromEdge();
 
     QPoint m_dragOffset;
     QPoint m_pressGlobalPos;
     bool m_wasDrag = false;
-    QPoint m_expandedPos;
-    bool m_collapsed = false;
     int m_unreadCount = 0;
     QMenu *m_contextMenu = nullptr;
     QVariantAnimation *m_badgePulseAnim = nullptr;
@@ -73,8 +67,6 @@ private:
 
     void startBadgePulse();
     static constexpr int kDragThresholdPx = 4;
-    static constexpr int kEdgeSnapPx = 12;
-    static constexpr qreal kCollapsedVisibleRatio = 1.0 / 3.0;
 };
 
 #endif // PIXIU_FLOATING_BALL_H
