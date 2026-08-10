@@ -5,6 +5,12 @@
 > **开发人员**：1人（后端基础设施）
 > **提供**：`core/` 中的共享数据模型和 Repository 接口
 
+> **当前状态（2026-08-09）**：retrieval 加固和 flow 生命周期已完成；
+> `/memory/query` 与 `/memory/flow/promote` 均为真实链路，短/中期上下文支持 SQLite
+> 持久化、promote/demote、幂等沉淀与 TTL 清理。
+> `pixiu`（Python 3.10.20）环境下 Foundation 247 项、Engine 21 项，共 268 项测试全部通过。
+> 下一步实现 sync、eval 与 D-Bus；真实麒麟 SDK 性能需在银河麒麟环境验收。
+
 ---
 
 ## 一句话
@@ -16,7 +22,7 @@ Foundation 是 PIXIU 的"骨架与血管"——它提供 API 网关让外部问�
 | Foundation 做的事 | Foundation 不做的事 |
 |------------------|-------------------|
 | HTTP/WS/D-Bus API 路由 | 数据清洗和标准化 |
-| SQLite 仓储实现（全部 8 表） | 偏好提取和版本化 |
+| SQLite 仓储实现（11 张基础表 + FTS5/向量索引） | 偏好提取和版本化 |
 | 混合检索（BM25/ANN/Graph→融合→重排→组装） | 知识冲突仲裁 |
 | 共享数据模型和 Repository 接口定义 | 敏感信息检测 |
 | CRDT 分布式同步 + Gossip 发现 + TLS | 忘记得执行逻辑 |
@@ -29,7 +35,7 @@ Foundation 是 PIXIU 的"骨架与血管"——它提供 API 网关让外部问�
 |------|------|--------|
 | `core/` | 共享契约：数据模型、Repository ABC、配置、日志 | `Evidence`, `KnowledgeItem`, `Preference`, `*Repository` |
 | `api/` | API 网关：HTTP/WS/D-Bus 路由 + 依赖注入 | `HttpApp`, `WsHandler`, `DbusService`, `DI` |
-| `storage/` | SQLite 仓储实现（8 张表 + WAL+FTS5+向量索引） | `SqliteEvidenceRepo`, `SqliteKnowledgeRepo`, ... |
+| `storage/` | SQLite 仓储实现（11 张基础表 + WAL + FTS5/向量索引） | `SqliteEvidenceRepo`, `SqliteKnowledgeRepo`, `SqliteFlowStore`, ... |
 | `retrieval/` | 混合检索管线（路由→3通道→融合→重排→组装） | `RetrievalService`, `Router`, `BM25`, `ANN`, `GraphSearch`, `Fuser`, `Reranker`, `Assembler` |
 | `flow/` | 记忆流转（promote/demote + TTL） | `FlowService`, `Promoter`, `TTLManager` |
 | `sync/` | P2P CRDT 同步 | `SyncService`, `CRDT`, `Gossip`, `Discovery`, `Transport` |
@@ -55,3 +61,5 @@ Foundation 是 PIXIU 的"骨架与血管"——它提供 API 网关让外部问�
 
 详细架构：`backend/foundation/docs/ARCHITECTURE.md`
 开发任务：`backend/foundation/docs/DEV_TASKS.md`
+Phase 1 报告：`backend/foundation/docs/PHASE1.md`
+Phase 2 报告：`backend/foundation/docs/PHASE2.md`

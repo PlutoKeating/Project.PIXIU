@@ -33,6 +33,78 @@ def test_default_db_path():
         assert s.db_path == "./pixiu.db"
 
 
+def test_default_sync_domain_and_device_name():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        assert settings.sync_domain == "shared:home"
+        assert settings.sync_device_name
+
+
+def test_sync_passphrase_is_required_only_when_sync_is_used():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        with pytest.raises(ValueError, match="PIXIU_SYNC_KEY_PASSPHRASE"):
+            _ = settings.sync_key_passphrase
+
+
+def test_sync_configuration_from_environment():
+    with mock.patch.dict(
+        os.environ,
+        {
+            "PIXIU_SYNC_DEVICE_NAME": "客厅一体机",
+            "PIXIU_SYNC_DOMAIN": "shared:family",
+            "PIXIU_SYNC_KEY_PASSPHRASE": "a-secure-test-passphrase",
+        },
+        clear=True,
+    ):
+        settings = Settings()
+        assert settings.sync_device_name == "客厅一体机"
+        assert settings.sync_domain == "shared:family"
+        assert settings.sync_key_passphrase == "a-secure-test-passphrase"
+
+
+def test_sync_domain_rejects_private_scope():
+    with mock.patch.dict(os.environ, {"PIXIU_SYNC_DOMAIN": "user:alice"}):
+        with pytest.raises(ValueError, match="PIXIU_SYNC_DOMAIN"):
+            Settings()
+
+
+def test_default_sync_domain_and_device_name():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        assert settings.sync_domain == "shared:home"
+        assert settings.sync_device_name
+
+
+def test_sync_passphrase_is_required_only_when_sync_is_used():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        with pytest.raises(ValueError, match="PIXIU_SYNC_KEY_PASSPHRASE"):
+            _ = settings.sync_key_passphrase
+
+
+def test_sync_configuration_from_environment():
+    with mock.patch.dict(
+        os.environ,
+        {
+            "PIXIU_SYNC_DEVICE_NAME": "客厅一体机",
+            "PIXIU_SYNC_DOMAIN": "shared:family",
+            "PIXIU_SYNC_KEY_PASSPHRASE": "a-secure-test-passphrase",
+        },
+        clear=True,
+    ):
+        settings = Settings()
+        assert settings.sync_device_name == "客厅一体机"
+        assert settings.sync_domain == "shared:family"
+        assert settings.sync_key_passphrase == "a-secure-test-passphrase"
+
+
+def test_sync_domain_rejects_private_scope():
+    with mock.patch.dict(os.environ, {"PIXIU_SYNC_DOMAIN": "user:alice"}):
+        with pytest.raises(ValueError, match="PIXIU_SYNC_DOMAIN"):
+            Settings()
+
+
 # ─── Env var reading ─────────────────────────────────────
 
 def test_embedding_mock_rejected():
@@ -158,3 +230,77 @@ def test_env_choice_invalid():
     with mock.patch.dict(os.environ, {"FOO": "bad"}):
         with pytest.raises(ValueError, match="FOO"):
             _env_choice("FOO", "default", frozenset({"opt", "alt"}))
+
+
+def test_sync_network_is_disabled_by_default():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        configured = Settings()
+        assert configured.sync_network_enabled is False
+        assert configured.sync_advertise_addresses == ()
+
+
+def test_sync_network_rejects_invalid_boolean():
+    with mock.patch.dict(
+        os.environ, {"PIXIU_SYNC_NETWORK_ENABLED": "sometimes"}, clear=True
+    ):
+        with pytest.raises(ValueError, match="boolean"):
+            Settings()
+
+
+def test_sync_network_requires_addresses_and_tls_paths():
+    base = {
+        "PIXIU_SYNC_NETWORK_ENABLED": "true",
+        "PIXIU_SYNC_KEY_PASSPHRASE": "phase3-config-test-passphrase",
+    }
+    with mock.patch.dict(os.environ, base, clear=True):
+        with pytest.raises(ValueError, match="ADVERTISE_ADDRESSES"):
+            Settings()
+
+    with mock.patch.dict(
+        os.environ,
+        {**base, "PIXIU_SYNC_ADVERTISE_ADDRESSES": "192.168.1.20"},
+        clear=True,
+    ):
+        with pytest.raises(ValueError, match="PIXIU_SYNC_CERTFILE"):
+            Settings()
+
+
+def test_sync_network_explicit_configuration():
+    values = {
+        "PIXIU_SYNC_NETWORK_ENABLED": "yes",
+        "PIXIU_SYNC_KEY_PASSPHRASE": "phase3-config-test-passphrase",
+        "PIXIU_SYNC_ADVERTISE_ADDRESSES": "192.168.1.20, 127.0.0.1",
+        "PIXIU_SYNC_BIND_HOST": "192.168.1.20",
+        "PIXIU_SYNC_PORT": "9876",
+        "PIXIU_SYNC_SERVER_NAME": "study.pixiu.local",
+        "PIXIU_SYNC_CERTFILE": "device.crt",
+        "PIXIU_SYNC_KEYFILE": "device.key",
+        "PIXIU_SYNC_CAFILE": "peers-ca.crt",
+    }
+    with mock.patch.dict(os.environ, values, clear=True):
+        configured = Settings()
+        assert configured.sync_network_enabled is True
+        assert configured.sync_port == 9876
+        assert configured.sync_advertise_addresses == (
+            "192.168.1.20",
+            "127.0.0.1",
+        )
+        assert configured.sync_certfile == "device.crt"
+        assert configured.sync_keyfile == "device.key"
+        assert configured.sync_cafile == "peers-ca.crt"
+
+def test_sync_network_rejects_wildcard_or_public_bind_host():
+    base = {
+        "PIXIU_SYNC_NETWORK_ENABLED": "true",
+        "PIXIU_SYNC_KEY_PASSPHRASE": "phase3-config-test-passphrase",
+        "PIXIU_SYNC_ADVERTISE_ADDRESSES": "192.168.1.20",
+        "PIXIU_SYNC_CERTFILE": "device.crt",
+        "PIXIU_SYNC_KEYFILE": "device.key",
+        "PIXIU_SYNC_CAFILE": "peers-ca.crt",
+    }
+    for host in ("0.0.0.0", "8.8.8.8"):
+        with mock.patch.dict(
+            os.environ, {**base, "PIXIU_SYNC_BIND_HOST": host}, clear=True
+        ):
+            with pytest.raises(ValueError, match="BIND_HOST"):
+                Settings()

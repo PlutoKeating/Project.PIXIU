@@ -14,12 +14,17 @@ from backend.foundation.api.di import (
     get_conflict_service,
     get_db,
     get_evidence_repo,
+    get_flow_service,
     get_ingestion_service,
     get_knowledge_service,
     get_preference_repo,
     get_preference_service,
     get_security_service,
+    get_sync_service,
 )
+from backend.foundation.flow import FlowService
+from backend.foundation.sync import SyncService
+from backend.foundation.storage.migrations import latest_version
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
     SqliteEvidenceRepo,
@@ -30,6 +35,10 @@ from backend.foundation.storage.repository import (
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        self.sync_device_name = "test-device"
+        self.sync_domain = "shared:test"
+        self.sync_key_passphrase = "phase3-di-test-passphrase"
+        self.sync_network_enabled = False
 
 
 @pytest.fixture()
@@ -52,7 +61,7 @@ async def test_get_db_runs_migrations(fresh_di, tmp_path):
         version_rows = await db.execute_fetchall(
             "SELECT MAX(version) FROM _schema_version"
         )
-        assert version_rows[0][0] == 1
+        assert version_rows[0][0] == latest_version()
     finally:
         await db.close()
 
@@ -68,5 +77,33 @@ async def test_service_factories_return_real_services(fresh_di):
         assert isinstance(await get_evidence_repo(db), SqliteEvidenceRepo)
         assert isinstance(await get_preference_repo(db), SqlitePreferenceRepo)
         assert isinstance(await get_conflict_repo(db), SqliteConflictRepo)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_flow_factory_composes_real_service(fresh_di):
+    db = await get_db()
+    try:
+        ingestion = await get_ingestion_service(db)
+        # 避免在无麒麟 SDK 的测试机调用默认 get_knowledge_service；这里只验证装配边界。
+        class _Knowledge:
+            async def structure(self, evidence):
+                raise AssertionError("not called during composition")
+
+        flow = await get_flow_service(db, ingestion, _Knowledge())
+        assert isinstance(flow, FlowService)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_sync_factory_composes_real_service(fresh_di):
+    db = await get_db()
+    try:
+        sync = await get_sync_service(db)
+        assert isinstance(sync, SyncService)
+        identity = await sync.initialize()
+        assert identity.domain == "shared:test"
     finally:
         await db.close()

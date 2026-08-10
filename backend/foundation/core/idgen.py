@@ -67,3 +67,7 @@ def gen_entity_id() -> str:
 
 def gen_request_id() -> str:
     return f"req_{_ulid()}"
+
+
+def gen_context_id() -> str:
+    return f"ctx_{_ulid()}"

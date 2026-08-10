@@ -2,6 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
+import sqlite3
+import time
+from pathlib import Path
+
+import aiosqlite
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,16 +16,23 @@ import backend.foundation.api.di as di_module
 from backend.foundation.api import app
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.tests.fakes import StubTextEmbedder
-from backend.foundation.api.di import get_knowledge_service
+from backend.foundation.api.di import get_flow_service, get_knowledge_service
+from backend.foundation.flow import FlowContextNotFound, InvalidFlowTransition
 from backend.foundation.storage.repository import (
     SqliteEntityRepo,
     SqliteKnowledgeRepo,
 )
+from backend.foundation.storage.schema import init_db_on_connection
+from backend.foundation.sync import PairingMethod, SqliteSyncStore, SyncService
 
 
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        self.sync_device_name = "书房工作站"
+        self.sync_domain = "shared:home"
+        self.sync_key_passphrase = "phase3-api-test-passphrase"
+        self.sync_network_enabled = False
 
 
 @pytest.fixture()
@@ -142,9 +156,202 @@ def test_conflicts_lists_records(client):
     assert "amount" in conflicts[0]["field"]
 
 
-def test_unimplemented_endpoints_keep_placeholder(client):
-    assert client.post("/memory/query", json={}).json()["status"] == "not_implemented"
-    assert client.post("/memory/flow/promote", json={}).json()["status"] == "not_implemented"
-    assert client.post("/sync/pair", json={}).json()["status"] == "not_implemented"
-    assert client.get("/sync/peers").json()["status"] == "not_implemented"
-    assert client.get("/sync/status").json()["status"] == "not_implemented"
+def test_flow_promote_contract(client):
+    # 先触发数据库迁移，再从会话生产者边界写入一个短期上下文。
+    assert client.get("/conflicts").status_code == 200
+    context_id = "ctx_AAAAAAAAAAAAAAAAAAAAAAAAAA"
+    now = int(time.time())
+    conn = sqlite3.connect(di_module.settings.db_path)
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute(
+        """INSERT INTO memory_contexts
+           (id, tier, payload, scope, status, created_at, updated_at, expires_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            context_id,
+            "SHORT_TERM",
+            json.dumps({"source_type": "MANUAL_CONFIG", "raw": {"title": "沉淀测试"}}),
+            "user:alice",
+            "ACTIVE",
+            now,
+            now,
+            now + 60,
+        ),
+    )
+    conn.commit()
+    conn.close()
+
+    response = client.post(
+        "/memory/flow/promote",
+        json={
+            "source": "SHORT_TERM",
+            "context_ids": [context_id],
+            "scope": "user:alice",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["promoted_count"] == 1
+    assert response.json()["knowledge_ids"][0].startswith("knw_")
+    assert response.json()["latency_ms"] >= 0
+
+    conn = sqlite3.connect(di_module.settings.db_path)
+    row = conn.execute(
+        "SELECT status, knowledge_id, expires_at FROM memory_contexts WHERE id = ?",
+        (context_id,),
+    ).fetchone()
+    conn.close()
+    assert row == ("PROMOTED", response.json()["knowledge_ids"][0], None)
+
+
+@pytest.mark.parametrize(
+    ("error", "status", "detail"),
+    [
+        (FlowContextNotFound("ctx_missing"), 404, "NOT_FOUND"),
+        (InvalidFlowTransition("expired"), 400, "INVALID_REQUEST"),
+    ],
+)
+def test_flow_promote_maps_domain_errors(client, error, status, detail):
+    class _Flow:
+        async def promote(self, source, context_ids, scope):
+            raise error
+
+    async def _override_flow():
+        return _Flow()
+
+    app.dependency_overrides[get_flow_service] = _override_flow
+    response = client.post(
+        "/memory/flow/promote",
+        json={
+            "source": "MID_TERM",
+            "context_ids": ["ctx_AAAAAAAAAAAAAAAAAAAAAAAAAA"],
+            "scope": "shared:home",
+        },
+    )
+    assert response.status_code == status
+    assert response.json()["detail"] == detail
+
+
+def test_flow_promote_rejects_empty_context_ids(client):
+    response = client.post(
+        "/memory/flow/promote",
+        json={"source": "SHORT_TERM", "context_ids": [], "scope": "user:alice"},
+    )
+    assert response.status_code == 422
+
+
+def _create_remote_pairing_token(db_path: str) -> str:
+    async def _create() -> str:
+        db = await aiosqlite.connect(db_path)
+        db.row_factory = aiosqlite.Row
+        try:
+            service = SyncService(
+                SqliteSyncStore(db),
+                device_name="客厅一体机",
+                domain="shared:home",
+                key_passphrase="phase3-remote-test-passphrase",
+            )
+            return await service.create_pairing_token(PairingMethod.QR)
+        finally:
+            await db.close()
+
+    sync_db = sqlite3.connect(db_path)
+    init_db_on_connection(sync_db)
+    sync_db.close()
+    return asyncio.run(_create())
+
+
+def test_sync_pair_peers_status_and_revoke(client):
+    initial = client.get("/sync/status")
+    assert initial.status_code == 200
+    assert initial.json() == {
+        "domain": "shared:home",
+        "peers_online": 1,
+        "peers_total": 1,
+        "pending_outgoing_ops": 0,
+        "last_anti_entropy_ts": None,
+        "total_ops_synced": 0,
+    }
+
+    remote_path = str(Path(di_module.settings.db_path).with_name("remote.db"))
+    token = _create_remote_pairing_token(remote_path)
+    paired = client.post(
+        "/sync/pair", json={"method": "QR", "token": token, "pin": None}
+    )
+    assert paired.status_code == 200
+    peer = paired.json()
+    assert peer["device_name"] == "客厅一体机"
+    assert peer["domain"] == "shared:home"
+    assert peer["status"] == "paired"
+
+    peers = client.get("/sync/peers").json()["peers"]
+    assert len(peers) == 2
+    assert sum(item["is_self"] for item in peers) == 1
+
+    revoked = client.post(f"/sync/peers/{peer['peer_id']}/revoke")
+    assert revoked.status_code == 200
+    assert revoked.json() == {
+        "status": "revoked",
+        "peer_id": peer["peer_id"],
+        "domain": "shared:home",
+    }
+    assert client.post(f"/sync/peers/{peer['peer_id']}/revoke").status_code == 404
+
+
+def test_sync_pair_maps_invalid_token(client):
+    response = client.post(
+        "/sync/pair", json={"method": "QR", "token": "not-a-token"}
+    )
+    assert response.status_code == 422
+    assert response.json()["detail"] == "PAIRING_FAILED"
+
+
+
+def _sync_rows() -> list[tuple[str, dict]]:
+    connection = sqlite3.connect(di_module.settings.db_path)
+    rows = connection.execute(
+        "SELECT entity, payload FROM sync_oplog ORDER BY ts, op_id"
+    ).fetchall()
+    connection.close()
+    return [(entity, json.loads(payload)) for entity, payload in rows]
+
+
+def test_shared_write_queues_only_signed_shared_operations(client):
+    response = client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"},
+    )
+    assert response.status_code == 200
+    rows = _sync_rows()
+    assert {entity.split(":", 1)[0] for entity, _ in rows} >= {
+        "evidence",
+        "knowledge",
+    }
+    assert all(payload["scope"] == "shared:home" for _, payload in rows)
+    assert all(isinstance(payload.get("signature"), str) for _, payload in rows)
+
+
+def test_user_write_never_enters_sync_oplog(client):
+    response = client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "user:alice"},
+    )
+    assert response.status_code == 200
+    assert _sync_rows() == []
+
+
+def test_shared_forget_queues_knowledge_tombstone(client):
+    client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"},
+    )
+    response = client.post(
+        "/forget", json={"command": "\u5fd8\u8bb0\u90a3\u5f204\u6708\u652f\u51fa\u6e05\u5355", "confirm": True}
+    )
+    assert response.status_code == 200
+    tombstones = [
+        payload
+        for entity, payload in _sync_rows()
+        if entity.startswith("knowledge:") and payload.get("deleted") is True
+    ]
+    assert len(tombstones) == 1
+    assert tombstones[0]["scope"] == "shared:home"

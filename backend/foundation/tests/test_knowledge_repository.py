@@ -10,6 +10,7 @@ import pytest
 import pytest_asyncio
 
 from backend.foundation.core.models import (
+    Entity,
     Evidence,
     KnowledgeItem,
     KnowledgeKind,
@@ -17,6 +18,7 @@ from backend.foundation.core.models import (
     SourceType,
 )
 from backend.foundation.storage.repository import (
+    SqliteEntityRepo,
     SqliteEvidenceRepo,
     SqliteKnowledgeRepo,
 )
@@ -54,6 +56,11 @@ def _id(tag: str) -> str:
 def _evd_id(tag: str) -> str:
     body = (tag + "0" * 26)[:26]
     return f"evd_{body}"
+
+
+def _ent_id(tag: str) -> str:
+    body = (tag + "0" * 26)[:26]
+    return f"ent_{body}"
 
 
 def _knw(**kwargs) -> KnowledgeItem:
@@ -182,7 +189,54 @@ async def test_link_evidence_ignores_duplicate(repo):
 
 
 # ═══════════════════════════════════════════════════════
-# Group 3: Chinese keyword search via FTS5 (trigram)
+# Group 3: knowledge-entity association persistence
+# ═══════════════════════════════════════════════════════
+
+@pytest.mark.asyncio
+async def test_entity_links_survive_repository_reopen(repo):
+    kr, _, db_path = repo
+    entity_repo = SqliteEntityRepo(kr._db)
+    await entity_repo.save_entity(
+        Entity(id=_ent_id("grid"), name="国家电网", norm_name="国家电网", type="ORG")
+    )
+    await entity_repo.save_entity(
+        Entity(id=_ent_id("utility"), name="水电燃气", norm_name="水电燃气", type="CATEGORY")
+    )
+    item = _knw(
+        id=_id("entity"),
+        entities=["国家电网"],
+        relations=[{"from": "国家电网", "to": "水电燃气", "type": "BELONG_TO"}],
+    )
+    await kr.save(item)
+
+    reopened_db = await aiosqlite.connect(db_path)
+    reopened_db.row_factory = aiosqlite.Row
+    reopened = SqliteKnowledgeRepo(reopened_db)
+    fetched = await reopened.get(item.id)
+    await reopened_db.close()
+
+    assert fetched is not None
+    assert set(fetched.entities) == {"国家电网", "水电燃气"}
+
+
+@pytest.mark.asyncio
+async def test_resave_refreshes_entity_links(repo):
+    kr, _, _ = repo
+    entity_repo = SqliteEntityRepo(kr._db)
+    await entity_repo.save_entity(
+        Entity(id=_ent_id("old"), name="旧实体", norm_name="旧实体", type="UNKNOWN")
+    )
+    item_id = _id("refreshentity")
+    await kr.save(_knw(id=item_id, entities=["旧实体"]))
+    await kr.save(_knw(id=item_id, entities=[], updated_at=NOW + 1))
+
+    fetched = await kr.get(item_id)
+    assert fetched is not None
+    assert fetched.entities == []
+
+
+# ═══════════════════════════════════════════════════════
+# Group 4: Chinese keyword search via FTS5 (trigram)
 # ═══════════════════════════════════════════════════════
 
 @pytest.mark.asyncio

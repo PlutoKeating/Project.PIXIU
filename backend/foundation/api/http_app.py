@@ -1,10 +1,11 @@
 """PIXIU Foundation — API 网关 (FastAPI)
 
 按 docs/API.md 注册 REST 端点。已接入引擎 Service 的端点返回真实业务结果；
-依赖后续阶段（retrieval/flow/sync）的端点保持占位。
+已实现端点均返回真实持久化业务结果。
 """
 
 from __future__ import annotations
+from contextlib import asynccontextmanager
 
 import time
 from typing import Any
@@ -14,22 +15,42 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from ..core.models import SourceType
+from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
+from ..sync import PairingError, PairingMethod, PeerNotFound
 from .di import (
     get_conflict_repo,
     get_conflict_service,
     get_evidence_repo,
+    get_flow_service,
     get_ingestion_service,
     get_knowledge_service,
+    get_knowledge_repo,
+    get_optional_sync_service,
     get_preference_repo,
     get_preference_service,
+    get_retrieval_service,
     get_security_service,
+    get_sync_service,
+    start_sync_runtime,
+    stop_sync_runtime,
 )
 from .ws_manager import ws_manager
+
+@asynccontextmanager
+async def _lifespan(_: FastAPI):
+    await start_sync_runtime()
+    try:
+        yield
+    finally:
+        await stop_sync_runtime()
+
+
 
 app = FastAPI(
     title="PIXIU Memory API",
     description="面向银河麒麟 OS Agent 的去中心化分布式记忆系统 — API 网关",
     version="0.2.0",
+    lifespan=_lifespan,
 )
 
 app.add_middleware(
@@ -59,8 +80,21 @@ class ForgetRequest(BaseModel):
     confirm: bool = False
 
 
-def _placeholder_response(**extra) -> dict:
-    return {"status": "not_implemented", **extra}
+class MemoryQueryRequest(BaseModel):
+    text: str
+    context_hint: dict[str, Any] = Field(default_factory=dict)
+
+
+class FlowPromoteRequest(BaseModel):
+    source: MemoryTier
+    context_ids: list[str] = Field(min_length=1)
+    scope: str
+
+
+class SyncPairRequest(BaseModel):
+    method: PairingMethod
+    token: str = Field(min_length=1, max_length=16 * 1024)
+    pin: str | None = Field(default=None, min_length=6, max_length=6)
 
 
 def _latency_ms(started: float) -> int:
@@ -76,6 +110,7 @@ async def memory_write(
     knowledge=Depends(get_knowledge_service),
     preference=Depends(get_preference_service),
     conflict=Depends(get_conflict_service),
+    sync=Depends(get_optional_sync_service),
 ):
     """同步落 evidence，随后执行结构化/偏好提取/冲突仲裁，并推送 memory_ready 事件。"""
     started = time.monotonic()
@@ -83,6 +118,24 @@ async def memory_write(
     item = await knowledge.structure(evidence)
     prefs = await preference.extract(evidence)
     record = await conflict.arbitrate(item)
+    if body.scope.startswith("shared:") and sync is not None:
+        await sync.record_local(
+            f"evidence:{evidence.id}",
+            evidence.model_dump(mode="json"),
+            evidence.scope,
+        )
+        await sync.record_local(
+            f"knowledge:{item.id}",
+            item.model_dump(mode="json"),
+            item.scope,
+        )
+        for extracted in prefs:
+            await sync.record_local(
+                f"preference:{extracted.id}",
+                extracted.model_dump(mode="json"),
+                extracted.scope,
+            )
+
 
     await ws_manager.broadcast(
         "memory_ready",
@@ -105,11 +158,16 @@ async def memory_write(
     }
 
 
-# ─── 混合检索（占位，待 retrieval 阶段）──────────────────
+# ─── 混合检索 ────────────────────────────────────────────
 
 @app.post("/memory/query", tags=["Memory"], summary="混合检索")
-async def memory_query():
-    return _placeholder_response()
+async def memory_query(
+    body: MemoryQueryRequest,
+    retrieval=Depends(get_retrieval_service),
+):
+    """BM25 + ANN + Graph 三通道融合检索，返回 MemoryAtom。"""
+    atom = await retrieval.query(body.text, body.context_hint)
+    return atom.model_dump(mode="json")
 
 
 # ─── 偏好提取 ────────────────────────────────────────────
@@ -164,7 +222,12 @@ async def preference_history(id: str, pref_repo=Depends(get_preference_repo)):
 # ─── 自然语言遗忘 ────────────────────────────────────────
 
 @app.post("/forget", tags=["Memory"], summary="自然语言遗忘")
-async def forget(body: ForgetRequest, security=Depends(get_security_service)):
+async def forget(
+    body: ForgetRequest,
+    security=Depends(get_security_service),
+    knowledge_repo=Depends(get_knowledge_repo),
+    sync=Depends(get_optional_sync_service),
+):
     started = time.monotonic()
     result = await security.forget(body.command, confirm=body.confirm)
     if result.status == "pending":
@@ -173,6 +236,13 @@ async def forget(body: ForgetRequest, security=Depends(get_security_service)):
             "cascade": result.cascade,
             "irreversible": result.irreversible,
         }
+    if sync is not None:
+        for forgotten_id in result.forgotten_ids:
+            item = await knowledge_repo.get(forgotten_id)
+            if item is not None and item.scope.startswith("shared:"):
+                await sync.record_local(
+                    f"knowledge:{item.id}", {}, item.scope, deleted=True
+                )
     return {
         "status": "forgotten",
         "forgotten_ids": result.forgotten_ids,
@@ -188,33 +258,83 @@ async def conflicts(conflict_repo=Depends(get_conflict_repo)):
     return {"conflicts": [r.model_dump(mode="json") for r in records]}
 
 
-# ─── 记忆流转（占位，待 flow 阶段）───────────────────────
+# ─── 记忆流转 ───────────────────────────────────────────
 
 @app.post("/memory/flow/promote", tags=["Flow"], summary="短/中期记忆沉淀到长期")
-async def flow_promote():
-    return _placeholder_response()
+async def flow_promote(
+    body: FlowPromoteRequest,
+    flow=Depends(get_flow_service),
+):
+    started = time.monotonic()
+    try:
+        knowledge_ids = await flow.promote(
+            body.source,
+            body.context_ids,
+            body.scope,
+        )
+    except FlowContextNotFound as exc:
+        raise HTTPException(status_code=404, detail="NOT_FOUND") from exc
+    except InvalidFlowTransition as exc:
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+    return {
+        "promoted_count": len(knowledge_ids),
+        "knowledge_ids": knowledge_ids,
+        "latency_ms": _latency_ms(started),
+    }
 
 
-# ─── 设备同步（占位，待 sync 阶段）───────────────────────
+# ─── 设备同步 ────────────────────────────────────────────
 
 @app.post("/sync/pair", tags=["Sync"], summary="设备配对")
-async def sync_pair():
-    return _placeholder_response()
+async def sync_pair(body: SyncPairRequest, sync=Depends(get_sync_service)):
+    try:
+        peer = await sync.pair(body.method, body.token, pin=body.pin)
+    except PairingError as exc:
+        raise HTTPException(status_code=422, detail="PAIRING_FAILED") from exc
+    await ws_manager.broadcast(
+        "sync_event",
+        {
+            "type": "PEER_ONLINE",
+            "peer_id": peer.id,
+            "peer_name": peer.name,
+            "timestamp": int(time.time()),
+        },
+    )
+    return {
+        "peer_id": peer.id,
+        "device_name": peer.name,
+        "domain": peer.domain,
+        "status": "paired",
+    }
 
 
 @app.get("/sync/peers", tags=["Sync"], summary="节点列表")
-async def sync_peers():
-    return _placeholder_response()
+async def sync_peers(sync=Depends(get_sync_service)):
+    return {"peers": await sync.peers()}
 
 
 @app.get("/sync/status", tags=["Sync"], summary="同步状态")
-async def sync_status():
-    return _placeholder_response()
+async def sync_status(sync=Depends(get_sync_service)):
+    status = await sync.status()
+    return status.model_dump(mode="json")
 
 
 @app.post("/sync/peers/{id}/revoke", tags=["Sync"], summary="解绑设备")
-async def sync_revoke(id: str):
-    return _placeholder_response(peer_id=id)
+async def sync_revoke(id: str, sync=Depends(get_sync_service)):
+    try:
+        peer = await sync.revoke(id)
+    except PeerNotFound as exc:
+        raise HTTPException(status_code=404, detail="PEER_NOT_FOUND") from exc
+    await ws_manager.broadcast(
+        "sync_event",
+        {
+            "type": "PEER_OFFLINE",
+            "peer_id": peer.id,
+            "peer_name": peer.name,
+            "timestamp": int(time.time()),
+        },
+    )
+    return {"status": "revoked", "peer_id": peer.id, "domain": peer.domain}
 
 
 if __name__ == "__main__":

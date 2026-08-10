@@ -154,6 +154,28 @@ def _knowledge_search_text(item: KnowledgeItem) -> str:
     return " ".join(parts)
 
 
+def _knowledge_entity_names(item: KnowledgeItem) -> list[str]:
+    """收集知识显式实体与关系两端的名称，去重并保序。"""
+    names: list[str] = []
+    seen: set[str] = set()
+
+    def _add(value: object) -> None:
+        name = str(value or "").strip()
+        key = name.casefold()
+        if name and key not in seen:
+            seen.add(key)
+            names.append(name)
+
+    for name in item.entities:
+        _add(name)
+    for relation in item.relations:
+        if not isinstance(relation, dict):
+            continue
+        _add(relation.get("from") or relation.get("src"))
+        _add(relation.get("to") or relation.get("dst"))
+    return names
+
+
 # ══════════════════════════════════════════════════════════
 # KnowledgeRepository
 # ══════════════════════════════════════════════════════════
@@ -216,6 +238,36 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             item.evidence_ids = mapping.get(item.id, [])
         return items
 
+    async def _attach_entity_names(
+        self, items: list[KnowledgeItem]
+    ) -> list[KnowledgeItem]:
+        """批量回填 knowledge_entities，数据库重连后仍保留图关联。"""
+        if not items:
+            return items
+        placeholders = ",".join("?" * len(items))
+        cursor = await self._db.execute(
+            f"""SELECT ke.knowledge_id, e.name
+                FROM knowledge_entities ke
+                JOIN entities e ON e.id = ke.entity_id
+                WHERE ke.knowledge_id IN ({placeholders})
+                ORDER BY e.name""",
+            [item.id for item in items],
+        )
+        rows = await cursor.fetchall()
+        mapping: dict[str, list[str]] = {item.id: [] for item in items}
+        for row in rows:
+            mapping.setdefault(row["knowledge_id"], []).append(row["name"])
+        for item in items:
+            item.entities = mapping.get(item.id, [])
+        return items
+
+    async def _attach_metadata(
+        self, items: list[KnowledgeItem]
+    ) -> list[KnowledgeItem]:
+        await self._attach_evidence_ids(items)
+        await self._attach_entity_names(items)
+        return items
+
     async def save(self, item: KnowledgeItem) -> str:
         """事务性保存：knowledge_items + knowledge_evidence + knowledge_fts。
 
@@ -253,6 +305,27 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
                     [(item.id, eid) for eid in item.evidence_ids],
                 )
 
+            # 刷新知识-实体关联。GraphBuilder 在保存知识前已确保实体存在；
+            # 关系端点也纳入关联，使类别节点可直接召回该知识。
+            await self._db.execute(
+                "DELETE FROM knowledge_entities WHERE knowledge_id = ?", (item.id,)
+            )
+            entity_names = _knowledge_entity_names(item)
+            if entity_names:
+                placeholders = ",".join("?" * len(entity_names))
+                cursor = await self._db.execute(
+                    f"""SELECT id, name, norm_name FROM entities
+                        WHERE name COLLATE NOCASE IN ({placeholders})
+                           OR norm_name COLLATE NOCASE IN ({placeholders})""",
+                    [*entity_names, *entity_names],
+                )
+                entity_rows = await cursor.fetchall()
+                await self._db.executemany(
+                    "INSERT OR IGNORE INTO knowledge_entities (knowledge_id, entity_id) "
+                    "VALUES (?, ?)",
+                    [(item.id, row["id"]) for row in entity_rows],
+                )
+
             # 同一事务内同步 FTS 索引（rowid = knowledge_items 的稳定 rowid）
             cursor = await self._db.execute(
                 "SELECT rowid FROM knowledge_items WHERE id = ?", (item.id,)
@@ -277,7 +350,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
         row = await cursor.fetchone()
         if row is None:
             return None
-        items = await self._attach_evidence_ids([_row_to_knowledge(row)])
+        items = await self._attach_metadata([_row_to_knowledge(row)])
         return items[0]
 
     async def search_fts(self, query: str, limit: int = 20) -> list[KnowledgeItem]:
@@ -292,7 +365,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (query, limit),
         )
         rows = await cursor.fetchall()
-        return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
+        return await self._attach_metadata([_row_to_knowledge(r) for r in rows])
 
     async def search_by_title(self, query: str, limit: int = 20) -> list[KnowledgeItem]:
         """按 title 子串模糊匹配（用于遗忘定位）。"""
@@ -304,7 +377,7 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (f"%{_escape_like(query)}%", limit),
         )
         rows = await cursor.fetchall()
-        return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
+        return await self._attach_metadata([_row_to_knowledge(r) for r in rows])
 
     async def save_vector(self, knowledge_id: str, dim: int, vec: bytes) -> None:
         """保存知识条目的向量（仅存储，不做 ANN 检索）。"""
@@ -338,7 +411,16 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             (KnowledgeStatus.ACTIVE.value,),
         )
         rows = await cursor.fetchall()
-        return await self._attach_evidence_ids([_row_to_knowledge(r) for r in rows])
+        return await self._attach_metadata([_row_to_knowledge(r) for r in rows])
+
+    async def list_vectors(self) -> list[tuple[str, int, bytes]]:
+        """列出全部知识向量 (knowledge_id, dim, vec_bytes)（检索 ANN 通道使用）。"""
+        await self._ensure_vec()
+        cursor = await self._db.execute(
+            "SELECT knowledge_id, dim, vec FROM knowledge_vec"
+        )
+        rows = await cursor.fetchall()
+        return [(r["knowledge_id"], r["dim"], r["vec"]) for r in rows]
 
 
 def _escape_like(value: str) -> str:
@@ -500,8 +582,13 @@ class SqliteEntityRepo(EntityRepository):
         return [Relation(src=r["src"], dst=r["dst"], type=r["type"]) for r in rows]
 
     async def find_entity_by_name(self, name: str) -> Optional[Entity]:
-        norm = name.strip().lower()
-        cursor = await self._db.execute("SELECT * FROM entities WHERE norm_name = ?", (norm,))
+        norm = name.strip()
+        cursor = await self._db.execute(
+            """SELECT * FROM entities
+               WHERE norm_name = ? COLLATE NOCASE OR name = ? COLLATE NOCASE
+               LIMIT 1""",
+            (norm, norm),
+        )
         row = await cursor.fetchone()
         return _row_to_entity(row) if row else None
 

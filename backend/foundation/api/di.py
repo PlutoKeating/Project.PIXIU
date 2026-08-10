@@ -20,6 +20,9 @@ from backend.engine.security import SecurityService
 
 from ..core.config import settings
 from ..core.logger import get_logger
+from .dbus_service import PixiuMemoryHandler
+from ..flow import FlowService, SqliteFlowStore
+from ..retrieval import RetrievalService
 from ..storage.migrations import apply_pending
 from ..storage.repository import (
     SqliteConflictRepo,
@@ -28,10 +31,14 @@ from ..storage.repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
+from ..sync import SqliteSyncStore, SyncService
+from ..sync.runtime import SyncRuntime, create_sync_runtime
+from ..sync.materializer import FoundationMaterializer
 
 _log = get_logger(__name__)
 
 _db: aiosqlite.Connection | None = None
+_sync_runtime: SyncRuntime | None = None
 
 
 async def get_db() -> aiosqlite.Connection:
@@ -93,6 +100,13 @@ async def get_knowledge_service(
     )
 
 
+
+async def get_knowledge_repo(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> SqliteKnowledgeRepo:
+    return SqliteKnowledgeRepo(db)
+
+
 async def get_conflict_service(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> ConflictService:
@@ -114,4 +128,113 @@ async def get_security_service(
     return SecurityService(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
+    )
+
+
+async def get_retrieval_service(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> RetrievalService:
+    return RetrievalService(
+        knw_repo=SqliteKnowledgeRepo(db),
+        entity_repo=SqliteEntityRepo(db),
+        evidence_repo=SqliteEvidenceRepo(db),
+        embedder=get_embedder(),
+    )
+
+
+async def get_flow_service(
+    db: aiosqlite.Connection = Depends(get_db),
+    ingestion: IngestionService = Depends(get_ingestion_service),
+    knowledge: KnowledgeService = Depends(get_knowledge_service),
+) -> FlowService:
+    """组装短/中期持久化与长期知识沉淀流水线。"""
+    store = SqliteFlowStore(db)
+
+    async def _promote_context(context):
+        payload = dict(context.payload)
+        source_type = str(payload.pop("source_type", "MANUAL_CONFIG"))
+        raw = payload.pop("raw", payload)
+        if not isinstance(raw, dict):
+            raise ValueError("flow context raw payload must be an object")
+        evidence = await ingestion.ingest(source_type, raw, context.scope)
+        item = await knowledge.structure(evidence)
+        return item.id
+
+    return FlowService(
+        store,
+        _promote_context,
+        knowledge_repo=SqliteKnowledgeRepo(db),
+    )
+
+
+async def get_sync_service(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> SyncService:
+    return SyncService(
+        SqliteSyncStore(db),
+        device_name=settings.sync_device_name,
+        domain=settings.sync_domain,
+        key_passphrase=settings.sync_key_passphrase,
+        materializer=FoundationMaterializer(
+            evidence_repo=SqliteEvidenceRepo(db),
+            knowledge_repo=SqliteKnowledgeRepo(db),
+            preference_repo=SqlitePreferenceRepo(db),
+        ),
+    )
+
+
+
+async def get_optional_sync_service(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> SyncService | None:
+    try:
+        return await get_sync_service(db)
+    except ValueError:
+        return None
+
+
+
+async def start_sync_runtime() -> SyncRuntime | None:
+    """Start LAN synchronization only after explicit opt-in configuration."""
+    global _sync_runtime
+    if not settings.sync_network_enabled:
+        return None
+    if _sync_runtime is None:
+        db = await get_db()
+        service = await get_sync_service(db)
+        _sync_runtime = await create_sync_runtime(
+            service, SqliteSyncStore(db), settings
+        )
+        await _sync_runtime.start()
+        _log.info("Sync networking started on port %s", settings.sync_port)
+    return _sync_runtime
+
+
+async def stop_sync_runtime() -> None:
+    global _sync_runtime
+    if _sync_runtime is not None:
+        await _sync_runtime.stop()
+        _sync_runtime = None
+        _log.info("Sync networking stopped")
+
+
+async def get_dbus_handler(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> PixiuMemoryHandler:
+    """组装 D-Bus 业务 handler（复用与 HTTP 相同的 Service 实例注入）。"""
+    ingestion = await get_ingestion_service(db)
+    knowledge = await get_knowledge_service(db)
+    preference = await get_preference_service(db)
+    conflict = await get_conflict_service(db)
+    security = await get_security_service(db)
+    retrieval = await get_retrieval_service(db)
+    sync = await get_optional_sync_service(db)
+    return PixiuMemoryHandler(
+        ingestion=ingestion,
+        knowledge=knowledge,
+        preference=preference,
+        conflict=conflict,
+        security=security,
+        retrieval=retrieval,
+        sync_status=sync.status if sync is not None else None,
     )
