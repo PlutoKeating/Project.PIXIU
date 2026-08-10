@@ -416,9 +416,10 @@
 }
 ```
 
-> **实际错误形状（2026-08-11）**：FastAPI 返回的错误与上述契约形状存在两种差异，
-> 前端已兼容：
-> - HTTPException 4xx/5xx 返回 `{"detail": "<错误码>"}`（如 404 时
->   `{"detail":"NOT_FOUND"}`）；
-> - Pydantic 校验失败返回 422 + `{"detail":[{"loc":[...],"msg":"...","type":"..."}]}`。
-> 前端 `parseBackendError` 同时解析 `error/detail` 两种形状，保证错误码不丢失。
+> **错误响应实现（2026-08-11）**：后端经 request_id 中间件将错误响应统一对齐
+> 上述 §5 契约（`{error, message, request_id}`）：
+> - HTTPException → 原状态码 + `{error:<错误码>, message:<错误码>, request_id}`；
+> - 参数校验失败 → 400 + `INVALID_REQUEST`；
+> - 未捕获异常 → 500 + `INTERNAL_ERROR`；
+> - 所有响应携带 `X-Request-Id` 响应头。
+> 前端 `parseBackendError` 同时兼容 `error` 与早期 `detail` 两种形状，错误码不丢失。
