@@ -3,8 +3,10 @@
 > **角色**：常驻记忆服务中的业务逻辑层，处理所有"记忆写入→结构化→应用"的流程。
 > **与模块 C 的边界**：引擎**消费** `foundation/core/` 中的 Repository 接口（ABC）和数据模型，**不依赖** `foundation/` 中的任何实现代码。
 
-> **状态（2026-08-07）**：全部子包已实现并通过 SQLite 全链路集成测试；kylin 为真实
-> 麒麟 SDK 适配（无 mock），pybind11 绑定源码就绪，待麒麟环境构建验证。
+> **状态（2026-08-11）**：全部子包已实现并通过 SQLite 全链路集成测试（麒麟 V11
+> 真机全量 pytest 364 passed）；kylin 为真实麒麟 SDK 适配（无 mock），pybind11
+> 绑定源码就绪，待麒麟环境构建验证。整包 .deb 已随包安装引擎源码（未构建绑定
+> 时 embedding 相关端点如实返回 `KylinSDKUnavailableError`）。
 
 ---
 

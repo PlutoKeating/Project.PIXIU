@@ -14,7 +14,7 @@
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Frontend-Qt5%20%2F%20UKUI-41CD52?style=flat-square&logo=qt&logoColor=white)](frontend/docs/ARCHITECTURE.md)
 [![Latency](https://img.shields.io/badge/检索延迟-%E2%89%A4500ms-success?style=flat-square)](docs/AcceptanceTestSpecification.md)
-[![Status](https://img.shields.io/badge/status-设计阶段-yellow?style=flat-square)](docs/DEVELOPMENT_PLAN.md)
+[![Status](https://img.shields.io/badge/status-开发中·可安装-blue?style=flat-square)](docs/DEVELOPMENT_PLAN.md)
 
 [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API 规格](docs/API.md) · [验收规范](docs/AcceptanceTestSpecification.md) · [赛题原文](docs/OriginProblemDescription.md)
 
@@ -128,6 +128,12 @@ Project.PIXIU/
 │
 ├── frontend/                  ★ Module A: UKUI 桌面客户端
 │   └── docs/                  # 前端开发文档
+│
+├── build/release/             ★ 打包与 CICD 脚手架（整包 .deb / staging / production）
+│   ├── Makefile               # make deb / publish-staging / publish-production
+│   ├── profiles/              # 目标平台画像（麒麟 V11 / Ubuntu）
+│   ├── scripts/               # 构建/预置/VM 部署冒烟/发布脚本
+│   └── debian/                # deb 元数据与维护脚本
 ```
 
 ## 文档导航
@@ -136,6 +142,8 @@ Project.PIXIU/
 |------|------|
 | [开发计划与分工](docs/DEVELOPMENT_PLAN.md) | 团队结构、模块划分、契约定义 |
 | [总体架构](docs/ARCHITECTURE.md) | 分层设计、数据模型、端到端流程 |
+| [快速启动](docs/QUICK_START.md) | 本地开发与整包安装快速路径 |
+| [打包发布 CICD](build/release/README.md) | 整包 .deb、staging/production 发布、麒麟 VM 实测 |
 | [API 规格](docs/API.md) | 前端↔后端通信契约（12 端点）|
 | [Module A 前端架构](frontend/docs/ARCHITECTURE.md) | UKUI 交互形态、组件树、kysdk 集成 |
 | [Module B 引擎架构](backend/engine/docs/ARCHITECTURE.md) | 引擎内部设计与实现机制 |

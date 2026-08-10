@@ -8,15 +8,20 @@
 
 ---
 
-## 实现状态（2026-08-07）
+## 实现状态（2026-08-11）
 
-- ❌ **尚未开始**：`frontend/` 目前仅有文档，尚无 `src/`、`CMakeLists.txt`、`resources/`。
-- 后端可联调状态：`/memory/write`、`/preference/extract`、`/preference/{id}/history`、
-  `/forget`、`/conflicts` 已实现真实逻辑；`/memory/query`、`/sync/*`、
-  `/memory/flow/promote` 为占位（返回 `not_implemented`）。
-- 开发基线：main（2026-08-07 已合入集成工作），契约以 `docs/API.md` 为准。
+- ✅ **独立功能与 UI/UX polish 全部完成**：悬浮球/侧边聊天窗/记忆面板/遗忘/
+  录入/设置/配对/解绑/同步管理/WS 事件路由/偏好提取；i18n 180 条 0 未完成；
+  双路径（KYSDK OFF/ON）ctest 31/31 全绿（含契约一致性测试
+  `t_contract_fixtures`）；`.deb` 打包产物已在麒麟 V11 真机安装验证。
+- 后端契约（2026-08-10 合入 main）：12 个 REST 端点已全部真实实现，前端
+  传输层与解析已按真实响应形状对齐（FastAPI `{"detail":...}` 错误形状兼容）。
+- 剩余均为**后端契约阻塞或人工验收项**：WS `/events` 真实广播（见
+  `BACKEND_ISSUES.md`）、证据详情/偏好列表/QR 令牌端点、真实麒麟 SDK 环境
+  性能与原生快捷键人工复测。
 
-> 下文的文件清单为任务定义与优先级，全部为待实现项。
+> 下文的文件清单为任务定义与优先级；已实现项以"实现状态"与
+> `frontend/docs/DEVELOPMENT_PLAN.md` 为准。
 
 ## 实现状态（2026-08-08 更新）
 

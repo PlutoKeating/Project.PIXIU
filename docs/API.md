@@ -18,20 +18,22 @@
 | 方法 | 路径 | 说明 | 实现状态 |
 |------|------|------|----------|
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
-| POST | `/memory/query` | 混合检索 | ⬜ 占位（待 retrieval 阶段） |
+| POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
 | GET | `/preference/{id}/history` | 偏好版本回溯 | ✅ 已实现 |
 | POST | `/forget` | 自然语言遗忘 | ✅ 已实现 |
 | GET | `/conflicts` | 冲突审计列表 | ✅ 已实现 |
-| POST | `/memory/flow/promote` | 短/中期→长期流转 | ⬜ 占位（待 flow 阶段） |
-| POST | `/sync/pair` | 设备配对 | ⬜ 占位（待 sync 阶段） |
-| GET | `/sync/peers` | 节点列表 | ⬜ 占位（待 sync 阶段） |
-| GET | `/sync/status` | 同步状态 | ⬜ 占位（待 sync 阶段） |
-| POST | `/sync/peers/{id}/revoke` | 解绑设备 | ⬜ 占位（待 sync 阶段） |
-| WS | `/events` | 事件推送 | ✅ 已实现（连接/心跳/广播；`memory_ready` 已接入写入链路） |
+| POST | `/memory/flow/promote` | 短/中期→长期流转 | ✅ 已实现（2026-08-10） |
+| POST | `/sync/pair` | 设备配对（QR/PIN + 签名令牌） | ✅ 已实现（2026-08-10） |
+| GET | `/sync/peers` | 节点列表 | ✅ 已实现（2026-08-10） |
+| GET | `/sync/status` | 同步状态 | ✅ 已实现（2026-08-10） |
+| POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
+| WS | `/events` | 事件推送 | 🟡 契约已实现（连接/心跳/广播）；路由注册待 Module C 修复（见 `frontend/docs/BACKEND_ISSUES.md`） |
 
-> 状态说明（2026-08-07）：带 ⬜ 的端点为契约占位，当前返回
-> `{"status": "not_implemented"}`，待对应模块实现后按本文档契约落地。
+> 状态说明（2026-08-11）：12 个 REST 端点已全部按本文档契约真实实现并接入
+> 引擎/检索/流转/同步服务（`feat/foundation` 2026-08-10 合入 main）。
+> 剩余未落地：WS `conflict_detected`、`forget_confirmation` 两类事件后端尚未
+> 广播（见 §4）；`/events` 路由注册问题见 `frontend/docs/BACKEND_ISSUES.md`。
 
 ---
 
@@ -345,7 +347,7 @@
 }
 ```
 
-### 4.2 conflict_detected ⬜ 占位（检测到冲突时暂未广播，待接入）
+### 4.2 conflict_detected ⬜ 未广播（后端尚无广播调用；前端已具备路由处理）
 
 ```jsonc
 {
@@ -360,7 +362,7 @@
 }
 ```
 
-### 4.3 forget_confirmation ⬜ 占位（待接入）
+### 4.3 forget_confirmation ⬜ 未广播（后端尚无广播调用；前端已具备路由处理）
 
 ```jsonc
 {
@@ -377,7 +379,7 @@
 }
 ```
 
-### 4.4 sync_event ⬜ 占位（待 sync 阶段）
+### 4.4 sync_event ✅ 已实现（配对/解绑时已广播）
 
 ```jsonc
 {
@@ -413,3 +415,10 @@
   "request_id": "req_..."
 }
 ```
+
+> **实际错误形状（2026-08-11）**：FastAPI 返回的错误与上述契约形状存在两种差异，
+> 前端已兼容：
+> - HTTPException 4xx/5xx 返回 `{"detail": "<错误码>"}`（如 404 时
+>   `{"detail":"NOT_FOUND"}`）；
+> - Pydantic 校验失败返回 422 + `{"detail":[{"loc":[...],"msg":"...","type":"..."}]}`。
+> 前端 `parseBackendError` 同时解析 `error/detail` 两种形状，保证错误码不丢失。

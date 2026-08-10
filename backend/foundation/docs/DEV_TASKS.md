@@ -7,7 +7,7 @@
 
 ## 实现状态（2026-08-10）
 
-### ✅ 已完成（Phase 0～Phase 3）
+### ✅ 已完成（Phase 0～Phase 5）
 
 - `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
@@ -17,12 +17,14 @@
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
 - `api/`：全部 REST 契约端点已真实接入（含 `/sync/pair`、`/sync/peers`、
   `/sync/status`、`/sync/peers/{id}/revoke`），FastAPI lifespan 仅在显式启用时启动同步网络；
-  `ws.py` + `ws_manager.py` 提供 `/events` 和 `sync_event`，`di.py` 组装真实服务与仓储
+  `ws.py` + `ws_manager.py` 提供 `/events` 和 `sync_event`，`di.py` 组装真实服务与仓储；
+  D-Bus 服务 `com.kylin.pixiu.Memory`（`dbus_service.py`）已实现并镜像
+  Write/Query/Forget/SyncStatus（复用 `di.py` 注入的服务，无重复实现）
 - `retrieval/`：路由、FTS5 BM25、INT8 向量召回、持久化图召回、三通道并发、
   scope/time_range 硬过滤、RRF 融合、词法重排、查询类别聚合与 evidence 回溯
 - `flow/`：短/中期上下文持久化、批量预校验与幂等 promote、长期知识可逆 demote、
   分层 TTL 和到期内容清理
-- 测试：Foundation 289 项 + Engine 21 项，共 310 项全绿
+- 测试：Foundation + Engine 全量通过（麒麟 V11 真机 pytest 364 passed）
 - `sync/`：加密 Ed25519 身份、QR/PIN 配对、LWW+vclock、反熵、ACK/墓碑回收、
   mDNS 信任过滤、TLS 1.3 mTLS、Gossip 重传、远端物化及默认关闭的运行时
 
@@ -30,8 +32,10 @@
 
 - `retrieval/` 环境验收：在银河麒麟机器上使用真实麒麟 embedding 与正式数据集完成
   top-1 召回率≥85%、P95≤500ms 验证（当前 Windows 环境无原生扩展）
-- `eval/`：评测引擎与指标脚本
-- `api/`：D-Bus 服务（`dbus_service.py`）真实实现
+- `eval/`：麒麟真实 SDK + 正式数据集的评测报告（框架已交付：6 项验收指标 +
+  recall@1/3/5、P50/P95/P99、scope 隔离、同步收敛/系统资源基准）
+- `api/`：WS `/events` 路由注册修复（`http_app.py` 未导入 `ws.py`、
+  `ws.py` 未导入 `fastapi.WebSocket`，见 `frontend/docs/BACKEND_ISSUES.md`）
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
 

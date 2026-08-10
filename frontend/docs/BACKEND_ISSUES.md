@@ -6,6 +6,9 @@
 > **边界**：本文件仅为问题记录，Module A 未修改任何 `backend/` 文件；修复由
 > Module C 负责人执行。
 > **状态**：⏳ 待 Module C 处理。
+> **复核（2026-08-11）**：`feat/foundation` 合入 main 后两项问题仍存在
+> （`http_app.py` 未导入 `ws.py`、`ws.py` 未导入 `fastapi.WebSocket`）；
+> 前端已具备退避重连与事件路由，修复后无需改前端。
 
 ---
 

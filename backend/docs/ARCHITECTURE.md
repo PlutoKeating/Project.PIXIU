@@ -3,8 +3,10 @@
 > 本文档从后端整体视角阐述系统设计，详细设计分别见 engine/ 和 foundation/ 的子架构文档。
 > 这是两端开发者之间的"接口层"文档。
 >
-> **状态（2026-08-07）**：引擎与基础设施 Phase 1 已完成并集成（229 项测试通过）；
-> 检索（retrieval）、流转（flow）、同步（sync）、评测（eval）尚未实现。
+> **状态（2026-08-11）**：引擎核心管线已完成并集成；foundation Phase 0~5 全部完成
+> （retrieval/flow/sync/eval/D-Bus，12 个 REST 端点真实实现）；全量测试通过
+> （麒麟 V11 真机 pytest 364 passed）。剩余：麒麟 SDK 绑定构建与真机性能验收、
+> WS `/events` 路由注册修复。
 
 ---
 
@@ -43,12 +45,13 @@
     engine/knowledge: Structurer → Graph → EmbedWriter
     engine/preference: Extractor（若含偏好信号）
     engine/conflict: Arbiter（与既有知识比对）
-  → foundation/sync: CRDT 广播（⚠️ 待实现，Phase 3）
+  → foundation/sync: CRDT 广播（✅ Phase 3 已实现，网络运行时默认关闭）
 ```
 
 ### 2.2 检索路径（基础设施主导）
 
-> ⚠️ **尚未实现**（依赖 foundation/retrieval，Phase 2），`/memory/query` 暂返回占位。
+> ✅ **已实现**（foundation/retrieval，Phase 2，2026-08-10 合入 main）。
+> 真实检索依赖麒麟 embedding：无 SDK 绑定环境返回 `KylinSDKUnavailableError`。
 
 ```
 query

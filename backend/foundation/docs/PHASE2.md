@@ -1,6 +1,7 @@
 # Module C · Phase 2 记忆流转验收报告
 
-> 日期：2026-08-09  
+> 日期：2026-08-09（后续状态：sync Phase 3、eval Phase 4/5、D-Bus 已在此后补齐，
+> 见 `PHASE3.md`/`PHASE4.md` 与 `ARCHITECTURE.md`；本文为 Phase 2 交付记录）
 > 范围：`backend/foundation/flow/`、必要的 Foundation 存储/API 接入、测试与模块文档。  
 > 环境：Anaconda `pixiu`，Python 3.10.20。
 

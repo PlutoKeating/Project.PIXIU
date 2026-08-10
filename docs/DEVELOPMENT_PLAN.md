@@ -39,10 +39,10 @@
 
 | 模块 | 负责人 | 当前状态 | 已实现 | 待实现 / 阻塞 |
 |------|--------|----------|--------|--------|
-| A · frontend | 团队负责人 | ✅ 独立功能完成 + UI/UX polish 完成 | Qt5/CMake 应用骨架；悬浮球/聊天框/记忆面板/遗忘/录入/设置/配对/解绑/同步 Tab；WS 事件路由；i18n（180 条）；UKUI 主题跟随/通知/快捷键/`.deb` 打包；双路径 ctest 30/30 全绿；真实桌面截图留证 | 真实麒麟会话人工复测（全局快捷键等）；后端契约阻塞：偏好列表/证据详情/二维码令牌/真实配对闭环/真实 WS 事件广播 |
+| A · frontend | 团队负责人 | ✅ 独立功能完成 + UI/UX polish 完成 | Qt5/CMake 应用骨架；悬浮球/聊天框/记忆面板/遗忘/录入/设置/配对/解绑/同步 Tab；WS 事件路由；i18n（180 条）；UKUI 主题跟随/通知/快捷键/`.deb` 打包；双路径 ctest 31/31 全绿；真实桌面截图留证 | 真实麒麟会话人工复测（全局快捷键等）；后端契约阻塞：偏好列表/证据详情/二维码令牌/真实配对闭环/真实 WS 事件广播 |
 | B · engine | @Ø是铯 | ✅ 核心管线已实现并集成（较 08-07 无新增） | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
-| C · foundation | @17% | ✅ Phase 0~5 全部完成 | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务；同步/流转 API 全部真实接入；测试全绿（Module C 报告口径 354 项） | 麒麟真实环境性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
-| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（函数级统计 342+21 个）；frontend ctest 30/30；自动回归脚本 `frontend/scripts/regression.sh` | 测试数据集、性能压测、Docker 容器化、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+| C · foundation | @17% | ✅ Phase 0~5 全部完成 | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务；同步/流转 API 全部真实接入；测试全绿（麒麟 V11 真机 364 passed） | 麒麟真实环境性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
+| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（麒麟 V11 真机 364 passed）；frontend ctest 31/31；自动回归脚本 `frontend/scripts/regression.sh`；打包发布脚手架 `build/release/` | 测试数据集、性能压测、Docker 容器化、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -60,7 +60,7 @@
 | `backend/foundation/eval/` | 评测框架 Phase 4/5：6 项验收指标 + recall@1/3/5、P50/P95/P99、scope 隔离；同步收敛与系统资源基准；stub 自检：收敛率 1.0、同步 P95 55ms |
 | `backend/foundation/api/` | D-Bus 服务 `com.kylin.pixiu.Memory` 实现（Write/Query/Forget/SyncStatus 镜像 HTTP）；桌面传输与共享服务对齐；`/events` 广播扩展至 sync/conflict 事件 |
 | `backend/foundation/storage/` `core/` | schema 扩至 16 张表（sync_identity/peers/state/acks/meta）；仓储持久化 knowledge↔entity 链接；核心契约加固 |
-| 测试与文档 | foundation+engine 测试全绿（函数级统计 342+21 个；Module C 报告口径 354 项）；PHASE0~4、BASELINE、任务书/架构更新；`docs/compose/spec/` 阶段规格 6 份 |
+| 测试与文档 | foundation+engine 测试全绿（麒麟 V11 真机 pytest 364 passed）；PHASE0~4、BASELINE、任务书/架构更新；`docs/compose/spec/` 阶段规格 6 份 |
 
 **未完成 / 遗留**：麒麟真实 embedding + 正式数据集的召回率/P95 验收（当前为 stub
 基线 P95=13.3ms）；真实局域网多设备互操作；**WS `/events` 注册问题仍未修复**（见下方阻塞项）。
@@ -70,7 +70,7 @@
 | 更新位置 | 内容 |
 |----------|------|
 | `frontend/src/`（70 个文件） | Qt5 应用全量实现：悬浮球（自由拖拽/角标/右键菜单）、侧边聊天窗（欢迎页/建议卡/多行输入/证据卡/骨架屏）、记忆面板（偏好/冲突/同步三 Tab）、遗忘/录入/设置/配对/解绑对话框、EventRouter、SyncController、健康探测、主题感知图标 |
-| `frontend/tests/`（30 个文件） | QtTest 双路径（KYSDK OFF/ON）30/30 全绿；端到端回归（首击、窗口恢复等）；自动回归脚本 `scripts/regression.sh` |
+| `frontend/tests/`（30 个文件 + 契约套件） | QtTest 双路径（KYSDK OFF/ON）31/31 全绿；端到端回归（首击、窗口恢复等）与后端契约一致性测试；自动回归脚本 `scripts/regression.sh` |
 | `frontend/resources/` | 设计令牌/全局 QSS/主题感知图标/内嵌 pixiu.svg/i18n（en_US 180 条 0 未完成） |
 | `frontend/docs/`（85 个文件） | 任务书/架构/执行计划/UI_UX_POLISH/适配报告更新 + 真实桌面截图（明暗主题、UI 演示 36 张） |
 | `frontend/debian/` `scripts/` | `.deb` 打包 + desktop 入口；WS 演示桩与桌面复验脚本 |
@@ -86,6 +86,34 @@
 `feat/foundation` 最新提交（b2d6abe）中**仍未修复**（`ws.py` 不在该分支改动列表中）。
 前端真实事件链路（`memory_ready`/`conflict_detected`/`sync_event` 广播）仍依赖
 Module C 修复后复测；Module A 已用测试桩完成 UI 侧冒烟。
+
+### 1.8 打包发布与测试交付（2026-08-11 更新）
+
+**全量 deb 打包 + CICD 脚手架（`build/release/`，main 分支）**
+
+- 一条命令产出整包 .deb：`make -C build/release deb`（前端构建+ctest → 后端
+  源码随包 → 目标 Python ABI 离线 wheels → dpkg 打包），发布用
+  `publish-staging` / `publish-production`。
+- 目标平台画像 `profiles/`（麒麟 V11 x86_64 / 通用 Ubuntu）把发行版事实全部
+  编码（apt 包名、Python ABI、KYSDK 可用性），禁止一次性手工补丁。
+- 麒麟实测中沉淀的修复：PEP 668 pip 自举、`--ignore-installed`（RECORD 缺失包）、
+  profile 优先级、后端顶层包 `backend` 的 PYTHONPATH、uvicorn CLI 启动、
+  `apt-get install ./deb`（dpkg 锁等待）、HTTP 级就绪等待。
+
+**麒麟 V11 真机验证（VM 192.168.122.197，2026-08-11）**
+
+- 安装：apt 预置 + `apt-get install ./deb` 一次通过，依赖从包内 wheels 离线安装。
+- 后端：`pixiu-backend.service` active，`/conflicts` 200，SQLite 库自动创建；
+  VM 上克隆源码跑全量 pytest **364 passed**。
+- 前端：真实桌面窗口映射确认，团队负责人验收"整体比较丝滑"。
+- 已发布 GitHub staging Release：`v0.1.0-staging`（附 deb + sha256）。
+
+**下一步（按优先级）**
+
+1. 引擎麒麟 SDK 绑定构建（Module B）→ 重新出包后写入/检索/同步链路即通。
+2. 后端 WS `/events` 注册修复（Module C）→ 前端实时事件链路复测。
+3. 麒麟 SDK 开发环境就绪后 `PIXIU_KYSDK=ON` 出原生版（原生快捷键/通知）。
+4. 正式验收：性能压测（P95≤500ms、召回率≥85%）、Docker 容器化、验收评测报告。
 
 ---
 
@@ -133,7 +161,7 @@ Module C 修复后复测；Module A 已用测试桩完成 UI 侧冒烟。
 
 **对外契约**：`docs/API.md` 中定义的 12 个端点及其请求/响应 JSON 结构。
 
-**状态（2026-08-10）**：独立功能与 UI/UX polish 全部完成（双路径 ctest 30/30、
+**状态（2026-08-11）**：独立功能与 UI/UX polish 全部完成（双路径 ctest 31/31、
 i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与后端契约阻塞，
 详见 §1.7。
 
@@ -150,6 +178,9 @@ i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与�
 **职责**：实现全部业务逻辑——多源数据清洗标准化、偏好动态捕捉与版本化、知识结构化整合与实体关系建图、冲突检测与仲裁、敏感识别与自然语言遗忘、麒麟 coreai/embedding 真实调用（pybind11 绑定，无 mock 降级）。
 
 **状态（2026-08-07）**：核心管线已实现并完成集成；真实 SDK 绑定源码就绪，待麒麟环境构建验证。
+
+**状态（2026-08-11）**：无新增实现变更；麒麟 V11 真机全量测试 364 passed，
+整包 .deb 已随包安装引擎源码，SDK 绑定构建待验证。
 
 ### 2.3 模块 C — 后台基础设施
 
@@ -179,8 +210,9 @@ D-Bus 服务均已落地，354 项测试通过；剩余为麒麟真实环境性�
 
 **职责**：测试数据集构造、单元/集成测试、性能压测、Docker 容器化、环境变量模板、评测脚本、文档补全。
 
-**状态（2026-08-10）**：测试侧已由 A/C 模块补齐（foundation 342 项 + engine 21 项、
-frontend ctest 30/30）；正式支持工作（测试数据集、性能压测、Docker 容器化、
+**状态（2026-08-11）**：测试侧已由 A/C 模块补齐（麒麟 V11 真机 foundation+engine
+364 passed、frontend ctest 31/31）；打包发布脚手架已交付（`build/release/`，
+已发布 `v0.1.0-staging`）；正式支持工作（测试数据集、性能压测、Docker 容器化、
 验收评测报告）尚未开工。
 
 ---

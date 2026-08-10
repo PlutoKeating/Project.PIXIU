@@ -1,56 +1,77 @@
 # PIXIU 快速启动指南
 
-> 本文档帮助开发人员在本地快速搭建 PIXIU 开发环境并运行。
-> 各模块详细启动文档见各自 `docs/QUICK_START.md`。
+> 本文档帮助开发人员在本地快速搭建 PIXIU 开发环境并运行，也覆盖"打包安装
+> 整个软件"的快速路径。各模块详细启动文档见各自 `docs/QUICK_START.md`；
+> 打包/CICD 细节见 `build/release/README.md`。
 
 ---
 
 ## 环境要求
 
 - **操作系统**：Linux（Ubuntu 22.04+ / 银河麒麟 V10+）
-- **Python**：3.10+
+- **Python**：3.10+（麒麟 V11 实测 3.12.3）
 - **C++ 编译器**：GCC 9+ / Clang 12+（C++17）
-- **CMake**：≥ 3.5
-- **Qt5**：Widgets / Network / WebSockets / DBus
+- **CMake**：≥ 3.5（建议 3.20+）
+- **Qt5**：Widgets / Network / WebSockets（前端构建必需）
 
----
-
-## 总览
-
-PIXIU 三个模块可独立开发与测试。
-
-### 各模块快速启动
+## 各模块快速启动
 
 | 模块 | 快速命令 | 详细文档 |
 |------|----------|----------|
-| 模块 A（前端） | ❌ 未开始（`frontend/` 仅含文档） | `frontend/docs/QUICK_START.md` |
-| 模块 B（引擎） | `pip install -r backend/requirements.txt && python -m pytest backend/engine/tests` | `backend/engine/docs/QUICK_START.md` |
-| 模块 C（基础设施） | `python -m backend.foundation.api.http_app` | `backend/foundation/docs/QUICK_START.md` |
+| 模块 A（前端） | `cmake -S frontend -B build/frontend -DPIXIU_HAVE_KYSDK=OFF && cmake --build build/frontend` | `frontend/docs/QUICK_START.md` |
+| 模块 B（引擎） | `pip install -r backend/requirements.txt && python -m pytest backend/engine/tests -q` | `backend/engine/docs/QUICK_START.md` |
+| 模块 C（基础设施） | `python -m backend.foundation.api.http_app`（默认 127.0.0.1:8765） | `backend/foundation/docs/QUICK_START.md` |
 
-### 快速验证
+## 开发模式运行
 
 ```bash
-# 启动后端（真实麒麟 SDK，需先构建 kylin 绑定）
+# 1) 初始化麒麟 SDK submodule（依赖 SDK 的构建/测试前必做）
+git submodule update --init --recursive
+
+# 2) 后端依赖与启动（无麒麟 SDK 绑定时写入/检索会如实报错）
+pip install -r backend/requirements.txt
 python -m backend.foundation.api.http_app
 
-# 写入测试数据
+# 3) 写入一条记忆（真实链路：ingest → knowledge → preference → conflict）
 curl -X POST http://127.0.0.1:8765/memory/write \
   -H "Content-Type: application/json" \
   -d '{"source_type":"MANUAL_CONFIG","raw":{"title":"测试"},"scope":"user:test"}'
 
-# 检索（待 retrieval 阶段实现，当前返回 not_implemented）
+# 4) 混合检索（BM25+ANN+Graph，真实麒麟 SDK 环境下可用）
 curl -X POST http://127.0.0.1:8765/memory/query \
   -H "Content-Type: application/json" \
-  -d '{"text":"测试","context_hint":{}}'
+  -d '{"text":"测试","context_hint":{"top_k":5}}'
+
+# 5) 前端（KYSDK=OFF 降级构建；麒麟机器可用 KYSDK=ON）
+cmake -S frontend -B build/frontend -DPIXIU_HAVE_KYSDK=OFF -DCMAKE_BUILD_TYPE=Release
+cmake --build build/frontend -j
+PIXIU_BACKEND_URL=http://127.0.0.1:8765 ./build/frontend/pixiu-frontend
 ```
 
----
+## 打包并安装整个软件（生产路径）
+
+```bash
+# 一键构建整包 .deb（前端+后端+本地 SQLite 记忆/同步库 + systemd 服务）
+PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
+
+# 全新麒麟机安装
+sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64
+sudo apt-get install -y ./build/release/out/pixiu_0.1.0-1_amd64.deb
+```
+
+安装后后端以 `pixiu-backend.service` 常驻，SQLite 数据库自动创建于
+`/var/lib/pixiu/pixiu.db`；桌面菜单/`pixiu` 命令打开前端。详见
+`build/release/README.md` 与 `frontend/docs/DEMO_GUIDE.md`。
 
 ## 开发降级
 
 非麒麟开发机上：
 
-- 前端：尚未开始；计划支持 `cmake -DPIXIU_HAVE_KYSDK=OFF` 降级构建
-- 后端：生产代码无 mock 降级；测试使用 `backend/engine/tests/fakes.py` 测试桩，
-  麒麟 SDK 绑定构建见 `backend/engine/kylin/cpp/README.md`
-- API 通信：自动回退至 `http://127.0.0.1:8765`
+- 前端：`cmake -DPIXIU_HAVE_KYSDK=OFF` 降级构建（`QShortcut`/`QSystemTrayIcon`
+  替代 kysdk 快捷键/通知）；
+- 后端：生产代码无 mock 降级（`PIXIU_EMBEDDING` 仅支持 `kylin`）；无麒麟 SDK
+  绑定时 embedding 相关端点返回 `KylinSDKUnavailableError`，测试使用
+  `backend/engine/tests/fakes.py` 测试桩；
+- 演示 UI：`python3 frontend/scripts/demo_stub_server.py --port 8877` +
+  `PIXIU_BACKEND_URL=http://127.0.0.1:8877` 可无后端完整演示前端（见
+  `frontend/docs/DEMO_GUIDE.md` §5）。

@@ -445,4 +445,6 @@ target_link_libraries(pixiu-frontend
 
 非麒麟开发机上：
 - `kysdk` 调用通过编译开关 `PIXIU_HAVE_KYSDK` 切换为本地桩实现（Qt 原生托盘通知 + `QShortcut`），保证 UI 可在普通 Linux/Windows 开发联调。
-- 后端 `MockEmbedding` 配合，端到端流程可离线演示。
+- 后端无 mock 降级（`PIXIU_EMBEDDING` 仅支持 `kylin`）；开发机无后端时可运行
+  `frontend/scripts/demo_stub_server.py` 演示桩，完整演示端到端 UI 流程
+  （见 `DEMO_GUIDE.md` §5）。

@@ -3,9 +3,11 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
-> **状态（2026-08-10）**：core/storage/api、retrieval、flow 与 Phase 3 sync 已完成；
-> `/memory/query`、`/memory/flow/promote`、`/sync/*` 已接入，Foundation 289 项 + Engine 21 项测试全部通过。
-> eval（1.7）与 D-Bus 尚未实现；真实麒麟 SDK 性能和真实局域网互操作待银河麒麟环境验收。
+> **状态（2026-08-11）**：core/storage/api、retrieval、flow、Phase 3 sync、
+> Phase 4/5 eval 与 D-Bus 服务全部完成；12 个 REST 端点真实实现。
+> Foundation + Engine 全量测试通过（麒麟 V11 真机 pytest 364 passed）。
+> 剩余：真实麒麟 SDK 性能（召回率≥85%、P95≤500ms）与真实局域网互操作验收；
+> WS `/events` 路由注册修复（见 `frontend/docs/BACKEND_ISSUES.md`）。
 
 ---
 
@@ -280,7 +282,7 @@ sync/
 
 ### 1.7 eval/ —— 评测框架
 
-> ⚠️ **尚未实现**（后续 Phase）。
+> ✅ **已实现**（Phase 4/5，2026-08-10 合入 main）。
 
 **指标脚本**（`scripts/eval.py`）：
 
@@ -292,6 +294,12 @@ sync/
 | 冲突处理正确率 | ≥88% | 冲突用例集 |
 | 聚合正确率 | 100% | 金额合计校验 |
 | 证据追溯成功率 | 100% | 返回 evidence_ids 校验 |
+
+实现：`eval/`（dataset/metrics/eval/reference/report/service/benchmark）+ CLI
+`python -m backend.foundation.eval`；扩展指标 recall@1/3/5、P50/P95/P99、
+scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗时）与
+`SystemBenchmark`（DB 大小/峰值内存/CPU，零新依赖）。stub 自检：收敛率 1.0、
+同步 P95 55ms。正式数据集的麒麟性能报告待目标机执行。
 
 ---
 

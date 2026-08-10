@@ -97,15 +97,22 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
   → foundation/sync:CRDT 广播（⚠️ 待实现，Phase 3）
 ```
 
-> 现状（2026-08-07）：`POST /memory/write` 已在请求内同步执行
-> ingest → knowledge → preference → conflict 整条管线（异步化与 CRDT 广播留待后续）。
+> 现状（2026-08-11）：`POST /memory/write` 在请求内同步执行
+> ingest → knowledge → preference → conflict 整条管线；`shared:*` 写入会追加
+> 签名 SyncOp 进入 `sync_oplog` 供 CRDT 广播（网络运行时默认关闭）。
 
 **三索引齐写**：一条知识同时进 FTS5（关键词）、向量表（语义）、图（实体关系），这是混合检索的前提。
-当前 FTS 与向量写入已实现（`SqliteKnowledgeRepo.save` / `save_vector`）；ANN 检索依赖 retrieval 阶段。
+当前 FTS 写入、INT8 向量写入与图（`knowledge_entities`/`relations`）均已实现；
+ANN/图召回由 retrieval 阶段（Phase 2）消费。
 
 ### 3.2 在线检索路径：500ms 内给出可信答案
 
-> ⚠️ 该路径依赖 foundation/retrieval 模块，**当前尚未实现**（Phase 2），`/memory/query` 暂返回 `not_implemented`。
+> ✅ 该路径已由 foundation/retrieval 实现（Phase 2 交付，2026-08-10 合入 main），
+> `/memory/query` 为真实链路。当前机制：规则路由；FTS5 trigram（含 CJK 回退）；
+> INT8 向量线性扫描；持久化图召回；三通道 `asyncio.gather` 并发；scope/time_range
+> 硬过滤；RRF 融合；词法重排；查询类别聚合与证据回溯。
+> 开发基线（50 条记录、1000 次查询、stub embedding）为 P50=11.4ms、P95=13.3ms，
+> 真实麒麟 embedding + 正式数据集的召回率/P95 验收留待麒麟环境。
 
 ```
 query + context_hint
@@ -145,9 +152,9 @@ query + context_hint
 
 ### 3.6 记忆流转（foundation/flow）
 
-⚠️ **待实现**（Phase 3）。
-
-短期（会话上下文）→ 中期（近期会话摘要）→ 长期（evidence/knowledge）三层模型；promote/demote 双向流转，TTL 衰减管理。
+✅ **已实现**（Phase 2 交付，2026-08-10 合入 main）：`POST /memory/flow/promote`
+为真实链路，复用引擎 ingest→knowledge 管线；短/中期上下文 SQLite 持久化、
+批量预校验与幂等 promote、长期知识 demote、分层 TTL 与到期清理均已落地。
 
 ---
 
@@ -155,7 +162,11 @@ query + context_hint
 
 核心创新点。完整管理链路由 `foundation/sync/` 实现：
 
-> ⚠️ **当前尚未实现**（Phase 3）。以下为既定设计蓝图，`foundation/sync/` 目前仅有空包占位。
+> ✅ **Phase 3 已实现**（2026-08-10 合入 main）：Ed25519 身份、QR/PIN 配对、
+> LWW-Element-Set + 版本向量、签名 oplog、Gossip + 反熵对账、墓碑回收、
+> mDNS 信任过滤、TLS 1.3 mTLS、CRDT 胜者物化；`/sync/*` 四端点已真实接入。
+> **网络运行时默认关闭**，需 `PIXIU_SYNC_NETWORK_ENABLED=true` 且显式配置
+> 地址与 TLS 证书后启动（安全边界见 `backend/foundation/docs/ARCHITECTURE.md` §1.6）。
 
 - **对等架构**：每台设备运行完整副本，AP + 最终一致
 - **同步单元**：`sync_oplog` 中的 op，CRDT（LWW-Element-Set + 版本向量）合并
@@ -177,8 +188,11 @@ query + context_hint
 
 详见 `backend/foundation/docs/ARCHITECTURE.md` 第 1.3 节。
 
-基础表（9 张，由 `storage/schema.py` 创建）：`evidence`, `knowledge_items`, `knowledge_evidence`,
-`preferences`, `preference_history`, `entities`, `relations`, `conflict_records`, `sync_oplog`。
+基础表 16 张（由 `storage/schema.py` 创建）：记忆/流转类（`evidence`,
+`knowledge_items`, `knowledge_evidence`, `knowledge_entities`, `preferences`,
+`preference_history`, `entities`, `relations`, `conflict_records`,
+`memory_contexts`）+ 同步类（`sync_identity`, `sync_peers`, `sync_state`,
+`sync_peer_acks`, `sync_meta`, `sync_oplog`）。
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
 建表/迁移统一走 `storage/migrations.py` 的版本化迁移。
 
@@ -190,10 +204,10 @@ query + context_hint
 | 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin（pybind11 绑定） | 🟡 客户端就绪，检索阶段接入 |
 | OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ⬜ 待接入 |
 | 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference | ⬜ 待接入 |
-| 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | ⬜ 待实现 |
-| 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend | ⬜ 待实现 |
-| 主题 | 8.5 Theme | 跟随 UKUI 明暗主题 | frontend | ⬜ 待实现 |
-| Qt 扩展控件 | 应用支撑 SDK 4.1.x | 聊天框 UI 组件 | frontend | ⬜ 待实现 |
+| 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为系统托盘通知 |
+| 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为 QShortcut |
+| 主题 | 8.5 Theme | 跟随 UKUI 明暗主题 | frontend | ✅ 已实现（含运行时换肤修复） |
+| Qt 扩展控件 | 应用支撑 SDK 4.1.x | 聊天框 UI 组件 | frontend | 🟡 代码已兼容，降级路径使用标准 QWidget |
 
 > 官方 SDK 仓库以 submodule 纳入 `third_party/`（openkylin/nile-sp2），绑定构建见
 > `backend/engine/kylin/cpp/README.md`。
@@ -205,17 +219,17 @@ query + context_hint
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | POST | `/memory/write` | 写入记忆（✅ 已实现） |
-| POST | `/memory/query` | 混合检索（⬜ 待 retrieval 阶段） |
+| POST | `/memory/query` | 混合检索（✅ 已实现） |
 | POST | `/preference/extract` | 偏好提取（✅ 已实现） |
 | GET | `/preference/{id}/history` | 偏好回溯（✅ 已实现） |
 | POST | `/forget` | 自然语言遗忘（✅ 已实现） |
 | GET | `/conflicts` | 冲突审计（✅ 已实现） |
-| POST | `/memory/flow/promote` | 记忆流转（⬜ 待 flow 阶段） |
-| POST | `/sync/pair` | 设备配对（⬜ 待 sync 阶段） |
-| GET | `/sync/peers` | 节点列表（⬜ 待 sync 阶段） |
-| GET | `/sync/status` | 同步状态（⬜ 待 sync 阶段） |
-| POST | `/sync/peers/{id}/revoke` | 解绑设备（⬜ 待 sync 阶段） |
-| WS | `/events` | 事件推送（✅ 已实现：连接/心跳/广播，`memory_ready` 已接入） |
+| POST | `/memory/flow/promote` | 记忆流转（✅ 已实现） |
+| POST | `/sync/pair` | 设备配对（✅ 已实现） |
+| GET | `/sync/peers` | 节点列表（✅ 已实现） |
+| GET | `/sync/status` | 同步状态（✅ 已实现） |
+| POST | `/sync/peers/{id}/revoke` | 解绑设备（✅ 已实现） |
+| WS | `/events` | 事件推送（🟡 契约已实现；路由注册待 Module C 修复） |
 
 ## 8. 仓库结构
 

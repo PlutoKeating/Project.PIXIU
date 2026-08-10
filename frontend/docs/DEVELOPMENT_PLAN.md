@@ -237,22 +237,20 @@
 
 ### 1.2 尚未完成
 
-- WebSocketClient 的真实环境冒烟（连接 `/events`、`connected`/`ping`/`memory_ready`）
-  未完成：后端两项问题阻塞（见 `frontend/docs/BACKEND_ISSUES.md`）。
-- Phase 5.4 偏好列表、Phase 5.5 证据原文：等待后端列表/详情契约落地后实现。
-- Phase 6 设备同步管理真实闭环：节点列表/同步状态/解绑的 UI 与客户端已
-  完成（见 1.1），但 `foundation/sync` 与 `/sync/*` 仍为占位，真实联调阻塞；
-  二维码配对展示等待令牌生成契约（Phase 6 第 5 项）。
-- `conflict_detected`/`forget_confirmation`/`sync_event` 的客户端路由已完成
-  （见 1.1），真实端到端广播验证等待后端事件接入（`docs/API.md` §4 占位项）。
-- Phase 8 验收发布：本地自动化回归基线已完成（`scripts/regression.sh`，
-  ctest 26/26）；本机实时 UKUI 会话已完成真实桌面冒烟与收尾验证（应用
-  启动、窗口、托盘、UKUI 阴影、全局快捷键注册、主题 dark→light→dark
-  实时跟随、第二实例激活通道、WS 桩驱动通知弹窗）。剩余项：全局快捷键
-  真实按键触发需在全新登录会话复测（当前运行会话未加载 grab，见
-  `UKUI_ADAPTATION_REPORT.md` 第 5 节）、通知弹窗点击行为、HiDPI/多屏
-  与 x86/ARM 目标机验收、配对对话框真实桌面视觉验收依赖人工复测
-  （清单见该报告第 4 节）。
+截至 2026-08-11（后端 12 个 REST 端点已全部真实实现，见 §3.1），前端剩余
+项均为**后端契约阻塞或人工验收**：
+
+- WS `/events` 真实广播：后端路由注册/导入问题仍未修复（见
+  `frontend/docs/BACKEND_ISSUES.md`），前端已具备退避重连与事件路由，修复后
+  无需改前端。
+- `conflict_detected` / `forget_confirmation` 广播：后端尚无广播调用，前端
+  路由已就绪。
+- 偏好列表、证据详情（原文）端点：后端契约缺失，前端保持 ID 输入/占位。
+- 配对令牌生成/二维码展示端点：后端未暴露，PIN 配对当前为令牌粘贴方式。
+- 真实麒麟环境人工复测：全局快捷键真实按键触发（全新登录会话）、通知点击、
+  HiDPI/多屏、x86/ARM 目标机（清单见 `UKUI_ADAPTATION_REPORT.md` 第 4 节）。
+- 整包 .deb 已在麒麟 V11 真机安装验证（`build/release/`），见
+  `build/release/README.md` 实测记录。
 
 ### 1.3 下一项最小独立 feature
 
@@ -360,21 +358,22 @@ git submodule update --init --recursive
 
 ### 3.1 REST 实现状态
 
-路径和主要契约与 `docs/API.md` 保持一致，但最新仓库已经从纯规划进入部分真实实现：
+路径与契约以 `docs/API.md` 为准。**12 个 REST 端点已全部真实实现**
+（`feat/foundation` 2026-08-10 合入 main）：
 
 | 接口 | 当前状态 | 前端计划影响 |
 |---|---|---|
 | `POST /memory/write` | 已接入真实 ingest → knowledge → preference → conflict，并广播 `memory_ready` | 可在写入 UI 完成后真实联调；不得依赖未声明的处理时序 |
-| `POST /memory/query` | 占位，返回 `{"status":"not_implemented"}` | 查询 MVP 的真实端到端验收被 retrieval 阻塞 |
+| `POST /memory/query` | 已实现（BM25+ANN+Graph 三通道混合检索） | 可真实联调；无麒麟 embedding 环境返回 `KylinSDKUnavailableError` |
 | `POST /preference/extract` | 已实现 | 可按契约解析提取结果 |
 | `GET /preference/{id}/history` | 已实现 | 可实现单项历史；偏好列表接口仍缺失 |
 | `POST /forget` | 已实现 `confirm=false/true` 两段式流程 | 前端必须二次确认，取消时不得发确认请求 |
 | `GET /conflicts` | 已实现 | 可展示现有冲突审计列表 |
-| `POST /memory/flow/promote` | 占位 | 流转 UI 真实联调被 flow 阻塞 |
-| `POST /sync/pair` | 占位 | 配对真实联调被 sync 阻塞 |
-| `GET /sync/peers` | 占位 | 节点列表真实联调被 sync 阻塞 |
-| `GET /sync/status` | 占位 | 同步状态真实联调被 sync 阻塞 |
-| `POST /sync/peers/{id}/revoke` | 占位 | 解绑真实联调被 sync 阻塞 |
+| `POST /memory/flow/promote` | 已实现（幂等 promote，复用引擎链路） | 可契约联调；ctx 上下文来源端点仍缺失 |
+| `POST /sync/pair` | 已实现（QR/PIN + 签名令牌，token 必填） | PIN 模式需粘贴令牌；QR 令牌生成端点未暴露 |
+| `GET /sync/peers` | 已实现（含本机/在线状态/待同步数） | 可真实联调 |
+| `GET /sync/status` | 已实现（域/在线数/待同步/对账时间） | 可真实联调 |
+| `POST /sync/peers/{id}/revoke` | 已实现 | 可真实联调 |
 
 客户端解析必须只要求契约中的必需字段，并容忍新增 JSON 字段。例如当前写入实现还返回
 `preference_count` 和 `conflict_detected`，前端不能因为出现额外字段而失败。任何契约字段变更
@@ -383,7 +382,6 @@ git submodule update --init --recursive
 ### 3.2 WebSocket 状态与兼容规则
 
 `WS /events` 的连接管理、心跳和广播代码已进入仓库；`memory_ready` 已接入写入链路。
-其余业务事件仍为占位：
 
 | 事件 | 当前状态 |
 |---|---|
@@ -392,7 +390,7 @@ git submodule update --init --recursive
 | `memory_ready` | 已从 `/memory/write` 链路广播 |
 | `conflict_detected` | 契约已定义，尚未广播 |
 | `forget_confirmation` | 契约已定义，尚未广播 |
-| `sync_event` | 契约已定义，待 sync 阶段 |
+| `sync_event` | 已从 `/sync/pair`、`/sync/peers/{id}/revoke` 链路广播 |
 
 WebSocket 客户端必须：
 
@@ -401,31 +399,28 @@ WebSocket 客户端必须：
 - 对未知事件保持前向兼容：不得崩溃、断开连接或弹出错误，只记录并忽略。
 - 实现退避重连，避免断线后高频重试；心跳/ACK 语义在后端确认前不自行发明。
 - WebSocketClient 已实现并完成本地编译/链接验收；但真实连接冒烟验证
-  （`connected`/`ping`/`memory_ready`）仍未完成——后端存在两项阻塞问题：
-  `/events` 未被实际启动入口注册、`ws.py` 的 `WebSocket` 标注缺少导入，
+  仍被后端阻塞——`/events` 未被实际启动入口注册、`ws.py` 的 `WebSocket`
+  标注缺少导入：
   详见 `frontend/docs/BACKEND_ISSUES.md`，修复后由 Module C 负责人确认并复测。
 
 ### 3.3 D-Bus 状态
 
-`backend/foundation/api/dbus_service.py` 当前只有占位类：
-
-- Bus name：`com.kylin.pixiu.Memory`
-- Object path：`/com/kylin/pixiu/Memory`
-- 方法和信号尚未实现
-
-因此 D-Bus 暂不能作为首个可用传输。前端优先设计可替换的 transport 边界并使用
-HTTP/WS 联调；D-Bus 只在后端接口真实落地并确认契约后实现，不得根据占位类猜测方法。
+`backend/foundation/api/dbus_service.py` 已真实实现（2026-08-10）：Bus name
+`com.kylin.pixiu.Memory`，方法 Write/Query/Forget/SyncStatus 镜像 HTTP 并复用
+`di.py` 注入的服务。**前端目前以 HTTP/WS 为首选传输，尚无 D-Bus 客户端**；
+`BackendTransport` 接口已预留第二实现位置，后续可按需补 D-Bus transport
+（参考 `backend/foundation/tests/test_dbus_service.py` 契约）。
 
 ### 3.4 当前接口阻塞与待确认项
 
-1. retrieval 尚未实现，`/memory/query` 不能返回 `MemoryAtom`，阻塞真实查询演示。
-2. flow 和 sync 尚未实现，阻塞记忆流转、配对、节点状态和解绑的真实联调。
-3. D-Bus 尚未实现，阻塞 D-Bus transport；HTTP/WS 仍是当前联调路径。
-4. `source_evidence` 只有 ID，尚无证据详情/原文读取端点。
-5. 尚无偏好列表端点，当前只有提取和指定 ID 的历史。
-6. `GET /conflicts` 的分页、排序、状态筛选和单条详情仍未定义。
-7. 配对令牌生成、二维码内容、有效期和过期错误语义仍未定义。
-8. WebSocket 代码虽已进入仓库，仍需后端启动级冒烟验证后再作为稳定依赖。
+1. WS `/events` 路由注册/导入修复（`http_app.py` 未导入 `ws.py`、`ws.py` 未导入
+   `fastapi.WebSocket`），修复后前端事件链路自动生效。
+2. `conflict_detected` / `forget_confirmation` 广播调用（后端未实现）。
+3. 证据详情/原文读取端点缺失（`source_evidence` 仅 ID）。
+4. 偏好列表端点缺失（当前为提取 + 指定 ID 历史）。
+5. 配对令牌生成/二维码展示端点缺失（PIN 配对需手动粘贴令牌）。
+6. `GET /conflicts` 分页/排序/筛选/单条详情未定义（暂不影响使用）。
+7. 真实麒麟 SDK 绑定未构建：写入/检索在无绑定环境返回 `KylinSDKUnavailableError`。
 
 ## 4. 实施原则
 

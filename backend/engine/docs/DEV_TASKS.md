@@ -5,7 +5,7 @@
 
 ---
 
-## 实现状态（2026-08-07）
+## 实现状态（2026-08-11）
 
 - ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
   全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
@@ -17,6 +17,8 @@
 - ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；OCR（AI SDK 9.4.1）
   与离线文本生成（AI SDK 9.5.1）接入。
 - 测试：20 项全绿；无麒麟 SDK 环境使用 `tests/fakes.py` 测试桩（仅测试用）。
+- 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），
+  麒麟 SDK 绑定在目标机构建后重新出包即恢复写入/检索链路。
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
 

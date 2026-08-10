@@ -6,12 +6,17 @@
 
 ---
 
-## 实现状态（2026-08-07）
+## 实现状态（2026-08-11）
 
-- ❌ **尚未开始**：`backend/scripts/`、`backend/tests/` 为空目录。
-- 集成期已由团队负责人补齐的部分：foundation + engine 测试共 229 项全绿；
-  `backend/.env.example` 已有内容（6 个变量，见 `backend/foundation/docs/QUICK_START.md`）。
-- 待办清单见下，全部为未实现项。
+- 🟡 **测试与工具侧**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
+  pytest 364 passed）；`backend/.env.example` 已有内容（6 个核心变量，见
+  `backend/foundation/docs/QUICK_START.md`）；前端回归脚本
+  `frontend/scripts/regression.sh` 已固化。
+- ✅ **打包发布脚手架**：`build/release/` 提供整包 .deb 构建、目标机预置
+  （`provision-target.sh`）、麒麟 VM 部署冒烟（`vm-deploy-test.sh`）与
+  staging/production 发布；已在麒麟 V11 真机验证并发布 `v0.1.0-staging`。
+- ⬜ **待办**：正式测试数据集、性能压测（P95≤500ms、召回率≥85%）、Docker 容器化、
+  验收评测报告——见下任务清单。
 
 ---
 

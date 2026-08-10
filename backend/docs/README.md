@@ -16,7 +16,7 @@ Python 3.10 + C++（KylinSDK pybind11 封装）
 | `knowledge/` | 知识结构化（Structurer → Graph → EmbedWriter） |
 | `conflict/` | 冲突仲裁（Arbiter：检测→裁决→审计） |
 | `security/` | 安全/遗忘（Detector + ForgetEngine） |
-| `kylin/` | KylinSDK embedding C++ 封装 + MockEmbedding |
+| `kylin/` | 真实麒麟 SDK 适配（coreai/embedding pybind11 绑定，无 mock 降级） |
 
 **文档**：
 - [架构设计](engine/docs/ARCHITECTURE.md)
@@ -31,11 +31,16 @@ Python 3.10 + SQLite + hnswlib
 |------|------|
 | `core/` | 共享契约（数据模型、Repository 接口、配置） |
 | `api/` | API 网关（HTTP/WS/D-Bus） |
-| `storage/` | SQLite 仓储实现（8 表 + WAL + FTS5 + 向量） |
+| `storage/` | SQLite 仓储实现（16 张表 + WAL + FTS5 + 向量，版本化迁移） |
 | `retrieval/` | 混合检索（路由→BM25∥ANN∥Graph→融合→重排→组装） |
 | `flow/` | 记忆流转（promote/demote + TTL） |
 | `sync/` | P2P CRDT 同步（Gossip + 反熵 + TLS） |
 | `eval/` | 评测框架 |
+
+> **状态（2026-08-11）**：foundation Phase 0~5 全部完成（retrieval/flow/sync/eval/
+> D-Bus），12 个 REST 端点真实实现；引擎核心管线已集成，麒麟 SDK 绑定待构建。
+> 全量测试：Foundation 342 项 + Engine 21 项（函数级统计），麒麟 V11 真机
+> pytest 364 passed。
 
 **文档**：
 - [架构设计](foundation/docs/ARCHITECTURE.md)

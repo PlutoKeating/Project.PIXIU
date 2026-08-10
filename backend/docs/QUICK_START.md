@@ -54,7 +54,13 @@ curl -X POST http://127.0.0.1:8765/memory/write \
 curl http://127.0.0.1:8765/conflicts
 ```
 
-> `/memory/query`、`/memory/flow/promote`、`/sync/*` 当前返回
-> `{"status":"not_implemented"}`，待对应阶段实现。
+> 12 个 REST 端点（含 `/memory/query`、`/memory/flow/promote`、`/sync/*`）已全部
+> 真实实现（2026-08-10 合入 main）；真实检索依赖麒麟 embedding，无 SDK 绑定环境
+> 会返回 `KylinSDKUnavailableError`。
+
+## 打包安装
+
+整包 .deb（前端+后端+本地 SQLite 记忆/同步库）构建与麒麟安装见
+`build/release/README.md` 与 `docs/QUICK_START.md`。
 
 详细开发说明见 `backend/engine/docs/QUICK_START.md` 与 `backend/foundation/docs/QUICK_START.md`。

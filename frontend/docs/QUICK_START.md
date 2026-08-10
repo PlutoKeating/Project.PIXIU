@@ -2,7 +2,8 @@
 
 > 模块 A · UKUI 桌面客户端
 
-> **状态（2026-08-07）**：❌ 尚未开始，`frontend/` 仅含文档；本文为计划性说明。
+> **状态（2026-08-11）**：独立功能与 UI/UX polish 已完成，双路径 ctest 31/31
+> 全绿；已随整包 .deb 在麒麟 V11 真机安装验证。本文为当前可用的构建/运行说明。
 
 ---
 
@@ -10,36 +11,49 @@
 
 ```bash
 sudo apt install qtbase5-dev libqt5websockets5-dev qtbase5-dev-tools \
-                 cmake g++ pkg-config
+                 cmake g++ ninja-build
 
-# 麒麟系统额外依赖
-sudo apt install libkysdk-notification-dev libkysdk-shortcut-dev
+# 麒麟系统额外依赖（原生 kysdk 能力；缺失时用 KYSDK=OFF 降级构建）
+sudo apt install libkysdk-notification-dev libkysdk-shortcut-dev libkysdk-qtwidgets-dev
 ```
 
-## 构建运行
+## 构建与测试（KYSDK=OFF 降级路径，开发机可用）
 
 ```bash
-cd frontend
+cmake -S frontend -B build/frontend \
+  -DPIXIU_HAVE_KYSDK=OFF -DCMAKE_BUILD_TYPE=Release -G Ninja
+cmake --build build/frontend -j
 
-# 构建
-cmake -B build -S .
-cmake --build build
-
-# 运行
-./build/pixiu-frontend
+# 全部 QtTest（31 项，offscreen）
+QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure
 ```
 
-## 开发降级（非麒麟系统）
+## 运行
 
 ```bash
-cmake -B build -S . \
-  -DPIXIU_HAVE_KYSDK=OFF \
-  -DPIXIU_BACKEND_URL=http://127.0.0.1:8765
+# 方式一：接真实后端（默认 http://127.0.0.1:8765）
+./build/frontend/pixiu-frontend
 
-cmake --build build
+# 方式二：接演示桩（无后端/无麒麟 SDK，可完整演示 UI）
+python3 frontend/scripts/demo_stub_server.py --port 8877 --badge 3
+PIXIU_BACKEND_URL=http://127.0.0.1:8877 ./build/frontend/pixiu-frontend
 ```
 
-降级模式下：
-- `FloatingBall` → 普通 `QWidget`
-- `ShortcutManager` → `QShortcut`
-- `NotifyService` → `QSystemTrayIcon::showMessage`
+环境变量：`PIXIU_BACKEND_URL`（后端地址，默认 `http://127.0.0.1:8765`）。
+详细演示脚本与真实桌面验收清单见 `frontend/docs/DEMO_GUIDE.md` 与
+`frontend/docs/UKUI_ADAPTATION_REPORT.md`。
+
+## 打包进整包 .deb
+
+前端由 `build/release/` 流水线构建并随整包安装（`/usr/bin/pixiu-frontend`、
+桌面入口、图标；麒麟机器用 `PIXIU_KYSDK=ON` 获得原生快捷键/通知）。详见
+`build/release/README.md`。
+
+## 当前已知边界
+
+- 后端 WS `/events` 路由注册未修复：前端实时事件暂不可用（前端自动重连，
+  见 `frontend/docs/BACKEND_ISSUES.md`）。
+- 引擎麒麟 SDK 绑定未构建时：写入/检索返回 `KylinSDKUnavailableError`，前端
+  如实呈现错误与重试。
+- 证据原文详情、偏好列表、QR 配对令牌展示依赖后端契约（当前为 ID 输入 /
+  占位/令牌粘贴方式）。
