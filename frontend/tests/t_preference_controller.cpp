@@ -20,6 +20,11 @@ public:
         lastPreferenceId = preferenceId;
         ++historyCalls;
     }
+    void extractPreferences(const QJsonObject &payload) override
+    {
+        lastExtractPayload = payload;
+        ++extractCalls;
+    }
     void promoteMemory(const QJsonObject &) override {}
     void pairDevice(const QJsonObject &) override {}
     void listPeers() override {}
@@ -30,6 +35,8 @@ public:
 
     QString lastPreferenceId;
     int historyCalls = 0;
+    QJsonObject lastExtractPayload;
+    int extractCalls = 0;
 };
 
 // PreferenceController 加载契约测试。
@@ -42,6 +49,11 @@ private slots:
     void loadWhilePendingIsIgnored();
     void historyIsForwarded();
     void staleResultsAreIgnored();
+    void extractRequestsEndpointWithEvidenceIds();
+    void extractEmptyIdsAreIgnored();
+    void extractWhilePendingIsIgnored();
+    void extractResultIsForwarded();
+    void extractErrorIsForwarded();
 };
 
 void TestPreferenceController::loadHistoryRequestsEndpoint()
@@ -101,6 +113,87 @@ void TestPreferenceController::staleResultsAreIgnored()
 
     emit transport.preferenceHistoryResult(QJsonObject());
     QCOMPARE(loadedSpy.count(), 0);
+}
+
+void TestPreferenceController::extractRequestsEndpointWithEvidenceIds()
+{
+    FakeTransport transport;
+    PreferenceController controller(&transport);
+    controller.extract(QStringList{QStringLiteral("evd_abc"),
+                                   QStringLiteral("evd_def")});
+    QCOMPARE(transport.extractCalls, 1);
+    const QJsonArray ids =
+        transport.lastExtractPayload.value(QStringLiteral("evidence_ids"))
+            .toArray();
+    QCOMPARE(ids.size(), 2);
+    QCOMPARE(ids.first().toString(), QStringLiteral("evd_abc"));
+}
+
+void TestPreferenceController::extractEmptyIdsAreIgnored()
+{
+    FakeTransport transport;
+    PreferenceController controller(&transport);
+    controller.extract(QStringList());
+    QCOMPARE(transport.extractCalls, 0);
+}
+
+void TestPreferenceController::extractWhilePendingIsIgnored()
+{
+    FakeTransport transport;
+    PreferenceController controller(&transport);
+    QSignalSpy extractedSpy(&controller, &PreferenceController::extracted);
+
+    controller.extract(QStringList{QStringLiteral("evd_a")});
+    controller.extract(QStringList{QStringLiteral("evd_b")});
+    QCOMPARE(transport.extractCalls, 1);
+
+    emit transport.preferenceExtractResult(
+        QJsonObject{{QStringLiteral("extracted_preferences"), QJsonArray{}}});
+    QCOMPARE(extractedSpy.count(), 1);
+
+    controller.extract(QStringList{QStringLiteral("evd_b")});
+    QCOMPARE(transport.extractCalls, 2);
+}
+
+void TestPreferenceController::extractResultIsForwarded()
+{
+    FakeTransport transport;
+    PreferenceController controller(&transport);
+    QSignalSpy extractedSpy(&controller, &PreferenceController::extracted);
+
+    controller.extract(QStringList{QStringLiteral("evd_abc")});
+    emit transport.preferenceExtractResult(
+        QJsonObject{
+            {QStringLiteral("extracted_preferences"),
+             QJsonArray{QJsonObject{{QStringLiteral("id"),
+                                     QStringLiteral("pref_x")}},
+                        QJsonObject{{QStringLiteral("id"),
+                                     QStringLiteral("pref_y")}}}},
+            {QStringLiteral("latency_ms"), 15},
+        });
+
+    QCOMPARE(extractedSpy.count(), 1);
+    const QList<QVariant> args = extractedSpy.takeFirst();
+    QCOMPARE(args.at(0).toInt(), 2);
+    QCOMPARE(args.at(1).toInt(), 15);
+}
+
+void TestPreferenceController::extractErrorIsForwarded()
+{
+    FakeTransport transport;
+    PreferenceController controller(&transport);
+    QSignalSpy failedSpy(&controller, &PreferenceController::extractFailed);
+    QSignalSpy historyFailedSpy(&controller, &PreferenceController::failed);
+
+    controller.extract(QStringList{QStringLiteral("evd_abc")});
+    emit transport.errorOccurred(QStringLiteral("NOT_FOUND"),
+                                 QStringLiteral("no such evidence"),
+                                 QString());
+
+    QCOMPARE(failedSpy.count(), 1);
+    QCOMPARE(failedSpy.takeFirst().at(0).toString(),
+             QStringLiteral("NOT_FOUND"));
+    QCOMPARE(historyFailedSpy.count(), 0);
 }
 
 QTEST_MAIN(TestPreferenceController)

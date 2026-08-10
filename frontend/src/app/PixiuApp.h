@@ -85,6 +85,8 @@ private:
     QString m_remoteForgetCommand;
     // 最近一次偏好历史请求的 ID（失败重试时重发）。
     QString m_lastPreferenceId;
+    // 最近一次成功写入返回的 evidence_id（偏好提取输入源）。
+    QString m_lastEvidenceId;
     // 后端离线引导提示是否已展示（每次断线仅提示一次，恢复后复位）。
     bool m_offlineGuidanceShown = false;
     struct Private;

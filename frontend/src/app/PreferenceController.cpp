@@ -18,8 +18,26 @@ PreferenceController::PreferenceController(BackendTransport *transport, QObject 
                 m_pendingId.clear();
                 emit historyLoaded(response);
             });
+    connect(m_transport, &BackendTransport::preferenceExtractResult, this,
+            [this](const QJsonObject &response) {
+                if (!m_extractPending) {
+                    return; // 无在途提取，忽略过期响应
+                }
+                m_extractPending = false;
+                const int count =
+                    response.value(QStringLiteral("extracted_preferences"))
+                        .toArray()
+                        .size();
+                emit extracted(count,
+                               response.value(QStringLiteral("latency_ms")).toInt(0));
+            });
     connect(m_transport, &BackendTransport::errorOccurred, this,
             [this](const QString &code, const QString &message, const QString &) {
+                if (m_extractPending) {
+                    m_extractPending = false;
+                    emit extractFailed(code, message);
+                    return;
+                }
                 if (m_pendingId.isEmpty()) {
                     return;
                 }
@@ -40,4 +58,20 @@ void PreferenceController::loadHistory(const QString &preferenceId)
     m_pendingId = id;
     qCInfo(lcPreference) << "loading preference history:" << id;
     m_transport->preferenceHistory(id);
+}
+
+void PreferenceController::extract(const QStringList &evidenceIds)
+{
+    if (evidenceIds.isEmpty() || m_extractPending) {
+        return;
+    }
+    m_extractPending = true;
+
+    QJsonArray ids;
+    for (const QString &id : evidenceIds) {
+        ids.append(id);
+    }
+    QJsonObject payload;
+    payload.insert(QStringLiteral("evidence_ids"), ids);
+    m_transport->extractPreferences(payload);
 }

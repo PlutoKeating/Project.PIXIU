@@ -117,6 +117,14 @@ void HttpBackendTransport::preferenceHistory(const QString &preferenceId)
             [this](quint64, const QJsonObject &obj) { emit preferenceHistoryResult(obj); });
 }
 
+void HttpBackendTransport::extractPreferences(const QJsonObject &payload)
+{
+    postJson(QStringLiteral("/preference/extract"), payload,
+             [this](quint64, const QJsonObject &obj) {
+                 emit preferenceExtractResult(obj);
+             });
+}
+
 void HttpBackendTransport::promoteMemory(const QJsonObject &payload)
 {
     postJson(QStringLiteral("/memory/flow/promote"), payload,

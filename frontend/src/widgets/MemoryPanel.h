@@ -45,6 +45,9 @@ public:
     void setPreferenceHistoryLoading();
     // 更新偏好历史 Tab 加载失败态。
     void setPreferenceHistoryError(const QString &message);
+    // 偏好提取结果反馈（成功：条数；失败：错误信息）。
+    void setPreferenceExtractResult(int count);
+    void setPreferenceExtractError(const QString &message);
 
     // 更新同步 Tab 状态行（配对结果 / 后端契约状态）。
     void setSyncStatus(const QString &status, bool ok = false);
@@ -62,6 +65,8 @@ signals:
     void conflictRetryRequested();
     // 用户请求重试加载偏好历史（应用层以最近一次 ID 重发）。
     void preferenceRetryRequested();
+    // 用户请求从最近录入的证据提取偏好（POST /preference/extract）。
+    void extractPreferencesRequested();
     // 用户请求设备配对（载荷见 PairDialog::pairRequested）。
     void pairRequested(const QJsonObject &payload);
     // 用户请求刷新节点列表与同步状态。
@@ -88,6 +93,8 @@ private:
     QLabel *m_prefHeaderLabel = nullptr;
     QLabel *m_prefEmptyLabel = nullptr;
     QLabel *m_prefErrorLabel = nullptr;
+    QLabel *m_prefExtractLabel = nullptr;
+    QPushButton *m_prefExtractButton = nullptr;
     QPushButton *m_prefRetryButton = nullptr;
     QLabel *m_syncStatusLabel = nullptr;
     QLabel *m_syncSummaryLabel = nullptr;

@@ -209,6 +209,20 @@ void MemoryPanel::setPreferenceHistoryError(const QString &message)
     m_prefHistoryList->setVisible(false);
 }
 
+void MemoryPanel::setPreferenceExtractResult(int count)
+{
+    m_prefExtractLabel->setStyleSheet(ui::textStyle(ui::Role::Success));
+    m_prefExtractLabel->setText(tr("已提取 %1 条偏好").arg(count));
+    m_prefExtractLabel->setVisible(true);
+}
+
+void MemoryPanel::setPreferenceExtractError(const QString &message)
+{
+    m_prefExtractLabel->setStyleSheet(ui::textStyle(ui::Role::Error));
+    m_prefExtractLabel->setText(message);
+    m_prefExtractLabel->setVisible(true);
+}
+
 void MemoryPanel::setSyncStatus(const QString &status, bool ok)
 {
     if (!m_syncStatusLabel) {
@@ -363,6 +377,22 @@ QWidget *MemoryPanel::createPreferenceTab()
     inputRow->addWidget(m_prefIdInput, 1);
     inputRow->addWidget(loadButton);
 
+    m_prefExtractButton = new QPushButton(tr("提取偏好"), page);
+    m_prefExtractButton->setObjectName(QStringLiteral("prefExtractButton"));
+    m_prefExtractButton->setAccessibleName(tr("从最近录入提取偏好"));
+    m_prefExtractButton->setCursor(Qt::PointingHandCursor);
+    connect(m_prefExtractButton, &QPushButton::clicked, this,
+            &MemoryPanel::extractPreferencesRequested);
+
+    m_prefExtractLabel = new QLabel(page);
+    m_prefExtractLabel->setObjectName(QStringLiteral("prefExtractLabel"));
+    m_prefExtractLabel->setWordWrap(true);
+    m_prefExtractLabel->setVisible(false);
+
+    QHBoxLayout *extractRow = new QHBoxLayout();
+    extractRow->addWidget(m_prefExtractButton);
+    extractRow->addWidget(m_prefExtractLabel, 1);
+
     m_prefErrorLabel = new QLabel(page);
     m_prefErrorLabel->setObjectName(QStringLiteral("prefErrorLabel"));
     m_prefErrorLabel->setStyleSheet(ui::textStyle(ui::Role::Error));
@@ -390,6 +420,7 @@ QWidget *MemoryPanel::createPreferenceTab()
 
     layout->addWidget(m_prefHeaderLabel);
     layout->addLayout(inputRow);
+    layout->addLayout(extractRow);
     layout->addLayout(prefErrorRow);
     layout->addWidget(m_prefEmptyLabel);
     layout->addWidget(m_prefHistoryList, 1);

@@ -43,6 +43,8 @@ private slots:
     void longPeerNameIsElided();
     void revokeFlowOpensDialogAndConfirms();
     void setSyncSummaryUpdatesLabel();
+    void extractButtonEmitsRequest();
+    void extractFeedbackShowsResultAndError();
     void escHidesPanel();
 };
 
@@ -527,6 +529,35 @@ void TestMemoryPanel::setSyncSummaryUpdatesLabel()
     QVERIFY(summary->text().contains(QStringLiteral("shared:home")));
     QVERIFY(summary->text().contains(QStringLiteral("在线 2/3")));
     QVERIFY(!summary->isHidden());
+}
+
+void TestMemoryPanel::extractButtonEmitsRequest()
+{
+    MemoryPanel panel;
+    QPushButton *button =
+        panel.findChild<QPushButton *>(QStringLiteral("prefExtractButton"));
+    QVERIFY(button != nullptr);
+    QSignalSpy spy(&panel, &MemoryPanel::extractPreferencesRequested);
+
+    QTest::mouseClick(button, Qt::LeftButton);
+
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestMemoryPanel::extractFeedbackShowsResultAndError()
+{
+    MemoryPanel panel;
+    QLabel *label =
+        panel.findChild<QLabel *>(QStringLiteral("prefExtractLabel"));
+    QVERIFY(label != nullptr);
+
+    panel.setPreferenceExtractResult(2);
+    QVERIFY(!label->isHidden());
+    QVERIFY(label->text().contains(QStringLiteral("2")));
+
+    panel.setPreferenceExtractError(QStringLiteral("提取失败"));
+    QVERIFY(!label->isHidden());
+    QCOMPARE(label->text(), QStringLiteral("提取失败"));
 }
 
 void TestMemoryPanel::escHidesPanel()

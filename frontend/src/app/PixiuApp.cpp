@@ -33,6 +33,7 @@
 #include <QJsonObject>
 #include <QRect>
 #include <QScreen>
+#include <QStringList>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
 
@@ -404,6 +405,8 @@ bool PixiuApp::start()
             });
     connect(m_writeController, &WriteController::writeAccepted, this,
             [this](const QJsonObject &response) {
+                m_lastEvidenceId =
+                    response.value(QStringLiteral("evidence_id")).toString();
                 ChatMessage notice;
                 notice.role = MessageRole::System;
                 notice.text = tr("已沉淀：证据 %1 · 质量评分 %2 · 敏感度 %3")
@@ -517,6 +520,26 @@ bool PixiuApp::start()
                     m_memoryPanel->setPreferenceHistoryLoading();
                     m_preferenceController->loadHistory(m_lastPreferenceId);
                 }
+            });
+    // 偏好提取：以最近一次成功写入的 evidence 为输入（POST /preference/extract）。
+    connect(m_memoryPanel, &MemoryPanel::extractPreferencesRequested, this,
+            [this]() {
+                if (m_lastEvidenceId.isEmpty()) {
+                    m_memoryPanel->setPreferenceExtractError(
+                        tr("尚无已录入的记忆，请先在聊天框录入一条"));
+                    return;
+                }
+                m_preferenceController->extract(
+                    QStringList{m_lastEvidenceId});
+            });
+    connect(m_preferenceController, &PreferenceController::extracted, this,
+            [this](int count, int) {
+                m_memoryPanel->setPreferenceExtractResult(count);
+            });
+    connect(m_preferenceController, &PreferenceController::extractFailed, this,
+            [this](const QString &code, const QString &message) {
+                m_memoryPanel->setPreferenceExtractError(
+                    tr("偏好提取失败（%1）：%2").arg(code, message));
             });
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
