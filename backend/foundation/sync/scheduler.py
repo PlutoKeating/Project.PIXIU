@@ -43,8 +43,11 @@ class SyncScheduler:
         self._failures = 0
         return self._interval
 
-    async def run(self) -> None:
+    def reset(self) -> None:
         self._stop.clear()
+
+
+    async def run(self) -> None:
         while not self._stop.is_set():
             delay = await self.run_once()
             try:
