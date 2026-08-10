@@ -31,7 +31,7 @@ ImportDialog::ImportDialog(QWidget *parent)
     QLabel *contentLabel = new QLabel(tr("内容"), this);
     m_contentEdit = new QPlainTextEdit(this);
     m_contentEdit->setPlaceholderText(
-        tr("粘贴文本内容，或后续拖入图片走 OCR 识别…"));
+        tr("粘贴文本内容；也可拖入图片作为附件预览…"));
 
     QLabel *scopeLabel = new QLabel(tr("作用域"), this);
     m_scopeCombo = new QComboBox(this);

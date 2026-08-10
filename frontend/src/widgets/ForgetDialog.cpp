@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QShowEvent>
 #include <QStringList>
 #include <QVBoxLayout>
 
@@ -56,6 +57,8 @@ ForgetDialog::ForgetDialog(QWidget *parent)
     m_summaryLabel->setWordWrap(true);
 
     QPushButton *cancelButton = new QPushButton(tr("取消"), this);
+    cancelButton->setObjectName(QStringLiteral("forgetCancelButton"));
+    cancelButton->setAccessibleName(tr("取消遗忘"));
     QPushButton *confirmButton = new QPushButton(tr("确认遗忘"), this);
     confirmButton->setObjectName(QStringLiteral("dangerConfirmButton"));
     confirmButton->setStyleSheet(ui::dangerButtonStyle());
@@ -89,4 +92,13 @@ ForgetDialog::ForgetDialog(QWidget *parent)
 void ForgetDialog::setForgetTargets(const QJsonArray &targets, const QJsonObject &cascade)
 {
     m_summaryLabel->setText(buildSummary(targets, cascade));
+}
+
+void ForgetDialog::showEvent(QShowEvent *event)
+{
+    QDialog::showEvent(event);
+    if (QPushButton *cancel =
+            findChild<QPushButton *>(QStringLiteral("forgetCancelButton"))) {
+        cancel->setFocus(Qt::OtherFocusReason);
+    }
 }

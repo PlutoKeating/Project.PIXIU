@@ -127,6 +127,10 @@ This action cannot be undone.</translation>
         <source>取消</source>
         <translation>Cancel</translation>
     </message>
+    <message>
+        <source>取消遗忘</source>
+        <translation>Cancel forgetting</translation>
+    </message>
 </context>
 <context>
     <name>HttpBackendTransport</name>
@@ -154,8 +158,8 @@ This action cannot be undone.</translation>
         <translation>Content</translation>
     </message>
     <message>
-        <source>粘贴文本内容，或后续拖入图片走 OCR 识别…</source>
-        <translation>Paste text, or drag in an image for OCR later…</translation>
+        <source>粘贴文本内容；也可拖入图片作为附件预览…</source>
+        <translation>Paste text content; you can also drag in an image as an attachment preview…</translation>
     </message>
     <message>
         <source>作用域</source>

@@ -24,6 +24,10 @@ signals:
     void confirmed();
     void cancelled();
 
+protected:
+    // 危险操作默认聚焦“取消”：对话框显示时把键盘焦点放到取消按钮。
+    void showEvent(QShowEvent *event) override;
+
 private:
     QLabel *m_nameLabel = nullptr;
 };

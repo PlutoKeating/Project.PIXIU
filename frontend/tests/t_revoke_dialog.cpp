@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QLabel>
 #include <QPushButton>
 #include <QSignalSpy>
@@ -16,6 +17,7 @@ private slots:
     void cancelEmitsAndHides();
     void escEmitsCancelled();
     void cancelIsDefault();
+    void cancelReceivesInitialFocus();
 };
 
 void TestRevokeDialog::showsPeerName()
@@ -76,6 +78,17 @@ void TestRevokeDialog::cancelIsDefault()
         dialog.findChild<QPushButton *>(QStringLiteral("revokeCancelButton"));
     QVERIFY(cancelButton != nullptr);
     QVERIFY(cancelButton->isDefault());
+}
+
+void TestRevokeDialog::cancelReceivesInitialFocus()
+{
+    RevokeDialog dialog;
+    dialog.show();
+
+    QPushButton *cancelButton =
+        dialog.findChild<QPushButton *>(QStringLiteral("revokeCancelButton"));
+    QVERIFY(cancelButton != nullptr);
+    QTRY_COMPARE(QApplication::focusWidget(), cancelButton);
 }
 
 QTEST_MAIN(TestRevokeDialog)

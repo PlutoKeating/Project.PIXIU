@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QShowEvent>
 #include <QVBoxLayout>
 
 RevokeDialog::RevokeDialog(QWidget *parent)
@@ -57,6 +58,15 @@ RevokeDialog::RevokeDialog(QWidget *parent)
 void RevokeDialog::setPeerName(const QString &name)
 {
     m_nameLabel->setText(tr("即将解绑设备：%1").arg(name));
+}
+
+void RevokeDialog::showEvent(QShowEvent *event)
+{
+    QDialog::showEvent(event);
+    if (QPushButton *cancel =
+            findChild<QPushButton *>(QStringLiteral("revokeCancelButton"))) {
+        cancel->setFocus(Qt::OtherFocusReason);
+    }
 }
 
 void RevokeDialog::showAndFocus()

@@ -1,5 +1,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QApplication>
 #include <QLabel>
 #include <QPushButton>
 #include <QSignalSpy>
@@ -18,6 +19,7 @@ private slots:
     void cancelEmitsCancelled();
     void escEmitsCancelled();
     void cancelIsDefaultButton();
+    void cancelReceivesInitialFocus();
 };
 
 QJsonObject sampleConfirmation()
@@ -110,6 +112,17 @@ void TestForgetDialog::cancelIsDefaultButton()
     QVERIFY(confirm != nullptr);
     QVERIFY(cancel->isDefault());
     QVERIFY(!confirm->isDefault());
+}
+
+void TestForgetDialog::cancelReceivesInitialFocus()
+{
+    ForgetDialog dialog;
+    dialog.show();
+
+    QPushButton *cancel =
+        dialog.findChild<QPushButton *>(QStringLiteral("forgetCancelButton"));
+    QVERIFY(cancel != nullptr);
+    QTRY_COMPARE(QApplication::focusWidget(), cancel);
 }
 
 QTEST_MAIN(TestForgetDialog)
