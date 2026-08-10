@@ -16,6 +16,9 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     QApplication application(argc, argv);
+    // 常驻托盘/悬浮球应用：关闭任意窗口（含记忆/设置/录入等功能弹窗）只关闭
+    // 该窗口本身，不得因“最后一个窗口关闭”连带退出应用、把对话一起关掉。
+    application.setQuitOnLastWindowClosed(false);
 
     QCoreApplication::setApplicationName(QStringLiteral("PIXIU"));
     QCoreApplication::setApplicationVersion(QStringLiteral("0.1.0"));

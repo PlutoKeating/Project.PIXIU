@@ -9,7 +9,6 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLoggingCategory>
-#include <QMenu>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPropertyAnimation>
@@ -120,30 +119,6 @@ ChatWindow::ChatWindow(QWidget *parent)
     connect(m_pinButton, &QPushButton::clicked,
             this, &ChatWindow::togglePinned);
 
-    m_moreButton = makeIconButton(QStringLiteral("moreButton"),
-                                  tr("更多"),
-                                  tr("更多"));
-    m_topBarMenu = new QMenu(this);
-    m_topBarMenu->setObjectName(QStringLiteral("topBarMenu"));
-    QAction *panelAction = m_topBarMenu->addAction(tr("记忆面板"));
-    QAction *settingsAction = m_topBarMenu->addAction(tr("设置"));
-    QAction *importAction = m_topBarMenu->addAction(tr("录入知识"));
-    QAction *syncAction = m_topBarMenu->addAction(tr("同步面板"));
-    connect(panelAction, &QAction::triggered,
-            this, &ChatWindow::openPanelRequested);
-    connect(settingsAction, &QAction::triggered,
-            this, &ChatWindow::settingsRequested);
-    connect(importAction, &QAction::triggered,
-            this, &ChatWindow::attachRequested);
-    connect(syncAction, &QAction::triggered,
-            this, &ChatWindow::syncPanelRequested);
-    connect(m_moreButton, &QPushButton::clicked, this, [this]() {
-        if (m_topBarMenu) {
-            m_topBarMenu->popup(m_moreButton->mapToGlobal(
-                QPoint(0, m_moreButton->height())));
-        }
-    });
-
     QPushButton *closeButton = new QPushButton(this);
     closeButton->setObjectName(QStringLiteral("closeButton"));
     closeButton->setAccessibleName(tr("关闭聊天框"));
@@ -164,7 +139,6 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(titleLabel);
     topBar->addStretch(1);
     topBar->addWidget(m_pinButton);
-    topBar->addWidget(m_moreButton);
     topBar->addWidget(closeButton);
 
     // 消息区：欢迎空态 + 消息流（消息到达后自动切换，清空后回到欢迎页）。
@@ -515,9 +489,6 @@ void ChatWindow::rebuildTopBarIcons()
     const QColor color = QApplication::palette().color(QPalette::Text);
     if (m_pinButton) {
         m_pinButton->setIcon(ui::pinIcon(color, m_pinned));
-    }
-    if (m_moreButton) {
-        m_moreButton->setIcon(ui::moreIcon(color));
     }
     if (QPushButton *close = findChild<QPushButton *>(
             QStringLiteral("closeButton"))) {

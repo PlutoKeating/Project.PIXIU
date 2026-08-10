@@ -22,6 +22,7 @@ private slots:
     void okAcceptsWithSelectedLanguage();
     void escapeCancels();
     void closeCancels();
+    void dialogIsNonModalSoClosingNeverBlocksChat();
     void buttonsHaveAccessibleNames();
     void dialogCanGrowForLongHints();
 };
@@ -145,6 +146,15 @@ void TestSettingsDialog::closeCancels()
     dialog.close();
     QCOMPARE(cancelled.count(), 1);
     QCOMPARE(dialog.result(), int(QDialog::Rejected));
+}
+
+void TestSettingsDialog::dialogIsNonModalSoClosingNeverBlocksChat()
+{
+    // 回归：设置弹窗曾为模态；在 kylin-wlcom 上通过窗口“×”关闭模态弹窗后
+    // 应用会残留模态状态，聊天框无法再响应点击。设置与其他功能弹窗一致
+    // 保持非模态，保证“关弹窗只关弹窗、不关对话”。
+    SettingsDialog dialog;
+    QCOMPARE(dialog.windowModality(), Qt::NonModal);
 }
 
 void TestSettingsDialog::buttonsHaveAccessibleNames()

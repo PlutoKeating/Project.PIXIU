@@ -37,8 +37,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Pin to top"));
     QCOMPARE(QCoreApplication::translate("ChatWindow", "您可以问我："),
              QStringLiteral("You can ask me:"));
-    QCOMPARE(QCoreApplication::translate("ChatWindow", "同步面板"),
-             QStringLiteral("Sync panel"));
     QCOMPARE(QCoreApplication::translate("InputBar", "更多"),
              QStringLiteral("More"));
     QCOMPARE(QCoreApplication::translate("InputBar", "打开同步面板"),

@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
+#include <QVBoxLayout>
 
 #include "services/BackendTypes.h"
 #include "widgets/InputBar.h"
@@ -27,6 +28,7 @@ private slots:
     void moreMenuEmitsSignals();
     void backendStateUpdatesBadgeAndAvailability();
     void chipsCollapseIntoMoreWhenNarrow();
+    void defaultWidthShowsAllChipsWithoutMore();
 };
 
 void TestInputBar::emptyTextDoesNotEmit()
@@ -142,39 +144,67 @@ void TestInputBar::controlsHaveAccessibleNames()
 void TestInputBar::chipsEmitSignals()
 {
     InputBar bar;
+    // 录入入口在后端在线时才可用，先置为 Connected 再逐个点击。
+    bar.setBackendState(ConnectionState::Connected);
     QSignalSpy memorySpy(&bar, &InputBar::memoryPanelRequested);
     QSignalSpy settingsSpy(&bar, &InputBar::settingsRequested);
+    QSignalSpy attachSpy(&bar, &InputBar::attachRequested);
     QSignalSpy syncSpy(&bar, &InputBar::syncPanelRequested);
 
     bar.findChild<QPushButton *>(QStringLiteral("memoryChip"))->click();
     bar.findChild<QPushButton *>(QStringLiteral("settingsChip"))->click();
+    bar.findChild<QPushButton *>(QStringLiteral("importChip"))->click();
     bar.findChild<QPushButton *>(QStringLiteral("syncChip"))->click();
     QCOMPARE(memorySpy.count(), 1);
     QCOMPARE(settingsSpy.count(), 1);
+    QCOMPARE(attachSpy.count(), 1);
     QCOMPARE(syncSpy.count(), 1);
 }
 
 void TestInputBar::moreMenuEmitsSignals()
 {
     InputBar bar;
+    bar.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&bar));
     QSignalSpy memorySpy(&bar, &InputBar::memoryPanelRequested);
     QSignalSpy settingsSpy(&bar, &InputBar::settingsRequested);
+    QSignalSpy attachSpy(&bar, &InputBar::attachRequested);
     QSignalSpy syncSpy(&bar, &InputBar::syncPanelRequested);
     QMenu *menu = bar.findChild<QMenu *>(QStringLiteral("moreMenu"));
     QVERIFY(menu != nullptr);
+    QPushButton *more =
+        bar.findChild<QPushButton *>(QStringLiteral("moreChip"));
+    QVERIFY(more != nullptr);
 
-    for (QAction *action : menu->actions()) {
-        if (action->text() == QStringLiteral("记忆面板")) {
-            action->trigger();
-        } else if (action->text() == QStringLiteral("设置")) {
-            action->trigger();
-        } else if (action->text() == QStringLiteral("同步面板")) {
-            action->trigger();
+    // 宽度充足：所有 chip 可见，“更多”不出现，菜单为空（无重复入口）。
+    bar.resize(560, 140);
+    QVERIFY(!more->isVisible());
+    QCOMPARE(menu->actions().size(), 0);
+
+    // 宽度不足：只有被隐藏的 chip 进入“更多”菜单，可见入口不重复。
+    bar.resize(220, 140);
+    QVERIFY(more->isVisible());
+    const QList<QPushButton *> chips = {
+        bar.findChild<QPushButton *>(QStringLiteral("memoryChip")),
+        bar.findChild<QPushButton *>(QStringLiteral("settingsChip")),
+        bar.findChild<QPushButton *>(QStringLiteral("importChip")),
+        bar.findChild<QPushButton *>(QStringLiteral("syncChip")),
+    };
+    int hiddenCount = 0;
+    for (QPushButton *chip : chips) {
+        if (!chip->isVisible()) {
+            ++hiddenCount;
         }
     }
-    QCOMPARE(memorySpy.count(), 1);
-    QCOMPARE(settingsSpy.count(), 1);
-    QCOMPARE(syncSpy.count(), 1);
+    QVERIFY(hiddenCount > 0);
+    more->click();
+    QCOMPARE(menu->actions().size(), hiddenCount);
+    for (QAction *action : menu->actions()) {
+        action->trigger();
+    }
+    QCOMPARE(memorySpy.count() + settingsSpy.count() + attachSpy.count()
+                 + syncSpy.count(),
+             hiddenCount);
 }
 
 void TestInputBar::backendStateUpdatesBadgeAndAvailability()
@@ -224,7 +254,7 @@ void TestInputBar::chipsCollapseIntoMoreWhenNarrow()
     for (QPushButton *chip : chips) {
         QVERIFY(chip->isVisible());
     }
-    QVERIFY(more->isVisible());
+    QVERIFY(!more->isVisible());
 
     bar.resize(220, 140);
     int hidden = 0;
@@ -235,6 +265,43 @@ void TestInputBar::chipsCollapseIntoMoreWhenNarrow()
     }
     QVERIFY(hidden > 0);
     QVERIFY(more->isVisible());
+}
+
+void TestInputBar::defaultWidthShowsAllChipsWithoutMore()
+{
+    // 回归：窗口首次布局（子控件尚未可见）时 isVisible() 恒为 false，溢出
+    // 判断必须基于显式隐藏状态（isHidden）；否则“更多”会在默认宽度错误常驻，
+    // 与四个主 chip 形成重复入口。
+    QWidget container;
+    container.resize(380, 640);
+    auto *layout = new QVBoxLayout(&container);
+    layout->setContentsMargins(16, 12, 16, 16);
+    layout->setSpacing(8);
+    InputBar *bar = new InputBar(&container);
+    layout->addWidget(bar);
+    container.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&container));
+
+    const QList<QPushButton *> chips = {
+        bar->findChild<QPushButton *>(QStringLiteral("memoryChip")),
+        bar->findChild<QPushButton *>(QStringLiteral("settingsChip")),
+        bar->findChild<QPushButton *>(QStringLiteral("importChip")),
+        bar->findChild<QPushButton *>(QStringLiteral("syncChip")),
+    };
+    QPushButton *more =
+        bar->findChild<QPushButton *>(QStringLiteral("moreChip"));
+    QVERIFY(more != nullptr);
+
+    // 主 chip 全部放得下时，“更多”不得作为重复入口出现（显式隐藏）；
+    // 任一主 chip 溢出隐藏时，“更多”才作为溢出入口出现。
+    bool anyHidden = false;
+    for (QPushButton *chip : chips) {
+        QVERIFY(chip != nullptr);
+        if (chip->isHidden()) {
+            anyHidden = true;
+        }
+    }
+    QCOMPARE(more->isHidden(), !anyHidden);
 }
 
 QTEST_MAIN(TestInputBar)

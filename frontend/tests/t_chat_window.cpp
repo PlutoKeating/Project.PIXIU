@@ -12,7 +12,7 @@
 #include "widgets/InputBar.h"
 #include "widgets/MessageList.h"
 
-// ChatWindow 交互测试：显示/隐藏、后端状态 badge、顶栏置顶/菜单/关闭、
+// ChatWindow 交互测试：显示/隐藏、后端状态 badge、顶栏置顶/关闭、
 // 发送与输入恢复、欢迎页建议卡片。
 class TestChatWindow : public QObject
 {
@@ -25,7 +25,7 @@ private slots:
     void backendStateUpdatesInputBadge();
     void offlineStateDisablesEditorButKeepsChips();
     void pinButtonTogglesAlwaysOnTop();
-    void moreMenuEmitsPanelAndSettingsAndSync();
+    void topBarHasNoDuplicateFunctionMenu();
     void closeButtonEmitsCloseRequested();
     void buttonsHaveToolTipsAndAccessibleNames();
     void dragMovesWindowAndEmitsMoved();
@@ -114,37 +114,14 @@ void TestChatWindow::pinButtonTogglesAlwaysOnTop()
     QVERIFY(!(window.windowFlags() & Qt::WindowStaysOnTopHint));
 }
 
-void TestChatWindow::moreMenuEmitsPanelAndSettingsAndSync()
+void TestChatWindow::topBarHasNoDuplicateFunctionMenu()
 {
+    // 功能入口统一收敛到 chip 行，顶栏不再提供重复的“更多”功能菜单。
     ChatWindow window;
-    QSignalSpy panelSpy(&window, &ChatWindow::openPanelRequested);
-    QSignalSpy settingsSpy(&window, &ChatWindow::settingsRequested);
-    QSignalSpy syncSpy(&window, &ChatWindow::syncPanelRequested);
-    QMenu *menu = window.findChild<QMenu *>(QStringLiteral("topBarMenu"));
-    QVERIFY(menu != nullptr);
-
-    QAction *panel = nullptr;
-    QAction *settings = nullptr;
-    QAction *sync = nullptr;
-    for (QAction *action : menu->actions()) {
-        if (action->text() == QStringLiteral("记忆面板")) {
-            panel = action;
-        } else if (action->text() == QStringLiteral("设置")) {
-            settings = action;
-        } else if (action->text() == QStringLiteral("同步面板")) {
-            sync = action;
-        }
-    }
-    QVERIFY(panel != nullptr);
-    QVERIFY(settings != nullptr);
-    QVERIFY(sync != nullptr);
-
-    panel->trigger();
-    settings->trigger();
-    sync->trigger();
-    QCOMPARE(panelSpy.count(), 1);
-    QCOMPARE(settingsSpy.count(), 1);
-    QCOMPARE(syncSpy.count(), 1);
+    QVERIFY(window.findChild<QPushButton *>(QStringLiteral("moreButton"))
+            == nullptr);
+    QVERIFY(window.findChild<QMenu *>(QStringLiteral("topBarMenu"))
+            == nullptr);
 }
 
 void TestChatWindow::closeButtonEmitsCloseRequested()
@@ -163,18 +140,13 @@ void TestChatWindow::buttonsHaveToolTipsAndAccessibleNames()
     ChatWindow window;
     QPushButton *pin =
         window.findChild<QPushButton *>(QStringLiteral("pinButton"));
-    QPushButton *more =
-        window.findChild<QPushButton *>(QStringLiteral("moreButton"));
     QPushButton *close =
         window.findChild<QPushButton *>(QStringLiteral("closeButton"));
     QVERIFY(pin != nullptr);
-    QVERIFY(more != nullptr);
     QVERIFY(close != nullptr);
     QVERIFY(!pin->toolTip().isEmpty());
-    QVERIFY(!more->toolTip().isEmpty());
     QVERIFY(!close->toolTip().isEmpty());
     QVERIFY(!pin->accessibleName().isEmpty());
-    QVERIFY(!more->accessibleName().isEmpty());
     QVERIFY(!close->accessibleName().isEmpty());
 }
 

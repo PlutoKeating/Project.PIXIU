@@ -79,8 +79,6 @@ private:
     void updateResizeCursor(const QPoint &pos);
 
     QPushButton *m_pinButton = nullptr;
-    QPushButton *m_moreButton = nullptr;
-    QMenu *m_topBarMenu = nullptr;
     QList<QPushButton *> m_suggestionCards;
     InputBar *m_inputBar = nullptr;
     MessageList *m_messageList = nullptr;

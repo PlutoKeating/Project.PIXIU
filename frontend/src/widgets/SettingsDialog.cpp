@@ -15,7 +15,10 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
 {
     setWindowTitle(tr("设置"));
-    setModal(true);
+    // 非模态：与记忆面板/录入/配对等功能弹窗一致。设置窗与聊天框相互独立，
+    // 关闭设置弹窗（含窗口“×”）只关闭该弹窗本身，不得因模态残留导致
+    // 聊天框无法继续交互（kylin-wlcom 上实测模态弹窗被 WM 关闭后应用会
+    // 进入输入卡死）。
     // 固定高度会裁剪英文长提示（快捷键说明等 i18n 长文案）；改为默认尺寸 +
     // 最小尺寸，内容超出时随 sizeHint 增高（中文保持 400x330 不变化）。
     resize(400, 330);

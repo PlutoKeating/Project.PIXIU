@@ -1,5 +1,6 @@
 #include "widgets/InputBar.h"
 
+#include <QAction>
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -62,18 +63,8 @@ InputBar::InputBar(QWidget *parent)
             this, &InputBar::showMoreMenu);
     m_moreMenu = new QMenu(this);
     m_moreMenu->setObjectName(QStringLiteral("moreMenu"));
-    QAction *memoryAction = m_moreMenu->addAction(tr("记忆面板"));
-    QAction *settingsAction = m_moreMenu->addAction(tr("设置"));
-    QAction *importAction = m_moreMenu->addAction(tr("录入知识"));
-    QAction *syncAction = m_moreMenu->addAction(tr("同步面板"));
-    connect(memoryAction, &QAction::triggered,
-            this, &InputBar::memoryPanelRequested);
-    connect(settingsAction, &QAction::triggered,
-            this, &InputBar::settingsRequested);
-    connect(importAction, &QAction::triggered,
-            this, &InputBar::attachRequested);
-    connect(syncAction, &QAction::triggered,
-            this, &InputBar::syncPanelRequested);
+    // “更多”仅作溢出入口：菜单内容在弹出时按当前被隐藏的 chip 动态生成，
+    // 与可见 chip 不重复（见 showMoreMenu）。
 
     QHBoxLayout *chipsRow = new QHBoxLayout();
     chipsRow->setContentsMargins(0, 0, 0, 0);
@@ -282,22 +273,56 @@ void InputBar::updateChipVisibility()
     const int spacing = ui::Spacing::XS;
     int used = m_moreChip->sizeHint().width() + spacing * 2;
     for (QPushButton *chip : m_chips) {
-        chip->setVisible(true);
+        chip->show();   // 显式复位，避免布局阶段历史隐藏残留
         used += chip->sizeHint().width() + spacing;
     }
     const int available = width() - spacing * 2;
+    // 注意：窗口尚未显示时 isVisible() 对子控件恒为 false，不能用它判断
+    // “已显示”，否则布局阶段不会隐藏任何 chip；“更多”也会恒显示。这里
+    // 一律基于显式隐藏状态（isHidden）判断，窗口显示后结果保持一致。
     for (int i = m_chips.size() - 1; i >= 0 && used > available; --i) {
-        if (m_chips[i]->isVisible()) {
-            m_chips[i]->setVisible(false);
-            used -= m_chips[i]->sizeHint().width() + spacing;
+        m_chips[i]->hide();
+        used -= m_chips[i]->sizeHint().width() + spacing;
+    }
+    // 没有任何 chip 被隐藏时，“更多”不出现，避免重复入口。
+    bool anyHidden = false;
+    for (QPushButton *chip : m_chips) {
+        if (chip->isHidden()) {
+            anyHidden = true;
+            break;
         }
     }
+    m_moreChip->setVisible(anyHidden);
 }
 
 void InputBar::showMoreMenu()
 {
-    if (m_moreMenu) {
-        m_moreMenu->popup(m_moreChip->mapToGlobal(
-            QPoint(0, m_moreChip->height())));
+    if (!m_moreMenu || !m_moreChip) {
+        return;
     }
+    // 只把当前因空间不足被隐藏的 chip 放进来，可见入口不重复。
+    m_moreMenu->clear();
+    for (QPushButton *chip : m_chips) {
+        if (!chip->isVisible()) {
+            QAction *action = m_moreMenu->addAction(chip->icon(), chip->text());
+            if (chip == m_memoryChip) {
+                connect(action, &QAction::triggered,
+                        this, &InputBar::memoryPanelRequested);
+            } else if (chip == m_settingsChip) {
+                connect(action, &QAction::triggered,
+                        this, &InputBar::settingsRequested);
+            } else if (chip == m_importChip) {
+                connect(action, &QAction::triggered,
+                        this, &InputBar::attachRequested);
+            } else if (chip == m_syncChip) {
+                connect(action, &QAction::triggered,
+                        this, &InputBar::syncPanelRequested);
+            }
+        }
+    }
+    if (m_moreMenu->isEmpty()) {
+        return;
+    }
+    m_moreMenu->popup(m_moreChip->mapToGlobal(
+        QPoint(0, m_moreChip->height())));
 }

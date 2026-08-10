@@ -28,14 +28,6 @@
         <translation>Ask your memories, or record something new</translation>
     </message>
     <message>
-        <source>录入知识</source>
-        <translation>Import knowledge</translation>
-    </message>
-    <message>
-        <source>记忆面板</source>
-        <translation>Memory panel</translation>
-    </message>
-    <message>
         <source>按 Ctrl+Alt+P 随时唤起</source>
         <translation>Press Ctrl+Alt+P anytime to summon</translation>
     </message>
@@ -46,18 +38,6 @@
     <message>
         <source>置顶</source>
         <translation>Pin to top</translation>
-    </message>
-    <message>
-        <source>更多</source>
-        <translation>More</translation>
-    </message>
-    <message>
-        <source>设置</source>
-        <translation>Settings</translation>
-    </message>
-    <message>
-        <source>同步面板</source>
-        <translation>Sync panel</translation>
     </message>
     <message>
         <source>您可以问我：</source>
@@ -275,14 +255,6 @@ This action cannot be undone.</translation>
     <message>
         <source>更多</source>
         <translation>More</translation>
-    </message>
-    <message>
-        <source>记忆面板</source>
-        <translation>Memory panel</translation>
-    </message>
-    <message>
-        <source>同步面板</source>
-        <translation>Sync panel</translation>
     </message>
     <message>
         <source>● 离线</source>

@@ -233,7 +233,9 @@ QPushButton[chipRole="chip"] {
     background-color: palette(alternate-base);
     border: none;
     border-radius: 12px;
-    padding: 4px 10px;
+    /* 4 个主 chip + 溢出“更多”在默认 380 宽窗口（内容区 348）必须全部放得下，
+       水平内边距取 9px：4×chip + “更多” = 335 ≤ 340，默认宽度不出现重复入口。 */
+    padding: 4px 9px;
     font-size: 10pt;
     color: palette(text);
 }
