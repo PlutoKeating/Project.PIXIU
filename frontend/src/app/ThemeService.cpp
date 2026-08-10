@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QColor>
 #include <QLoggingCategory>
+#include <QtGlobal>
 
 #ifdef PIXIU_HAVE_KYSDK
 #include <themeController.h>
@@ -13,25 +14,59 @@ Q_LOGGING_CATEGORY(lcTheme, "pixiu.theme")
 
 namespace {
 
-#ifdef PIXIU_HAVE_KYSDK
-// UKUI 深色主题（启典主题）近似色；浅色主题恢复系统 Palette，不强改。
+// ── PIXIU 设计系统调色（2026-08-10 侧边浮窗视觉统一）────────────
+//
+// 控件色一律取 palette 角色：浅色模式为“白 / 极浅灰 + 大量留白”，深色模式
+// 为结构一致的深灰蓝变体。高亮色（Highlight）不在此处覆盖，始终跟随 UKUI
+// 系统主题，保证“原生一致”不回归。
+
+// 浅色：窗口极浅灰、内容白、输入/卡片浅灰填充，边框使用柔和 Mid。
+QPalette lightPalette(const QPalette &base)
+{
+    QPalette p = base;
+    p.setColor(QPalette::Window, QColor(0xf5, 0xf6, 0xf8));
+    p.setColor(QPalette::WindowText, QColor(0x1f, 0x23, 0x29));
+    p.setColor(QPalette::Base, QColor(0xff, 0xff, 0xff));
+    p.setColor(QPalette::AlternateBase, QColor(0xed, 0xf0, 0xf4));
+    p.setColor(QPalette::Text, QColor(0x1f, 0x23, 0x29));
+    p.setColor(QPalette::Button, QColor(0xed, 0xf0, 0xf4));
+    p.setColor(QPalette::ButtonText, QColor(0x1f, 0x23, 0x29));
+    p.setColor(QPalette::Mid, QColor(0xd5, 0xda, 0xe1));
+    p.setColor(QPalette::Midlight, QColor(0xe3, 0xe7, 0xec));
+    p.setColor(QPalette::Light, QColor(0xff, 0xff, 0xff));
+    p.setColor(QPalette::Dark, QColor(0xb6, 0xbc, 0xc6));
+    p.setColor(QPalette::ToolTipBase, QColor(0xff, 0xff, 0xff));
+    p.setColor(QPalette::ToolTipText, QColor(0x1f, 0x23, 0x29));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    p.setColor(QPalette::PlaceholderText, QColor(0x98, 0x9f, 0xa9));
+#endif
+    return p;
+}
+
+// 深色：深灰蓝窗口、更深的内容底、浅灰蓝填充卡片；语义色由 UiTokens 提亮。
 QPalette darkPalette()
 {
     QPalette p;
-    p.setColor(QPalette::Window, QColor(0x2b, 0x2b, 0x2b));
-    p.setColor(QPalette::WindowText, QColor(0xd6, 0xd6, 0xd6));
-    p.setColor(QPalette::Base, QColor(0x22, 0x22, 0x22));
-    p.setColor(QPalette::AlternateBase, QColor(0x30, 0x30, 0x30));
-    p.setColor(QPalette::Text, QColor(0xd6, 0xd6, 0xd6));
-    p.setColor(QPalette::Button, QColor(0x3a, 0x3a, 0x3a));
-    p.setColor(QPalette::ButtonText, QColor(0xd6, 0xd6, 0xd6));
+    p.setColor(QPalette::Window, QColor(0x20, 0x23, 0x29));
+    p.setColor(QPalette::WindowText, QColor(0xe2, 0xe6, 0xeb));
+    p.setColor(QPalette::Base, QColor(0x19, 0x1c, 0x21));
+    p.setColor(QPalette::AlternateBase, QColor(0x27, 0x2b, 0x33));
+    p.setColor(QPalette::Text, QColor(0xe2, 0xe6, 0xeb));
+    p.setColor(QPalette::Button, QColor(0x2d, 0x32, 0x3b));
+    p.setColor(QPalette::ButtonText, QColor(0xe2, 0xe6, 0xeb));
     p.setColor(QPalette::Highlight, QColor(0x37, 0x90, 0xfa));
     p.setColor(QPalette::HighlightedText, QColor(0xff, 0xff, 0xff));
-    p.setColor(QPalette::ToolTipBase, QColor(0x3a, 0x3a, 0x3a));
-    p.setColor(QPalette::ToolTipText, QColor(0xd6, 0xd6, 0xd6));
+    p.setColor(QPalette::Mid, QColor(0x3b, 0x42, 0x4d));
+    p.setColor(QPalette::Midlight, QColor(0x46, 0x4e, 0x5a));
+    p.setColor(QPalette::Light, QColor(0x5a, 0x63, 0x70));
+    p.setColor(QPalette::Dark, QColor(0x12, 0x14, 0x18));
+    p.setColor(QPalette::ToolTipBase, QColor(0x2d, 0x32, 0x3b));
+    p.setColor(QPalette::ToolTipText, QColor(0xe2, 0xe6, 0xeb));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    p.setColor(QPalette::PlaceholderText, QColor(0x7b, 0x82, 0x8d));
+#endif
     return p;
 }
-#endif
 
 } // namespace
 
@@ -91,7 +126,12 @@ bool ThemeService::start()
     qCInfo(lcTheme) << "UKUI theme following enabled";
     return true;
 #else
-    qCInfo(lcTheme) << "theme following disabled; using Qt default palette";
+    // 降级路径（开发态 / 无 KYSDK）：仍应用 PIXIU 设计系统明暗调色，保证
+    // 离屏渲染与开发截图与真实桌面观感一致；主题切换跟随能力由 KYSDK 提供，
+    // 因此返回值保持 false（语义：无系统主题跟随）。
+    m_originalPalette = QApplication::palette();
+    applyTheme();
+    qCInfo(lcTheme) << "theme following disabled; design-system palette applied";
     return false;
 #endif
 }
@@ -118,16 +158,21 @@ void ThemeService::applyTheme()
         QApplication::setPalette(darkPalette());
         m_darkApplied = true;
         qCInfo(lcTheme) << "applied UKUI dark palette";
-    } else if (m_darkApplied) {
-        QApplication::setPalette(m_originalPalette);
-        m_darkApplied = false;
-        qCInfo(lcTheme) << "restored system palette (light theme)";
     } else {
-        qCInfo(lcTheme) << "light theme active; system palette already in use";
+        QApplication::setPalette(lightPalette(m_originalPalette));
+        m_darkApplied = false;
+        qCInfo(lcTheme) << "applied PIXIU light palette";
     }
 #else
-    // 降级路径：不修改 Palette，保持 Qt/UKUI 样式默认值。
-    qCInfo(lcTheme) << "theme palette untouched (fallback mode)";
+    // 降级路径：按当前 Palette 亮度判定明暗并应用设计系统调色。
+    const bool dark =
+        QApplication::palette().color(QPalette::Window).lightness() < 128;
+    if (dark) {
+        QApplication::setPalette(darkPalette());
+    } else {
+        QApplication::setPalette(lightPalette(m_originalPalette));
+    }
+    qCInfo(lcTheme) << "theme palette normalized (fallback mode)";
 #endif
 }
 

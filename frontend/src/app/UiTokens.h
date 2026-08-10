@@ -13,7 +13,8 @@
 //   - 配色：语义色从 QPalette / 明暗主题派生，控件中禁止再出现内联色值；
 //   - 字号分级：标题 14pt / 正文 11pt / 辅助 9pt（§7.2）；
 //   - 间距栅格：4 / 8 / 12 / 16（§7.3）；
-//   - 圆角：窗口 12 / 卡片 8 / 按钮 8 / 气泡 10（§7.3）；
+//   - 圆角：窗口 16 / 卡片 10 / 按钮 8 / 气泡 12（§7.3，2026-08-10 侧边
+//     浮窗视觉统一后更新）；
 //   - 危险按钮：统一由 dangerButtonStyle() 生成，明暗主题自适应。
 //
 // 本文件为 header-only：token 实现只依赖 Qt 基础类型，各控件与测试可直接
@@ -88,6 +89,31 @@ inline QString dangerButtonStyle()
              hover.name(), pressed.name());
 }
 
+// 主操作按钮统一样式（发送 / 录入 / 配对等强调操作），以主题高亮色为底、
+// 高亮文字为前景，hover / pressed 在明暗主题下各自微调，保持“卡片化、低噪声”
+// 的浮窗视觉（2026-08-10 侧边助手视觉统一）。
+inline QString accentButtonStyle()
+{
+    const bool dark = isDarkPalette();
+    const QColor bg = QApplication::palette().color(QPalette::Highlight);
+    const QColor hover = dark ? bg.lighter(115) : bg.darker(105);
+    const QColor pressed = dark ? bg.lighter(130) : bg.darker(112);
+    const QColor text =
+        QApplication::palette().color(QPalette::HighlightedText);
+    return QStringLiteral(
+               "QPushButton { background-color: %1; color: %2; border: none;"
+               " border-radius: 16px; padding: 6px 18px; font-size: 11pt;"
+               " font-weight: bold; }"
+               "QPushButton:hover { background-color: %3; }"
+               "QPushButton:pressed { background-color: %4; }"
+               "QPushButton:disabled { background-color: %5; color: %6; }")
+        .arg(bg.name(), text.name(), hover.name(), pressed.name(),
+             dark ? QColor(0x33, 0x38, 0x41).name()
+                  : QColor(0xe4, 0xe7, 0xec).name(),
+             dark ? QColor(0x6b, 0x72, 0x7d).name()
+                  : QColor(0x9a, 0xa1, 0xab).name());
+}
+
 // 字号分级（ARCHITECTURE §7.2）：标题 14pt / 正文 11pt / 辅助 9pt。
 namespace Font {
 enum class Size { Title = 14, Body = 11, Caption = 9 };
@@ -114,12 +140,12 @@ constexpr int L = 16;
 constexpr int XL = 24;
 } // namespace Spacing
 
-// 圆角（§7.3）：窗口 12 / 卡片 8 / 按钮 8 / 气泡 10。
+// 圆角（§7.3）：窗口 16 / 卡片 10 / 按钮 8 / 气泡 12。
 namespace Radius {
-constexpr int Window = 12;
-constexpr int Card = 8;
+constexpr int Window = 16;
+constexpr int Card = 10;
 constexpr int Button = 8;
-constexpr int Bubble = 10;
+constexpr int Bubble = 12;
 constexpr int Badge = 10;
 constexpr int Small = 4;
 } // namespace Radius

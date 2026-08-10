@@ -28,6 +28,9 @@ private slots:
     void statusLabelHasStableMinimumWidth();
     void dragMovesWindowAndEmitsMoved();
     void buttonsHaveAccessibleNames();
+    void defaultSizeIsNarrowTall();
+    void welcomeShownInitiallyThenHiddenAfterMessage();
+    void welcomeActionsForwardToWindowSignals();
     void sendButtonForwardsTextAndClears();
     void restoreInputPrefillsLineEdit();
 };
@@ -196,6 +199,63 @@ void TestChatWindow::buttonsHaveAccessibleNames()
     QVERIFY(!settings->accessibleName().isEmpty());
     QVERIFY(!panel->accessibleName().isEmpty());
     QVERIFY(!close->accessibleName().isEmpty());
+}
+
+void TestChatWindow::defaultSizeIsNarrowTall()
+{
+    ChatWindow window;
+    // 侧边助手形态：默认窄而高，最小尺寸保持窄高比例。
+    QVERIFY(window.width() < window.height());
+    QVERIFY(window.minimumWidth() < window.minimumHeight());
+}
+
+void TestChatWindow::welcomeShownInitiallyThenHiddenAfterMessage()
+{
+    ChatWindow window;
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+
+    QWidget *welcome =
+        window.findChild<QWidget *>(QStringLiteral("welcomeView"));
+    QVERIFY(welcome != nullptr);
+    QVERIFY(welcome->isVisible());
+
+    // 消息到达后切换到消息流，欢迎页隐藏。
+    ChatMessage message;
+    message.role = MessageRole::User;
+    message.text = QStringLiteral("水电燃气花了多少钱？");
+    message.timestamp = 1786164000;
+    window.messageList()->appendMessage(message);
+    QVERIFY(!welcome->isVisible());
+
+    // 清空消息后回到欢迎页（行删除经零延迟定时器处理）。
+    window.messageList()->clearMessages();
+    QTRY_VERIFY(welcome->isVisible());
+}
+
+void TestChatWindow::welcomeActionsForwardToWindowSignals()
+{
+    ChatWindow window;
+    window.show();
+    QSignalSpy attachSpy(&window, &ChatWindow::attachRequested);
+    QSignalSpy panelSpy(&window, &ChatWindow::openPanelRequested);
+
+    const QList<QPushButton *> actions =
+        window.findChildren<QPushButton *>(QStringLiteral("welcomeAction"));
+    QCOMPARE(actions.size(), 3);
+
+    // “录入知识”与“记忆面板”分别转发到窗口信号；“开始提问”聚焦输入框。
+    for (QPushButton *action : actions) {
+        if (action->text() == QStringLiteral("录入知识")) {
+            QTest::mouseClick(action, Qt::LeftButton);
+            QCOMPARE(attachSpy.count(), 1);
+        } else if (action->text() == QStringLiteral("记忆面板")) {
+            QTest::mouseClick(action, Qt::LeftButton);
+            QCOMPARE(panelSpy.count(), 1);
+        } else {
+            QCOMPARE(action->text(), QStringLiteral("开始提问"));
+        }
+    }
 }
 
 void TestChatWindow::sendButtonForwardsTextAndClears()

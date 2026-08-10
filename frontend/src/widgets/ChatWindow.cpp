@@ -2,8 +2,10 @@
 
 #include <QApplication>
 #include <QCloseEvent>
+#include <QAbstractItemModel>
 #include <QEasingCurve>
 #include <QHBoxLayout>
+#include <QIcon>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLoggingCategory>
@@ -11,6 +13,8 @@
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QPushButton>
+#include <QStackedWidget>
+#include <QTimer>
 #include <QVBoxLayout>
 
 #include "app/UkuiWindow.h"
@@ -31,7 +35,15 @@ ChatWindow::ChatWindow(QWidget *parent)
     // UKUI 原生窗口装饰（阴影/圆角）；无 KYSDK 环境为 no-op。
     pixiu::decorateUkuiWindow(this, ui::Radius::Window);
 
-    // 顶栏：标题 + 同步状态占位 + 记忆面板 + 关闭。
+    // 顶栏：Logo + 标题 + 同步状态 + 设置/记忆面板/关闭。
+    QLabel *logoLabel = new QLabel(this);
+    const QIcon brandIcon(QStringLiteral(":/icons/pixiu.svg"));
+    if (!brandIcon.isNull()) {
+        logoLabel->setPixmap(brandIcon.pixmap(QSize(20, 20)));
+    }
+    logoLabel->setFixedSize(22, 22);
+    logoLabel->setAccessibleName(tr("PIXIU 标识"));
+
     QLabel *titleLabel = new QLabel(tr("PIXIU 貔貅"), this);
     titleLabel->setObjectName(QStringLiteral("titleLabel"));
 
@@ -87,6 +99,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     QHBoxLayout *topBar = new QHBoxLayout();
     topBar->setContentsMargins(0, 0, 0, 0);
     topBar->setSpacing(ui::Spacing::S);
+    topBar->addWidget(logoLabel);
     topBar->addWidget(titleLabel);
     topBar->addStretch(1);
     topBar->addWidget(m_statusLabel);
@@ -94,7 +107,35 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(panelButton);
     topBar->addWidget(closeButton);
 
+    // 消息区：欢迎空态 + 消息流（消息到达后自动切换，清空后回到欢迎页）。
     m_messageList = new MessageList(this);
+    m_welcomeView = buildWelcomeView();
+    m_centerStack = new QStackedWidget(this);
+    m_centerStack->addWidget(m_welcomeView);
+    m_centerStack->addWidget(m_messageList);
+    m_centerStack->setCurrentWidget(m_welcomeView);
+    connect(m_messageList->model(), &QAbstractItemModel::rowsInserted, this,
+            [this]() {
+                if (m_centerStack && m_messageList) {
+                    m_centerStack->setCurrentWidget(m_messageList);
+                }
+            });
+    // 注意：本机 Qt 版本中 QListWidget::clear() 不发 rowsRemoved，而是发
+    // modelReset（实测确认）；两者都接入同一延迟判定，保证清空后回到欢迎页。
+    const auto resetWelcome = [this]() {
+        // 延迟一帧判断：思考占位被答案替换时先清空再插入，避免欢迎页
+        // 在两次行变更之间闪现。
+        QTimer::singleShot(0, this, [this]() {
+            if (m_centerStack && m_messageList
+                && m_messageList->count() == 0) {
+                m_centerStack->setCurrentWidget(m_welcomeView);
+            }
+        });
+    };
+    connect(m_messageList->model(), &QAbstractItemModel::rowsRemoved,
+            this, resetWelcome);
+    connect(m_messageList->model(), &QAbstractItemModel::modelReset,
+            this, resetWelcome);
 
     m_inputBar = new InputBar(this);
     connect(m_inputBar, &InputBar::sendRequested, this, &ChatWindow::sendRequested);
@@ -105,10 +146,86 @@ ChatWindow::ChatWindow(QWidget *parent)
                                ui::Spacing::L, ui::Spacing::L);
     layout->setSpacing(ui::Spacing::S);
     layout->addLayout(topBar);
-    layout->addWidget(m_messageList, 1);
+    layout->addWidget(m_centerStack, 1);
     layout->addWidget(m_inputBar);
 
     updateResizeCursor(QPoint(0, 0));
+}
+
+QWidget *ChatWindow::buildWelcomeView()
+{
+    QWidget *view = new QWidget(this);
+    view->setObjectName(QStringLiteral("welcomeView"));
+    view->setAccessibleName(tr("PIXIU 欢迎页"));
+
+    QLabel *logo = new QLabel(view);
+    const QIcon brandIcon(QStringLiteral(":/icons/pixiu.svg"));
+    if (!brandIcon.isNull()) {
+        logo->setPixmap(brandIcon.pixmap(QSize(52, 52)));
+    }
+    logo->setAlignment(Qt::AlignCenter);
+    logo->setAccessibleName(tr("PIXIU 标识"));
+
+    QLabel *title = new QLabel(tr("你好，我是 PIXIU"), view);
+    title->setObjectName(QStringLiteral("welcomeTitle"));
+    title->setAlignment(Qt::AlignCenter);
+
+    QLabel *subtitle = new QLabel(tr("问问你的记忆，或录入新的知识"), view);
+    subtitle->setObjectName(QStringLiteral("welcomeSubtitle"));
+    subtitle->setAlignment(Qt::AlignCenter);
+    subtitle->setWordWrap(true);
+
+    QPushButton *askButton = new QPushButton(tr("开始提问"), view);
+    askButton->setObjectName(QStringLiteral("welcomeAction"));
+    askButton->setAccessibleName(tr("开始提问"));
+    askButton->setCursor(Qt::PointingHandCursor);
+    connect(askButton, &QPushButton::clicked, this, [this]() {
+        if (m_inputBar) {
+            m_inputBar->focusInput();
+        }
+    });
+
+    QPushButton *importButton = new QPushButton(tr("录入知识"), view);
+    importButton->setObjectName(QStringLiteral("welcomeAction"));
+    importButton->setAccessibleName(tr("录入知识"));
+    importButton->setCursor(Qt::PointingHandCursor);
+    connect(importButton, &QPushButton::clicked,
+            this, &ChatWindow::attachRequested);
+
+    QPushButton *panelButton = new QPushButton(tr("记忆面板"), view);
+    panelButton->setObjectName(QStringLiteral("welcomeAction"));
+    panelButton->setAccessibleName(tr("打开记忆面板"));
+    panelButton->setCursor(Qt::PointingHandCursor);
+    connect(panelButton, &QPushButton::clicked,
+            this, &ChatWindow::openPanelRequested);
+
+    QHBoxLayout *actions = new QHBoxLayout();
+    actions->setContentsMargins(0, 0, 0, 0);
+    actions->setSpacing(ui::Spacing::S);
+    actions->addStretch(1);
+    actions->addWidget(askButton);
+    actions->addWidget(importButton);
+    actions->addWidget(panelButton);
+    actions->addStretch(1);
+
+    QLabel *hint = new QLabel(tr("按 Ctrl+Alt+P 随时唤起"), view);
+    hint->setObjectName(QStringLiteral("welcomeHint"));
+    hint->setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout *layout = new QVBoxLayout(view);
+    layout->setContentsMargins(ui::Spacing::XL, ui::Spacing::XL,
+                               ui::Spacing::XL, ui::Spacing::L);
+    layout->addStretch(1);
+    layout->addWidget(logo);
+    layout->addSpacing(ui::Spacing::M);
+    layout->addWidget(title);
+    layout->addSpacing(ui::Spacing::XS);
+    layout->addWidget(subtitle);
+    layout->addSpacing(ui::Spacing::XL);
+    layout->addLayout(actions);
+    layout->addStretch(1);
+    layout->addWidget(hint);
+    return view;
 }
 
 MessageList *ChatWindow::messageList() const

@@ -1,17 +1,19 @@
 /* PIXIU 全局样式：颜色全部使用 palette 角色（语义色由 UiTokens 生成，
    明暗主题切换随 Palette 联动）；禁止在 QSS 中硬编码颜色。
+   2026-08-10 侧边浮窗视觉统一：弱边框、圆角、卡片感、低噪声；
    字号分级与间距/圆角见 frontend/docs/ARCHITECTURE.md §7。 */
 
 QWidget {
     font-size: 11pt;
 }
 
-/* ── 通用控件状态 ─────────────────────────────────────── */
+/* ── 通用按钮：柔和填充、无硬边框、圆角 ─────────────────── */
 QPushButton {
     background-color: palette(button);
-    border: 1px solid palette(mid);
+    border: none;
     border-radius: 8px;
-    padding: 5px 14px;
+    padding: 7px 16px;
+    color: palette(button-text);
 }
 QPushButton:hover {
     background-color: palette(alternate-base);
@@ -21,14 +23,15 @@ QPushButton:pressed {
 }
 QPushButton:disabled {
     color: palette(mid);
+    background-color: palette(window);
 }
 QPushButton:focus {
-    border-color: palette(highlight);
+    border: 1px solid palette(highlight);
 }
 QPushButton:flat {
     background: transparent;
     border: none;
-    padding: 4px;
+    padding: 6px;
 }
 QPushButton:flat:hover {
     background-color: palette(alternate-base);
@@ -43,47 +46,66 @@ QPushButton:flat:focus {
     border-radius: 8px;
 }
 
+/* ── 输入控件：浅灰填充、弱边框、大圆角 ─────────────────── */
 QLineEdit, QPlainTextEdit, QComboBox, QKeySequenceEdit {
-    background-color: palette(base);
-    border: 1px solid palette(mid);
-    border-radius: 6px;
-    padding: 4px 8px;
+    background-color: palette(alternate-base);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 7px 12px;
     selection-background-color: palette(highlight);
     selection-color: palette(highlighted-text);
 }
 QLineEdit:focus, QPlainTextEdit:focus, QComboBox:focus, QKeySequenceEdit:focus {
+    background-color: palette(base);
     border-color: palette(highlight);
 }
 QLineEdit:disabled, QPlainTextEdit:disabled {
     color: palette(mid);
     background-color: palette(window);
 }
+QComboBox::drop-down {
+    border: none;
+    width: 22px;
+}
 
-/* ── 列表与滚动条 ─────────────────────────────────────── */
+/* ── 列表与卡片行：透明底、圆角行、低间距 ───────────────── */
 QListWidget {
-    background-color: palette(base);
-    border: 1px solid palette(mid);
-    border-radius: 8px;
+    background-color: transparent;
+    border: none;
     outline: none;
 }
 QListWidget::item {
-    padding: 4px;
+    padding: 8px 10px;
+    margin: 3px 0;
+    border-radius: 8px;
+}
+QListWidget::item:hover {
+    background-color: palette(alternate-base);
 }
 QListWidget::item:selected {
     background: transparent;
 }
+/* 消息流不套卡片行样式（气泡自带底色）。 */
 QListWidget#messageList {
     background: transparent;
     border: none;
 }
+QListWidget#messageList::item {
+    padding: 2px 0;
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+/* ── 滚动条：细、透明轨道、圆角滑块 ─────────────────────── */
 QScrollBar:vertical {
     background: transparent;
-    width: 6px;
+    width: 5px;
     margin: 2px;
 }
 QScrollBar::handle:vertical {
     background: palette(mid);
-    border-radius: 3px;
+    border-radius: 2px;
     min-height: 24px;
 }
 QScrollBar::handle:vertical:hover {
@@ -91,12 +113,12 @@ QScrollBar::handle:vertical:hover {
 }
 QScrollBar:horizontal {
     background: transparent;
-    height: 6px;
+    height: 5px;
     margin: 2px;
 }
 QScrollBar::handle:horizontal {
     background: palette(mid);
-    border-radius: 3px;
+    border-radius: 2px;
     min-width: 24px;
 }
 QScrollBar::handle:horizontal:hover {
@@ -110,36 +132,39 @@ QScrollBar::add-page, QScrollBar::sub-page {
     background: transparent;
 }
 
-/* ── Tab 页 ───────────────────────────────────────────── */
+/* ── Tab：无边框内容区、胶囊选中态 ───────────────────────── */
 QTabWidget::pane {
-    border: 1px solid palette(mid);
-    border-radius: 8px;
-    top: -1px;
+    border: none;
+    top: 0;
+}
+QTabBar {
+    background: transparent;
 }
 QTabBar::tab {
     background: transparent;
-    padding: 6px 14px;
-    border-radius: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
     font-size: 11pt;
 }
 QTabBar::tab:hover {
     background-color: palette(alternate-base);
 }
 QTabBar::tab:selected {
+    background-color: palette(alternate-base);
     color: palette(highlight);
     font-weight: bold;
 }
 
-/* ── 菜单与提示 ───────────────────────────────────────── */
+/* ── 菜单与提示 ─────────────────────────────────────────── */
 QMenu {
     background-color: palette(base);
     border: 1px solid palette(mid);
-    border-radius: 8px;
-    padding: 4px;
+    border-radius: 10px;
+    padding: 6px;
 }
 QMenu::item {
-    padding: 6px 16px;
-    border-radius: 4px;
+    padding: 7px 18px;
+    border-radius: 6px;
 }
 QMenu::item:selected {
     background-color: palette(highlight);
@@ -149,11 +174,16 @@ QToolTip {
     background-color: palette(tooltip-base);
     color: palette(tooltip-text);
     border: 1px solid palette(mid);
-    border-radius: 4px;
-    padding: 4px 8px;
+    border-radius: 6px;
+    padding: 4px 10px;
 }
 
-/* ── 标题与顶栏（ARCHITECTURE §7.2：标题 14pt）────────── */
+/* ── 对话框底：与浮窗同底色，内容留白 ───────────────────── */
+QDialog {
+    background-color: palette(window);
+}
+
+/* ── 标题与顶栏（ARCHITECTURE §7.2：标题 14pt）────────────── */
 QLabel#titleLabel,
 QLabel#panelTitleLabel,
 QLabel#prefHeaderLabel,
@@ -161,7 +191,12 @@ QLabel#settingsTitleLabel {
     font-size: 14pt;
     font-weight: bold;
 }
-QLabel#statusLabel,
+QLabel#statusLabel {
+    font-size: 9pt;
+    background-color: palette(alternate-base);
+    border-radius: 10px;
+    padding: 3px 10px;
+}
 QLabel#syncStatusLabel,
 QLabel#pairStatusLabel,
 QLabel#syncSummaryLabel {
@@ -172,36 +207,54 @@ QLabel#versionLabel {
     font-size: 9pt;
 }
 
-/* ── 消息气泡（§7.2/7.3：气泡内边距 12px，圆角 10px）──── */
+/* ── 聊天输入卡片：容器浅灰填充、内嵌无边框输入 ─────────── */
+QWidget#inputBar {
+    background-color: palette(alternate-base);
+    border-radius: 14px;
+}
+QLineEdit#lineEdit {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 8px 4px;
+}
+QLineEdit#lineEdit:focus {
+    background: transparent;
+    border: none;
+}
+
+/* ── 消息气泡（§7.2/7.3：内边距 12px，圆角 12/14px）──────── */
 QLabel#userBubble {
     background-color: palette(highlight);
     color: palette(highlighted-text);
-    border-radius: 10px;
-    padding: 12px;
+    border-radius: 14px;
+    padding: 10px 14px;
     font-size: 11pt;
 }
 QLabel#assistantBubble {
-    background-color: palette(base);
+    background-color: palette(alternate-base);
     color: palette(text);
-    border: 1px solid palette(mid);
-    border-radius: 10px;
-    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 14px;
     font-size: 11pt;
 }
 QLabel#assistantMeta {
     color: palette(mid);
     font-size: 9pt;
+    padding: 0 4px;
 }
 QLabel#systemHint {
     color: palette(mid);
-    font-size: 11pt;
+    font-size: 10pt;
+    padding: 2px 8px;
 }
 
-/* ── 证据卡（§7.3：内边距 10px，圆角 8px）─────────────── */
+/* ── 证据卡（§7.3：内边距 10px，圆角 10px）────────────────── */
 QFrame#evidenceCard {
     background-color: palette(base);
     border: 1px solid palette(mid);
-    border-radius: 8px;
+    border-radius: 10px;
 }
 QLabel#evidenceTitle {
     font-size: 10pt;
@@ -215,9 +268,10 @@ QLabel#evidenceMeta {
 QLabel#evidenceAction {
     color: palette(highlight);
     font-size: 9pt;
+    font-weight: bold;
 }
 
-/* ── 同步 Tab 节点行 ──────────────────────────────────── */
+/* ── 同步 Tab 节点行 ─────────────────────────────────────── */
 QLabel#peerNameLabel {
     font-size: 11pt;
     font-weight: bold;
@@ -228,7 +282,7 @@ QLabel#peerMetaLabel {
     font-size: 9pt;
 }
 
-/* ── 加载 / 空 / 错误状态 ─────────────────────────────── */
+/* ── 加载 / 空 / 错误状态 ─────────────────────────────────── */
 QLabel#conflictEmptyLabel,
 QLabel#prefEmptyLabel,
 QLabel#syncEmptyLabel {
@@ -244,15 +298,44 @@ QLabel#emptyHint {
     color: palette(mid);
 }
 
-/* ── 录入拖入占位框 ───────────────────────────────────── */
+/* ── 录入拖入占位框 ───────────────────────────────────────── */
 QLabel#previewLabel {
     border: 1px dashed palette(mid);
-    border-radius: 8px;
+    border-radius: 10px;
+    color: palette(mid);
+    font-size: 11pt;
+    background-color: palette(base);
+}
+
+/* ── 欢迎空态（侧边浮窗首屏）─────────────────────────────── */
+QWidget#welcomeView {
+    background: transparent;
+}
+QLabel#welcomeTitle {
+    font-size: 16pt;
+    font-weight: bold;
+    color: palette(text);
+}
+QLabel#welcomeSubtitle {
     color: palette(mid);
     font-size: 11pt;
 }
+QLabel#welcomeHint {
+    color: palette(mid);
+    font-size: 9pt;
+}
+QPushButton#welcomeAction {
+    background-color: palette(alternate-base);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 10pt;
+}
+QPushButton#welcomeAction:hover {
+    background-color: palette(midlight);
+}
 
-/* ── 思考骨架屏（加载占位）────────────────────────────── */
+/* ── 思考骨架屏（加载占位）────────────────────────────────── */
 QWidget#thinkingSkeleton {
     background: transparent;
 }

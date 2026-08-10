@@ -41,11 +41,43 @@
     </message>
     <message>
         <source>⚙</source>
-        <translation>⚙</translation>
+        <translation type="vanished">⚙</translation>
     </message>
     <message>
         <source>打开设置</source>
         <translation>Open settings</translation>
+    </message>
+    <message>
+        <source>PIXIU 标识</source>
+        <translation>PIXIU logo</translation>
+    </message>
+    <message>
+        <source>PIXIU 欢迎页</source>
+        <translation>PIXIU welcome</translation>
+    </message>
+    <message>
+        <source>你好，我是 PIXIU</source>
+        <translation>Hi, I'm PIXIU</translation>
+    </message>
+    <message>
+        <source>问问你的记忆，或录入新的知识</source>
+        <translation>Ask your memories, or record something new</translation>
+    </message>
+    <message>
+        <source>开始提问</source>
+        <translation>Start asking</translation>
+    </message>
+    <message>
+        <source>录入知识</source>
+        <translation>Import knowledge</translation>
+    </message>
+    <message>
+        <source>记忆面板</source>
+        <translation>Memory panel</translation>
+    </message>
+    <message>
+        <source>按 Ctrl+Alt+P 随时唤起</source>
+        <translation>Press Ctrl+Alt+P anytime to summon</translation>
     </message>
 </context>
 <context>
@@ -635,6 +667,10 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>取消设置</source>
         <translation>Cancel settings</translation>
+    </message>
+    <message>
+        <source>设置</source>
+        <translation>Settings</translation>
     </message>
 </context>
 <context>

@@ -1,12 +1,22 @@
 #include "widgets/InputBar.h"
 
+#include <QApplication>
+#include <QFile>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 
+#include "app/UiTokens.h"
+
 InputBar::InputBar(QWidget *parent)
     : QWidget(parent)
 {
+    // 输入区整体为圆角卡片（浅灰填充、无边框），内部输入框透明无边框，
+    // 发送按钮为主题高亮色胶囊——对应侧边助手“低噪声卡片”视觉。
+    setObjectName(QStringLiteral("inputBar"));
+    // 纯 QWidget 子类需显式启用样式背景，QSS 中的圆角卡片底色才会绘制。
+    setAttribute(Qt::WA_StyledBackground, true);
+
     QPushButton *attachButton = new QPushButton(tr("📎"), this);
     attachButton->setObjectName(QStringLiteral("attachButton"));
     attachButton->setAccessibleName(tr("录入图片或文件"));
@@ -28,14 +38,21 @@ InputBar::InputBar(QWidget *parent)
     m_sendButton->setAccessibleName(tr("发送"));
     m_sendButton->setCursor(Qt::PointingHandCursor);
     m_sendButton->setEnabled(false);
+    m_sendButton->setStyleSheet(ui::accentButtonStyle());
     connect(m_sendButton, &QPushButton::clicked, this, &InputBar::onSendClicked);
     connect(m_lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
         m_sendButton->setEnabled(!text.trimmed().isEmpty());
     });
+    // 明暗主题切换时重建胶囊底色（跟随 Highlight，禁用态保持柔和）。
+    connect(qApp, &QApplication::paletteChanged, this, [this](const QPalette &) {
+        if (m_sendButton) {
+            m_sendButton->setStyleSheet(ui::accentButtonStyle());
+        }
+    });
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(8);
+    layout->setContentsMargins(6, 6, 6, 6);
+    layout->setSpacing(ui::Spacing::XS);
     layout->addWidget(attachButton);
     layout->addWidget(m_lineEdit, 1);
     layout->addWidget(m_sendButton);

@@ -320,10 +320,11 @@ void TestMemoryPanel::panelMarginsUseSpacingToken()
     QLayout *layout = panel.layout();
     QVERIFY(layout != nullptr);
     const QMargins margins = layout->contentsMargins();
-    QCOMPARE(margins.left(), 8);
-    QCOMPARE(margins.top(), 8);
-    QCOMPARE(margins.right(), 8);
-    QCOMPARE(margins.bottom(), 8);
+    // 2026-08-10 侧边浮窗视觉统一：面板留白由 8px 提升到 12px（Spacing::M）。
+    QCOMPARE(margins.left(), 12);
+    QCOMPARE(margins.top(), 12);
+    QCOMPARE(margins.right(), 12);
+    QCOMPARE(margins.bottom(), 12);
 }
 
 void TestMemoryPanel::syncTabHasPairButtonOpensDialog()

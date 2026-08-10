@@ -11,7 +11,7 @@
 #include "widgets/ThinkingSkeleton.h"
 
 namespace {
-constexpr int kBubbleMaxWidth = 300;
+constexpr int kBubbleMaxWidth = 316;
 
 QString formatTimestamp(qint64 ts)
 {

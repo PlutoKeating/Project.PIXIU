@@ -63,8 +63,9 @@ MemoryPanel::MemoryPanel(QWidget *parent)
     m_tabs->addTab(createSyncTab(), tr("同步"));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(ui::Spacing::S, ui::Spacing::S,
-                               ui::Spacing::S, ui::Spacing::S);
+    layout->setContentsMargins(ui::Spacing::M, ui::Spacing::M,
+                               ui::Spacing::M, ui::Spacing::M);
+    layout->setSpacing(ui::Spacing::XS);
     layout->addWidget(m_tabs);
 }
 

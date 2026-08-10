@@ -8,10 +8,12 @@
 class QLabel;
 class QPushButton;
 class QPropertyAnimation;
+class QStackedWidget;
 class InputBar;
 class MessageList;
 
-// 聊天主窗口：无边框圆角浮层，顶栏（标题 + 状态 + 面板/关闭）。
+// 聊天主窗口：窄而高的侧边助手浮窗（无边框圆角浮层），顶栏（Logo + 标题 +
+// 状态 + 面板/设置/关闭），消息区带欢迎空态。
 //
 // 本阶段提供窗口壳与显示/隐藏/焦点行为；消息列表与输入栏由后续 feature 填充。
 class ChatWindow : public QWidget
@@ -61,6 +63,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    QWidget *buildWelcomeView();
     void animateOpacity(qreal target);
     enum class ResizeEdge {
         None, Left, Right, Top, Bottom,
@@ -73,6 +76,8 @@ private:
     QPushButton *m_settingsButton = nullptr;
     InputBar *m_inputBar = nullptr;
     MessageList *m_messageList = nullptr;
+    QStackedWidget *m_centerStack = nullptr;
+    QWidget *m_welcomeView = nullptr;
     QPropertyAnimation *m_opacityAnimation = nullptr;
     QPoint m_rememberedPos;
     QPoint m_dragGlobalOffset;
@@ -82,10 +87,10 @@ private:
     QPoint m_resizeStartGlobalPos;
     bool m_resizing = false;
 
-    static constexpr int kWindowWidth = 420;
-    static constexpr int kWindowHeight = 560;
-    static constexpr int kMinWidth = 360;
-    static constexpr int kMinHeight = 440;
+    static constexpr int kWindowWidth = 380;
+    static constexpr int kWindowHeight = 640;
+    static constexpr int kMinWidth = 320;
+    static constexpr int kMinHeight = 480;
     static constexpr int kResizeMargin = 6;
     static constexpr int kAnimationMs = 150;
 };
