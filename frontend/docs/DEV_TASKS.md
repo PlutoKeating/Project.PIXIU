@@ -218,6 +218,38 @@
   记忆面板）。参考截图不在工作区，视觉方向按需求文字执行（弱边框、圆角、
   卡片感、留白），待参考图补充后可再做逐项微调。
 
+## 实现状态（2026-08-10 契约对齐更新）
+
+在 `feat/foundation` 分支后端已真实实现全部 REST 端点（2026-08-10）的前提下，
+Module A 完成了第一轮"端口与用例对齐"工作（全程未修改 backend/）：
+
+- **错误解析对齐 FastAPI 形状**：`parseBackendError` 兼容 `{"detail":"..."}`
+  （HTTPException 404/422 等）与 `{"detail":[...]}`（Pydantic 校验）两种真实
+  后端形状，错误码正确映射为 NOT_FOUND / INVALID_REQUEST 等，不再显示空白
+  "HTTP_4xx"；`t_http_backend` 新增 detail/校验/旧契约三种错误用例。
+- **契约级一致性测试**：新增 `tests/t_contract_fixtures.cpp`（ctest 第 31 项），
+  以本地 TCP 桩模拟后端真实响应形状（取自 `backend/foundation/tests/test_api.py`
+  与 `api/http_app.py`），覆盖 write/query/forget 两段式/conflicts/preference
+  history/sync peers+status/pair+revoke/flow promote 共 8 组契约断言。
+- **偏好提取接线**：`BackendTransport::extractPreferences`（默认空实现，测试桩
+  无需改动）+ `HttpBackendTransport` POST `/preference/extract` +
+  `PreferenceController::extract`（在途防重、空 evidence 忽略）+
+  MemoryPanel 偏好 Tab“提取偏好”按钮（以最近一次成功写入的 evidence_id 为输入，
+  成功/失败就地反馈）；`t_preference_controller` 新增 5 例，`t_memory_panel`
+  新增 2 例。
+- **配对 PIN 对齐后端契约**：`/sync/pair` 的 `token` 后端必填（min_length=1），
+  PairDialog 新增“配对令牌”输入（与 6 位 PIN 双条件门控，缺令牌时禁用确认），
+  载荷携带 token；`t_pair_dialog` 同步更新（令牌门控/载荷断言）。
+- i18n 新增 7 条（偏好提取/配对令牌相关），`.ts` 180 条 0 未完成，`.qm` 已
+  重新生成；`t_i18n` 增加“提取偏好”抽查。
+- 本地验收：OFF 路径构建通过，ctest 31/31 全绿；offscreen 冒烟（演示桩 +
+  真前端二进制）通过（WS 连接、memory_ready → 角标/通知链路）。
+
+> 仍被后端契约阻塞、前端未推进：WS `/events` 注册/导入修复、conflict_detected
+> 与 forget_confirmation 真实广播、配对令牌生成端点（QR/PIN 完整闭环）、偏好
+> 列表/证据详情/flow 上下文来源端点。以上均需 Module C 侧落地（见
+> `frontend/docs/BACKEND_ISSUES.md` 与 `DEMO_GUIDE.md` §3）。
+
 ## 开工要求（本地环境准备）
 
 开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
