@@ -37,10 +37,9 @@ Python 3.10 + SQLite + hnswlib
 | `sync/` | P2P CRDT 同步（Gossip + 反熵 + TLS） |
 | `eval/` | 评测框架 |
 
-> **状态（2026-08-11）**：foundation Phase 0~5 全部完成（retrieval/flow/sync/eval/
-> D-Bus），12 个 REST 端点真实实现；引擎核心管线已集成，麒麟 SDK 绑定待构建。
-> 全量测试：Foundation 342 项 + Engine 21 项（函数级统计），麒麟 V11 真机
-> pytest 364 passed。
+> **状态（2026-08-11）**：foundation Phase 0~7 全部完成（retrieval/flow/sync/eval/
+> D-Bus + request_id 统一错误契约），12 个 REST 端点真实实现；引擎核心管线已
+> 集成，麒麟 SDK 绑定待构建。全量测试：麒麟 V11 真机 pytest 377 passed。
 
 **文档**：
 - [架构设计](foundation/docs/ARCHITECTURE.md)

@@ -41,8 +41,8 @@
 |------|--------|----------|--------|--------|
 | A · frontend | 团队负责人 | ✅ 独立功能完成 + UI/UX polish 完成 | Qt5/CMake 应用骨架；悬浮球/聊天框/记忆面板/遗忘/录入/设置/配对/解绑/同步 Tab；WS 事件路由；i18n（180 条）；UKUI 主题跟随/通知/快捷键/`.deb` 打包；双路径 ctest 31/31 全绿；真实桌面截图留证 | 真实麒麟会话人工复测（全局快捷键等）；后端契约阻塞：偏好列表/证据详情/二维码令牌/真实配对闭环/真实 WS 事件广播 |
 | B · engine | @Ø是铯 | ✅ 核心管线已实现并集成（较 08-07 无新增） | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
-| C · foundation | @17% | ✅ Phase 0~5 全部完成 | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务；同步/流转 API 全部真实接入；测试全绿（麒麟 V11 真机 364 passed） | 麒麟真实环境性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
-| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（麒麟 V11 真机 364 passed）；frontend ctest 31/31；自动回归脚本 `frontend/scripts/regression.sh`；打包发布脚手架 `build/release/` | 测试数据集、性能压测、Docker 容器化、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+| C · foundation | @17% | ✅ Phase 0~7 全部完成（功能冻结） | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务、request_id 统一错误契约、Phase 7 压测证据（P95=19.18ms）；同步/流转 API 全部真实接入；测试全绿（麒麟 V11 真机 377 passed） | 麒麟真实 SDK 性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
+| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（麒麟 V11 真机 377 passed）；frontend ctest 31/31；自动回归脚本 `frontend/scripts/regression.sh`；打包发布脚手架 `build/release/` | 测试数据集、性能压测、Docker 容器化、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -60,7 +60,7 @@
 | `backend/foundation/eval/` | 评测框架 Phase 4/5：6 项验收指标 + recall@1/3/5、P50/P95/P99、scope 隔离；同步收敛与系统资源基准；stub 自检：收敛率 1.0、同步 P95 55ms |
 | `backend/foundation/api/` | D-Bus 服务 `com.kylin.pixiu.Memory` 实现（Write/Query/Forget/SyncStatus 镜像 HTTP）；桌面传输与共享服务对齐；`/events` 广播扩展至 sync/conflict 事件 |
 | `backend/foundation/storage/` `core/` | schema 扩至 16 张表（sync_identity/peers/state/acks/meta）；仓储持久化 knowledge↔entity 链接；核心契约加固 |
-| 测试与文档 | foundation+engine 测试全绿（麒麟 V11 真机 pytest 364 passed）；PHASE0~4、BASELINE、任务书/架构更新；`docs/compose/spec/` 阶段规格 6 份 |
+| 测试与文档 | foundation+engine 测试全绿（麒麟 V11 真机 pytest 377 passed）；PHASE0~4、BASELINE、ACCEPTANCE、任务书/架构更新；`docs/compose/spec/` 阶段规格 6 份 |
 
 **未完成 / 遗留**：麒麟真实 embedding + 正式数据集的召回率/P95 验收（当前为 stub
 基线 P95=13.3ms）；真实局域网多设备互操作；**WS `/events` 注册问题仍未修复**（见下方阻塞项）。
@@ -98,13 +98,15 @@ Module C 修复后复测；Module A 已用测试桩完成 UI 侧冒烟。
   编码（apt 包名、Python ABI、KYSDK 可用性），禁止一次性手工补丁。
 - 麒麟实测中沉淀的修复：PEP 668 pip 自举、`--ignore-installed`（RECORD 缺失包）、
   profile 优先级、后端顶层包 `backend` 的 PYTHONPATH、uvicorn CLI 启动、
-  `apt-get install ./deb`（dpkg 锁等待）、HTTP 级就绪等待。
+  `apt-get install ./deb`（dpkg 锁等待）、HTTP 级就绪等待、
+  `PIXIU_SYNC_KEY_PASSPHRASE` ≥16 字符默认值（后端强制要求，否则 `/sync/*` 500）、
+  前端单实例守护（冒烟前先结束桌面实例）。
 
 **麒麟 V11 真机验证（VM 192.168.122.197，2026-08-11）**
 
 - 安装：apt 预置 + `apt-get install ./deb` 一次通过，依赖从包内 wheels 离线安装。
 - 后端：`pixiu-backend.service` active，`/conflicts` 200，SQLite 库自动创建；
-  VM 上克隆源码跑全量 pytest **364 passed**。
+  VM 上克隆源码跑全量 pytest **377 passed**。
 - 前端：真实桌面窗口映射确认，团队负责人验收"整体比较丝滑"。
 - 已发布 GitHub staging Release：`v0.1.0-staging`（附 deb + sha256）。
 
@@ -179,7 +181,7 @@ i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与�
 
 **状态（2026-08-07）**：核心管线已实现并完成集成；真实 SDK 绑定源码就绪，待麒麟环境构建验证。
 
-**状态（2026-08-11）**：无新增实现变更；麒麟 V11 真机全量测试 364 passed，
+**状态（2026-08-11）**：无新增实现变更；麒麟 V11 真机全量测试 377 passed，
 整包 .deb 已随包安装引擎源码，SDK 绑定构建待验证。
 
 ### 2.3 模块 C — 后台基础设施
@@ -194,10 +196,10 @@ i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与�
 
 **职责**：实现全部基础设施——API 网关（HTTP/WS/D-Bus）、SQLite 存储实现（仓储模式）、混合检索管线（BM25∥ANN∥Graph→融合→重排→组装）、短中/长期记忆流转、P2P CRDT 分布式同步、量化评测框架。
 
-**状态（2026-08-10）**：Phase 0~5 全部完成——retrieval（`/memory/query`）、
+**状态（2026-08-11）**：Phase 0~7 全部完成（功能冻结）——retrieval（`/memory/query`）、
 flow（`/memory/flow/promote`）、sync（`/sync/*`）、eval（评测框架+基准）、
-D-Bus 服务均已落地，354 项测试通过；剩余为麒麟真实环境性能验收与真实局域网
-互操作。
+D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 377 项测试通过；
+剩余为麒麟真实 SDK 性能验收与真实局域网互操作。
 
 ### 2.4 支持岗 D — 测试与工具
 
@@ -211,7 +213,7 @@ D-Bus 服务均已落地，354 项测试通过；剩余为麒麟真实环境性�
 **职责**：测试数据集构造、单元/集成测试、性能压测、Docker 容器化、环境变量模板、评测脚本、文档补全。
 
 **状态（2026-08-11）**：测试侧已由 A/C 模块补齐（麒麟 V11 真机 foundation+engine
-364 passed、frontend ctest 31/31）；打包发布脚手架已交付（`build/release/`，
+377 passed、frontend ctest 31/31）；打包发布脚手架已交付（`build/release/`，
 已发布 `v0.1.0-staging`）；正式支持工作（测试数据集、性能压测、Docker 容器化、
 验收评测报告）尚未开工。
 

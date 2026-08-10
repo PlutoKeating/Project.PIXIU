@@ -157,7 +157,7 @@ git clone git@github-personal:PlutoKeating/Project.PIXIU.git
 CI 示例见 [`ci/github-actions-release.yml`](ci/github-actions-release.yml)，部署到
 麒麟环境时改用自托管 runner（x86_64 / aarch64），步骤不变。
 
-## 实测记录（麒麟 V11 VM，2026-08-10）
+## 实测记录（麒麟 V11 VM，2026-08-11 更新）
 
 目标机：`192.168.122.197`（Kylin V11，x86_64，Python 3.12.3，Qt 5.15.19，
 无 python3-pip/venv、无 kysdk 开发头文件）。
@@ -171,12 +171,16 @@ KYSDK=OFF，35 个 cp312 wheels）→ `vm-deploy-test.sh`（force reinstall）�
 | `pixiu-backend.service` | ✅ active；uvicorn 监听 127.0.0.1:8765 |
 | SQLite 数据库 | ✅ 首次请求自动创建 `/var/lib/pixiu/pixiu.db`（229KB，属主 pixiu） |
 | `GET /conflicts` | ✅ 200 `{"conflicts":[]}` |
-| `GET /sync/status`、`POST /memory/write` | ⚠️ 500 `KylinSDKUnavailableError`（引擎 SDK 绑定未构建，见"已知边界"） |
-| 后端全量测试（VM 上 github-personal 克隆源码） | ✅ 364 passed（foundation + engine） |
+| `GET /sync/status`、`GET /sync/peers` | ✅ 200（真实状态；Ed25519 身份自动创建；口令配置修复后可用） |
+| `POST /memory/write` | ⚠️ 500 `KylinSDKUnavailableError`（引擎 SDK 绑定未构建，见"已知边界"） |
+| 错误契约（400/404/422/500） | ✅ 统一 `{error, message, request_id}` + `X-Request-Id` 头 |
+| 后端全量测试（VM 上跑最新源码） | ✅ 377 passed（foundation + engine） |
 | 前端离屏冒烟 | ✅ 进程存活（timeout 正常退出 124） |
 | 前端真实桌面 | ✅ 窗口映射确认（`wmctrl -l` 显示 PIXIU）；WS `/events` 403 为已知后端问题 |
 
 本轮发现并已沉淀的修复：PEP 668 pip 自举、`--ignore-installed`（RECORD 缺失包）、
 profile 优先级（默认值不得覆盖画像）、`PYTHONPATH=/usr/lib/pixiu`（顶层包 backend）、
 uvicorn CLI 启动（避免双导入告警）、`apt-get install ./deb`（dpkg 锁等待）、
-HTTP 级就绪等待（systemd active ≠ 端口就绪）。
+HTTP 级就绪等待（systemd active ≠ 端口就绪）、`PIXIU_SYNC_KEY_PASSPHRASE` ≥16
+字符默认值（后端强制要求，否则 `/sync/*` 500）、前端单实例守护（冒烟前先
+`pkill -x pixiu-frontend`）。

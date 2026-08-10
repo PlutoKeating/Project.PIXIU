@@ -15,7 +15,8 @@
   双路径（KYSDK OFF/ON）ctest 31/31 全绿（含契约一致性测试
   `t_contract_fixtures`）；`.deb` 打包产物已在麒麟 V11 真机安装验证。
 - 后端契约（2026-08-10 合入 main）：12 个 REST 端点已全部真实实现，前端
-  传输层与解析已按真实响应形状对齐（FastAPI `{"detail":...}` 错误形状兼容）。
+  传输层与解析已按真实响应形状对齐；2026-08-11 起后端经 request_id 中间件统一
+  返回 `{error, message, request_id}`，前端两种形状（`error`/`detail`）均兼容。
 - 剩余均为**后端契约阻塞或人工验收项**：WS `/events` 真实广播（见
   `BACKEND_ISSUES.md`）、证据详情/偏好列表/QR 令牌端点、真实麒麟 SDK 环境
   性能与原生快捷键人工复测。
@@ -232,6 +233,7 @@ Module A 完成了第一轮"端口与用例对齐"工作（全程未修改 backe
   （HTTPException 404/422 等）与 `{"detail":[...]}`（Pydantic 校验）两种真实
   后端形状，错误码正确映射为 NOT_FOUND / INVALID_REQUEST 等，不再显示空白
   "HTTP_4xx"；`t_http_backend` 新增 detail/校验/旧契约三种错误用例。
+  （2026-08-11：后端已统一为 `error` 契约，兼容逻辑保留并继续生效。）
 - **契约级一致性测试**：新增 `tests/t_contract_fixtures.cpp`（ctest 第 31 项），
   以本地 TCP 桩模拟后端真实响应形状（取自 `backend/foundation/tests/test_api.py`
   与 `api/http_app.py`），覆盖 write/query/forget 两段式/conflicts/preference

@@ -119,6 +119,9 @@ fi
 log "[5/6] frontend offscreen smoke"
 "${SSH[@]}" '
 set +e
+# 单实例守护：先结束可能存在的桌面实例，否则新实例会立即退出（exit 1）
+pkill -x pixiu-frontend 2>/dev/null
+sleep 1
 timeout 6 env QT_QPA_PLATFORM=offscreen /usr/bin/pixiu-frontend >/tmp/pixiu-front-smoke.log 2>&1
 rc=$?
 echo "frontend exit: $rc (124=timeout ok)"

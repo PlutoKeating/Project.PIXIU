@@ -9,7 +9,7 @@
 ## 实现状态（2026-08-11）
 
 - 🟡 **测试与工具侧**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
-  pytest 364 passed）；`backend/.env.example` 已有内容（6 个核心变量，见
+  pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见
   `backend/foundation/docs/QUICK_START.md`）；前端回归脚本
   `frontend/scripts/regression.sh` 已固化。
 - ✅ **打包发布脚手架**：`build/release/` 提供整包 .deb 构建、目标机预置
