@@ -5,9 +5,9 @@
 
 ---
 
-## 实现状态（2026-08-10）
+## 实现状态（2026-09-09，功能冻结）
 
-### ✅ 已完成（Phase 0～Phase 3）
+### ✅ 已完成（Phase 0～Phase 7）
 
 - `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
@@ -15,23 +15,29 @@
   （request_id + 敏感过滤）
 - `storage/`：`schema.py`（16 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v4 版本化迁移）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
-- `api/`：全部 REST 契约端点已真实接入（含 `/sync/pair`、`/sync/peers`、
-  `/sync/status`、`/sync/peers/{id}/revoke`），FastAPI lifespan 仅在显式启用时启动同步网络；
-  `ws.py` + `ws_manager.py` 提供 `/events` 和 `sync_event`，`di.py` 组装真实服务与仓储
+- `api/`：全部 REST 契约端点真实接入（含 `/sync/*`），request_id 中间件 + API.md §5
+  统一错误契约（`{error, message, request_id}`），D-Bus 服务（`com.kylin.pixiu.Memory`：
+  Write/Query/Forget/SyncStatus 复用共享 Service，bus name 冲突处理）；
+  `ws.py` + `ws_manager.py` 事件推送，`di.py` 组装真实服务与仓储
 - `retrieval/`：路由、FTS5 BM25、INT8 向量召回、持久化图召回、三通道并发、
   scope/time_range 硬过滤、RRF 融合、词法重排、查询类别聚合与 evidence 回溯
 - `flow/`：短/中期上下文持久化、批量预校验与幂等 promote、长期知识可逆 demote、
   分层 TTL 和到期内容清理
-- 测试：Foundation 289 项 + Engine 21 项，共 310 项全绿
 - `sync/`：加密 Ed25519 身份、QR/PIN 配对、LWW+vclock、反熵、ACK/墓碑回收、
   mDNS 信任过滤、TLS 1.3 mTLS、Gossip 重传、远端物化及默认关闭的运行时
+- `eval/`：评测引擎（Recall@1/3/5、P50/P95/P99、scope 隔离、聚合/追溯/冲突/偏好指标）、
+  基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
+- **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
+  崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
+- 测试：Foundation 356 项 + Engine 21 项，共 377 项全绿
 
-### ⬜ 待实现 / 加固
+### ⬜ 待麒麟环境完成（功能冻结后不新增）
 
-- `retrieval/` 环境验收：在银河麒麟机器上使用真实麒麟 embedding 与正式数据集完成
-  top-1 召回率≥85%、P95≤500ms 验证（当前 Windows 环境无原生扩展）
-- `eval/`：评测引擎与指标脚本
-- `api/`：D-Bus 服务（`dbus_service.py`）真实实现
+- `retrieval/` + `eval/` 环境验收：麒麟机器上真实 embedding 跑 reference-v1（50 组数据集、
+  90 查询、1000 压测），验证召回≥85%、P95≤500ms，产出 runtime="kylin" 报告
+- `engine/kylin/cpp/` 原生绑定构建（`_kylin_text_embedding` pybind11）
+- vector-engine-client 对接（submodule 已就位）
+- Module A（前端）HTTP/WS/D-Bus 三通道联调
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
 
