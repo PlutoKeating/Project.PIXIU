@@ -157,8 +157,11 @@
   `t_app_navigation`（含“窗口未激活时首击即可响应”回归）与
   `t_window_restore`（屏外几何恢复回归）两个端到端测试；真实桌面手动复验
   步骤固化为 `scripts/desktop_first_click_check.sh`（唤起聊天窗 → 焦点让给
-  其他窗口 → 逐个 chip 首击并判定目标窗口出现）。OFF 路径构建 + ctest
-  30/30 全绿。
+  其他窗口 → 逐个 chip 首击并判定目标窗口出现）。OFF/ON 双路径构建 + ctest
+  30/30 全绿 + offscreen 冒烟 + desktop-file-validate + `.deb` 打包与内容
+  校验全部通过（2026-08-10 补充复跑，补齐提交时仅记录的 OFF 路径验证）；
+  真实桌面首击复验脚本需在真实 UKUI 会话执行（本开发环境无 DISPLAY，
+  维持 §6 人工复测记录）。
 - 第一批主窗口细节补齐（2026-08-10 Round 6，详见 `UI_UX_POLISH.md`）：顶栏
   改为 Logo/应用入口 + 置顶/更多/关闭三个主题感知图标（`UiIcons` 新增
   pin/more/close/memory/sync/import/chat 图标），状态胶囊移入输入区左下角
