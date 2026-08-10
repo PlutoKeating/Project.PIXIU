@@ -20,6 +20,7 @@ private slots:
     void escEmitsCancelled();
     void cancelIsDefaultButton();
     void cancelReceivesInitialFocus();
+    void buttonsShowPointerCursor();
 };
 
 QJsonObject sampleConfirmation()
@@ -123,6 +124,19 @@ void TestForgetDialog::cancelReceivesInitialFocus()
         dialog.findChild<QPushButton *>(QStringLiteral("forgetCancelButton"));
     QVERIFY(cancel != nullptr);
     QTRY_COMPARE(QApplication::focusWidget(), cancel);
+}
+
+void TestForgetDialog::buttonsShowPointerCursor()
+{
+    ForgetDialog dialog;
+    QPushButton *cancel =
+        dialog.findChild<QPushButton *>(QStringLiteral("forgetCancelButton"));
+    QPushButton *confirm =
+        dialog.findChild<QPushButton *>(QStringLiteral("dangerConfirmButton"));
+    QVERIFY(cancel != nullptr);
+    QVERIFY(confirm != nullptr);
+    QCOMPARE(cancel->cursor().shape(), Qt::PointingHandCursor);
+    QCOMPARE(confirm->cursor().shape(), Qt::PointingHandCursor);
 }
 
 QTEST_MAIN(TestForgetDialog)

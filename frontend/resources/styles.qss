@@ -12,7 +12,6 @@ QPushButton {
     border: 1px solid palette(mid);
     border-radius: 8px;
     padding: 5px 14px;
-    cursor: pointer;
 }
 QPushButton:hover {
     background-color: palette(alternate-base);
@@ -37,6 +36,10 @@ QPushButton:flat:hover {
 }
 QPushButton:flat:pressed {
     background-color: palette(midlight);
+    border-radius: 8px;
+}
+QPushButton:flat:focus {
+    border: 1px solid palette(highlight);
     border-radius: 8px;
 }
 
@@ -118,7 +121,6 @@ QTabBar::tab {
     padding: 6px 14px;
     border-radius: 6px;
     font-size: 11pt;
-    cursor: pointer;
 }
 QTabBar::tab:hover {
     background-color: palette(alternate-base);

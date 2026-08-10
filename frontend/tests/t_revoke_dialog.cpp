@@ -18,6 +18,7 @@ private slots:
     void escEmitsCancelled();
     void cancelIsDefault();
     void cancelReceivesInitialFocus();
+    void buttonsShowPointerCursor();
 };
 
 void TestRevokeDialog::showsPeerName()
@@ -89,6 +90,19 @@ void TestRevokeDialog::cancelReceivesInitialFocus()
         dialog.findChild<QPushButton *>(QStringLiteral("revokeCancelButton"));
     QVERIFY(cancelButton != nullptr);
     QTRY_COMPARE(QApplication::focusWidget(), cancelButton);
+}
+
+void TestRevokeDialog::buttonsShowPointerCursor()
+{
+    RevokeDialog dialog;
+    QPushButton *cancelButton =
+        dialog.findChild<QPushButton *>(QStringLiteral("revokeCancelButton"));
+    QPushButton *confirmButton =
+        dialog.findChild<QPushButton *>(QStringLiteral("revokeConfirmButton"));
+    QVERIFY(cancelButton != nullptr);
+    QVERIFY(confirmButton != nullptr);
+    QCOMPARE(cancelButton->cursor().shape(), Qt::PointingHandCursor);
+    QCOMPARE(confirmButton->cursor().shape(), Qt::PointingHandCursor);
 }
 
 QTEST_MAIN(TestRevokeDialog)

@@ -173,11 +173,16 @@ QWidget *MessageList::createAssistantBubble(const ChatMessage &message) const
                            .arg(message.latencyMs);
         QLabel *metaLabel = new QLabel(meta);
         metaLabel->setObjectName(QStringLiteral("assistantMeta"));
+        // 英文长文案（Evidence … · Confidence … · Latency …）随证据卡宽度换行，
+        // 避免超出答案气泡宽度造成布局不齐。
+        metaLabel->setWordWrap(true);
         layout->addWidget(metaLabel);
     }
     if (!message.evidenceId.isEmpty()) {
         EvidenceCard *card =
             new EvidenceCard(message.evidenceId, message.confidence, message.latencyMs);
+        // 证据卡与答案气泡同宽，长证据 ID 元信息在卡内换行而非撑宽卡片。
+        card->setMaximumWidth(kBubbleMaxWidth);
         connect(card, &EvidenceCard::evidenceClicked,
                 this, &MessageList::evidenceClicked);
         layout->addWidget(card);
@@ -190,6 +195,10 @@ QWidget *MessageList::createSystemBubble(const ChatMessage &message) const
     QLabel *label = new QLabel(message.text);
     label->setObjectName(QStringLiteral("systemHint"));
     label->setAlignment(Qt::AlignCenter);
+    // 系统提示（离线引导 / 写入回执 / 防重提示）在英文长文案下若不换行会被
+    // 列表视口硬裁剪；与气泡同宽换行保证 i18n 长文案完整可读（ARCHITECTURE §8）。
+    label->setWordWrap(true);
+    label->setMaximumWidth(kBubbleMaxWidth);
     return label;
 }
 

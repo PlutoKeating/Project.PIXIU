@@ -24,10 +24,12 @@ RevokeDialog::RevokeDialog(QWidget *parent)
     QPushButton *cancelButton = new QPushButton(tr("取消"), this);
     cancelButton->setObjectName(QStringLiteral("revokeCancelButton"));
     cancelButton->setAccessibleName(tr("取消解绑"));
+    cancelButton->setCursor(Qt::PointingHandCursor);
     QPushButton *confirmButton = new QPushButton(tr("解绑"), this);
     confirmButton->setObjectName(QStringLiteral("revokeConfirmButton"));
     confirmButton->setAccessibleName(tr("确认解绑"));
     confirmButton->setStyleSheet(ui::dangerButtonStyle());
+    confirmButton->setCursor(Qt::PointingHandCursor);
 
     connect(cancelButton, &QPushButton::clicked, this, [this]() {
         emit cancelled();

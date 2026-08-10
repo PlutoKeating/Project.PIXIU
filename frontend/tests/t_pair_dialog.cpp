@@ -22,6 +22,7 @@ private slots:
     void qrModeDisablesConfirm();
     void feedbackShowsStatus();
     void accessibilityNamesPresent();
+    void hasComfortableMinimumWidth();
 };
 
 namespace {
@@ -136,6 +137,14 @@ void TestPairDialog::accessibilityNamesPresent()
     QVERIFY(!pinInput(&dialog)->accessibleName().isEmpty());
     QVERIFY(!confirmButton(&dialog)->accessibleName().isEmpty());
     QVERIFY(!cancelButton(&dialog)->accessibleName().isEmpty());
+    QCOMPARE(confirmButton(&dialog)->cursor().shape(), Qt::PointingHandCursor);
+    QCOMPARE(cancelButton(&dialog)->cursor().shape(), Qt::PointingHandCursor);
+}
+
+void TestPairDialog::hasComfortableMinimumWidth()
+{
+    PairDialog dialog;
+    QVERIFY(dialog.minimumWidth() >= 280);
 }
 
 QTEST_MAIN(TestPairDialog)

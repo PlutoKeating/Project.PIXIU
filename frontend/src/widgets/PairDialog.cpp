@@ -20,6 +20,9 @@ PairDialog::PairDialog(QWidget *parent)
 {
     setWindowTitle(tr("配对新设备"));
     setModal(false);
+    // 默认内容尺寸下对话框过窄（PIN 输入 / 按钮局促）；固定舒适最小宽度，
+    // 明暗主题与英文文案下保持一致观感（ARCHITECTURE §7.3）。
+    setMinimumWidth(280);
 
     QLabel *scopeLabel = new QLabel(tr("加入共享域 shared:home"), this);
     scopeLabel->setObjectName(QStringLiteral("pairScopeLabel"));
@@ -65,10 +68,12 @@ PairDialog::PairDialog(QWidget *parent)
     QPushButton *cancelButton = new QPushButton(tr("取消"), this);
     cancelButton->setObjectName(QStringLiteral("pairCancelButton"));
     cancelButton->setAccessibleName(tr("取消配对"));
+    cancelButton->setCursor(Qt::PointingHandCursor);
     m_confirmButton = new QPushButton(tr("完成配对"), this);
     m_confirmButton->setObjectName(QStringLiteral("pairConfirmButton"));
     m_confirmButton->setAccessibleName(tr("完成配对"));
     m_confirmButton->setDefault(true);
+    m_confirmButton->setCursor(Qt::PointingHandCursor);
 
     connect(cancelButton, &QPushButton::clicked, this, [this]() {
         emit cancelled();

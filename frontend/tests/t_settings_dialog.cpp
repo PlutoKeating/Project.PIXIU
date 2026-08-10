@@ -23,6 +23,7 @@ private slots:
     void escapeCancels();
     void closeCancels();
     void buttonsHaveAccessibleNames();
+    void dialogCanGrowForLongHints();
 };
 
 void TestSettingsDialog::defaultLanguageFollowsSystem()
@@ -157,6 +158,17 @@ void TestSettingsDialog::buttonsHaveAccessibleNames()
     QVERIFY(cancel != nullptr);
     QVERIFY(!ok->accessibleName().isEmpty());
     QVERIFY(!cancel->accessibleName().isEmpty());
+    QCOMPARE(ok->cursor().shape(), Qt::PointingHandCursor);
+    QCOMPARE(cancel->cursor().shape(), Qt::PointingHandCursor);
+}
+
+void TestSettingsDialog::dialogCanGrowForLongHints()
+{
+    SettingsDialog dialog;
+    // 固定尺寸会裁剪英文长提示；对话框保留最小尺寸且允许随内容增高。
+    QVERIFY(dialog.minimumWidth() >= 400);
+    QVERIFY(dialog.minimumHeight() >= 330);
+    QVERIFY(dialog.maximumHeight() > 500);
 }
 
 QTEST_MAIN(TestSettingsDialog)

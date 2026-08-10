@@ -16,7 +16,10 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 {
     setWindowTitle(tr("设置"));
     setModal(true);
-    setFixedSize(400, 330);
+    // 固定高度会裁剪英文长提示（快捷键说明等 i18n 长文案）；改为默认尺寸 +
+    // 最小尺寸，内容超出时随 sizeHint 增高（中文保持 400x330 不变化）。
+    resize(400, 330);
+    setMinimumSize(400, 330);
 
     QLabel *titleLabel = new QLabel(tr("PIXIU 设置"), this);
     titleLabel->setObjectName(QStringLiteral("settingsTitleLabel"));
@@ -57,11 +60,13 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     m_okButton->setObjectName(QStringLiteral("settingsOkButton"));
     m_okButton->setAccessibleName(tr("保存设置"));
     m_okButton->setDefault(true);
+    m_okButton->setCursor(Qt::PointingHandCursor);
     connect(m_okButton, &QPushButton::clicked, this, &QDialog::accept);
 
     QPushButton *cancelButton = new QPushButton(tr("取消"), this);
     cancelButton->setObjectName(QStringLiteral("settingsCancelButton"));
     cancelButton->setAccessibleName(tr("取消设置"));
+    cancelButton->setCursor(Qt::PointingHandCursor);
     connect(cancelButton, &QPushButton::clicked, this, &QDialog::reject);
     // 键盘可达：Esc / 窗口关闭（QDialog::reject）统一视为取消。
     connect(this, &QDialog::rejected, this, &SettingsDialog::cancelled);

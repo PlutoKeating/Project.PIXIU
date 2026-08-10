@@ -6,6 +6,7 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -41,6 +42,11 @@ QString peerStateText(bool isSelf, const QString &state)
     return state.isEmpty()
                ? QCoreApplication::translate("MemoryPanel", "状态未知")
                : state;
+}
+
+QString elidePeerName(const QFont &font, const QString &name, int maxWidth)
+{
+    return QFontMetrics(font).elidedText(name, Qt::ElideRight, maxWidth);
 }
 }
 
@@ -224,10 +230,13 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
         layout->setSpacing(ui::Spacing::XS);
 
         QHBoxLayout *nameRow = new QHBoxLayout();
-        QLabel *nameLabel = new QLabel(
-            name.isEmpty() ? tr("（未命名设备）") : name, container);
+        const QString displayName =
+            name.isEmpty() ? tr("（未命名设备）") : name;
+        QLabel *nameLabel = new QLabel(container);
         nameLabel->setObjectName(QStringLiteral("peerNameLabel"));
         nameLabel->setFont(ui::Font::body());
+        // 长设备名行内省略，避免把在线状态挤出可视区（布局鲁棒性）。
+        nameLabel->setText(elidePeerName(nameLabel->font(), displayName, 220));
 
         QLabel *stateLabel = new QLabel(peerStateText(isSelf, state), container);
         stateLabel->setObjectName(QStringLiteral("peerStateLabel"));
@@ -334,6 +343,7 @@ QWidget *MemoryPanel::createPreferenceTab()
     m_prefIdInput->setAccessibleName(tr("偏好 ID 输入框"));
     m_prefIdInput->setPlaceholderText(tr("偏好 ID（如 pref_…）"));
     QPushButton *loadButton = new QPushButton(tr("加载历史"), page);
+    loadButton->setCursor(Qt::PointingHandCursor);
     connect(loadButton, &QPushButton::clicked, this, [this]() {
         emit historyRequested(m_prefIdInput->text().trimmed());
     });
@@ -355,6 +365,7 @@ QWidget *MemoryPanel::createPreferenceTab()
     m_prefRetryButton->setAccessibleName(tr("重试加载偏好历史"));
     m_prefRetryButton->setFlat(true);
     m_prefRetryButton->setVisible(false);
+    m_prefRetryButton->setCursor(Qt::PointingHandCursor);
     connect(m_prefRetryButton, &QPushButton::clicked, this,
             &MemoryPanel::preferenceRetryRequested);
 
@@ -406,6 +417,7 @@ QWidget *MemoryPanel::createConflictTab()
     m_conflictRetryButton->setAccessibleName(tr("重试加载冲突列表"));
     m_conflictRetryButton->setFlat(true);
     m_conflictRetryButton->setVisible(false);
+    m_conflictRetryButton->setCursor(Qt::PointingHandCursor);
     connect(m_conflictRetryButton, &QPushButton::clicked, this,
             &MemoryPanel::conflictRetryRequested);
 
@@ -457,6 +469,7 @@ QWidget *MemoryPanel::createSyncTab()
     QPushButton *pairButton = new QPushButton(tr("配对设备"), page);
     pairButton->setObjectName(QStringLiteral("pairDeviceButton"));
     pairButton->setAccessibleName(tr("打开设备配对"));
+    pairButton->setCursor(Qt::PointingHandCursor);
     connect(pairButton, &QPushButton::clicked, this, [this]() {
         if (!m_pairDialog) {
             m_pairDialog = new PairDialog(this);
@@ -469,6 +482,7 @@ QWidget *MemoryPanel::createSyncTab()
     QPushButton *refreshButton = new QPushButton(tr("刷新"), page);
     refreshButton->setObjectName(QStringLiteral("syncRefreshButton"));
     refreshButton->setAccessibleName(tr("刷新节点与同步状态"));
+    refreshButton->setCursor(Qt::PointingHandCursor);
     connect(refreshButton, &QPushButton::clicked, this, [this]() {
         m_syncStatusLabel->setText(tr("正在加载同步状态…"));
         m_syncStatusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));

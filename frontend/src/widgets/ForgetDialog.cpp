@@ -59,9 +59,11 @@ ForgetDialog::ForgetDialog(QWidget *parent)
     QPushButton *cancelButton = new QPushButton(tr("取消"), this);
     cancelButton->setObjectName(QStringLiteral("forgetCancelButton"));
     cancelButton->setAccessibleName(tr("取消遗忘"));
+    cancelButton->setCursor(Qt::PointingHandCursor);
     QPushButton *confirmButton = new QPushButton(tr("确认遗忘"), this);
     confirmButton->setObjectName(QStringLiteral("dangerConfirmButton"));
     confirmButton->setStyleSheet(ui::dangerButtonStyle());
+    confirmButton->setCursor(Qt::PointingHandCursor);
 
     connect(cancelButton, &QPushButton::clicked, this, [this]() {
         emit cancelled();

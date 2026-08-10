@@ -55,6 +55,9 @@ ImportDialog::ImportDialog(QWidget *parent)
     QPushButton *okButton = buttons->button(QDialogButtonBox::Ok);
     okButton->setText(tr("录入记忆"));
     okButton->setEnabled(false);
+    okButton->setCursor(Qt::PointingHandCursor);
+    QPushButton *cancelButton = buttons->button(QDialogButtonBox::Cancel);
+    cancelButton->setCursor(Qt::PointingHandCursor);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::hide);
     connect(buttons, &QDialogButtonBox::accepted, this, &ImportDialog::onConfirmClicked);
 

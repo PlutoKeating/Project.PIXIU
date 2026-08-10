@@ -39,6 +39,7 @@ private slots:
     void syncTabRefreshButtonEmitsRequest();
     void setPeersPopulatesList();
     void setPeersShowsEmptyState();
+    void longPeerNameIsElided();
     void revokeFlowOpensDialogAndConfirms();
     void setSyncSummaryUpdatesLabel();
     void escHidesPanel();
@@ -437,6 +438,32 @@ void TestMemoryPanel::setPeersShowsEmptyState()
         panel.findChild<QLabel *>(QStringLiteral("syncEmptyLabel"));
     QVERIFY(emptyLabel != nullptr);
     QVERIFY(!emptyLabel->isHidden());
+}
+
+void TestMemoryPanel::longPeerNameIsElided()
+{
+    MemoryPanel panel;
+    const QString longName(120, QLatin1Char('A'));
+    panel.setPeers(QJsonArray{
+        QJsonObject{
+            {QStringLiteral("id"), QStringLiteral("dev_long")},
+            {QStringLiteral("name"), longName},
+            {QStringLiteral("is_self"), false},
+            {QStringLiteral("status"), QStringLiteral("OFFLINE")}}});
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("peerList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 1);
+
+    QWidget *row = list->itemWidget(list->item(0));
+    QVERIFY(row != nullptr);
+    QLabel *nameLabel =
+        row->findChild<QLabel *>(QStringLiteral("peerNameLabel"));
+    QVERIFY(nameLabel != nullptr);
+    // 长设备名行内省略，避免把在线状态挤出可视区。
+    QVERIFY(nameLabel->text().size() < longName.size());
+    QVERIFY(nameLabel->text().endsWith(QStringLiteral("…")));
 }
 
 void TestMemoryPanel::revokeFlowOpensDialogAndConfirms()
