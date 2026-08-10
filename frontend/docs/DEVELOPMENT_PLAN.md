@@ -1093,3 +1093,20 @@ HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉�
                         docs(frontend): record UI/UX polish round 3
                         completion and screenshots
 ```
+
+2026-08-10 追加（真实 UKUI 桌面 UI 演示，Round 4/展示轮）：
+
+```text
+方式        不修改代码；DISPLAY=:0 真实 UKUI 桌面会话启动最新 pixiu-frontend，
+            隔离演示桩 frontend/scripts/demo_stub_server.py 按 docs/API.md
+            契约填充偏好/冲突/同步/通知演示数据
+覆盖        悬浮球/角标/右键菜单、聊天（空/思考/答案+证据/失败重试/输入区）、
+            MemoryPanel（偏好/冲突/同步 的加载/已加载/空/失败重试）、配对/解绑/
+            遗忘/录入/设置对话框、系统通知（冲突检测/记忆已沉淀）、浅色+深色主题
+截图        真实桌面截图 frontend/docs/screenshots/ui-demo-2026-08-10/（36 张）
+限制        Wayland 合成器下 UKUI 面板不渲染托盘图标，托盘菜单以悬浮球右键
+            菜单等价展示；其余人工复测/后端契约阻塞项维持原记录
+提交        feat(frontend): add demo stub server for visual UI demos
+            docs(frontend): add real-desktop UI demo screenshots (light and dark)
+            docs(frontend): record real-desktop UI demo completion and screenshots
+```
