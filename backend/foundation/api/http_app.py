@@ -10,8 +10,10 @@ from contextlib import asynccontextmanager
 import time
 from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from ..core.models import SourceType
@@ -60,6 +62,55 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ─── request_id 中间件与统一错误响应（对齐 docs/API.md §5）────────
+
+@app.middleware("http")
+async def request_id_middleware(request: Request, call_next):
+    """为每个请求生成 request_id（响应头 X-Request-Id + request.state）。"""
+    from ..core.idgen import gen_request_id
+
+    request_id = gen_request_id()
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers["X-Request-Id"] = request_id
+    return response
+
+
+def _error_payload(request: Request, error: str, message: str) -> dict:
+    return {
+        "error": error,
+        "message": message,
+        "request_id": getattr(request.state, "request_id", ""),
+    }
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=_error_payload(request, str(exc.detail), str(exc.detail)),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=400,
+        content=_error_payload(request, "INVALID_REQUEST", str(exc)),
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    from ..core.logger import get_logger
+
+    get_logger(__name__).exception("unhandled error: %s", type(exc).__name__)
+    return JSONResponse(
+        status_code=500,
+        content=_error_payload(request, "INTERNAL_ERROR", "internal server error"),
+    )
 
 
 # ─── 请求模型 ────────────────────────────────────────────

@@ -3,11 +3,13 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
-> **状态（2026-08-11）**：core/storage/api、retrieval、flow、Phase 3 sync、
-> Phase 4/5 eval 与 D-Bus 服务全部完成；12 个 REST 端点真实实现。
-> Foundation + Engine 全量测试通过（麒麟 V11 真机 pytest 364 passed）。
-> 剩余：真实麒麟 SDK 性能（召回率≥85%、P95≤500ms）与真实局域网互操作验收；
-> WS `/events` 路由注册修复（见 `frontend/docs/BACKEND_ISSUES.md`）。
+> **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
+> retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
+> request_id 统一错误契约；四故事端到端与硬化测试通过，377 项全绿；
+> 1000 次查询压测 P95=19.18ms。仅真实麒麟 SDK 性能 / 局域网互操作 / Module A 联调
+> 待银河麒麟环境验收（详见 docs/ACCEPTANCE.md）；WS `/events` 路由注册修复
+> 仍待处理（`http_app.py` 未导入 `ws.py`、`ws.py` 未导入 `fastapi.WebSocket`，
+> 见 `frontend/docs/BACKEND_ISSUES.md`）。
 
 ---
 
@@ -282,7 +284,11 @@ sync/
 
 ### 1.7 eval/ —— 评测框架
 
-> ✅ **已实现**（Phase 4/5，2026-08-10 合入 main）。
+> ✅ **已实现（Phase 4/5）**：评测引擎 `eval/eval.py`（EvalService）、指标 `eval/metrics.py`
+> （Recall@1/3/5、P50/P95/P99、scope 隔离、聚合/追溯/冲突/偏好 12 项）、基准
+> `eval/benchmark.py`（CRDT 收敛率/同步耗时/DB/内存/CPU）、`eval/service.py`
+> （BenchmarkService，runtime=stub|kylin 双结果）、CLI `python -m backend.foundation.eval`、
+> 报告 `eval/report.py`（JSON+Markdown 原子写出）。压测证据见 `evidence/`。
 
 **指标脚本**（`scripts/eval.py`）：
 
@@ -308,6 +314,7 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 | 内容 | 路径 |
 |------|------|
 | 开发任务书 | `backend/foundation/docs/DEV_TASKS.md` |
+| 最终验收清单 | `backend/foundation/docs/ACCEPTANCE.md` |
 | Phase 3 同步报告 | `backend/foundation/docs/PHASE3.md` |
 | 快速启动 | `backend/foundation/docs/QUICK_START.md` |
 | Phase 1 加固报告 | `backend/foundation/docs/PHASE1.md` |

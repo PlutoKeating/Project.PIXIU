@@ -228,7 +228,9 @@ def test_flow_promote_maps_domain_errors(client, error, status, detail):
         },
     )
     assert response.status_code == status
-    assert response.json()["detail"] == detail
+    # API.md §5：错误响应为 {"error", "message", "request_id"}
+    assert response.json()["error"] == detail
+    assert response.json()["request_id"]
 
 
 def test_flow_promote_rejects_empty_context_ids(client):
@@ -236,7 +238,10 @@ def test_flow_promote_rejects_empty_context_ids(client):
         "/memory/flow/promote",
         json={"source": "SHORT_TERM", "context_ids": [], "scope": "user:alice"},
     )
-    assert response.status_code == 422
+    # API.md §5：请求体不符合 Schema → INVALID_REQUEST (400)
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+    assert response.json()["request_id"]
 
 
 def _create_remote_pairing_token(db_path: str) -> str:
@@ -302,7 +307,8 @@ def test_sync_pair_maps_invalid_token(client):
         "/sync/pair", json={"method": "QR", "token": "not-a-token"}
     )
     assert response.status_code == 422
-    assert response.json()["detail"] == "PAIRING_FAILED"
+    assert response.json()["error"] == "PAIRING_FAILED"
+    assert response.json()["request_id"]
 
 
 
