@@ -1,0 +1,60 @@
+# PIXIU CICD 示例（GitHub Actions）
+#
+# 说明：
+#  - 本示例面向 x86_64 Linux 打包验证；麒麟目标机（x86/ARM）请改用自托管
+#    runner（ubuntu-22.04 等价环境 + libkysdk-* 依赖），步骤不变。
+#  - 标签 v* 触发 release：跑完整流水线并上传 .deb 到 Release。
+
+name: pixiu-release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qtbase5-dev qtbase5-dev-tools \
+            libqt5websockets5-dev qttools5-dev-tools cmake ninja-build \
+            dpkg-dev python3 python3-pip python3-venv
+
+      - name: Run release pipeline (KYSDK=OFF, bundle wheels)
+        env:
+          PIXIU_KYSDK: "OFF"
+          PIXIU_BUNDLE_WHEELS: "1"
+          PIXIU_PYTHON_VERSION: "310"
+          PIXIU_SKIP_TESTS: "0"
+        run: |
+          make -C build/release build-deb
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixiu-deb
+          path: build/release/out/*.deb
+
+  release:
+    needs: build-deb
+    runs-on: ubuntu-22.04
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pixiu-deb
+          path: dist
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.deb

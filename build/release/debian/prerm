@@ -1,0 +1,9 @@
+#!/bin/sh
+# PIXIU 卸载前：停止并禁用后端服务。
+set -e
+
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl stop pixiu-backend.service >/dev/null 2>&1 || true
+    systemctl disable pixiu-backend.service >/dev/null 2>&1 || true
+fi
+exit 0

@@ -1,0 +1,59 @@
+#!/bin/sh
+# PIXIU 安装后脚本：运行时用户/数据目录、Python venv 与依赖、systemd 服务注册。
+set -e
+
+PIXIU_USER=pixiu
+PIXIU_HOME=/var/lib/pixiu
+PIXIU_LIB=/usr/lib/pixiu
+PY=/usr/bin/python3
+
+echo "pixiu: configuring backend runtime environment"
+
+# 1) 运行时用户与数据目录（SQLite 记忆/同步库目录）
+if ! getent passwd "${PIXIU_USER}" >/dev/null 2>&1; then
+    useradd --system --home "${PIXIU_HOME}" \
+            --shell /usr/sbin/nologin "${PIXIU_USER}" 2>/dev/null || true
+fi
+mkdir -p "${PIXIU_HOME}" "${PIXIU_HOME}/data"
+chown -R "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
+
+# 2) Python venv + 依赖（优先离线 wheels，其次在线）
+if [ ! -x "${PIXIU_LIB}/venv/bin/python" ]; then
+    if ! "${PY}" -m venv "${PIXIU_LIB}/venv" 2>/dev/null; then
+        "${PY}" -m venv --system-site-packages "${PIXIU_LIB}/venv" 2>/dev/null || {
+            echo "pixiu: failed to create venv at ${PIXIU_LIB}/venv" >&2
+            echo "pixiu: install python3-venv first (apt install python3-venv)" >&2
+            exit 1
+        }
+    fi
+fi
+"${PIXIU_LIB}/venv/bin/pip" install --upgrade pip >/dev/null 2>&1 || true
+
+REQ="${PIXIU_LIB}/backend/requirements.txt"
+SYNC_REQ="${PIXIU_LIB}/backend/foundation/requirements-sync.txt"
+if [ -d "${PIXIU_LIB}/wheels" ] && [ -n "$(ls -A "${PIXIU_LIB}/wheels" 2>/dev/null)" ]; then
+    echo "pixiu: installing backend dependencies from bundled wheels (offline)"
+    "${PIXIU_LIB}/venv/bin/pip" install \
+        --no-index --find-links="${PIXIU_LIB}/wheels" -r "${REQ}" >/dev/null
+    if [ -f "${SYNC_REQ}" ] && [ -s "${SYNC_REQ}" ]; then
+        "${PIXIU_LIB}/venv/bin/pip" install \
+            --no-index --find-links="${PIXIU_LIB}/wheels" -r "${SYNC_REQ}" >/dev/null
+    fi
+else
+    echo "pixiu: installing backend dependencies from PyPI (online)"
+    "${PIXIU_LIB}/venv/bin/pip" install -r "${REQ}" >/dev/null
+    if [ -f "${SYNC_REQ}" ] && [ -s "${SYNC_REQ}" ]; then
+        "${PIXIU_LIB}/venv/bin/pip" install -r "${SYNC_REQ}" >/dev/null
+    fi
+fi
+chown -R "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_LIB}/venv"
+
+# 3) systemd 服务
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload >/dev/null 2>&1 || true
+    systemctl enable pixiu-backend.service >/dev/null 2>&1 || true
+    systemctl restart pixiu-backend.service >/dev/null 2>&1 || true
+fi
+
+echo "pixiu: install complete — backend on 127.0.0.1:8765, client via 'pixiu' or app menu."
+exit 0

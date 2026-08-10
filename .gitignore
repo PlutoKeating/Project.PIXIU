@@ -28,7 +28,11 @@ Thumbs.db
 
 # Compilation / Build outputs
 dist/
-build/
+build/*
+!build/release/
+!build/release/**
+build/release/out/
+build/release/dist/
 out/
 target/
 bin/

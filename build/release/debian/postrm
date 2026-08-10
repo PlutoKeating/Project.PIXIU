@@ -1,0 +1,11 @@
+#!/bin/sh
+# PIXIU 卸载后：purge 时清理运行时数据与 venv（保留包文件由 dpkg 管理）。
+set -e
+
+if [ "$1" = "purge" ]; then
+    rm -rf /var/lib/pixiu /etc/pixiu /usr/lib/pixiu/venv
+fi
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload >/dev/null 2>&1 || true
+fi
+exit 0
