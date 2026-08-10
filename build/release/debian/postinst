@@ -1,11 +1,18 @@
 #!/bin/sh
-# PIXIU 安装后脚本：运行时用户/数据目录、Python venv 与依赖、systemd 服务注册。
+# PIXIU 安装后脚本：运行时用户/数据目录、Python 环境（pip/venv 自适应）与
+# 依赖安装、systemd 服务注册。
+#
+# 兼容性设计（针对麒麟 V11/openKylin 实测）：
+#  - 部分麒麟发行版不提供 python3-venv / python3-pip：本脚本先引导 get-pip，
+#    再尝试 venv，失败则回退系统 Python（PEP 668 用 --break-system-packages）。
+#  - 依赖优先从随包 wheels 离线安装（--no-index），无 wheels 时在线安装。
 set -e
 
 PIXIU_USER=pixiu
 PIXIU_HOME=/var/lib/pixiu
 PIXIU_LIB=/usr/lib/pixiu
 PY=/usr/bin/python3
+VENV="${PIXIU_LIB}/venv"
 
 echo "pixiu: configuring backend runtime environment"
 
@@ -17,38 +24,73 @@ fi
 mkdir -p "${PIXIU_HOME}" "${PIXIU_HOME}/data"
 chown -R "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
 
-# 2) Python venv + 依赖（优先离线 wheels，其次在线）
-if [ ! -x "${PIXIU_LIB}/venv/bin/python" ]; then
-    if ! "${PY}" -m venv "${PIXIU_LIB}/venv" 2>/dev/null; then
-        "${PY}" -m venv --system-site-packages "${PIXIU_LIB}/venv" 2>/dev/null || {
-            echo "pixiu: failed to create venv at ${PIXIU_LIB}/venv" >&2
-            echo "pixiu: install python3-venv first (apt install python3-venv)" >&2
+# 2) pip 引导（缺失时下载 get-pip.py）
+if ! "${PY}" -m pip --version >/dev/null 2>&1; then
+    echo "pixiu: bootstrapping pip"
+    command -v curl >/dev/null 2>&1 || {
+        echo "pixiu: pip missing and curl unavailable — cannot bootstrap" >&2
+        exit 1
+    }
+    curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/pixiu-get-pip.py
+    if ! PIP_BREAK_SYSTEM_PACKAGES=1 "${PY}" /tmp/pixiu-get-pip.py >/dev/null 2>&1; then
+        "${PY}" /tmp/pixiu-get-pip.py --break-system-packages >/dev/null 2>&1 || {
+            echo "pixiu: failed to bootstrap pip" >&2
             exit 1
         }
     fi
+    rm -f /tmp/pixiu-get-pip.py
 fi
-"${PIXIU_LIB}/venv/bin/pip" install --upgrade pip >/dev/null 2>&1 || true
+
+# 3) Python 解释器：优先 venv（有 python3-venv 的发行版），否则回退系统 Python
+VPY="${PY}"
+if [ ! -x "${VENV}/bin/python" ]; then
+    if "${PY}" -m venv "${VENV}" >/dev/null 2>&1 \
+            && [ -x "${VENV}/bin/python" ]; then
+        echo "pixiu: using venv at ${VENV}"
+        VPY="${VENV}/bin/python"
+        "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
+    else
+        echo "pixiu: python3-venv unavailable — using system Python ${PY}"
+    fi
+fi
 
 REQ="${PIXIU_LIB}/backend/requirements.txt"
 SYNC_REQ="${PIXIU_LIB}/backend/foundation/requirements-sync.txt"
+
+install_reqs() {
+    if [ "${VPY}" = "${PY}" ]; then
+        # --ignore-installed：避免发行版自带包（如 typing_extensions）无 RECORD
+        # 导致 pip 升级失败（麒麟 V11 实测）。
+        PIP_BREAK_SYSTEM_PACKAGES=1 \
+            "${VPY}" -m pip install --ignore-installed "$@" >/dev/null
+    else
+        "${VPY}" -m pip install "$@" >/dev/null
+    fi
+}
+
 if [ -d "${PIXIU_LIB}/wheels" ] && [ -n "$(ls -A "${PIXIU_LIB}/wheels" 2>/dev/null)" ]; then
     echo "pixiu: installing backend dependencies from bundled wheels (offline)"
-    "${PIXIU_LIB}/venv/bin/pip" install \
-        --no-index --find-links="${PIXIU_LIB}/wheels" -r "${REQ}" >/dev/null
+    if ! install_reqs --no-index --find-links="${PIXIU_LIB}/wheels" -r "${REQ}"; then
+        echo "pixiu: offline wheels 不完整（目标 Python 版本不匹配等），回退在线安装"
+        install_reqs -r "${REQ}"
+    fi
     if [ -f "${SYNC_REQ}" ] && [ -s "${SYNC_REQ}" ]; then
-        "${PIXIU_LIB}/venv/bin/pip" install \
-            --no-index --find-links="${PIXIU_LIB}/wheels" -r "${SYNC_REQ}" >/dev/null
+        if ! install_reqs --no-index --find-links="${PIXIU_LIB}/wheels" -r "${SYNC_REQ}"; then
+            install_reqs -r "${SYNC_REQ}"
+        fi
     fi
 else
     echo "pixiu: installing backend dependencies from PyPI (online)"
-    "${PIXIU_LIB}/venv/bin/pip" install -r "${REQ}" >/dev/null
+    install_reqs -r "${REQ}"
     if [ -f "${SYNC_REQ}" ] && [ -s "${SYNC_REQ}" ]; then
-        "${PIXIU_LIB}/venv/bin/pip" install -r "${SYNC_REQ}" >/dev/null
+        install_reqs -r "${SYNC_REQ}"
     fi
 fi
-chown -R "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_LIB}/venv"
+if [ -d "${VENV}" ]; then
+    chown -R "${PIXIU_USER}:${PIXIU_USER}" "${VENV}"
+fi
 
-# 3) systemd 服务
+# 4) systemd 服务
 if command -v systemctl >/dev/null 2>&1; then
     systemctl daemon-reload >/dev/null 2>&1 || true
     systemctl enable pixiu-backend.service >/dev/null 2>&1 || true

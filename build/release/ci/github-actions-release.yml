@@ -29,9 +29,8 @@ jobs:
 
       - name: Run release pipeline (KYSDK=OFF, bundle wheels)
         env:
-          PIXIU_KYSDK: "OFF"
+          PIXIU_PROFILE: "kylin-v11-x86_64"
           PIXIU_BUNDLE_WHEELS: "1"
-          PIXIU_PYTHON_VERSION: "310"
           PIXIU_SKIP_TESTS: "0"
         run: |
           make -C build/release build-deb
@@ -58,3 +57,18 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*.deb
+
+  deploy-smoke-vm:
+    needs: build-deb
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    environment: kylin-test-vm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy + smoke on Kylin test VM
+        env:
+          PIXIU_VM_HOST: ${{ secrets.PIXIU_VM_HOST }}
+          PIXIU_VM_USER: ${{ secrets.PIXIU_VM_USER }}
+          PIXIU_PROFILE: "kylin-v11-x86_64"
+        run: |
+          bash build/release/scripts/vm-deploy-test.sh

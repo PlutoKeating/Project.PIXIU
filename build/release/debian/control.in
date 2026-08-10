@@ -5,6 +5,7 @@ Priority: optional
 Architecture: @ARCH@
 Maintainer: PIXIU Team <pixiu@example.invalid>
 Depends: @DEPENDS@
+@SUGGESTS@
 Homepage: https://github.com/PlutoKeating/Project.PIXIU
 Description: PIXIU — decentralized memory assistant for Kylin OS
  UKUI desktop client (Qt5) + FastAPI memory backend + local SQLite
