@@ -156,6 +156,15 @@
   ctest 28/28 全绿，offscreen 冒烟无回归；离屏核对截图见
   `docs/screenshots/ui-polish-round2-2026-08-10/`。剩余项仍为人工复测与
   后端契约阻塞（见 `UI_UX_POLISH.md` §4-§6）。
+- UI/UX Polish Round 3（2026-08-10）已完成：系统提示与证据卡长文案换行
+  （`systemHint` wordWrap + 300px 上限、证据卡与气泡同宽），修复英文路径
+  文案被列表视口硬裁剪；移除 QSS 中不生效的 `cursor: pointer`（当前 Qt 版本
+  不支持且启动刷警告），全部交互按钮显式指针光标；扁平按钮焦点加主题高亮
+  描边；`SettingsDialog` 固定尺寸改默认+最小（英文长提示可随内容增高）、
+  `PairDialog` 最小宽 280；同步 Tab 长设备名 220px 行内省略。OFF/ON 双路径
+  ctest 28/28 全绿，offscreen 冒烟无回归、cursor QSS 警告清零；离屏核对截图见
+  `docs/screenshots/ui-polish-round3-2026-08-10/`；本机实时 UKUI 会话复验
+  无回归。
 
 ## 开工要求（本地环境准备）
 

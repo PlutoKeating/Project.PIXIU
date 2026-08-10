@@ -1062,3 +1062,34 @@ HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉�
                         docs(frontend): record UI/UX polish round 2
                         completion and screenshots
 ```
+
+2026-08-10 追加（UI/UX Polish Round 3：长文案布局 + 指针/焦点收尾）：
+
+```text
+长文案换行                systemHint（离线引导/写入回执等）wordWrap + 300px
+                         上限，与答案气泡同宽；证据卡同宽，长证据 ID 元信息
+                         卡内换行——英文路径不再硬裁剪
+指针光标                  QSS cursor:pointer 在当前 Qt 不支持（启动刷警告且
+                         不生效），已移除；全部交互按钮显式 PointingHandCursor
+焦点可见性                QPushButton:flat:focus 主题高亮描边，扁平按钮键盘
+                         焦点不再丢失
+对话框尺寸                SettingsDialog 固定尺寸改默认+最小（英文需要时随
+                         sizeHint 增高，实测 en_US sizeHint 282 仍 400x330）；
+                         PairDialog 最小宽 280
+设备名省略                同步 Tab peerNameLabel 220px ElideRight，在线状态
+                         不被长名挤出
+测试                    OFF/ON 双路径 ctest 28/28 通过（t_message_list 新增
+                        长系统提示换行/证据卡同宽 2 例；t_memory_panel 长设备
+                        名省略 1 例；t_settings_dialog / t_pair_dialog /
+                        t_forget_dialog / t_revoke_dialog 指针光标断言）；
+                        offscreen 冒烟无回归，cursor QSS 警告清零
+截图                    离屏核对截图 frontend/docs/screenshots/
+                        ui-polish-round3-2026-08-10/（4 张，offscreen）
+桌面复验                 本机实时 UKUI 会话 xcb 启动：主题/托盘/阴影/英文
+                        i18n/离线引导/健康探测无回归；会话为 Wayland 合成器，
+                        wmctrl 不可枚举窗口（真实桌面截图按 offscreen 记录）
+提交                    feat(frontend): wrap long UI texts and complete
+                        pointer focus polish
+                        docs(frontend): record UI/UX polish round 3
+                        completion and screenshots
+```
