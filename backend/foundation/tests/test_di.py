@@ -38,6 +38,7 @@ class _FakeSettings:
         self.sync_device_name = "test-device"
         self.sync_domain = "shared:test"
         self.sync_key_passphrase = "phase3-di-test-passphrase"
+        self.sync_network_enabled = False
 
 
 @pytest.fixture()

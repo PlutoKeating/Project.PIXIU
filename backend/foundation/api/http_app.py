@@ -5,6 +5,7 @@
 """
 
 from __future__ import annotations
+from contextlib import asynccontextmanager
 
 import time
 from typing import Any
@@ -23,18 +24,33 @@ from .di import (
     get_flow_service,
     get_ingestion_service,
     get_knowledge_service,
+    get_knowledge_repo,
+    get_optional_sync_service,
     get_preference_repo,
     get_preference_service,
     get_retrieval_service,
     get_security_service,
     get_sync_service,
+    start_sync_runtime,
+    stop_sync_runtime,
 )
 from .ws_manager import ws_manager
+
+@asynccontextmanager
+async def _lifespan(_: FastAPI):
+    await start_sync_runtime()
+    try:
+        yield
+    finally:
+        await stop_sync_runtime()
+
+
 
 app = FastAPI(
     title="PIXIU Memory API",
     description="面向银河麒麟 OS Agent 的去中心化分布式记忆系统 — API 网关",
     version="0.2.0",
+    lifespan=_lifespan,
 )
 
 app.add_middleware(
@@ -94,6 +110,7 @@ async def memory_write(
     knowledge=Depends(get_knowledge_service),
     preference=Depends(get_preference_service),
     conflict=Depends(get_conflict_service),
+    sync=Depends(get_optional_sync_service),
 ):
     """同步落 evidence，随后执行结构化/偏好提取/冲突仲裁，并推送 memory_ready 事件。"""
     started = time.monotonic()
@@ -101,6 +118,24 @@ async def memory_write(
     item = await knowledge.structure(evidence)
     prefs = await preference.extract(evidence)
     record = await conflict.arbitrate(item)
+    if body.scope.startswith("shared:") and sync is not None:
+        await sync.record_local(
+            f"evidence:{evidence.id}",
+            evidence.model_dump(mode="json"),
+            evidence.scope,
+        )
+        await sync.record_local(
+            f"knowledge:{item.id}",
+            item.model_dump(mode="json"),
+            item.scope,
+        )
+        for extracted in prefs:
+            await sync.record_local(
+                f"preference:{extracted.id}",
+                extracted.model_dump(mode="json"),
+                extracted.scope,
+            )
+
 
     await ws_manager.broadcast(
         "memory_ready",
@@ -187,7 +222,12 @@ async def preference_history(id: str, pref_repo=Depends(get_preference_repo)):
 # ─── 自然语言遗忘 ────────────────────────────────────────
 
 @app.post("/forget", tags=["Memory"], summary="自然语言遗忘")
-async def forget(body: ForgetRequest, security=Depends(get_security_service)):
+async def forget(
+    body: ForgetRequest,
+    security=Depends(get_security_service),
+    knowledge_repo=Depends(get_knowledge_repo),
+    sync=Depends(get_optional_sync_service),
+):
     started = time.monotonic()
     result = await security.forget(body.command, confirm=body.confirm)
     if result.status == "pending":
@@ -196,6 +236,13 @@ async def forget(body: ForgetRequest, security=Depends(get_security_service)):
             "cascade": result.cascade,
             "irreversible": result.irreversible,
         }
+    if sync is not None:
+        for forgotten_id in result.forgotten_ids:
+            item = await knowledge_repo.get(forgotten_id)
+            if item is not None and item.scope.startswith("shared:"):
+                await sync.record_local(
+                    f"knowledge:{item.id}", {}, item.scope, deleted=True
+                )
     return {
         "status": "forgotten",
         "forgotten_ids": result.forgotten_ids,

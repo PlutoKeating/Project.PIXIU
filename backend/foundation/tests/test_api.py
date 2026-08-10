@@ -32,6 +32,7 @@ class _FakeSettings:
         self.sync_device_name = "书房工作站"
         self.sync_domain = "shared:home"
         self.sync_key_passphrase = "phase3-api-test-passphrase"
+        self.sync_network_enabled = False
 
 
 @pytest.fixture()
@@ -302,3 +303,55 @@ def test_sync_pair_maps_invalid_token(client):
     )
     assert response.status_code == 422
     assert response.json()["detail"] == "PAIRING_FAILED"
+
+
+
+def _sync_rows() -> list[tuple[str, dict]]:
+    connection = sqlite3.connect(di_module.settings.db_path)
+    rows = connection.execute(
+        "SELECT entity, payload FROM sync_oplog ORDER BY ts, op_id"
+    ).fetchall()
+    connection.close()
+    return [(entity, json.loads(payload)) for entity, payload in rows]
+
+
+def test_shared_write_queues_only_signed_shared_operations(client):
+    response = client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"},
+    )
+    assert response.status_code == 200
+    rows = _sync_rows()
+    assert {entity.split(":", 1)[0] for entity, _ in rows} >= {
+        "evidence",
+        "knowledge",
+    }
+    assert all(payload["scope"] == "shared:home" for _, payload in rows)
+    assert all(isinstance(payload.get("signature"), str) for _, payload in rows)
+
+
+def test_user_write_never_enters_sync_oplog(client):
+    response = client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "user:alice"},
+    )
+    assert response.status_code == 200
+    assert _sync_rows() == []
+
+
+def test_shared_forget_queues_knowledge_tombstone(client):
+    client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"},
+    )
+    response = client.post(
+        "/forget", json={"command": "\u5fd8\u8bb0\u90a3\u5f204\u6708\u652f\u51fa\u6e05\u5355", "confirm": True}
+    )
+    assert response.status_code == 200
+    tombstones = [
+        payload
+        for entity, payload in _sync_rows()
+        if entity.startswith("knowledge:") and payload.get("deleted") is True
+    ]
+    assert len(tombstones) == 1
+    assert tombstones[0]["scope"] == "shared:home"

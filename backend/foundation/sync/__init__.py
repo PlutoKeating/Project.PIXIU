@@ -62,6 +62,7 @@ class SyncService:
         device_name: str,
         domain: str,
         key_passphrase: str,
+        materializer=None,
     ) -> None:
         self._store = store
         self._device_name = device_name
@@ -69,6 +70,7 @@ class SyncService:
         self._identity_manager = IdentityManager(store, key_passphrase)
         self._identity: DeviceIdentity | None = None
         self._crdt = LWWElementSet()
+        self._materializer = materializer
 
     async def initialize(self) -> DeviceIdentity:
         if self._identity is None:
@@ -121,6 +123,9 @@ class SyncService:
         identity = await self.initialize()
         if scope != identity.domain:
             raise ScopeNotShareable("scope is outside the local shared domain")
+        if "scope" in value and value["scope"] != scope:
+            raise InvalidSyncOperation("operation value scope does not match envelope")
+
         current = await self._store.get_state(entity)
         clock = increment_clock(current.vclock if current else {}, identity.id)
         op = SyncOp(
@@ -156,10 +161,18 @@ class SyncService:
 
         accepted = 0
         for op in operations:
-            if not await self._store.append_op(op):
+            if await self._store.get_op(op.op_id) is not None:
                 continue
             current = await self._store.get_state(op.entity)
-            await self._store.save_state(self._crdt.resolve(current, op))
+            resolved = self._crdt.resolve(current, op)
+            if (
+                self._materializer is not None
+                and (current is None or resolved.op_id != current.op_id)
+            ):
+                await self._materializer(resolved)
+            if not await self._store.append_op(op):
+                continue
+            await self._store.save_state(resolved)
             accepted += 1
         return accepted
 
@@ -174,6 +187,10 @@ class SyncService:
             raise InvalidSyncOperation("operation scope or origin is invalid")
         if not isinstance(signature_text, str):
             raise InvalidSyncOperation("operation signature is missing")
+        value = op.payload.get("value")
+        if isinstance(value, dict) and "scope" in value and value["scope"] != scope:
+            raise InvalidSyncOperation("operation value scope does not match envelope")
+
         if origin == identity.id:
             public_key = identity.public_key
         else:
