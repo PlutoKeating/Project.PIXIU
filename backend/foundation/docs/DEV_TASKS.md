@@ -5,31 +5,31 @@
 
 ---
 
-## 实现状态（2026-08-09）
+## 实现状态（2026-08-10）
 
-### ✅ 已完成（Phase 0～Phase 2）
+### ✅ 已完成（Phase 0～Phase 3）
 
 - `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
   `config.py`（仅支持 `kylin`，无 mock）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
-- `storage/`：`schema.py`（11 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v3 版本化迁移）、
+- `storage/`：`schema.py`（16 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v4 版本化迁移）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
-- `api/`：`http_app.py` 真实端点（`/memory/write`、`/preference/extract`、
-  `/preference/{id}/history`、`/forget`、`/conflicts`、`/memory/query`、
-  `/memory/flow/promote`）、`ws.py` + `ws_manager.py`
-  （`/events` 连接/心跳/广播）、`di.py`（真实注入引擎 Service + SQLite 仓储）
+- `api/`：全部 REST 契约端点已真实接入（含 `/sync/pair`、`/sync/peers`、
+  `/sync/status`、`/sync/peers/{id}/revoke`），FastAPI lifespan 仅在显式启用时启动同步网络；
+  `ws.py` + `ws_manager.py` 提供 `/events` 和 `sync_event`，`di.py` 组装真实服务与仓储
 - `retrieval/`：路由、FTS5 BM25、INT8 向量召回、持久化图召回、三通道并发、
   scope/time_range 硬过滤、RRF 融合、词法重排、查询类别聚合与 evidence 回溯
 - `flow/`：短/中期上下文持久化、批量预校验与幂等 promote、长期知识可逆 demote、
   分层 TTL 和到期内容清理
-- 测试：Foundation 247 项 + Engine 21 项，共 268 项全绿
+- 测试：Foundation 289 项 + Engine 21 项，共 310 项全绿
+- `sync/`：加密 Ed25519 身份、QR/PIN 配对、LWW+vclock、反熵、ACK/墓碑回收、
+  mDNS 信任过滤、TLS 1.3 mTLS、Gossip 重传、远端物化及默认关闭的运行时
 
 ### ⬜ 待实现 / 加固
 
 - `retrieval/` 环境验收：在银河麒麟机器上使用真实麒麟 embedding 与正式数据集完成
   top-1 召回率≥85%、P95≤500ms 验证（当前 Windows 环境无原生扩展）
-- `sync/`：`identity/pairing/crdt/anti_entropy/gc/scheduler` —— 实现 `/sync/*` 与 CRDT 广播
 - `eval/`：评测引擎与指标脚本
 - `api/`：D-Bus 服务（`dbus_service.py`）真实实现
 
@@ -123,12 +123,16 @@ git submodule update --init --recursive
 |------|--------|------|
 | `sync/__init__.py` | ★★ | 导出 `SyncService` |
 | `sync/identity.py` | ★★ | 节点身份 + Ed25519 密钥对生成 |
-| `sync/discovery.py` | ★ | mDNS/Gossip 节点发现 |
+| `sync/discovery.py` | ★ | mDNS 广告 + 已配对 peer 信任过滤 |
 | `sync/pairing.py` | ★★ | 设备配对（扫码/PIN + 公钥交换） |
 | `sync/transport.py` | ★ | TLS 1.3 双向加密传输 |
 | `sync/crdt.py` | ★★★ | LWW-Element-Set + 版本向量合并 |
 | `sync/anti_entropy.py` | ★★ | 反熵对账（digest 比对 + 补齐缺失） |
 | `sync/gc.py` | ★ | tombstone 回收 |
+| `sync/protocol.py` | ★★ | 已配对 sender + 签名 SyncOp 协议 |
+| `sync/gossip.py` | ★★ | 有界 fanout、ACK 与持久化重传 |
+| `sync/materializer.py` | ★★ | CRDT 胜者物化到本地仓储 |
+| `sync/runtime.py` | ★ | 默认关闭的 mDNS/mTLS 生命周期 |
 | `sync/scheduler.py` | ★ | 同步轮次调度 + 退避 |
 
 ### eval/ —— 评测框架
@@ -147,6 +151,10 @@ git submodule update --init --recursive
 | `tests/test_api.py` | 各 REST 端点的请求/响应测试 |
 | `tests/test_storage.py` | SQLite 仓储实现测试 |
 | `tests/test_retrieval.py` | 三通道 + 融合 + 重排 + 组装测试 |
-| `tests/test_sync.py` | CRDT 合并 + Gossip 扩散测试（mock transport）|
+| `tests/test_sync_core.py` | 身份、版本向量、LWW 与 SQLite 状态 |
+| `tests/test_sync_service.py` | 配对、签名、反熵、GC 与调度 |
+| `tests/test_sync_network.py` | mDNS 信任过滤、协议、Gossip、内存运行时 |
+| `tests/test_sync_tls.py` | 仅 loopback 的 TLS 1.3 mTLS 集成测试 |
+| `tests/test_sync_materializer.py` | 远端物化、墓碑与 scope 隔离 |
 | `tests/test_flow.py` | promote/demote + TTL 测试 |
 | `tests/test_eval.py` | 评测框架正确性测试 |

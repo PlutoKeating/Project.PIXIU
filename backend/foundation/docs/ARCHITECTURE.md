@@ -3,9 +3,9 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 
-> **状态（2026-08-09）**：core/storage/api、retrieval 加固与 flow 生命周期已完成；
-> `/memory/query`、`/memory/flow/promote` 已接入，Foundation 247 项 + Engine 21 项测试全部通过。
-> sync（1.6）、eval（1.7）尚未实现；真实麒麟 SDK 性能待银河麒麟环境验收。
+> **状态（2026-08-10）**：core/storage/api、retrieval、flow 与 Phase 3 sync 已完成；
+> `/memory/query`、`/memory/flow/promote`、`/sync/*` 已接入，Foundation 289 项 + Engine 21 项测试全部通过。
+> eval（1.7）与 D-Bus 尚未实现；真实麒麟 SDK 性能和真实局域网互操作待银河麒麟环境验收。
 
 ---
 
@@ -78,7 +78,7 @@ class ConflictRepository(ABC): ...
 
 ```
 http_app.py  → FastAPI app + 路由（/memory/write、/memory/query、/preference/*、/forget、
-               /conflicts、/memory/flow/promote 已实现；/sync/* 为占位）
+               /conflicts、/memory/flow/promote、/sync/* 已实现）
 ws.py + ws_manager.py → WebSocket /events（连接/心跳/广播，memory_ready 已接入写入链路）
 dbus_service.py → com.kylin.pixiu.Memory（桌面 D-Bus）
 ```
@@ -125,9 +125,8 @@ async def get_security_service(db=Depends(get_db)) -> SecurityService:
 
 **Schema**（由 `storage/migrations.py` 版本化迁移创建，`storage/schema.py` 定义）：
 
-基础表 11 张：`evidence`、`knowledge_items`、`knowledge_evidence`、`knowledge_entities`、
-`preferences`、`preference_history`、`entities`、`relations`、`memory_contexts`、
-`conflict_records`、`sync_oplog`；
+基础表 16 张：原有记忆/流转表加 `sync_identity`、`sync_peers`、`sync_state`、
+`sync_peer_acks`、`sync_meta`；`sync_oplog` 保存签名操作，私钥仅以加密 PKCS#8 保存。
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
 WAL + foreign_keys + busy_timeout 已启用。
 
@@ -231,7 +230,7 @@ TTL：短期默认 30 分钟，中期默认 7 天；到期保留审计行、清�
 
 ### 1.6 sync/ —— P2P CRDT 同步
 
-> ⚠️ **尚未实现**（Phase 3）。以下为设计蓝图。
+> ✅ **Phase 3 已实现**。网络运行时默认关闭，需显式安全配置后启动。
 
 **核心创新**：去中心化多设备记忆网络。
 
@@ -239,14 +238,18 @@ TTL：短期默认 30 分钟，中期默认 7 天；到期保留审计行、清�
 
 ```
 sync/
-├── identity.py     # 节点身份、Ed25519 密钥对
-├── discovery.py    # mDNS/Gossip 节点发现
-├── pairing.py      # 设备配对授权（扫码/PIN）
-├── transport.py    # TLS 1.3 双向证书加密通道
-├── crdt.py         # LWW-Element-Set + 版本向量合并引擎
-├── anti_entropy.py # 反熵周期对账
-├── gc.py           # tombstone 墓碑回收
-└── scheduler.py    # 同步轮次调度
+├── identity.py     # Ed25519 身份；私钥口令加密
+├── discovery.py    # mDNS 广告解析 + 已配对 peer 信任目录
+├── pairing.py      # 扫码/PIN、签名、公钥交换、防重放
+├── transport.py    # TLS 1.3 mTLS + 1 MiB JSON 帧
+├── protocol.py     # 仅接受已配对 sender 的签名 SyncOp
+├── gossip.py       # 有界 fanout、持久化重传和 ACK
+├── crdt.py         # LWW-Element-Set + 版本向量
+├── anti_entropy.py # digest/delta 对账
+├── materializer.py # CRDT 胜者物化到本地仓储
+├── gc.py           # 全网 ACK 后 tombstone 回收
+├── scheduler.py    # 有界退避调度
+└── runtime.py      # 默认关闭的 mDNS/mTLS 生命周期
 ```
 
 **同步流程**：
@@ -267,9 +270,17 @@ sync/
 | 判定依据 | 版本向量 + LWW | 字段级语义比对新旧 |
 | 结果 | 数据层收敛 | 生成 ConflictRecord |
 
+
+**安全与运行边界**：
+
+- 网络默认关闭；只有 `PIXIU_SYNC_NETWORK_ENABLED=true` 且地址、证书、CA 均显式配置后启动。
+- mDNS 结果必须与本地已配对、未撤销 peer 的设备 ID、`shared:*` 域和 Ed25519 公钥完全匹配。
+- `user:*` 不进入 oplog；嵌套 payload scope 必须与签名 envelope scope 一致。
+- 传输固定 TLS 1.3 双向认证；单帧和单批分别限制为 1 MiB、256 个操作。
+
 ### 1.7 eval/ —— 评测框架
 
-> ⚠️ **尚未实现**（Phase 3）。
+> ⚠️ **尚未实现**（后续 Phase）。
 
 **指标脚本**（`scripts/eval.py`）：
 
@@ -289,6 +300,7 @@ sync/
 | 内容 | 路径 |
 |------|------|
 | 开发任务书 | `backend/foundation/docs/DEV_TASKS.md` |
+| Phase 3 同步报告 | `backend/foundation/docs/PHASE3.md` |
 | 快速启动 | `backend/foundation/docs/QUICK_START.md` |
 | Phase 1 加固报告 | `backend/foundation/docs/PHASE1.md` |
 | Phase 2 流转报告 | `backend/foundation/docs/PHASE2.md` |

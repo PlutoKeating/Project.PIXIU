@@ -8,6 +8,7 @@
 cd /path/to/Project.PIXIU
 conda activate pixiu
 pip install -r backend/requirements.txt
+pip install -r backend/foundation/requirements-sync.txt
 ```
 
 ## 初始化数据库
@@ -52,9 +53,35 @@ curl -X POST http://127.0.0.1:8765/memory/flow/promote \
 ```
 
 > `context_ids` 由后端会话/摘要流程调用 `FlowService.remember(...)` 创建；当前公开 API
-> 只承担沉淀动作。`/sync/*` 仍返回 `{"status":"not_implemented"}`，待 sync 阶段实现。
+> 只承担沉淀动作。`/sync/*` 已按 `docs/API.md` 接入真实本地状态。
+
+
+## 可选：启用局域网同步
+
+默认不打开任何同步监听或 mDNS 资源。启用前需为每台设备准备由同一受信 CA 签发的客户端/服务端证书；
+证书 SAN 必须包含 `PIXIU_SYNC_SERVER_NAME`，广告地址只能是私网、链路本地或 loopback 地址。
+
+```bash
+export PIXIU_SYNC_NETWORK_ENABLED=true
+export PIXIU_SYNC_DEVICE_NAME='study-workstation'
+export PIXIU_SYNC_DOMAIN='shared:home'
+export PIXIU_SYNC_KEY_PASSPHRASE='<at-least-16-characters>'
+export PIXIU_SYNC_BIND_HOST='<device-lan-ip>'
+export PIXIU_SYNC_PORT='8766'
+export PIXIU_SYNC_ADVERTISE_ADDRESSES='<device-lan-ip>'
+export PIXIU_SYNC_SERVER_NAME='study.pixiu.local'
+export PIXIU_SYNC_CERTFILE='/secure/path/device.crt'
+export PIXIU_SYNC_KEYFILE='/secure/path/device.key'
+export PIXIU_SYNC_CAFILE='/secure/path/peers-ca.crt'
+```
+
+可选的加密 TLS 私钥口令使用 `PIXIU_SYNC_TLS_KEY_PASSWORD`。不要把口令、私钥或真实证书提交到仓库。
+启动 API 后可用 `GET /sync/status`、`GET /sync/peers` 检查状态；配对令牌由
+`SyncService.create_pairing_token(...)` 生成，再交给 `POST /sync/pair`。只有已配对、未撤销且
+公钥/域与 mDNS 广告一致的节点会进入传输目录；`user:*` 永不进入同步 oplog。
 
 ## 运行测试
+
 
 ```bash
 # 全部 foundation 测试（仓库根目录运行）
