@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>styles.qss</file>
+        <file>icons/pixiu.svg</file>
+        <file alias="i18n/pixiu_en_US.qm">i18n/pixiu_en_US.qm</file>
+    </qresource>
+</RCC>

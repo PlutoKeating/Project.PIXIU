@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+# 桌面入口注册：刷新 desktop 数据库（无该工具时静默跳过）。
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database -q /usr/share/applications || true
+fi
+
+exit 0

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=PIXIU 貔貅
+Name[en_US]=PIXIU
+Comment=去中心化分布式记忆系统桌面助手
+Comment[en_US]=Decentralized memory assistant for Kylin desktop
+Exec=pixiu-frontend
+Icon=pixiu
+Terminal=false
+Categories=Utility;
+StartupNotify=true

@@ -74,6 +74,12 @@ frontend/.env.local
 backend/.env
 backend/.env.local
 
+# Local runtime databases (never commit)
+pixiu.db
+pixiu.db-shm
+pixiu.db-wal
+pixiu.db-*
+
 # Docker local data/caches
 .docker/
 docker-compose.override.yml
