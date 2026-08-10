@@ -152,6 +152,18 @@ if(BUILD_TESTING)
     target_link_libraries(t_http_backend PRIVATE Qt5::Test Qt5::Network)
     add_test(NAME http_backend COMMAND t_http_backend)
 
+    add_executable(t_contract_fixtures
+        tests/t_contract_fixtures.cpp
+        src/services/BackendTypes.h
+        src/services/BackendTransport.h
+        src/services/BackendTransport.cpp
+        src/services/HttpBackendTransport.h
+        src/services/HttpBackendTransport.cpp
+    )
+    target_include_directories(t_contract_fixtures PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_contract_fixtures PRIVATE Qt5::Test Qt5::Network)
+    add_test(NAME contract_fixtures COMMAND t_contract_fixtures)
+
     add_executable(t_floating_ball
         tests/t_floating_ball.cpp
         src/widgets/FloatingBall.h
