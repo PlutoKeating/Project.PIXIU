@@ -8,44 +8,8 @@
         <translation>PIXIU</translation>
     </message>
     <message>
-        <source>● 离线</source>
-        <translation>● Offline</translation>
-    </message>
-    <message>
-        <source>记忆</source>
-        <translation>Memory</translation>
-    </message>
-    <message>
-        <source>✕</source>
-        <translation>✕</translation>
-    </message>
-    <message>
-        <source>打开记忆面板</source>
-        <translation>Open memory panel</translation>
-    </message>
-    <message>
         <source>关闭聊天框</source>
         <translation>Close chat window</translation>
-    </message>
-    <message>
-        <source>● 在线</source>
-        <translation>● Online</translation>
-    </message>
-    <message>
-        <source>● 连接中…</source>
-        <translation>● Connecting…</translation>
-    </message>
-    <message>
-        <source>● 服务异常</source>
-        <translation>● Service error</translation>
-    </message>
-    <message>
-        <source>⚙</source>
-        <translation type="vanished">⚙</translation>
-    </message>
-    <message>
-        <source>打开设置</source>
-        <translation>Open settings</translation>
     </message>
     <message>
         <source>PIXIU 标识</source>
@@ -57,15 +21,11 @@
     </message>
     <message>
         <source>你好，我是 PIXIU</source>
-        <translation>Hi, I'm PIXIU</translation>
+        <translation>Hi, I&apos;m PIXIU</translation>
     </message>
     <message>
         <source>问问你的记忆，或录入新的知识</source>
         <translation>Ask your memories, or record something new</translation>
-    </message>
-    <message>
-        <source>开始提问</source>
-        <translation>Start asking</translation>
     </message>
     <message>
         <source>录入知识</source>
@@ -78,6 +38,50 @@
     <message>
         <source>按 Ctrl+Alt+P 随时唤起</source>
         <translation>Press Ctrl+Alt+P anytime to summon</translation>
+    </message>
+    <message>
+        <source>置顶聊天框</source>
+        <translation>Pin chat window</translation>
+    </message>
+    <message>
+        <source>置顶</source>
+        <translation>Pin to top</translation>
+    </message>
+    <message>
+        <source>更多</source>
+        <translation>More</translation>
+    </message>
+    <message>
+        <source>设置</source>
+        <translation>Settings</translation>
+    </message>
+    <message>
+        <source>同步面板</source>
+        <translation>Sync panel</translation>
+    </message>
+    <message>
+        <source>您可以问我：</source>
+        <translation>You can ask me:</translation>
+    </message>
+    <message>
+        <source>我们家的水电燃气花了多少钱？</source>
+        <translation>How much did we spend on utilities?</translation>
+    </message>
+    <message>
+        <source>我最近记下了哪些知识点？</source>
+        <translation>What knowledge have I recorded recently?</translation>
+    </message>
+    <message>
+        <source>我的偏好设置有哪些？</source>
+        <translation>What are my preferences?</translation>
+    </message>
+    <message>
+        <source>忘记上个月的家庭支出清单</source>
+        <translation>Forget last month&apos;s household expense list</translation>
+    </message>
+    <message>
+        <source>取消置顶</source>
+        <translation>Unpin</translation>
     </message>
 </context>
 <context>
@@ -235,6 +239,70 @@ This action cannot be undone.</translation>
     <message>
         <source>发送</source>
         <translation>Send</translation>
+    </message>
+    <message>
+        <source>记忆</source>
+        <translation>Memory</translation>
+    </message>
+    <message>
+        <source>打开记忆面板</source>
+        <translation>Open memory panel</translation>
+    </message>
+    <message>
+        <source>设置</source>
+        <translation>Settings</translation>
+    </message>
+    <message>
+        <source>打开设置</source>
+        <translation>Open settings</translation>
+    </message>
+    <message>
+        <source>录入</source>
+        <translation>Import</translation>
+    </message>
+    <message>
+        <source>录入知识</source>
+        <translation>Import knowledge</translation>
+    </message>
+    <message>
+        <source>同步</source>
+        <translation>Sync</translation>
+    </message>
+    <message>
+        <source>打开同步面板</source>
+        <translation>Open sync panel</translation>
+    </message>
+    <message>
+        <source>更多</source>
+        <translation>More</translation>
+    </message>
+    <message>
+        <source>记忆面板</source>
+        <translation>Memory panel</translation>
+    </message>
+    <message>
+        <source>同步面板</source>
+        <translation>Sync panel</translation>
+    </message>
+    <message>
+        <source>● 离线</source>
+        <translation>● Offline</translation>
+    </message>
+    <message>
+        <source>后端连接状态</source>
+        <translation>Backend connection status</translation>
+    </message>
+    <message>
+        <source>● 在线</source>
+        <translation>● Online</translation>
+    </message>
+    <message>
+        <source>● 连接中…</source>
+        <translation>● Connecting…</translation>
+    </message>
+    <message>
+        <source>● 服务异常</source>
+        <translation>● Service error</translation>
     </message>
 </context>
 <context>

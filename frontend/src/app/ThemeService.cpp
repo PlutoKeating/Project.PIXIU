@@ -174,6 +174,16 @@ void ThemeService::applyTheme()
     }
     qCInfo(lcTheme) << "theme palette normalized (fallback mode)";
 #endif
+
+    // QSS 中的 palette(role) 在换肤时不会自动重新解析（实测：窗口自绘背景已
+    // 跟随新 Palette，但 QSS 卡片/输入区/chip 仍冻结在旧主题色）。重设一次
+    // 全局 stylesheet 强制 QStyleSheetStyle 对全部控件重新 polish，保证
+    // 运行时明暗切换与启动直接进入对应主题的观感一致。
+    const QString sheet = qApp->styleSheet();
+    if (!sheet.isEmpty()) {
+        qApp->setStyleSheet(QString());
+        qApp->setStyleSheet(sheet);
+    }
 }
 
 bool ThemeService::isAvailable() const

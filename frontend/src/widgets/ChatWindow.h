@@ -1,19 +1,23 @@
 #ifndef PIXIU_CHAT_WINDOW_H
 #define PIXIU_CHAT_WINDOW_H
 
+#include <QList>
 #include <QWidget>
 
 #include "services/BackendTypes.h"
 
 class QLabel;
+class QMenu;
 class QPushButton;
 class QPropertyAnimation;
 class QStackedWidget;
 class InputBar;
 class MessageList;
 
-// 聊天主窗口：窄而高的侧边助手浮窗（无边框圆角浮层），顶栏（Logo + 标题 +
-// 状态 + 面板/设置/关闭），消息区带欢迎空态。
+// 聊天主窗口：窄而高的侧边助手浮窗（无边框圆角浮层）。顶栏保持轻量——
+// 左侧 Logo + 应用入口，右侧置顶/菜单/关闭三个主题感知图标按钮；消息区为
+// 欢迎页（Logo + 问候 + 建议问题卡片）与消息流的自动切换；输入区为多行
+// 卡片 + chip 快捷行 + 状态 badge（见 InputBar）。
 //
 // 本阶段提供窗口壳与显示/隐藏/焦点行为；消息列表与输入栏由后续 feature 填充。
 class ChatWindow : public QWidget
@@ -45,6 +49,8 @@ signals:
     void openPanelRequested();
     // 顶栏“设置”入口。
     void settingsRequested();
+    // 同步面板入口（chip / 菜单）。
+    void syncPanelRequested();
     // 用户拖动窗口后发射（供应用层持久化位置）。
     void moved(const QPoint &topLeft);
     void sendRequested(const QString &text);
@@ -72,8 +78,10 @@ private:
     ResizeEdge resizeEdgeAt(const QPoint &pos) const;
     void updateResizeCursor(const QPoint &pos);
 
-    QLabel *m_statusLabel = nullptr;
-    QPushButton *m_settingsButton = nullptr;
+    QPushButton *m_pinButton = nullptr;
+    QPushButton *m_moreButton = nullptr;
+    QMenu *m_topBarMenu = nullptr;
+    QList<QPushButton *> m_suggestionCards;
     InputBar *m_inputBar = nullptr;
     MessageList *m_messageList = nullptr;
     QStackedWidget *m_centerStack = nullptr;
@@ -86,6 +94,9 @@ private:
     QRect m_resizeStartGeometry;
     QPoint m_resizeStartGlobalPos;
     bool m_resizing = false;
+    bool m_pinned = false;
+    void rebuildTopBarIcons();
+    void togglePinned();
 
     static constexpr int kWindowWidth = 380;
     static constexpr int kWindowHeight = 640;

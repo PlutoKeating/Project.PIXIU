@@ -195,3 +195,41 @@ pixiu-frontend，**未修改任何代码**；用隔离演示桩
 
 待办（参考图补齐后）：按参考截图的图标样式、排版细节做逐项微调；真实
 UKUI 桌面会话复验窗口阴影/圆角与 HiDPI；§4-§6 原有人工复测项不变。
+
+## 2026-08-10 Round 6（第一批需求补齐：置顶/菜单/建议卡片/chip/多行输入/badge）
+
+继续第一批“聊天主窗口 + 悬浮球”改造，把需求清单中 Round 5 未覆盖的细节
+逐项补齐；仍只改主窗口与输入区，不触碰 MemoryPanel/SettingsDialog/
+PairDialog/EvidenceCard 等页面业务逻辑，悬浮球能力保持不变：
+
+1. 顶栏轻量化：左侧 Logo + 应用入口；右侧改为**置顶**（点击切换
+   `WindowStaysOnTopHint`）、**更多**（记忆面板/设置/录入知识/同步面板）、
+   **关闭**三个主题感知图标按钮。`UiIcons` 新增运行时绘制的 pin/more/
+   close/memory/sync/import/chat 七枚图标（24 单位坐标系 + 16/24/32 多倍图，
+   HiDPI 清晰，palette 变色）；后端状态胶囊从顶栏移入输入区左下角 badge，
+   顶栏不再因状态文案切换抖动。
+2. 欢迎页：Logo + 「你好，我是 PIXIU」+ 弱色说明文案居中；下方新增
+   「您可以问我：」+ 4 张纵向圆角**建议卡片**（浅灰底、无强边框、左侧弱
+   气泡图标、hover 仅轻微变背景、点击填入输入框可编辑后发送）；整个欢迎
+   页放入无边框滚动区，窗口很矮或英文长文案换行时内容可滚动，不破坏布局。
+3. 输入区：圆角输入卡片（1px `palette(midlight)` 弱边框 + 14px 圆角）内含
+   多行 `QPlainTextEdit`（Enter 发送、Shift+Enter 换行，原输入语义不回归，
+   placeholder 走 `PlaceholderText` 弱色）；左下角状态 badge（在线/连接中/
+   服务异常/离线，小号语义色，不遮挡界面）；右下角主题高亮发送胶囊；输入
+   区上方新增 chip 快捷行（记忆/设置/录入/同步 + 更多，图标 + 短文字），
+   空间不足时从右向左收缩进「更多」菜单，不挤爆窗口；离线时仅禁用输入/
+   录入，记忆/设置/更多入口保持可用。
+4. 悬浮球：不变（PIXIU 品牌标记、左键拖拽、右键菜单、位置记忆、HiDPI）。
+5. 运行时换肤修复：实测发现 `QApplication::setPalette` 后 QSS 中
+   `palette(role)` 不会自动重新解析（窗口自绘背景已换色、卡片/输入区/chip
+   仍冻结在旧主题色）。`ThemeService::applyTheme` 在换肤后重设全局
+   stylesheet 强制全部控件重新 polish；真实桌面复验 light→dark→light
+   三态颜色全部正确跟随。
+6. 验证：`t_chat_window`/`t_input_bar` 按新交互重写并补强（置顶切换、菜单
+   动作转发、建议卡片填入输入、多行/Shift+Enter、chip 收缩、状态 badge、
+   离线可用性），`t_memory_panel` 新增 `showSyncTab` 1 例；OFF/ON 双路径
+   回归 + ctest 28/28 全绿 + offscreen 冒烟无回归；i18n `.ts` 180 条、
+   0 未完成，`.qm` 已重新生成。
+
+待办不变：§4-§6 原有人工复测/后端契约阻塞项；真实 UKUI 桌面截图按第一批
+验收要求重新生成后提交（见 `ui-sidebar-real-2026-08-10/`）。

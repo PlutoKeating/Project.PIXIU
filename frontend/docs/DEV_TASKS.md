@@ -148,6 +148,17 @@
 
 ## 实现状态（2026-08-10 更新）
 
+- 第一批主窗口细节补齐（2026-08-10 Round 6，详见 `UI_UX_POLISH.md`）：顶栏
+  改为 Logo/应用入口 + 置顶/更多/关闭三个主题感知图标（`UiIcons` 新增
+  pin/more/close/memory/sync/import/chat 图标），状态胶囊移入输入区左下角
+  badge；欢迎页新增「您可以问我：」+ 4 张建议卡片（点击填入输入框），整体
+  放入无边框滚动区；输入区改为多行输入（Enter 发送 / Shift+Enter 换行）+
+  chip 快捷行（记忆/设置/录入/同步/更多，空间不足自动收缩进更多）+ 圆角
+  输入卡片；修复运行时明暗换肤后 QSS `palette(role)` 不重新解析的问题
+  （`ThemeService` 换肤后重设全局 stylesheet）。真实 UKUI 桌面截图：
+  `docs/screenshots/ui-sidebar-real-2026-08-10/`（浅/深欢迎页、浅/深对话页、
+  悬浮球+主窗口同屏）。OFF/ON 双路径回归 + ctest 28/28 全绿，i18n 180 条
+  0 未完成。
 - UI/UX Polish Round 2（2026-08-10）已完成：按钮/Tab 统一指针光标与焦点
   高亮描边（`styles.qss`）；聊天框顶栏状态文案固定最小宽度防止切换抖动，
   顶栏按钮补 tooltip/accessibleName；`ForgetDialog`/`RevokeDialog` 打开

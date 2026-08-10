@@ -35,6 +35,7 @@ private slots:
     void panelMarginsUseSpacingToken();
     void syncTabHasPairButtonOpensDialog();
     void showConflictTabSelectsTab();
+    void showSyncTabSelectsTab();
     void setSyncStatusUpdatesLabel();
     void syncTabRefreshButtonEmitsRequest();
     void setPeersPopulatesList();
@@ -351,6 +352,17 @@ void TestMemoryPanel::showConflictTabSelectsTab()
 
     panel.showConflictTab();
     QCOMPARE(tabs->currentIndex(), 1);
+}
+
+void TestMemoryPanel::showSyncTabSelectsTab()
+{
+    MemoryPanel panel;
+    QTabWidget *tabs = panel.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    QCOMPARE(tabs->currentIndex(), 0);
+
+    panel.showSyncTab();
+    QCOMPARE(tabs->currentIndex(), 2);
 }
 
 void TestMemoryPanel::setSyncStatusUpdatesLabel()

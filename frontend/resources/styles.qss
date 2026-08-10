@@ -191,12 +191,6 @@ QLabel#settingsTitleLabel {
     font-size: 14pt;
     font-weight: bold;
 }
-QLabel#statusLabel {
-    font-size: 9pt;
-    background-color: palette(alternate-base);
-    border-radius: 10px;
-    padding: 3px 10px;
-}
 QLabel#syncStatusLabel,
 QLabel#pairStatusLabel,
 QLabel#syncSummaryLabel {
@@ -207,20 +201,54 @@ QLabel#versionLabel {
     font-size: 9pt;
 }
 
-/* ── 聊天输入卡片：容器浅灰填充、内嵌无边框输入 ─────────── */
+/* ── 聊天输入区：chip 快捷行 + 圆角输入卡片 ─────────────── */
 QWidget#inputBar {
+    background: transparent;
+}
+QWidget#inputCard {
     background-color: palette(alternate-base);
+    border: 1px solid palette(midlight);
     border-radius: 14px;
 }
-QLineEdit#lineEdit {
+QPlainTextEdit#inputEdit {
     background: transparent;
     border: none;
     border-radius: 0;
-    padding: 8px 4px;
+    padding: 6px 4px;
+    font-size: 11pt;
 }
-QLineEdit#lineEdit:focus {
+QPlainTextEdit#inputEdit:focus {
     background: transparent;
     border: none;
+}
+QPlainTextEdit#inputEdit:disabled {
+    color: palette(mid);
+    background: transparent;
+}
+QLabel#inputStateBadge {
+    font-size: 9pt;
+    padding: 2px 2px;
+}
+QPushButton[chipRole="chip"] {
+    background-color: palette(alternate-base);
+    border: none;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 10pt;
+    color: palette(text);
+}
+QPushButton[chipRole="chip"]:hover {
+    background-color: palette(midlight);
+}
+QPushButton[chipRole="chip"]:pressed {
+    background-color: palette(mid);
+}
+QPushButton[chipRole="chip"]:disabled {
+    color: palette(mid);
+    background-color: transparent;
+}
+QPushButton[chipRole="chip"]:focus {
+    border: 1px solid palette(highlight);
 }
 
 /* ── 消息气泡（§7.2/7.3：内边距 12px，圆角 12/14px）──────── */
@@ -324,15 +352,41 @@ QLabel#welcomeHint {
     color: palette(mid);
     font-size: 9pt;
 }
-QPushButton#welcomeAction {
+QLabel#suggestLabel {
+    color: palette(mid);
+    font-size: 10pt;
+    font-weight: bold;
+}
+QPushButton#suggestionCard {
     background-color: palette(alternate-base);
     border: none;
     border-radius: 10px;
-    padding: 8px 14px;
-    font-size: 10pt;
+    text-align: left;
+    padding: 0;
 }
-QPushButton#welcomeAction:hover {
+QPushButton#suggestionCard:hover {
     background-color: palette(midlight);
+}
+QPushButton#suggestionCard:pressed {
+    background-color: palette(mid);
+}
+QPushButton#suggestionCard:focus {
+    border: 1px solid palette(highlight);
+}
+QLabel#suggestionText {
+    font-size: 11pt;
+    color: palette(text);
+    background: transparent;
+}
+QLabel#suggestionIcon {
+    background: transparent;
+}
+QScrollArea#welcomeScroll {
+    background: transparent;
+    border: none;
+}
+QScrollArea#welcomeScroll > QWidget > QWidget {
+    background: transparent;
 }
 
 /* ── 思考骨架屏（加载占位）────────────────────────────────── */

@@ -1,6 +1,8 @@
+#include <QAction>
 #include <QLabel>
-#include <QLineEdit>
+#include <QMenu>
 #include <QMouseEvent>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
@@ -10,7 +12,8 @@
 #include "widgets/InputBar.h"
 #include "widgets/MessageList.h"
 
-// ChatWindow 交互测试：显示/隐藏、后端状态、顶栏按钮、发送与输入恢复。
+// ChatWindow 交互测试：显示/隐藏、后端状态 badge、顶栏置顶/菜单/关闭、
+// 发送与输入恢复、欢迎页建议卡片。
 class TestChatWindow : public QObject
 {
     Q_OBJECT
@@ -19,20 +22,18 @@ private slots:
     void messageListIsAvailable();
     void showAndFocusShowsWindow();
     void escapeHidesWindow();
-    void backendStateUpdatesStatusLabel();
-    void offlineStateDisablesInput();
-    void panelButtonEmitsOpenPanelRequested();
-    void settingsButtonEmitsSettingsRequested();
+    void backendStateUpdatesInputBadge();
+    void offlineStateDisablesEditorButKeepsChips();
+    void pinButtonTogglesAlwaysOnTop();
+    void moreMenuEmitsPanelAndSettingsAndSync();
     void closeButtonEmitsCloseRequested();
-    void buttonsHaveToolTips();
-    void statusLabelHasStableMinimumWidth();
+    void buttonsHaveToolTipsAndAccessibleNames();
     void dragMovesWindowAndEmitsMoved();
-    void buttonsHaveAccessibleNames();
     void defaultSizeIsNarrowTall();
     void welcomeShownInitiallyThenHiddenAfterMessage();
-    void welcomeActionsForwardToWindowSignals();
+    void suggestionCardsFillInput();
     void sendButtonForwardsTextAndClears();
-    void restoreInputPrefillsLineEdit();
+    void restoreInputPrefillsEditor();
 };
 
 void TestChatWindow::messageListIsAvailable()
@@ -58,56 +59,92 @@ void TestChatWindow::escapeHidesWindow()
     QTRY_VERIFY(!window.isChatVisible());
 }
 
-void TestChatWindow::backendStateUpdatesStatusLabel()
-{
-    ChatWindow window;
-    QLabel *status = window.findChild<QLabel *>(QStringLiteral("statusLabel"));
-    QVERIFY(status != nullptr);
-
-    window.setBackendState(ConnectionState::Connected);
-    QCOMPARE(status->text(), QStringLiteral("● 在线"));
-    window.setBackendState(ConnectionState::Connecting);
-    QCOMPARE(status->text(), QStringLiteral("● 连接中…"));
-    window.setBackendState(ConnectionState::Error);
-    QCOMPARE(status->text(), QStringLiteral("● 服务异常"));
-    window.setBackendState(ConnectionState::Disconnected);
-    QCOMPARE(status->text(), QStringLiteral("● 离线"));
-}
-
-void TestChatWindow::offlineStateDisablesInput()
+void TestChatWindow::backendStateUpdatesInputBadge()
 {
     ChatWindow window;
     InputBar *input = window.findChild<InputBar *>();
     QVERIFY(input != nullptr);
+    QLabel *badge = input->findChild<QLabel *>(
+        QStringLiteral("inputStateBadge"));
+    QVERIFY(badge != nullptr);
 
     window.setBackendState(ConnectionState::Connected);
-    QVERIFY(input->isEnabled());
-    window.setBackendState(ConnectionState::Disconnected);
-    QVERIFY(!input->isEnabled());
+    QCOMPARE(badge->text(), QStringLiteral("● 在线"));
+    window.setBackendState(ConnectionState::Connecting);
+    QCOMPARE(badge->text(), QStringLiteral("● 连接中…"));
     window.setBackendState(ConnectionState::Error);
-    QVERIFY(!input->isEnabled());
+    QCOMPARE(badge->text(), QStringLiteral("● 服务异常"));
+    window.setBackendState(ConnectionState::Disconnected);
+    QCOMPARE(badge->text(), QStringLiteral("● 离线"));
 }
 
-void TestChatWindow::panelButtonEmitsOpenPanelRequested()
+void TestChatWindow::offlineStateDisablesEditorButKeepsChips()
 {
     ChatWindow window;
-    QSignalSpy spy(&window, &ChatWindow::openPanelRequested);
-    QPushButton *button =
-        window.findChild<QPushButton *>(QStringLiteral("panelButton"));
-    QVERIFY(button != nullptr);
-    QTest::mouseClick(button, Qt::LeftButton);
-    QCOMPARE(spy.count(), 1);
+    InputBar *input = window.findChild<InputBar *>();
+    QVERIFY(input != nullptr);
+    QPlainTextEdit *editor = input->findChild<QPlainTextEdit *>(
+        QStringLiteral("inputEdit"));
+    QPushButton *memoryChip = input->findChild<QPushButton *>(
+        QStringLiteral("memoryChip"));
+    QVERIFY(editor != nullptr);
+    QVERIFY(memoryChip != nullptr);
+
+    window.setBackendState(ConnectionState::Connected);
+    QVERIFY(editor->isEnabled());
+    window.setBackendState(ConnectionState::Disconnected);
+    QVERIFY(!editor->isEnabled());
+    window.setBackendState(ConnectionState::Error);
+    QVERIFY(!editor->isEnabled());
+    // 离线时记忆/设置等入口仍需可用（不把整条输入栏一起禁掉）。
+    QVERIFY(memoryChip->isEnabled());
 }
 
-void TestChatWindow::settingsButtonEmitsSettingsRequested()
+void TestChatWindow::pinButtonTogglesAlwaysOnTop()
 {
     ChatWindow window;
-    QSignalSpy spy(&window, &ChatWindow::settingsRequested);
-    QPushButton *button =
-        window.findChild<QPushButton *>(QStringLiteral("settingsButton"));
-    QVERIFY(button != nullptr);
-    QTest::mouseClick(button, Qt::LeftButton);
-    QCOMPARE(spy.count(), 1);
+    window.show();
+    QPushButton *pin =
+        window.findChild<QPushButton *>(QStringLiteral("pinButton"));
+    QVERIFY(pin != nullptr);
+
+    QTest::mouseClick(pin, Qt::LeftButton);
+    QVERIFY(window.windowFlags() & Qt::WindowStaysOnTopHint);
+    QTest::mouseClick(pin, Qt::LeftButton);
+    QVERIFY(!(window.windowFlags() & Qt::WindowStaysOnTopHint));
+}
+
+void TestChatWindow::moreMenuEmitsPanelAndSettingsAndSync()
+{
+    ChatWindow window;
+    QSignalSpy panelSpy(&window, &ChatWindow::openPanelRequested);
+    QSignalSpy settingsSpy(&window, &ChatWindow::settingsRequested);
+    QSignalSpy syncSpy(&window, &ChatWindow::syncPanelRequested);
+    QMenu *menu = window.findChild<QMenu *>(QStringLiteral("topBarMenu"));
+    QVERIFY(menu != nullptr);
+
+    QAction *panel = nullptr;
+    QAction *settings = nullptr;
+    QAction *sync = nullptr;
+    for (QAction *action : menu->actions()) {
+        if (action->text() == QStringLiteral("记忆面板")) {
+            panel = action;
+        } else if (action->text() == QStringLiteral("设置")) {
+            settings = action;
+        } else if (action->text() == QStringLiteral("同步面板")) {
+            sync = action;
+        }
+    }
+    QVERIFY(panel != nullptr);
+    QVERIFY(settings != nullptr);
+    QVERIFY(sync != nullptr);
+
+    panel->trigger();
+    settings->trigger();
+    sync->trigger();
+    QCOMPARE(panelSpy.count(), 1);
+    QCOMPARE(settingsSpy.count(), 1);
+    QCOMPARE(syncSpy.count(), 1);
 }
 
 void TestChatWindow::closeButtonEmitsCloseRequested()
@@ -121,39 +158,24 @@ void TestChatWindow::closeButtonEmitsCloseRequested()
     QCOMPARE(spy.count(), 1);
 }
 
-void TestChatWindow::buttonsHaveToolTips()
+void TestChatWindow::buttonsHaveToolTipsAndAccessibleNames()
 {
     ChatWindow window;
-    QPushButton *settings =
-        window.findChild<QPushButton *>(QStringLiteral("settingsButton"));
-    QPushButton *panel =
-        window.findChild<QPushButton *>(QStringLiteral("panelButton"));
+    QPushButton *pin =
+        window.findChild<QPushButton *>(QStringLiteral("pinButton"));
+    QPushButton *more =
+        window.findChild<QPushButton *>(QStringLiteral("moreButton"));
     QPushButton *close =
         window.findChild<QPushButton *>(QStringLiteral("closeButton"));
-    QVERIFY(settings != nullptr);
-    QVERIFY(panel != nullptr);
+    QVERIFY(pin != nullptr);
+    QVERIFY(more != nullptr);
     QVERIFY(close != nullptr);
-    QVERIFY(!settings->toolTip().isEmpty());
-    QVERIFY(!panel->toolTip().isEmpty());
+    QVERIFY(!pin->toolTip().isEmpty());
+    QVERIFY(!more->toolTip().isEmpty());
     QVERIFY(!close->toolTip().isEmpty());
-}
-
-void TestChatWindow::statusLabelHasStableMinimumWidth()
-{
-    ChatWindow window;
-    QLabel *status = window.findChild<QLabel *>(QStringLiteral("statusLabel"));
-    QVERIFY(status != nullptr);
-
-    // 最小宽度必须足以容纳最长状态文案，避免状态切换时顶栏布局抖动。
-    const int widest = qMax(
-        qMax(status->fontMetrics().horizontalAdvance(QStringLiteral("● 在线")),
-             status->fontMetrics().horizontalAdvance(
-                 QStringLiteral("● 连接中…"))),
-        qMax(status->fontMetrics().horizontalAdvance(
-                 QStringLiteral("● 服务异常")),
-             status->fontMetrics().horizontalAdvance(QStringLiteral("● 离线"))));
-    QVERIFY(status->minimumWidth() >= widest);
-    QVERIFY(status->minimumWidth() > 0);
+    QVERIFY(!pin->accessibleName().isEmpty());
+    QVERIFY(!more->accessibleName().isEmpty());
+    QVERIFY(!close->accessibleName().isEmpty());
 }
 
 void TestChatWindow::dragMovesWindowAndEmitsMoved()
@@ -182,23 +204,6 @@ void TestChatWindow::dragMovesWindowAndEmitsMoved()
 
     QVERIFY(window.pos() != before);
     QVERIFY(moved.count() >= 1);
-}
-
-void TestChatWindow::buttonsHaveAccessibleNames()
-{
-    ChatWindow window;
-    QPushButton *settings =
-        window.findChild<QPushButton *>(QStringLiteral("settingsButton"));
-    QPushButton *panel =
-        window.findChild<QPushButton *>(QStringLiteral("panelButton"));
-    QPushButton *close =
-        window.findChild<QPushButton *>(QStringLiteral("closeButton"));
-    QVERIFY(panel != nullptr);
-    QVERIFY(close != nullptr);
-    QVERIFY(settings != nullptr);
-    QVERIFY(!settings->accessibleName().isEmpty());
-    QVERIFY(!panel->accessibleName().isEmpty());
-    QVERIFY(!close->accessibleName().isEmpty());
 }
 
 void TestChatWindow::defaultSizeIsNarrowTall()
@@ -233,57 +238,50 @@ void TestChatWindow::welcomeShownInitiallyThenHiddenAfterMessage()
     QTRY_VERIFY(welcome->isVisible());
 }
 
-void TestChatWindow::welcomeActionsForwardToWindowSignals()
+void TestChatWindow::suggestionCardsFillInput()
 {
     ChatWindow window;
     window.show();
-    QSignalSpy attachSpy(&window, &ChatWindow::attachRequested);
-    QSignalSpy panelSpy(&window, &ChatWindow::openPanelRequested);
+    InputBar *input = window.findChild<InputBar *>();
+    QPlainTextEdit *editor = input->findChild<QPlainTextEdit *>(
+        QStringLiteral("inputEdit"));
+    const QList<QPushButton *> cards =
+        window.findChildren<QPushButton *>(QStringLiteral("suggestionCard"));
+    QCOMPARE(cards.size(), 4);
 
-    const QList<QPushButton *> actions =
-        window.findChildren<QPushButton *>(QStringLiteral("welcomeAction"));
-    QCOMPARE(actions.size(), 3);
-
-    // “录入知识”与“记忆面板”分别转发到窗口信号；“开始提问”聚焦输入框。
-    for (QPushButton *action : actions) {
-        if (action->text() == QStringLiteral("录入知识")) {
-            QTest::mouseClick(action, Qt::LeftButton);
-            QCOMPARE(attachSpy.count(), 1);
-        } else if (action->text() == QStringLiteral("记忆面板")) {
-            QTest::mouseClick(action, Qt::LeftButton);
-            QCOMPARE(panelSpy.count(), 1);
-        } else {
-            QCOMPARE(action->text(), QStringLiteral("开始提问"));
-        }
-    }
+    QTest::mouseClick(cards.first(), Qt::LeftButton);
+    QVERIFY(!editor->toPlainText().isEmpty());
 }
 
 void TestChatWindow::sendButtonForwardsTextAndClears()
 {
     ChatWindow window;
     InputBar *input = window.findChild<InputBar *>();
-    QLineEdit *lineEdit = input->findChild<QLineEdit *>(QStringLiteral("lineEdit"));
+    QPlainTextEdit *editor = input->findChild<QPlainTextEdit *>(
+        QStringLiteral("inputEdit"));
     QPushButton *send =
         input->findChild<QPushButton *>(QStringLiteral("sendButton"));
     QSignalSpy spy(&window, &ChatWindow::sendRequested);
 
-    lineEdit->setText(QStringLiteral("水电燃气花了多少钱？"));
+    window.setBackendState(ConnectionState::Connected);
+    editor->setPlainText(QStringLiteral("水电燃气花了多少钱？"));
     QTest::mouseClick(send, Qt::LeftButton);
 
     QCOMPARE(spy.count(), 1);
     QCOMPARE(spy.takeFirst().at(0).toString(),
              QStringLiteral("水电燃气花了多少钱？"));
-    QVERIFY(lineEdit->text().isEmpty());
+    QVERIFY(editor->toPlainText().isEmpty());
 }
 
-void TestChatWindow::restoreInputPrefillsLineEdit()
+void TestChatWindow::restoreInputPrefillsEditor()
 {
     ChatWindow window;
     InputBar *input = window.findChild<InputBar *>();
-    QLineEdit *lineEdit = input->findChild<QLineEdit *>(QStringLiteral("lineEdit"));
+    QPlainTextEdit *editor = input->findChild<QPlainTextEdit *>(
+        QStringLiteral("inputEdit"));
 
     window.restoreInput(QStringLiteral("失败后保留的输入"));
-    QCOMPARE(lineEdit->text(), QStringLiteral("失败后保留的输入"));
+    QCOMPARE(editor->toPlainText(), QStringLiteral("失败后保留的输入"));
 }
 
 QTEST_MAIN(TestChatWindow)

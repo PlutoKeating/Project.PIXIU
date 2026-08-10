@@ -83,6 +83,13 @@ void MemoryPanel::showConflictTab()
     }
 }
 
+void MemoryPanel::showSyncTab()
+{
+    if (m_tabs) {
+        m_tabs->setCurrentIndex(2);
+    }
+}
+
 void MemoryPanel::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {

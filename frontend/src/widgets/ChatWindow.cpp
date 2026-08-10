@@ -9,10 +9,12 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLoggingCategory>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QStackedWidget>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -25,6 +27,57 @@
 
 Q_LOGGING_CATEGORY(lcChat, "pixiu.chat-window")
 
+namespace {
+
+// 建议问题卡片：浅灰圆角、无强边框，左侧弱图标 + 可换行长文案；
+// hover 只做轻微背景变化（QSS），点击由 ChatWindow 接线（填入输入框）。
+class SuggestionCard : public QPushButton
+{
+public:
+    explicit SuggestionCard(const QString &text, QWidget *parent = nullptr)
+        : QPushButton(parent)
+    {
+        setObjectName(QStringLiteral("suggestionCard"));
+        setFlat(true);
+        setCursor(Qt::PointingHandCursor);
+        setAccessibleName(text);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+        QHBoxLayout *layout = new QHBoxLayout(this);
+        layout->setContentsMargins(ui::Spacing::M, 10, ui::Spacing::M, 10);
+        layout->setSpacing(10);
+        m_iconLabel = new QLabel(this);
+        m_iconLabel->setObjectName(QStringLiteral("suggestionIcon"));
+        layout->addWidget(m_iconLabel, 0, Qt::AlignTop);
+        m_textLabel = new QLabel(text, this);
+        m_textLabel->setObjectName(QStringLiteral("suggestionText"));
+        m_textLabel->setWordWrap(true);
+        m_textLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+        layout->addWidget(m_textLabel, 1);
+    }
+
+    // QPushButton 默认 sizeHint 只按自身文本/图标计算，不理会内部布局；
+    // 这里改为按文本在典型宽度下的换行高度计算，保证中/英文长文案的
+    // 建议卡片高度正确（中文 1 行、英文 2 行内均不裁剪）。
+    QSize sizeHint() const override
+    {
+        constexpr int kTextWidth = 230;
+        const int textHeight = m_textLabel
+                                   ? m_textLabel->heightForWidth(kTextWidth)
+                                   : 0;
+        const int vMargins = 20;   // 上下内边距 10px × 2
+        const int hMargins = 34;   // 左右内边距 24px + 图标/文字间距 10px
+        return QSize(kTextWidth + hMargins,
+                     qMax(52, textHeight + vMargins));
+    }
+
+private:
+    QLabel *m_iconLabel = nullptr;
+    QLabel *m_textLabel = nullptr;
+};
+
+} // namespace
+
 ChatWindow::ChatWindow(QWidget *parent)
     : QWidget(parent)
 {
@@ -35,7 +88,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     // UKUI 原生窗口装饰（阴影/圆角）；无 KYSDK 环境为 no-op。
     pixiu::decorateUkuiWindow(this, ui::Radius::Window);
 
-    // 顶栏：Logo + 标题 + 同步状态 + 设置/记忆面板/关闭。
+    // 顶栏：Logo + 应用入口（左侧），置顶/菜单/关闭（右侧），轻量留白。
     QLabel *logoLabel = new QLabel(this);
     const QIcon brandIcon(QStringLiteral(":/icons/pixiu.svg"));
     if (!brandIcon.isNull()) {
@@ -47,54 +100,62 @@ ChatWindow::ChatWindow(QWidget *parent)
     QLabel *titleLabel = new QLabel(tr("PIXIU 貔貅"), this);
     titleLabel->setObjectName(QStringLiteral("titleLabel"));
 
-    m_statusLabel = new QLabel(tr("● 离线"), this);
-    m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
-    m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
-    // 状态文案长度不同（在线/连接中/服务异常/离线），固定最小宽度，
-    // 避免状态切换时右侧按钮左右抖动（ARCHITECTURE §7.3 轻量克制）。
-    const QString states[] = {tr("● 在线"), tr("● 连接中…"),
-                              tr("● 服务异常"), tr("● 离线")};
-    int widestState = 0;
-    for (const QString &text : states) {
-        widestState = qMax(widestState,
-                           m_statusLabel->fontMetrics().horizontalAdvance(text));
-    }
-    m_statusLabel->setMinimumWidth(widestState + ui::Spacing::S);
+    const auto makeIconButton = [this](const QString &objectName,
+                                       const QString &accessibleName,
+                                       const QString &toolTip) {
+        QPushButton *button = new QPushButton(this);
+        button->setObjectName(objectName);
+        button->setAccessibleName(accessibleName);
+        button->setToolTip(toolTip);
+        button->setFlat(true);
+        button->setCursor(Qt::PointingHandCursor);
+        button->setFixedSize(28, 28);
+        button->setIconSize(QSize(16, 16));
+        return button;
+    };
 
-    m_settingsButton = new QPushButton(this);
-    m_settingsButton->setObjectName(QStringLiteral("settingsButton"));
-    m_settingsButton->setAccessibleName(tr("打开设置"));
-    m_settingsButton->setToolTip(tr("打开设置"));
-    m_settingsButton->setFlat(true);
-    m_settingsButton->setCursor(Qt::PointingHandCursor);
-    // 设置入口统一使用运行时绘制齿轮图标：颜色跟随主题 Palette，HiDPI 多倍图。
-    m_settingsButton->setIcon(ui::gearIcon(QApplication::palette()));
-    m_settingsButton->setIconSize(QSize(16, 16));
-    connect(m_settingsButton, &QPushButton::clicked,
+    m_pinButton = makeIconButton(QStringLiteral("pinButton"),
+                                 tr("置顶聊天框"),
+                                 tr("置顶"));
+    connect(m_pinButton, &QPushButton::clicked,
+            this, &ChatWindow::togglePinned);
+
+    m_moreButton = makeIconButton(QStringLiteral("moreButton"),
+                                  tr("更多"),
+                                  tr("更多"));
+    m_topBarMenu = new QMenu(this);
+    m_topBarMenu->setObjectName(QStringLiteral("topBarMenu"));
+    QAction *panelAction = m_topBarMenu->addAction(tr("记忆面板"));
+    QAction *settingsAction = m_topBarMenu->addAction(tr("设置"));
+    QAction *importAction = m_topBarMenu->addAction(tr("录入知识"));
+    QAction *syncAction = m_topBarMenu->addAction(tr("同步面板"));
+    connect(panelAction, &QAction::triggered,
+            this, &ChatWindow::openPanelRequested);
+    connect(settingsAction, &QAction::triggered,
             this, &ChatWindow::settingsRequested);
-    // 明暗主题切换时重建图标颜色（ThemeService 应用 Palette 后触发）。
-    connect(qApp, &QApplication::paletteChanged, this,
-            [this](const QPalette &palette) {
-                if (m_settingsButton) {
-                    m_settingsButton->setIcon(ui::gearIcon(palette));
-                }
-            });
+    connect(importAction, &QAction::triggered,
+            this, &ChatWindow::attachRequested);
+    connect(syncAction, &QAction::triggered,
+            this, &ChatWindow::syncPanelRequested);
+    connect(m_moreButton, &QPushButton::clicked, this, [this]() {
+        if (m_topBarMenu) {
+            m_topBarMenu->popup(m_moreButton->mapToGlobal(
+                QPoint(0, m_moreButton->height())));
+        }
+    });
 
-    QPushButton *panelButton = new QPushButton(tr("记忆"), this);
-    panelButton->setObjectName(QStringLiteral("panelButton"));
-    panelButton->setAccessibleName(tr("打开记忆面板"));
-    panelButton->setToolTip(tr("打开记忆面板"));
-    panelButton->setFlat(true);
-    panelButton->setCursor(Qt::PointingHandCursor);
-    connect(panelButton, &QPushButton::clicked, this, &ChatWindow::openPanelRequested);
-
-    QPushButton *closeButton = new QPushButton(tr("✕"), this);
+    QPushButton *closeButton = new QPushButton(this);
     closeButton->setObjectName(QStringLiteral("closeButton"));
     closeButton->setAccessibleName(tr("关闭聊天框"));
     closeButton->setToolTip(tr("关闭聊天框"));
     closeButton->setFlat(true);
     closeButton->setCursor(Qt::PointingHandCursor);
+    closeButton->setFixedSize(28, 28);
+    closeButton->setIconSize(QSize(16, 16));
     connect(closeButton, &QPushButton::clicked, this, &ChatWindow::closeRequested);
+    connect(qApp, &QApplication::paletteChanged, this,
+            [this](const QPalette &) { rebuildTopBarIcons(); });
+    rebuildTopBarIcons();
 
     QHBoxLayout *topBar = new QHBoxLayout();
     topBar->setContentsMargins(0, 0, 0, 0);
@@ -102,9 +163,8 @@ ChatWindow::ChatWindow(QWidget *parent)
     topBar->addWidget(logoLabel);
     topBar->addWidget(titleLabel);
     topBar->addStretch(1);
-    topBar->addWidget(m_statusLabel);
-    topBar->addWidget(m_settingsButton);
-    topBar->addWidget(panelButton);
+    topBar->addWidget(m_pinButton);
+    topBar->addWidget(m_moreButton);
     topBar->addWidget(closeButton);
 
     // 消息区：欢迎空态 + 消息流（消息到达后自动切换，清空后回到欢迎页）。
@@ -140,6 +200,12 @@ ChatWindow::ChatWindow(QWidget *parent)
     m_inputBar = new InputBar(this);
     connect(m_inputBar, &InputBar::sendRequested, this, &ChatWindow::sendRequested);
     connect(m_inputBar, &InputBar::attachRequested, this, &ChatWindow::attachRequested);
+    connect(m_inputBar, &InputBar::memoryPanelRequested,
+            this, &ChatWindow::openPanelRequested);
+    connect(m_inputBar, &InputBar::settingsRequested,
+            this, &ChatWindow::settingsRequested);
+    connect(m_inputBar, &InputBar::syncPanelRequested,
+            this, &ChatWindow::syncPanelRequested);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(ui::Spacing::L, ui::Spacing::M,
@@ -154,14 +220,23 @@ ChatWindow::ChatWindow(QWidget *parent)
 
 QWidget *ChatWindow::buildWelcomeView()
 {
-    QWidget *view = new QWidget(this);
+    // 欢迎页放入无边框滚动区：窗口很矮时内容可滚动，英文长文案换行不破坏布局。
+    QScrollArea *scroll = new QScrollArea(this);
+    scroll->setObjectName(QStringLiteral("welcomeScroll"));
+    scroll->setFrameShape(QFrame::NoFrame);
+    scroll->setWidgetResizable(true);
+    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scroll->viewport()->setAutoFillBackground(false);
+
+    QWidget *view = new QWidget(scroll);
     view->setObjectName(QStringLiteral("welcomeView"));
     view->setAccessibleName(tr("PIXIU 欢迎页"));
 
     QLabel *logo = new QLabel(view);
     const QIcon brandIcon(QStringLiteral(":/icons/pixiu.svg"));
     if (!brandIcon.isNull()) {
-        logo->setPixmap(brandIcon.pixmap(QSize(52, 52)));
+        logo->setPixmap(brandIcon.pixmap(QSize(48, 48)));
     }
     logo->setAlignment(Qt::AlignCenter);
     logo->setAccessibleName(tr("PIXIU 标识"));
@@ -175,57 +250,67 @@ QWidget *ChatWindow::buildWelcomeView()
     subtitle->setAlignment(Qt::AlignCenter);
     subtitle->setWordWrap(true);
 
-    QPushButton *askButton = new QPushButton(tr("开始提问"), view);
-    askButton->setObjectName(QStringLiteral("welcomeAction"));
-    askButton->setAccessibleName(tr("开始提问"));
-    askButton->setCursor(Qt::PointingHandCursor);
-    connect(askButton, &QPushButton::clicked, this, [this]() {
-        if (m_inputBar) {
-            m_inputBar->focusInput();
+    // 建议问题区域：真实能力对应的问题，点击填入输入框（可编辑后发送）。
+    QLabel *suggestLabel = new QLabel(tr("您可以问我："), view);
+    suggestLabel->setObjectName(QStringLiteral("suggestLabel"));
+
+    const QStringList suggestions = {
+        tr("我们家的水电燃气花了多少钱？"),
+        tr("我最近记下了哪些知识点？"),
+        tr("我的偏好设置有哪些？"),
+        tr("忘记上个月的家庭支出清单"),
+    };
+    QVBoxLayout *cardsLayout = new QVBoxLayout();
+    cardsLayout->setContentsMargins(0, 0, 0, 0);
+    cardsLayout->setSpacing(ui::Spacing::S);
+    for (const QString &question : suggestions) {
+        SuggestionCard *card = new SuggestionCard(question, view);
+        connect(card, &QPushButton::clicked, this, [this, question]() {
+            if (m_inputBar) {
+                m_inputBar->setInputText(question);
+            }
+        });
+        cardsLayout->addWidget(card);
+        m_suggestionCards.append(card);
+    }
+
+    const QColor iconColor = QApplication::palette().color(QPalette::Mid);
+    for (QPushButton *card : m_suggestionCards) {
+        if (QLabel *icon = card->findChild<QLabel *>(
+                QStringLiteral("suggestionIcon"))) {
+            icon->setPixmap(ui::chatIcon(iconColor).pixmap(QSize(14, 14)));
+        }
+    }
+    connect(qApp, &QApplication::paletteChanged, this, [this](const QPalette &) {
+        const QColor color = QApplication::palette().color(QPalette::Mid);
+        for (QPushButton *card : m_suggestionCards) {
+            if (QLabel *icon = card->findChild<QLabel *>(
+                    QStringLiteral("suggestionIcon"))) {
+                icon->setPixmap(ui::chatIcon(color).pixmap(QSize(14, 14)));
+            }
         }
     });
-
-    QPushButton *importButton = new QPushButton(tr("录入知识"), view);
-    importButton->setObjectName(QStringLiteral("welcomeAction"));
-    importButton->setAccessibleName(tr("录入知识"));
-    importButton->setCursor(Qt::PointingHandCursor);
-    connect(importButton, &QPushButton::clicked,
-            this, &ChatWindow::attachRequested);
-
-    QPushButton *panelButton = new QPushButton(tr("记忆面板"), view);
-    panelButton->setObjectName(QStringLiteral("welcomeAction"));
-    panelButton->setAccessibleName(tr("打开记忆面板"));
-    panelButton->setCursor(Qt::PointingHandCursor);
-    connect(panelButton, &QPushButton::clicked,
-            this, &ChatWindow::openPanelRequested);
-
-    QHBoxLayout *actions = new QHBoxLayout();
-    actions->setContentsMargins(0, 0, 0, 0);
-    actions->setSpacing(ui::Spacing::S);
-    actions->addStretch(1);
-    actions->addWidget(askButton);
-    actions->addWidget(importButton);
-    actions->addWidget(panelButton);
-    actions->addStretch(1);
 
     QLabel *hint = new QLabel(tr("按 Ctrl+Alt+P 随时唤起"), view);
     hint->setObjectName(QStringLiteral("welcomeHint"));
     hint->setAlignment(Qt::AlignCenter);
 
     QVBoxLayout *layout = new QVBoxLayout(view);
-    layout->setContentsMargins(ui::Spacing::XL, ui::Spacing::XL,
-                               ui::Spacing::XL, ui::Spacing::L);
-    layout->addStretch(1);
+    layout->setContentsMargins(ui::Spacing::M, ui::Spacing::XL,
+                               ui::Spacing::M, ui::Spacing::L);
     layout->addWidget(logo);
-    layout->addSpacing(ui::Spacing::M);
+    layout->addSpacing(ui::Spacing::S);
     layout->addWidget(title);
     layout->addSpacing(ui::Spacing::XS);
     layout->addWidget(subtitle);
-    layout->addSpacing(ui::Spacing::XL);
-    layout->addLayout(actions);
+    layout->addSpacing(ui::Spacing::L);
+    layout->addWidget(suggestLabel);
+    layout->addSpacing(ui::Spacing::XS);
+    layout->addLayout(cardsLayout);
     layout->addStretch(1);
     layout->addWidget(hint);
-    return view;
+    scroll->setWidget(view);
+    return scroll;
 }
 
 MessageList *ChatWindow::messageList() const
@@ -247,29 +332,8 @@ void ChatWindow::showAndFocus()
 
 void ChatWindow::setBackendState(ConnectionState state)
 {
-    switch (state) {
-    case ConnectionState::Connected:
-        m_statusLabel->setText(tr("● 在线"));
-        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Success));
-        m_inputBar->setEnabled(true);
-        break;
-    case ConnectionState::Connecting:
-        m_statusLabel->setText(tr("● 连接中…"));
-        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Warning));
-        m_inputBar->setEnabled(false);
-        break;
-    case ConnectionState::Error:
-        m_statusLabel->setText(tr("● 服务异常"));
-        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Error));
-        m_inputBar->setEnabled(false);
-        break;
-    case ConnectionState::Disconnected:
-    default:
-        m_statusLabel->setText(tr("● 离线"));
-        m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
-        m_inputBar->setEnabled(false);
-        break;
-    }
+    // 后端状态显示在输入区左下角 badge（InputBar 内部处理文案/颜色/可用性）。
+    m_inputBar->setBackendState(state);
 }
 
 void ChatWindow::restoreInput(const QString &text)
@@ -444,6 +508,31 @@ void ChatWindow::animateOpacity(qreal target)
     m_opacityAnimation->setStartValue(windowOpacity());
     m_opacityAnimation->setEndValue(target);
     m_opacityAnimation->start();
+}
+
+void ChatWindow::rebuildTopBarIcons()
+{
+    const QColor color = QApplication::palette().color(QPalette::Text);
+    if (m_pinButton) {
+        m_pinButton->setIcon(ui::pinIcon(color, m_pinned));
+    }
+    if (m_moreButton) {
+        m_moreButton->setIcon(ui::moreIcon(color));
+    }
+    if (QPushButton *close = findChild<QPushButton *>(
+            QStringLiteral("closeButton"))) {
+        close->setIcon(ui::closeIcon(color));
+    }
+}
+
+void ChatWindow::togglePinned()
+{
+    m_pinned = !m_pinned;
+    setWindowFlag(Qt::WindowStaysOnTopHint, m_pinned);
+    show();
+    rebuildTopBarIcons();
+    m_pinButton->setToolTip(m_pinned ? tr("取消置顶") : tr("置顶"));
+    m_pinButton->setAccessibleName(m_pinned ? tr("取消置顶") : tr("置顶聊天框"));
 }
 
 ChatWindow::ResizeEdge ChatWindow::resizeEdgeAt(const QPoint &pos) const

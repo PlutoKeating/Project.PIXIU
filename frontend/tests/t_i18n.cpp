@@ -19,7 +19,7 @@ void TestI18n::englishTranslationLoadsAndApplies()
              "embedded en_US translation must be present in qrc");
     QCoreApplication::installTranslator(&translator);
 
-    QCOMPARE(QCoreApplication::translate("ChatWindow", "记忆"),
+    QCOMPARE(QCoreApplication::translate("InputBar", "记忆"),
              QStringLiteral("Memory"));
     QCOMPARE(QCoreApplication::translate("InputBar", "发送"),
              QStringLiteral("Send"));
@@ -31,8 +31,18 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("MessageList", "录入知识"),
              QStringLiteral("Import knowledge"));
-    QCOMPARE(QCoreApplication::translate("ChatWindow", "打开记忆面板"),
+    QCOMPARE(QCoreApplication::translate("InputBar", "打开记忆面板"),
              QStringLiteral("Open memory panel"));
+    QCOMPARE(QCoreApplication::translate("ChatWindow", "置顶"),
+             QStringLiteral("Pin to top"));
+    QCOMPARE(QCoreApplication::translate("ChatWindow", "您可以问我："),
+             QStringLiteral("You can ask me:"));
+    QCOMPARE(QCoreApplication::translate("ChatWindow", "同步面板"),
+             QStringLiteral("Sync panel"));
+    QCOMPARE(QCoreApplication::translate("InputBar", "更多"),
+             QStringLiteral("More"));
+    QCOMPARE(QCoreApplication::translate("InputBar", "打开同步面板"),
+             QStringLiteral("Open sync panel"));
     QCOMPARE(QCoreApplication::translate("InputBar", "录入图片或文件"),
              QStringLiteral("Import image or file"));
     QCOMPARE(QCoreApplication::translate("FloatingBall", "打开聊天框"),
@@ -41,7 +51,7 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Quit"));
     QCOMPARE(QCoreApplication::translate("FloatingBall", "设置"),
              QStringLiteral("Settings"));
-    QCOMPARE(QCoreApplication::translate("ChatWindow", "打开设置"),
+    QCOMPARE(QCoreApplication::translate("InputBar", "打开设置"),
              QStringLiteral("Open settings"));
     QCOMPARE(QCoreApplication::translate("SettingsDialog", "界面语言"),
              QStringLiteral("Language"));

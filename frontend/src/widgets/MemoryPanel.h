@@ -29,6 +29,8 @@ public:
     void showAndFocus();
     // 切换到冲突 Tab（conflict_detected 事件到达且面板可见时使用）。
     void showConflictTab();
+    // 切换到同步 Tab（chip/菜单“同步面板”入口使用）。
+    void showSyncTab();
 
     // 更新冲突审计 Tab 内容（来自 GET /conflicts）。
     void setConflicts(const QJsonArray &conflicts);

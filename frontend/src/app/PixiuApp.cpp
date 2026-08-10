@@ -172,6 +172,13 @@ bool PixiuApp::start()
         m_memoryPanel->showAndFocus();
     };
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, openMemoryPanel);
+    connect(m_chatWindow, &ChatWindow::syncPanelRequested, this, [this]() {
+        if (m_syncController) {
+            m_syncController->refresh();
+        }
+        m_memoryPanel->showSyncTab();
+        m_memoryPanel->showAndFocus();
+    });
     connect(m_floatingBall, &FloatingBall::openPanelRequested, this, openMemoryPanel);
     connect(m_chatWindow, &ChatWindow::settingsRequested,
             this, &PixiuApp::openSettings);
