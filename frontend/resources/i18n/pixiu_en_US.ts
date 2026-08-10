@@ -276,6 +276,10 @@ This action cannot be undone.</translation>
         <translation>Preference ID (e.g. pref_…)</translation>
     </message>
     <message>
+        <source>偏好 ID 输入框</source>
+        <translation>Preference ID input</translation>
+    </message>
+    <message>
         <source>加载历史</source>
         <translation>Load history</translation>
     </message>

@@ -24,6 +24,8 @@ private slots:
     void panelButtonEmitsOpenPanelRequested();
     void settingsButtonEmitsSettingsRequested();
     void closeButtonEmitsCloseRequested();
+    void buttonsHaveToolTips();
+    void statusLabelHasStableMinimumWidth();
     void dragMovesWindowAndEmitsMoved();
     void buttonsHaveAccessibleNames();
     void sendButtonForwardsTextAndClears();
@@ -114,6 +116,41 @@ void TestChatWindow::closeButtonEmitsCloseRequested()
     QVERIFY(button != nullptr);
     QTest::mouseClick(button, Qt::LeftButton);
     QCOMPARE(spy.count(), 1);
+}
+
+void TestChatWindow::buttonsHaveToolTips()
+{
+    ChatWindow window;
+    QPushButton *settings =
+        window.findChild<QPushButton *>(QStringLiteral("settingsButton"));
+    QPushButton *panel =
+        window.findChild<QPushButton *>(QStringLiteral("panelButton"));
+    QPushButton *close =
+        window.findChild<QPushButton *>(QStringLiteral("closeButton"));
+    QVERIFY(settings != nullptr);
+    QVERIFY(panel != nullptr);
+    QVERIFY(close != nullptr);
+    QVERIFY(!settings->toolTip().isEmpty());
+    QVERIFY(!panel->toolTip().isEmpty());
+    QVERIFY(!close->toolTip().isEmpty());
+}
+
+void TestChatWindow::statusLabelHasStableMinimumWidth()
+{
+    ChatWindow window;
+    QLabel *status = window.findChild<QLabel *>(QStringLiteral("statusLabel"));
+    QVERIFY(status != nullptr);
+
+    // 最小宽度必须足以容纳最长状态文案，避免状态切换时顶栏布局抖动。
+    const int widest = qMax(
+        qMax(status->fontMetrics().horizontalAdvance(QStringLiteral("● 在线")),
+             status->fontMetrics().horizontalAdvance(
+                 QStringLiteral("● 连接中…"))),
+        qMax(status->fontMetrics().horizontalAdvance(
+                 QStringLiteral("● 服务异常")),
+             status->fontMetrics().horizontalAdvance(QStringLiteral("● 离线"))));
+    QVERIFY(status->minimumWidth() >= widest);
+    QVERIFY(status->minimumWidth() > 0);
 }
 
 void TestChatWindow::dragMovesWindowAndEmitsMoved()

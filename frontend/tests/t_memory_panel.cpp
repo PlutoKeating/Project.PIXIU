@@ -1,6 +1,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QLabel>
+#include <QLayout>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
@@ -30,6 +31,8 @@ private slots:
     void setPreferenceHistoryLoadingShowsLoadingState();
     void setPreferenceHistoryErrorShowsErrorAndRetry();
     void setPreferenceHistorySuccessHidesErrorState();
+    void prefInputHasAccessibleName();
+    void panelMarginsUseSpacingToken();
     void syncTabHasPairButtonOpensDialog();
     void showConflictTabSelectsTab();
     void setSyncStatusUpdatesLabel();
@@ -300,6 +303,26 @@ void TestMemoryPanel::setPreferenceHistorySuccessHidesErrorState()
     QVERIFY(retryButton != nullptr);
     QVERIFY(errorLabel->isHidden());
     QVERIFY(retryButton->isHidden());
+}
+
+void TestMemoryPanel::prefInputHasAccessibleName()
+{
+    MemoryPanel panel;
+    QLineEdit *input = panel.findChild<QLineEdit *>();
+    QVERIFY(input != nullptr);
+    QVERIFY(!input->accessibleName().isEmpty());
+}
+
+void TestMemoryPanel::panelMarginsUseSpacingToken()
+{
+    MemoryPanel panel;
+    QLayout *layout = panel.layout();
+    QVERIFY(layout != nullptr);
+    const QMargins margins = layout->contentsMargins();
+    QCOMPARE(margins.left(), 8);
+    QCOMPARE(margins.top(), 8);
+    QCOMPARE(margins.right(), 8);
+    QCOMPARE(margins.bottom(), 8);
 }
 
 void TestMemoryPanel::syncTabHasPairButtonOpensDialog()

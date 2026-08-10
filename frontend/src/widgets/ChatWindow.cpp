@@ -38,10 +38,21 @@ ChatWindow::ChatWindow(QWidget *parent)
     m_statusLabel = new QLabel(tr("● 离线"), this);
     m_statusLabel->setObjectName(QStringLiteral("statusLabel"));
     m_statusLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
+    // 状态文案长度不同（在线/连接中/服务异常/离线），固定最小宽度，
+    // 避免状态切换时右侧按钮左右抖动（ARCHITECTURE §7.3 轻量克制）。
+    const QString states[] = {tr("● 在线"), tr("● 连接中…"),
+                              tr("● 服务异常"), tr("● 离线")};
+    int widestState = 0;
+    for (const QString &text : states) {
+        widestState = qMax(widestState,
+                           m_statusLabel->fontMetrics().horizontalAdvance(text));
+    }
+    m_statusLabel->setMinimumWidth(widestState + ui::Spacing::S);
 
     m_settingsButton = new QPushButton(this);
     m_settingsButton->setObjectName(QStringLiteral("settingsButton"));
     m_settingsButton->setAccessibleName(tr("打开设置"));
+    m_settingsButton->setToolTip(tr("打开设置"));
     m_settingsButton->setFlat(true);
     m_settingsButton->setCursor(Qt::PointingHandCursor);
     // 设置入口统一使用运行时绘制齿轮图标：颜色跟随主题 Palette，HiDPI 多倍图。
@@ -60,6 +71,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     QPushButton *panelButton = new QPushButton(tr("记忆"), this);
     panelButton->setObjectName(QStringLiteral("panelButton"));
     panelButton->setAccessibleName(tr("打开记忆面板"));
+    panelButton->setToolTip(tr("打开记忆面板"));
     panelButton->setFlat(true);
     panelButton->setCursor(Qt::PointingHandCursor);
     connect(panelButton, &QPushButton::clicked, this, &ChatWindow::openPanelRequested);
@@ -67,6 +79,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     QPushButton *closeButton = new QPushButton(tr("✕"), this);
     closeButton->setObjectName(QStringLiteral("closeButton"));
     closeButton->setAccessibleName(tr("关闭聊天框"));
+    closeButton->setToolTip(tr("关闭聊天框"));
     closeButton->setFlat(true);
     closeButton->setCursor(Qt::PointingHandCursor);
     connect(closeButton, &QPushButton::clicked, this, &ChatWindow::closeRequested);

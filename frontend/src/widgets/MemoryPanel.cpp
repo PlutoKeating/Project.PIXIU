@@ -57,7 +57,8 @@ MemoryPanel::MemoryPanel(QWidget *parent)
     m_tabs->addTab(createSyncTab(), tr("同步"));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setContentsMargins(ui::Spacing::S, ui::Spacing::S,
+                               ui::Spacing::S, ui::Spacing::S);
     layout->addWidget(m_tabs);
 }
 
@@ -330,6 +331,7 @@ QWidget *MemoryPanel::createPreferenceTab()
     m_prefHeaderLabel->setFont(ui::Font::title());
 
     m_prefIdInput = new QLineEdit(page);
+    m_prefIdInput->setAccessibleName(tr("偏好 ID 输入框"));
     m_prefIdInput->setPlaceholderText(tr("偏好 ID（如 pref_…）"));
     QPushButton *loadButton = new QPushButton(tr("加载历史"), page);
     connect(loadButton, &QPushButton::clicked, this, [this]() {
