@@ -136,6 +136,16 @@ def normalize_prediction(case: EvalCase, value: Any) -> dict[str, Any]:
         "knowledge_ids": _unique_strings(knowledge, field="knowledge_ids"),
         "evidence_ids": _unique_strings(evidence, field="evidence_ids"),
     }
+    scopes = payload.get("knowledge_scopes")
+    if scopes is not None:
+        if not isinstance(scopes, Mapping):
+            raise EvalExecutionError("knowledge_scopes must be a mapping")
+        normalized_scopes: dict[str, str] = {}
+        for key, value in scopes.items():
+            if not isinstance(key, str) or not isinstance(value, str) or not value:
+                raise EvalExecutionError("knowledge_scopes must map string ids to non-empty scope strings")
+            normalized_scopes[key] = value
+        result["knowledge_scopes"] = normalized_scopes
     if "aggregate_amount" in payload:
         amount = payload["aggregate_amount"]
         if isinstance(amount, bool) or not isinstance(amount, (int, float)):

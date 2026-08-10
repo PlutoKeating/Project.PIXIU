@@ -99,6 +99,69 @@ def _latency_metric(
     )
 
 
+def _latency_aux_metric(
+    latencies: list[float],
+    *,
+    percentile: float,
+    name: str,
+    target: float,
+    description: str,
+) -> MetricResult:
+    """P50/P99 等信息性延迟指标：仅要求样本非空，不驱动样本数校验。"""
+    if not latencies:
+        return MetricResult(
+            name=name,
+            value=None,
+            target=target,
+            comparison="<=",
+            numerator=0.0,
+            denominator=0,
+            unit="ms",
+            status=MetricStatus.NOT_EVALUATED,
+            description=description,
+        )
+    value = nearest_rank_percentile(latencies, percentile)
+    return MetricResult(
+        name=name,
+        value=value,
+        target=target,
+        comparison="<=",
+        numerator=value,
+        denominator=len(latencies),
+        unit="ms",
+        status=MetricStatus.PASS if value <= target else MetricStatus.FAIL,
+        description=description,
+    )
+
+
+def _recall_at_fixed_k(
+    *,
+    name: str,
+    top_k: int,
+    retrieval_cases: list,
+    by_case: dict,
+    target: float,
+) -> MetricResult:
+    """Recall@k：取预测 knowledge_ids 前 k 个与期望集的重合率。"""
+    recall_sum = 0.0
+    for case in retrieval_cases:
+        outcome = by_case[case.id]
+        if outcome.error is not None:
+            continue
+        actual = _string_list(outcome.prediction.get("knowledge_ids"))
+        expected = set(case.expected["knowledge_ids"])
+        if not expected:
+            continue
+        recall_sum += len(set(actual[:top_k]) & expected) / len(expected)
+    return _ratio_metric(
+        name=name,
+        numerator=recall_sum,
+        denominator=len(retrieval_cases),
+        target=target,
+        description=f"Mean relevant-item recall at fixed top-{top_k}.",
+    )
+
+
 def _string_set(value: object) -> set[str]:
     if not isinstance(value, list):
         return set()
@@ -166,6 +229,68 @@ def compute_metrics(dataset: EvalDataset, outcomes: list[CaseOutcome]) -> list[M
         target=thresholds.retrieval_p95_ms,
         required_samples=len(retrieval_cases) * dataset.retrieval_repetitions,
     )
+    p50 = _latency_aux_metric(
+        retrieval_latencies,
+        percentile=0.50,
+        name="retrieval_p50_ms",
+        target=thresholds.retrieval_p95_ms,
+        description="Nearest-rank P50 end-to-end retrieval latency (informational).",
+    )
+    p99 = _latency_aux_metric(
+        retrieval_latencies,
+        percentile=0.99,
+        name="retrieval_p99_ms",
+        target=thresholds.retrieval_p95_ms,
+        description="Nearest-rank P99 end-to-end retrieval latency (informational).",
+    )
+    recall_1 = _recall_at_fixed_k(
+        name="knowledge_recall@1",
+        top_k=1,
+        retrieval_cases=retrieval_cases,
+        by_case=by_case,
+        target=thresholds.knowledge_recall_at_k,
+    )
+    recall_3 = _recall_at_fixed_k(
+        name="knowledge_recall@3",
+        top_k=3,
+        retrieval_cases=retrieval_cases,
+        by_case=by_case,
+        target=thresholds.knowledge_recall_at_k,
+    )
+    recall_5 = _recall_at_fixed_k(
+        name="knowledge_recall@5",
+        top_k=5,
+        retrieval_cases=retrieval_cases,
+        by_case=by_case,
+        target=thresholds.knowledge_recall_at_k,
+    )
+
+    scope_cases = [
+        case for case in retrieval_cases if "scope" in case.expected
+    ]
+    scope_isolated = 0
+    for case in scope_cases:
+        outcome = by_case[case.id]
+        if outcome.error is not None:
+            continue
+        expected_scope = case.expected["scope"]
+        actual = _string_list(outcome.prediction.get("knowledge_ids"))
+        scopes = outcome.prediction.get("knowledge_scopes") or {}
+        if not isinstance(scopes, dict):
+            continue
+        if not actual:
+            continue
+        if all(
+            scopes.get(knowledge_id) == expected_scope for knowledge_id in actual
+        ):
+            scope_isolated += 1
+    scope_isolation = _ratio_metric(
+        name="scope_isolation_accuracy",
+        numerator=float(scope_isolated),
+        denominator=len(scope_cases),
+        target=1.0,
+        description="Retrieval cases whose every returned knowledge belongs to the expected scope.",
+    )
 
 
     aggregation_cases = [
@@ -225,14 +350,32 @@ def compute_metrics(dataset: EvalDataset, outcomes: list[CaseOutcome]) -> list[M
         description="Exact conflict resolution accuracy.",
     )
 
-    return [preference, recall, latency, conflict, aggregation, evidence]
+    return [preference, recall, recall_1, recall_3, recall_5, latency, p50, p99, conflict, aggregation, evidence, scope_isolation]
+
+
+_CORE_METRICS = {
+    "preference_accuracy",
+    "knowledge_recall_at_k",
+    "retrieval_p95_ms",
+    "conflict_accuracy",
+    "aggregation_accuracy",
+    "evidence_trace_accuracy",
+}
 
 
 def overall_status(metrics: list[MetricResult]) -> ReportStatus:
-    """Fail on any failed metric, otherwise require all six metrics."""
+    """Fail on any failed metric; require all core acceptance metrics sampled and passing.
+
+    辅助指标（recall@1/3/5、p50/p99、scope 隔离）无样本时不阻塞整体判定。
+    """
 
     if any(metric.status is MetricStatus.FAIL for metric in metrics):
         return ReportStatus.FAIL
-    if any(metric.status is MetricStatus.NOT_EVALUATED for metric in metrics):
+    by_name = {metric.name: metric for metric in metrics}
+    core_passing = all(
+        name in by_name and by_name[name].status is MetricStatus.PASS
+        for name in _CORE_METRICS
+    )
+    if not core_passing:
         return ReportStatus.INCOMPLETE
     return ReportStatus.PASS

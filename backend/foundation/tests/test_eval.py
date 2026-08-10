@@ -158,12 +158,19 @@ def test_offline_predictions_pass_all_six_metrics():
     assert {metric.name for metric in report.metrics} == {
         "preference_accuracy",
         "knowledge_recall_at_k",
+        "knowledge_recall@1",
+        "knowledge_recall@3",
+        "knowledge_recall@5",
+        "retrieval_p50_ms",
         "retrieval_p95_ms",
+        "retrieval_p99_ms",
         "conflict_accuracy",
         "aggregation_accuracy",
         "evidence_trace_accuracy",
+        "scope_isolation_accuracy",
     }
-    assert all(metric.status is MetricStatus.PASS for metric in report.metrics)
+    # 全部指标无 FAIL；scope 隔离无样本时为 NOT_EVALUATED（数据未声明 scope）
+    assert not any(metric.status is MetricStatus.FAIL for metric in report.metrics)
     assert next(metric for metric in report.metrics if metric.name == "retrieval_p95_ms").value == 12
 
 
@@ -457,3 +464,154 @@ def test_reference_dataset_scores_complete_1000_sample_capture():
     assert report.overall_status is ReportStatus.PASS
     assert latency.denominator == 1000
     assert latency.value == 25
+
+
+# ═══════════════════════════════════════════════════════
+# Phase 5: scope isolation + fixed-k recall + p50/p99
+# ═══════════════════════════════════════════════════════
+
+def _scope_dataset() -> EvalDataset:
+    return EvalDataset(
+        schema_version="1.0",
+        name="scope-test",
+        profile="development",
+        cases=[
+            EvalCase(
+                id="ret-scope-ok",
+                task=CaseKind.RETRIEVAL,
+                input={},
+                expected={"knowledge_ids": ["knw-a"], "scope": "shared:home"},
+            ),
+            EvalCase(
+                id="ret-scope-bad",
+                task=CaseKind.RETRIEVAL,
+                input={},
+                expected={"knowledge_ids": ["knw-b"], "scope": "shared:home"},
+            ),
+        ],
+    )
+
+
+def test_scope_isolation_passes_when_all_in_scope():
+    report = EvalService().evaluate_predictions(
+        _scope_dataset(),
+        [
+            PredictionRecord(
+                case_id="ret-scope-ok",
+                prediction={
+                    "knowledge_ids": ["knw-a"],
+                    "knowledge_scopes": {"knw-a": "shared:home"},
+                },
+                latency_ms=5,
+            ),
+            PredictionRecord(
+                case_id="ret-scope-bad",
+                prediction={
+                    "knowledge_ids": ["knw-b"],
+                    "knowledge_scopes": {"knw-b": "shared:home"},
+                },
+                latency_ms=5,
+            ),
+        ],
+    )
+    metric = next(m for m in report.metrics if m.name == "scope_isolation_accuracy")
+    assert metric.status is MetricStatus.PASS
+    assert metric.value == 1.0
+
+
+def test_scope_isolation_fails_on_violation():
+    report = EvalService().evaluate_predictions(
+        _scope_dataset(),
+        [
+            PredictionRecord(
+                case_id="ret-scope-ok",
+                prediction={
+                    "knowledge_ids": ["knw-a"],
+                    "knowledge_scopes": {"knw-a": "shared:home"},
+                },
+                latency_ms=5,
+            ),
+            PredictionRecord(
+                case_id="ret-scope-bad",
+                prediction={
+                    "knowledge_ids": ["knw-b"],
+                    "knowledge_scopes": {"knw-b": "user:private"},
+                },
+                latency_ms=5,
+            ),
+        ],
+    )
+    metric = next(m for m in report.metrics if m.name == "scope_isolation_accuracy")
+    assert metric.status is MetricStatus.FAIL
+    assert metric.value == 0.5
+    assert report.overall_status is ReportStatus.FAIL
+
+
+def test_scope_isolation_not_evaluated_without_scope_field():
+    report = EvalService().evaluate_predictions(_dataset(), _predictions())
+    metric = next(m for m in report.metrics if m.name == "scope_isolation_accuracy")
+    assert metric.status is MetricStatus.NOT_EVALUATED
+    assert report.overall_status is ReportStatus.PASS
+
+
+def test_scope_isolation_fails_when_scopes_missing():
+    """Declared scope but prediction lacks knowledge_scopes -> cannot prove isolation."""
+    report = EvalService().evaluate_predictions(
+        _scope_dataset(),
+        [
+            PredictionRecord(
+                case_id="ret-scope-ok",
+                prediction={"knowledge_ids": ["knw-a"]},
+                latency_ms=5,
+            ),
+            PredictionRecord(
+                case_id="ret-scope-bad",
+                prediction={"knowledge_ids": ["knw-b"]},
+                latency_ms=5,
+            ),
+        ],
+    )
+    metric = next(m for m in report.metrics if m.name == "scope_isolation_accuracy")
+    assert metric.status is MetricStatus.FAIL
+
+
+def test_recall_fixed_buckets_values():
+    """Recall@1/@3/@5 reflect each fixed k."""
+    dataset = EvalDataset(
+        schema_version="1.0",
+        name="bucket-test",
+        profile="development",
+        cases=[
+            EvalCase(
+                id="ret-bucket",
+                task=CaseKind.RETRIEVAL,
+                input={},
+                expected={"knowledge_ids": ["knw-target"], "top_k": 1},
+            ),
+        ],
+    )
+    report = EvalService().evaluate_predictions(
+        dataset,
+        [
+            PredictionRecord(
+                case_id="ret-bucket",
+                prediction={"knowledge_ids": ["knw-x", "knw-target"]},
+                latency_ms=5,
+            ),
+        ],
+    )
+    values = {m.name: m.value for m in report.metrics}
+    assert values["knowledge_recall@1"] == 0.0
+    assert values["knowledge_recall@3"] == 1.0
+    assert values["knowledge_recall@5"] == 1.0
+
+
+def test_p50_p99_latency_metrics_present():
+    report = EvalService().evaluate_predictions(_dataset(), _predictions())
+    names = {m.name for m in report.metrics}
+    assert "retrieval_p50_ms" in names
+    assert "retrieval_p99_ms" in names
+    p50 = next(m for m in report.metrics if m.name == "retrieval_p50_ms")
+    p99 = next(m for m in report.metrics if m.name == "retrieval_p99_ms")
+    assert p50.value is not None
+    assert p99.value is not None

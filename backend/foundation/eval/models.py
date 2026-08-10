@@ -78,7 +78,7 @@ class EvalCase(BaseModel):
                 required={"knowledge_ids"},
                 allowed={
                     "knowledge_ids", "evidence_ids", "aggregate_amount",
-                    "amount_tolerance", "top_k",
+                    "amount_tolerance", "top_k", "scope",
                 },
             )
             self._validate_string_list("knowledge_ids", required=True)
@@ -86,6 +86,10 @@ class EvalCase(BaseModel):
             top_k = self.expected.get("top_k", 1)
             if isinstance(top_k, bool) or not isinstance(top_k, int) or not 1 <= top_k <= 100:
                 raise ValueError("retrieval expected.top_k must be an integer from 1 to 100")
+            if "scope" in self.expected:
+                scope = self.expected["scope"]
+                if not isinstance(scope, str) or not scope:
+                    raise ValueError("retrieval expected.scope must be a non-empty string")
             if "aggregate_amount" in self.expected:
                 self._validate_number("aggregate_amount")
                 tolerance = self.expected.get("amount_tolerance", 0.01)
@@ -217,3 +221,50 @@ class EvalReport(BaseModel):
     overall_status: ReportStatus
     metrics: list[MetricResult]
     outcomes: list[CaseOutcome]
+
+
+# ══════════════════════════════════════════════════════════
+# Phase 5：性能 / 同步基准模型
+# ══════════════════════════════════════════════════════════
+
+RuntimeType = Literal["stub", "kylin"]
+
+
+class BenchmarkMetric(BaseModel):
+    """One benchmark score (system resource or sync behavior)."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str
+    value: float | None
+    target: float
+    comparison: Literal[">=", "<="]
+    unit: Literal["ratio", "ms", "bytes", "count"]
+    status: MetricStatus
+    description: str
+    sample_count: int = 0
+
+
+class SyncRound(BaseModel):
+    """One convergence round in the sync benchmark."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    round: int
+    ops: int
+    converged: bool
+    elapsed_ms: float = Field(ge=0.0)
+    error: str | None = None
+
+
+class BenchmarkReport(BaseModel):
+    """Complete benchmark result for sync and system resources."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["1.0"] = "1.0"
+    runtime: RuntimeType
+    generated_at: int
+    overall_status: ReportStatus
+    metrics: list[BenchmarkMetric]
+    sync_rounds: list[SyncRound] = Field(default_factory=list, max_length=10_000)
