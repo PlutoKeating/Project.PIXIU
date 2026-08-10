@@ -447,6 +447,18 @@ This action cannot be undone.</translation>
         <source>刷新节点与同步状态</source>
         <translation>Refresh peers and sync status</translation>
     </message>
+    <message>
+        <source>提取偏好</source>
+        <translation>Extract preferences</translation>
+    </message>
+    <message>
+        <source>从最近录入提取偏好</source>
+        <translation>Extract preferences from the latest import</translation>
+    </message>
+    <message>
+        <source>已提取 %1 条偏好</source>
+        <translation>%1 preference(s) extracted</translation>
+    </message>
 </context>
 <context>
     <name>MessageList</name>
@@ -512,6 +524,14 @@ This action cannot be undone.</translation>
     <message>
         <source>完成配对</source>
         <translation>Complete Pairing</translation>
+    </message>
+    <message>
+        <source>配对令牌输入框</source>
+        <translation>Pairing token input</translation>
+    </message>
+    <message>
+        <source>另一台设备生成的配对令牌（必填）</source>
+        <translation>Pairing token generated on the other device (required)</translation>
     </message>
 </context>
 <context>
@@ -617,6 +637,14 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>同步事件</source>
         <translation>Sync event</translation>
+    </message>
+    <message>
+        <source>尚无已录入的记忆，请先在聊天框录入一条</source>
+        <translation>No imported memory yet. Please import one from the chat window first.</translation>
+    </message>
+    <message>
+        <source>偏好提取失败（%1）：%2</source>
+        <translation>Preference extraction failed (%1): %2</translation>
     </message>
 </context>
 <context>

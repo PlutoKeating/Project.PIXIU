@@ -65,6 +65,8 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "正在加载…"),
              QStringLiteral("Loading…"));
+    QCOMPARE(QCoreApplication::translate("MemoryPanel", "提取偏好"),
+             QStringLiteral("Extract preferences"));
     QCOMPARE(QCoreApplication::translate("PixiuApp", "冲突加载失败（%1）：%2"),
              QStringLiteral("Conflict load failed (%1): %2"));
     QCOMPARE(QCoreApplication::translate(
