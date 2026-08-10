@@ -1,5 +1,6 @@
 """PIXIU quantitative evaluation framework."""
 
+from .benchmark import SyncBenchmark, SystemBenchmark
 from .dataset import EvalInputError, load_dataset, load_predictions
 from .eval import (
     EvalConfigurationError,
@@ -12,6 +13,8 @@ from .eval import (
 )
 from .metrics import compute_metrics, nearest_rank_percentile
 from .models import (
+    BenchmarkMetric,
+    BenchmarkReport,
     CaseKind,
     CaseOutcome,
     EvalCase,
@@ -22,14 +25,48 @@ from .models import (
     MetricStatus,
     PredictionRecord,
     ReportStatus,
+    SyncRound,
 )
 from .reference import build_reference_dataset
+from .report import render_benchmark_markdown, write_benchmark_report
+from .service import BenchmarkService
 
 __all__ = [
-    "CaseKind", "CaseOutcome", "EvalCase", "EvalConfigurationError",
-    "EvalDataset", "EvalExecutionError", "EvalInputError", "EvalReport",
-    "EvalService", "EvalThresholds", "MetricResult", "MetricStatus",
-    "PredictionRecord", "ReportStatus", "build_reference_dataset", "compute_metrics", "dataset_sha256",
-    "load_dataset", "load_predictions", "nearest_rank_percentile",
-    "normalize_prediction", "render_markdown", "write_report",
+    # benchmark
+    "BenchmarkService",
+    "SyncBenchmark",
+    "SystemBenchmark",
+    # dataset / reference
+    "EvalInputError",
+    "build_reference_dataset",
+    "load_dataset",
+    "load_predictions",
+    # eval service
+    "EvalConfigurationError",
+    "EvalExecutionError",
+    "EvalService",
+    "dataset_sha256",
+    "normalize_prediction",
+    "render_markdown",
+    "write_report",
+    # metrics
+    "compute_metrics",
+    "nearest_rank_percentile",
+    # models
+    "BenchmarkMetric",
+    "BenchmarkReport",
+    "CaseKind",
+    "CaseOutcome",
+    "EvalCase",
+    "EvalDataset",
+    "EvalReport",
+    "EvalThresholds",
+    "MetricResult",
+    "MetricStatus",
+    "PredictionRecord",
+    "ReportStatus",
+    "SyncRound",
+    # report
+    "render_benchmark_markdown",
+    "write_benchmark_report",
 ]
