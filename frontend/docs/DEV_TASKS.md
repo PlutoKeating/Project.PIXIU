@@ -289,6 +289,11 @@ PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。�
 
 ## 2. 源文件清单与实现优先级
 
+> ✅ 第一阶段~第四阶段均已实现（2026-08-11，ctest 31/31）。实际实现的文件
+> 结构以 `src/` 为准：早期规划中的 `MemoryClient`/`SyncClient` 已由
+> `services/BackendTransport`（抽象）+ `services/HttpBackendTransport` +
+> `services/WebSocketClient` 取代，业务逻辑收敛到 `src/app/*Controller`。
+
 ### 第一阶段：基础骨架
 
 | 文件 | 优先级 | 说明 |
@@ -333,7 +338,11 @@ PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。�
 
 ## 3. 与后端的接口契约
 
-前端通过 **MemoryClient** 和 **SyncClient** 两个类封装所有后端通信。
+> 下方 `MemoryClient`/`SyncClient` 接口为早期规划示意；实际实现见
+> `src/services/BackendTransport.h`（抽象 + HTTP/WS 实现）与
+> `src/app/*Controller.h`（Query/Write/Forget/Conflict/Preference/Sync）。
+
+前端通过 **BackendTransport** 抽象封装所有后端通信。
 
 ### MemoryClient 接口
 

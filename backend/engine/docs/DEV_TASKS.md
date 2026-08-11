@@ -16,7 +16,8 @@
   并完成真实端到端调用（AI 运行时 / 向量引擎需在线）。
 - ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；OCR（AI SDK 9.4.1）
   与离线文本生成（AI SDK 9.5.1）接入。
-- 测试：20 项全绿；无麒麟 SDK 环境使用 `tests/fakes.py` 测试桩（仅测试用）。
+- 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；
+  无麒麟 SDK 环境使用 `tests/fakes.py` 测试桩（仅测试用）。
 - 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），
   麒麟 SDK 绑定在目标机构建后重新出包即恢复写入/检索链路。
 
@@ -37,6 +38,8 @@ git submodule update --init --recursive
 
 未补齐 submodule 时，`kylin/` 相关代码无法引用 SDK 头文件，pybind11 绑定
 （`backend/engine/kylin/cpp/`）无法构建，请勿跳过此步骤。
+
+> ✅ 下文各阶段文件清单均已实现（以"实现状态"为准），保留作为实现明细参考。
 
 ---
 

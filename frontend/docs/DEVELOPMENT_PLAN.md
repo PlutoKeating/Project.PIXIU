@@ -300,11 +300,10 @@ i18n 152 条、0 未完成。
 事后启动时，顶栏状态与离线引导无需用户操作即自动刷新；新增
 `t_http_backend`，套件 28 例 OFF/ON 全绿，真实 UKUI 桌面验证通过。
 
-其余 Module A 可执行项仍被后端契约阻塞：Phase 5.4/5.5 等待偏好列表与证据详情契约、
-Phase 6 真实配对闭环/节点状态真实数据/二维码令牌等待 `foundation/sync`、
-WS 真实事件联调等待 Module C 修复 `/events` 注册与 WebSocket 导入
-（见 `BACKEND_ISSUES.md`）；`/memory/flow/promote` 等待 flow 契约与上下文
-来源端点。阻塞期间 Module A 以测试专用 WS 桩
+其余 Module A 可执行项仍被后端契约阻塞（2026-08-09 记录；此后 `/sync/*` 与
+flow 已落地，见 §1.2/§3.1）：Phase 5.4/5.5 等待偏好列表与证据详情契约、
+二维码令牌等待令牌生成端点、WS 真实事件联调等待 Module C 修复 `/events`
+注册与 WebSocket 导入（见 `BACKEND_ISSUES.md`）。阻塞期间 Module A 以测试专用 WS 桩
 （`frontend/scripts/ws_smoke_server.py`）维持事件 UI 链路冒烟，不修改
 `backend/`。
 
@@ -449,39 +448,41 @@ WebSocket 客户端必须：
 
 ### Phase 1：应用基础
 
-#### Phase 1A — Qt5/CMake scaffold（已完成，未完成真实编译验证）
+#### Phase 1A — Qt5/CMake scaffold（✅ 已完成并验证）
 
 - Commit：`9cebaa8 chore(frontend): scaffold Qt5 application`
 - 内容：目录、`CMakeLists.txt`、`main.cpp`、资源占位、`PIXIU_HAVE_KYSDK` 选项。
-- 验证记录：OFF 路径 configure/build/ctest 已通过（2026-08-08，Linux + Qt 5.15）；
-  ON 路径自 Phase 7.1 起接入 kysdk-shortcut，并在本机（Kylin V11）验证通过。
+- 验证记录：OFF/ON 双路径 configure/build/ctest 通过；麒麟 V11 真机随整包 .deb
+  安装验证（2026-08-11）。
 
-#### Phase 1B — PixiuApp application lifecycle（下一 feature）
+#### Phase 1B — PixiuApp application lifecycle（✅ 已完成）
 
 - 新建 `src/app/PixiuApp.{h,cpp}`，由其拥有后续顶层服务和窗口。
 - 将启动与退出流程从 `main.cpp` 收敛到应用生命周期对象。
 - 验证正常启动、事件循环和干净退出。
 - Commit：`feat(frontend): add application lifecycle`
 
-#### Phase 1C — 单实例守护
+#### Phase 1C — 单实例守护（✅ 已完成）
 
 - 独立实现重复启动检测和已有实例激活通道。
 - 覆盖正常启动、重复启动、异常退出后再次启动。
 - Commit：`feat(frontend): add single-instance guard`
 
-#### Phase 1D — 系统托盘与退出入口
+#### Phase 1D — 系统托盘与退出入口（✅ 已完成）
 
 - 添加托盘显示/隐藏、打开主入口和显式退出动作。
 - 不在本提交实现悬浮球或桌面通知服务。
 - Commit：`feat(frontend): add system tray integration`
 
-#### Phase 1E — 基础配置持久化
+#### Phase 1E — 基础配置持久化（✅ 已完成）
 
 - 用 `QSettings` 保存必要的应用级设置，不提前写入窗口业务配置。
 - 不提交本机生成的配置文件。
 - Commit：`feat(frontend): add application settings`
 
 ### Phase 2：静态交互入口
+
+> ✅ 本阶段已完成（2026-08-08~08-10，验证见 §1.1）。
 
 每一项单独实现、验证和提交：
 
@@ -510,8 +511,8 @@ WebSocket 客户端必须：
 6. retrieval 落地后接通真实 `/memory/query`：
    `feat(frontend): connect memory query flow`
 
-真实端到端验收受 `/memory/query` 占位阻塞。阻塞期间只允许测试专用 fake transport，生产
-程序必须呈现明确的 `not_implemented`/不可用状态。
+> ✅ 真实 `/memory/query` 已接通（后端 2026-08-10 合入 main）；无麒麟 embedding
+> 环境返回 `KylinSDKUnavailableError`，前端如实呈现错误与"重试"。
 
 ### Phase 4：写入、WebSocket、通知和遗忘
 
@@ -537,8 +538,9 @@ WebSocket 客户端必须：
    - 本地验收通过（2026-08-08：编译通过；ctest 5/5 通过；offscreen 冒烟正常）。
    - 真实联调需后端 `/forget` 可用（已实现），无 Module C 阻塞项。
 
-`conflict_detected`、`forget_confirmation` 和 `sync_event` 只有在后端开始真实广播后才做
-端到端验收；客户端事件分发可以先具备未知事件兼容能力。
+> `sync_event` 已由后端广播（配对/解绑，2026-08-10）；`conflict_detected` 与
+> `forget_confirmation` 仍待后端广播后做端到端验收；客户端事件分发已具备未知
+> 事件兼容能力。
 
 ### Phase 5：记忆管理
 
@@ -555,23 +557,24 @@ WebSocket 客户端必须：
 
 ### Phase 6：设备同步管理
 
-该阶段受 `foundation/sync` 和 `/sync/*` 占位阻塞。客户端侧非阻塞部分已完成
-（2026-08-09），后端契约落地后按以下独立 feature 闭环：
+该阶段后端契约已落地（2026-08-10 合入 main），除二维码展示外均已真实闭环
+（麒麟 V11 真机实测 `/sync/status`、`/sync/peers` 200，2026-08-11）。
 
 1. [x] `SyncClient` 数据模型和 transport：`feat(frontend): add sync client`
    - transport 端点（pair/peers/status/revoke）已就绪，见
      `HttpBackendTransport`；客户端状态机见 `SyncController`（2026-08-09）。
 2. [x] 节点列表：`feat(frontend): add peer list`
    - 同步 Tab 渲染节点（本机/在线/离线/上次同步/待同步），`not_implemented`
-     如实呈现；真实数据等待 `/sync/peers` 落地（2026-08-09）。
+     如实呈现；真实数据已闭环（2026-08-11 麒麟 VM 实测）。
 3. [x] 同步状态：`feat(frontend): add sync status view`
-   - 同步摘要行渲染共享域/在线数/待同步/对账时间/累计同步（2026-08-09）。
+   - 同步摘要行渲染共享域/在线数/待同步/对账时间/累计同步；真实数据已闭环。
 4. [x] PIN 配对：`feat(frontend): add device PIN pairing`
-   - `PairDialog` 契约载荷与结果反馈已完成；真实闭环等待 `/sync/pair` 落地。
+   - `PairDialog` 契约载荷与结果反馈已完成；真实闭环已通（PIN+令牌，
+     2026-08-11 麒麟 VM 实测）。
 5. 二维码展示：等待令牌生成契约后 `feat(frontend): add device QR pairing`
 6. [x] 解绑确认：`feat(frontend): add peer revoke flow`
    - `RevokeDialog` 二次确认 + `SyncController::revokePeer` 已就绪；真实闭环
-     等待 `/sync/peers/{id}/revoke` 落地（2026-08-09）。
+     已通（2026-08-11 麒麟 VM 实测）。
 
 前端只管理配对和展示状态，不参与 CRDT 或传输实现。
 

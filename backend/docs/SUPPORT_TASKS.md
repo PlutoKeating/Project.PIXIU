@@ -55,7 +55,10 @@ git submodule update --init --recursive
 |------|------|
 | `scripts/init_db.py` | 数据库初始化（建表 + 索引） |
 | `scripts/run.sh` | 一键启动脚本 |
-| `scripts/eval.py` | 评测脚本（调用 foundation/eval 跑全量指标） |
+| `scripts/eval.py` | 评测脚本（foundation/eval 已提供 CLI `python -m backend.foundation.eval`，可复用） |
+
+> Module C 已交付 `foundation/scripts/phase7_pressure.py`（1000 次压测证据生成器，
+> 产出 `foundation/evidence/` 报告），本岗位无需重复实现。
 
 ### 2. 测试数据集
 
@@ -72,7 +75,7 @@ git submodule update --init --recursive
 |------|----------|------|
 | `backend/Dockerfile` | 空 | 填入 Python + C++ 构建 |
 | `backend/docker-compose.yml` | 空 | 填入编排配置 |
-| `backend/.env.example` | 已有内容 | 校验/维护模板（当前 6 个变量：DB/API/EMBEDDING/LOG/DATA） |
+| `backend/.env.example` | 已有内容 | 校验/维护模板（已含全部变量：DB/API/EMBEDDING/LOG/DATA/SYNC*） |
 | `frontend/Dockerfile` | 空 | 填入 Qt5 构建 |
 | `frontend/docker-compose.yml` | 空 | 填入编排 |
 | `frontend/.env.example` | 空 | 填入模板 |

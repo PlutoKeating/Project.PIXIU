@@ -88,7 +88,7 @@ git submodule update --init --recursive
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `storage/__init__.py` | ★★★ | 导出全部 Repository 类 |
-| `storage/repository.py` | ★★★ | SQLite 实现全部 Repository 接口（8 个类） |
+| `storage/repository.py` | ★★★ | SQLite 实现全部 Repository 接口（5 个仓储类） |
 | `storage/schema.py` | ★★★ | DDL 建表语句 + 索引创建 |
 | `storage/migrations.py` | ★ | 数据库迁移 |
 
@@ -149,6 +149,14 @@ git submodule update --init --recursive
 |------|--------|------|
 | `eval/__init__.py` | ★★ | 导出 `EvalService` |
 | `eval/eval.py` | ★★ | 评测引擎（加载数据集→跑指标→输出报告） |
+| `eval/dataset.py` | ★★ | 版本化参考数据集（`pixiu-family-expense-v1`）+ profile |
+| `eval/metrics.py` | ★★ | 12 项指标（6 核心 + recall@1/3/5、P50/P95/P99、scope 隔离） |
+| `eval/benchmark.py` | ★★ | SyncBenchmark / SystemBenchmark（收敛率/同步耗时/DB/内存/CPU） |
+| `eval/service.py` | ★★ | BenchmarkService（runtime=stub\|kylin 双结果） |
+| `eval/report.py` | ★★ | JSON+Markdown 报告原子写出（SHA-256） |
+| `eval/reference.py` | ★★ | acceptance 数据集构建（50 检索/15 偏好/25 冲突/1000 样本） |
+| `eval/models.py` | ★★ | EvalCase / MetricResult / BenchmarkReport 数据模型 |
+| `eval/__main__.py` | ★★ | CLI：`python -m backend.foundation.eval` |
 
 ---
 
@@ -166,3 +174,13 @@ git submodule update --init --recursive
 | `tests/test_sync_materializer.py` | 远端物化、墓碑与 scope 隔离 |
 | `tests/test_flow.py` | promote/demote + TTL 测试 |
 | `tests/test_eval.py` | 评测框架正确性测试 |
+| `tests/test_benchmark.py` | 基准框架测试（收敛率/同步耗时/资源） |
+| `tests/test_hardening.py` | Phase 7 硬化测试（WAL 并发/错误契约/脱敏/迁移/崩溃恢复/资源边界） |
+| `tests/test_e2e_stories.py` | Phase 7 四条端到端故事 |
+| `tests/test_dbus_service.py` | D-Bus 服务契约测试 |
+| `tests/test_di.py` | 依赖注入组装测试 |
+| `tests/test_config.py` / `test_idgen.py` | 配置与 ID 生成器测试 |
+| `tests/test_schema.py` / `test_knowledge_repository.py` / `test_repository_contracts.py` | 存储契约测试 |
+| `tests/test_sync_convergence.py` | Phase 4 同步收敛验收测试 |
+
+> ✅ 第一阶段~第三阶段文件清单均已实现（功能冻结），保留作为实现明细参考。
