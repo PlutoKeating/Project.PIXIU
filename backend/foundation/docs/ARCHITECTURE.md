@@ -110,7 +110,7 @@ async def get_knowledge_service(db=Depends(get_db)) -> KnowledgeService:
     return KnowledgeService(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
-        embedder=get_embedder(),   # 真实麒麟 SDK，无 mock
+        embedder=get_embedder(settings.embedding),  # auto / kylin / portable
     )
 
 async def get_conflict_service(db=Depends(get_db)) -> ConflictService:

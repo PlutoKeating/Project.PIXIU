@@ -11,7 +11,7 @@
 
 - `core/`：`models.py`（9 个 Pydantic 模型 + 枚举/校验）、`repository.py`（5 个 ABC，
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
-  `config.py`（仅支持 `kylin`，无 mock）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
+  `config.py`（`auto`/`kylin`/`portable` 能力选择）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
 - `storage/`：`schema.py`（16 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v4 版本化迁移）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）

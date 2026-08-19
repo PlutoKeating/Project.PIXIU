@@ -8,8 +8,8 @@
 - PixiuDBusInterface：dbus-next ServiceInterface 子类（方法注册 + 参数映射）
 - PixiuDBusService：生命周期（总线连接、bus name 申请与冲突处理）
 
-无麒麟 SDK 时 Query 经 RetrievalService → get_embedder() 明确抛
-KylinSDKUnavailableError，不会静默使用生产 mock。
+无麒麟 SDK 时 Query 经 RetrievalService 使用明确标识的可移植向量器；严格
+``PIXIU_EMBEDDING=kylin`` 模式仍会抛出 KylinSDKUnavailableError。
 """
 
 from __future__ import annotations
