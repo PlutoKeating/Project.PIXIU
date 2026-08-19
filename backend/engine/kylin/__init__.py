@@ -1,9 +1,10 @@
-"""kylin/ —— 麒麟 SDK 适配（真实调用，无 mock 降级）。
+"""kylin/ —— 麒麟 SDK 适配与 Debian 可移植降级。
 
 - 文本向量化：libkysdk-coreai-embedding（C API，pybind11 绑定）
 - 向量数据库：libkysdk-vector-engine-client（C++ API，pybind11 绑定）
 
-SDK 不可用时抛出 ``KylinSDKUnavailableError``，附构建指引。
+默认优先真实 SDK，缺失时使用可移植向量器；严格麒麟模式会抛出
+``KylinSDKUnavailableError`` 并附构建指引。
 """
 
 from __future__ import annotations

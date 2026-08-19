@@ -4,9 +4,9 @@
 > **与模块 C 的边界**：引擎**消费** `foundation/core/` 中的 Repository 接口（ABC）和数据模型，**不依赖** `foundation/` 中的任何实现代码。
 
 > **状态（2026-08-11）**：全部子包已实现并通过 SQLite 全链路集成测试（麒麟 V11
-> 真机全量 pytest 364 passed）；kylin 为真实麒麟 SDK 适配（无 mock），pybind11
-> 绑定源码就绪，待麒麟环境构建验证。整包 .deb 已随包安装引擎源码（未构建绑定
-> 时 embedding 相关端点如实返回 `KylinSDKUnavailableError`）。
+> 真机全量 pytest 364 passed）；kylin 为真实麒麟 SDK 适配，pybind11 绑定源码
+> 就绪，待麒麟环境构建验证。默认 `auto` 模式优先使用该 SDK；缺少原生能力的
+> Debian 系统切换到可移植特征哈希向量器，保持核心写入和检索可用。
 
 ---
 
@@ -157,8 +157,10 @@ class KylinTextEmbedding:
 
 底层为 C 接口 SDK `libkysdk-coreai-embedding`（官方仓库以 submodule 纳入
 `third_party/kylin-coreai-embedding`），经 pybind11 绑定
-`_kylin_text_embedding` 暴露给 Python。**无 mock 降级**：SDK 缺失或
-麒麟 AI 运行时不可用时，`get_embedder()` 抛出 `KylinSDKUnavailableError`。
+`_kylin_text_embedding` 暴露给 Python。`get_embedder("auto")` 优先实例化真实
+SDK，SDK/运行时不可用时切换到 `PortableTextEmbedding`；后者是确定性的字符
+特征哈希软件实现，不是 SDK mock。麒麟验收使用 `get_embedder("kylin")`，缺少
+原生能力时明确抛出 `KylinSDKUnavailableError`，避免降级结果混入验收数据。
 
 向量数据库使用 `libkysdk-vector-engine-client`（Milvus 式 gRPC 客户端，
 submodule 位于 `third_party/libkysdk-vector-engine-client`），

@@ -1,7 +1,7 @@
 """测试专用桩 —— 仅存在于 tests/，不参与生产代码。
 
-生产代码不包含任何 mock：embedding 一律走麒麟 SDK（KylinTextEmbedding）。
-本文件仅为在无麒麟 SDK 的开发机上运行管线逻辑测试而存在。
+生产代码默认优先麒麟 SDK，并在 Debian 环境使用独立的可移植软件实现。
+本文件仅为隔离管线单元测试、精确控制向量输出而存在。
 """
 
 from __future__ import annotations

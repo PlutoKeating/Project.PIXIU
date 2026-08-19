@@ -45,7 +45,8 @@ cmake --install build
   通过 D-Bus 连接服务并加载端侧模型。
 - 向量数据库：向量引擎服务需已启动（默认 `127.0.0.1:19530`），客户端通过 gRPC 连接。
 
-## 无 mock 说明
+## 能力选择说明
 
-生产代码不包含任何 mock 降级：SDK 缺失或服务不可用时，`get_embedder()` /
-`VectorEngineClient()` 会抛出 `KylinSDKUnavailableError`（附构建指引）。
+`get_embedder("auto")` 优先加载这里构建的真实扩展，缺失时使用独立的 Debian
+软件向量器；`get_embedder("kylin")` 与 `VectorEngineClient()` 在 SDK/服务不
+可用时抛出 `KylinSDKUnavailableError`。只有严格 `kylin` 路径可用于 SDK 验收。

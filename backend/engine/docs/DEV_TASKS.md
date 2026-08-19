@@ -11,15 +11,16 @@
   全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
   仓储语义 / 偏好版本化），并经 SQLite 全链路集成测试验证。
 - ✅ **已完成**：`kylin/` 真实麒麟 SDK 适配——`embedding.py`（coreai/embedding）、
-  `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本，无 mock 降级。
+  `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本；另有
+  Debian 可移植特征哈希向量器作为明确的软件降级路径。
 - 🟡 **待验证**：麒麟环境构建 `_kylin_text_embedding` / `_kylin_vector_client`
   并完成真实端到端调用（AI 运行时 / 向量引擎需在线）。
 - ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；OCR（AI SDK 9.4.1）
   与离线文本生成（AI SDK 9.5.1）接入。
 - 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；
-  无麒麟 SDK 环境使用 `tests/fakes.py` 测试桩（仅测试用）。
+  无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），
-  麒麟 SDK 绑定在目标机构建后重新出包即恢复写入/检索链路。
+  麒麟 SDK 绑定在目标机构建后提供正式语义能力；无绑定时核心链路保持降级可用。
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
 
@@ -73,7 +74,7 @@ git submodule update --init --recursive
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `kylin/__init__.py` | ★★★ | 导出 `KylinTextEmbedding` |
-| `kylin/embedding.py` | ★★★ | 麒麟 coreai/embedding C API 的 pybind11 封装（无 mock 降级） |
+| `kylin/embedding.py` | ★★★ | 麒麟 coreai/embedding 封装 + Debian 可移植向量器 + 能力选择 |
 | `kylin/cpp/` | ★★★ | pybind11 绑定源码 + CMake 构建（SDK 以 third_party submodule 纳入） |
 | `kylin/vector.py` | ★★ | 麒麟向量数据库客户端（libkysdk-vector-engine-client）封装 |
 
@@ -118,5 +119,5 @@ git submodule update --init --recursive
 | `tests/test_security.py` | 敏感识别+遗忘精确性+级联清理测试 |
 | `tests/test_sqlite_integration.py` | 引擎 × SQLite 全链路集成测试 |
 
-embedding 相关测试在无麒麟 SDK 的开发机上使用 tests/fakes.py 的测试桩；
-生产代码一律调用真实麒麟 SDK，SDK 缺失时抛出 `KylinSDKUnavailableError`。
+默认生产配置优先调用真实麒麟 SDK，SDK 缺失时使用可移植软件向量器；严格
+`kylin` 模式会抛出 `KylinSDKUnavailableError`。测试桩仅用于隔离单元测试。

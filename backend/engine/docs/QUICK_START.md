@@ -23,7 +23,7 @@ python -m pytest backend/engine/tests/test_knowledge.py -v
 
 ## 麒麟 SDK 绑定构建（银河麒麟系统）
 
-生产 embedding 与向量库调用依赖 pybind11 绑定，详见
+麒麟原生 embedding 与向量库调用依赖 pybind11 绑定，详见
 `backend/engine/kylin/cpp/README.md`：
 
 ```bash
@@ -33,9 +33,10 @@ cmake --build build
 cmake --install build
 ```
 
-构建产物安装到 `backend/engine/kylin/`。SDK 缺失时
-`get_embedder()` / `VectorEngineClient()` 抛出 `KylinSDKUnavailableError`，
-生产环境无 mock 降级。
+构建产物安装到 `backend/engine/kylin/`。默认 `PIXIU_EMBEDDING=auto`：优先调用
+真实 SDK，缺失时使用可移植软件向量器；`PIXIU_EMBEDDING=kylin` 为严格麒麟验收
+模式并在 SDK 不可用时抛出 `KylinSDKUnavailableError`，`portable` 可用于通用
+Debian 验证。`VectorEngineClient` 仍只在麒麟 SDK 可用时启用。
 
 ## 依赖关系
 
