@@ -87,10 +87,18 @@ echo "--- GET /conflicts ---"
 curl -sS -w "\nHTTP %{http_code}\n" http://127.0.0.1:8765/conflicts
 echo "--- GET /sync/status ---"
 curl -sS -w "\nHTTP %{http_code}\n" http://127.0.0.1:8765/sync/status
-echo "--- POST /memory/write (预期 500：KylinSDK 绑定未构建，见 README 边界) ---"
-curl -sS -w "\nHTTP %{http_code}\n" -X POST http://127.0.0.1:8765/memory/write \
+echo "--- POST /memory/write (无 KylinSDK 时应自动降级并返回 200) ---"
+WRITE_HTTP=$(curl -sS -o /tmp/pixiu-write-response.json -w "%{http_code}" \
+    -X POST http://127.0.0.1:8765/memory/write \
     -H "Content-Type: application/json" \
-    -d "{\"source_type\":\"MANUAL_CONFIG\",\"raw\":{\"title\":\"t\",\"body\":{\"key\":\"k\",\"enabled\":true}},\"scope\":\"user:test\"}"
+    -d "{\"source_type\":\"MANUAL_CONFIG\",\"raw\":{\"title\":\"t\",\"body\":{\"key\":\"k\",\"enabled\":true}},\"scope\":\"user:test\"}")
+cat /tmp/pixiu-write-response.json
+echo ""
+echo "HTTP ${WRITE_HTTP}"
+if [ "${WRITE_HTTP}" != "200" ]; then
+    echo "portable embedding write smoke failed"
+    exit 1
+fi
 echo "--- journal tail ---"
 sudo journalctl -u pixiu-backend.service -n 6 --no-pager 2>/dev/null | tail -6
 '
