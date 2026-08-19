@@ -201,6 +201,15 @@ async def test_forget_rejects_empty_scope() -> None:
 
 
 @pytest.mark.asyncio
+async def test_forget_legacy_call_without_scope() -> None:
+    item = _knowledge_item(title="四月份电费账单", scope="user:alice")
+    service, _, _ = _security([item])
+
+    pending = await service.forget("忘记四月份电费", confirm=False)
+    assert [target["id"] for target in pending.targets] == [item.id]
+
+
+@pytest.mark.asyncio
 async def test_forget_multiple_candidates_sorted() -> None:
     low = _knowledge_item(title="家庭支出模板", body={"text": "电费说明"}, scope="user:alice")
     mid = _knowledge_item(title="电费缴纳流程", scope="user:alice")
@@ -282,7 +291,7 @@ async def test_forget_does_not_claim_delete_evidence() -> None:
 
     done = await service.forget("忘记四月份电费", confirm=True, scope="user:alice")
     assert done.cascade_preview.get("evidence_count", 0) >= 1
-    assert evd_id in done.forgotten_ids
+    assert evd_id not in done.forgotten_ids
     # Engine only soft-deletes knowledge; evidence rows are not removed here.
     assert knw.items[item.id].status == KnowledgeStatus.FORGOTTEN
 

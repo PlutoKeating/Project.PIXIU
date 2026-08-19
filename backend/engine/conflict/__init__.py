@@ -21,7 +21,6 @@ from backend.foundation.core.repository import (
 
 from backend.engine.conflict.arbiter import Arbiter
 from backend.engine.conflict.entity_matcher import EntityMatcher
-from backend.engine.conflict.field_matcher import FieldMatcher
 from backend.engine.conflict.text_detector import (
     RuleBasedTextConflictDetector,
     TextConflictDetector,
@@ -88,10 +87,4 @@ class ConflictService:
         await self._conflict_repo.save(record)
 
 
-__all__ = [
-    "Arbiter",
-    "ConflictService",
-    "EntityMatcher",
-    "FieldMatcher",
-    "RuleBasedTextConflictDetector",
-]
+__all__ = ["ConflictService"]

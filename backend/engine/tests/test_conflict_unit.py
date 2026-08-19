@@ -194,6 +194,25 @@ async def test_no_conflict_synonymous_text() -> None:
 
 
 @pytest.mark.asyncio
+async def test_no_conflict_unrelated_text_without_contradiction_evidence() -> None:
+    service, knw, _ = _service()
+    old = _item(
+        title="profile note",
+        entities=["Alice"],
+        body={"text": "Alice住在北京"},
+    )
+    new = _item(
+        title="profile note v2",
+        entities=["Alice"],
+        body={"text": "Alice喜欢爵士乐"},
+    )
+    await knw.save(old)
+
+    record = await service.arbitrate(new)
+    assert record is None
+
+
+@pytest.mark.asyncio
 async def test_conflict_antonym_text() -> None:
     service, knw, _ = _service()
     old = _item(

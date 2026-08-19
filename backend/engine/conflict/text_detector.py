@@ -139,7 +139,7 @@ class RuleBasedTextConflictDetector:
         jaccard = self._jaccard(self._tokens(old_c), self._tokens(new_c))
         if jaccard >= self._paraphrase_jaccard:
             return False
-        return True
+        return False
 
     def _canonicalize(self, text: str) -> str:
         normalized = unicodedata.normalize("NFKC", text).strip().casefold()

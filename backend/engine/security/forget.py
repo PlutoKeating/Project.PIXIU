@@ -1,4 +1,4 @@
-"""Natural-language forget — scoped match, score ranking, Knowledge soft-delete only."""
+"""Natural-language forget — optional scoped match and Knowledge soft-delete."""
 
 from __future__ import annotations
 
@@ -68,18 +68,22 @@ class ForgetEngine:
         self,
         command: str,
         *,
-        scope: str,
+        scope: str | None,
         confirm: bool,
         knw_repo: KnowledgeRepository,
         entity_repo: EntityRepository,
     ) -> ForgetResult:
-        normalized_scope = scope.strip()
-        if not normalized_scope:
+        normalized_scope = scope.strip() if scope is not None else None
+        if scope is not None and not normalized_scope:
             raise ValueError("scope must be a non-empty string")
 
         tokens = self._tokens(command)
         active = await knw_repo.list_active()
-        scoped = [item for item in active if item.scope == normalized_scope]
+        scoped = (
+            [item for item in active if item.scope == normalized_scope]
+            if normalized_scope is not None
+            else active
+        )
 
         scored = [
             result
@@ -114,7 +118,6 @@ class ForgetEngine:
         for entry in scored:
             await knw_repo.update_status(entry.item.id, KnowledgeStatus.FORGOTTEN)
             forgotten_ids.append(entry.item.id)
-            forgotten_ids.extend(entry.item.evidence_ids)
 
         return ForgetResult(
             status="forgotten",

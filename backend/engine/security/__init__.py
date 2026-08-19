@@ -34,7 +34,12 @@ class SecurityService:
         """Structured sensitivity result (score + matched type keys)."""
         return self._detector.detect_detail(raw)
 
-    async def forget(self, command: str, confirm: bool, scope: str) -> ForgetResult:
+    async def forget(
+        self,
+        command: str,
+        confirm: bool,
+        scope: Optional[str] = None,
+    ) -> ForgetResult:
         return await self._forget_engine.forget(
             command,
             scope=scope,
