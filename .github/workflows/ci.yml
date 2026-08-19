@@ -1,0 +1,70 @@
+name: pixiu-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/foundation/requirements-sync.txt
+
+      - name: Install backend dependencies
+        run: >-
+          python -m pip install
+          -r backend/requirements.txt
+          -r backend/foundation/requirements-sync.txt
+
+      - name: Run backend tests
+        env:
+          PIXIU_EMBEDDING: portable
+        run: python -m pytest backend/foundation/tests backend/engine/tests -q
+
+  build-deb:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build dpkg-dev python3 \
+            qtbase5-dev qtbase5-dev-tools libqt5websockets5-dev qttools5-dev-tools
+
+      - name: Compile, test, and package
+        env:
+          PIXIU_PROFILE: generic-ubuntu
+          PIXIU_BUNDLE_WHEELS: "0"
+          PIXIU_SKIP_TESTS: "0"
+        run: make -C build/release build-deb
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixiu-deb-${{ github.sha }}
+          path: |
+            build/release/out/*.deb
+            build/release/out/*.sha256
+          if-no-files-found: error

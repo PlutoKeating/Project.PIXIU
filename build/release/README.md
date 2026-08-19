@@ -24,19 +24,21 @@ build/release/
 ├── profiles/                 # 目标平台画像（发行版事实全部沉淀于此）
 │   ├── kylin-v11-x86_64.env  # 麒麟 V11（openKylin）x86_64 —— 真机实测画像
 │   └── generic-ubuntu.env    # 通用 Ubuntu（CI 默认）
-├── debian/                   # .deb 元数据模板与维护脚本
-│   ├── control.in            # control 模板（@VERSION@/@ARCH@/@DEPENDS@ 由脚本替换）
-│   ├── postinst              # 安装后：建用户/数据目录/venv/装依赖/注册服务
-│   ├── prerm                 # 卸载前：停止并禁用服务
-│   ├── postrm                # 卸载后：purge 时清理数据
-│   ├── pixiu-backend.service # systemd：后端常驻服务（API 8765 + sync runtime）
-│   ├── pixiu.env             # 后端环境变量模板（安装到 /etc/pixiu/pixiu.env）
-│   └── usr/bin/
-│       ├── pixiu             # 一键启动器：确保后端服务在线后打开桌面客户端
-│       └── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
-└── ci/
-    └── github-actions-release.yml  # CI 示例（换用麒麟自托管 runner 即可跑通）
+└── debian/                   # .deb 元数据模板与维护脚本
+    ├── control.in            # control 模板（@VERSION@/@ARCH@/@DEPENDS@ 由脚本替换）
+    ├── postinst              # 安装后：建用户/数据目录/venv/装依赖/注册服务
+    ├── prerm                 # 卸载前：停止并禁用服务
+    ├── postrm                # 卸载后：purge 时清理数据
+    ├── pixiu-backend.service # systemd：后端常驻服务（API 8765 + sync runtime）
+    ├── pixiu.env             # 后端环境变量模板（安装到 /etc/pixiu/pixiu.env）
+    └── usr/bin/
+        ├── pixiu             # 一键启动器：确保后端服务在线后打开桌面客户端
+        └── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
 ```
+
+仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
+前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
+同等验证、打入离线 wheels，并把 `.deb` 与 SHA-256 校验文件发布到 GitHub Release。
 
 流水线产物：
 
@@ -126,10 +128,10 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.0-1_amd64.deb
 
 - **引擎麒麟 SDK 绑定**：`backend/engine/kylin/cpp` 的 pybind11 扩展需在目标
   麒麟环境构建，本流水线暂以源码随包安装（`/usr/lib/pixiu/backend/engine/kylin`）；
-  后端在无绑定环境启动时写入会明确报 `KylinSDKUnavailableError`，前端如实呈现。
-  因此**未构建 SDK 绑定的机器上**：`/memory/write` 与 `/sync/status` 返回 500
-  （`KylinSDKUnavailableError`），`/conflicts` 等不依赖 embedding 的端点正常；
-  这是引擎侧功能边界，不是安装问题，待引擎开发完成后重新出包即自动修复。
+  默认 `PIXIU_EMBEDDING=auto` 会优先调用真实 SDK，未构建绑定的 Debian 系机器
+  自动使用可移植特征哈希向量器，`/memory/write` 与 `/memory/query` 保持可用；
+  该路径语义质量低于麒麟模型，不计作正式召回率/时延验收。麒麟验收应设置
+  `PIXIU_EMBEDDING=kylin`，让缺失绑定或 AI 运行时成为显式失败。
 - **后端 Python 依赖**：优先随包携带离线 wheels（`PIXIU_BUNDLE_WHEELS=1`）；
   打包机无法下载时退化为安装时在线 `pip install`（需要目标机联网）。
 - **WS `/events`**：后端注册问题仍未修复（见 `frontend/docs/BACKEND_ISSUES.md`），
@@ -152,10 +154,11 @@ git clone git@github-personal:PlutoKeating/Project.PIXIU.git
 1. 开发分支合并到 `main`（本仓库既有流程：feature → staging → production）。
 2. 本地/CI 执行 `make -C build/release deb`（自动跑前端 ctest，可选后端 pytest）。
 3. `make -C build/release publish-staging` 产出 staging 包（供联调机安装验证）。
-4. 验收通过后 `make -C build/release publish-production`，由 Human 推 tag 并发布。
+4. 验收通过后推送 `v*` tag，GitHub Actions 自动构建并发布 Release；也可以从
+   Actions 页面手动运行 release workflow，只生成验证产物而不创建 Release。
 
-CI 示例见 [`ci/github-actions-release.yml`](ci/github-actions-release.yml)，部署到
-麒麟环境时改用自托管 runner（x86_64 / aarch64），步骤不变。
+GitHub 托管 runner 使用 `generic-ubuntu` 画像与 `KYSDK=OFF`。麒麟 SDK 原生绑定
+仍需切换到安装了 SDK 开发包的麒麟自托管 runner（x86_64 / aarch64）。
 
 ## 实测记录（麒麟 V11 VM，2026-08-11 更新）
 
@@ -172,7 +175,7 @@ KYSDK=OFF，35 个 cp312 wheels）→ `vm-deploy-test.sh`（force reinstall）�
 | SQLite 数据库 | ✅ 首次请求自动创建 `/var/lib/pixiu/pixiu.db`（229KB，属主 pixiu） |
 | `GET /conflicts` | ✅ 200 `{"conflicts":[]}` |
 | `GET /sync/status`、`GET /sync/peers` | ✅ 200（真实状态；Ed25519 身份自动创建；口令配置修复后可用） |
-| `POST /memory/write` | ⚠️ 500 `KylinSDKUnavailableError`（引擎 SDK 绑定未构建，见"已知边界"） |
+| `POST /memory/write` | ⚠️ 当时为 500（旧版尚无 Debian embedding 降级；现已由 `auto` 模式修复） |
 | 错误契约（400/404/422/500） | ✅ 统一 `{error, message, request_id}` + `X-Request-Id` 头 |
 | 后端全量测试（VM 上跑最新源码） | ✅ 377 passed（foundation + engine） |
 | 前端离屏冒烟 | ✅ 进程存活（timeout 正常退出 124） |

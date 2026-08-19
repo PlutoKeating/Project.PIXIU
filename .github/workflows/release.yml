@@ -1,0 +1,91 @@
+name: pixiu-release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Debian package version used for a manual validation build
+        required: true
+        default: "0.1.0"
+
+permissions:
+  contents: read
+
+jobs:
+  build-release:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/foundation/requirements-sync.txt
+
+      - name: Install build and test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build dpkg-dev \
+            qtbase5-dev qtbase5-dev-tools libqt5websockets5-dev qttools5-dev-tools
+          python -m pip install \
+            -r backend/requirements.txt \
+            -r backend/foundation/requirements-sync.txt
+
+      - name: Resolve package version
+        env:
+          MANUAL_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "PIXIU_VERSION=${GITHUB_REF_NAME#v}" >> "${GITHUB_ENV}"
+          else
+            echo "PIXIU_VERSION=${MANUAL_VERSION}" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Run backend tests
+        env:
+          PIXIU_EMBEDDING: portable
+        run: python -m pytest backend/foundation/tests backend/engine/tests -q
+
+      - name: Build release package
+        env:
+          PIXIU_PROFILE: generic-ubuntu
+          PIXIU_BUNDLE_WHEELS: "1"
+          PIXIU_SKIP_TESTS: "0"
+        run: make -C build/release build-deb
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixiu-release-${{ github.ref_name }}
+          path: |
+            build/release/out/*.deb
+            build/release/out/*.sha256
+          if-no-files-found: error
+
+  publish-release:
+    needs: build-release
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pixiu-release-${{ github.ref_name }}
+          path: dist
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            dist/*.deb
+            dist/*.sha256
