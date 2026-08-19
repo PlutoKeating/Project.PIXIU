@@ -123,7 +123,7 @@ mkdir -p "${STAGE}/DEBIAN" \
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
     PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), python3-venv, dbus, \
-libqt5widgets5, libqt5network5, libqt5websockets5, \
+libqt5widgets5, libqt5network5, libqt5websockets5, libqt5svg5, \
 libkysdk-shortcut, libkysdk-notification, libkysdk-qtwidgets, libgsettings-qt1"
 fi
 sed -e "s/@VERSION@/${PIXIU_VERSION}-${PIXIU_REVISION}/" \
