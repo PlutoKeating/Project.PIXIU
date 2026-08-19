@@ -11,6 +11,7 @@ from __future__ import annotations
 from backend.engine.kylin.embedding import (
     KylinSDKUnavailableError,
     KylinTextEmbedding,
+    PortableTextEmbedding,
     TextEmbedder,
     get_embedder,
 )
@@ -19,6 +20,7 @@ from backend.engine.kylin.vector import VectorEngineClient
 __all__ = [
     "KylinSDKUnavailableError",
     "KylinTextEmbedding",
+    "PortableTextEmbedding",
     "TextEmbedder",
     "VectorEngineClient",
     "get_embedder",
