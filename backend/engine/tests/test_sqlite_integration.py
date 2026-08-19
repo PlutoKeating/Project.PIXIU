@@ -139,11 +139,15 @@ async def test_full_write_pipeline_on_sqlite(stack):
     assert fetched_rec is not None  # 回归保护：冲突记录可读（row 读取修复）
 
     # 5) security：自然语言遗忘（pending → confirmed）
-    pending = await services["security"].forget("忘记那张4月支出清单", confirm=False)
+    pending = await services["security"].forget(
+        "忘记那张4月支出清单", confirm=False, scope="shared:home"
+    )
     assert pending.status == "pending"
-    assert pending.cascade.get("evidence_count", 0) >= 1
+    assert pending.cascade_preview.get("evidence_count", 0) >= 1
 
-    done = await services["security"].forget("忘记那张4月支出清单", confirm=True)
+    done = await services["security"].forget(
+        "忘记那张4月支出清单", confirm=True, scope="shared:home"
+    )
     assert done.status == "forgotten"
     forgotten = await repos["knowledge"].get(new_item.id)
     assert forgotten is not None

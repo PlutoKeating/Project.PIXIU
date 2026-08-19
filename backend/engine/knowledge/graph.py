@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional
 
 from backend.foundation.core.idgen import gen_entity_id
 from backend.foundation.core.models import Entity, KnowledgeItem, Relation
@@ -19,7 +19,9 @@ class GraphBuilder:
         name_to_entity: dict[str, Entity] = {}
 
         for name in item.entities:
-            entity = await self._ensure_entity(name, item, entity_repo, name_to_entity)
+            if not str(name or "").strip():
+                continue
+            entity = await self._ensure_entity(str(name), item, entity_repo, name_to_entity)
             if entity is not None:
                 entities.append(entity)
 
@@ -29,7 +31,7 @@ class GraphBuilder:
                 continue
             src_name = str(rel.get("from") or rel.get("src") or "").strip()
             dst_name = str(rel.get("to") or rel.get("dst") or "").strip()
-            rtype = str(rel.get("type") or "BELONG_TO").upper()
+            rtype = str(rel.get("type") or "BELONG_TO").strip().upper() or "BELONG_TO"
             if not src_name or not dst_name:
                 continue
             src_ent = await self._ensure_entity(

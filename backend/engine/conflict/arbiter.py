@@ -1,4 +1,8 @@
-"""Conflict arbiter — detect field-level contradictions and decide NEW_WINS."""
+"""Conflict arbiter — field-level contradiction detection (NEW_WINS decision).
+
+Candidate selection (same entity / scope) lives in ConflictService +
+EntityMatcher. This class only compares already-paired items.
+"""
 
 from __future__ import annotations
 
@@ -8,24 +12,19 @@ from typing import Any, Optional
 from backend.foundation.core.idgen import gen_conflict_id
 from backend.foundation.core.models import ConflictRecord, KnowledgeItem
 
-
-def _flatten(obj: Any, prefix: str = "") -> dict[str, Any]:
-    flat: dict[str, Any] = {}
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            key = f"{prefix}.{k}" if prefix else str(k)
-            flat.update(_flatten(v, key))
-    elif isinstance(obj, list):
-        for i, v in enumerate(obj):
-            key = f"{prefix}[{i}]"
-            flat.update(_flatten(v, key))
-    else:
-        flat[prefix] = obj
-    return flat
+from backend.engine.conflict.field_matcher import FieldMatcher
+from backend.engine.conflict.text_detector import TextConflictDetector
 
 
 class Arbiter:
-    """Compare new knowledge against an existing ACTIVE item with same title/scope."""
+    """Compare two ACTIVE items that the service already treated as candidates."""
+
+    def __init__(
+        self,
+        field_matcher: Optional[FieldMatcher] = None,
+        text_detector: Optional[TextConflictDetector] = None,
+    ) -> None:
+        self._fields = field_matcher or FieldMatcher(text_detector=text_detector)
 
     def detect(
         self,
@@ -37,33 +36,19 @@ class Arbiter:
         if existing.scope != new_item.scope:
             return None
 
-        old_flat = _flatten(existing.body)
-        new_flat = _flatten(new_item.body)
+        hit = self._fields.find_conflict(existing, new_item)
+        if hit is None:
+            return None
+        return ConflictRecord(
+            id=gen_conflict_id(),
+            target_knowledge=existing.id,
+            field=hit.field,
+            old_value=hit.old_value,
+            new_value=hit.new_value,
+            resolution="NEW_WINS",
+            created_at=int(time.time()),
+        )
 
-        for field, new_val in new_flat.items():
-            if field not in old_flat:
-                continue
-            old_val = old_flat[field]
-            if self._is_contradiction(old_val, new_val):
-                return ConflictRecord(
-                    id=gen_conflict_id(),
-                    target_knowledge=existing.id,
-                    field=field,
-                    old_value=old_val,
-                    new_value=new_val,
-                    resolution="NEW_WINS",
-                    created_at=int(time.time()),
-                )
-        return None
-
-    @staticmethod
-    def _is_contradiction(old_val: Any, new_val: Any) -> bool:
-        if old_val == new_val:
-            return False
-        # Numeric compare
-        if isinstance(old_val, (int, float)) and isinstance(new_val, (int, float)):
-            return float(old_val) != float(new_val)
-        # Enum / string: treat different non-empty strings as contradiction
-        if old_val is None or new_val is None:
-            return False
-        return str(old_val) != str(new_val)
+    def _is_contradiction(self, old_val: Any, new_val: Any) -> bool:
+        """Kept for callers/tests that used the previous helper."""
+        return self._fields.values_conflict(old_val, new_val)

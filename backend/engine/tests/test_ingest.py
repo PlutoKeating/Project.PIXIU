@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 import pytest
 import pytest_asyncio
 
@@ -9,7 +11,28 @@ from backend.engine.ingest import IngestionService
 from backend.engine.ingest.cleaner import Cleaner
 from backend.engine.ingest.normalizer import Normalizer
 from backend.engine.ingest.quality import Quality, QualityError
+from backend.foundation.core.models import Evidence
+from backend.foundation.core.repository import EvidenceRepository
 from backend.foundation.storage.repository import SqliteEvidenceRepo
+
+
+class _FakeEvidenceRepo(EvidenceRepository):
+    """In-memory EvidenceRepository for engine-only ingest tests."""
+
+    def __init__(self) -> None:
+        self.saved: dict[str, Evidence] = {}
+
+    async def save(self, evidence: Evidence) -> str:
+        self.saved[evidence.id] = evidence
+        return evidence.id
+
+    async def get(self, id: str) -> Optional[Evidence]:
+        return self.saved.get(id)
+
+    async def list_by_scope(self, scope: str, limit: int) -> list[Evidence]:
+        items = [e for e in self.saved.values() if e.scope == scope]
+        items.sort(key=lambda e: e.created_at, reverse=True)
+        return items[:limit]
 
 
 @pytest_asyncio.fixture
@@ -134,3 +157,77 @@ def test_quality_requires_body() -> None:
     q = Quality()
     with pytest.raises(QualityError):
         q.score({"title": "only"}, "OCR")
+
+
+def test_normalizer_accepts_injected_alias_without_code_edit() -> None:
+    out = Normalizer(aliases={"AAA": "BBB"}).normalize(
+        {
+            "title": "t",
+            "body": {},
+            "entities": ["AAA", "国网"],
+            "relations": [],
+        }
+    )
+    assert out["entities"] == ["BBB", "国家电网"]
+
+
+def test_normalizer_alias_applies_to_item_vendor() -> None:
+    out = Normalizer().normalize(
+        {
+            "title": "t",
+            "body": {
+                "items": [
+                    {"category": "水电燃气", "vendor": "国网", "amount": 210.0},
+                ]
+            },
+            "entities": ["国网"],
+            "relations": [{"from": "国网", "to": "水电燃气", "type": "BELONG_TO"}],
+        }
+    )
+    assert out["body"]["items"][0]["vendor"] == "国家电网"
+    assert out["entities"] == ["国家电网"]
+    assert out["relations"][0]["from"] == "国家电网"
+    assert out["body"]["items"][0]["category"] == "水电燃气"
+
+
+@pytest.mark.asyncio
+async def test_evidence_raw_keeps_content_hash() -> None:
+    repo = _FakeEvidenceRepo()
+    service = IngestionService(evidence_repo=repo)
+    evidence = await service.ingest(
+        "MANUAL_CONFIG",
+        {"key": "output_style.compact", "enabled": True},
+        scope="user:alice",
+    )
+    assert "content_hash" in evidence.raw
+    assert isinstance(evidence.raw["content_hash"], str)
+    assert len(evidence.raw["content_hash"]) == 64
+    stored = await repo.get(evidence.id)
+    assert stored is not None
+    assert stored.raw.get("content_hash") == evidence.raw["content_hash"]
+
+
+@pytest.mark.asyncio
+async def test_duplicate_payload_still_saves_two_ids() -> None:
+    repo = _FakeEvidenceRepo()
+    service = IngestionService(evidence_repo=repo)
+    raw = {"key": "output_style.compact", "enabled": True}
+    first = await service.ingest("MANUAL_CONFIG", raw, scope="user:alice")
+    second = await service.ingest("MANUAL_CONFIG", raw, scope="user:alice")
+    assert first.id != second.id
+    assert first.raw.get("content_hash") == second.raw.get("content_hash")
+    assert len(repo.saved) == 2
+
+
+@pytest.mark.asyncio
+async def test_ingest_rejects_non_dict_raw() -> None:
+    service = IngestionService(evidence_repo=_FakeEvidenceRepo())
+    with pytest.raises(TypeError, match="raw must be a dict"):
+        await service.ingest("OCR", "not-a-dict", scope="user:alice")  # type: ignore[arg-type]
+
+
+@pytest.mark.asyncio
+async def test_ingest_rejects_empty_scope() -> None:
+    service = IngestionService(evidence_repo=_FakeEvidenceRepo())
+    with pytest.raises(ValueError, match="scope must be a non-empty string"):
+        await service.ingest("OCR", {"title": "x"}, scope="")

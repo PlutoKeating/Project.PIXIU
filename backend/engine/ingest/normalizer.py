@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any
+from typing import Any, Mapping, Optional
 
+# Nested body fields treated as entity identity (not a generic walk).
+_IDENTITY_ITEM_FIELDS = ("vendor",)
 
-# Simple alias dictionary for V0.1 entity normalization
-_ENTITY_ALIASES: dict[str, str] = {
+# Default alias dictionary for V0.1 entity normalization
+_DEFAULT_ENTITY_ALIASES: dict[str, str] = {
     "国家电网公司": "国家电网",
     "国网": "国家电网",
     "市自来水": "市自来水公司",
@@ -19,6 +21,12 @@ _ENTITY_ALIASES: dict[str, str] = {
 class Normalizer:
     """Normalize payload shape and entity names."""
 
+    def __init__(self, aliases: Optional[Mapping[str, str]] = None) -> None:
+        merged = dict(_DEFAULT_ENTITY_ALIASES)
+        if aliases:
+            merged.update(aliases)
+        self._aliases = merged
+
     def normalize(self, payload: dict[str, Any]) -> dict[str, Any]:
         data = deepcopy(payload)
 
@@ -28,7 +36,7 @@ class Normalizer:
         body = data.get("body") or {}
         if not isinstance(body, dict):
             body = {"text": str(body)}
-        data["body"] = body
+        data["body"] = self._normalize_identity_fields(body)
 
         entities_raw = data.get("entities") or []
         entities: list[str] = []
@@ -52,9 +60,21 @@ class Normalizer:
 
         return data
 
-    @staticmethod
-    def normalize_entity(name: str) -> str:
+    def normalize_entity(self, name: str) -> str:
         text = name.strip()
         if not text:
             return text
-        return _ENTITY_ALIASES.get(text, text)
+        return self._aliases.get(text, text)
+
+    def _normalize_identity_fields(self, body: dict[str, Any]) -> dict[str, Any]:
+        items = body.get("items")
+        if not isinstance(items, list):
+            return body
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            for field in _IDENTITY_ITEM_FIELDS:
+                value = item.get(field)
+                if isinstance(value, str):
+                    item[field] = self.normalize_entity(value)
+        return body

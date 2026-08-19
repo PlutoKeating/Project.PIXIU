@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Optional
 
 from backend.foundation.core.models import Evidence, KnowledgeItem
@@ -15,6 +16,8 @@ from backend.engine.knowledge.graph import GraphBuilder
 from backend.engine.knowledge.structurer import Structurer
 from backend.engine.kylin import get_embedder
 from backend.engine.kylin.embedding import TextEmbedder
+
+logger = logging.getLogger(__name__)
 
 
 class KnowledgeService:
@@ -36,13 +39,26 @@ class KnowledgeService:
 
     async def structure(self, evidence: Evidence) -> KnowledgeItem:
         item = self._structurer.structure(evidence)
-        await self._graph.build(item, self._entity_repo)
-        item = self._embed_writer.write(item)
-        # 先落知识条目（knowledge_vec 外键依赖 knowledge_items.id），再写向量
-        await self._knw_repo.save(item)
-        vec = self._embed_writer.vector_bytes(item)
-        if vec is not None:
-            await self._knw_repo.save_vector(item.id, self._embed_writer.dim(item), vec)
+        step = "graph"
+        try:
+            await self._graph.build(item, self._entity_repo)
+            step = "embed"
+            item = self._embed_writer.write(item)
+            step = "knowledge_save"
+            # 先落知识条目（knowledge_vec 外键依赖 knowledge_items.id），再写向量
+            await self._knw_repo.save(item)
+            step = "vector_save"
+            vec = self._embed_writer.vector_bytes(item)
+            if vec is not None:
+                await self._knw_repo.save_vector(item.id, self._embed_writer.dim(item), vec)
+        except Exception:
+            logger.warning(
+                "knowledge.structure failed at step=%s knowledge_id=%s evidence_id=%s",
+                step,
+                item.id,
+                evidence.id,
+            )
+            raise
         return item
 
 

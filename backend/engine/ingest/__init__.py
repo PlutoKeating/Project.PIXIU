@@ -52,10 +52,13 @@ class IngestionService:
         normalized = self._normalizer.normalize(cleaned)
         quality_score = self._quality.score(normalized, source_type)
 
-        # Strip internal helper fields before persistence
+        # Promote fingerprint out of the internal "_" namespace so it survives strip.
         persist_raw = {
             k: v for k, v in normalized.items() if not k.startswith("_")
         }
+        content_hash = normalized.get("_content_hash")
+        if isinstance(content_hash, str) and content_hash:
+            persist_raw["content_hash"] = content_hash
 
         evidence = Evidence(
             id=gen_evidence_id(),

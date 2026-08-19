@@ -52,6 +52,8 @@ async def test_extract_output_style_and_versioning(
     assert len(first) == 1
     pref_id = first[0].id
     assert first[0].version == 1
+    assert first[0].key == "output_style.verbosity"
+    assert first[0].value.get("verbosity") == "compact"
 
     evidence2 = await ingest_service.ingest(
         "MANUAL_CONFIG",
@@ -61,6 +63,8 @@ async def test_extract_output_style_and_versioning(
     second = await pref_service.extract(evidence2)
     assert second[0].id == pref_id
     assert second[0].version == 2
+    assert second[0].key == "output_style.verbosity"
+    assert second[0].value.get("verbosity") == "verbose"
 
     history = await pref_service.get_history(pref_id)
     assert len(history) >= 2
