@@ -55,8 +55,8 @@ curl http://127.0.0.1:8765/conflicts
 ```
 
 > 12 个 REST 端点（含 `/memory/query`、`/memory/flow/promote`、`/sync/*`）已全部
-> 真实实现（2026-08-10 合入 main）；真实检索依赖麒麟 embedding，无 SDK 绑定环境
-> 会返回 `KylinSDKUnavailableError`。
+> 真实实现（2026-08-10 合入 main）；默认优先麒麟 embedding，无 SDK 绑定的
+> Debian 环境自动使用可移植软件向量器。正式麒麟验收使用严格 `kylin` 模式。
 
 ## 打包安装
 

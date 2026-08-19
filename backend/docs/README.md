@@ -16,7 +16,7 @@ Python 3.10 + C++（KylinSDK pybind11 封装）
 | `knowledge/` | 知识结构化（Structurer → Graph → EmbedWriter） |
 | `conflict/` | 冲突仲裁（Arbiter：检测→裁决→审计） |
 | `security/` | 安全/遗忘（Detector + ForgetEngine） |
-| `kylin/` | 真实麒麟 SDK 适配（coreai/embedding pybind11 绑定，无 mock 降级） |
+| `kylin/` | 麒麟 SDK 适配（coreai/embedding pybind11）+ Debian 软件降级 |
 
 **文档**：
 - [架构设计](engine/docs/ARCHITECTURE.md)
@@ -52,5 +52,5 @@ Python 3.10 + SQLite + hnswlib
 # 全部后端测试
 cd backend
 pip install -r requirements.txt
-PIXIU_EMBEDDING=mock pytest engine/tests/ foundation/tests/ -v
+PIXIU_EMBEDDING=portable pytest engine/tests/ foundation/tests/ -v
 ```

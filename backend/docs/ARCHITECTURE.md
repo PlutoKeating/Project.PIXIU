@@ -51,7 +51,8 @@
 ### 2.2 检索路径（基础设施主导）
 
 > ✅ **已实现**（foundation/retrieval，Phase 2，2026-08-10 合入 main）。
-> 真实检索依赖麒麟 embedding：无 SDK 绑定环境返回 `KylinSDKUnavailableError`。
+> 默认优先使用麒麟 embedding；无 SDK 的 Debian 环境使用可移植软件向量器。
+> 麒麟性能验收必须启用严格 `PIXIU_EMBEDDING=kylin`。
 
 ```
 query

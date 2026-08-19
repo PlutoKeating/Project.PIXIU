@@ -13,6 +13,20 @@
 - **截止**：2026年9月15日（挑战杯作品提交）
 - **团队**：4人（2-3名开发 + 1-2名支持/测试）
 
+### 1.1 平台兼容与验收基线
+
+1. 银河麒麟 OS V11 是产品的首要目标平台；正式赛题验收必须验证 KylinSDK
+   embedding、UKUI 集成及麒麟安装包。
+2. Debian 系发行版是强制兼容基线。没有 KylinSDK/UKUI 时，前端以纯 Qt5
+   编译，后端以 `PIXIU_EMBEDDING=auto` 自动选择可移植软件向量器，核心写入、
+   检索、同步和 API 不得因专有 SDK 缺失而整体不可用。
+3. 专有能力必须通过适配层和能力探测接入；严格验收可设置
+   `PIXIU_EMBEDDING=kylin` 使 SDK 缺失立即失败，通用验证可设置 `portable`。
+4. 开发依据优先级：仓库归档的 `docs/kylin_sdk_docs/` → `third_party/` 官方 SDK
+   submodule 源码/头文件 → `build/release/profiles/` 已验证平台事实。
+5. CI 必须持续验证 Debian 系通用构建；麒麟真机/自托管 runner 验证单独记录，
+   不能用软件降级测试冒充 KylinSDK 验收。
+
 ### 1.5 当前进度总览（2026-08-07）
 
 > 本小节随实际开发状态持续更新；各模块详细任务清单见模块内 `DEV_TASKS.md`。

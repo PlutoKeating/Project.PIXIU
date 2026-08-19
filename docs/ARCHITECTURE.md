@@ -8,6 +8,15 @@
 
 ## 1. 设计目标与约束
 
+### 1.0 平台兼容边界
+
+架构采用“麒麟能力优先、Debian 软件降级”的双路径：所有 KylinSDK 调用封装在
+适配层，运行时先探测原生扩展与服务；不可用时，核心业务切换到明确标识的可移植
+实现。`PIXIU_EMBEDDING=auto` 为默认，优先 `KylinTextEmbedding`，否则使用
+`PortableTextEmbedding`；`kylin` 为严格验收模式，`portable` 为通用 Debian
+验证模式。Qt/UKUI 同样以 `PIXIU_HAVE_KYSDK` 控制专有集成。降级路径保证可用性，
+不承诺也不替代麒麟 SDK 的召回率、时延和桌面集成验收。
+
 ### 1.1 模块划分（新增）
 
 PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `backend/` 下的不同目录树，通过 `foundation/core/` 中的抽象接口（ABC）解耦：

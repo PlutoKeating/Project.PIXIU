@@ -69,9 +69,9 @@ sudo apt-get install -y ./build/release/out/pixiu_0.1.0-1_amd64.deb
 
 - 前端：`cmake -DPIXIU_HAVE_KYSDK=OFF` 降级构建（`QShortcut`/`QSystemTrayIcon`
   替代 kysdk 快捷键/通知）；
-- 后端：生产代码无 mock 降级（`PIXIU_EMBEDDING` 仅支持 `kylin`）；无麒麟 SDK
-  绑定时 embedding 相关端点返回 `KylinSDKUnavailableError`，测试使用
-  `backend/engine/tests/fakes.py` 测试桩；
+- 后端：默认 `PIXIU_EMBEDDING=auto` 优先调用麒麟 SDK；无 SDK 时切换到本地
+  特征哈希向量器，核心端点保持可用。`kylin` 为严格验收模式，`portable` 为
+  Debian 通用验证模式；测试桩仅用于隔离单元测试；
 - 演示 UI：`python3 frontend/scripts/demo_stub_server.py --port 8877` +
   `PIXIU_BACKEND_URL=http://127.0.0.1:8877` 可无后端完整演示前端（见
   `frontend/docs/DEMO_GUIDE.md` §5）。
