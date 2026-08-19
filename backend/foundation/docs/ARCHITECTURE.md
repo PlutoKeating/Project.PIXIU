@@ -7,9 +7,8 @@
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
 > request_id 统一错误契约；四故事端到端与硬化测试通过，377 项全绿；
 > 1000 次查询压测 P95=19.18ms。仅真实麒麟 SDK 性能 / 局域网互操作 / Module A 联调
-> 待银河麒麟环境验收（详见 docs/ACCEPTANCE.md）；WS `/events` 路由注册修复
-> 仍待处理（`http_app.py` 未导入 `ws.py`、`ws.py` 未导入 `fastapi.WebSocket`，
-> 见 `frontend/docs/BACKEND_ISSUES.md`）。
+> 待银河麒麟环境验收（详见 docs/ACCEPTANCE.md）。WS `/events` 路由已于
+> 2026-08-20 完成真实入口注册与麒麟 VM 握手验证。
 
 ---
 

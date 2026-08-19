@@ -80,6 +80,11 @@ def test_memory_write_returns_accepted(client):
     assert data["latency_ms"] >= 0
 
 
+def test_events_websocket_is_registered(client):
+    with client.websocket_connect("/events") as websocket:
+        assert websocket.receive_json() == {"event": "connected", "data": {}}
+
+
 def test_preference_extract_and_history(client):
     write = client.post(
         "/memory/write",

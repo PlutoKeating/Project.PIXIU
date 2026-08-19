@@ -388,6 +388,11 @@ async def sync_revoke(id: str, sync=Depends(get_sync_service)):
     return {"status": "revoked", "peer_id": peer.id, "domain": peer.domain}
 
 
+# WebSocket routes live in a separate module, but the actual uvicorn entrypoint is
+# this module. Import only after ``app`` exists to register /events safely.
+from . import ws as _ws  # noqa: E402,F401
+
+
 if __name__ == "__main__":
     import uvicorn
 
