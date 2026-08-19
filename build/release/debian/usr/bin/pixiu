@@ -1,0 +1,10 @@
+#!/bin/sh
+# PIXIU 一键启动器：确保后端服务在线后打开桌面客户端。
+set -e
+
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl is-active --quiet pixiu-backend.service 2>/dev/null \
+        || systemctl start pixiu-backend.service 2>/dev/null || true
+fi
+
+exec /usr/bin/pixiu-frontend "$@"

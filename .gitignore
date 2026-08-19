@@ -36,6 +36,9 @@ build/release/dist/
 out/
 target/
 bin/
+!build/release/debian/usr/bin/
+!build/release/debian/usr/bin/pixiu
+!build/release/debian/usr/bin/pixiu-backend
 
 # Dependency directories
 node_modules/

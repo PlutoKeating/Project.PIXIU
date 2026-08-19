@@ -1,0 +1,24 @@
+#!/bin/sh
+# PIXIU 后端启动器：加载 /etc/pixiu 配置，用 venv Python 启动 API 网关。
+set -e
+
+if [ -f /etc/pixiu/pixiu.env ]; then
+    set -a
+    . /etc/pixiu/pixiu.env
+    set +a
+fi
+
+# 顶层 Python 包名是 backend（/usr/lib/pixiu/backend/{engine,foundation,...}），
+# 因此 PYTHONPATH 必须指向 /usr/lib/pixiu 而非其 backend 子目录
+# （实测教训：指向子目录会导致 ModuleNotFoundError: No module named 'backend'）。
+export PYTHONPATH=/usr/lib/pixiu${PYTHONPATH:+:$PYTHONPATH}
+if [ -x /usr/lib/pixiu/venv/bin/python ]; then
+    PIXIU_PYTHON=/usr/lib/pixiu/venv/bin/python
+else
+    PIXIU_PYTHON=/usr/bin/python3
+fi
+# 用 uvicorn CLI 启动（而非 python -m http_app）：规避 http_app 被包 __init__
+# 重复导入的 RuntimeWarning，并显式使用 /etc/pixiu 配置的 host/port。
+exec "${PIXIU_PYTHON}" -m uvicorn backend.foundation.api.http_app:app \
+    --host "${PIXIU_API_HOST:-127.0.0.1}" \
+    --port "${PIXIU_API_PORT:-8765}"
