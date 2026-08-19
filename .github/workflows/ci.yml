@@ -16,11 +16,11 @@ jobs:
   backend-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -42,16 +42,18 @@ jobs:
   build-deb:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Install build dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get install -y --no-install-recommends \
             cmake ninja-build dpkg-dev python3 \
-            qtbase5-dev qtbase5-dev-tools libqt5websockets5-dev qttools5-dev-tools
+            qtbase5-dev libqt5websockets5-dev
 
       - name: Compile, test, and package
         env:
@@ -61,7 +63,7 @@ jobs:
         run: make -C build/release build-deb
 
       - name: Upload Debian package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pixiu-deb-${{ github.sha }}
           path: |
