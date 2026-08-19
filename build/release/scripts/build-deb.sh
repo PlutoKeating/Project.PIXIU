@@ -70,7 +70,9 @@ BK="${STAGE}/usr/lib/pixiu/backend"
 mkdir -p "${BK}"
 cp -a "${PIXIU_ROOT}/backend/engine" "${BK}/"
 cp -a "${PIXIU_ROOT}/backend/foundation" "${BK}/"
-cp -a "${PIXIU_ROOT}/backend/scripts" "${BK}/"
+if [ -d "${PIXIU_ROOT}/backend/scripts" ]; then
+    cp -a "${PIXIU_ROOT}/backend/scripts" "${BK}/"
+fi
 cp "${PIXIU_ROOT}/backend/requirements.txt" "${BK}/requirements.txt"
 if [ -f "${PIXIU_ROOT}/backend/foundation/requirements-sync.txt" ]; then
     cp "${PIXIU_ROOT}/backend/foundation/requirements-sync.txt" \
