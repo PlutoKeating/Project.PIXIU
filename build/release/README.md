@@ -134,8 +134,8 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.0-1_amd64.deb
   `PIXIU_EMBEDDING=kylin`，让缺失绑定或 AI 运行时成为显式失败。
 - **后端 Python 依赖**：优先随包携带离线 wheels（`PIXIU_BUNDLE_WHEELS=1`）；
   打包机无法下载时退化为安装时在线 `pip install`（需要目标机联网）。
-- **WS `/events`**：后端注册问题仍未修复（见 `frontend/docs/BACKEND_ISSUES.md`），
-  不影响安装与 HTTP 端点使用；修复后随后端代码进包即可。
+- **WS 事件完整度**：`/events` 已完成真实入口注册并通过麒麟 VM 握手；当前仍需
+  补齐 `conflict_detected` / `forget_confirmation` 两类业务广播。
 - **OCR / 文本生成**：引擎侧待接入，不影响安装结构。
 
 ## 在测试机上克隆仓库（如需在目标机编译）

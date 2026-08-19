@@ -17,8 +17,8 @@
 - 后端契约（2026-08-10 合入 main）：12 个 REST 端点已全部真实实现，前端
   传输层与解析已按真实响应形状对齐；2026-08-11 起后端经 request_id 中间件统一
   返回 `{error, message, request_id}`，前端两种形状（`error`/`detail`）均兼容。
-- 剩余均为**后端契约阻塞或人工验收项**：WS `/events` 真实广播（见
-  `BACKEND_ISSUES.md`）、证据详情/偏好列表/QR 令牌端点、真实麒麟 SDK 环境
+- 剩余均为**后端契约阻塞或人工验收项**：WS 的 conflict/forget 事件补齐、
+  证据详情/偏好列表/QR 令牌端点、真实麒麟 SDK 环境
   性能与原生快捷键人工复测。
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"与
@@ -252,8 +252,8 @@ Module A 完成了第一轮"端口与用例对齐"工作（全程未修改 backe
 - 本地验收：OFF 路径构建通过，ctest 31/31 全绿；offscreen 冒烟（演示桩 +
   真前端二进制）通过（WS 连接、memory_ready → 角标/通知链路）。
 
-> 仍被后端契约阻塞、前端未推进：WS `/events` 注册/导入修复、conflict_detected
-> 与 forget_confirmation 真实广播、配对令牌生成端点（QR/PIN 完整闭环）、偏好
+> 仍被后端契约阻塞、前端未推进：conflict_detected 与 forget_confirmation 真实
+> 广播、配对令牌生成端点（QR/PIN 完整闭环）、偏好
 > 列表/证据详情/flow 上下文来源端点。以上均需 Module C 侧落地（见
 > `frontend/docs/BACKEND_ISSUES.md` 与 `DEMO_GUIDE.md` §3）。
 

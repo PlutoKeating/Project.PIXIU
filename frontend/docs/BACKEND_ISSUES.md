@@ -5,10 +5,13 @@
 > 发现的后端问题。
 > **边界**：本文件仅为问题记录，Module A 未修改任何 `backend/` 文件；修复由
 > Module C 负责人执行。
-> **状态**：⏳ 待 Module C 处理。
+> **状态**：✅ 已由 Module C 修复（2026-08-20）。
 > **复核（2026-08-11）**：`feat/foundation` 合入 main 后两项问题仍存在
 > （`http_app.py` 未导入 `ws.py`、`ws.py` 未导入 `fastapi.WebSocket`）；
 > 前端已具备退避重连与事件路由，修复后无需改前端。
+> **修复验证（2026-08-20）**：`http_app.py` 在 `app` 建立后加载 WS 路由，
+> `ws.py` 补齐 `WebSocket` 导入；TestClient 握手测试通过，麒麟 V11 安装包中的
+> 真实前端已连接 `ws://127.0.0.1:8765/events`，不再返回 403。
 
 ---
 

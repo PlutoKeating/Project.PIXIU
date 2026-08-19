@@ -95,11 +95,10 @@
 
 #### 跨模块阻塞项（Module A → C 交接，状态核实于 2026-08-10）
 
-`frontend/docs/BACKEND_ISSUES.md` 记录的两项 `/events` 问题——`http_app.py` 未导入
-`ws.py` 导致路由未注册（问题 1）、`ws.py` 未导入 `fastapi.WebSocket`（问题 2）——在
-`feat/foundation` 最新提交（b2d6abe）中**仍未修复**（`ws.py` 不在该分支改动列表中）。
-前端真实事件链路（`memory_ready`/`conflict_detected`/`sync_event` 广播）仍依赖
-Module C 修复后复测；Module A 已用测试桩完成 UI 侧冒烟。
+`frontend/docs/BACKEND_ISSUES.md` 记录的两项 `/events` 注册/导入问题已于
+2026-08-20 修复，并通过 TestClient 与麒麟 V11 安装包真实握手复测。
+`memory_ready`/`sync_event` 已具备广播路径；`conflict_detected` 与
+`forget_confirmation` 事件补齐仍是跨模块缺口。
 
 ### 1.8 打包发布与测试交付（2026-08-11 更新）
 
