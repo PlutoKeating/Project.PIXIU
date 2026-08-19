@@ -130,16 +130,21 @@ async def test_sync_status_reuses_sync_service(handler):
 
 
 # ═══════════════════════════════════════════════════════
-# 无 SDK 明确失败（不静默 mock）
+# 无 SDK 自动降级；严格模式明确失败
 # ═══════════════════════════════════════════════════════
 
-def test_production_embedder_fails_clearly_without_sdk():
-    """真实 get_embedder() 在无麒麟 SDK 时必须抛 KylinSDKUnavailableError。"""
+def test_production_embedder_falls_back_without_sdk():
+    from backend.engine.kylin import PortableTextEmbedding, get_embedder
+
+    assert isinstance(get_embedder(), PortableTextEmbedding)
+
+
+def test_strict_kylin_embedder_fails_clearly_without_sdk():
     from backend.engine.kylin import get_embedder
     from backend.engine.kylin.errors import KylinSDKUnavailableError
 
     with pytest.raises(KylinSDKUnavailableError):
-        get_embedder()
+        get_embedder("kylin")
 
 
 # ═══════════════════════════════════════════════════════

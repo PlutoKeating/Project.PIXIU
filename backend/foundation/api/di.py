@@ -96,7 +96,7 @@ async def get_knowledge_service(
     return KnowledgeService(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
-        embedder=get_embedder(),
+        embedder=get_embedder(settings.embedding),
     )
 
 
@@ -138,7 +138,7 @@ async def get_retrieval_service(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
         evidence_repo=SqliteEvidenceRepo(db),
-        embedder=get_embedder(),
+        embedder=get_embedder(settings.embedding),
     )
 
 

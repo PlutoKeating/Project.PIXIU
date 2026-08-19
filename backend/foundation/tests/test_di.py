@@ -7,6 +7,7 @@ import pytest
 import backend.foundation.api.di as di_module
 from backend.engine.conflict import ConflictService
 from backend.engine.ingest import IngestionService
+from backend.engine.knowledge import KnowledgeService
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
 from backend.foundation.api.di import (
@@ -35,6 +36,7 @@ from backend.foundation.storage.repository import (
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        self.embedding = "portable"
         self.sync_device_name = "test-device"
         self.sync_domain = "shared:test"
         self.sync_key_passphrase = "phase3-di-test-passphrase"
@@ -74,6 +76,7 @@ async def test_service_factories_return_real_services(fresh_di):
         assert isinstance(await get_preference_service(db), PreferenceService)
         assert isinstance(await get_conflict_service(db), ConflictService)
         assert isinstance(await get_security_service(db), SecurityService)
+        assert isinstance(await get_knowledge_service(db), KnowledgeService)
         assert isinstance(await get_evidence_repo(db), SqliteEvidenceRepo)
         assert isinstance(await get_preference_repo(db), SqlitePreferenceRepo)
         assert isinstance(await get_conflict_repo(db), SqliteConflictRepo)

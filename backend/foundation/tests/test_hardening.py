@@ -156,6 +156,7 @@ def test_api_error_contract_violation_and_request_id(tmp_path, monkeypatch):
     class _FakeSettings:
         def __init__(self, db_path: str):
             self.db_path = db_path
+            self.embedding = "portable"
             # sync lifespan 需要的最小属性（默认关闭网络）
             self.sync_network_enabled = False
             self.sync_port = 8766

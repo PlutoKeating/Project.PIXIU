@@ -29,6 +29,7 @@ from backend.foundation.sync import PairingMethod, SqliteSyncStore, SyncService
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
+        self.embedding = "portable"
         self.sync_device_name = "书房工作站"
         self.sync_domain = "shared:home"
         self.sync_key_passphrase = "phase3-api-test-passphrase"

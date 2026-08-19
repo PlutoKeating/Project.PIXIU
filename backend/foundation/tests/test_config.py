@@ -19,11 +19,11 @@ def test_default_port():
         assert s.api_port == 8765
 
 
-def test_default_embedding_is_kylin():
-    """Default PIXIU_EMBEDDING is 'kylin'（生产仅支持真实麒麟 SDK）。"""
+def test_default_embedding_is_auto():
+    """Default prefers Kylin SDK and permits portable Debian fallback."""
     with mock.patch.dict(os.environ, {}, clear=True):
         s = Settings()
-        assert s.embedding == "kylin"
+        assert s.embedding == "auto"
 
 
 def test_default_db_path():
@@ -119,6 +119,13 @@ def test_embedding_kylin():
     with mock.patch.dict(os.environ, {"PIXIU_EMBEDDING": "kylin"}):
         s = Settings()
         assert s.embedding == "kylin"
+
+
+def test_embedding_portable():
+    """PIXIU_EMBEDDING=portable forces the Debian-compatible implementation."""
+    with mock.patch.dict(os.environ, {"PIXIU_EMBEDDING": "portable"}):
+        s = Settings()
+        assert s.embedding == "portable"
 
 
 # ─── Invalid values are rejected ─────────────────────────
