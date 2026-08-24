@@ -14,7 +14,7 @@ from fastapi import Depends
 from backend.engine.conflict import ConflictService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import get_embedder
+from backend.engine.kylin import get_embedder, get_ocr
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
 
@@ -76,6 +76,11 @@ async def get_evidence_repo(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> SqliteEvidenceRepo:
     return SqliteEvidenceRepo(db)
+
+
+async def get_ocr_service():
+    """OCR 后端：PIXIU_OCR 控制 auto/kylin/portable，与 embedding 同构。"""
+    return get_ocr(settings.ocr)
 
 
 async def get_preference_service(

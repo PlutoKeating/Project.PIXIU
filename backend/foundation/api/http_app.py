@@ -5,6 +5,11 @@
 """
 
 from __future__ import annotations
+import asyncio
+import base64
+import contextlib
+import os
+import tempfile
 from contextlib import asynccontextmanager
 
 import time
@@ -27,6 +32,7 @@ from .di import (
     get_ingestion_service,
     get_knowledge_service,
     get_knowledge_repo,
+    get_ocr_service,
     get_optional_sync_service,
     get_preference_repo,
     get_preference_service,
@@ -154,6 +160,12 @@ class SyncTokenRequest(BaseModel):
     ttl_seconds: int = Field(default=300, ge=1, le=900)
 
 
+class OcrRequest(BaseModel):
+    # 二选一：image_base64（前端拖拽/粘贴上传）或 image_path（本机绝对路径）。
+    image_base64: str | None = Field(default=None, max_length=20 * 1024 * 1024)
+    image_path: str | None = Field(default=None, max_length=4096)
+
+
 def _latency_ms(started: float) -> int:
     return int((time.monotonic() - started) * 1000)
 
@@ -236,6 +248,57 @@ async def evidence_detail(id: str, evidence_repo=Depends(get_evidence_repo)):
     if evidence is None:
         raise HTTPException(status_code=404, detail="NOT_FOUND")
     return evidence.model_dump(mode="json")
+
+
+# ─── OCR 识别 ────────────────────────────────────────────
+
+@app.post("/memory/ocr", tags=["Memory"], summary="图片文字识别")
+async def memory_ocr(
+    body: OcrRequest,
+    ocr=Depends(get_ocr_service),
+):
+    """识别图片中的文字（麒麟 kysdk-ocr）；无 SDK 环境返回 OCR_UNAVAILABLE。"""
+    from backend.engine.kylin.errors import KylinSDKUnavailableError
+
+    if bool(body.image_base64) == bool(body.image_path):
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST")
+
+    started = time.monotonic()
+    tmp_path: str | None = None
+    image_ref: str
+    cleanup = False
+    if body.image_base64:
+        try:
+            data = base64.b64decode(body.image_base64, validate=True)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+        if not data:
+            raise HTTPException(status_code=400, detail="INVALID_REQUEST")
+        with tempfile.NamedTemporaryFile(suffix=".img", delete=False) as handle:
+            tmp_path = handle.name
+            handle.write(data)
+        image_ref = tmp_path
+        cleanup = True
+    else:
+        image_ref = str(body.image_path)
+
+    try:
+        lines = await asyncio.to_thread(ocr.recognize, image_ref)
+    except KylinSDKUnavailableError as exc:
+        raise HTTPException(status_code=503, detail="OCR_UNAVAILABLE") from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+    finally:
+        if cleanup and tmp_path:
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
+
+    return {
+        "text_lines": lines,
+        "text": "\n".join(lines),
+        "engine": type(ocr).__name__,
+        "latency_ms": _latency_ms(started),
+    }
 
 
 # ─── 混合检索 ────────────────────────────────────────────

@@ -30,6 +30,7 @@ class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self.embedding = "portable"
+        self.ocr = "portable"
         self.sync_device_name = "书房工作站"
         self.sync_domain = "shared:home"
         self.sync_key_passphrase = "phase3-api-test-passphrase"
@@ -139,6 +140,71 @@ def test_sync_token_returns_usable_token(client):
     # 生成的令牌可被 /sync/pair 校验格式（自配对会被拒绝但不是 INVALID_REQUEST）
     paired = client.post("/sync/pair", json={"method": "QR", "token": data["token"]})
     assert paired.status_code in (200, 422)
+
+
+def _install_ocr_override(backend_engine):
+    from backend.foundation.api.di import get_ocr_service
+
+    async def _override():
+        return backend_engine
+
+    app.dependency_overrides[get_ocr_service] = _override
+
+
+def test_memory_ocr_rejects_ambiguous_payload(client):
+    resp = client.post("/memory/ocr", json={})
+    assert resp.status_code == 400
+    assert resp.json()["error"] == "INVALID_REQUEST"
+
+    resp = client.post(
+        "/memory/ocr",
+        json={"image_base64": "aGVsbG8=", "image_path": "/tmp/x.png"},
+    )
+    assert resp.status_code == 400
+
+    resp = client.post("/memory/ocr", json={"image_base64": "!!!not-base64!!!"})
+    assert resp.status_code == 400
+
+
+def test_memory_ocr_reports_unavailable_without_sdk(client):
+    from backend.engine.kylin.errors import KylinSDKUnavailableError
+    from backend.foundation.api.di import get_ocr_service
+
+    class _Stub:
+        def recognize(self, image_path, nums=4):
+            raise KylinSDKUnavailableError("no sdk")
+
+    _install_ocr_override(_Stub())
+    try:
+        resp = client.post("/memory/ocr", json={"image_path": "/tmp/none.png"})
+        assert resp.status_code == 503
+        assert resp.json()["error"] == "OCR_UNAVAILABLE"
+    finally:
+        app.dependency_overrides.pop(get_ocr_service, None)
+
+
+def test_memory_ocr_returns_lines_with_sdk_stub(client):
+    from backend.foundation.api.di import get_ocr_service
+
+    class _Stub:
+        def recognize(self, image_path, nums=4):
+            assert image_path.endswith(".img")
+            return ["2026年4月家庭支出清单", "电费 210 元"]
+
+    _install_ocr_override(_Stub())
+    try:
+        import base64 as b64
+
+        resp = client.post(
+            "/memory/ocr", json={"image_base64": b64.b64encode(b"fake").decode()}
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["text_lines"] == ["2026年4月家庭支出清单", "电费 210 元"]
+        assert data["text"].startswith("2026年")
+        assert data["latency_ms"] >= 0
+    finally:
+        app.dependency_overrides.pop(get_ocr_service, None)
 
 
 def test_preference_extract_and_history(client):

@@ -11,6 +11,7 @@ import os
 import socket
 
 _VALID_EMBEDDING = frozenset({"auto", "kylin", "portable"})
+_VALID_OCR = frozenset({"auto", "kylin", "portable"})
 _VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR"})
 
 
@@ -87,6 +88,7 @@ class Settings:
         self._api_host = _env_str("PIXIU_API_HOST", "127.0.0.1")
         self._api_port = _env_port("PIXIU_API_PORT", 8765)
         self._embedding = _env_choice("PIXIU_EMBEDDING", "auto", _VALID_EMBEDDING)
+        self._ocr = _env_choice("PIXIU_OCR", "auto", _VALID_OCR)
         self._log_level = _env_choice("PIXIU_LOG_LEVEL", "INFO", _VALID_LOG_LEVELS)
         self._data_dir = _env_str("PIXIU_DATA_DIR", "./data")
         self._sync_device_name = _env_str(
@@ -133,6 +135,10 @@ class Settings:
     @property
     def embedding(self) -> str:
         return self._embedding
+
+    @property
+    def ocr(self) -> str:
+        return self._ocr
 
     @property
     def log_level(self) -> str:
