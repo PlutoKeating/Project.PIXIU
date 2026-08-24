@@ -36,7 +36,7 @@
 | A · frontend | 团队负责人 | ❌ 未开始 | — | 悬浮球/聊天框/记忆面板/设备配对等全部内容（见 `frontend/docs/DEV_TASKS.md`） |
 | B · engine | @Ø是铯 | ✅ 核心管线已实现并集成 | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐（ULID ID、版本化）；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
 | C · foundation | @17% | 🟡 Phase 1 完成 | core 契约 + config/idgen/logger；SQLite 存储（schema/migrations/5 仓储）；API 网关部分真实端点；WS 推送 | retrieval 混合检索（`/memory/query`）；flow 记忆流转；sync CRDT；eval 评测 |
-| D · tests/support | @捌嘎君 | ❌ 未开始 | foundation 侧测试已由集成工作补齐（229 项全绿） | 测试数据集、性能压测、Docker 容器化、评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+| D · tests/support | @捌嘎君 | ❌ 未开始 | foundation 侧测试已由集成工作补齐（229 项全绿） | 测试数据集、性能压测、验收评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
 
 **已完成的集成工作（integration/backend-v0.2 → main，2026-08-07）**
 
@@ -56,7 +56,7 @@
 | A · frontend | 团队负责人 | ✅ 独立功能完成 + UI/UX polish 完成 | Qt5/CMake 应用骨架；悬浮球/聊天框/记忆面板/遗忘/录入/设置/配对/解绑/同步 Tab；WS 事件路由；i18n（180 条）；UKUI 主题跟随/通知/快捷键/`.deb` 打包；双路径 ctest 31/31 全绿；真实桌面截图留证 | 真实麒麟会话人工复测（全局快捷键等）；后端契约阻塞：偏好列表/证据详情/二维码令牌/真实配对闭环/真实 WS 事件广播 |
 | B · engine | @Ø是铯 | ✅ 核心管线已实现并集成（较 08-07 无新增） | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
 | C · foundation | @17% | ✅ Phase 0~7 全部完成（功能冻结） | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务、request_id 统一错误契约、Phase 7 压测证据（P95=19.18ms）；同步/流转 API 全部真实接入；测试全绿（麒麟 V11 真机 377 passed） | 麒麟真实 SDK 性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
-| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（麒麟 V11 真机 377 passed）；frontend ctest 31/31；自动回归脚本 `frontend/scripts/regression.sh`；打包发布脚手架 `build/release/` | 测试数据集、性能压测、Docker 容器化、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（麒麟 V11 真机 377 passed）；frontend ctest 31/31；自动回归脚本 `frontend/scripts/regression.sh`；打包发布脚手架 `build/release/` | 测试数据集、性能压测、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -128,7 +128,7 @@
 1. 引擎麒麟 SDK 绑定构建（Module B）→ 重新出包后写入/检索/同步链路即通。
 2. 后端 WS `/events` 注册修复（Module C）→ 前端实时事件链路复测。
 3. 麒麟 SDK 开发环境就绪后 `PIXIU_KYSDK=ON` 出原生版（原生快捷键/通知）。
-4. 正式验收：性能压测（P95≤500ms、召回率≥85%）、Docker 容器化、验收评测报告。
+4. 正式验收：性能压测（P95≤500ms、召回率≥85%）、验收评测报告。
 
 ---
 
@@ -161,7 +161,7 @@
 └──────────────────────────────────────────────────────────┘
 
   支持岗 D (scripts/ + tests/):
-    测试数据集 · 评测框架 · Docker 容器化 · 文档补全 · 集成测试
+    测试数据集 · 评测框架 · 文档补全 · 集成测试
 ```
 
 ### 2.1 模块 A — UKUI 桌面客户端
@@ -219,15 +219,15 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 | 属性 | 说明 |
 |------|------|
 | 目录 | `backend/scripts/`, `backend/tests/` |
-| 技术栈 | Python, Shell, Docker |
+| 技术栈 | Python, Shell |
 | 开发人员 | 1人（测试 / 运维 / 工具开发） |
 | 对其他模块 | 零依赖，可使用 mock 独立工作 |
 
-**职责**：测试数据集构造、单元/集成测试、性能压测、Docker 容器化、环境变量模板、评测脚本、文档补全。
+**职责**：测试数据集构造、单元/集成测试、性能压测、环境变量模板、评测脚本、文档补全。
 
 **状态（2026-08-11）**：测试侧已由 A/C 模块补齐（麒麟 V11 真机 foundation+engine
 377 passed、frontend ctest 31/31）；打包发布脚手架已交付（`build/release/`，
-已发布 `v0.1.0-staging`）；正式支持工作（测试数据集、性能压测、Docker 容器化、
+已发布 `v0.1.0-staging`）；正式支持工作（测试数据集、性能压测、
 验收评测报告）尚未开工。
 
 ---
@@ -373,8 +373,6 @@ Project.PIXIU/
 │   ├── scripts/                    ★ 支持岗 D：工具脚本
 │   ├── tests/                      ★ 支持岗 D：测试
 │   ├── requirements.txt
-│   ├── Dockerfile
-│   ├── docker-compose.yml
 │   └── .env.example
 │
 ├── frontend/                       ★ 模块 A：UKUI 桌面客户端
@@ -386,8 +384,6 @@ Project.PIXIU/
 │   │   └── QUICK_START.md
 │   ├── resources/                  # 图标、QSS 样式、i18n
 │   ├── CMakeLists.txt
-│   ├── Dockerfile
-│   ├── docker-compose.yml
 │   └── .env.example
 
 ├── third_party/                    # 第三方依赖（官方麒麟 SDK submodule）
