@@ -40,6 +40,9 @@ bin/
 !build/release/debian/usr/bin/pixiu
 !build/release/debian/usr/bin/pixiu-backend
 
+# Kylin SDK 原生绑定编译产物（在目标机按 backend/engine/kylin/cpp/README 构建）
+backend/engine/kylin/*.so
+
 # Dependency directories
 node_modules/
 jspm_packages/

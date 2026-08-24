@@ -55,6 +55,9 @@ class ANNChannel:
     def __init__(self, knw_repo: KnowledgeRepository, embedder: Embedder) -> None:
         self._knw_repo = knw_repo
         self._embedder = embedder
+        # 解码缓存：knowledge_id -> (字节数, 解码后的量化向量)。
+        # 避免每次查询对全量向量重复 struct.unpack；以 (id, 字节数) 判定是否复用。
+        self._decoded: dict[str, tuple[int, list[int]]] = {}
 
     async def search(self, text: str, top_k: int = 20) -> list[tuple[KnowledgeItem, float]]:
         """返回 [(KnowledgeItem, similarity)]，按相似度降序。"""
@@ -65,10 +68,21 @@ class ANNChannel:
         vectors = await self._knw_repo.list_vectors()
 
         scored: list[tuple[str, float]] = []
+        seen_ids: set[str] = set()
         for knowledge_id, _dim, vec_bytes in vectors:
-            stored = _unpack_quantized(vec_bytes)
-            sim = _cosine(query_vec, stored)
+            seen_ids.add(knowledge_id)
+            cached = self._decoded.get(knowledge_id)
+            if cached is None or cached[0] != len(vec_bytes):
+                cached = (len(vec_bytes), _unpack_quantized(vec_bytes))
+                self._decoded[knowledge_id] = cached
+            sim = _cosine(query_vec, cached[1])
             scored.append((knowledge_id, sim))
+
+        # 清理已删除/被遗忘条目的缓存，防止长期驻留
+        if len(self._decoded) > len(seen_ids) * 2:
+            self._decoded = {
+                k: v for k, v in self._decoded.items() if k in seen_ids
+            }
 
         scored.sort(key=lambda t: t[1], reverse=True)
         top = scored[:top_k]
