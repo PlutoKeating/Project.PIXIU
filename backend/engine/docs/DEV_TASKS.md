@@ -15,8 +15,12 @@
   Debian 可移植特征哈希向量器作为明确的软件降级路径。
 - 🟡 **待验证**：麒麟环境构建 `_kylin_text_embedding` / `_kylin_vector_client`
   并完成真实端到端调用（AI 运行时 / 向量引擎需在线）。
-- ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；OCR（AI SDK 9.4.1）
-  与离线文本生成（AI SDK 9.5.1）接入。
+- 🟡 **OCR（kysdk-ocr / libkyocr）已接入**（2026-08-24）：pybind11 绑定
+  `_kylin_ocr` + `engine/kylin/ocr.py` 适配层 + REST `POST /memory/ocr`
+  （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）。
+- ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；离线文本
+  生成（AI SDK 9.5.1，当前麒麟 apt 源未提供对应开发包，需在带该 SDK 的
+  目标环境接入）。
 - 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），

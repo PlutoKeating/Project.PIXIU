@@ -20,6 +20,7 @@
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | GET | `/evidence/{id}` | 证据详情（查看原文） | ✅ 已实现（2026-08-24） |
+| POST | `/memory/ocr` | 图片文字识别（麒麟 kysdk-ocr） | ✅ 已实现（2026-08-24，无 SDK 环境返回 503 OCR_UNAVAILABLE） |
 | POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
 | GET | `/preferences` | 偏好列表（支持 scope 过滤） | ✅ 已实现（2026-08-24） |
 | GET | `/preference/{id}/history` | 偏好版本回溯 | ✅ 已实现 |
@@ -33,7 +34,7 @@
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部四类事件） |
 
-> 状态说明（2026-08-24）：15 个 REST 端点已全部按本文档契约真实实现；
+> 状态说明（2026-08-24）：16 个 REST 端点已全部按本文档契约真实实现；
 > 四类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event）均已广播。
 
@@ -129,7 +130,24 @@
 }
 ```
 
-### 3.4 POST /preference/extract
+### 3.4 POST /memory/ocr
+
+图片文字识别。请求体二选一：`image_base64`（前端上传，≤20MB base64）
+或 `image_path`（本机绝对路径）。无麒麟 kysdk-ocr 环境返回
+`503 {"error": "OCR_UNAVAILABLE"}`。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "text_lines": ["2026年4月家庭支出清单", "电费 210 元"],
+  "text": "2026年4月家庭支出清单\n电费 210 元",
+  "engine": "KylinOcr",
+  "latency_ms": 850
+}
+```
+
+### 3.5 POST /preference/extract
 
 触发偏好提取。
 
@@ -158,7 +176,7 @@
 }
 ```
 
-### 3.5 GET /preferences
+### 3.6 GET /preferences
 
 偏好列表，支持 `scope` 查询参数过滤，供前端 MemoryPanel 偏好选择器使用。
 
@@ -184,7 +202,7 @@
 }
 ```
 
-### 3.6 GET /preference/{id}/history
+### 3.7 GET /preference/{id}/history
 
 偏好版本回溯。
 
@@ -203,7 +221,7 @@
 }
 ```
 
-### 3.7 POST /forget
+### 3.8 POST /forget
 
 自然语言遗忘指令。
 
@@ -241,7 +259,7 @@
 }
 ```
 
-### 3.8 GET /conflicts
+### 3.9 GET /conflicts
 
 冲突审计列表。
 
@@ -264,7 +282,7 @@
 }
 ```
 
-### 3.9 POST /memory/flow/promote
+### 3.10 POST /memory/flow/promote
 
 短/中期记忆沉淀到长期记忆。
 
@@ -288,7 +306,7 @@
 }
 ```
 
-### 3.10 POST /sync/token
+### 3.11 POST /sync/token
 
 生成设备配对令牌（QR/PIN），供前端 PairDialog 展示二维码或 PIN 码。
 注意：`method=PIN` 时必须提供 6 位数字 `pin`；`method=QR` 时无需 pin。
@@ -313,7 +331,7 @@
 }
 ```
 
-### 3.11 POST /sync/pair
+### 3.12 POST /sync/pair
 
 设备配对，加入共享域。
 
@@ -338,7 +356,7 @@
 }
 ```
 
-### 3.12 GET /sync/peers
+### 3.13 GET /sync/peers
 
 节点列表。
 
@@ -367,7 +385,7 @@
 }
 ```
 
-### 3.13 GET /sync/status
+### 3.14 GET /sync/status
 
 同步状态。
 
@@ -384,7 +402,7 @@
 }
 ```
 
-### 3.14 POST /sync/peers/{id}/revoke
+### 3.15 POST /sync/peers/{id}/revoke
 
 解绑设备。
 
