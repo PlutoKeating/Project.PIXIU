@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(pixiu-frontend VERSION 0.1.0 LANGUAGES CXX)
 
 option(PIXIU_HAVE_KYSDK "Build with KylinSDK integration" OFF)
+option(PIXIU_HAVE_QRENCODE "Build QR pairing rendering with libqrencode" ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,6 +41,8 @@ add_executable(pixiu-frontend
     src/widgets/ThinkingSkeleton.cpp
     src/widgets/EvidenceCard.h
     src/widgets/EvidenceCard.cpp
+    src/widgets/EvidenceDetailDialog.h
+    src/widgets/EvidenceDetailDialog.cpp
     src/widgets/ImportDialog.h
     src/widgets/ImportDialog.cpp
     src/models/ChatMessage.h
@@ -102,6 +105,18 @@ install(FILES resources/com.kylin.pixiu.desktop
 install(FILES resources/icons/pixiu.svg
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
 )
+
+if(PIXIU_HAVE_QRENCODE)
+    # 配对二维码渲染：libqrencode 可选依赖，缺失时 PairDialog 降级为令牌文本。
+    find_library(QRENCODE_LIBRARY NAMES qrencode)
+    if(QRENCODE_LIBRARY)
+        target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_QRENCODE=1)
+        target_link_libraries(pixiu-frontend PRIVATE ${QRENCODE_LIBRARY})
+        message(STATUS "libqrencode found: QR pairing rendering enabled")
+    else()
+        message(STATUS "libqrencode not found: QR pairing falls back to token text")
+    endif()
+endif()
 
 if(PIXIU_HAVE_KYSDK)
     # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）与
@@ -478,6 +493,8 @@ if(BUILD_TESTING)
         src/widgets/ThinkingSkeleton.cpp
         src/widgets/EvidenceCard.h
         src/widgets/EvidenceCard.cpp
+        src/widgets/EvidenceDetailDialog.h
+        src/widgets/EvidenceDetailDialog.cpp
         src/widgets/ImportDialog.h
         src/widgets/ImportDialog.cpp
         src/models/ChatMessage.h
@@ -555,6 +572,8 @@ if(BUILD_TESTING)
         src/widgets/ThinkingSkeleton.cpp
         src/widgets/EvidenceCard.h
         src/widgets/EvidenceCard.cpp
+        src/widgets/EvidenceDetailDialog.h
+        src/widgets/EvidenceDetailDialog.cpp
         src/widgets/ImportDialog.h
         src/widgets/ImportDialog.cpp
         src/models/ChatMessage.h

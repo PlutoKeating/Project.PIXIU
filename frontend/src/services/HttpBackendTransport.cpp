@@ -125,6 +125,33 @@ void HttpBackendTransport::extractPreferences(const QJsonObject &payload)
              });
 }
 
+void HttpBackendTransport::preferencesList(const QString &scope)
+{
+    QString path = QStringLiteral("/preferences");
+    if (!scope.isEmpty()) {
+        path += QStringLiteral("?scope=") + QUrl::toPercentEncoding(scope);
+    }
+    getJson(path,
+            [this](quint64, const QJsonObject &obj) {
+                emit preferencesListResult(
+                    obj.value(QStringLiteral("preferences")).toArray());
+            });
+}
+
+void HttpBackendTransport::evidenceDetail(const QString &evidenceId)
+{
+    getJson(QStringLiteral("/evidence/") + evidenceId,
+            [this](quint64, const QJsonObject &obj) { emit evidenceDetailResult(obj); });
+}
+
+void HttpBackendTransport::createPairingToken(const QJsonObject &payload)
+{
+    postJson(QStringLiteral("/sync/token"), payload,
+             [this](quint64, const QJsonObject &obj) {
+                 emit pairingTokenResult(obj);
+             });
+}
+
 void HttpBackendTransport::promoteMemory(const QJsonObject &payload)
 {
     postJson(QStringLiteral("/memory/flow/promote"), payload,

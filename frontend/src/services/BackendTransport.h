@@ -33,6 +33,12 @@ public:
     // 偏好提取（POST /preference/extract，evidence_ids 由上层提供）。
     // 基类提供默认空实现，非 HTTP 传输/测试桩无需强制实现。
     virtual void extractPreferences(const QJsonObject &payload);
+    // 偏好列表（GET /preferences?scope=）。默认空实现，理由同上。
+    virtual void preferencesList(const QString &scope);
+    // 证据详情（GET /evidence/{id}）。默认空实现，理由同上。
+    virtual void evidenceDetail(const QString &evidenceId);
+    // 配对令牌生成（POST /sync/token）。默认空实现，理由同上。
+    virtual void createPairingToken(const QJsonObject &payload);
     virtual void promoteMemory(const QJsonObject &payload) = 0;
     virtual void pairDevice(const QJsonObject &payload) = 0;
     virtual void listPeers() = 0;
@@ -59,6 +65,12 @@ signals:
     void preferenceHistoryResult(const QJsonObject &response);
     // 偏好提取响应（POST /preference/extract）。
     void preferenceExtractResult(const QJsonObject &response);
+    // 偏好列表（GET /preferences → {"preferences": [...]}）。
+    void preferencesListResult(const QJsonArray &preferences);
+    // 证据详情（GET /evidence/{id}）。
+    void evidenceDetailResult(const QJsonObject &evidence);
+    // 配对令牌（POST /sync/token → {"token", "method", "ttl_seconds"}）。
+    void pairingTokenResult(const QJsonObject &response);
     // 记忆流转（POST /memory/flow/promote）。
     void promoteResult(const QJsonObject &response);
     // 设备配对（POST /sync/pair）。

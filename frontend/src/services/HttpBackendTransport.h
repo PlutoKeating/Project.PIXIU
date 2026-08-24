@@ -37,6 +37,9 @@ public:
     void listConflicts() override;
     void preferenceHistory(const QString &preferenceId) override;
     void extractPreferences(const QJsonObject &payload) override;
+    void preferencesList(const QString &scope) override;
+    void evidenceDetail(const QString &evidenceId) override;
+    void createPairingToken(const QJsonObject &payload) override;
     void promoteMemory(const QJsonObject &payload) override;
     void pairDevice(const QJsonObject &payload) override;
     void listPeers() override;

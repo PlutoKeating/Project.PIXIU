@@ -21,6 +21,7 @@ class ForgetController;
 class ForgetDialog;
 class SettingsDialog;
 class MemoryPanel;
+class EvidenceDetailDialog;
 class ConflictController;
 class PreferenceController;
 class ThemeService;
@@ -73,6 +74,7 @@ private:
     ForgetDialog *m_forgetDialog = nullptr;
     SettingsDialog *m_settingsDialog = nullptr;
     MemoryPanel *m_memoryPanel = nullptr;
+    EvidenceDetailDialog *m_evidenceDetailDialog = nullptr;
     ConflictController *m_conflictController = nullptr;
     PreferenceController *m_preferenceController = nullptr;
     SyncController *m_syncController = nullptr;
@@ -81,10 +83,14 @@ private:
     // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
     // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。
     bool m_pairPending = false;
+    // 配对令牌生成在途标记：错误路由到配对对话框。
+    bool m_tokenPending = false;
     // WS forget_confirmation 事件携带的待确认指令（确认后执行第二阶段）。
     QString m_remoteForgetCommand;
     // 最近一次偏好历史请求的 ID（失败重试时重发）。
     QString m_lastPreferenceId;
+    // 最近一次证据详情请求的 ID（响应路由与错误上报用）。
+    QString m_pendingEvidenceId;
     // 最近一次成功写入返回的 evidence_id（偏好提取输入源）。
     QString m_lastEvidenceId;
     // 后端离线引导提示是否已展示（每次断线仅提示一次，恢复后复位）。

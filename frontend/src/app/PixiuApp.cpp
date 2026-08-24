@@ -18,6 +18,7 @@
 #include "widgets/ForgetDialog.h"
 #include "widgets/SettingsDialog.h"
 #include "widgets/MemoryPanel.h"
+#include "widgets/EvidenceDetailDialog.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
 #include "models/MemoryAtom.h"
@@ -183,6 +184,9 @@ bool PixiuApp::start()
         if (m_syncController) {
             m_syncController->refresh();
         }
+        if (m_preferenceController) {
+            m_preferenceController->loadList();
+        }
         m_memoryPanel->showAndFocus();
     };
     connect(m_chatWindow, &ChatWindow::openPanelRequested, this, openMemoryPanel);
@@ -249,6 +253,17 @@ bool PixiuApp::start()
                 m_pairPending = true;
                 m_transport->pairDevice(payload);
             });
+    // 配对令牌生成（POST /sync/token）：结果路由到配对对话框。
+    connect(m_memoryPanel, &MemoryPanel::pairingTokenRequested, this,
+            [this](const QJsonObject &payload) {
+                m_tokenPending = true;
+                m_transport->createPairingToken(payload);
+            });
+    connect(m_transport, &BackendTransport::pairingTokenResult, this,
+            [this](const QJsonObject &response) {
+                m_tokenPending = false;
+                m_memoryPanel->showPairingToken(response);
+            });
     connect(m_transport, &BackendTransport::pairResult, this,
             [this](const QJsonObject &response) {
                 m_pairPending = false;
@@ -275,12 +290,23 @@ bool PixiuApp::start()
             });
     connect(m_transport, &BackendTransport::errorOccurred, this,
             [this](const QString &code, const QString &message, const QString &) {
-                if (!m_pairPending) {
+                if (m_pairPending) {
+                    m_pairPending = false;
+                    m_memoryPanel->setSyncStatus(
+                        tr("配对请求失败（%1）：%2").arg(code, message));
                     return;
                 }
-                m_pairPending = false;
-                m_memoryPanel->setSyncStatus(
-                    tr("配对请求失败（%1）：%2").arg(code, message));
+                if (m_tokenPending) {
+                    m_tokenPending = false;
+                    m_memoryPanel->showPairingTokenError(
+                        tr("%1：%2").arg(code, message));
+                    return;
+                }
+                if (!m_pendingEvidenceId.isEmpty() && m_evidenceDetailDialog) {
+                    m_pendingEvidenceId.clear();
+                    m_evidenceDetailDialog->setError(
+                        tr("证据加载失败（%1）：%2").arg(code, message));
+                }
             });
 
     // 同步管理：节点列表 / 同步状态 / 解绑（Phase 6）。
@@ -366,12 +392,19 @@ bool PixiuApp::start()
             });
     connect(m_chatWindow->messageList(), &MessageList::evidenceClicked, this,
             [this](const QString &evidenceId) {
-                ChatMessage notice;
-                notice.role = MessageRole::System;
-                notice.text = tr("证据详情接口待后端提供（source_evidence=%1）")
-                                  .arg(evidenceId);
-                notice.timestamp = QDateTime::currentSecsSinceEpoch();
-                m_chatWindow->messageList()->appendMessage(notice);
+                if (!m_evidenceDetailDialog) {
+                    m_evidenceDetailDialog = new EvidenceDetailDialog();
+                }
+                m_pendingEvidenceId = evidenceId;
+                m_evidenceDetailDialog->showLoading(evidenceId);
+                m_transport->evidenceDetail(evidenceId);
+            });
+    connect(m_transport, &BackendTransport::evidenceDetailResult, this,
+            [this](const QJsonObject &evidence) {
+                m_pendingEvidenceId.clear();
+                if (m_evidenceDetailDialog) {
+                    m_evidenceDetailDialog->setEvidence(evidence);
+                }
             });
     connect(m_transport, &BackendTransport::queryResult, m_queryController,
             &QueryController::handleQueryResult);
@@ -540,6 +573,15 @@ bool PixiuApp::start()
             [this](const QString &code, const QString &message) {
                 m_memoryPanel->setPreferenceExtractError(
                     tr("偏好提取失败（%1）：%2").arg(code, message));
+            });
+    // 偏好列表：GET /preferences，面板打开或手动刷新时拉取。
+    connect(m_memoryPanel, &MemoryPanel::preferencesRefreshRequested,
+            m_preferenceController, [this]() {
+                m_preferenceController->loadList();
+            });
+    connect(m_preferenceController, &PreferenceController::listLoaded, this,
+            [this](const QJsonArray &preferences) {
+                m_memoryPanel->setPreferenceList(preferences);
             });
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
