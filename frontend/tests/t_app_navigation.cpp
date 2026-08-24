@@ -1,3 +1,4 @@
+#include <QGuiApplication>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QTest>
@@ -115,7 +116,11 @@ void TestAppNavigation::memoryChipOpensMemoryPanel()
     const auto panels = topLevels<MemoryPanel>();
     QCOMPARE(panels.size(), 1);
     QTRY_VERIFY(panels.first()->isVisible());
-    QTRY_VERIFY(panels.first()->isActiveWindow());
+    // offscreen 平台不支持窗口激活（raise/activateWindow 为 no-op），
+    // 仅在真实窗口系统下断言前置激活。
+    if (QGuiApplication::platformName() != QStringLiteral("offscreen")) {
+        QTRY_VERIFY(panels.first()->isActiveWindow());
+    }
 }
 
 void TestAppNavigation::settingsChipOpensSettingsDialog()
