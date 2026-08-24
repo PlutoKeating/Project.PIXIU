@@ -148,6 +148,12 @@ class SyncPairRequest(BaseModel):
     pin: str | None = Field(default=None, min_length=6, max_length=6)
 
 
+class SyncTokenRequest(BaseModel):
+    method: PairingMethod
+    pin: str | None = Field(default=None, min_length=6, max_length=6)
+    ttl_seconds: int = Field(default=300, ge=1, le=900)
+
+
 def _latency_ms(started: float) -> int:
     return int((time.monotonic() - started) * 1000)
 
@@ -198,6 +204,18 @@ async def memory_write(
         },
     )
 
+    if record is not None:
+        await ws_manager.broadcast(
+            "conflict_detected",
+            {
+                "conflict_id": record.id,
+                "knowledge_title": item.title,
+                "field": record.field,
+                "old_value": record.old_value,
+                "new_value": record.new_value,
+            },
+        )
+
     return {
         "evidence_id": evidence.id,
         "status": "accepted",
@@ -207,6 +225,17 @@ async def memory_write(
         "conflict_detected": record is not None,
         "latency_ms": _latency_ms(started),
     }
+
+
+# ─── 证据详情 ────────────────────────────────────────────
+
+@app.get("/evidence/{id}", tags=["Memory"], summary="证据详情")
+async def evidence_detail(id: str, evidence_repo=Depends(get_evidence_repo)):
+    """按 evidence_id 获取原始证据（供前端 EvidenceCard 查看原文）。"""
+    evidence = await evidence_repo.get(id)
+    if evidence is None:
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    return evidence.model_dump(mode="json")
 
 
 # ─── 混合检索 ────────────────────────────────────────────
@@ -270,6 +299,18 @@ async def preference_history(id: str, pref_repo=Depends(get_preference_repo)):
     }
 
 
+# ─── 偏好列表 ────────────────────────────────────────────
+
+@app.get("/preferences", tags=["Preference"], summary="偏好列表")
+async def preferences_list(
+    scope: str | None = None,
+    pref_repo=Depends(get_preference_repo),
+):
+    """列出偏好，支持按 scope 过滤，供前端 MemoryPanel 选择器使用。"""
+    prefs = await pref_repo.list(scope=scope)
+    return {"preferences": [p.model_dump(mode="json") for p in prefs]}
+
+
 # ─── 自然语言遗忘 ────────────────────────────────────────
 
 @app.post("/forget", tags=["Memory"], summary="自然语言遗忘")
@@ -294,11 +335,29 @@ async def forget(
                 await sync.record_local(
                     f"knowledge:{item.id}", {}, item.scope, deleted=True
                 )
+    await ws_manager.broadcast(
+        "forget_confirmation",
+        {
+            "command": body.command,
+            "targets": result.targets,
+            "forgotten_ids": result.forgotten_ids,
+            "expires_at": int(time.time()) + 10,
+        },
+    )
     return {
         "status": "forgotten",
         "forgotten_ids": result.forgotten_ids,
         "latency_ms": _latency_ms(started),
     }
+
+
+# ─── 同步配对 Token 生成 ───────────────────────────────────
+
+@app.post("/sync/token", tags=["Sync"], summary="生成配对令牌")
+async def sync_token(body: SyncTokenRequest, sync=Depends(get_sync_service)):
+    """生成设备配对令牌（QR/PIN），供前端 PairDialog 使用。"""
+    token = await sync.create_pairing_token(body.method, pin=body.pin, ttl_seconds=body.ttl_seconds)
+    return {"token": token, "method": body.method.value, "ttl_seconds": body.ttl_seconds}
 
 
 # ─── 冲突审计 ────────────────────────────────────────────

@@ -85,6 +85,62 @@ def test_events_websocket_is_registered(client):
         assert websocket.receive_json() == {"event": "connected", "data": {}}
 
 
+def test_evidence_detail_returns_raw(client):
+    write = client.post(
+        "/memory/write",
+        json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"},
+    ).json()
+    resp = client.get(f"/evidence/{write['evidence_id']}")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["id"] == write["evidence_id"]
+    assert data["source_type"] == "OCR"
+    assert data["raw"]["title"] == OCR_RAW["title"]
+    assert data["scope"] == "shared:home"
+
+
+def test_evidence_detail_404(client):
+    resp = client.get("/evidence/evd_AAAAAAAAAAAAAAAAAAAAAAAAAA")
+    assert resp.status_code == 404
+    assert resp.json()["error"] == "NOT_FOUND"
+
+
+def test_preferences_list_returns_extracted(client):
+    write = client.post(
+        "/memory/write",
+        json={
+            "source_type": "MANUAL_CONFIG",
+            "raw": {
+                "title": "output_style.compact",
+                "key": "output_style.compact",
+                "enabled": True,
+            },
+            "scope": "user:alice",
+        },
+    ).json()
+    extracted = client.post(
+        "/preference/extract", json={"evidence_ids": [write["evidence_id"]]}
+    ).json()["extracted_preferences"]
+    assert extracted
+
+    resp = client.get("/preferences", params={"scope": "user:alice"})
+    assert resp.status_code == 200
+    prefs = resp.json()["preferences"]
+    assert any(p["id"] == extracted[0]["id"] for p in prefs)
+    assert all(p["scope"] == "user:alice" for p in prefs)
+
+
+def test_sync_token_returns_usable_token(client):
+    resp = client.post("/sync/token", json={"method": "QR", "ttl_seconds": 60})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["method"] == "QR"
+    assert data["ttl_seconds"] == 60
+    # 生成的令牌可被 /sync/pair 校验格式（自配对会被拒绝但不是 INVALID_REQUEST）
+    paired = client.post("/sync/pair", json={"method": "QR", "token": data["token"]})
+    assert paired.status_code in (200, 422)
+
+
 def test_preference_extract_and_history(client):
     write = client.post(
         "/memory/write",
