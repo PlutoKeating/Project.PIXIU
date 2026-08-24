@@ -8,6 +8,7 @@
 class QLabel;
 class QLineEdit;
 class QListWidget;
+class QComboBox;
 class QKeyEvent;
 class QPushButton;
 class QTabWidget;
@@ -49,6 +50,14 @@ public:
     void setPreferenceExtractResult(int count);
     void setPreferenceExtractError(const QString &message);
 
+    // 更新偏好下拉列表（来自 GET /preferences）。
+    void setPreferenceList(const QJsonArray &preferences);
+
+    // 展示 /sync/token 返回的本机配对令牌（转发到配对对话框）。
+    void showPairingToken(const QJsonObject &response);
+    // 配对令牌生成失败反馈。
+    void showPairingTokenError(const QString &message);
+
     // 更新同步 Tab 状态行（配对结果 / 后端契约状态）。
     void setSyncStatus(const QString &status, bool ok = false);
 
@@ -67,6 +76,10 @@ signals:
     void preferenceRetryRequested();
     // 用户请求从最近录入的证据提取偏好（POST /preference/extract）。
     void extractPreferencesRequested();
+    // 用户请求刷新偏好列表（GET /preferences）。
+    void preferencesRefreshRequested();
+    // 用户请求生成本机配对令牌（POST /sync/token）。
+    void pairingTokenRequested(const QJsonObject &payload);
     // 用户请求设备配对（载荷见 PairDialog::pairRequested）。
     void pairRequested(const QJsonObject &payload);
     // 用户请求刷新节点列表与同步状态。
@@ -89,6 +102,7 @@ private:
     QLabel *m_conflictErrorLabel = nullptr;
     QPushButton *m_conflictRetryButton = nullptr;
     QLineEdit *m_prefIdInput = nullptr;
+    QComboBox *m_prefListCombo = nullptr;
     QListWidget *m_prefHistoryList = nullptr;
     QLabel *m_prefHeaderLabel = nullptr;
     QLabel *m_prefEmptyLabel = nullptr;

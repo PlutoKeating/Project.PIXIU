@@ -5,6 +5,7 @@
 #include "widgets/RevokeDialog.h"
 
 #include <QCoreApplication>
+#include <QComboBox>
 #include <QDateTime>
 #include <QFontMetrics>
 #include <QHBoxLayout>
@@ -223,6 +224,39 @@ void MemoryPanel::setPreferenceExtractError(const QString &message)
     m_prefExtractLabel->setVisible(true);
 }
 
+void MemoryPanel::setPreferenceList(const QJsonArray &preferences)
+{
+    if (!m_prefListCombo) {
+        return;
+    }
+    m_prefListCombo->blockSignals(true);
+    m_prefListCombo->clear();
+    m_prefListCombo->addItem(tr("从列表选择偏好…"), QString());
+    for (const QJsonValue &value : preferences) {
+        const QJsonObject pref = value.toObject();
+        const QString id = pref.value(QStringLiteral("id")).toString();
+        const QString key = pref.value(QStringLiteral("key")).toString();
+        const int version = pref.value(QStringLiteral("version")).toInt(1);
+        m_prefListCombo->addItem(
+            tr("%1 · v%2").arg(key.isEmpty() ? id : key).arg(version), id);
+    }
+    m_prefListCombo->blockSignals(false);
+}
+
+void MemoryPanel::showPairingToken(const QJsonObject &response)
+{
+    if (m_pairDialog) {
+        m_pairDialog->setPairingToken(response);
+    }
+}
+
+void MemoryPanel::showPairingTokenError(const QString &message)
+{
+    if (m_pairDialog) {
+        m_pairDialog->setPairingTokenError(message);
+    }
+}
+
 void MemoryPanel::setSyncStatus(const QString &status, bool ok)
 {
     if (!m_syncStatusLabel) {
@@ -377,6 +411,31 @@ QWidget *MemoryPanel::createPreferenceTab()
     inputRow->addWidget(m_prefIdInput, 1);
     inputRow->addWidget(loadButton);
 
+    // 偏好列表选择器（GET /preferences）：免手动输入 ID。
+    m_prefListCombo = new QComboBox(page);
+    m_prefListCombo->setObjectName(QStringLiteral("prefListCombo"));
+    m_prefListCombo->setAccessibleName(tr("已提取偏好选择"));
+    m_prefListCombo->addItem(tr("从列表选择偏好…"), QString());
+    connect(m_prefListCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, [this](int index) {
+                const QString id = m_prefListCombo->itemData(index).toString();
+                if (!id.isEmpty()) {
+                    emit historyRequested(id);
+                    m_prefListCombo->setCurrentIndex(0);
+                }
+            });
+
+    QPushButton *refreshPrefButton = new QPushButton(tr("刷新列表"), page);
+    refreshPrefButton->setObjectName(QStringLiteral("prefRefreshButton"));
+    refreshPrefButton->setAccessibleName(tr("刷新偏好列表"));
+    refreshPrefButton->setCursor(Qt::PointingHandCursor);
+    connect(refreshPrefButton, &QPushButton::clicked, this,
+            &MemoryPanel::preferencesRefreshRequested);
+
+    QHBoxLayout *comboRow = new QHBoxLayout();
+    comboRow->addWidget(m_prefListCombo, 1);
+    comboRow->addWidget(refreshPrefButton);
+
     m_prefExtractButton = new QPushButton(tr("提取偏好"), page);
     m_prefExtractButton->setObjectName(QStringLiteral("prefExtractButton"));
     m_prefExtractButton->setAccessibleName(tr("从最近录入提取偏好"));
@@ -420,6 +479,7 @@ QWidget *MemoryPanel::createPreferenceTab()
 
     layout->addWidget(m_prefHeaderLabel);
     layout->addLayout(inputRow);
+    layout->addLayout(comboRow);
     layout->addLayout(extractRow);
     layout->addLayout(prefErrorRow);
     layout->addWidget(m_prefEmptyLabel);
@@ -514,6 +574,8 @@ QWidget *MemoryPanel::createSyncTab()
             m_pairDialog = new PairDialog(this);
             connect(m_pairDialog, &PairDialog::pairRequested,
                     this, &MemoryPanel::pairRequested);
+            connect(m_pairDialog, &PairDialog::tokenGenerationRequested,
+                    this, &MemoryPanel::pairingTokenRequested);
         }
         m_pairDialog->showAndFocus();
     });
