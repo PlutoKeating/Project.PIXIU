@@ -1,0 +1,2414 @@
+{
+  "dataset_name": "pixiu-family-expense-v1",
+  "dataset_profile": "acceptance",
+  "dataset_sha256": "946f1132af8f743338af8dc586ebf832775312fd472b32b38627d75dc66a361b",
+  "generated_at": 1787575067,
+  "metrics": [
+    {
+      "comparison": ">=",
+      "denominator": 15,
+      "description": "Exact-set accuracy of canonical category:key preference labels.",
+      "name": "preference_accuracy",
+      "numerator": 5.0,
+      "status": "FAIL",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 0.3333333333333333
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Mean relevant-item recall at each case's declared top_k.",
+      "name": "knowledge_recall_at_k",
+      "numerator": 13.0,
+      "status": "FAIL",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 0.26
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Mean relevant-item recall at fixed top-1.",
+      "name": "knowledge_recall@1",
+      "numerator": 13.0,
+      "status": "FAIL",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 0.26
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Mean relevant-item recall at fixed top-3.",
+      "name": "knowledge_recall@3",
+      "numerator": 13.0,
+      "status": "FAIL",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 0.26
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Mean relevant-item recall at fixed top-5.",
+      "name": "knowledge_recall@5",
+      "numerator": 13.0,
+      "status": "FAIL",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 0.26
+    },
+    {
+      "comparison": "<=",
+      "denominator": 1000,
+      "description": "Nearest-rank P95 latency; all declared repetitions are required.",
+      "name": "retrieval_p95_ms",
+      "numerator": 61.166,
+      "status": "PASS",
+      "target": 500.0,
+      "unit": "ms",
+      "value": 61.166
+    },
+    {
+      "comparison": "<=",
+      "denominator": 1000,
+      "description": "Nearest-rank P50 end-to-end retrieval latency (informational).",
+      "name": "retrieval_p50_ms",
+      "numerator": 39.729,
+      "status": "PASS",
+      "target": 500.0,
+      "unit": "ms",
+      "value": 39.729
+    },
+    {
+      "comparison": "<=",
+      "denominator": 1000,
+      "description": "Nearest-rank P99 end-to-end retrieval latency (informational).",
+      "name": "retrieval_p99_ms",
+      "numerator": 76.264,
+      "status": "PASS",
+      "target": 500.0,
+      "unit": "ms",
+      "value": 76.264
+    },
+    {
+      "comparison": ">=",
+      "denominator": 25,
+      "description": "Exact conflict resolution accuracy.",
+      "name": "conflict_accuracy",
+      "numerator": 20.0,
+      "status": "FAIL",
+      "target": 0.88,
+      "unit": "ratio",
+      "value": 0.8
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Exact numeric aggregation accuracy within the declared tolerance.",
+      "name": "aggregation_accuracy",
+      "numerator": 13.0,
+      "status": "FAIL",
+      "target": 1.0,
+      "unit": "ratio",
+      "value": 0.26
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Cases whose complete expected evidence set is traceable.",
+      "name": "evidence_trace_accuracy",
+      "numerator": 13.0,
+      "status": "FAIL",
+      "target": 1.0,
+      "unit": "ratio",
+      "value": 0.26
+    },
+    {
+      "comparison": ">=",
+      "denominator": 0,
+      "description": "Retrieval cases whose every returned knowledge belongs to the expected scope.",
+      "name": "scope_isolation_accuracy",
+      "numerator": 0.0,
+      "status": "NOT_EVALUATED",
+      "target": 1.0,
+      "unit": "ratio",
+      "value": null
+    }
+  ],
+  "outcomes": [
+    {
+      "case_id": "retrieval-01",
+      "error": null,
+      "latency_ms": 20.131,
+      "latency_samples_ms": [
+        26.631,
+        22.073,
+        16.629,
+        19.633,
+        18.933,
+        20.281,
+        19.938,
+        17.994,
+        24.223,
+        21.166,
+        21.944,
+        19.03,
+        24.789,
+        20.363,
+        20.06,
+        23.05,
+        22.975,
+        17.739,
+        22.264,
+        20.131
+      ],
+      "prediction": {
+        "aggregate_amount": 339.0,
+        "evidence_ids": [
+          "evd-expense-01"
+        ],
+        "knowledge_ids": [
+          "knw-expense-01"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-02",
+      "error": null,
+      "latency_ms": 35.559,
+      "latency_samples_ms": [
+        34.024,
+        28.373,
+        29.563,
+        29.023,
+        32.42,
+        32.567,
+        29.591,
+        34.483,
+        28.646,
+        32.291,
+        29.298,
+        35.725,
+        30.534,
+        33.911,
+        30.131,
+        29.425,
+        34.11,
+        35.521,
+        33.985,
+        35.559
+      ],
+      "prediction": {
+        "aggregate_amount": 343.0,
+        "evidence_ids": [
+          "evd-expense-02"
+        ],
+        "knowledge_ids": [
+          "knw-expense-02"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-03",
+      "error": null,
+      "latency_ms": 38.524,
+      "latency_samples_ms": [
+        51.108,
+        51.708,
+        46.208,
+        40.113,
+        62.745,
+        39.729,
+        42.516,
+        37.562,
+        42.746,
+        37.951,
+        42.218,
+        38.023,
+        41.156,
+        39.117,
+        44.796,
+        41.574,
+        44.737,
+        37.757,
+        46.147,
+        38.524
+      ],
+      "prediction": {
+        "aggregate_amount": 347.0,
+        "evidence_ids": [
+          "evd-expense-03"
+        ],
+        "knowledge_ids": [
+          "knw-expense-03"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-04",
+      "error": null,
+      "latency_ms": 38.597,
+      "latency_samples_ms": [
+        39.945,
+        37.053,
+        37.719,
+        40.217,
+        43.374,
+        41.987,
+        48.554,
+        37.377,
+        39.676,
+        37.195,
+        38.418,
+        45.93,
+        52.589,
+        59.762,
+        53.595,
+        45.399,
+        55.212,
+        35.089,
+        41.142,
+        38.597
+      ],
+      "prediction": {
+        "aggregate_amount": 495.0,
+        "evidence_ids": [
+          "evd-expense-40"
+        ],
+        "knowledge_ids": [
+          "knw-expense-40"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-05",
+      "error": null,
+      "latency_ms": 31.691,
+      "latency_samples_ms": [
+        31.419,
+        34.286,
+        34.928,
+        37.0,
+        50.54,
+        40.067,
+        39.817,
+        39.451,
+        44.445,
+        47.805,
+        46.756,
+        40.014,
+        48.252,
+        37.873,
+        45.014,
+        33.834,
+        42.156,
+        35.076,
+        40.401,
+        31.691
+      ],
+      "prediction": {
+        "aggregate_amount": 499.0,
+        "evidence_ids": [
+          "evd-expense-41"
+        ],
+        "knowledge_ids": [
+          "knw-expense-41"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-06",
+      "error": null,
+      "latency_ms": 45.402,
+      "latency_samples_ms": [
+        35.333,
+        54.718,
+        44.197,
+        76.264,
+        40.684,
+        42.426,
+        32.208,
+        33.225,
+        33.602,
+        40.567,
+        41.992,
+        40.824,
+        40.566,
+        40.266,
+        36.419,
+        43.66,
+        41.391,
+        42.507,
+        38.185,
+        45.402
+      ],
+      "prediction": {
+        "aggregate_amount": 359.0,
+        "evidence_ids": [
+          "evd-expense-06"
+        ],
+        "knowledge_ids": [
+          "knw-expense-06"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-07",
+      "error": null,
+      "latency_ms": 43.541,
+      "latency_samples_ms": [
+        45.444,
+        40.824,
+        48.428,
+        44.415,
+        30.837,
+        31.124,
+        26.776,
+        34.368,
+        30.894,
+        27.111,
+        26.679,
+        33.874,
+        28.083,
+        34.607,
+        30.63,
+        51.382,
+        40.84,
+        45.83,
+        45.727,
+        43.541
+      ],
+      "prediction": {
+        "aggregate_amount": 507.0,
+        "evidence_ids": [
+          "evd-expense-43"
+        ],
+        "knowledge_ids": [
+          "knw-expense-43"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-08",
+      "error": null,
+      "latency_ms": 44.465,
+      "latency_samples_ms": [
+        36.936,
+        44.282,
+        37.278,
+        42.053,
+        41.161,
+        42.246,
+        41.837,
+        40.699,
+        42.938,
+        43.799,
+        36.889,
+        37.651,
+        43.348,
+        41.21,
+        39.883,
+        35.496,
+        42.029,
+        41.232,
+        48.171,
+        44.465
+      ],
+      "prediction": {
+        "aggregate_amount": 511.0,
+        "evidence_ids": [
+          "evd-expense-44"
+        ],
+        "knowledge_ids": [
+          "knw-expense-44"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-09",
+      "error": null,
+      "latency_ms": 35.631,
+      "latency_samples_ms": [
+        50.093,
+        37.415,
+        56.387,
+        47.941,
+        42.59,
+        37.918,
+        39.078,
+        33.856,
+        47.065,
+        38.526,
+        59.398,
+        43.842,
+        38.071,
+        36.7,
+        36.34,
+        44.789,
+        35.074,
+        34.93,
+        36.953,
+        35.631
+      ],
+      "prediction": {
+        "aggregate_amount": 515.0,
+        "evidence_ids": [
+          "evd-expense-45"
+        ],
+        "knowledge_ids": [
+          "knw-expense-45"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-10",
+      "error": null,
+      "latency_ms": 37.123,
+      "latency_samples_ms": [
+        36.308,
+        36.952,
+        38.842,
+        33.235,
+        34.547,
+        41.227,
+        37.564,
+        38.07,
+        34.804,
+        42.71,
+        36.982,
+        45.09,
+        35.833,
+        37.235,
+        40.038,
+        35.639,
+        42.715,
+        36.829,
+        41.149,
+        37.123
+      ],
+      "prediction": {
+        "aggregate_amount": 519.0,
+        "evidence_ids": [
+          "evd-expense-46"
+        ],
+        "knowledge_ids": [
+          "knw-expense-46"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-11",
+      "error": null,
+      "latency_ms": 23.165,
+      "latency_samples_ms": [
+        22.146,
+        23.795,
+        19.201,
+        27.802,
+        19.027,
+        15.918,
+        18.424,
+        21.355,
+        20.974,
+        15.65,
+        17.062,
+        17.466,
+        20.502,
+        20.022,
+        18.997,
+        21.097,
+        16.793,
+        23.554,
+        18.733,
+        23.165
+      ],
+      "prediction": {
+        "aggregate_amount": 379.0,
+        "evidence_ids": [
+          "evd-expense-11"
+        ],
+        "knowledge_ids": [
+          "knw-expense-11"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-12",
+      "error": null,
+      "latency_ms": 33.232,
+      "latency_samples_ms": [
+        31.525,
+        34.326,
+        31.123,
+        31.344,
+        31.89,
+        32.512,
+        34.398,
+        29.598,
+        32.757,
+        34.488,
+        33.284,
+        37.802,
+        30.958,
+        33.45,
+        31.814,
+        28.024,
+        35.729,
+        33.151,
+        42.531,
+        33.232
+      ],
+      "prediction": {
+        "aggregate_amount": 383.0,
+        "evidence_ids": [
+          "evd-expense-12"
+        ],
+        "knowledge_ids": [
+          "knw-expense-12"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-13",
+      "error": null,
+      "latency_ms": 41.46,
+      "latency_samples_ms": [
+        47.675,
+        55.714,
+        44.231,
+        43.7,
+        51.56,
+        70.839,
+        63.758,
+        50.956,
+        37.573,
+        42.22,
+        39.115,
+        61.596,
+        39.201,
+        44.742,
+        41.104,
+        38.344,
+        39.72,
+        39.797,
+        50.343,
+        41.46
+      ],
+      "prediction": {
+        "aggregate_amount": 339.0,
+        "evidence_ids": [
+          "evd-expense-01"
+        ],
+        "knowledge_ids": [
+          "knw-expense-01"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-14",
+      "error": null,
+      "latency_ms": 40.005,
+      "latency_samples_ms": [
+        37.749,
+        40.997,
+        76.213,
+        45.731,
+        65.98,
+        44.058,
+        58.572,
+        51.839,
+        51.759,
+        48.7,
+        46.022,
+        46.856,
+        47.483,
+        48.786,
+        43.196,
+        40.836,
+        39.668,
+        38.418,
+        41.011,
+        40.005
+      ],
+      "prediction": {
+        "aggregate_amount": 487.0,
+        "evidence_ids": [
+          "evd-expense-38"
+        ],
+        "knowledge_ids": [
+          "knw-expense-38"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-15",
+      "error": null,
+      "latency_ms": 37.099,
+      "latency_samples_ms": [
+        38.482,
+        42.635,
+        39.89,
+        41.272,
+        40.473,
+        44.937,
+        39.511,
+        44.691,
+        36.845,
+        38.147,
+        38.446,
+        34.743,
+        38.179,
+        38.068,
+        38.256,
+        42.177,
+        34.131,
+        38.729,
+        34.937,
+        37.099
+      ],
+      "prediction": {
+        "aggregate_amount": 491.0,
+        "evidence_ids": [
+          "evd-expense-39"
+        ],
+        "knowledge_ids": [
+          "knw-expense-39"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-16",
+      "error": null,
+      "latency_ms": 36.745,
+      "latency_samples_ms": [
+        35.876,
+        38.462,
+        47.01,
+        34.456,
+        51.376,
+        38.976,
+        35.393,
+        37.95,
+        36.162,
+        35.327,
+        49.075,
+        60.41,
+        40.774,
+        59.567,
+        37.711,
+        39.832,
+        37.111,
+        39.062,
+        34.844,
+        36.745
+      ],
+      "prediction": {
+        "aggregate_amount": 351.0,
+        "evidence_ids": [
+          "evd-expense-04"
+        ],
+        "knowledge_ids": [
+          "knw-expense-04"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-17",
+      "error": null,
+      "latency_ms": 76.027,
+      "latency_samples_ms": [
+        31.452,
+        28.593,
+        38.094,
+        37.716,
+        32.993,
+        32.136,
+        29.426,
+        38.718,
+        27.011,
+        30.355,
+        35.049,
+        31.933,
+        36.809,
+        27.433,
+        29.799,
+        35.771,
+        37.834,
+        30.365,
+        55.702,
+        76.027
+      ],
+      "prediction": {
+        "aggregate_amount": 355.0,
+        "evidence_ids": [
+          "evd-expense-05"
+        ],
+        "knowledge_ids": [
+          "knw-expense-05"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-18",
+      "error": null,
+      "latency_ms": 61.866,
+      "latency_samples_ms": [
+        101.509,
+        46.237,
+        49.225,
+        57.111,
+        43.707,
+        51.915,
+        48.733,
+        43.301,
+        39.727,
+        43.754,
+        43.604,
+        41.87,
+        41.077,
+        45.024,
+        47.646,
+        40.955,
+        45.316,
+        43.253,
+        47.879,
+        61.866
+      ],
+      "prediction": {
+        "aggregate_amount": 359.0,
+        "evidence_ids": [
+          "evd-expense-06"
+        ],
+        "knowledge_ids": [
+          "knw-expense-06"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-19",
+      "error": null,
+      "latency_ms": 53.629,
+      "latency_samples_ms": [
+        61.311,
+        77.058,
+        67.136,
+        53.944,
+        39.029,
+        51.375,
+        47.106,
+        37.367,
+        36.751,
+        35.923,
+        41.033,
+        37.952,
+        37.463,
+        42.489,
+        41.318,
+        36.699,
+        48.601,
+        61.278,
+        38.941,
+        53.629
+      ],
+      "prediction": {
+        "aggregate_amount": 507.0,
+        "evidence_ids": [
+          "evd-expense-43"
+        ],
+        "knowledge_ids": [
+          "knw-expense-43"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-20",
+      "error": null,
+      "latency_ms": 37.816,
+      "latency_samples_ms": [
+        62.435,
+        59.229,
+        45.198,
+        39.813,
+        40.646,
+        33.213,
+        39.308,
+        42.752,
+        31.073,
+        41.235,
+        39.28,
+        47.644,
+        37.828,
+        46.775,
+        42.1,
+        34.942,
+        44.861,
+        47.081,
+        34.926,
+        37.816
+      ],
+      "prediction": {
+        "aggregate_amount": 511.0,
+        "evidence_ids": [
+          "evd-expense-44"
+        ],
+        "knowledge_ids": [
+          "knw-expense-44"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-21",
+      "error": null,
+      "latency_ms": 37.588,
+      "latency_samples_ms": [
+        40.559,
+        44.991,
+        43.457,
+        45.137,
+        64.401,
+        44.879,
+        38.736,
+        42.59,
+        38.876,
+        48.796,
+        66.538,
+        40.62,
+        45.469,
+        208.757,
+        95.023,
+        70.281,
+        36.896,
+        35.064,
+        42.656,
+        37.588
+      ],
+      "prediction": {
+        "aggregate_amount": 371.0,
+        "evidence_ids": [
+          "evd-expense-09"
+        ],
+        "knowledge_ids": [
+          "knw-expense-09"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-22",
+      "error": null,
+      "latency_ms": 30.285,
+      "latency_samples_ms": [
+        28.062,
+        32.129,
+        31.819,
+        33.936,
+        33.818,
+        32.067,
+        29.048,
+        29.942,
+        32.929,
+        28.487,
+        34.623,
+        33.237,
+        32.074,
+        37.459,
+        26.64,
+        29.974,
+        35.481,
+        32.507,
+        28.536,
+        30.285
+      ],
+      "prediction": {
+        "aggregate_amount": 375.0,
+        "evidence_ids": [
+          "evd-expense-10"
+        ],
+        "knowledge_ids": [
+          "knw-expense-10"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-23",
+      "error": null,
+      "latency_ms": 51.026,
+      "latency_samples_ms": [
+        44.435,
+        52.877,
+        59.429,
+        41.962,
+        43.621,
+        39.468,
+        42.172,
+        44.2,
+        52.74,
+        50.87,
+        56.105,
+        86.519,
+        53.818,
+        39.63,
+        46.152,
+        63.426,
+        45.962,
+        41.846,
+        50.876,
+        51.026
+      ],
+      "prediction": {
+        "aggregate_amount": 523.0,
+        "evidence_ids": [
+          "evd-expense-47"
+        ],
+        "knowledge_ids": [
+          "knw-expense-47"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-24",
+      "error": null,
+      "latency_ms": 42.667,
+      "latency_samples_ms": [
+        38.11,
+        38.983,
+        56.375,
+        30.754,
+        38.625,
+        36.944,
+        38.811,
+        40.525,
+        34.246,
+        42.838,
+        43.045,
+        39.869,
+        44.027,
+        39.715,
+        34.875,
+        43.242,
+        43.952,
+        35.083,
+        46.18,
+        42.667
+      ],
+      "prediction": {
+        "aggregate_amount": 527.0,
+        "evidence_ids": [
+          "evd-expense-48"
+        ],
+        "knowledge_ids": [
+          "knw-expense-48"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-25",
+      "error": null,
+      "latency_ms": 45.172,
+      "latency_samples_ms": [
+        41.58,
+        45.923,
+        43.318,
+        40.648,
+        54.395,
+        40.262,
+        40.19,
+        36.65,
+        39.845,
+        51.666,
+        39.282,
+        52.846,
+        44.862,
+        49.651,
+        39.479,
+        41.014,
+        53.22,
+        41.947,
+        57.844,
+        45.172
+      ],
+      "prediction": {
+        "aggregate_amount": 531.0,
+        "evidence_ids": [
+          "evd-expense-49"
+        ],
+        "knowledge_ids": [
+          "knw-expense-49"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-26",
+      "error": null,
+      "latency_ms": 40.944,
+      "latency_samples_ms": [
+        50.048,
+        61.968,
+        39.205,
+        44.886,
+        47.1,
+        50.977,
+        57.358,
+        34.813,
+        38.332,
+        35.194,
+        59.559,
+        60.163,
+        61.543,
+        49.392,
+        62.612,
+        39.704,
+        36.582,
+        38.609,
+        33.823,
+        40.944
+      ],
+      "prediction": {
+        "aggregate_amount": 343.0,
+        "evidence_ids": [
+          "evd-expense-02"
+        ],
+        "knowledge_ids": [
+          "knw-expense-02"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-27",
+      "error": null,
+      "latency_ms": 37.077,
+      "latency_samples_ms": [
+        34.407,
+        30.786,
+        30.247,
+        27.616,
+        36.706,
+        34.662,
+        25.83,
+        29.826,
+        53.477,
+        75.54,
+        61.58,
+        71.053,
+        64.211,
+        39.904,
+        34.314,
+        30.795,
+        33.391,
+        34.919,
+        28.677,
+        37.077
+      ],
+      "prediction": {
+        "aggregate_amount": 347.0,
+        "evidence_ids": [
+          "evd-expense-03"
+        ],
+        "knowledge_ids": [
+          "knw-expense-03"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-28",
+      "error": null,
+      "latency_ms": 40.539,
+      "latency_samples_ms": [
+        47.866,
+        48.052,
+        44.433,
+        51.336,
+        43.841,
+        49.533,
+        65.841,
+        44.599,
+        61.256,
+        54.687,
+        46.363,
+        63.899,
+        46.462,
+        48.617,
+        50.647,
+        52.617,
+        62.265,
+        45.714,
+        42.772,
+        40.539
+      ],
+      "prediction": {
+        "aggregate_amount": 351.0,
+        "evidence_ids": [
+          "evd-expense-04"
+        ],
+        "knowledge_ids": [
+          "knw-expense-04"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-29",
+      "error": null,
+      "latency_ms": 33.44,
+      "latency_samples_ms": [
+        47.55,
+        52.063,
+        49.281,
+        49.381,
+        41.051,
+        42.571,
+        33.233,
+        42.286,
+        36.161,
+        47.198,
+        35.466,
+        36.57,
+        42.034,
+        47.705,
+        43.881,
+        56.634,
+        45.853,
+        41.226,
+        33.984,
+        33.44
+      ],
+      "prediction": {
+        "aggregate_amount": 499.0,
+        "evidence_ids": [
+          "evd-expense-41"
+        ],
+        "knowledge_ids": [
+          "knw-expense-41"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-30",
+      "error": null,
+      "latency_ms": 38.468,
+      "latency_samples_ms": [
+        35.605,
+        35.136,
+        59.087,
+        37.895,
+        37.492,
+        35.492,
+        38.779,
+        37.297,
+        48.713,
+        36.342,
+        52.162,
+        48.362,
+        48.207,
+        55.031,
+        39.587,
+        53.015,
+        61.285,
+        38.543,
+        45.03,
+        38.468
+      ],
+      "prediction": {
+        "aggregate_amount": 503.0,
+        "evidence_ids": [
+          "evd-expense-42"
+        ],
+        "knowledge_ids": [
+          "knw-expense-42"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-31",
+      "error": null,
+      "latency_ms": 35.777,
+      "latency_samples_ms": [
+        37.944,
+        34.263,
+        31.104,
+        40.738,
+        34.913,
+        49.608,
+        38.582,
+        43.355,
+        38.304,
+        38.46,
+        36.636,
+        38.67,
+        35.488,
+        41.604,
+        35.238,
+        33.692,
+        40.777,
+        34.229,
+        41.076,
+        35.777
+      ],
+      "prediction": {
+        "aggregate_amount": 363.0,
+        "evidence_ids": [
+          "evd-expense-07"
+        ],
+        "knowledge_ids": [
+          "knw-expense-07"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-32",
+      "error": null,
+      "latency_ms": 34.735,
+      "latency_samples_ms": [
+        31.409,
+        28.067,
+        36.217,
+        27.936,
+        27.219,
+        27.831,
+        31.329,
+        27.611,
+        29.316,
+        28.24,
+        28.647,
+        30.598,
+        31.614,
+        26.269,
+        26.584,
+        29.778,
+        27.836,
+        28.974,
+        29.176,
+        34.735
+      ],
+      "prediction": {
+        "aggregate_amount": 367.0,
+        "evidence_ids": [
+          "evd-expense-08"
+        ],
+        "knowledge_ids": [
+          "knw-expense-08"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-33",
+      "error": null,
+      "latency_ms": 39.956,
+      "latency_samples_ms": [
+        50.062,
+        49.252,
+        40.658,
+        43.343,
+        42.273,
+        45.737,
+        41.97,
+        40.868,
+        42.011,
+        41.701,
+        43.86,
+        46.026,
+        40.216,
+        57.495,
+        43.761,
+        52.269,
+        53.267,
+        57.156,
+        54.782,
+        39.956
+      ],
+      "prediction": {
+        "aggregate_amount": 515.0,
+        "evidence_ids": [
+          "evd-expense-45"
+        ],
+        "knowledge_ids": [
+          "knw-expense-45"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-34",
+      "error": null,
+      "latency_ms": 38.154,
+      "latency_samples_ms": [
+        35.283,
+        35.726,
+        37.576,
+        34.224,
+        38.451,
+        35.1,
+        34.735,
+        43.174,
+        42.809,
+        31.876,
+        33.946,
+        41.451,
+        36.394,
+        35.267,
+        33.356,
+        34.95,
+        38.434,
+        33.829,
+        37.618,
+        38.154
+      ],
+      "prediction": {
+        "aggregate_amount": 519.0,
+        "evidence_ids": [
+          "evd-expense-46"
+        ],
+        "knowledge_ids": [
+          "knw-expense-46"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-35",
+      "error": null,
+      "latency_ms": 41.402,
+      "latency_samples_ms": [
+        38.429,
+        37.272,
+        39.855,
+        32.326,
+        39.479,
+        45.257,
+        39.977,
+        35.23,
+        39.138,
+        37.309,
+        42.592,
+        38.498,
+        39.529,
+        38.577,
+        37.033,
+        39.946,
+        39.953,
+        46.378,
+        37.899,
+        41.402
+      ],
+      "prediction": {
+        "aggregate_amount": 523.0,
+        "evidence_ids": [
+          "evd-expense-47"
+        ],
+        "knowledge_ids": [
+          "knw-expense-47"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-36",
+      "error": null,
+      "latency_ms": 35.643,
+      "latency_samples_ms": [
+        43.912,
+        44.486,
+        37.953,
+        41.304,
+        34.083,
+        39.179,
+        41.708,
+        37.801,
+        45.338,
+        47.903,
+        39.891,
+        42.329,
+        39.274,
+        38.327,
+        37.011,
+        33.073,
+        54.283,
+        30.881,
+        40.126,
+        35.643
+      ],
+      "prediction": {
+        "aggregate_amount": 383.0,
+        "evidence_ids": [
+          "evd-expense-12"
+        ],
+        "knowledge_ids": [
+          "knw-expense-12"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-37",
+      "error": null,
+      "latency_ms": 30.997,
+      "latency_samples_ms": [
+        33.729,
+        27.142,
+        27.279,
+        31.612,
+        27.677,
+        31.298,
+        33.4,
+        34.043,
+        36.347,
+        29.484,
+        30.372,
+        32.82,
+        28.918,
+        32.708,
+        32.855,
+        28.419,
+        28.91,
+        30.753,
+        28.519,
+        30.997
+      ],
+      "prediction": {
+        "aggregate_amount": 339.0,
+        "evidence_ids": [
+          "evd-expense-01"
+        ],
+        "knowledge_ids": [
+          "knw-expense-01"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-38",
+      "error": null,
+      "latency_ms": 39.632,
+      "latency_samples_ms": [
+        45.776,
+        39.33,
+        40.772,
+        40.034,
+        44.338,
+        42.125,
+        47.935,
+        47.876,
+        38.966,
+        44.412,
+        47.379,
+        42.956,
+        44.195,
+        46.712,
+        41.633,
+        43.857,
+        38.008,
+        40.066,
+        38.508,
+        39.632
+      ],
+      "prediction": {
+        "aggregate_amount": 439.0,
+        "evidence_ids": [
+          "evd-expense-26"
+        ],
+        "knowledge_ids": [
+          "knw-expense-26"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-39",
+      "error": null,
+      "latency_ms": 38.218,
+      "latency_samples_ms": [
+        37.242,
+        38.643,
+        42.27,
+        41.67,
+        36.47,
+        36.933,
+        47.378,
+        57.66,
+        37.477,
+        35.616,
+        32.202,
+        34.678,
+        36.194,
+        34.772,
+        37.849,
+        43.436,
+        40.316,
+        36.491,
+        37.109,
+        38.218
+      ],
+      "prediction": {
+        "aggregate_amount": 491.0,
+        "evidence_ids": [
+          "evd-expense-39"
+        ],
+        "knowledge_ids": [
+          "knw-expense-39"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-40",
+      "error": null,
+      "latency_ms": 40.101,
+      "latency_samples_ms": [
+        36.847,
+        38.506,
+        36.582,
+        44.668,
+        48.362,
+        40.797,
+        34.198,
+        38.696,
+        34.682,
+        36.329,
+        37.962,
+        36.809,
+        38.439,
+        36.79,
+        51.141,
+        42.996,
+        41.308,
+        45.651,
+        38.475,
+        40.101
+      ],
+      "prediction": {
+        "aggregate_amount": 495.0,
+        "evidence_ids": [
+          "evd-expense-40"
+        ],
+        "knowledge_ids": [
+          "knw-expense-40"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-41",
+      "error": null,
+      "latency_ms": 40.761,
+      "latency_samples_ms": [
+        38.852,
+        37.382,
+        37.983,
+        35.293,
+        39.451,
+        36.118,
+        34.62,
+        65.919,
+        96.674,
+        47.273,
+        44.836,
+        69.518,
+        44.27,
+        44.828,
+        37.838,
+        34.562,
+        45.224,
+        39.142,
+        44.586,
+        40.761
+      ],
+      "prediction": {
+        "aggregate_amount": 355.0,
+        "evidence_ids": [
+          "evd-expense-05"
+        ],
+        "knowledge_ids": [
+          "knw-expense-05"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-42",
+      "error": null,
+      "latency_ms": 28.763,
+      "latency_samples_ms": [
+        32.469,
+        28.667,
+        29.037,
+        38.75,
+        32.728,
+        27.421,
+        37.466,
+        28.31,
+        33.895,
+        30.64,
+        29.741,
+        29.918,
+        45.846,
+        42.337,
+        32.294,
+        35.608,
+        31.386,
+        41.909,
+        36.759,
+        28.763
+      ],
+      "prediction": {
+        "aggregate_amount": 503.0,
+        "evidence_ids": [
+          "evd-expense-42"
+        ],
+        "knowledge_ids": [
+          "knw-expense-42"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-43",
+      "error": null,
+      "latency_ms": 44.107,
+      "latency_samples_ms": [
+        43.373,
+        47.083,
+        54.104,
+        44.601,
+        42.581,
+        45.828,
+        47.669,
+        81.551,
+        55.425,
+        48.921,
+        48.648,
+        38.617,
+        41.816,
+        42.853,
+        41.994,
+        53.457,
+        41.598,
+        39.413,
+        47.778,
+        44.107
+      ],
+      "prediction": {
+        "aggregate_amount": 363.0,
+        "evidence_ids": [
+          "evd-expense-07"
+        ],
+        "knowledge_ids": [
+          "knw-expense-07"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-44",
+      "error": null,
+      "latency_ms": 39.72,
+      "latency_samples_ms": [
+        38.515,
+        37.408,
+        43.198,
+        34.998,
+        32.743,
+        37.85,
+        33.446,
+        42.67,
+        34.479,
+        37.35,
+        48.66,
+        58.402,
+        86.282,
+        35.865,
+        40.832,
+        35.925,
+        35.234,
+        36.189,
+        45.317,
+        39.72
+      ],
+      "prediction": {
+        "aggregate_amount": 511.0,
+        "evidence_ids": [
+          "evd-expense-44"
+        ],
+        "knowledge_ids": [
+          "knw-expense-44"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-45",
+      "error": null,
+      "latency_ms": 62.075,
+      "latency_samples_ms": [
+        33.745,
+        38.006,
+        39.217,
+        59.603,
+        47.051,
+        41.513,
+        38.334,
+        47.82,
+        69.386,
+        40.772,
+        69.99,
+        42.019,
+        48.491,
+        47.927,
+        40.761,
+        32.221,
+        55.58,
+        51.373,
+        41.298,
+        62.075
+      ],
+      "prediction": {
+        "aggregate_amount": 515.0,
+        "evidence_ids": [
+          "evd-expense-45"
+        ],
+        "knowledge_ids": [
+          "knw-expense-45"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-46",
+      "error": null,
+      "latency_ms": 40.93,
+      "latency_samples_ms": [
+        43.45,
+        37.12,
+        39.965,
+        36.783,
+        42.927,
+        40.138,
+        32.523,
+        42.47,
+        61.592,
+        49.558,
+        38.246,
+        47.769,
+        38.855,
+        38.725,
+        36.145,
+        44.134,
+        42.665,
+        57.423,
+        34.951,
+        40.93
+      ],
+      "prediction": {
+        "aggregate_amount": 375.0,
+        "evidence_ids": [
+          "evd-expense-10"
+        ],
+        "knowledge_ids": [
+          "knw-expense-10"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-47",
+      "error": null,
+      "latency_ms": 30.557,
+      "latency_samples_ms": [
+        45.57,
+        43.559,
+        42.151,
+        31.134,
+        27.105,
+        30.624,
+        30.336,
+        37.506,
+        31.381,
+        30.435,
+        34.695,
+        32.896,
+        28.643,
+        39.617,
+        41.095,
+        32.121,
+        35.472,
+        40.484,
+        31.399,
+        30.557
+      ],
+      "prediction": {
+        "aggregate_amount": 379.0,
+        "evidence_ids": [
+          "evd-expense-11"
+        ],
+        "knowledge_ids": [
+          "knw-expense-11"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-48",
+      "error": null,
+      "latency_ms": 41.895,
+      "latency_samples_ms": [
+        50.657,
+        42.072,
+        56.228,
+        43.822,
+        46.486,
+        44.756,
+        43.818,
+        63.389,
+        49.164,
+        56.59,
+        53.536,
+        53.772,
+        46.646,
+        50.294,
+        48.74,
+        50.099,
+        46.789,
+        43.251,
+        44.369,
+        41.895
+      ],
+      "prediction": {
+        "aggregate_amount": 527.0,
+        "evidence_ids": [
+          "evd-expense-48"
+        ],
+        "knowledge_ids": [
+          "knw-expense-48"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-49",
+      "error": null,
+      "latency_ms": 68.995,
+      "latency_samples_ms": [
+        43.071,
+        61.166,
+        50.468,
+        45.013,
+        45.584,
+        43.082,
+        38.308,
+        42.453,
+        47.802,
+        47.737,
+        44.432,
+        45.514,
+        68.563,
+        45.868,
+        58.74,
+        88.775,
+        47.37,
+        40.602,
+        50.087,
+        68.995
+      ],
+      "prediction": {
+        "aggregate_amount": 531.0,
+        "evidence_ids": [
+          "evd-expense-49"
+        ],
+        "knowledge_ids": [
+          "knw-expense-49"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "retrieval-50",
+      "error": null,
+      "latency_ms": 35.805,
+      "latency_samples_ms": [
+        77.534,
+        40.471,
+        49.233,
+        43.876,
+        55.022,
+        39.725,
+        46.47,
+        73.088,
+        50.133,
+        42.951,
+        47.77,
+        47.684,
+        36.541,
+        37.867,
+        35.112,
+        62.792,
+        46.186,
+        41.757,
+        38.781,
+        35.805
+      ],
+      "prediction": {
+        "aggregate_amount": 487.0,
+        "evidence_ids": [
+          "evd-expense-38"
+        ],
+        "knowledge_ids": [
+          "knw-expense-38"
+        ]
+      },
+      "task": "retrieval"
+    },
+    {
+      "case_id": "preference-01",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": []
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-02",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "OUTPUT_STYLE:output_style.verbosity"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-03",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "SECURITY_POLICY:security.confirm_sensitive"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-04",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": []
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-05",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "OUTPUT_STYLE:output_style.verbosity"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-06",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "SECURITY_POLICY:security.confirm_sensitive"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-07",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": []
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-08",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "OUTPUT_STYLE:output_style.verbosity"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-09",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "SECURITY_POLICY:security.confirm_sensitive"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-10",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": []
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-11",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "OUTPUT_STYLE:output_style.verbosity"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-12",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "SECURITY_POLICY:security.confirm_sensitive"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-13",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": []
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-14",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "OUTPUT_STYLE:output_style.verbosity"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "preference-15",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "labels": [
+          "SECURITY_POLICY:security.confirm_sensitive"
+        ]
+      },
+      "task": "preference"
+    },
+    {
+      "case_id": "conflict-01",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-02",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-03",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-04",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-05",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-06",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-07",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-08",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-09",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-10",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-11",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-12",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-13",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-14",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-15",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-16",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-17",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-18",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-19",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-20",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-21",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-22",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-23",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-24",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    },
+    {
+      "case_id": "conflict-25",
+      "error": null,
+      "latency_ms": 0.0,
+      "latency_samples_ms": [],
+      "prediction": {
+        "resolution": "NEW_WINS"
+      },
+      "task": "conflict"
+    }
+  ],
+  "overall_status": "FAIL",
+  "schema_version": "1.0"
+}

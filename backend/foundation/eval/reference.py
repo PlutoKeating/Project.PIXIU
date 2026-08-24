@@ -6,11 +6,11 @@ from .models import CaseKind, EvalCase, EvalDataset
 
 
 _QUERY_TEMPLATES = (
-    "{month}?????????????",
-    "??{month}?? utilities ??",
-    "{month}??????????????",
-    "??{month}??????????",
-    "{month}??????????",
+    "{month}月的家庭支出清单记录了哪些支出",
+    "查询{month}月份 utilities 花费",
+    "{month}月的水电燃气总共支出了多少金额",
+    "统计{month}月水电燃气费用的总额",
+    "{month}月水电燃气总共花了多少",
 )
 
 
@@ -33,45 +33,45 @@ def _expense_fixture(index: int) -> tuple[dict, EvalCase]:
         "knowledge_id": knowledge_id,
         "evidence_id": evidence_id,
         "kind": "FACT",
-        "title": f"2026?{month}???????-{index:02d}",
+        "title": f"2026年{month}月家庭支出清单-{index:02d}",
         "scope": "shared:home",
         "body": {
             "items": [
                 {
-                    "category": "??",
-                    "vendor": "????",
+                    "category": "房租",
+                    "vendor": "物业公司",
                     "amount": round(300.0 + index, 2),
                     "date": f"2026-{month:02d}-03",
-                    "tags": ["??"],
+                    "tags": ["房租"],
                 },
                 {
-                    "category": "????",
-                    "vendor": "????",
+                    "category": "水电燃气",
+                    "vendor": "国家电网",
                     "amount": electricity,
                     "date": f"2026-{month:02d}-10",
-                    "tags": ["??"],
+                    "tags": ["电费"],
                 },
                 {
-                    "category": "????",
-                    "vendor": "??????",
+                    "category": "水电燃气",
+                    "vendor": "市自来水公司",
                     "amount": water,
                     "date": f"2026-{month:02d}-12",
-                    "tags": ["??"],
+                    "tags": ["水费"],
                 },
                 {
-                    "category": "????",
-                    "vendor": "????",
+                    "category": "水电燃气",
+                    "vendor": "燃气集团",
                     "amount": gas,
                     "date": f"2026-{month:02d}-15",
-                    "tags": ["???"],
+                    "tags": ["燃气费"],
                 },
             ]
         },
-        "entities": ["????", "??????", "????", "????"],
+        "entities": ["国家电网", "市自来水公司", "燃气集团", "水电燃气"],
         "relations": [
-            {"from": "????", "to": "????", "type": "BELONG_TO"},
-            {"from": "??????", "to": "????", "type": "BELONG_TO"},
-            {"from": "????", "to": "????", "type": "BELONG_TO"},
+            {"from": "国家电网", "to": "水电燃气", "type": "BELONG_TO"},
+            {"from": "市自来水公司", "to": "水电燃气", "type": "BELONG_TO"},
+            {"from": "燃气集团", "to": "水电燃气", "type": "BELONG_TO"},
         ],
     }
     query = _QUERY_TEMPLATES[(index - 1) % len(_QUERY_TEMPLATES)].format(month=month)
