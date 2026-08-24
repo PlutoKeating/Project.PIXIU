@@ -15,8 +15,9 @@
 - ✅ **打包发布脚手架**：`build/release/` 提供整包 .deb 构建、目标机预置
   （`provision-target.sh`）、麒麟 VM 部署冒烟（`vm-deploy-test.sh`）与
   staging/production 发布；已在麒麟 V11 真机验证并发布 `v0.1.0-staging`。
-- ⬜ **待办**：正式测试数据集、性能压测（P95≤500ms、召回率≥85%）、Docker 容器化、
+- ⬜ **待办**：正式测试数据集、性能压测（P95≤500ms、召回率≥85%）、
   验收评测报告——见下任务清单。
+- ❌ **Docker 容器化**：本项目交付物为原生 `.deb` 安装包，不依赖 Docker，相关文件已移除。
 
 ---
 
@@ -43,7 +44,6 @@ git submodule update --init --recursive
 | 工具脚本 | `backend/scripts/` | 建库、压测、部署脚本 |
 | 测试数据集 | `backend/tests/datasets/` | 结构化测试数据 + 黄金查询集 |
 | 单元/集成测试 | `backend/tests/` | 全模块 pytest 测试 |
-| Docker 容器化 | `backend/Dockerfile` + `docker-compose.yml` | 补全容器化 |
 | 环境变量模板 | `backend/.env.example` | 补全配置模板 |
 | 文档补全 | `docs/*.md` | 辅助完善项目级文档 |
 
@@ -69,18 +69,7 @@ git submodule update --init --recursive
 | `tests/datasets/preferences.json` | 偏好提取测试用例 |
 | `tests/datasets/conflicts.json` | 冲突仲裁测试用例 |
 
-### 3. Docker 容器化
-
-| 文件 | 当前状态 | 任务 |
-|------|----------|------|
-| `backend/Dockerfile` | 空 | 填入 Python + C++ 构建 |
-| `backend/docker-compose.yml` | 空 | 填入编排配置 |
-| `backend/.env.example` | 已有内容 | 校验/维护模板（已含全部变量：DB/API/EMBEDDING/LOG/DATA/SYNC*） |
-| `frontend/Dockerfile` | 空 | 填入 Qt5 构建 |
-| `frontend/docker-compose.yml` | 空 | 填入编排 |
-| `frontend/.env.example` | 空 | 填入模板 |
-
-### 4. 文档补全
+### 3. 文档补全
 
 - 配合其他开发者更新 `docs/` 下的项目级文档
 - 编写效果演示报告（D-01）
