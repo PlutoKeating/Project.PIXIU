@@ -16,13 +16,17 @@ from backend.engine.kylin.embedding import (
     TextEmbedder,
     get_embedder,
 )
+from backend.engine.kylin.ocr import KylinOcr, StructuredTextOcr, get_ocr
 from backend.engine.kylin.vector import VectorEngineClient
 
 __all__ = [
+    "KylinOcr",
     "KylinSDKUnavailableError",
     "KylinTextEmbedding",
     "PortableTextEmbedding",
+    "StructuredTextOcr",
     "TextEmbedder",
     "VectorEngineClient",
     "get_embedder",
+    "get_ocr",
 ]

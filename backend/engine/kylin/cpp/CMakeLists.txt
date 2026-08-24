@@ -37,6 +37,21 @@ target_include_directories(_kylin_vector_client
 target_link_libraries(_kylin_vector_client
                       PRIVATE ${KYSDK_VECTOR_CLIENT_LIBRARY})
 
+# ── OCR SDK（libkyocr，C++ API）—— 可选：找到头文件与库才构建 ────
+find_library(KYSDK_OCR_LIBRARY NAMES kyocr)
+find_path(KYSDK_OCR_INCLUDE_DIR kysdk/kysdk-system/libkyocr.hpp)
+set(PIXIU_KYLIN_OPTIONAL_TARGETS "")
+if(KYSDK_OCR_LIBRARY AND KYSDK_OCR_INCLUDE_DIR)
+    pybind11_add_module(_kylin_ocr kylin_ocr.cpp)
+    target_include_directories(_kylin_ocr PRIVATE ${KYSDK_OCR_INCLUDE_DIR})
+    target_link_libraries(_kylin_ocr PRIVATE ${KYSDK_OCR_LIBRARY})
+    list(APPEND PIXIU_KYLIN_OPTIONAL_TARGETS _kylin_ocr)
+    message(STATUS "libkyocr found: building _kylin_ocr")
+else()
+    message(STATUS "libkyocr not found: skipping _kylin_ocr")
+endif()
+
 # 产物输出到 backend/engine/kylin/（与 __init__.py 同级，便于直接 import）
 install(TARGETS _kylin_text_embedding _kylin_vector_client
+                ${PIXIU_KYLIN_OPTIONAL_TARGETS}
         LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/..)
