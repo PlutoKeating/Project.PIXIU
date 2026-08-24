@@ -117,6 +117,11 @@ class PreferenceRepository(ABC):
         """按 key + scope 获取偏好（版本化定位，供 save 时决定是否递增版本）。"""
         ...
 
+    @abstractmethod
+    async def list(self, scope: str | None = None, limit: int = 100) -> list[Preference]:
+        """列出偏好。可选按 scope 过滤，按更新时间降序。"""
+        ...
+
 
 class EntityRepository(ABC):
     """实体-关系图仓储。"""

@@ -179,6 +179,9 @@ class FakePreferenceRepo(PreferenceRepository):
     async def get_by_key(self, key: str, scope: str) -> Optional[Preference]:
         return None
 
+    async def list(self, scope: str | None = None, limit: int = 100) -> list[Preference]:
+        return []
+
 
 class FakeEntityRepo(EntityRepository):
     async def save_entity(self, entity: Entity) -> str:

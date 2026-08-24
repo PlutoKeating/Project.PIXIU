@@ -538,6 +538,19 @@ class SqlitePreferenceRepo(PreferenceRepository):
         rows = await cursor.fetchall()
         return [_row_to_preference(r) for r in rows]
 
+    async def list(self, scope: str | None = None, limit: int = 100) -> list[Preference]:
+        if scope is not None:
+            cursor = await self._db.execute(
+                "SELECT * FROM preferences WHERE scope = ? ORDER BY updated_at DESC LIMIT ?",
+                (scope, limit),
+            )
+        else:
+            cursor = await self._db.execute(
+                "SELECT * FROM preferences ORDER BY updated_at DESC LIMIT ?", (limit,)
+            )
+        rows = await cursor.fetchall()
+        return [_row_to_preference(r) for r in rows]
+
 
 # ══════════════════════════════════════════════════════════
 # EntityRepository
