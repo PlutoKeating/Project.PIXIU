@@ -152,18 +152,80 @@ async def _capture(db_path: str) -> list[dict]:
         else:  # conflict —— 走真实仲裁管线：先写旧知识，再写冲突新知识。
             index = int(case.input["old"])
             entity = f"冲突实体-{index:02d}"
+            scenario = case.input.get("scenario", "new_wins")
 
-            def _raw(value: float) -> dict:
+            def _raw_new_wins() -> dict:
                 return {
                     "title": f"冲突场景-{index:02d}",
-                    "body": {"items": [{"amount": value}]},
+                    "body": {"items": [{"vendor": "Alpha", "amount": 100.0 + index}]},
                     "entities": [entity],
                     "relations": [],
                 }
 
-            old_evidence = await ingestion.ingest("MANUAL_CONFIG", _raw(100.0 + index), "shared:home")
-            await knowledge.structure(old_evidence)
-            new_evidence = await ingestion.ingest("MANUAL_CONFIG", _raw(200.0 + index), "shared:home")
+            def _raw_merge() -> tuple[dict, dict]:
+                # MERGE：新知识扩展旧知识的明细项，无字段冲突。
+                old_body = {"items": [{"vendor": "Alpha", "amount": 100.0 + index}]}
+                new_body = {
+                    "items": [
+                        {"vendor": "Alpha", "amount": 100.0 + index},
+                        {"vendor": "Beta", "amount": 50.0 + index},
+                    ]
+                }
+                return old_body, new_body
+
+            def _raw_manual() -> tuple[dict, dict]:
+                # MANUAL：数值冲突 + 标题带人工确认标记。
+                old = {
+                    "title": f"冲突场景-{index:02d}",
+                    "body": {"items": [{"vendor": "Alpha", "amount": 100.0 + index}]},
+                    "entities": [entity],
+                    "relations": [],
+                }
+                new = {
+                    "title": f"冲突场景-{index:02d}（人工确认）",
+                    "body": {"items": [{"vendor": "Alpha", "amount": 200.0 + index}]},
+                    "entities": [entity],
+                    "relations": [],
+                }
+                return old, new
+
+            if scenario == "merge":
+                old_body, new_body = _raw_merge()
+                old_evidence = await ingestion.ingest(
+                    "MANUAL_CONFIG",
+                    {
+                        "title": f"冲突场景-{index:02d}",
+                        "body": old_body,
+                        "entities": [entity],
+                        "relations": [],
+                    },
+                    "shared:home",
+                )
+                await knowledge.structure(old_evidence)
+                new_evidence = await ingestion.ingest(
+                    "MANUAL_CONFIG",
+                    {
+                        "title": f"冲突场景-{index:02d}",
+                        "body": new_body,
+                        "entities": [entity],
+                        "relations": [],
+                    },
+                    "shared:home",
+                )
+            elif scenario == "manual":
+                old_raw, new_raw = _raw_manual()
+                old_evidence = await ingestion.ingest("MANUAL_CONFIG", old_raw, "shared:home")
+                await knowledge.structure(old_evidence)
+                new_evidence = await ingestion.ingest("MANUAL_CONFIG", new_raw, "shared:home")
+            else:
+                old_evidence = await ingestion.ingest(
+                    "MANUAL_CONFIG", _raw_new_wins(), "shared:home"
+                )
+                await knowledge.structure(old_evidence)
+                new_evidence = await ingestion.ingest(
+                    "MANUAL_CONFIG", _raw_new_wins(), "shared:home"
+                )
+
             record = await ConflictService(
                 knw_repo=knowledge_repo, conflict_repo=SqliteConflictRepo(db)
             ).arbitrate(await knowledge.structure(new_evidence))
