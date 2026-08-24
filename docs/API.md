@@ -19,21 +19,23 @@
 |------|------|------|----------|
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
+| GET | `/evidence/{id}` | 证据详情（查看原文） | ✅ 已实现（2026-08-24） |
 | POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
+| GET | `/preferences` | 偏好列表（支持 scope 过滤） | ✅ 已实现（2026-08-24） |
 | GET | `/preference/{id}/history` | 偏好版本回溯 | ✅ 已实现 |
 | POST | `/forget` | 自然语言遗忘 | ✅ 已实现 |
 | GET | `/conflicts` | 冲突审计列表 | ✅ 已实现 |
 | POST | `/memory/flow/promote` | 短/中期→长期流转 | ✅ 已实现（2026-08-10） |
+| POST | `/sync/token` | 生成配对令牌（QR/PIN） | ✅ 已实现（2026-08-24） |
 | POST | `/sync/pair` | 设备配对（QR/PIN + 签名令牌） | ✅ 已实现（2026-08-10） |
 | GET | `/sync/peers` | 节点列表 | ✅ 已实现（2026-08-10） |
 | GET | `/sync/status` | 同步状态 | ✅ 已实现（2026-08-10） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
-| WS | `/events` | 事件推送 | 🟡 契约已实现（连接/心跳/广播）；路由注册待 Module C 修复（见 `frontend/docs/BACKEND_ISSUES.md`） |
+| WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部四类事件） |
 
-> 状态说明（2026-08-11）：12 个 REST 端点已全部按本文档契约真实实现并接入
-> 引擎/检索/流转/同步服务（`feat/foundation` 2026-08-10 合入 main）。
-> 剩余未落地：WS `conflict_detected`、`forget_confirmation` 两类事件后端尚未
-> 广播（见 §4）；`/events` 路由注册问题见 `frontend/docs/BACKEND_ISSUES.md`。
+> 状态说明（2026-08-24）：15 个 REST 端点已全部按本文档契约真实实现；
+> 四类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
+> sync_event）均已广播。
 
 ---
 
@@ -109,7 +111,25 @@
 }
 ```
 
-### 3.3 POST /preference/extract
+### 3.3 GET /evidence/{id}
+
+按 evidence_id 获取原始证据详情，供前端 EvidenceCard「查看原文」。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "id": "evd_01H...",
+  "source_type": "OCR",
+  "raw": { "...": "写入时的原始结构化内容" },
+  "quality_score": 0.94,
+  "sensitivity": 0,
+  "scope": "shared:home",
+  "created_at": 1714435200
+}
+```
+
+### 3.4 POST /preference/extract
 
 触发偏好提取。
 
@@ -138,7 +158,33 @@
 }
 ```
 
-### 3.4 GET /preference/{id}/history
+### 3.5 GET /preferences
+
+偏好列表，支持 `scope` 查询参数过滤，供前端 MemoryPanel 偏好选择器使用。
+
+**查询参数：** `scope`（可选，e.g. `shared:home`）
+
+**响应体（200）：**
+
+```jsonc
+{
+  "preferences": [
+    {
+      "id": "pref_...",
+      "category": "OP_HABIT|OUTPUT_STYLE|SECURITY_POLICY",
+      "key": "output_style.compact",
+      "value": {"enabled": true},
+      "confidence": 0.85,
+      "version": 3,
+      "scope": "shared:home",
+      "created_at": 1714435200,
+      "updated_at": 1714608000
+    }
+  ]
+}
+```
+
+### 3.6 GET /preference/{id}/history
 
 偏好版本回溯。
 
@@ -157,7 +203,7 @@
 }
 ```
 
-### 3.5 POST /forget
+### 3.7 POST /forget
 
 自然语言遗忘指令。
 
@@ -195,7 +241,7 @@
 }
 ```
 
-### 3.6 GET /conflicts
+### 3.8 GET /conflicts
 
 冲突审计列表。
 
@@ -218,7 +264,7 @@
 }
 ```
 
-### 3.7 POST /memory/flow/promote
+### 3.9 POST /memory/flow/promote
 
 短/中期记忆沉淀到长期记忆。
 
@@ -242,7 +288,32 @@
 }
 ```
 
-### 3.8 POST /sync/pair
+### 3.10 POST /sync/token
+
+生成设备配对令牌（QR/PIN），供前端 PairDialog 展示二维码或 PIN 码。
+注意：`method=PIN` 时必须提供 6 位数字 `pin`；`method=QR` 时无需 pin。
+
+**请求体：**
+
+```jsonc
+{
+  "method": "QR|PIN",
+  "pin": "123456",
+  "ttl_seconds": 300
+}
+```
+
+**响应体（200）：**
+
+```jsonc
+{
+  "token": "base64_encoded_pairing_token",
+  "method": "QR",
+  "ttl_seconds": 300
+}
+```
+
+### 3.11 POST /sync/pair
 
 设备配对，加入共享域。
 
@@ -267,7 +338,7 @@
 }
 ```
 
-### 3.9 GET /sync/peers
+### 3.12 GET /sync/peers
 
 节点列表。
 
@@ -296,7 +367,7 @@
 }
 ```
 
-### 3.10 GET /sync/status
+### 3.13 GET /sync/status
 
 同步状态。
 
@@ -313,7 +384,7 @@
 }
 ```
 
-### 3.11 POST /sync/peers/{id}/revoke
+### 3.14 POST /sync/peers/{id}/revoke
 
 解绑设备。
 
@@ -347,7 +418,7 @@
 }
 ```
 
-### 4.2 conflict_detected ⬜ 未广播（后端尚无广播调用；前端已具备路由处理）
+### 4.2 conflict_detected ✅ 已实现（写入链路冲突仲裁命中时广播）
 
 ```jsonc
 {
@@ -362,7 +433,7 @@
 }
 ```
 
-### 4.3 forget_confirmation ⬜ 未广播（后端尚无广播调用；前端已具备路由处理）
+### 4.3 forget_confirmation ✅ 已实现（遗忘执行后广播，含 targets/forgotten_ids/expires_at）
 
 ```jsonc
 {
