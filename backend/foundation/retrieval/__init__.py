@@ -76,15 +76,19 @@ class RetrievalService:
         channel_results = await asyncio.gather(*(searches[name] for name in channel_names))
         results = dict(zip(channel_names, channel_results))
 
+        # 先在大候选池上融合，重排（词面+时间信号）后再截断到 top_k；
+        # 否则 top_k=1 时 rerank 只有一个候选、无法纠正通道间的排名噪声
+        #（如实体完全同构时 graph 通道的任意排序）。
+        pool_k = max(search_limit, top_k)
         fused = fuse_candidates(
             bm25=results.get("bm25"),
             ann=results.get("ann"),
             graph=results.get("graph"),
             scope=scope,
             time_range=time_range,
-            top_k=top_k,
+            top_k=pool_k,
         )
-        reranked = rerank(fused, text)
+        reranked = rerank(fused, text)[:top_k]
 
         if not reranked:
             latency = int((time.monotonic() - started) * 1000)

@@ -6,12 +6,17 @@ from .models import CaseKind, EvalCase, EvalDataset
 
 
 _QUERY_TEMPLATES = (
-    "{month}月的家庭支出清单记录了哪些支出",
-    "查询{month}月份 utilities 花费",
-    "{month}月的水电燃气总共支出了多少金额",
-    "统计{month}月水电燃气费用的总额",
-    "{month}月水电燃气总共花了多少",
+    "{month}月的家庭支出清单记录了哪些支出，单据编号{doc_no}",
+    "查询{month}月份 utilities 花费，单据编号{doc_no}",
+    "{month}月的水电燃气总共支出了多少金额，单据编号{doc_no}",
+    "统计{month}月水电燃气费用的总额，单据编号{doc_no}",
+    "{month}月水电燃气总共花了多少，单据编号{doc_no}",
 )
+
+
+def _doc_no(index: int, month: int) -> str:
+    """唯一单据编号：保证同月多份账单在查询中可被词面区分。"""
+    return f"PX2026{month:02d}{index:04d}"
 
 
 def _expense_fixture(index: int) -> tuple[dict, EvalCase]:
@@ -36,6 +41,7 @@ def _expense_fixture(index: int) -> tuple[dict, EvalCase]:
         "title": f"2026年{month}月家庭支出清单-{index:02d}",
         "scope": "shared:home",
         "body": {
+            "document_no": _doc_no(index, month),
             "items": [
                 {
                     "category": "房租",
@@ -74,7 +80,9 @@ def _expense_fixture(index: int) -> tuple[dict, EvalCase]:
             {"from": "燃气集团", "to": "水电燃气", "type": "BELONG_TO"},
         ],
     }
-    query = _QUERY_TEMPLATES[(index - 1) % len(_QUERY_TEMPLATES)].format(month=month)
+    query = _QUERY_TEMPLATES[(index - 1) % len(_QUERY_TEMPLATES)].format(
+        month=month, doc_no=_doc_no(index, month)
+    )
     case = EvalCase(
         id=f"retrieval-{index:02d}",
         task=CaseKind.RETRIEVAL,

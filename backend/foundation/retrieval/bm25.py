@@ -4,8 +4,9 @@
 知识不参与检索，与引擎语义对齐）。
 
 ⚠️ trigram 限制：长查询串会被 FTS5 按 AND 语义匹配所有 trigram，
-整句查询几乎必然 0 命中。因此本通道对 CJK 查询提供滑动窗口回退：
-直接 MATCH 无命中时，按 4 字窗口（步长 2）逐个检索并合并。
+整句查询几乎必然 0 命中且代价高昂。因此本通道对长查询提供显著词
+回退：优先取字母数字串（单号/编号类强区分信号），再按 CJK 4 字
+滑动窗口（步长 2）逐个检索并合并。
 """
 
 from __future__ import annotations
@@ -16,9 +17,12 @@ from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
 from backend.foundation.core.repository import KnowledgeRepository
 
 _CJK_RUN = re.compile(r"[\u4e00-\u9fff]{3,}")
+_ALNUM_RUN = re.compile(r"[A-Za-z0-9_]{3,}")
 _WINDOW_SIZE = 4
 _WINDOW_STEP = 2
 _MAX_WINDOWS = 6
+# 超过该长度的查询跳过整句直查（trigram AND 语义下必然 0 命中且昂贵）。
+_DIRECT_MATCH_MAX_LEN = 12
 
 
 def _cjk_windows(text: str) -> list[str]:
@@ -32,7 +36,23 @@ def _cjk_windows(text: str) -> list[str]:
             windows.append(run[i : i + _WINDOW_SIZE])
             if len(windows) >= _MAX_WINDOWS:
                 return windows
-    return windows[: _MAX_WINDOWS]
+    return windows[:_MAX_WINDOWS]
+
+
+def _salient_tokens(text: str) -> list[str]:
+    """显著词序列：字母数字串（编号/单号）优先，其后为 CJK 滑动窗口。"""
+    tokens: list[str] = []
+    seen: set[str] = set()
+    for run in _ALNUM_RUN.findall(text):
+        key = run.casefold()
+        if key not in seen:
+            seen.add(key)
+            tokens.append(run)
+    for window in _cjk_windows(text):
+        if window not in seen:
+            seen.add(window)
+            tokens.append(window)
+    return tokens
 
 
 class BM25Channel:
@@ -43,25 +63,23 @@ class BM25Channel:
 
     async def search(self, query: str, limit: int = 20) -> list[tuple[KnowledgeItem, float]]:
         """返回 [(KnowledgeItem, score)]，按命中权重降序。"""
-        results = await self._knw_repo.search_fts(query, limit=limit)
+        results = []
+        if len(query or "") <= _DIRECT_MATCH_MAX_LEN:
+            results = list(await self._knw_repo.search_fts(query, limit=limit))
 
-        # 长句查询回退：滑动窗口逐个检索，首个命中窗口权重最高
+        # 长句查询回退：显著词逐个检索（编号类词最先、区分度最高）
         if not results:
-            windows = _cjk_windows(query)
-            if windows:
-                results = []
-                for window in windows:
-                    hit = await self._knw_repo.search_fts(window, limit=limit)
-                    if hit:
-                        results.extend(hit)
-                # 去重保序（保持第一个窗口的排序）
-                seen: set[str] = set()
-                deduped: list[KnowledgeItem] = []
-                for item in results:
+            collected: list[KnowledgeItem] = []
+            seen: set[str] = set()
+            for token in _salient_tokens(query):
+                hit = await self._knw_repo.search_fts(token, limit=limit)
+                for item in hit:
                     if item.id not in seen:
                         seen.add(item.id)
-                        deduped.append(item)
-                results = deduped[:limit]
+                        collected.append(item)
+                if len(collected) >= limit:
+                    break
+            results = collected[:limit]
 
         scored: list[tuple[KnowledgeItem, float]] = []
         for rank, item in enumerate(results):
