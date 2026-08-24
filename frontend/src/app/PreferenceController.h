@@ -1,6 +1,7 @@
 #ifndef PIXIU_PREFERENCE_CONTROLLER_H
 #define PIXIU_PREFERENCE_CONTROLLER_H
 
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
 #include <QString>
@@ -17,11 +18,14 @@ public:
     explicit PreferenceController(BackendTransport *transport, QObject *parent = nullptr);
 
     void loadHistory(const QString &preferenceId);
+    // 偏好列表：GET /preferences（scope 可空）。
+    void loadList(const QString &scope = QString());
     // 偏好提取：POST /preference/extract（evidence_ids 非空且无在途提取时放行）。
     void extract(const QStringList &evidenceIds);
 
 signals:
     void historyLoaded(const QJsonObject &response);
+    void listLoaded(const QJsonArray &preferences);
     void extracted(int count, int latencyMs);
     void extractFailed(const QString &code, const QString &message);
     void failed(const QString &code, const QString &message);
@@ -29,6 +33,7 @@ signals:
 private:
     BackendTransport *m_transport = nullptr;
     QString m_pendingId;
+    bool m_listPending = false;
     bool m_extractPending = false;
 };
 

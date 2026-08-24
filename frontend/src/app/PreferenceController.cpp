@@ -31,8 +31,21 @@ PreferenceController::PreferenceController(BackendTransport *transport, QObject 
                 emit extracted(count,
                                response.value(QStringLiteral("latency_ms")).toInt(0));
             });
+    connect(m_transport, &BackendTransport::preferencesListResult, this,
+            [this](const QJsonArray &preferences) {
+                if (!m_listPending) {
+                    return; // 无在途请求，忽略过期响应
+                }
+                m_listPending = false;
+                emit listLoaded(preferences);
+            });
     connect(m_transport, &BackendTransport::errorOccurred, this,
             [this](const QString &code, const QString &message, const QString &) {
+                if (m_listPending) {
+                    m_listPending = false;
+                    emit failed(code, message);
+                    return;
+                }
                 if (m_extractPending) {
                     m_extractPending = false;
                     emit extractFailed(code, message);
@@ -58,6 +71,16 @@ void PreferenceController::loadHistory(const QString &preferenceId)
     m_pendingId = id;
     qCInfo(lcPreference) << "loading preference history:" << id;
     m_transport->preferenceHistory(id);
+}
+
+void PreferenceController::loadList(const QString &scope)
+{
+    if (m_listPending) {
+        return; // 在途防重
+    }
+    m_listPending = true;
+    qCInfo(lcPreference) << "loading preference list";
+    m_transport->preferencesList(scope);
 }
 
 void PreferenceController::extract(const QStringList &evidenceIds)

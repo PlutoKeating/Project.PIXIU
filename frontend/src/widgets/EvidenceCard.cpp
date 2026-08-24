@@ -14,7 +14,7 @@ EvidenceCard::EvidenceCard(const QString &evidenceId,
 {
     setObjectName(QStringLiteral("evidenceCard"));
     setCursor(Qt::PointingHandCursor);
-    setToolTip(tr("点击查看原文（详情接口待后端提供）"));
+    setToolTip(tr("点击查看原文"));
 
     QLabel *title = new QLabel(tr("📄 原始证据"), this);
     title->setObjectName(QStringLiteral("evidenceTitle"));
