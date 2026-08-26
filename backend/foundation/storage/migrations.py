@@ -104,11 +104,19 @@ def _add_sync_foundation(conn: sqlite3.Connection) -> None:
         conn.execute(statement)
 
 
+def _add_monitor_config(conn: sqlite3.Connection) -> None:
+    """迁移 #5：监视服务配置 KV 表（MonitorConfigStore 持久化）。"""
+    from .schema import MONITOR_CONFIG_DDL
+
+    conn.execute(MONITOR_CONFIG_DDL)
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
     (3, "memory_contexts", _add_memory_contexts),
     (4, "sync_foundation", _add_sync_foundation),
+    (5, "monitor_config", _add_monitor_config),
 ]
 
 

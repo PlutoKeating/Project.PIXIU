@@ -36,6 +36,7 @@ EXPECTED_TABLES = {
     "sync_state",
     "sync_peer_acks",
     "sync_meta",
+    "monitor_config",
 }
 
 
@@ -284,12 +285,13 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 3
+    assert apply_pending(conn) == 4
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
     assert "sync_identity" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 4
+    assert "monitor_config" in _table_names(conn)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 5
     conn.close()
 
 

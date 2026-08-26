@@ -10,7 +10,17 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
+
+# monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
+# 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
+MONITOR_CONFIG_DDL = """
+CREATE TABLE IF NOT EXISTS monitor_config (
+    key        TEXT PRIMARY KEY,
+    value      TEXT NOT NULL DEFAULT '{}',
+    updated_at INTEGER NOT NULL
+)
+"""
 
 # FTS5 全文索引（trigram 分词器，支持中文子串检索）。
 # 独立表（不绑定 content=），rowid 手动对应 knowledge_items.rowid，
@@ -260,6 +270,9 @@ DDL_STATEMENTS: list[str] = [
         value TEXT NOT NULL
     )
     """,
+
+    # ─── monitor_config (监视服务配置 KV) ─────────────────
+    MONITOR_CONFIG_DDL,
 ]
 
 
