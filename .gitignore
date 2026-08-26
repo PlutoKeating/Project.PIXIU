@@ -33,6 +33,7 @@ build/*
 !build/release/**
 build/release/out/
 build/release/dist/
+build/release/eval/
 out/
 target/
 bin/
