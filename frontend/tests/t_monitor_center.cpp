@@ -188,6 +188,12 @@ void TestMonitorCenter::externalPauseSyncsOpenDialog()
     for (QCheckBox *box : sourceChecks(dialog)) {
         QVERIFY(box->isEnabled());
     }
+
+    // sourceChanged 镜像：外部直接翻转单个源开关时，
+    // 已打开面板的对应源复选框必须同步勾选。
+    controller.setSourceEnabled(MonitorSource::Clipboard, true);
+    QVERIFY(
+        sourceChecks(dialog).at(int(MonitorSource::Clipboard))->isChecked());
 }
 
 void TestMonitorCenter::cleanupTestCase()

@@ -163,9 +163,11 @@ MonitorCenterDialog::MonitorCenterDialog(MonitorController *controller,
             [this]() { rebuildDirectoryList(); });
     // 外部写入方（托盘/悬浮球菜单直接调用 controller->setEnabled /
     // setSourceEnabled）改变状态时，常驻复用的面板必须实时同步勾选态，
-    // 否则会显示陈旧开关。回发的 toggled 由控制器等态短路吸收，不会递归。
+    // 否则会显示陈旧开关。镜像写入用 QSignalBlocker 包裹，局部自证
+    // “此处仅做 UI 镜像、不回写控制器”，不依赖控制器等态短路防递归。
     connect(m_controller, &MonitorController::enabledChanged, this,
             [this](bool on) {
+                const QSignalBlocker masterBlocker(m_masterCheck);
                 m_masterCheck->setChecked(on);
                 for (QCheckBox *check : m_sourceChecks) {
                     check->setEnabled(on);
@@ -175,6 +177,7 @@ MonitorCenterDialog::MonitorCenterDialog(MonitorController *controller,
             [this](MonitorSource source, bool on) {
                 const int index = static_cast<int>(source);
                 if (index >= 0 && index < m_sourceChecks.size()) {
+                    const QSignalBlocker blocker(m_sourceChecks.at(index));
                     m_sourceChecks.at(index)->setChecked(on);
                 }
             });

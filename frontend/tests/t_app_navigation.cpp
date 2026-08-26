@@ -232,6 +232,8 @@ void TestAppNavigation::pauseToggleFromBallFlipsController()
                                     : QStringLiteral("继续监控"));
     pause->trigger();
     QCOMPARE(controller->isEnabled(), before);
+    QCOMPARE(pause->text(), before ? QStringLiteral("暂停监控")
+                                   : QStringLiteral("继续监控"));
 }
 
 void TestAppNavigation::settingsOpensMonitorCenter()
