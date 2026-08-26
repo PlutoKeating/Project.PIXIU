@@ -23,6 +23,12 @@ public:
     static inline const QString keyToggleShortcut = QStringLiteral("app/shortcut/toggle");
     static inline const QString keyWindowGeometry = QStringLiteral("app/window/geometry");
     static inline const QString keyBallPosition = QStringLiteral("app/floating_ball/position");
+    static inline const QString keyMonitorEnabled =
+        QStringLiteral("app/monitor/enabled");
+    static inline const QString keyMonitorSourcePrefix =
+        QStringLiteral("app/monitor/source/");
+    static inline const QString keyMonitorDirectories =
+        QStringLiteral("app/monitor/directories");
 
     explicit AppSettings(QObject *parent = nullptr);
     ~AppSettings() override;

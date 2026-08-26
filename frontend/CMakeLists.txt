@@ -23,6 +23,8 @@ add_executable(pixiu-frontend
     src/app/TrayIcon.cpp
     src/app/AppSettings.h
     src/app/AppSettings.cpp
+    src/app/MonitorController.h
+    src/app/MonitorController.cpp
     src/app/ShortcutManager.h
     src/app/ShortcutManager.cpp
     src/app/QueryController.h
@@ -395,6 +397,17 @@ if(BUILD_TESTING)
     target_link_libraries(t_app_settings PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME app_settings COMMAND t_app_settings)
 
+    add_executable(t_monitor_controller
+        tests/t_monitor_controller.cpp
+        src/app/AppSettings.h
+        src/app/AppSettings.cpp
+        src/app/MonitorController.h
+        src/app/MonitorController.cpp
+    )
+    target_include_directories(t_monitor_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_monitor_controller PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME monitor_controller COMMAND t_monitor_controller)
+
     add_executable(t_chat_window
         tests/t_chat_window.cpp
         src/widgets/ChatWindow.h
@@ -629,6 +642,6 @@ if(BUILD_TESTING)
         memory_atom query_controller write_controller app_settings
         chat_window input_bar message_list import_dialog evidence_card i18n
         revoke_dialog sync_controller event_router settings_dialog
-        app_navigation window_restore
+        app_navigation window_restore monitor_controller
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
