@@ -16,11 +16,12 @@ import json
 import os
 import sqlite3
 import time
+from contextlib import closing
 from typing import Any, Callable
 
 from ..core.config import settings
 from ..core.logger import get_logger
-from ..storage.schema import MONITOR_CONFIG_DDL
+from ..storage.schema import MONITOR_CONFIG_DDL, create_connection
 
 log = get_logger(__name__)
 
@@ -47,7 +48,8 @@ def _normalize(config: dict[str, Any]) -> dict[str, Any]:
 
     - enabled 必须是 bool（缺省 False）；
     - sources 只接受白名单键、值必须是 bool（缺省全 False）；
-    - directories 丢弃空串/纯空白、按原序去重、拒绝相对路径（缺省 []）。
+    - directories 先 strip 归一化，再丢弃空串/纯空白、按原序去重、
+      拒绝相对路径（缺省 []）。
     未知顶层键静默忽略（归一化到契约三键形状）。
     """
     if not isinstance(config, dict):
@@ -59,7 +61,8 @@ def _normalize(config: dict[str, Any]) -> dict[str, Any]:
             f"enabled must be a bool, got {type(enabled).__name__}"
         )
 
-    raw_sources = config.get("sources") or {}
+    raw = config.get("sources")
+    raw_sources = {} if raw is None else raw
     if not isinstance(raw_sources, dict):
         raise InvalidMonitorConfig("sources must be a dict")
     unknown = sorted(set(raw_sources) - set(SOURCE_WHITELIST))
@@ -87,7 +90,8 @@ def _normalize(config: dict[str, Any]) -> dict[str, Any]:
             raise InvalidMonitorConfig(
                 f"directory entries must be strings, got {type(entry).__name__}"
             )
-        if not entry.strip():
+        entry = entry.strip()  # 先归一化再做空/绝对路径/去重判定（M2）
+        if not entry:
             continue  # 丢弃空串/纯空白
         if entry in seen:
             continue  # 按原序去重
@@ -119,26 +123,34 @@ class MonitorConfigStore:
     def __init__(self, db_path: str | None = None):
         self._db_path = db_path or settings.db_path
         self._callbacks: list[Callable[[dict], Any]] = []
-        # 幂等建表 + 启用 WAL（对齐 storage.create_connection 风格）
-        with self._open() as conn:
-            conn.execute("PRAGMA journal_mode=WAL")
+        # 幂等建表一次性 bootstrap（独立短连接 + try/finally 显式关闭，
+        # 对齐 api/di.py 先例）。bootstrap 连接不跨线程复用：
+        # _open() 每次调用都新建连接，天然线程安全。
+        conn = create_connection(self._db_path)
+        try:
+            conn.execute(MONITOR_CONFIG_DDL)
+            conn.commit()
+        finally:
+            conn.close()
 
     # ─── 内部：短连接（线程安全） ─────────────────────────
 
     def _open(self) -> sqlite3.Connection:
-        os.makedirs(os.path.dirname(self._db_path) or ".", exist_ok=True)
-        conn = sqlite3.connect(self._db_path)
-        conn.execute("PRAGMA busy_timeout=5000")
-        conn.execute("PRAGMA foreign_keys=ON")
-        conn.execute(MONITOR_CONFIG_DDL)
-        conn.commit()
-        return conn
+        """新建短连接（复用 storage.schema.create_connection 的标准 pragmas）。
+
+        不执行 DDL、不 commit：建表由 __init__ bootstrap 一次性完成
+        （幂等，CREATE TABLE IF NOT EXISTS）。get()/put() 以
+        ``with closing(self._open()) as conn, conn:`` 持有连接——
+        conn 的 __exit__ 负责 commit/rollback，closing 负责 close，
+        读路径不再显式 commit。
+        """
+        return create_connection(self._db_path)
 
     # ─── 读取 ─────────────────────────────────────────────
 
     def get(self) -> dict:
         """读取当前配置；未写入过返回 DEFAULT_MONITOR_CONFIG。"""
-        with self._open() as conn:
+        with closing(self._open()) as conn, conn:
             row = conn.execute(
                 "SELECT value FROM monitor_config WHERE key = ?",
                 (_MONITOR_CONFIG_KEY,),
@@ -165,7 +177,7 @@ class MonitorConfigStore:
         """
         normalized = _normalize(config)
         payload = json.dumps(normalized, ensure_ascii=False)
-        with self._open() as conn:
+        with closing(self._open()) as conn, conn:
             conn.execute(
                 """INSERT INTO monitor_config (key, value, updated_at)
                    VALUES (?, ?, ?)
@@ -174,7 +186,7 @@ class MonitorConfigStore:
                        updated_at = excluded.updated_at""",
                 (_MONITOR_CONFIG_KEY, payload, int(time.time())),
             )
-            conn.commit()
+            # conn 的 __exit__ 负责 commit（成功路径）
         for callback in list(self._callbacks):
             await self._notify(callback, normalized)
         return normalized

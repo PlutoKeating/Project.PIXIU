@@ -1,7 +1,8 @@
 """Tests for monitor/config_store.py — MonitorConfigStore（持久化 + 校验 + 热生效订阅）。
 
-覆盖：默认值 / roundtrip / 跨实例持久化 / source 白名单 / enabled 类型 /
-directories 去空去重拒相对路径 / 订阅回调（同步 + 异步 + 异常隔离）。
+覆盖：默认值 / roundtrip / 跨实例持久化 / source 白名单与假值拒收 /
+enabled 类型 / directories 去空去白去重归一化拒相对路径 /
+订阅回调（同步 + 异步 + 异常隔离）。
 """
 
 from __future__ import annotations
@@ -94,6 +95,14 @@ async def test_source_value_must_be_bool(store: MonitorConfigStore):
         await store.put({"sources": {"directory": "yes"}})
 
 
+@pytest.mark.asyncio
+async def test_sources_falsy_non_dict_rejected(store: MonitorConfigStore):
+    """sources 为 [] / "" 等假值不得静默当缺省（I3 回归），必须按类型拒收。"""
+    for bad in ([], "", 0):
+        with pytest.raises(InvalidMonitorConfig, match="dict"):
+            await store.put({"sources": bad})
+
+
 # ─── enabled 校验 ────────────────────────────────────────
 
 @pytest.mark.asyncio
@@ -141,6 +150,20 @@ async def test_directories_reject_relative_path(store: MonitorConfigStore):
 async def test_directories_must_be_strings(store: MonitorConfigStore):
     with pytest.raises(InvalidMonitorConfig, match="string"):
         await store.put({"directories": ["/abs", 42]})
+
+
+@pytest.mark.asyncio
+async def test_directories_whitespace_stripped(store: MonitorConfigStore):
+    """目录条目先 strip 归一化再存储（M2）：首尾空白不影响绝对路径判定。"""
+    stored = await store.put({"directories": [" /tmp/a ", "\t/tmp/b\n"]})
+    assert stored["directories"] == ["/tmp/a", "/tmp/b"]
+
+
+@pytest.mark.asyncio
+async def test_directories_dedupe_after_strip(store: MonitorConfigStore):
+    """strip 后去重（M2 回归）：前后空白差异不得漏判重复，归一化后 size==1。"""
+    stored = await store.put({"directories": [" /a ", "/a"]})
+    assert stored["directories"] == ["/a"]
 
 
 # ─── 订阅回调（热生效） ──────────────────────────────────
