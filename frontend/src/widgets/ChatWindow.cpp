@@ -323,6 +323,12 @@ void ChatWindow::setBackendState(ConnectionState state)
     m_inputBar->setBackendState(state);
 }
 
+void ChatWindow::setMonitorActive(bool active)
+{
+    // 监控暂停徽标显示在连接状态旁（InputBar 内部处理文案/颜色/可见性）。
+    m_inputBar->setMonitorActive(active);
+}
+
 void ChatWindow::restoreInput(const QString &text)
 {
     m_inputBar->setInputText(text);

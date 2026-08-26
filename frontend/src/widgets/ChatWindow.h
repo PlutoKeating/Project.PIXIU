@@ -41,6 +41,9 @@ public:
     // 后端连接状态 -> 顶栏状态与输入可用性。
     void setBackendState(ConnectionState state);
 
+    // 监控总闸状态 -> 输入区“⏸ 已暂停”徽标（InputBar 内部处理）。
+    void setMonitorActive(bool active);
+
     // 恢复用户输入（查询失败重试）。
     void restoreInput(const QString &text);
 

@@ -27,6 +27,8 @@ class PreferenceController;
 class ThemeService;
 class SyncController;
 class EventRouter;
+class MonitorController;
+class MonitorCenterDialog;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -80,6 +82,9 @@ private:
     SyncController *m_syncController = nullptr;
     EventRouter *m_eventRouter = nullptr;
     ThemeService *m_themeService = nullptr;
+    // 监控掌控层：状态单一事实来源 + 监控中心面板（懒创建）。
+    MonitorController *m_monitorController = nullptr;
+    MonitorCenterDialog *m_monitorCenter = nullptr;
     // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
     // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。
     bool m_pairPending = false;
@@ -101,6 +106,8 @@ private:
 private:
     void toggleChatWindow();
     void openSettings();
+    void openMonitorCenter();
+    void refreshMonitorUi();
     void handleBackendEvent(const QJsonObject &event);
 };
 

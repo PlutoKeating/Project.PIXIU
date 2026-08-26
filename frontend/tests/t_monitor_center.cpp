@@ -25,6 +25,7 @@ private slots:
     void sourceCheckWritesToController();
     void addAndRemoveDirectory();
     void logTabRendersEntries();
+    void externalPauseSyncsOpenDialog();
     void cleanupTestCase();
 
 private:
@@ -154,6 +155,39 @@ void TestMonitorCenter::logTabRendersEntries()
         dialog.findChild<QListWidget *>(QStringLiteral("monitorLogList"));
     QVERIFY(logList != nullptr);
     QVERIFY(logList->count() >= 1);
+}
+
+void TestMonitorCenter::externalPauseSyncsOpenDialog()
+{
+    // 外部写入方（托盘/悬浮球直接调 controller->setEnabled）翻转总闸时，
+    // 常驻复用、已打开的监控中心面板必须实时同步勾选态与源开关可用性，
+    // 不允许显示陈旧状态。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    controller.setEnabled(true);
+    MonitorCenterDialog dialog(&controller);   // 打开时即处于已启用态
+    dialog.show();
+    QVERIFY(masterCheck(dialog)->isChecked());
+    for (QCheckBox *box : sourceChecks(dialog)) {
+        QVERIFY(box->isEnabled());
+    }
+
+    controller.setEnabled(false);
+    QVERIFY(!masterCheck(dialog)->isChecked());
+    for (QCheckBox *box : sourceChecks(dialog)) {
+        QVERIFY(!box->isEnabled());
+    }
+
+    // 反向恢复：重新开启后勾选与源开关使能一并还原。
+    controller.setEnabled(true);
+    QVERIFY(masterCheck(dialog)->isChecked());
+    for (QCheckBox *box : sourceChecks(dialog)) {
+        QVERIFY(box->isEnabled());
+    }
 }
 
 void TestMonitorCenter::cleanupTestCase()

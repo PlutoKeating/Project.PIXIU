@@ -56,6 +56,13 @@ void FloatingBall::clearUnread()
     setUnreadCount(0);
 }
 
+void FloatingBall::setPauseMenuText(const QString &text)
+{
+    if (m_pauseAction) {
+        m_pauseAction->setText(text);
+    }
+}
+
 void FloatingBall::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
@@ -212,6 +219,16 @@ void FloatingBall::buildContextMenu()
     QAction *settingsAction = m_contextMenu->addAction(tr("设置"));
     settingsAction->setObjectName(QStringLiteral("settingsAction"));
     connect(settingsAction, &QAction::triggered, this, &FloatingBall::settingsRequested);
+
+    QAction *centerAction = m_contextMenu->addAction(tr("监控中心"));
+    centerAction->setObjectName(QStringLiteral("monitorCenterAction"));
+    connect(centerAction, &QAction::triggered,
+            this, &FloatingBall::monitorCenterRequested);
+
+    m_pauseAction = m_contextMenu->addAction(tr("暂停监控"));
+    m_pauseAction->setObjectName(QStringLiteral("pauseMonitorAction"));
+    connect(m_pauseAction, &QAction::triggered,
+            this, &FloatingBall::pauseMonitorRequested);
 
     m_contextMenu->addSeparator();
 

@@ -54,6 +54,14 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     shortcutHint->setObjectName(QStringLiteral("shortcutHint"));
     shortcutHint->setWordWrap(true);
 
+    // 监控掌控层入口：打开监控中心面板（数据源开关/目录/活动记录）。
+    m_monitorButton = new QPushButton(tr("监控中心…"), this);
+    m_monitorButton->setObjectName(QStringLiteral("openMonitorCenterButton"));
+    m_monitorButton->setAccessibleName(tr("打开监控中心"));
+    m_monitorButton->setCursor(Qt::PointingHandCursor);
+    connect(m_monitorButton, &QPushButton::clicked,
+            this, &SettingsDialog::monitorCenterRequested);
+
     QLabel *aboutLabel = new QLabel(tr("PIXIU 貔貅 · 记忆管家"), this);
     QLabel *versionLabel = new QLabel(
         tr("版本 %1").arg(QCoreApplication::applicationVersion()), this);
@@ -82,6 +90,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->addLayout(formLayout);
+    layout->addWidget(m_monitorButton);
     layout->addWidget(hintLabel);
     layout->addWidget(shortcutHint);
     layout->addStretch(1);

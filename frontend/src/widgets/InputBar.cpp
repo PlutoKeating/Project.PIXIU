@@ -116,6 +116,12 @@ InputBar::InputBar(QWidget *parent)
     m_stateBadge->setAccessibleName(tr("后端连接状态"));
     m_stateBadge->setStyleSheet(ui::textStyle(ui::Role::Muted));
 
+    // 监控暂停徽标：仅监控总闸关闭时可见（默认在线观感）。
+    m_monitorBadge = new QLabel(card);
+    m_monitorBadge->setObjectName(QStringLiteral("inputMonitorBadge"));
+    m_monitorBadge->setAccessibleName(tr("监控状态"));
+    m_monitorBadge->hide();
+
     QHBoxLayout *editorRow = new QHBoxLayout();
     editorRow->setContentsMargins(0, 0, 0, 0);
     editorRow->setSpacing(ui::Spacing::XS);
@@ -126,6 +132,7 @@ InputBar::InputBar(QWidget *parent)
     bottomRow->setContentsMargins(0, 0, 0, 0);
     bottomRow->setSpacing(ui::Spacing::S);
     bottomRow->addWidget(m_stateBadge);
+    bottomRow->addWidget(m_monitorBadge);
     bottomRow->addStretch(1);
     bottomRow->addWidget(m_sendButton);
 
@@ -215,6 +222,17 @@ void InputBar::setBackendState(ConnectionState state)
     m_attachButton->setEnabled(online);
     m_importChip->setEnabled(online);
     updateSendEnabled();
+}
+
+void InputBar::setMonitorActive(bool active)
+{
+    // active=false 时显示“⏸ 已暂停”；active=true 徽标隐藏（默认在线观感）。
+    if (!m_monitorBadge) {
+        return;
+    }
+    m_monitorBadge->setText(tr("⏸ 已暂停"));
+    m_monitorBadge->setStyleSheet(ui::textStyle(ui::Role::Warning));
+    m_monitorBadge->setVisible(!active);
 }
 
 bool InputBar::eventFilter(QObject *watched, QEvent *event)

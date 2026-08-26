@@ -34,6 +34,9 @@ public:
     void setUnreadCount(int count);
     void clearUnread();
 
+    // 更新暂停菜单文案（监控开启显示“暂停监控”，暂停中显示“继续监控”）。
+    void setPauseMenuText(const QString &text);
+
 signals:
     // 无拖动位移的单击。
     void clicked();
@@ -41,6 +44,10 @@ signals:
     void settingsRequested();
     // 右键菜单“记忆面板”。
     void openPanelRequested();
+    // 右键菜单“监控中心”。
+    void monitorCenterRequested();
+    // 右键菜单“暂停/继续监控”。
+    void pauseMonitorRequested();
     // 右键菜单“退出”。
     void quitRequested();
     // 拖动结束或位置恢复后发射（供位置持久化）。
@@ -61,6 +68,7 @@ private:
     QPoint m_pressGlobalPos;
     bool m_wasDrag = false;
     int m_unreadCount = 0;
+    QAction *m_pauseAction = nullptr;
     QMenu *m_contextMenu = nullptr;
     QVariantAnimation *m_badgePulseAnim = nullptr;
     qreal m_badgePulse = 1.0;

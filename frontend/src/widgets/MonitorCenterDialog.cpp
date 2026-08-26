@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
+#include <QSignalBlocker>
 #include <QTabWidget>
 #include <QVBoxLayout>
 
@@ -160,13 +161,35 @@ MonitorCenterDialog::MonitorCenterDialog(MonitorController *controller,
             });
     connect(m_controller, &MonitorController::directoriesChanged, this,
             [this]() { rebuildDirectoryList(); });
+    // 外部写入方（托盘/悬浮球菜单直接调用 controller->setEnabled /
+    // setSourceEnabled）改变状态时，常驻复用的面板必须实时同步勾选态，
+    // 否则会显示陈旧开关。回发的 toggled 由控制器等态短路吸收，不会递归。
+    connect(m_controller, &MonitorController::enabledChanged, this,
+            [this](bool on) {
+                m_masterCheck->setChecked(on);
+                for (QCheckBox *check : m_sourceChecks) {
+                    check->setEnabled(on);
+                }
+            });
+    connect(m_controller, &MonitorController::sourceChanged, this,
+            [this](MonitorSource source, bool on) {
+                const int index = static_cast<int>(source);
+                if (index >= 0 && index < m_sourceChecks.size()) {
+                    m_sourceChecks.at(index)->setChecked(on);
+                }
+            });
 
-    // 初始状态回填。
-    m_masterCheck->setChecked(m_controller->isEnabled());
-    for (int i = 0; i < m_sourceChecks.size(); ++i) {
-        m_sourceChecks.at(i)->setChecked(
-            m_controller->isSourceEnabled(static_cast<MonitorSource>(i)));
-        m_sourceChecks.at(i)->setEnabled(m_controller->isEnabled());
+    // 初始状态回填：用 QSignalBlocker 包裹，明确“此处仅做 UI 镜像、
+    // 不回写控制器”——比依赖回填语句与 connect 的相对顺序更稳健。
+    {
+        const QSignalBlocker masterBlocker(m_masterCheck);
+        m_masterCheck->setChecked(m_controller->isEnabled());
+        for (int i = 0; i < m_sourceChecks.size(); ++i) {
+            const QSignalBlocker blocker(m_sourceChecks.at(i));
+            m_sourceChecks.at(i)->setChecked(
+                m_controller->isSourceEnabled(static_cast<MonitorSource>(i)));
+            m_sourceChecks.at(i)->setEnabled(m_controller->isEnabled());
+        }
     }
     rebuildDirectoryList();
     reloadLog();

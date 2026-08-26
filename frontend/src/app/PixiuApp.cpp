@@ -12,12 +12,14 @@
 #include "app/SyncController.h"
 #include "app/EventRouter.h"
 #include "app/ThemeService.h"
+#include "app/MonitorController.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
 #include "widgets/ForgetDialog.h"
 #include "widgets/SettingsDialog.h"
 #include "widgets/MemoryPanel.h"
+#include "widgets/MonitorCenterDialog.h"
 #include "widgets/EvidenceDetailDialog.h"
 #include "widgets/MessageList.h"
 #include "models/ChatMessage.h"
@@ -210,6 +212,26 @@ bool PixiuApp::start()
         connect(m_tray, &TrayIcon::openRequested,
                 m_chatWindow, &ChatWindow::showAndFocus);
     }
+
+    // 监控掌控层：状态单一事实来源 + 三入口（托盘/悬浮球/设置）统一接线。
+    // 须置于聊天窗与悬浮球创建之后（回填初始徽标与菜单文案需要它们就绪）。
+    m_monitorController = new MonitorController(m_settings, this);
+    connect(m_monitorController, &MonitorController::enabledChanged,
+            this, &PixiuApp::refreshMonitorUi);
+    if (m_tray) {
+        connect(m_tray, &TrayIcon::pauseMonitorRequested, this, [this]() {
+            m_monitorController->setEnabled(!m_monitorController->isEnabled());
+        });
+    }
+    connect(m_floatingBall, &FloatingBall::pauseMonitorRequested, this,
+            [this]() {
+                m_monitorController->setEnabled(
+                    !m_monitorController->isEnabled());
+            });
+    connect(m_floatingBall, &FloatingBall::monitorCenterRequested,
+            this, &PixiuApp::openMonitorCenter);
+    // 初始徽标与托盘/悬浮球菜单文案按已存偏好回填。
+    refreshMonitorUi();
 
     // 开发态全局快捷键唤起。
     m_shortcutManager = new ShortcutManager(m_chatWindow, this);
@@ -697,6 +719,9 @@ void PixiuApp::openSettings()
                               << shortcut.toString(QKeySequence::PortableText);
             }
         });
+        // 监控中心入口：懒创建的设置对话框只接线一次。
+        connect(m_settingsDialog, &SettingsDialog::monitorCenterRequested,
+                this, &PixiuApp::openMonitorCenter);
     }
     m_settingsDialog->setLanguage(
         m_settings->value(AppSettings::keyLanguage).toString());
@@ -706,6 +731,32 @@ void PixiuApp::openSettings()
                          QStringLiteral("Ctrl+Alt+P"))
                          .toString()));
     m_settingsDialog->showAndFocus();
+}
+
+void PixiuApp::openMonitorCenter()
+{
+    if (!m_monitorCenter) {
+        m_monitorCenter = new MonitorCenterDialog(m_monitorController);
+    }
+    m_monitorCenter->showAndFocus();
+}
+
+void PixiuApp::refreshMonitorUi()
+{
+    if (!m_monitorController) {
+        return;
+    }
+    const bool on = m_monitorController->isEnabled();
+    if (m_chatWindow) {
+        m_chatWindow->setMonitorActive(on);
+    }
+    const QString pauseText = on ? tr("暂停监控") : tr("继续监控");
+    if (m_tray) {
+        m_tray->setPauseActionText(pauseText);
+    }
+    if (m_floatingBall) {
+        m_floatingBall->setPauseMenuText(pauseText);
+    }
 }
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)

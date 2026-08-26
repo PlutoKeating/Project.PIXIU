@@ -1,14 +1,18 @@
+#include <QAction>
 #include <QGuiApplication>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QTest>
 
+#include "app/MonitorController.h"
 #include "app/PixiuApp.h"
 #include "services/BackendTypes.h"
 #include "widgets/ChatWindow.h"
+#include "widgets/FloatingBall.h"
 #include "widgets/ImportDialog.h"
 #include "widgets/InputBar.h"
 #include "widgets/MemoryPanel.h"
+#include "widgets/MonitorCenterDialog.h"
 #include "widgets/SettingsDialog.h"
 
 // 端到端导航回归：聊天框输入区上方 chip 快捷入口（记忆/设置/导入/同步）
@@ -28,6 +32,8 @@ private slots:
     void importChipDisabledWhileOffline();
     void repeatedClickActivatesExistingWindow();
     void chipClickRespondsWhenWindowNotActive();
+    void pauseToggleFromBallFlipsController();
+    void settingsOpensMonitorCenter();
 
 private:
     template <typename T>
@@ -204,6 +210,41 @@ void TestAppNavigation::chipClickRespondsWhenWindowNotActive()
     const auto panels = topLevels<MemoryPanel>();
     QCOMPARE(panels.size(), 1);
     QTRY_VERIFY(panels.first()->isVisible());
+}
+
+void TestAppNavigation::pauseToggleFromBallFlipsController()
+{
+    // 悬浮球菜单“暂停/继续监控”必须翻转控制器全局开关并刷新菜单文案。
+    const auto balls = topLevels<FloatingBall>();
+    QVERIFY(!balls.isEmpty());
+    QAction *pause =
+        balls.first()->findChild<QAction *>(
+            QStringLiteral("pauseMonitorAction"));
+    QVERIFY(pause != nullptr);
+
+    MonitorController *controller =
+        m_app->findChild<MonitorController *>();
+    QVERIFY(controller != nullptr);
+    const bool before = controller->isEnabled();
+    pause->trigger();
+    QCOMPARE(controller->isEnabled(), !before);
+    QCOMPARE(pause->text(), !before ? QStringLiteral("暂停监控")
+                                    : QStringLiteral("继续监控"));
+    pause->trigger();
+    QCOMPARE(controller->isEnabled(), before);
+}
+
+void TestAppNavigation::settingsOpensMonitorCenter()
+{
+    // 设置对话框中的“监控中心…”按钮打开监控中心面板。
+    clickChip("settingsChip");
+    SettingsDialog *settings = topLevels<SettingsDialog>().first();
+    QPushButton *button = settings->findChild<QPushButton *>(
+        QStringLiteral("openMonitorCenterButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QTRY_VERIFY(!topLevels<MonitorCenterDialog>().isEmpty());
+    QTRY_VERIFY(topLevels<MonitorCenterDialog>().first()->isVisible());
 }
 
 QTEST_MAIN(TestAppNavigation)

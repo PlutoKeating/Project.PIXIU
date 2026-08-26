@@ -73,11 +73,24 @@ QSystemTrayIcon *TrayIcon::trayIcon() const
     return m_tray;
 }
 
+void TrayIcon::setPauseActionText(const QString &text)
+{
+    if (m_pauseAction) {
+        m_pauseAction->setText(text);
+    }
+}
+
 void TrayIcon::buildMenu()
 {
     QMenu *menu = new QMenu();
 
     QAction *openAction = menu->addAction(tr("打开 PIXIU"));
+
+    m_pauseAction = menu->addAction(tr("暂停监控"));
+    m_pauseAction->setObjectName(QStringLiteral("pauseMonitorAction"));
+    connect(m_pauseAction, &QAction::triggered,
+            this, &TrayIcon::pauseMonitorRequested);
+
     QAction *quitAction = menu->addAction(tr("退出"));
 
     connect(openAction, &QAction::triggered, this, &TrayIcon::openRequested);

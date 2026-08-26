@@ -35,6 +35,8 @@ public:
 signals:
     // 取消 / Esc / 窗口关闭。
     void cancelled();
+    // “监控中心…”按钮：由应用层打开监控中心面板（懒创建）。
+    void monitorCenterRequested();
 
 private:
     void updateOkEnabled();
@@ -42,6 +44,7 @@ private:
     QComboBox *m_languageCombo = nullptr;
     QKeySequenceEdit *m_shortcutEdit = nullptr;
     QPushButton *m_okButton = nullptr;
+    QPushButton *m_monitorButton = nullptr;
 };
 
 #endif // PIXIU_SETTINGS_DIALOG_H

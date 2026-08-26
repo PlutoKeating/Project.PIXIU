@@ -37,6 +37,9 @@ public:
     // 后端连接状态 -> 左下角 badge 与输入可用性。
     void setBackendState(ConnectionState state);
 
+    // 监控总闸状态 -> 状态旁的“⏸ 已暂停”徽标；active=true 时徽标隐藏。
+    void setMonitorActive(bool active);
+
 signals:
     void sendRequested(const QString &text);
     void attachRequested();
@@ -60,6 +63,7 @@ private:
     QPushButton *m_attachButton = nullptr;
     QPushButton *m_sendButton = nullptr;
     QLabel *m_stateBadge = nullptr;
+    QLabel *m_monitorBadge = nullptr;
 
     QPushButton *m_memoryChip = nullptr;
     QPushButton *m_settingsChip = nullptr;
