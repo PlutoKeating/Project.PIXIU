@@ -67,10 +67,6 @@
 <context>
     <name>EvidenceCard</name>
     <message>
-        <source>点击查看原文（详情接口待后端提供）</source>
-        <translation>Click to view source (details API pending backend)</translation>
-    </message>
-    <message>
         <source>📄 原始证据</source>
         <translation>📄 Source evidence</translation>
     </message>
@@ -81,6 +77,53 @@
     <message>
         <source>查看原文 →</source>
         <translation>View source →</translation>
+    </message>
+    <message>
+        <source>点击查看原文</source>
+        <translation>Click to view source</translation>
+    </message>
+</context>
+<context>
+    <name>EvidenceDetailDialog</name>
+    <message>
+        <source>证据详情</source>
+        <translation>Evidence Details</translation>
+    </message>
+    <message>
+        <source>关闭</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <source>证据详情 · %1</source>
+        <translation>Evidence Details · %1</translation>
+    </message>
+    <message>
+        <source>正在加载证据…</source>
+        <translation>Loading evidence…</translation>
+    </message>
+    <message>
+        <source>来源：%1</source>
+        <translation>Source: %1</translation>
+    </message>
+    <message>
+        <source>质量评分：%1</source>
+        <translation>Quality score: %1</translation>
+    </message>
+    <message>
+        <source>敏感度：%1</source>
+        <translation>Sensitivity: %1</translation>
+    </message>
+    <message>
+        <source>范围：%1</source>
+        <translation>Scope: %1</translation>
+    </message>
+    <message>
+        <source>（未命名）</source>
+        <translation>(Unnamed)</translation>
+    </message>
+    <message>
+        <source>加载失败</source>
+        <translation>Load failed</translation>
     </message>
 </context>
 <context>
@@ -104,6 +147,14 @@
     <message>
         <source>PIXIU 貔貅</source>
         <translation>PIXIU</translation>
+    </message>
+    <message>
+        <source>监控中心</source>
+        <translation>Monitor Center</translation>
+    </message>
+    <message>
+        <source>暂停监控</source>
+        <translation>Pause monitoring</translation>
     </message>
 </context>
 <context>
@@ -275,6 +326,14 @@ This action cannot be undone.</translation>
     <message>
         <source>● 服务异常</source>
         <translation>● Service error</translation>
+    </message>
+    <message>
+        <source>监控状态</source>
+        <translation>Monitoring status</translation>
+    </message>
+    <message>
+        <source>⏸ 已暂停</source>
+        <translation>⏸ Paused</translation>
     </message>
 </context>
 <context>
@@ -459,6 +518,22 @@ This action cannot be undone.</translation>
         <source>已提取 %1 条偏好</source>
         <translation>%1 preference(s) extracted</translation>
     </message>
+    <message>
+        <source>从列表选择偏好…</source>
+        <translation>Select a preference…</translation>
+    </message>
+    <message>
+        <source>已提取偏好选择</source>
+        <translation>Extracted preferences</translation>
+    </message>
+    <message>
+        <source>刷新列表</source>
+        <translation>Refresh list</translation>
+    </message>
+    <message>
+        <source>刷新偏好列表</source>
+        <translation>Refresh preference list</translation>
+    </message>
 </context>
 <context>
     <name>MessageList</name>
@@ -477,6 +552,112 @@ This action cannot be undone.</translation>
     <message>
         <source>录入知识</source>
         <translation>Import knowledge</translation>
+    </message>
+</context>
+<context>
+    <name>MonitorCenterDialog</name>
+    <message>
+        <source>监视下方目录，新文件自动识别入库</source>
+        <translation>Watches the folders below and imports newly detected files automatically</translation>
+    </message>
+    <message>
+        <source>复制较长文本或图片时自动捕获</source>
+        <translation>Captures automatically when longer text or images are copied</translation>
+    </message>
+    <message>
+        <source>记录常用应用与操作习惯，用于偏好提取</source>
+        <translation>Records frequently used apps and habits for preference extraction</translation>
+    </message>
+    <message>
+        <source>截屏内容经 OCR 后沉淀为记忆</source>
+        <translation>Screenshots are OCR&apos;d and distilled into memory</translation>
+    </message>
+    <message>
+        <source>监控中心</source>
+        <translation>Monitor Center</translation>
+    </message>
+    <message>
+        <source>数据源</source>
+        <translation>Sources</translation>
+    </message>
+    <message>
+        <source>活动记录</source>
+        <translation>Activity Log</translation>
+    </message>
+    <message>
+        <source>启用监控（总开关）</source>
+        <translation>Enable monitoring (master switch)</translation>
+    </message>
+    <message>
+        <source>监控总开关</source>
+        <translation>Master monitoring switch</translation>
+    </message>
+    <message>
+        <source>开启后 PIXIU 将在您指定的范围内静默捕获信息；可随时暂停，活动记录完整可查。</source>
+        <translation>Once enabled, PIXIU quietly captures within the scope you define. Pause anytime; every capture is fully traceable in the activity log.</translation>
+    </message>
+    <message>
+        <source>监视目录</source>
+        <translation>Watched folders</translation>
+    </message>
+    <message>
+        <source>监视目录路径</source>
+        <translation>Watched folder path</translation>
+    </message>
+    <message>
+        <source>输入或浏览要监视的目录…</source>
+        <translation>Enter or browse for a folder to watch…</translation>
+    </message>
+    <message>
+        <source>浏览…</source>
+        <translation>Browse…</translation>
+    </message>
+    <message>
+        <source>选择监视目录</source>
+        <translation>Select folder to watch</translation>
+    </message>
+    <message>
+        <source>添加</source>
+        <translation>Add</translation>
+    </message>
+    <message>
+        <source>移除所选</source>
+        <translation>Remove selected</translation>
+    </message>
+</context>
+<context>
+    <name>MonitorController</name>
+    <message>
+        <source>目录文件监视</source>
+        <translation>Folder watch</translation>
+    </message>
+    <message>
+        <source>剪贴板捕获</source>
+        <translation>Clipboard capture</translation>
+    </message>
+    <message>
+        <source>应用使用行为</source>
+        <translation>App usage behavior</translation>
+    </message>
+    <message>
+        <source>截屏识别</source>
+        <translation>Screen OCR</translation>
+    </message>
+    <message>
+        <source>监控已开启</source>
+        <translation>Monitoring enabled</translation>
+    </message>
+    <message>
+        <source>监控已暂停</source>
+        <translation>Monitoring paused</translation>
+    </message>
+    <message>
+        <source>已开启：%1</source>
+        <translation>Enabled: %1</translation>
+    </message>
+    <message>
+        <source>已暂停：%1</source>
+        <translation>Paused: %1</translation>
     </message>
 </context>
 <context>
@@ -510,10 +691,6 @@ This action cannot be undone.</translation>
         <translation>Enter 6-digit PIN</translation>
     </message>
     <message>
-        <source>二维码令牌待后端契约（foundation/sync）</source>
-        <translation>QR token pending backend contract (foundation/sync)</translation>
-    </message>
-    <message>
         <source>取消</source>
         <translation>Cancel</translation>
     </message>
@@ -533,6 +710,30 @@ This action cannot be undone.</translation>
         <source>另一台设备生成的配对令牌（必填）</source>
         <translation>Pairing token generated on the other device (required)</translation>
     </message>
+    <message>
+        <source>其他设备扫码或复制令牌后，在本机粘贴完成配对。</source>
+        <translation>After the other device scans the code or copies the token, paste it here to finish pairing.</translation>
+    </message>
+    <message>
+        <source>生成本机配对令牌</source>
+        <translation>Generate pairing token for this device</translation>
+    </message>
+    <message>
+        <source>正在生成本机配对令牌…</source>
+        <translation>Generating pairing token for this device…</translation>
+    </message>
+    <message>
+        <source>后端未返回配对令牌</source>
+        <translation>Backend returned no pairing token</translation>
+    </message>
+    <message>
+        <source>令牌生成失败：%1</source>
+        <translation>Token generation failed: %1</translation>
+    </message>
+    <message>
+        <source>扫码或复制令牌完成配对（5 分钟内有效）</source>
+        <translation>Scan or copy the token to pair (valid for 5 minutes)</translation>
+    </message>
 </context>
 <context>
     <name>PixiuApp</name>
@@ -545,10 +746,6 @@ This action cannot be undone.</translation>
 输入已保留，可修改后重试。</source>
         <translation>Query failed (%1): %2
 Your input is kept; edit and retry.</translation>
-    </message>
-    <message>
-        <source>证据详情接口待后端提供（source_evidence=%1）</source>
-        <translation>Evidence detail API pending backend (source_evidence=%1)</translation>
     </message>
     <message>
         <source>已沉淀：证据 %1 · 质量评分 %2 · 敏感度 %3</source>
@@ -646,6 +843,22 @@ Your input is kept; edit and retry.</translation>
         <source>偏好提取失败（%1）：%2</source>
         <translation>Preference extraction failed (%1): %2</translation>
     </message>
+    <message>
+        <source>%1：%2</source>
+        <translation>%1: %2</translation>
+    </message>
+    <message>
+        <source>证据加载失败（%1）：%2</source>
+        <translation>Evidence load failed (%1): %2</translation>
+    </message>
+    <message>
+        <source>暂停监控</source>
+        <translation>Pause monitoring</translation>
+    </message>
+    <message>
+        <source>继续监控</source>
+        <translation>Resume monitoring</translation>
+    </message>
 </context>
 <context>
     <name>RevokeDialog</name>
@@ -740,6 +953,14 @@ Your input is kept; edit and retry.</translation>
         <source>设置</source>
         <translation>Settings</translation>
     </message>
+    <message>
+        <source>监控中心…</source>
+        <translation>Monitor Center…</translation>
+    </message>
+    <message>
+        <source>打开监控中心</source>
+        <translation>Open Monitor Center</translation>
+    </message>
 </context>
 <context>
     <name>SyncController</name>
@@ -773,6 +994,10 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>退出</source>
         <translation>Quit</translation>
+    </message>
+    <message>
+        <source>暂停监控</source>
+        <translation>Pause monitoring</translation>
     </message>
 </context>
 </TS>
