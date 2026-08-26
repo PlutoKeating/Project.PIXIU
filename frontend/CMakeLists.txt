@@ -64,6 +64,8 @@ add_executable(pixiu-frontend
     src/widgets/ForgetDialog.cpp
     src/widgets/MemoryPanel.h
     src/widgets/MemoryPanel.cpp
+    src/widgets/MonitorCenterDialog.h
+    src/widgets/MonitorCenterDialog.cpp
     src/widgets/PairDialog.h
     src/widgets/PairDialog.cpp
     src/widgets/RevokeDialog.h
@@ -408,6 +410,19 @@ if(BUILD_TESTING)
     target_link_libraries(t_monitor_controller PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME monitor_controller COMMAND t_monitor_controller)
 
+    add_executable(t_monitor_center
+        tests/t_monitor_center.cpp
+        src/app/AppSettings.h
+        src/app/AppSettings.cpp
+        src/app/MonitorController.h
+        src/app/MonitorController.cpp
+        src/widgets/MonitorCenterDialog.h
+        src/widgets/MonitorCenterDialog.cpp
+    )
+    target_include_directories(t_monitor_center PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_monitor_center PRIVATE Qt5::Test Qt5::Widgets)
+    add_test(NAME monitor_center COMMAND t_monitor_center)
+
     add_executable(t_chat_window
         tests/t_chat_window.cpp
         src/widgets/ChatWindow.h
@@ -642,6 +657,6 @@ if(BUILD_TESTING)
         memory_atom query_controller write_controller app_settings
         chat_window input_bar message_list import_dialog evidence_card i18n
         revoke_dialog sync_controller event_router settings_dialog
-        app_navigation window_restore monitor_controller
+        app_navigation window_restore monitor_controller monitor_center
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

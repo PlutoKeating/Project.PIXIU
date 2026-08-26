@@ -18,6 +18,8 @@ private slots:
     void sourceTogglePersistsAndEmits();
     void directoriesRoundTrip();
     void logRecordsToggles();
+    void setDirectoriesSanitizes();
+    void sourceIndexOutOfBoundsIsSafe();
     void cleanupTestCase();
 
 private:
@@ -112,6 +114,41 @@ void TestMonitorController::logRecordsToggles()
             QStringLiteral("手动条目"));
     // 开关产生的日志时间戳有效
     QVERIFY(controller.log().first().timestamp > 0);
+}
+
+void TestMonitorController::setDirectoriesSanitizes()
+{
+    // 隔离：清除前序用例持久化的目录清单，确保本用例从已知状态出发。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    QSignalSpy spy(&controller, &MonitorController::directoriesChanged);
+    // 空白项被剔除、重复项去重，清洗后恰好剩一个且只发射一次。
+    controller.setDirectories({QStringLiteral(" "), QStringLiteral("/a/b"),
+                               QStringLiteral("/a/b")});
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(controller.directories().size(), 1);
+    QCOMPARE(controller.directories().first(), QStringLiteral("/a/b"));
+    // 与当前清单等价（仅空白差异）的输入不再发射。
+    controller.setDirectories({QStringLiteral(" /a/b ")});
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestMonitorController::sourceIndexOutOfBoundsIsSafe()
+{
+    AppSettings settings;
+    MonitorController controller(&settings);
+    QSignalSpy spy(&controller, &MonitorController::sourceChanged);
+    const auto invalid =
+        static_cast<MonitorSource>(MonitorController::sourceCount());
+    QVERIFY(!controller.isSourceEnabled(static_cast<MonitorSource>(-1)));
+    QVERIFY(!controller.isSourceEnabled(invalid));
+    controller.setSourceEnabled(static_cast<MonitorSource>(-1), true);
+    controller.setSourceEnabled(invalid, true);
+    QCOMPARE(spy.count(), 0);
 }
 
 void TestMonitorController::cleanupTestCase()

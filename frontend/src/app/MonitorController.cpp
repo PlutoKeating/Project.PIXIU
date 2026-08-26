@@ -2,6 +2,7 @@
 
 #include "app/AppSettings.h"
 
+#include <QCoreApplication>
 #include <QDateTime>
 
 namespace {
@@ -11,18 +12,6 @@ MonitorLogEntry makeEntry(const QString &text)
     entry.timestamp = QDateTime::currentSecsSinceEpoch();
     entry.text = text;
     return entry;
-}
-
-// 数据源的用户可读名称（与监控中心面板文案保持一致）。
-QString describeSource(MonitorSource source)
-{
-    switch (source) {
-    case MonitorSource::Directory:  return QObject::tr("目录文件监视");
-    case MonitorSource::Clipboard:  return QObject::tr("剪贴板捕获");
-    case MonitorSource::Behavior:   return QObject::tr("应用使用行为");
-    case MonitorSource::Screenshot: return QObject::tr("截屏识别");
-    }
-    return QString();
 }
 } // namespace
 
@@ -37,6 +26,22 @@ const char *MonitorController::sourceKey(MonitorSource source)
     return "unknown";
 }
 
+QString MonitorController::sourceDisplayName(MonitorSource source)
+{
+    switch (source) {
+    case MonitorSource::Directory:
+        return QCoreApplication::translate("MonitorController",
+                                           "目录文件监视");
+    case MonitorSource::Clipboard:
+        return QCoreApplication::translate("MonitorController", "剪贴板捕获");
+    case MonitorSource::Behavior:
+        return QCoreApplication::translate("MonitorController", "应用使用行为");
+    case MonitorSource::Screenshot:
+        return QCoreApplication::translate("MonitorController", "截屏识别");
+    }
+    return QString();
+}
+
 MonitorController::MonitorController(AppSettings *settings, QObject *parent)
     : QObject(parent)
     , m_settings(settings)
@@ -49,7 +54,11 @@ MonitorController::MonitorController(AppSettings *settings, QObject *parent)
 
 bool MonitorController::isSourceEnabled(MonitorSource source) const
 {
-    return m_sources[static_cast<int>(source)];
+    const int index = static_cast<int>(source);
+    if (index < 0 || index >= sourceCount()) {
+        return false;
+    }
+    return m_sources[index];
 }
 
 void MonitorController::load()
@@ -74,14 +83,17 @@ void MonitorController::setEnabled(bool on)
     m_enabled = on;
     m_settings->setValue(AppSettings::keyMonitorEnabled, on);
     m_settings->sync();
-    appendLog(on ? QObject::tr("监控已开启")
-                 : QObject::tr("监控已暂停"));
+    appendLog(on ? QCoreApplication::translate("MonitorController", "监控已开启")
+                 : QCoreApplication::translate("MonitorController", "监控已暂停"));
     emit enabledChanged(on);
 }
 
 void MonitorController::setSourceEnabled(MonitorSource source, bool on)
 {
     const int index = static_cast<int>(source);
+    if (index < 0 || index >= sourceCount()) {
+        return;
+    }
     if (m_sources[index] == on) {
         return;
     }
@@ -91,9 +103,9 @@ void MonitorController::setSourceEnabled(MonitorSource source, bool on)
     m_settings->setValue(key, on);
     m_settings->sync();
     // 活动日志记录开关状态变更（内存级，重启清零）。
-    const QString name = describeSource(source);
-    appendLog(on ? QObject::tr("已开启：%1").arg(name)
-                 : QObject::tr("已暂停：%1").arg(name));
+    const QString name = sourceDisplayName(source);
+    appendLog(on ? QCoreApplication::translate("MonitorController", "已开启：%1").arg(name)
+                 : QCoreApplication::translate("MonitorController", "已暂停：%1").arg(name));
     emit sourceChanged(source, on);
 }
 

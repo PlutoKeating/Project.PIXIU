@@ -57,6 +57,9 @@ public:
     static int sourceCount() { return 4; }
     static const char *sourceKey(MonitorSource source);  // 设置键后缀
 
+    // 数据源的用户可读中文名称（日志与监控中心面板共用的单一文案来源）。
+    static QString sourceDisplayName(MonitorSource source);
+
 signals:
     void enabledChanged(bool on);
     void sourceChanged(MonitorSource source, bool on);
