@@ -629,43 +629,6 @@ if(BUILD_TESTING)
         src/widgets/MemoryPanel.cpp
         src/widgets/MonitorCenterDialog.h
         src/widgets/MonitorCenterDialog.cpp
-        src/app/QueryController.h
-        src/app/QueryController.cpp
-        src/app/WriteController.h
-        src/app/WriteController.cpp
-        src/widgets/FloatingBall.h
-        src/widgets/FloatingBall.cpp
-        src/widgets/ChatWindow.h
-        src/widgets/ChatWindow.cpp
-        src/widgets/InputBar.h
-        src/widgets/InputBar.cpp
-        src/widgets/MessageList.h
-        src/widgets/MessageList.cpp
-        src/widgets/ThinkingSkeleton.h
-        src/widgets/ThinkingSkeleton.cpp
-        src/widgets/EvidenceCard.h
-        src/widgets/EvidenceCard.cpp
-        src/widgets/EvidenceDetailDialog.h
-        src/widgets/EvidenceDetailDialog.cpp
-        src/widgets/ImportDialog.h
-        src/widgets/ImportDialog.cpp
-        src/models/ChatMessage.h
-        src/models/MemoryAtom.h
-        src/services/BackendTypes.h
-        src/services/BackendTransport.h
-        src/services/BackendTransport.cpp
-        src/services/HttpBackendTransport.h
-        src/services/HttpBackendTransport.cpp
-        src/services/WebSocketClient.h
-        src/services/WebSocketClient.cpp
-        src/services/NotifyService.h
-        src/services/NotifyService.cpp
-        src/app/ForgetController.h
-        src/app/ForgetController.cpp
-        src/widgets/ForgetDialog.h
-        src/widgets/ForgetDialog.cpp
-        src/widgets/MemoryPanel.h
-        src/widgets/MemoryPanel.cpp
         src/widgets/PairDialog.h
         src/widgets/PairDialog.cpp
         src/widgets/RevokeDialog.h
