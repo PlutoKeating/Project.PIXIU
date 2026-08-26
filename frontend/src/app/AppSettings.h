@@ -25,6 +25,11 @@ public:
     static inline const QString keyBallPosition = QStringLiteral("app/floating_ball/position");
     static inline const QString keyMonitorEnabled =
         QStringLiteral("app/monitor/enabled");
+    // 单向粘性标记：监控总闸首次开启后恒为 true（关闭不清除）。
+    // 供 UI 区分「从未启用过监控」与「启用后暂停」，避免新用户常驻
+    // 看到“⏸ 已暂停”徽标。
+    static inline const QString keyMonitorEverEnabled =
+        QStringLiteral("app/monitor/ever_enabled");
     static inline const QString keyMonitorSourcePrefix =
         QStringLiteral("app/monitor/source/");
     static inline const QString keyMonitorDirectories =

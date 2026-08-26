@@ -20,6 +20,7 @@ private slots:
     void logRecordsToggles();
     void setDirectoriesSanitizes();
     void sourceIndexOutOfBoundsIsSafe();
+    void everEnabledPersistsAndGates();
     void cleanupTestCase();
 
 private:
@@ -149,6 +150,33 @@ void TestMonitorController::sourceIndexOutOfBoundsIsSafe()
     controller.setSourceEnabled(static_cast<MonitorSource>(-1), true);
     controller.setSourceEnabled(invalid, true);
     QCOMPARE(spy.count(), 0);
+}
+
+void TestMonitorController::everEnabledPersistsAndGates()
+{
+    // 隔离：清除前序用例（enablePersistsAcrossInstances 等）在同一配置文件
+    // 中持久化的监控状态，确保本用例从「从未启用过」的默认态出发。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+
+    // 新实例：从未开启过监控，粘性标记为 false。
+    AppSettings settings;
+    MonitorController controller(&settings);
+    QVERIFY(!controller.hasEverBeenEnabled());
+
+    // 只调节数据源开关不改变「曾开启过」标记（仅总闸置位）。
+    controller.setSourceEnabled(MonitorSource::Directory, true);
+    QVERIFY(!controller.hasEverBeenEnabled());
+
+    // 开启总闸后置位，且跨实例恢复。
+    controller.setEnabled(true);
+    QVERIFY(controller.hasEverBeenEnabled());
+
+    AppSettings settings2;
+    MonitorController reloaded(&settings2);
+    QVERIFY(reloaded.hasEverBeenEnabled());
 }
 
 void TestMonitorController::cleanupTestCase()

@@ -1,6 +1,8 @@
 #include <QAction>
 #include <QGuiApplication>
+#include <QLabel>
 #include <QPushButton>
+#include <QSettings>
 #include <QTabWidget>
 #include <QTest>
 
@@ -65,6 +67,14 @@ void TestAppNavigation::initTestCase()
     qputenv("USER", QStringLiteral("pixiu-nav-test-%1")
                         .arg(QCoreApplication::applicationPid())
                         .toUtf8());
+    // 监控徽标门控断言要求「从未启用过」的初始态：清除前序运行持久化的
+    // 总闸与粘性标记（须在 PixiuApp::start() 构造 MonitorController 之前）。
+    {
+        QSettings raw;
+        raw.remove(QStringLiteral("app/monitor/enabled"));
+        raw.remove(QStringLiteral("app/monitor/ever_enabled"));
+        raw.sync();
+    }
     m_app = new PixiuApp();
     QVERIFY(m_app->start());
 
@@ -225,15 +235,30 @@ void TestAppNavigation::pauseToggleFromBallFlipsController()
     MonitorController *controller =
         m_app->findChild<MonitorController *>();
     QVERIFY(controller != nullptr);
+
+    // 「⏸ 已暂停」徽标门控：仅在「曾开启过监控、当前关闭」时显示；
+    // 从未启用过的用户（initTestCase 已清除粘性标记）界面保持干净。
+    InputBar *bar = inputBar();
+    QVERIFY(bar != nullptr);
+    QLabel *badge = bar->findChild<QLabel *>(
+        QStringLiteral("inputMonitorBadge"));
+    QVERIFY(badge != nullptr);
+
     const bool before = controller->isEnabled();
+    // 初始（未启用过）：不显示暂停提示。
+    QVERIFY(!badge->isVisible());
     pause->trigger();
     QCOMPARE(controller->isEnabled(), !before);
     QCOMPARE(pause->text(), !before ? QStringLiteral("暂停监控")
                                     : QStringLiteral("继续监控"));
+    // 开启中：同样不显示暂停徽标。
+    QVERIFY(!badge->isVisible());
     pause->trigger();
     QCOMPARE(controller->isEnabled(), before);
     QCOMPARE(pause->text(), before ? QStringLiteral("暂停监控")
                                    : QStringLiteral("继续监控"));
+    // 曾开启过 + 当前关闭：显示「⏸ 已暂停」徽标。
+    QVERIFY(badge->isVisible());
 }
 
 void TestAppNavigation::settingsOpensMonitorCenter()

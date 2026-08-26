@@ -748,7 +748,10 @@ void PixiuApp::refreshMonitorUi()
     }
     const bool on = m_monitorController->isEnabled();
     if (m_chatWindow) {
-        m_chatWindow->setMonitorActive(on);
+        // 「⏸ 已暂停」徽标仅对曾开启过监控的用户有意义：开启中或从未启用
+        // 过（默认关闭）都不显示，避免新用户常驻看到暂停提示而困惑。
+        m_chatWindow->setMonitorActive(
+            on || !m_monitorController->hasEverBeenEnabled());
     }
     const QString pauseText = on ? tr("暂停监控") : tr("继续监控");
     if (m_tray) {

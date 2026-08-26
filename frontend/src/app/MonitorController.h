@@ -43,6 +43,10 @@ public:
                                QObject *parent = nullptr);
 
     bool isEnabled() const { return m_enabled; }
+    // 是否曾开启过监控（持久化粘性标记，关闭监控不清除）。
+    // 用途：UI 徽标仅在「曾开启过 + 当前关闭」时提示“⏸ 已暂停”；
+    // 从未启用过的用户（默认关闭）界面保持干净。
+    bool hasEverBeenEnabled() const { return m_everEnabled; }
     bool isSourceEnabled(MonitorSource source) const;
     QStringList directories() const { return m_directories; }
 
@@ -71,6 +75,7 @@ private:
 
     AppSettings *m_settings = nullptr;
     bool m_enabled = false;
+    bool m_everEnabled = false;  // 曾开启过监控（持久化，单向置位）
     bool m_sources[4] = {false, false, false, false};
     QStringList m_directories;
     QVector<MonitorLogEntry> m_log;

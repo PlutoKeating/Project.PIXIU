@@ -65,6 +65,9 @@ void MonitorController::load()
 {
     m_enabled = m_settings->value(AppSettings::keyMonitorEnabled, false)
                     .toBool();
+    // 「曾开启过」为单向粘性标记，跨实例恢复（见 hasEverBeenEnabled）。
+    m_everEnabled =
+        m_settings->value(AppSettings::keyMonitorEverEnabled, false).toBool();
     for (int i = 0; i < sourceCount(); ++i) {
         const QString key = AppSettings::keyMonitorSourcePrefix
                             + QLatin1String(sourceKey(static_cast<MonitorSource>(i)));
@@ -82,6 +85,11 @@ void MonitorController::setEnabled(bool on)
     }
     m_enabled = on;
     m_settings->setValue(AppSettings::keyMonitorEnabled, on);
+    // 首次开启时置位「曾开启过」并随本次变更一并落盘；关闭不清除。
+    if (on && !m_everEnabled) {
+        m_everEnabled = true;
+        m_settings->setValue(AppSettings::keyMonitorEverEnabled, true);
+    }
     m_settings->sync();
     appendLog(on ? QCoreApplication::translate("MonitorController", "监控已开启")
                  : QCoreApplication::translate("MonitorController", "监控已暂停"));
