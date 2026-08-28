@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from ..core.logger import get_logger
 from ..core.models import SourceType
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from ..monitor.config_store import InvalidMonitorConfig
@@ -53,6 +54,8 @@ from .monitor_log import (
     broadcast_capture_event,
 )
 from .ws_manager import ws_manager
+
+_log = get_logger(__name__)
 
 @asynccontextmanager
 async def _lifespan(_: FastAPI):
@@ -546,14 +549,23 @@ async def monitor_config_put(
     except InvalidMonitorConfig as exc:
         raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
 
+    # store.put 已持久化 + 热生效：后续写日志/广播属旁路副作用，失败只记日志、
+    # 不改变已生效配置，也不向客户端谎报 500（对齐 _make_capture_callback 的
+    # 隔离语义，di.py:314-356）。
     summary = "监控已开启" if normalized["enabled"] else "监控已暂停"
     ts = int(time.time())
-    log_store.write_event(
-        source="system", status="state_changed", summary=summary, ts=ts
-    )
-    await broadcast_capture_event(
-        source="system", status="state_changed", summary=summary, ts=ts
-    )
+    try:
+        log_store.write_event(
+            source="system", status="state_changed", summary=summary, ts=ts
+        )
+    except Exception:
+        _log.exception("monitor state_changed log write failed")
+    try:
+        await broadcast_capture_event(
+            source="system", status="state_changed", summary=summary, ts=ts
+        )
+    except Exception:
+        _log.exception("monitor state_changed broadcast failed")
     return normalized
 
 

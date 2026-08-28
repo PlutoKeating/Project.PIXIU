@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import sqlite3 as _sqlite3
+import time
 
 import aiosqlite
 from fastapi import Depends
@@ -254,6 +255,15 @@ def get_monitor_log_store() -> MonitorLogStore:
     return _monitor_log_store
 
 
+def _reclaim_broadcast_task(task: asyncio.Future) -> None:
+    """fire-and-forget 广播任务收尾：取回异常（防 unretrieved warning）并记录。"""
+    if task.cancelled():
+        return
+    exc = task.exception()
+    if exc is not None:
+        _log.warning("capture_event broadcast task failed: %s", exc)
+
+
 def _schedule_capture_broadcast(
     *,
     source: str,
@@ -266,15 +276,20 @@ def _schedule_capture_broadcast(
     """把 capture_event 广播调度回主事件循环（watcher 回调运行在 watch 线程）。
 
     WebSocket 连接绑定主循环，跨线程直发不安全；主循环未注册（测试直连）
-    时静默跳过广播，日志已由调用方落库。
+    时 debug 记录并跳过广播（日志已由调用方落库）。
     """
     loop = _main_loop
     if loop is None or not loop.is_running():
+        _log.debug(
+            "monitor main loop not registered/running, skip capture_event "
+            "broadcast (source=%s)",
+            source,
+        )
         return
 
     def _run() -> None:
         try:
-            asyncio.ensure_future(
+            task = asyncio.ensure_future(
                 broadcast_capture_event(
                     source=source,
                     status=status,
@@ -284,6 +299,9 @@ def _schedule_capture_broadcast(
                     ts=ts,
                 )
             )
+            # 不保留外部引用（fire-and-forget）：done 回调取回并记录异常，
+            # 避免 unretrieved task exception 警告或异常被静默吞掉。
+            task.add_done_callback(_reclaim_broadcast_task)
         except Exception:
             _log.exception("capture_event broadcast scheduling failed")
 
@@ -309,6 +327,9 @@ def _make_capture_callback(log_store: MonitorLogStore):
         knowledge_id: str | None = None,
         ts: int | None = None,
     ) -> None:
+        # 统一 ts：日志与广播共用同一时间戳，避免两者各自取 time.time() 差 1 秒
+        if ts is None:
+            ts = int(time.time())
         try:
             log_store.write_event(
                 source=source,

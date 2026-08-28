@@ -154,6 +154,20 @@ def test_put_writes_state_changed_log(client):
     assert entry["knowledge_id"] is None
 
 
+def test_put_survives_log_write_error(client, monkeypatch):
+    """PUT 半提交隔离：state_changed 日志写入失败不吞掉已生效的配置变更。"""
+
+    def _boom(self, **kwargs):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(MonitorLogStore, "write_event", _boom)
+    resp = client.put("/monitor/config", json=VALID_CONFIG)
+    assert resp.status_code == 200
+    assert resp.json() == VALID_CONFIG
+    # store.put（持久化 + 热生效）先于日志旁路执行，配置必须已生效
+    assert client.get("/monitor/config").json() == VALID_CONFIG
+
+
 def test_monitor_log_pagination(client):
     store = MonitorLogStore(str(Path(di_module.settings.db_path)))
     for i in range(5):

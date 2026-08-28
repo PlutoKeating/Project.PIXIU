@@ -158,6 +158,9 @@ class DirectoryWatcher:
             self._observer = Observer()
             self._observer.daemon = True
             self._observer.start()
+            # 每进程单生命周期假设：本实例只 start 一次、不做退订（MVP 无
+            # unsubscribe）；进程重启由 di.stop_monitor_runtime 置空
+            # _monitor_runtime 后新建实例驱动。
             self._config_store.subscribe(self._on_config_changed)
             self._submit(self._apply_config(self._config_store.get()))
         except Exception:
