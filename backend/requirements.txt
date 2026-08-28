@@ -14,6 +14,9 @@ aiosqlite>=0.20.0
 # D-Bus (desktop integration, pure-python asyncio client)
 dbus-next>=0.2.3
 
+# Directory monitoring (batch 2: DirectoryWatcher collector)
+watchdog>=3.0.0
+
 # Testing
 pytest>=8.0.0
 pytest-asyncio>=0.23.0
