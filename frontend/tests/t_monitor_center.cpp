@@ -1,4 +1,8 @@
 #include <QCheckBox>
+#include <QDateTime>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
@@ -26,6 +30,10 @@ private slots:
     void addAndRemoveDirectory();
     void logTabRendersEntries();
     void externalPauseSyncsOpenDialog();
+    void appendRemoteLogRendersServerEntries();
+    void offlineHintShownWhenSet();
+    void captureEventAppendsToLogOnce();
+    void dialogMutationEmitsConfigEdited();
     void cleanupTestCase();
 
 private:
@@ -194,6 +202,154 @@ void TestMonitorCenter::externalPauseSyncsOpenDialog()
     controller.setSourceEnabled(MonitorSource::Clipboard, true);
     QVERIFY(
         sourceChecks(dialog).at(int(MonitorSource::Clipboard))->isChecked());
+}
+
+void TestMonitorCenter::appendRemoteLogRendersServerEntries()
+{
+    // A-3：服务端分页记录（{ts,source,status,summary,evidence_id,
+    // knowledge_id}）渲染到活动记录列表；显示「[MM-dd HH:mm] 文案」，
+    // 无 id 的条目省略 id 部分。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    MonitorCenterDialog dialog(&controller);
+    dialog.show();
+
+    QTabWidget *tabs = dialog.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    tabs->setCurrentIndex(1);
+    QListWidget *logList =
+        dialog.findChild<QListWidget *>(QStringLiteral("monitorLogList"));
+    QVERIFY(logList != nullptr);
+    const int before = logList->count();
+
+    QJsonArray entries;
+    entries.append(QJsonObject{
+        {QStringLiteral("ts"), 1756080000},
+        {QStringLiteral("source"), QStringLiteral("directory")},
+        {QStringLiteral("status"), QStringLiteral("ingested")},
+        {QStringLiteral("summary"), QStringLiteral("记住文件 支出清单.xlsx")},
+        {QStringLiteral("evidence_id"), QStringLiteral("evd_01")},
+        {QStringLiteral("knowledge_id"), QStringLiteral("knw_02")},
+    });
+    // 无 evidence_id / knowledge_id：省略 id 部分（如 ignored / state_changed）。
+    entries.append(QJsonObject{
+        {QStringLiteral("ts"), 1756080060},
+        {QStringLiteral("source"), QStringLiteral("system")},
+        {QStringLiteral("status"), QStringLiteral("state_changed")},
+        {QStringLiteral("summary"), QStringLiteral("监控配置已更新")},
+    });
+
+    dialog.appendRemoteLog(entries);
+
+    QCOMPARE(logList->count(), before + 2);
+    const QString firstTime = QDateTime::fromSecsSinceEpoch(1756080000)
+                                  .toString(QStringLiteral("MM-dd HH:mm"));
+    QCOMPARE(logList->item(before)->text(),
+             QStringLiteral("[%1] 记住文件 支出清单.xlsx（evd_01、knw_02）")
+                 .arg(firstTime));
+    const QString secondTime = QDateTime::fromSecsSinceEpoch(1756080060)
+                                   .toString(QStringLiteral("MM-dd HH:mm"));
+    QCOMPARE(logList->item(before + 1)->text(),
+             QStringLiteral("[%1] 监控配置已更新").arg(secondTime));
+}
+
+void TestMonitorCenter::offlineHintShownWhenSet()
+{
+    // A-3：配置上送失败后面板状态行提示「离线，仅本地生效」，恢复后隐藏。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    MonitorCenterDialog dialog(&controller);
+    dialog.show();
+
+    QLabel *hint = dialog.findChild<QLabel *>(
+        QStringLiteral("monitorOfflineHint"));
+    QVERIFY(hint != nullptr);
+    QVERIFY(!hint->isVisible());
+
+    dialog.setOfflineHint(true);
+    QVERIFY(hint->isVisible());
+    QCOMPARE(hint->text(), QStringLiteral("离线，仅本地生效"));
+
+    dialog.setOfflineHint(false);
+    QVERIFY(!hint->isVisible());
+}
+
+void TestMonitorCenter::captureEventAppendsToLogOnce()
+{
+    // A-3：capture_event 实时追加与本地日志同列表；同源重复事件
+    // （远端分页与实时 WS 可能重复送达）只渲染一次。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    MonitorCenterDialog dialog(&controller);
+    dialog.show();
+
+    QTabWidget *tabs = dialog.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    tabs->setCurrentIndex(1);
+    QListWidget *logList =
+        dialog.findChild<QListWidget *>(QStringLiteral("monitorLogList"));
+    QVERIFY(logList != nullptr);
+    const int before = logList->count();
+
+    dialog.appendCaptureEvent(QStringLiteral("clipboard"),
+                              QStringLiteral("ingested"),
+                              QStringLiteral("记住剪贴板内容"), 1756080000);
+    dialog.appendCaptureEvent(QStringLiteral("clipboard"),
+                              QStringLiteral("ingested"),
+                              QStringLiteral("记住剪贴板内容"), 1756080000);
+    QCOMPARE(logList->count(), before + 1);
+    const QString time = QDateTime::fromSecsSinceEpoch(1756080000)
+                             .toString(QStringLiteral("MM-dd HH:mm"));
+    QCOMPARE(logList->item(before)->text(),
+             QStringLiteral("[%1] 记住剪贴板内容").arg(time));
+}
+
+void TestMonitorCenter::dialogMutationEmitsConfigEdited()
+{
+    // A-3：面板任一配置改动（主开关/源开关/目录增删）触发 configEdited
+    // 信号一次——PixiuApp 以此为唯一 PUT 上送点，防止重复上送。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    MonitorCenterDialog dialog(&controller);
+    dialog.show();
+    QSignalSpy editedSpy(&dialog, &MonitorCenterDialog::configEdited);
+
+    masterCheck(dialog)->setChecked(true);
+    QCOMPARE(editedSpy.count(), 1);
+    sourceChecks(dialog).at(int(MonitorSource::Clipboard))->setChecked(true);
+    QCOMPARE(editedSpy.count(), 2);
+
+    QTest::keyClicks(
+        dialog.findChild<QLineEdit *>(QStringLiteral("monitorDirEdit")),
+        QStringLiteral("/tmp/pixiu-watch"));
+    QTest::mouseClick(
+        dialog.findChild<QPushButton *>(QStringLiteral("monitorDirAdd")),
+        Qt::LeftButton);
+    QCOMPARE(editedSpy.count(), 3);
+
+    QListWidget *dirList =
+        dialog.findChild<QListWidget *>(QStringLiteral("monitorDirList"));
+    dirList->setCurrentRow(0);
+    QTest::mouseClick(
+        dialog.findChild<QPushButton *>(QStringLiteral("monitorDirRemove")),
+        Qt::LeftButton);
+    QCOMPARE(editedSpy.count(), 4);
 }
 
 void TestMonitorCenter::cleanupTestCase()

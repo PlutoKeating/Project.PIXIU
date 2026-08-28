@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QJsonObject>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
@@ -64,6 +65,13 @@ MonitorCenterDialog::MonitorCenterDialog(MonitorController *controller,
     m_tabs = new QTabWidget(this);
     m_tabs->addTab(new QWidget(this), tr("数据源"));
     m_tabs->addTab(new QWidget(this), tr("活动记录"));
+    // 活动记录懒加载：首次切到该 Tab 时请求首页分页（防重复由
+    // m_remoteLogLoaded 保证）。
+    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int index) {
+        if (index == 1) {
+            requestFirstLogPage();
+        }
+    });
 
     // ── Tab1 数据源 ──────────────────────────────────────────────
     QWidget *sourcePage = m_tabs->widget(0);
@@ -82,8 +90,15 @@ MonitorCenterDialog::MonitorCenterDialog(MonitorController *controller,
     hint->setWordWrap(true);
     hint->setStyleSheet(ui::textStyle(ui::Role::Muted));
 
+    // 离线状态行：远端配置上送失败时提示「离线，仅本地生效」（A-3）。
+    m_offlineHint = new QLabel(sourcePage);
+    m_offlineHint->setObjectName(QStringLiteral("monitorOfflineHint"));
+    m_offlineHint->setStyleSheet(ui::textStyle(ui::Role::Warning));
+    m_offlineHint->setVisible(false);
+
     sourceLayout->addWidget(m_masterCheck);
     sourceLayout->addWidget(hint);
+    sourceLayout->addWidget(m_offlineHint);
 
     for (int i = 0; i < MonitorController::sourceCount(); ++i) {
         const auto source = static_cast<MonitorSource>(i);
@@ -93,6 +108,8 @@ MonitorCenterDialog::MonitorCenterDialog(MonitorController *controller,
         check->setToolTip(sourceHint(source));
         connect(check, &QCheckBox::toggled, this, [this, source](bool on) {
             m_controller->setSourceEnabled(source, on);
+            // 面板改动统一经 configEdited 上送（PixiuApp 侧唯一 PUT 触发点）。
+            emit configEdited();
         });
         sourceLayout->addWidget(check);
         m_sourceChecks.append(check);
@@ -204,6 +221,8 @@ void MonitorCenterDialog::showAndFocus()
     raise();
     activateWindow();
     m_masterCheck->setFocus();
+    // 活动记录懒加载：面板打开即请求首页（m_remoteLogLoaded 防重复）。
+    requestFirstLogPage();
 }
 
 void MonitorCenterDialog::onMasterToggled(bool on)
@@ -212,6 +231,7 @@ void MonitorCenterDialog::onMasterToggled(bool on)
     for (QCheckBox *check : m_sourceChecks) {
         check->setEnabled(on);
     }
+    emit configEdited();
 }
 
 void MonitorCenterDialog::onAddDirectory()
@@ -224,6 +244,7 @@ void MonitorCenterDialog::onAddDirectory()
     dirs << path;
     m_controller->setDirectories(dirs);
     m_dirEdit->clear();
+    emit configEdited();
 }
 
 void MonitorCenterDialog::onRemoveDirectory()
@@ -238,16 +259,23 @@ void MonitorCenterDialog::onRemoveDirectory()
     }
     dirs.removeAt(row);
     m_controller->setDirectories(dirs);
+    emit configEdited();
 }
 
 void MonitorCenterDialog::reloadLog()
 {
     m_logList->clear();
+    // 本地日志与远端事件去重键相互独立（local 前缀区分），重建时清空
+    // 远端去重键，避免残留键挡住后续远端/实时条目。
+    m_logKeys.clear();
     const auto entries = m_controller->log();
     for (const MonitorLogEntry &entry : entries) {
         m_logList->addItem(QStringLiteral("[%1] %2")
                                .arg(formatLogTime(entry.timestamp),
                                     entry.text));
+        m_logKeys.insert(QStringLiteral("%1|local|%2")
+                             .arg(entry.timestamp)
+                             .arg(entry.text));
     }
     m_logList->scrollToBottom();
 }
@@ -256,4 +284,81 @@ void MonitorCenterDialog::rebuildDirectoryList()
 {
     m_dirList->clear();
     m_dirList->addItems(m_controller->directories());
+}
+
+void MonitorCenterDialog::appendRemoteLog(const QJsonArray &entries)
+{
+    for (const QJsonValue &value : entries) {
+        const QJsonObject entry = value.toObject();
+        const qint64 ts =
+            entry.value(QStringLiteral("ts")).toVariant().toLongLong();
+        const QString source =
+            entry.value(QStringLiteral("source")).toString();
+        const QString summary =
+            entry.value(QStringLiteral("summary")).toString();
+        QStringList ids;
+        const QString evidenceId =
+            entry.value(QStringLiteral("evidence_id")).toString();
+        const QString knowledgeId =
+            entry.value(QStringLiteral("knowledge_id")).toString();
+        if (!evidenceId.isEmpty()) {
+            ids << evidenceId;
+        }
+        if (!knowledgeId.isEmpty()) {
+            ids << knowledgeId;
+        }
+        // 「[MM-dd HH:mm] 文案」；无 id 的条目省略 id 部分。
+        const QString idsSuffix = ids.isEmpty()
+                                      ? QString()
+                                      : QStringLiteral("（%1）")
+                                            .arg(ids.join(QStringLiteral("、")));
+        appendLogLine(ts, source, summary, idsSuffix);
+    }
+    m_logList->scrollToBottom();
+}
+
+void MonitorCenterDialog::appendCaptureEvent(const QString &source,
+                                             const QString &,
+                                             const QString &summary,
+                                             qint64 ts)
+{
+    // capture_event 与本地日志同列表渲染；status 不参与显示文案。
+    appendLogLine(ts, source, summary, QString());
+    m_logList->scrollToBottom();
+}
+
+void MonitorCenterDialog::setOfflineHint(bool offline)
+{
+    if (!m_offlineHint) {
+        return;
+    }
+    m_offlineHint->setVisible(offline);
+    if (offline) {
+        m_offlineHint->setText(tr("离线，仅本地生效"));
+    }
+}
+
+void MonitorCenterDialog::requestFirstLogPage()
+{
+    if (m_remoteLogLoaded) {
+        return;
+    }
+    m_remoteLogLoaded = true;
+    emit logPageRequested(100, 0);
+}
+
+void MonitorCenterDialog::appendLogLine(qint64 ts, const QString &source,
+                                        const QString &summary,
+                                        const QString &idsSuffix)
+{
+    // 远端分页与实时 WS 可能重复送达同一事件：按键去重，只追加一次。
+    const QString key = QStringLiteral("%1|%2|%3")
+                            .arg(ts)
+                            .arg(source, summary);
+    if (m_logKeys.contains(key)) {
+        return;
+    }
+    m_logKeys.insert(key);
+    m_logList->addItem(QStringLiteral("[%1] %2%3")
+                           .arg(formatLogTime(ts), summary, idsSuffix));
 }

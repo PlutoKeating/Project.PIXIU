@@ -1,6 +1,7 @@
 #ifndef PIXIU_APP_H
 #define PIXIU_APP_H
 
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
 #include <QScopedPointer>
@@ -51,6 +52,9 @@ public:
     // 启动应用：初始化核心服务与窗口挂载点。失败时返回 false。
     bool start();
 
+    // 测试注入：替换默认 HTTP transport（仅测试用，须在 start() 前调用）。
+    void setTransportForTest(BackendTransport *transport);
+
     // 退出前清理：停止异步任务、断开连接并释放资源。
     void shutdown();
 
@@ -100,6 +104,11 @@ private:
     QString m_lastEvidenceId;
     // 后端离线引导提示是否已展示（每次断线仅提示一次，恢复后复位）。
     bool m_offlineGuidanceShown = false;
+    // 监控配置远端权威标记：true=远端配置已成功拉取/上送；
+    // false=仅本地键生效（离线回退，状态行提示「离线，仅本地生效」）。
+    bool m_monitorRemoteAuthoritative = false;
+    // 监控配置请求（启动 GET / 面板 PUT）在途标记：失败路由到面板离线提示。
+    bool m_monitorConfigPending = false;
     struct Private;
     QScopedPointer<Private> d;
 
@@ -109,6 +118,11 @@ private:
     void openMonitorCenter();
     void refreshMonitorUi();
     void handleBackendEvent(const QJsonObject &event);
+    // 远端监控配置（A-3）：启动拉取 / 回包应用 / 面板改动上送。
+    void loadRemoteMonitorConfig();
+    void handleMonitorConfigResult(const QJsonObject &config);
+    void handleMonitorLogResult(const QJsonArray &events);
+    void pushMonitorConfig();
 };
 
 #endif // PIXIU_APP_H

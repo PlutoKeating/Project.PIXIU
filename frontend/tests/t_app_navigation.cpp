@@ -1,13 +1,18 @@
 #include <QAction>
 #include <QGuiApplication>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QLabel>
+#include <QListWidget>
 #include <QPushButton>
 #include <QSettings>
 #include <QTabWidget>
 #include <QTest>
 
+#include "app/EventRouter.h"
 #include "app/MonitorController.h"
 #include "app/PixiuApp.h"
+#include "services/BackendTransport.h"
 #include "services/BackendTypes.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/FloatingBall.h"
@@ -16,6 +21,67 @@
 #include "widgets/MemoryPanel.h"
 #include "widgets/MonitorCenterDialog.h"
 #include "widgets/SettingsDialog.h"
+
+// 测试用假 transport：仅实现 A-3 需要的 /monitor/config 回包，其余为 no-op。
+// 经 PixiuApp::setTransportForTest 注入，避免依赖真实后端。
+class FakeTransport : public BackendTransport
+{
+public:
+    explicit FakeTransport(QObject *parent = nullptr)
+        : BackendTransport(parent)
+    {
+    }
+
+    bool monitorEnabled = false;
+
+    void connectToBackend() override {}
+    void disconnectFromBackend() override {}
+    quint64 queryMemory(const QString &, const QJsonObject &) override
+    {
+        return 0;
+    }
+    void writeMemory(const QJsonObject &) override {}
+    void forget(const QString &, bool) override {}
+    void listConflicts() override {}
+    void preferenceHistory(const QString &) override {}
+    void promoteMemory(const QJsonObject &) override {}
+    void pairDevice(const QJsonObject &) override {}
+    void listPeers() override {}
+    void syncStatus() override {}
+    void revokePeer(const QString &) override {}
+    ConnectionState connectionState() const override
+    {
+        return ConnectionState::Connected;
+    }
+    // WS 派生用：指向不存在地址即可，连接失败为异步且被容忍。
+    QString baseUrl() const override
+    {
+        return QStringLiteral("ws://127.0.0.1:1");
+    }
+
+    // GET /monitor/config：同步回包（直接连接下 start() 内即生效）。
+    void monitorConfig() override
+    {
+        emit configResult(QJsonObject{
+            {QStringLiteral("enabled"), monitorEnabled},
+            {QStringLiteral("sources"),
+             QJsonObject{
+                 {QStringLiteral("directory"), true},
+                 {QStringLiteral("clipboard"), false},
+                 {QStringLiteral("behavior"), true},
+                 {QStringLiteral("screenshot"), false},
+             }},
+            {QStringLiteral("directories"),
+             QJsonArray{QStringLiteral("/home/u/Downloads")}},
+        });
+    }
+    // PUT /monitor/config：回显提交体（模拟服务端归一化成功）。
+    void updateMonitorConfig(const QJsonObject &payload) override
+    {
+        emit configResult(payload);
+    }
+    void monitorLog(int, int) override {}
+};
 
 // 端到端导航回归：聊天框输入区上方 chip 快捷入口（记忆/设置/导入/同步）
 // 点击后必须真正打开对应窗口/Tab。防止 UI 重构只重建视觉控件、却把原有
@@ -36,6 +102,8 @@ private slots:
     void chipClickRespondsWhenWindowNotActive();
     void pauseToggleFromBallFlipsController();
     void settingsOpensMonitorCenter();
+    void remoteConfigOverridesControllerOnStart();
+    void captureEventAppendsWhenCenterOpen();
 
 private:
     template <typename T>
@@ -272,6 +340,69 @@ void TestAppNavigation::settingsOpensMonitorCenter()
     QTest::mouseClick(button, Qt::LeftButton);
     QTRY_VERIFY(!topLevels<MonitorCenterDialog>().isEmpty());
     QTRY_VERIFY(topLevels<MonitorCenterDialog>().first()->isVisible());
+}
+
+void TestAppNavigation::remoteConfigOverridesControllerOnStart()
+{
+    // A-3：启动时 GET /monitor/config 成功 → 远端配置覆盖本地控制器状态
+    // （enabled / 数据源开关 / 目录），并置 hasEverBeenEnabled。
+    // 用独立 USER 的第二个 PixiuApp 实例（注入假 transport），
+    // 避免与类级实例的单实例守卫互抢。
+    qputenv("USER", QStringLiteral("pixiu-nav-remote-%1")
+                        .arg(QCoreApplication::applicationPid())
+                        .toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->monitorEnabled = true;
+
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    MonitorController *controller = app.findChild<MonitorController *>();
+    QVERIFY(controller != nullptr);
+    // 远端 enabled=true 覆盖本地默认关闭态。
+    QVERIFY(controller->isEnabled());
+    QVERIFY(controller->isSourceEnabled(MonitorSource::Directory));
+    QVERIFY(controller->isSourceEnabled(MonitorSource::Behavior));
+    QVERIFY(!controller->isSourceEnabled(MonitorSource::Clipboard));
+    QVERIFY(!controller->isSourceEnabled(MonitorSource::Screenshot));
+    QCOMPARE(controller->directories(),
+             QStringList{QStringLiteral("/home/u/Downloads")});
+    // setEnabled(true) 顺带置位「曾开启过」粘性标记（远端覆盖的期望行为）。
+    QVERIFY(controller->hasEverBeenEnabled());
+
+    app.shutdown();
+}
+
+void TestAppNavigation::captureEventAppendsWhenCenterOpen()
+{
+    // A-3：监控中心打开时，WS capture_event 实时追加到活动记录列表。
+    EventRouter *router = m_app->findChild<EventRouter *>();
+    QVERIFY(router != nullptr);
+
+    // 打开监控中心（设置 → 监控中心…）。
+    clickChip("settingsChip");
+    SettingsDialog *settings = topLevels<SettingsDialog>().first();
+    QPushButton *button = settings->findChild<QPushButton *>(
+        QStringLiteral("openMonitorCenterButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QTRY_VERIFY(!topLevels<MonitorCenterDialog>().isEmpty());
+    MonitorCenterDialog *center = topLevels<MonitorCenterDialog>().first();
+    QVERIFY(center->isVisible());
+
+    QTabWidget *tabs = center->findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    tabs->setCurrentIndex(1);
+    QListWidget *logList = center->findChild<QListWidget *>(
+        QStringLiteral("monitorLogList"));
+    QVERIFY(logList != nullptr);
+    const int before = logList->count();
+
+    emit router->captureEvent(QStringLiteral("clipboard"),
+                              QStringLiteral("ingested"),
+                              QStringLiteral("记住剪贴板内容"), 1756080000);
+    QCOMPARE(logList->count(), before + 1);
 }
 
 QTEST_MAIN(TestAppNavigation)
