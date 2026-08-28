@@ -411,3 +411,80 @@ async def test_debounce_merges_concurrent_writes_into_single_capture(env):
         assert len(rows) == 1
     finally:
         watcher.stop()
+
+
+# ─── I1 回归：start() 失败路径不泄漏 loop/线程，可重启 ─────
+
+@pytest.mark.asyncio
+async def test_start_failure_cleans_up_and_allows_restart(env):
+    class FailingStore:
+        """subscribe 抛错的 config store：触发 start() 失败清理路径。"""
+
+        def subscribe(self, _cb):
+            raise RuntimeError("subscribe boom")
+
+    watcher = DirectoryWatcher(FailingStore(), _bridge(env), debounce_ms=200)
+    watcher.start()  # 失败在内部 try/except 清理，不抛给调用方
+    assert watcher._running is False
+    assert watcher._loop is None, "失败后不应残留事件循环引用"
+    assert watcher._thread is None, "失败后不应残留 watch 线程引用"
+    assert watcher._queue is None
+    assert watcher._observer is None
+    watcher.stop()  # 已清理：stop 为 no-op，不抛错
+
+    # 生命周期契约保持：清理后可再次 start 并正常捕获
+    await env.store.put(_config(env))
+    events: list[dict] = []
+    watcher2 = DirectoryWatcher(
+        env.store, _bridge(env), debounce_ms=200, callbacks=[]
+    )
+    watcher2.register_callback(lambda *a, **kw: events.append(kw))
+    watcher2.start()
+    assert watcher2._running is True
+    try:
+        time.sleep(0.6)
+        (Path(env.watched) / "restart.txt").write_text(
+            "captured after restart", encoding="utf-8"
+        )
+        assert _wait_until(lambda: events), "失败清理后重新 start 应可正常捕获"
+        assert events[0]["status"] == "ingested"
+    finally:
+        watcher2.stop()
+
+
+# ─── I2 回归：移入目录 / 空文件 → ignored，不入库空证据 ───
+
+@pytest.mark.asyncio
+async def test_directory_move_and_empty_file_not_ingested(env):
+    await env.store.put(_config(env))
+    events: list[dict] = []
+    watcher = DirectoryWatcher(
+        env.store, _bridge(env), debounce_ms=200, callbacks=[]
+    )
+    watcher.register_callback(lambda *a, **kw: events.append(kw))
+    watcher.start()
+    try:
+        time.sleep(0.6)
+        # 目录（名为 .txt）移入监视目录：on_moved 必须过滤 is_directory，
+        # 不产生捕获事件、不入库（否则 read_text 抛 IsADirectoryError → 空证据）
+        outside = Path(env.watched).parent / "outside_dir"
+        outside.mkdir(exist_ok=True)
+        (outside / "inner.txt").write_text("inner", encoding="utf-8")
+        outside.rename(Path(env.watched) / "伪文本.txt")
+        time.sleep(2.0)  # 跨过防抖 + 稳定性窗口
+        assert events == [], f"移入目录不应触发捕获: {events}"
+        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
+        assert rows == []
+
+        # 空 .txt：_read_text 返回空 → ignored 事件，不入库（不产生空证据）
+        (Path(env.watched) / "空文件.txt").write_text("", encoding="utf-8")
+        assert _wait_until(lambda: events), "空文件应产生 ignored 事件"
+        event = events[0]
+        assert event["status"] == "ignored"
+        assert event["summary"] == "忽略无法读取的文件 空文件.txt"
+        assert event["evidence_id"] is None
+        assert event["knowledge_id"] is None
+        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
+        assert rows == []
+    finally:
+        watcher.stop()

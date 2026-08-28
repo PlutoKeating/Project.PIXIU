@@ -65,13 +65,13 @@ class OcrAdapter(Protocol):
     def recognize(self, image_path: str | Path, nums: int = 4) -> list[str]: ...
 
 
-def _read_text(path: str) -> str:
-    """读取文本文件内容（UTF-8，失败时记日志并返回空串，不中断监视）。"""
+def _read_text(path: str) -> str | None:
+    """读取文本文件内容（UTF-8；失败时记日志并返回 None，不中断监视）。"""
     try:
         return Path(path).read_text(encoding="utf-8", errors="replace")
     except OSError:
         log.warning("cannot read text file %s", path, exc_info=True)
-        return ""
+        return None
 
 
 class IngestBridge:
@@ -138,7 +138,15 @@ class IngestBridge:
         # OCR 为同步 C 调用，放入线程池避免阻塞监视循环（对齐 http_app 的 to_thread）。
         lines = await asyncio.to_thread(self._ocr.recognize, path)
         text = "\n".join(lines)
-        return await self._ingest({self._title_key(): name, "text": text}, name)
+        if not text.strip():
+            # OCR 无有效文本：不入库（避免空证据），与 size 不可读→ignored 一致
+            log.warning("image capture ignored (no OCR text): %s", path)
+            return CaptureResult(
+                status=STATUS_IGNORED,
+                summary=f"忽略无法识别的图片 {name}",
+                ts=int(time.time()),
+            )
+        return await self._ingest({"title": name, "text": text}, name)
 
     # ─── 内部：文本直读 ───────────────────────────────────
 
@@ -158,13 +166,17 @@ class IngestBridge:
                 ts=int(time.time()),
             )
         text = _read_text(path)
-        return await self._ingest({self._title_key(): name, "text": text}, name)
+        if not text:
+            # 空内容或读取失败（如目录被误当文本文件）：不入库，避免空证据
+            log.info("directory capture ignored (unreadable or empty text): %s", path)
+            return CaptureResult(
+                status=STATUS_IGNORED,
+                summary=f"忽略无法读取的文件 {name}",
+                ts=int(time.time()),
+            )
+        return await self._ingest({"title": name, "text": text}, name)
 
     # ─── 内部：共享入库管线 ───────────────────────────────
-
-    @staticmethod
-    def _title_key() -> str:
-        return "title"
 
     async def _ingest(self, raw: dict[str, Any], name: str) -> CaptureResult:
         """raw → evidence → knowledge，返回 CaptureResult（敏感判定在先）。"""

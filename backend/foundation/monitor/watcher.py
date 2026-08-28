@@ -62,7 +62,6 @@ class _FileEventHandler(FileSystemEventHandler):
 
     def __init__(self, watcher: "DirectoryWatcher") -> None:
         self._watcher = watcher
-        self._need = {"created", "modified", "closed", "moved"}
 
     def _maybe_note(self, event: FileSystemEvent) -> None:
         if event.is_directory:
@@ -79,7 +78,10 @@ class _FileEventHandler(FileSystemEventHandler):
         self._maybe_note(event)
 
     def on_moved(self, event: FileSystemEvent) -> None:
-        # 移入受监视目录等同新增（dest_path 为目标路径）
+        # 移入受监视目录等同新增（dest_path 为目标路径）；目录整体忽略，
+        # 与 _maybe_note 一致（否则名为 note.txt 的目录会走 read_text → 空入库）。
+        if event.is_directory:
+            return
         dest = str(getattr(event, "dest_path", ""))
         if dest and not _is_ignored(dest):
             self._watcher._note_event(dest)
@@ -108,14 +110,15 @@ class DirectoryWatcher:
         ingest_bridge: Any,
         *,
         debounce_ms: float = 500,
-        stable_checks: int = 30,
+        max_stable_attempts: int = 30,
         check_interval_ms: float = 50,
         callbacks: list[Callable[..., Any]] | None = None,
     ) -> None:
         self._config_store = config_store
         self._bridge = ingest_bridge
         self._debounce = debounce_ms / 1000.0
-        self._stable_checks = stable_checks
+        #: 稳定性检查的最大尝试次数上限：到期仍未稳定也强制入库（防无限跟踪）。
+        self._max_stable_attempts = max_stable_attempts
         self._check_interval = check_interval_ms / 1000.0
         self._callbacks: list[Callable[..., Any]] = list(callbacks or [])
 
@@ -133,7 +136,12 @@ class DirectoryWatcher:
     # ─── 生命周期 ─────────────────────────────────────────
 
     def start(self) -> None:
-        """启动监视线程 + watchdog Observer，并应用当前配置。"""
+        """启动监视线程 + watchdog Observer，并应用当前配置。
+
+        线程启动后的 setup 包进 try/except：任何失败（含 loop 启动超时）
+        都走 _abort_start 镜像 stop() 尾部清理，保证失败后不留孤儿
+        loop/线程/队列（否则 stop() 因 ``not self._running`` 空转泄漏）。
+        """
         if self._running:
             return
         self._running = True
@@ -144,17 +152,50 @@ class DirectoryWatcher:
             target=self._run_loop, name="pixiu-dirwatcher", daemon=True
         )
         self._thread.start()
-        if not self._loop_ready.wait(timeout=10):
-            log.error("directory watcher loop failed to start")
-            self._running = False
+        try:
+            if not self._loop_ready.wait(timeout=10):
+                raise RuntimeError("directory watcher loop failed to start")
+            self._observer = Observer()
+            self._observer.daemon = True
+            self._observer.start()
+            self._config_store.subscribe(self._on_config_changed)
+            self._submit(self._apply_config(self._config_store.get()))
+        except Exception:
+            log.exception("failed to start directory watcher")
+            self._abort_start()
             return
-
-        self._observer = Observer()
-        self._observer.daemon = True
-        self._observer.start()
-        self._config_store.subscribe(self._on_config_changed)
-        self._submit(self._apply_config(self._config_store.get()))
         log.info("DirectoryWatcher started")
+
+    def _abort_start(self) -> None:
+        """start() 中途失败后的回收（镜像 stop() 尾部清理，含任务取消）。"""
+        self._running = False
+        loop = self._loop
+        if self._observer is not None:
+            try:
+                self._observer.stop()
+                self._observer.join(timeout=5)
+            except Exception:
+                log.exception("failed to stop watchdog observer")
+            self._observer = None
+        if loop is not None and loop.is_running():
+            try:
+                shutdown = asyncio.run_coroutine_threadsafe(self._shutdown(), loop)
+                shutdown.result(timeout=10)
+            except Exception:
+                log.exception("failed to shut down watcher loop tasks")
+        if loop is not None:
+            try:
+                loop.call_soon_threadsafe(loop.stop)
+            except Exception:
+                log.exception("failed to stop watcher loop")
+        if self._thread is not None:
+            self._thread.join(timeout=5)
+        self._loop = None
+        self._thread = None
+        self._queue = None
+        self._states.clear()
+        self._last_event.clear()
+        self._watched.clear()
 
     def stop(self) -> None:
         """停止监视：先停 Observer，再取消看护循环任务并回收线程。"""
@@ -325,8 +366,8 @@ class DirectoryWatcher:
                 self._states[path] = state
             state.prev_sample = sample
             state.checks += 1
-            if state.checks >= self._stable_checks:
-                # 异常持续写入的文件：到期仍入库（防止无限跟踪）
+            if state.checks >= self._max_stable_attempts:
+                # 达到尝试次数上限的文件仍持续写入：到期强制入库（防止无限跟踪）
                 log.warning(
                     "file kept changing for %d checks, capture anyway: %s",
                     state.checks,
@@ -412,4 +453,4 @@ class DirectoryWatcher:
         return self._effective
 
 
-__all__ = ["DirectoryWatcher", "_is_ignored"]
+__all__ = ["DirectoryWatcher"]

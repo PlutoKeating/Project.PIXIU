@@ -20,7 +20,7 @@ from .ingest_bridge import (
     TEXT_SUFFIXES,
     IngestBridge,
 )
-from .watcher import DirectoryWatcher, _is_ignored
+from .watcher import DirectoryWatcher
 
 __all__ = [
     "CaptureResult",
@@ -35,5 +35,4 @@ __all__ = [
     "TEXT_SUFFIXES",
     "DEFAULT_MONITOR_CONFIG",
     "DirectoryWatcher",
-    "_is_ignored",
 ]
