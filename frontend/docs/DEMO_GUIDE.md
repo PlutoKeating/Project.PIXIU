@@ -127,3 +127,148 @@ python -m backend.foundation.api.http_app        # 127.0.0.1:8765
   前端展示离线/占位状态是设计行为，不是故障。
 - 检索/同步链路未通前，演示聚焦：录入、遗忘两段式确认、冲突审计、
   主题跟随与全局唤起，均可在当前版本真实走通。
+
+---
+
+## 6. 批次②演示脚本：目录监视闭环（2026-08-26）
+
+> 场景（附录 A）：「放清单图 → 自动入库 → 检索回查」。
+> 演示的是「一次配置，永久监控」的目录源闭环：监控中心开启目录源并挂上
+> 监视目录后，放入的文件经 watchdog 防抖 + 稳定性检查 → OCR/直读 → 入库，
+> 期间 `capture_event` 实时推送、`GET /monitor/log` 可查、`/memory/query`
+> 可回查。全程不需要重启 daemon，配置热生效。
+> 契约见 `MONITOR_API_REQUIREMENTS.md` 与 `docs/API.md §3.16–3.18 / §4.5`。
+
+### 6.1 准备（复用 §5 模式 B：真实后端）
+
+```bash
+# 终端 1：真实后端（批次② /monitor/* 端点与 monitor runtime 随应用启动）
+python -m backend.foundation.api.http_app        # 127.0.0.1:8765
+
+# 终端 2：前端（默认即 http://127.0.0.1:8765）
+./frontend/build/pixiu-frontend
+```
+
+### 6.2 一键闭环脚本
+
+```bash
+#!/usr/bin/env bash
+# 批次②目录监视闭环演示：放清单 → 自动入库 → 检索回查
+# 用法：BASE=http://127.0.0.1:8765 MON_DIR=/tmp/pixiu-demo-monitor bash demo_batch2_monitor.sh
+set -euo pipefail
+
+BASE="${BASE:-http://127.0.0.1:8765}"
+MON_DIR="${MON_DIR:-/tmp/pixiu-demo-monitor}"
+IMG="${IMG:-${MON_DIR}/家庭支出清单.png}"
+TXT="${TXT:-${MON_DIR}/家庭支出清单.txt}"
+TIMEOUT="${TIMEOUT:-40}"
+
+echo "==> [1/5] 准备监视目录：${MON_DIR}"
+mkdir -p "${MON_DIR}"
+
+echo "==> [2/5] PUT /monitor/config 开启目录源（热生效，无需重启 daemon）"
+curl -sf -m 10 -X PUT "${BASE}/monitor/config" -H 'Content-Type: application/json' \
+  -d "{\"enabled\":true,\"sources\":{\"directory\":true,\"clipboard\":false,\"behavior\":false,\"screenshot\":false},\"directories\":[\"${MON_DIR}\"]}" \
+  | python3 -m json.tool
+
+echo "==> [3/5] 放入清单文件（优先图片，图片入库走 OCR）"
+if python3 -c 'import PIL' 2>/dev/null; then
+  python3 - "${IMG}" <<'PY'
+import sys
+from PIL import Image, ImageDraw, ImageFont
+out = sys.argv[1]
+img = Image.new("RGB", (640, 360), "white")
+d = ImageDraw.Draw(img)
+font = None
+for p in ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+          "/usr/share/fonts/wps-office/HYXingKaiJ.ttf",
+          "/usr/share/fonts/kylin-fonts-gb/国标楷体-GBT2312.ttf"):
+    try:
+        font = ImageFont.truetype(p, 32)
+        break
+    except OSError:
+        continue
+font = font or ImageFont.load_default()
+d.text((40, 60), "家庭支出清单", font=font, fill="black")
+for i, line in enumerate(["米 68 元", "食用油 45 元", "挂面 32 元"]):
+    d.text((60, 140 + i * 60), line, font=font, fill="black")
+img.save(out)
+print("生成清单图片：", out)
+PY
+else
+  printf '家庭支出清单\n米 68 元\n食用油 45 元\n挂面 32 元\n' > "${TXT}"
+  echo "（无 PIL，直接用文本清单）"
+fi
+
+echo "==> [4/5] 等待捕获入库（轮询 GET /monitor/log，只认最近 3 分钟条目）"
+fallback=""
+start=$(date +%s)
+while :; do
+  read -r status summary <<< "$(curl -sf -m 5 "${BASE}/monitor/log?limit=30" | python3 -c '
+import json, sys, time
+now = int(time.time())
+for e in json.load(sys.stdin)["events"]:
+    if now - e.get("ts", 0) > 180:      # 只认最近 3 分钟，避免命中旧日志
+        continue
+    if e.get("source") != "directory":
+        continue
+    print(e.get("status", ""), e.get("summary", ""))
+    break
+')" || true
+  if [ "${status}" = "ingested" ]; then
+    echo "已入库：${summary}"
+    break
+  fi
+  if [ -z "${fallback}" ] && { [ "${status}" = "ignored" ] \
+      || [ $(( $(date +%s) - start )) -gt 10 ]; }; then
+    # 图片未入库（ignored / 10s 无结果）＝本机无 OCR（麒麟 kysdk）：
+    # 退回文本清单重试，文本直读不依赖 OCR。
+    echo "（图片路径未入库——本机无 OCR？退回文本清单重试）"
+    printf '家庭支出清单\n米 68 元\n食用油 45 元\n挂面 32 元\n' > "${TXT}"
+    fallback=1
+    start=$(date +%s)
+  fi
+  if [ $(( $(date +%s) - start )) -gt "${TIMEOUT}" ]; then
+    echo "等待超时（${TIMEOUT}s）——检查后端日志与 watcher" >&2
+    exit 1
+  fi
+  sleep 1
+done
+
+echo "==> [5/5] POST /memory/query 回查"
+curl -sf -m 15 -X POST "${BASE}/memory/query" -H 'Content-Type: application/json' \
+  -d '{"text":"我们买了米、食用油和挂面，一共花了多少钱？","context_hint":{"scope":"user:local","top_k":5}}' \
+  | python3 -m json.tool \
+  || echo "（查询超时/无答案：真实检索依赖麒麟 embedding，见 §2.5；入库闭环已由第 4 步验证）"
+
+echo "==> 闭环演示完成"
+```
+
+> 已在开发机真实验证：PUT 配置热生效 → 放入 `家庭支出清单.txt` →
+> `GET /monitor/log` 出现 `ingested`（「记住文件 家庭支出清单.txt」）。
+> 图片路径在装有麒麟 kysdk OCR 的目标机上生效；无 OCR 的开发机会在
+> 第 4 步自动退回文本清单。
+
+### 6.3 前端可视化对照（与脚本并行演示）
+
+1. 脚本 [2/5] 前后各截一张「设置 → 监控中心…」：Tab1 数据源矩阵应显示
+   「目录文件监视」为开；Tab2 活动记录应实时追加 `state_changed` 与
+   `ingested` 行（`capture_event` WS 推送，无需刷新）。
+2. 脚本 [4/5] 入库后，在聊天框输入与查询语句相同的问句，预期返回含
+   「家庭支出清单」的检索答案（真实检索依赖麒麟 embedding；开发机为
+   BM25 通道结果，见 §2.5）。
+3. 关闭后端再开监控中心：出现「离线，仅本地生效」提示行（离线回退，
+   配置仍可编辑，恢复连接后对账）。
+
+### 6.4 截图留证建议
+
+- 会话为 X11 / XWayland 时用 `scrot`（UKUI 全屏会话可直接用 `PrintScreen`）：
+  ```bash
+  mkdir -p frontend/docs/screenshots/batch2-monitor-$(date +%F)
+  scrot -d 5 frontend/docs/screenshots/batch2-monitor-$(date +%F)/step2-config.png
+  scrot -u frontend/docs/screenshots/batch2-monitor-$(date +%F)/step4-log.png   # -u 截当前焦点窗口
+  ```
+- 建议留存 4 张：监控中心数据源页、活动记录页（含 ingested 行）、聊天框
+  回查答案、离线提示行。
+- 目标机为 Wayland 原生会话时，改用会话自带截图工具（UKUI 截图/快捷键）
+  或先切回 X11/XWayland 会话再执行 `scrot`。
