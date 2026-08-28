@@ -66,7 +66,10 @@ class _FileEventHandler(FileSystemEventHandler):
     def _maybe_note(self, event: FileSystemEvent) -> None:
         if event.is_directory:
             return
-        path = str(getattr(event, "dest_path", event.src_path))
+        # 真实 watchdog 事件（FileCreatedEvent 等）的 dest_path 恒为 ''/None，
+        # 只有移入事件（FileMovedEvent）才携带目标路径：非移入一律回退 src_path，
+        # 否则 path='' 导致 os.stat('') 失败、文件永不入库（真机冒烟 BE-4 发现）。
+        path = str(getattr(event, "dest_path", None) or event.src_path)
         if _is_ignored(path):
             return
         self._watcher._note_event(path)
