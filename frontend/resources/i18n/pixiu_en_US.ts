@@ -624,6 +624,18 @@ This action cannot be undone.</translation>
         <source>移除所选</source>
         <translation>Remove selected</translation>
     </message>
+    <message>
+        <source>（%1）</source>
+        <translation>(%1)</translation>
+    </message>
+    <message>
+        <source>、</source>
+        <translation>, </translation>
+    </message>
+    <message>
+        <source>离线，仅本地生效</source>
+        <translation>Offline; local changes only</translation>
+    </message>
 </context>
 <context>
     <name>MonitorController</name>
@@ -858,6 +870,10 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>继续监控</source>
         <translation>Resume monitoring</translation>
+    </message>
+    <message>
+        <source>监控隔离</source>
+        <translation>Monitoring quarantine</translation>
     </message>
 </context>
 <context>
