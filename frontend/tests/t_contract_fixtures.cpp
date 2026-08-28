@@ -44,7 +44,16 @@ public:
 
     quint16 port() const { return m_server->serverPort(); }
 
+    // 最近一次请求的 HTTP 方法（校验 transport 使用了正确动词）。
+    QString lastMethod() const { return m_lastMethod; }
+
 private:
+    static QString getMethod(const QString &requestLine)
+    {
+        const QStringList parts = requestLine.split(QLatin1Char(' '));
+        return parts.value(0);
+    }
+
     static QString getPath(const QString &requestLine)
     {
         const QStringList parts = requestLine.split(QLatin1Char(' '));
@@ -87,17 +96,20 @@ private:
 
         const QString requestLine =
             QString::fromLatin1(lines.first().trimmed());
+        const QString method = getMethod(requestLine);
         const QString path = getPath(requestLine);
         const QByteArray bodyRaw =
             buffer.mid(headerEnd + 4, contentLength);
         const QJsonObject body = parseBody(bodyRaw);
         buffer.clear();
+        m_lastMethod = method;
 
-        const QJsonObject response = route(path, body);
+        const QJsonObject response = route(method, path, body);
         respond(socket, response);
     }
 
-    QJsonObject route(const QString &path, const QJsonObject &body)
+    QJsonObject route(const QString &method, const QString &path,
+                      const QJsonObject &body)
     {
         const QString evd = QStringLiteral("evd_01HAAAAAAAAAAAAAAAAAAAAAA");
         const QString knw = QStringLiteral("knw_02KAAAAAAAAAAAAAAAAAAAAAA");
@@ -245,6 +257,80 @@ private:
                 {QStringLiteral("latency_ms"), 3200},
             };
         }
+        const QString pathOnly = path.section(QLatin1Char('?'), 0, 0);
+        if (pathOnly == QStringLiteral("/monitor/config")) {
+            // PUT：回显归一化配置（补齐四数据源键，模拟服务端归一化）；
+            // 其余方法按 GET 默认形状回包（便于断言 transport 用了 PUT）。
+            if (method == QStringLiteral("PUT")) {
+                QJsonObject sources =
+                    body.value(QStringLiteral("sources")).toObject();
+                for (const QString &key :
+                     {QStringLiteral("directory"), QStringLiteral("clipboard"),
+                      QStringLiteral("behavior"), QStringLiteral("screenshot")}) {
+                    if (!sources.contains(key)) {
+                        sources.insert(key, false);
+                    }
+                }
+                return QJsonObject{
+                    {QStringLiteral("enabled"),
+                     body.value(QStringLiteral("enabled")).toBool(false)},
+                    {QStringLiteral("sources"), sources},
+                    {QStringLiteral("directories"),
+                     body.value(QStringLiteral("directories")).toArray()},
+                };
+            }
+            return QJsonObject{
+                {QStringLiteral("enabled"), false},
+                {QStringLiteral("sources"),
+                 QJsonObject{
+                     {QStringLiteral("directory"), false},
+                     {QStringLiteral("clipboard"), false},
+                     {QStringLiteral("behavior"), false},
+                     {QStringLiteral("screenshot"), false},
+                 }},
+                {QStringLiteral("directories"),
+                 QJsonArray{QStringLiteral("/home/u/Downloads")}},
+                // 未知字段：transport 必须容忍（只消费契约字段）。
+                {QStringLiteral("revision"), 3},
+            };
+        }
+        if (pathOnly == QStringLiteral("/monitor/log")) {
+            // 解析 query 参数；events 数量与首条 ts 编码 limit/offset，
+            // 供测试断言参数确实到达桩端。
+            int limit = 100;
+            int offset = 0;
+            const QString query = path.section(QLatin1Char('?'), 1);
+            const QStringList pairs = query.split(QLatin1Char('&'));
+            for (const QString &pair : pairs) {
+                if (pair.isEmpty()) {
+                    continue;
+                }
+                const QString key = pair.section(QLatin1Char('='), 0, 0);
+                const QString value = pair.section(QLatin1Char('='), 1);
+                if (key == QStringLiteral("limit")) {
+                    limit = value.toInt();
+                } else if (key == QStringLiteral("offset")) {
+                    offset = value.toInt();
+                }
+            }
+            QJsonArray events;
+            for (int i = 0; i < limit; ++i) {
+                events.append(QJsonObject{
+                    {QStringLiteral("ts"), 1756080000 + offset + i},
+                    {QStringLiteral("source"), QStringLiteral("directory")},
+                    {QStringLiteral("status"), QStringLiteral("ingested")},
+                    {QStringLiteral("summary"),
+                     QStringLiteral("记住文件 支出清单.xlsx")},
+                    {QStringLiteral("evidence_id"), evd},
+                    {QStringLiteral("knowledge_id"), knw},
+                });
+            }
+            return QJsonObject{
+                {QStringLiteral("events"), events},
+                // 未知字段：transport 只取 events，多余忽略。
+                {QStringLiteral("total"), events.size()},
+            };
+        }
         return QJsonObject{
             {QStringLiteral("detail"), QStringLiteral("NOT_FOUND")},
         };
@@ -270,6 +356,7 @@ private:
 
     QTcpServer *m_server = nullptr;
     QHash<QTcpSocket *, QByteArray> m_buffers;
+    QString m_lastMethod;
 };
 
 class TestContractFixtures : public QObject
@@ -288,6 +375,9 @@ private slots:
     void syncPeersAndStatusMatchBackendContract();
     void syncPairAndRevokeMatchBackendContract();
     void flowPromoteMatchesBackendContract();
+    void monitorConfigMatchesBackendContract();
+    void updateMonitorConfigMatchesBackendContract();
+    void monitorLogMatchesBackendContract();
 
 private:
     HttpBackendTransport *makeTransport();
@@ -509,6 +599,79 @@ void TestContractFixtures::flowPromoteMatchesBackendContract()
     QCOMPARE(response.value(QStringLiteral("promoted_count")).toInt(), 1);
     QVERIFY(response.value(QStringLiteral("knowledge_ids")).toArray().size() == 1);
     QVERIFY(response.value(QStringLiteral("latency_ms")).toInt() >= 0);
+}
+
+void TestContractFixtures::monitorConfigMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::configResult);
+
+    transport->monitorConfig();
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    const QJsonObject config = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(config.value(QStringLiteral("enabled")).toBool(), false);
+    const QJsonObject sources =
+        config.value(QStringLiteral("sources")).toObject();
+    QCOMPARE(sources.size(), 4);
+    QVERIFY(sources.contains(QStringLiteral("directory")));
+    QVERIFY(sources.contains(QStringLiteral("clipboard")));
+    QVERIFY(sources.contains(QStringLiteral("behavior")));
+    QVERIFY(sources.contains(QStringLiteral("screenshot")));
+    QCOMPARE(config.value(QStringLiteral("directories")).toArray().size(), 1);
+}
+
+void TestContractFixtures::updateMonitorConfigMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::configResult);
+
+    QJsonObject sources;
+    sources.insert(QStringLiteral("directory"), true);
+    sources.insert(QStringLiteral("behavior"), true);
+    QJsonObject payload;
+    payload.insert(QStringLiteral("enabled"), true);
+    payload.insert(QStringLiteral("sources"), sources);
+    payload.insert(QStringLiteral("directories"),
+                   QJsonArray{QStringLiteral("/home/u/Downloads")});
+
+    transport->updateMonitorConfig(payload);
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    QCOMPARE(m_server->lastMethod(), QStringLiteral("PUT"));
+    const QJsonObject config = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(config.value(QStringLiteral("enabled")).toBool(), true);
+    // 桩回显归一化配置：补齐缺失数据源键，且保留提交值。
+    const QJsonObject normalized =
+        config.value(QStringLiteral("sources")).toObject();
+    QCOMPARE(normalized.size(), 4);
+    QCOMPARE(normalized.value(QStringLiteral("directory")).toBool(), true);
+    QCOMPARE(normalized.value(QStringLiteral("clipboard")).toBool(), false);
+    QCOMPARE(config.value(QStringLiteral("directories")).toArray().size(), 1);
+}
+
+void TestContractFixtures::monitorLogMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::monitorLogResult);
+
+    transport->monitorLog(2, 5);
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    const QJsonArray events = spy.takeFirst().at(0).toJsonArray();
+    // 桩按收到的 limit 生成事件条数，首条 ts 编码 offset，证明参数到达。
+    QCOMPARE(events.size(), 2);
+    const QJsonObject first = events.first().toObject();
+    QCOMPARE(first.value(QStringLiteral("ts")).toInt(), 1756080005);
+    QCOMPARE(first.value(QStringLiteral("source")).toString(),
+             QStringLiteral("directory"));
+    QCOMPARE(first.value(QStringLiteral("status")).toString(),
+             QStringLiteral("ingested"));
+    QVERIFY(!first.value(QStringLiteral("summary")).toString().isEmpty());
+    QVERIFY(first.value(QStringLiteral("evidence_id")).toString().startsWith(
+        QStringLiteral("evd_")));
+    QVERIFY(first.value(QStringLiteral("knowledge_id")).toString().startsWith(
+        QStringLiteral("knw_")));
 }
 
 QTEST_MAIN(TestContractFixtures)

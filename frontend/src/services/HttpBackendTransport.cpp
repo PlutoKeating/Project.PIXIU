@@ -8,6 +8,7 @@
 #include <QNetworkRequest>
 #include <QTimer>
 #include <QUrl>
+#include <QUrlQuery>
 
 Q_LOGGING_CATEGORY(lcHttp, "pixiu.http")
 
@@ -183,6 +184,36 @@ void HttpBackendTransport::revokePeer(const QString &peerId)
              [this](quint64, const QJsonObject &obj) { emit revokeResult(obj); });
 }
 
+void HttpBackendTransport::monitorConfig()
+{
+    getJson(QStringLiteral("/monitor/config"),
+            [this](quint64, const QJsonObject &obj) { emit configResult(obj); });
+}
+
+void HttpBackendTransport::updateMonitorConfig(const QJsonObject &payload)
+{
+    putJson(QStringLiteral("/monitor/config"), payload,
+            [this](quint64, const QJsonObject &obj) { emit configResult(obj); });
+}
+
+void HttpBackendTransport::monitorLog(int limit, int offset)
+{
+    // QUrlQuery 负责参数编码；响应只取契约字段 events，多余字段忽略。
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    query.addQueryItem(QStringLiteral("offset"), QString::number(offset));
+    QString path = QStringLiteral("/monitor/log");
+    const QString encoded = query.toString(QUrl::FullyEncoded);
+    if (!encoded.isEmpty()) {
+        path += QLatin1Char('?') + encoded;
+    }
+    getJson(path,
+            [this](quint64, const QJsonObject &obj) {
+                emit monitorLogResult(
+                    obj.value(QStringLiteral("events")).toArray());
+            });
+}
+
 ConnectionState HttpBackendTransport::connectionState() const
 {
     return m_state;
@@ -221,6 +252,21 @@ void HttpBackendTransport::postJson(const QString &path,
     request.setTransferTimeout(kTransferTimeoutMs);
     const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
     QNetworkReply *reply = m_network->post(request, payload);
+    handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"), tag);
+}
+
+void HttpBackendTransport::putJson(const QString &path,
+                                   const QJsonObject &body,
+                                   const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                                   quint64 tag)
+{
+    QNetworkRequest request(endpoint(path));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
+    request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader,
+                      QStringLiteral("PIXIU-Frontend/0.1.0"));
+    request.setTransferTimeout(kTransferTimeoutMs);
+    const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
+    QNetworkReply *reply = m_network->put(request, payload);
     handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"), tag);
 }
 

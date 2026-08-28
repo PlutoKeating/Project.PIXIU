@@ -40,6 +40,9 @@ public:
     void preferencesList(const QString &scope) override;
     void evidenceDetail(const QString &evidenceId) override;
     void createPairingToken(const QJsonObject &payload) override;
+    void monitorConfig() override;
+    void updateMonitorConfig(const QJsonObject &payload) override;
+    void monitorLog(int limit, int offset) override;
     void promoteMemory(const QJsonObject &payload) override;
     void pairDevice(const QJsonObject &payload) override;
     void listPeers() override;
@@ -65,6 +68,11 @@ private:
                   const QJsonObject &body,
                   const std::function<void(quint64, const QJsonObject &)> &onSuccess,
                   quint64 tag = 0);
+    // PUT 语义助手：与 postJson 对称，4xx/5xx 与传输错误统一走 handleReply。
+    void putJson(const QString &path,
+                 const QJsonObject &body,
+                 const std::function<void(quint64, const QJsonObject &)> &onSuccess,
+                 quint64 tag = 0);
 
     void handleReply(QNetworkReply *reply,
                      const std::function<void(quint64, const QJsonObject &)> &onSuccess,

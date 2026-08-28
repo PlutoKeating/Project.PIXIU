@@ -39,6 +39,13 @@ public:
     virtual void evidenceDetail(const QString &evidenceId);
     // 配对令牌生成（POST /sync/token）。默认空实现，理由同上。
     virtual void createPairingToken(const QJsonObject &payload);
+    // 监控配置读取（GET /monitor/config）。默认空实现，理由同上。
+    virtual void monitorConfig();
+    // 监控配置写入（PUT /monitor/config，全量提交，payload 即请求体）。
+    // 成功同样经 configResult 回包（响应为归一化配置）。默认空实现。
+    virtual void updateMonitorConfig(const QJsonObject &payload);
+    // 监控活动日志（GET /monitor/log?limit=&offset=）。默认空实现，理由同上。
+    virtual void monitorLog(int limit, int offset);
     virtual void promoteMemory(const QJsonObject &payload) = 0;
     virtual void pairDevice(const QJsonObject &payload) = 0;
     virtual void listPeers() = 0;
@@ -82,6 +89,10 @@ signals:
     void syncStatusResult(const QJsonObject &status);
     // 解绑（POST /sync/peers/{id}/revoke）。
     void revokeResult(const QJsonObject &response);
+    // 监控配置（GET/PUT /monitor/config → 归一化配置；PUT 失败走 errorOccurred）。
+    void configResult(const QJsonObject &config);
+    // 监控活动日志（GET /monitor/log → {"events": [...]} 的 events 数组）。
+    void monitorLogResult(const QJsonArray &events);
 
     // 通用错误；code 取 API 错误码或 NETWORK_ERROR / TIMEOUT。
     void errorOccurred(const QString &code, const QString &message, const QString &requestId);

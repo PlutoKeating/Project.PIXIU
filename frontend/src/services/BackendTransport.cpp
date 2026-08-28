@@ -23,3 +23,15 @@ void BackendTransport::evidenceDetail(const QString &)
 void BackendTransport::createPairingToken(const QJsonObject &)
 {
 }
+
+void BackendTransport::monitorConfig()
+{
+}
+
+void BackendTransport::updateMonitorConfig(const QJsonObject &)
+{
+}
+
+void BackendTransport::monitorLog(int, int)
+{
+}
