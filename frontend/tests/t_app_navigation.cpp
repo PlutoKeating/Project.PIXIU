@@ -1,4 +1,5 @@
 #include <QAction>
+#include <QCheckBox>
 #include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -33,6 +34,15 @@ public:
     }
 
     bool monitorEnabled = false;
+    // A-3 修复测试缝：控制 GET/PUT 回包时机与失败。
+    bool failGet = false;     // GET 立即 errorOccurred（模拟启动离线）
+    bool failPut = false;     // PUT 立即 errorOccurred（模拟上送失败）
+    bool autoEchoGet = true;  // false 时 GET 响应入队、手动释放
+    bool autoEchoPut = true;  // false 时 PUT 回声入队、手动释放
+    int monitorConfigCalls = 0;
+    int updateMonitorConfigCalls = 0;
+    QList<QJsonObject> queuedGetResponses;
+    QList<QJsonObject> queuedPutEchos;
 
     void connectToBackend() override {}
     void disconnectFromBackend() override {}
@@ -59,10 +69,18 @@ public:
         return QStringLiteral("ws://127.0.0.1:1");
     }
 
-    // GET /monitor/config：同步回包（直接连接下 start() 内即生效）。
+    // GET /monitor/config：默认同步回包（直接连接下 start() 内即生效）；
+    // autoEchoGet=false 时响应入队，由测试手动释放（模拟响应乱序到达）。
     void monitorConfig() override
     {
-        emit configResult(QJsonObject{
+        ++monitorConfigCalls;
+        if (failGet) {
+            emit errorOccurred(QStringLiteral("NETWORK_ERROR"),
+                               QStringLiteral("backend unreachable"),
+                               QString());
+            return;
+        }
+        const QJsonObject config{
             {QStringLiteral("enabled"), monitorEnabled},
             {QStringLiteral("sources"),
              QJsonObject{
@@ -73,14 +91,45 @@ public:
              }},
             {QStringLiteral("directories"),
              QJsonArray{QStringLiteral("/home/u/Downloads")}},
-        });
+        };
+        if (autoEchoGet) {
+            emit configResult(config);
+        } else {
+            queuedGetResponses.append(config);
+        }
     }
-    // PUT /monitor/config：回显提交体（模拟服务端归一化成功）。
+    // PUT /monitor/config：默认回显提交体（模拟服务端归一化成功）；
+    // autoEchoPut=false 时回声入队，由测试按序释放（模拟乱序回声）。
     void updateMonitorConfig(const QJsonObject &payload) override
     {
-        emit configResult(payload);
+        ++updateMonitorConfigCalls;
+        if (failPut) {
+            emit errorOccurred(QStringLiteral("NETWORK_ERROR"),
+                               QStringLiteral("backend unreachable"),
+                               QString());
+            return;
+        }
+        if (autoEchoPut) {
+            emit configResult(payload);
+        } else {
+            queuedPutEchos.append(payload);
+        }
     }
     void monitorLog(int, int) override {}
+
+    // 手动释放排队中的 GET 响应 / PUT 回声（模拟响应乱序到达）。
+    void flushNextGet()
+    {
+        if (!queuedGetResponses.isEmpty()) {
+            emit configResult(queuedGetResponses.takeFirst());
+        }
+    }
+    void flushNextPutEcho()
+    {
+        if (!queuedPutEchos.isEmpty()) {
+            emit configResult(queuedPutEchos.takeFirst());
+        }
+    }
 };
 
 // 端到端导航回归：聊天框输入区上方 chip 快捷入口（记忆/设置/导入/同步）
@@ -104,6 +153,10 @@ private slots:
     void settingsOpensMonitorCenter();
     void remoteConfigOverridesControllerOnStart();
     void captureEventAppendsWhenCenterOpen();
+    void reconnectRepullsConfigWhenNotAuthoritative();
+    void offlineHintShownWhenPanelCreatedWhileOffline();
+    void outOfOrderPutEchoSkipped();
+    void dirtyGetDoesNotOverwriteUserEdits();
 
 private:
     template <typename T>
@@ -115,6 +168,18 @@ private:
             if (T *t = qobject_cast<T *>(w)) {
                 found.append(t);
             }
+        }
+        return found;
+    }
+
+    // 第二个 PixiuApp 的窗口与类级实例并存且均为无父顶层窗口：用
+    // 「start/emit 前后差值」定位属于新实例的窗口，避免与类级窗口混淆。
+    template <typename T>
+    static QList<T *> newTopLevels(const QList<T *> &before)
+    {
+        QList<T *> found = topLevels<T>();
+        for (T *w : before) {
+            found.removeAll(w);
         }
         return found;
     }
@@ -403,6 +468,195 @@ void TestAppNavigation::captureEventAppendsWhenCenterOpen()
                               QStringLiteral("ingested"),
                               QStringLiteral("记住剪贴板内容"), 1756080000);
     QCOMPARE(logList->count(), before + 1);
+}
+
+void TestAppNavigation::reconnectRepullsConfigWhenNotAuthoritative()
+{
+    // A-3 修复（断线恢复对账）：启动时 GET 失败（离线）→ 非远端权威；
+    // 重连（Connected）后应重新拉取配置，断言 monitorConfig 调用次数 2。
+    qputenv("USER", QStringLiteral("pixiu-nav-reconnect-%1")
+                        .arg(QCoreApplication::applicationPid())
+                        .toUtf8());
+    {
+        QSettings raw;
+        raw.remove(QStringLiteral("app/monitor/enabled"));
+        raw.remove(QStringLiteral("app/monitor/ever_enabled"));
+        raw.sync();
+    }
+    FakeTransport *fake = new FakeTransport(this);
+    fake->failGet = true;
+
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+    QCOMPARE(fake->monitorConfigCalls, 1);
+
+    // 断线恢复：后端重新在线，重拉配置成功。
+    fake->failGet = false;
+    emit fake->connectionStateChanged(ConnectionState::Connected);
+    QCOMPARE(fake->monitorConfigCalls, 2);
+
+    MonitorController *controller = app.findChild<MonitorController *>();
+    QVERIFY(controller != nullptr);
+    // 重拉成功的远端配置已应用（enabled=false 覆盖本地）。
+    QVERIFY(!controller->isEnabled());
+    QVERIFY(controller->isSourceEnabled(MonitorSource::Directory));
+
+    app.shutdown();
+}
+
+void TestAppNavigation::offlineHintShownWhenPanelCreatedWhileOffline()
+{
+    // A-3 修复（离线提示迟到/永不消失）：配置失败发生在面板创建之前时，
+    // 之后打开面板也必须显示「离线，仅本地生效」。
+    qputenv("USER", QStringLiteral("pixiu-nav-offline-%1")
+                        .arg(QCoreApplication::applicationPid())
+                        .toUtf8());
+    {
+        QSettings raw;
+        raw.remove(QStringLiteral("app/monitor/enabled"));
+        raw.remove(QStringLiteral("app/monitor/ever_enabled"));
+        raw.sync();
+    }
+    FakeTransport *fake = new FakeTransport(this);
+    fake->failGet = true;
+
+    const auto ballsBefore = topLevels<FloatingBall>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());   // 启动 GET 失败 → 非远端权威
+
+    // 经悬浮球信号打开监控中心（面板此刻才创建）。
+    FloatingBall *ball = newTopLevels(ballsBefore).value(0);
+    QVERIFY(ball != nullptr);
+    const auto centersBefore = topLevels<MonitorCenterDialog>();
+    emit ball->monitorCenterRequested();
+
+    MonitorCenterDialog *center =
+        newTopLevels(centersBefore).value(0);
+    QVERIFY(center != nullptr);
+    QLabel *hint = center->findChild<QLabel *>(
+        QStringLiteral("monitorOfflineHint"));
+    QVERIFY(hint != nullptr);
+    QVERIFY(hint->isVisible());
+    QCOMPARE(hint->text(), QStringLiteral("离线，仅本地生效"));
+
+    app.shutdown();
+}
+
+void TestAppNavigation::outOfOrderPutEchoSkipped()
+{
+    // A-3 修复（回声校验）：乱序旧 PUT 回声不得覆盖用户最新改动——
+    // 先放行的旧回声（P1）与暂存载荷（P2）不匹配 → 跳过应用；
+    // 匹配的新回声（P2）到达后才应用。
+    qputenv("USER", QStringLiteral("pixiu-nav-echo-%1")
+                        .arg(QCoreApplication::applicationPid())
+                        .toUtf8());
+    {
+        QSettings raw;
+        raw.remove(QStringLiteral("app/monitor/enabled"));
+        raw.remove(QStringLiteral("app/monitor/ever_enabled"));
+        raw.sync();
+    }
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoPut = false;   // PUT 回声入队、手动按序释放
+
+    const auto ballsBefore = topLevels<FloatingBall>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());   // 启动 GET 立即应用（远端权威）
+
+    FloatingBall *ball = newTopLevels(ballsBefore).value(0);
+    QVERIFY(ball != nullptr);
+    const auto centersBefore = topLevels<MonitorCenterDialog>();
+    emit ball->monitorCenterRequested();
+    MonitorCenterDialog *center =
+        newTopLevels(centersBefore).value(0);
+    QVERIFY(center != nullptr);
+    QCheckBox *master = center->findChild<QCheckBox *>(
+        QStringLiteral("monitorMasterCheck"));
+    QVERIFY(master != nullptr);
+    MonitorController *controller = app.findChild<MonitorController *>();
+    QVERIFY(controller != nullptr);
+
+    // 改动 1：总闸开启 → PUT#1（P1，enabled=true）。
+    master->setChecked(true);
+    QTRY_COMPARE(fake->updateMonitorConfigCalls, 1);
+    QCOMPARE(fake->queuedPutEchos.size(), 1);
+
+    // 改动 2（去抖窗口外）：总闸关闭 → PUT#2（P2，enabled=false）。
+    QTest::qWait(350);
+    master->setChecked(false);
+    QTRY_COMPARE(fake->updateMonitorConfigCalls, 2);
+    QCOMPARE(fake->queuedPutEchos.size(), 2);
+
+    // 乱序：先放行旧回声 P1 → 与暂存 P2 不匹配 → 跳过应用，
+    // 用户最新改动（关闭）不被覆盖。
+    fake->flushNextPutEcho();
+    QVERIFY(!controller->isEnabled());
+    QCOMPARE(fake->queuedPutEchos.size(), 1);   // 暂存仍在等匹配回声
+
+    // 再放行新回声 P2 → 匹配 → 应用，暂存清空。
+    fake->flushNextPutEcho();
+    QVERIFY(!controller->isEnabled());
+    QCOMPARE(fake->queuedPutEchos.size(), 0);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::dirtyGetDoesNotOverwriteUserEdits()
+{
+    // A-3 修复（读后写竞态）：用户本地改动期间到达的 GET 响应不得覆盖
+    // 本地改动——PUT 失败（离线）后重连重拉，GET 到达时 dirty 仍为 true
+    // → 跳过应用，仅更新远端权威标记。
+    qputenv("USER", QStringLiteral("pixiu-nav-dirty-%1")
+                        .arg(QCoreApplication::applicationPid())
+                        .toUtf8());
+    {
+        QSettings raw;
+        raw.remove(QStringLiteral("app/monitor/enabled"));
+        raw.remove(QStringLiteral("app/monitor/ever_enabled"));
+        raw.sync();
+    }
+    FakeTransport *fake = new FakeTransport(this);
+    fake->failPut = true;   // PUT 上送失败 → 离线提示 + 非远端权威
+
+    const auto ballsBefore = topLevels<FloatingBall>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());   // 启动 GET 成功（远端权威）
+
+    FloatingBall *ball = newTopLevels(ballsBefore).value(0);
+    QVERIFY(ball != nullptr);
+    const auto centersBefore = topLevels<MonitorCenterDialog>();
+    emit ball->monitorCenterRequested();
+    MonitorCenterDialog *center =
+        newTopLevels(centersBefore).value(0);
+    QVERIFY(center != nullptr);
+    QCheckBox *master = center->findChild<QCheckBox *>(
+        QStringLiteral("monitorMasterCheck"));
+    QVERIFY(master != nullptr);
+    MonitorController *controller = app.findChild<MonitorController *>();
+    QVERIFY(controller != nullptr);
+
+    // 用户改动：总闸开启 → PUT 失败 → 离线提示显示。
+    master->setChecked(true);
+    QTRY_COMPARE(fake->updateMonitorConfigCalls, 1);
+    QLabel *hint = center->findChild<QLabel *>(
+        QStringLiteral("monitorOfflineHint"));
+    QVERIFY(hint != nullptr);
+    QVERIFY(hint->isVisible());
+
+    // 断线恢复：重连后重拉 GET（远端仍为旧值 enabled=false）。
+    fake->failPut = false;
+    fake->monitorEnabled = false;
+    emit fake->connectionStateChanged(ConnectionState::Connected);
+    QCOMPARE(fake->monitorConfigCalls, 2);
+
+    // dirty 仍为 true：GET 不覆盖用户本地改动（enabled 保持 true）。
+    QVERIFY(controller->isEnabled());
+
+    app.shutdown();
 }
 
 QTEST_MAIN(TestAppNavigation)

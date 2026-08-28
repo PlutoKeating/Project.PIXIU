@@ -30,6 +30,7 @@ class SyncController;
 class EventRouter;
 class MonitorController;
 class MonitorCenterDialog;
+class QTimer;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -109,6 +110,15 @@ private:
     bool m_monitorRemoteAuthoritative = false;
     // 监控配置请求（启动 GET / 面板 PUT）在途标记：失败路由到面板离线提示。
     bool m_monitorConfigPending = false;
+    // 暂存待确认的 PUT 载荷（回声校验：仅当响应与暂存载荷一致才整体应用，
+    // 防乱序旧回声/过时 GET 覆盖用户最新改动）。空对象 = 无在途 PUT。
+    QJsonObject m_monitorPendingPutPayload;
+    // 用户是否已改动面板（configEdited 发射时置 true；匹配回声应用后
+    // 复位）。GET 响应到达时若为 true 则跳过应用（用户本地改动优先）。
+    bool m_monitorConfigDirty = false;
+    // configEdited → PUT 的去抖定时器（合并连发，减少并发 PUT；
+    // 定时器 pending 时只更新暂存载荷）。
+    QTimer *m_configPushTimer = nullptr;
     struct Private;
     QScopedPointer<Private> d;
 
@@ -123,6 +133,11 @@ private:
     void handleMonitorConfigResult(const QJsonObject &config);
     void handleMonitorLogResult(const QJsonArray &events);
     void pushMonitorConfig();
+    // 构建全量 PUT 载荷（与 GET 响应同形状：enabled/sources/directories）。
+    QJsonObject buildMonitorConfigPayload() const;
+    // 将远端配置整体应用到控制器（enabled / 四数据源 / 目录）+ 置远端
+    // 权威标记 + 清除面板离线提示。
+    void applyMonitorConfig(const QJsonObject &config);
 };
 
 #endif // PIXIU_APP_H

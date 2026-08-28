@@ -37,6 +37,7 @@
 #include <QRect>
 #include <QScreen>
 #include <QStringList>
+#include <QTimer>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
 
@@ -58,6 +59,13 @@ void PixiuApp::setTransportForTest(BackendTransport *transport)
 {
     // 仅测试用：须在 start() 前调用，start() 检测到已注入则不再创建
     // HttpBackendTransport。transport 所有权仍归调用方（测试对象）。
+    // start() 之后 m_transport 已就位，此时再替换会静默丢掉既有
+    // transport（所有权归属混乱）——拒绝替换并告警，防止静默覆盖。
+    if (m_transport && m_transport != transport) {
+        qCWarning(lcApp) << "setTransportForTest: transport already set; "
+                            "refusing to replace";
+        return;
+    }
     m_transport = transport;
 }
 
@@ -275,6 +283,11 @@ bool PixiuApp::start()
                     qCInfo(lcApp) << "offline guidance shown";
                 } else if (state == ConnectionState::Connected) {
                     m_offlineGuidanceShown = false;
+                    // 断线恢复对账：远端配置尚未权威（离线期间拉取/上送
+                    // 失败）时重新拉取，避免恢复后本地与远端永久脱节。
+                    if (!m_monitorRemoteAuthoritative) {
+                        loadRemoteMonitorConfig();
+                    }
                 }
             });
 
@@ -351,6 +364,10 @@ bool PixiuApp::start()
                     // 已打开的面板状态行提示「离线，仅本地生效」。
                     m_monitorConfigPending = false;
                     m_monitorRemoteAuthoritative = false;
+                    // 本次 PUT 已失败、无匹配回声可等：清空暂存载荷，避免
+                    // 过时载荷毒化后续 GET 处理（GET 失败时载荷本就为空，
+                    // 此清空为空操作，覆盖两种场景）。
+                    m_monitorPendingPutPayload = QJsonObject();
                     if (m_monitorCenter) {
                         m_monitorCenter->setOfflineHint(true);
                     }
@@ -792,6 +809,11 @@ void PixiuApp::openMonitorCenter()
                         m_transport->monitorLog(limit, offset);
                     }
                 });
+        // 配置拉取/上送失败可能发生在面板创建之前——创建时按远端权威
+        // 标记（且无在途请求，避免「GET 尚未返回」的瞬态误报）初始化
+        // 离线提示，保证「失败发生在面板创建前」后面板打开即有提示。
+        m_monitorCenter->setOfflineHint(!m_monitorRemoteAuthoritative
+                                        && !m_monitorConfigPending);
     }
     m_monitorCenter->showAndFocus();
 }
@@ -832,6 +854,96 @@ void PixiuApp::handleMonitorConfigResult(const QJsonObject &config)
     if (!m_monitorController) {
         return;
     }
+    if (!m_monitorPendingPutPayload.isEmpty()) {
+        // 暂存载荷非空 = 在途 PUT（或与在途 PUT 竞争的 GET 响应）：
+        // 回声校验——仅当响应与暂存载荷一致才整体应用；乱序旧回声/
+        // 过时 GET 不覆盖用户最新改动，不匹配则跳过应用、保留暂存
+        // 等待匹配回声。
+        const bool echoMatches =
+            config.value(QStringLiteral("enabled"))
+                == m_monitorPendingPutPayload.value(QStringLiteral("enabled"))
+            && config.value(QStringLiteral("sources"))
+                == m_monitorPendingPutPayload.value(QStringLiteral("sources"))
+            && config.value(QStringLiteral("directories"))
+                == m_monitorPendingPutPayload.value(
+                    QStringLiteral("directories"));
+        if (echoMatches) {
+            applyMonitorConfig(config);
+            m_monitorPendingPutPayload = QJsonObject();
+            // 用户改动已确认上送：读后写竞态窗口关闭，后续 GET 可正常应用。
+            m_monitorConfigDirty = false;
+        }
+        return;
+    }
+    // 无暂存载荷 = 启动/断线恢复拉取（GET）响应：仅当用户尚未改动面板
+    // 时应用（用户本地改动优先）；已改动则跳过应用，仅更新远端权威标记。
+    if (m_monitorConfigDirty) {
+        m_monitorRemoteAuthoritative = true;
+        return;
+    }
+    applyMonitorConfig(config);
+}
+
+void PixiuApp::handleMonitorLogResult(const QJsonArray &events)
+{
+    if (m_monitorCenter) {
+        m_monitorCenter->appendRemoteLog(events);
+    }
+}
+
+void PixiuApp::pushMonitorConfig()
+{
+    if (!m_transport || !m_monitorController) {
+        return;
+    }
+    // 用户本地改动优先于尚未到达的 GET 响应（读后写竞态防护，
+    // handleMonitorConfigResult 据此跳过过时 GET 的应用）。
+    m_monitorConfigDirty = true;
+    // 去抖：连发改动合并为一次 PUT——定时器 pending 时只更新暂存载荷，
+    // 减少并发 PUT；定时器触发时以最新暂存载荷发出。
+    m_monitorPendingPutPayload = buildMonitorConfigPayload();
+    if (!m_configPushTimer) {
+        m_configPushTimer = new QTimer(this);
+        m_configPushTimer->setSingleShot(true);
+        m_configPushTimer->setInterval(300);
+        connect(m_configPushTimer, &QTimer::timeout, this, [this]() {
+            if (m_transport && !m_monitorPendingPutPayload.isEmpty()) {
+                m_monitorConfigPending = true;
+                m_transport->updateMonitorConfig(m_monitorPendingPutPayload);
+            }
+        });
+    }
+    if (!m_configPushTimer->isActive()) {
+        m_configPushTimer->start();
+    }
+}
+
+QJsonObject PixiuApp::buildMonitorConfigPayload() const
+{
+    // 全量提交（契约要求，不做局部 patch）：形状与 GET 响应一致。
+    QJsonObject sources;
+    for (int i = 0; i < MonitorController::sourceCount(); ++i) {
+        const auto source = static_cast<MonitorSource>(i);
+        sources.insert(MonitorController::sourceKey(source),
+                       m_monitorController->isSourceEnabled(source));
+    }
+    QJsonArray dirs;
+    for (const QString &dir : m_monitorController->directories()) {
+        dirs.append(dir);
+    }
+    QJsonObject payload;
+    payload.insert(QStringLiteral("enabled"),
+                   m_monitorController->isEnabled());
+    payload.insert(QStringLiteral("sources"), sources);
+    payload.insert(QStringLiteral("directories"), dirs);
+    return payload;
+}
+
+void PixiuApp::applyMonitorConfig(const QJsonObject &config)
+{
+    if (!m_monitorController) {
+        return;
+    }
     // 远端配置优先：覆盖控制器状态（enabled / 四数据源 / 目录）。
     // 控制器 set* 同步落盘本地键，作为离线回退缓存。
     m_monitorController->setEnabled(
@@ -856,38 +968,6 @@ void PixiuApp::handleMonitorConfigResult(const QJsonObject &config)
     if (m_monitorCenter) {
         m_monitorCenter->setOfflineHint(false);
     }
-}
-
-void PixiuApp::handleMonitorLogResult(const QJsonArray &events)
-{
-    if (m_monitorCenter) {
-        m_monitorCenter->appendRemoteLog(events);
-    }
-}
-
-void PixiuApp::pushMonitorConfig()
-{
-    if (!m_transport || !m_monitorController) {
-        return;
-    }
-    // 全量提交（契约要求，不做局部 patch）：形状与 GET 响应一致。
-    QJsonObject sources;
-    for (int i = 0; i < MonitorController::sourceCount(); ++i) {
-        const auto source = static_cast<MonitorSource>(i);
-        sources.insert(MonitorController::sourceKey(source),
-                       m_monitorController->isSourceEnabled(source));
-    }
-    QJsonArray dirs;
-    for (const QString &dir : m_monitorController->directories()) {
-        dirs.append(dir);
-    }
-    QJsonObject payload;
-    payload.insert(QStringLiteral("enabled"),
-                   m_monitorController->isEnabled());
-    payload.insert(QStringLiteral("sources"), sources);
-    payload.insert(QStringLiteral("directories"), dirs);
-    m_monitorConfigPending = true;
-    m_transport->updateMonitorConfig(payload);
 }
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)

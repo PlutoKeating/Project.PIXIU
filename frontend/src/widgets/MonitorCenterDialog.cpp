@@ -288,8 +288,11 @@ void MonitorCenterDialog::rebuildDirectoryList()
 
 void MonitorCenterDialog::appendRemoteLog(const QJsonArray &entries)
 {
-    for (const QJsonValue &value : entries) {
-        const QJsonObject entry = value.toObject();
+    // 契约 §2：服务端返回「最新在前」。逆序遍历（先追加最旧、最后追加
+    // 最新），使列表「底部最新」与本地日志/capture_event 一致——
+    // scrollToBottom 自然落在最新条目上。
+    for (int i = entries.size() - 1; i >= 0; --i) {
+        const QJsonObject entry = entries.at(i).toObject();
         const qint64 ts =
             entry.value(QStringLiteral("ts")).toVariant().toLongLong();
         const QString source =
@@ -310,9 +313,9 @@ void MonitorCenterDialog::appendRemoteLog(const QJsonArray &entries)
         // 「[MM-dd HH:mm] 文案」；无 id 的条目省略 id 部分。
         const QString idsSuffix = ids.isEmpty()
                                       ? QString()
-                                      : QStringLiteral("（%1）")
-                                            .arg(ids.join(QStringLiteral("、")));
-        appendLogLine(ts, source, summary, idsSuffix);
+                                      : tr("（%1）").arg(ids.join(tr("、")));
+        appendLogLine(ts, source, summary, idsSuffix,
+                      ids.join(QStringLiteral("|")));
     }
     m_logList->scrollToBottom();
 }
@@ -323,7 +326,7 @@ void MonitorCenterDialog::appendCaptureEvent(const QString &source,
                                              qint64 ts)
 {
     // capture_event 与本地日志同列表渲染；status 不参与显示文案。
-    appendLogLine(ts, source, summary, QString());
+    appendLogLine(ts, source, summary, QString(), QString());
     m_logList->scrollToBottom();
 }
 
@@ -349,12 +352,17 @@ void MonitorCenterDialog::requestFirstLogPage()
 
 void MonitorCenterDialog::appendLogLine(qint64 ts, const QString &source,
                                         const QString &summary,
-                                        const QString &idsSuffix)
+                                        const QString &idsSuffix,
+                                        const QString &idKey)
 {
     // 远端分页与实时 WS 可能重复送达同一事件：按键去重，只追加一次。
-    const QString key = QStringLiteral("%1|%2|%3")
-                            .arg(ts)
-                            .arg(source, summary);
+    // 有 evidence_id/knowledge_id 时键用 ts|id（同 ts/source/summary 的
+    // 不同事件不互相误杀）；本地/实时无 id 时保持 ts|source|summary。
+    const QString key = idKey.isEmpty()
+                            ? QStringLiteral("%1|%2|%3")
+                                  .arg(ts)
+                                  .arg(source, summary)
+                            : QStringLiteral("%1|%2").arg(ts).arg(idKey);
     if (m_logKeys.contains(key)) {
         return;
     }

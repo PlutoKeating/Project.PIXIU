@@ -31,6 +31,8 @@ private slots:
     void logTabRendersEntries();
     void externalPauseSyncsOpenDialog();
     void appendRemoteLogRendersServerEntries();
+    void remoteLogNewestFirstRendersBottomNewest();
+    void appendRemoteLogDedupKeyIncludesId();
     void offlineHintShownWhenSet();
     void captureEventAppendsToLogOnce();
     void dialogMutationEmitsConfigEdited();
@@ -208,7 +210,111 @@ void TestMonitorCenter::appendRemoteLogRendersServerEntries()
 {
     // A-3：服务端分页记录（{ts,source,status,summary,evidence_id,
     // knowledge_id}）渲染到活动记录列表；显示「[MM-dd HH:mm] 文案」，
-    // 无 id 的条目省略 id 部分。
+    // 无 id 的条目省略 id 部分。输入按契约「最新在前」。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    MonitorCenterDialog dialog(&controller);
+    dialog.show();
+
+    QTabWidget *tabs = dialog.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    tabs->setCurrentIndex(1);
+    QListWidget *logList =
+        dialog.findChild<QListWidget *>(QStringLiteral("monitorLogList"));
+    QVERIFY(logList != nullptr);
+    const int before = logList->count();
+
+    QJsonArray entries;
+    // 最新（ts 较大）在前。
+    entries.append(QJsonObject{
+        {QStringLiteral("ts"), 1756080060},
+        {QStringLiteral("source"), QStringLiteral("system")},
+        {QStringLiteral("status"), QStringLiteral("state_changed")},
+        {QStringLiteral("summary"), QStringLiteral("监控配置已更新")},
+    });
+    // 更旧（ts 较小）在后；带 evidence_id / knowledge_id：显示 id 部分。
+    entries.append(QJsonObject{
+        {QStringLiteral("ts"), 1756080000},
+        {QStringLiteral("source"), QStringLiteral("directory")},
+        {QStringLiteral("status"), QStringLiteral("ingested")},
+        {QStringLiteral("summary"), QStringLiteral("记住文件 支出清单.xlsx")},
+        {QStringLiteral("evidence_id"), QStringLiteral("evd_01")},
+        {QStringLiteral("knowledge_id"), QStringLiteral("knw_02")},
+    });
+
+    dialog.appendRemoteLog(entries);
+
+    QCOMPARE(logList->count(), before + 2);
+    // 逆序渲染：列表顺序为最旧 → 最新（底部最新）。
+    const QString firstTime = QDateTime::fromSecsSinceEpoch(1756080000)
+                                  .toString(QStringLiteral("MM-dd HH:mm"));
+    QCOMPARE(logList->item(before)->text(),
+             QStringLiteral("[%1] 记住文件 支出清单.xlsx（evd_01、knw_02）")
+                 .arg(firstTime));
+    const QString secondTime = QDateTime::fromSecsSinceEpoch(1756080060)
+                                   .toString(QStringLiteral("MM-dd HH:mm"));
+    QCOMPARE(logList->item(before + 1)->text(),
+             QStringLiteral("[%1] 监控配置已更新").arg(secondTime));
+}
+
+void TestMonitorCenter::remoteLogNewestFirstRendersBottomNewest()
+{
+    // A-3 修复（排序方向）：契约 §2 日志「最新在前」，但若按数组序 addItem
+    // 会把视野停在最旧条目——修复后逆序渲染，列表顺序为最旧→最新
+    // （底部最新，与本地日志/capture_event 一致），scrollToBottom 落在最新。
+    {
+        QSettings raw;
+        raw.clear();
+    }
+    AppSettings settings;
+    MonitorController controller(&settings);
+    MonitorCenterDialog dialog(&controller);
+    dialog.show();
+
+    QTabWidget *tabs = dialog.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    tabs->setCurrentIndex(1);
+    QListWidget *logList =
+        dialog.findChild<QListWidget *>(QStringLiteral("monitorLogList"));
+    QVERIFY(logList != nullptr);
+    const int before = logList->count();
+
+    QJsonArray entries;
+    // 契约输入：最新在前（ts 大者在前）。
+    entries.append(QJsonObject{
+        {QStringLiteral("ts"), 1756080060},
+        {QStringLiteral("source"), QStringLiteral("system")},
+        {QStringLiteral("status"), QStringLiteral("state_changed")},
+        {QStringLiteral("summary"), QStringLiteral("监控配置已更新")},
+    });
+    entries.append(QJsonObject{
+        {QStringLiteral("ts"), 1756080000},
+        {QStringLiteral("source"), QStringLiteral("directory")},
+        {QStringLiteral("status"), QStringLiteral("ingested")},
+        {QStringLiteral("summary"), QStringLiteral("记住文件 支出清单.xlsx")},
+    });
+    dialog.appendRemoteLog(entries);
+
+    QCOMPARE(logList->count(), before + 2);
+    const QString olderTime = QDateTime::fromSecsSinceEpoch(1756080000)
+                                  .toString(QStringLiteral("MM-dd HH:mm"));
+    const QString newerTime = QDateTime::fromSecsSinceEpoch(1756080060)
+                                  .toString(QStringLiteral("MM-dd HH:mm"));
+    // 列表顺序：最旧 → 最新（item(before)=最旧，item(before+1)=最新）。
+    QCOMPARE(logList->item(before)->text(),
+             QStringLiteral("[%1] 记住文件 支出清单.xlsx").arg(olderTime));
+    QCOMPARE(logList->item(before + 1)->text(),
+             QStringLiteral("[%1] 监控配置已更新").arg(newerTime));
+}
+
+void TestMonitorCenter::appendRemoteLogDedupKeyIncludesId()
+{
+    // A-3 修复（去重键含 id）：同一 ts/source/summary 但 evidence_id
+    // 不同的两条事件不再互相误杀，都应渲染。
     {
         QSettings raw;
         raw.clear();
@@ -233,28 +339,18 @@ void TestMonitorCenter::appendRemoteLogRendersServerEntries()
         {QStringLiteral("status"), QStringLiteral("ingested")},
         {QStringLiteral("summary"), QStringLiteral("记住文件 支出清单.xlsx")},
         {QStringLiteral("evidence_id"), QStringLiteral("evd_01")},
-        {QStringLiteral("knowledge_id"), QStringLiteral("knw_02")},
     });
-    // 无 evidence_id / knowledge_id：省略 id 部分（如 ignored / state_changed）。
     entries.append(QJsonObject{
-        {QStringLiteral("ts"), 1756080060},
-        {QStringLiteral("source"), QStringLiteral("system")},
-        {QStringLiteral("status"), QStringLiteral("state_changed")},
-        {QStringLiteral("summary"), QStringLiteral("监控配置已更新")},
+        {QStringLiteral("ts"), 1756080000},
+        {QStringLiteral("source"), QStringLiteral("directory")},
+        {QStringLiteral("status"), QStringLiteral("ingested")},
+        {QStringLiteral("summary"), QStringLiteral("记住文件 支出清单.xlsx")},
+        {QStringLiteral("evidence_id"), QStringLiteral("evd_02")},
     });
-
     dialog.appendRemoteLog(entries);
 
+    // 同 ts/source/summary、不同 evidence_id：两条都渲染。
     QCOMPARE(logList->count(), before + 2);
-    const QString firstTime = QDateTime::fromSecsSinceEpoch(1756080000)
-                                  .toString(QStringLiteral("MM-dd HH:mm"));
-    QCOMPARE(logList->item(before)->text(),
-             QStringLiteral("[%1] 记住文件 支出清单.xlsx（evd_01、knw_02）")
-                 .arg(firstTime));
-    const QString secondTime = QDateTime::fromSecsSinceEpoch(1756080060)
-                                   .toString(QStringLiteral("MM-dd HH:mm"));
-    QCOMPARE(logList->item(before + 1)->text(),
-             QStringLiteral("[%1] 监控配置已更新").arg(secondTime));
 }
 
 void TestMonitorCenter::offlineHintShownWhenSet()

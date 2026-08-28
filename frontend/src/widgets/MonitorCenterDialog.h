@@ -57,8 +57,12 @@ private slots:
 private:
     void rebuildDirectoryList();
     void requestFirstLogPage();
+    // 追加一条日志；idsSuffix 为显示用的 id 后缀（如「（evd_01、knw_02）」），
+    // idKey 为去重键片段：有 evidence_id/knowledge_id 时传 id 串（键用
+    // ts|id），本地/实时无 id 时传空（键保持 ts|source|summary）。
     void appendLogLine(qint64 ts, const QString &source,
-                       const QString &summary, const QString &idsSuffix);
+                       const QString &summary, const QString &idsSuffix,
+                       const QString &idKey);
 
     MonitorController *m_controller = nullptr;
     QCheckBox *m_masterCheck = nullptr;
@@ -70,8 +74,8 @@ private:
     QLabel *m_offlineHint = nullptr;
     // 活动记录首页是否已懒加载（防重复请求与重复渲染）。
     bool m_remoteLogLoaded = false;
-    // 已渲染条目的去重键（ts|source|summary）：远端分页与实时 WS 可能
-    // 重复送达同一事件，只追加一次。
+    // 已渲染条目的去重键（ts|source|summary，有 id 时 ts|id）：远端分页
+    // 与实时 WS 可能重复送达同一事件，只追加一次。
     QSet<QString> m_logKeys;
 };
 
