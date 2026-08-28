@@ -154,18 +154,19 @@
   virtual void monitorConfig();
   // PUT /monitor/config（payload 即 §1 请求体）；成功同样经 configResult 回包。
   virtual void updateMonitorConfig(const QJsonObject &payload);
-  // GET /monitor/log?limit=&offset= → logResult(events)。
+  // GET /monitor/log?limit=&offset= → monitorLogResult(events)。
   virtual void monitorLog(int limit, int offset);
 
   signals:
   void configResult(const QJsonObject &config);   // 含 400 时由 errorOccurred 报告
-  void logResult(const QJsonArray &events);
+  void monitorLogResult(const QJsonArray &events);
   ```
 
 - **WS 事件路由**：`capture_event` 经既有
   `frontend/src/app/EventRouter`（`backendEvent` → `handleEvent`）扩展分发，
-  新增语义信号 `captureEvent(const QJsonObject &data)`；未知/残缺帧继续
-  按「安全忽略」处理，不断连、不崩溃。UI 层只订阅语义信号，
+  新增语义信号 `captureEvent(QString source, QString status, QString summary,
+  qint64 ts)`（与 `EventRouter.h` 一致，只展开契约保证存在的四字段）；未知/残缺
+  帧继续按「安全忽略」处理，不断连、不崩溃。UI 层只订阅语义信号，
   不感知 WS 原始 payload。
 
 ---

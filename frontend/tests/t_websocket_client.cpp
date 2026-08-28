@@ -12,7 +12,7 @@
 // WebSocketClient 契约测试：以本地 QWebSocketServer 模拟后端 /events。
 //
 // 覆盖：HTTP 基址到 ws://…/events 的映射、控制事件不抛业务事件、
-// memory_ready 正常上抛、未知事件/畸形帧安全忽略。
+// memory_ready / capture_event 正常上抛、未知事件/畸形帧安全忽略。
 class TestWebSocketClient : public QObject
 {
     Q_OBJECT
@@ -24,6 +24,7 @@ private slots:
     void httpUrlMapsToWsEvents();
     void controlEventsAreNotForwarded();
     void memoryReadyIsForwarded();
+    void captureEventIsForwarded();
     void unknownEventIsIgnored();
     void malformedFrameIsIgnored();
     void reconnectAfterServerDrop();
@@ -117,6 +118,31 @@ void TestWebSocketClient::memoryReadyIsForwarded()
              QStringLiteral("knw_1"));
     QCOMPARE(data.value(QStringLiteral("title")).toString(),
              QStringLiteral("测试记忆"));
+}
+
+void TestWebSocketClient::captureEventIsForwarded()
+{
+    QSignalSpy spy(m_client, &WebSocketClient::eventReceived);
+    connectClientAndWaitServer();
+
+    // capture_event 已在 WebSocketClient 白名单（kKnownEvents）中；正向确认
+    // 其不被 control/unknown 过滤路径吞掉（误删白名单条目时本用例即变红）。
+    sendFrame("{\"event\":\"capture_event\",\"data\":{"
+              "\"source\":\"directory\",\"status\":\"ingested\","
+              "\"summary\":\"记住文件 支出清单.xlsx\",\"ts\":1756080000}}");
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+
+    const QJsonObject event = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(event.value(QStringLiteral("event")).toString(),
+             QStringLiteral("capture_event"));
+    const QJsonObject data = event.value(QStringLiteral("data")).toObject();
+    QCOMPARE(data.value(QStringLiteral("source")).toString(),
+             QStringLiteral("directory"));
+    QCOMPARE(data.value(QStringLiteral("status")).toString(),
+             QStringLiteral("ingested"));
+    QCOMPARE(data.value(QStringLiteral("summary")).toString(),
+             QStringLiteral("记住文件 支出清单.xlsx"));
+    QCOMPARE(data.value(QStringLiteral("ts")).toDouble(), 1756080000.0);
 }
 
 void TestWebSocketClient::unknownEventIsIgnored()
