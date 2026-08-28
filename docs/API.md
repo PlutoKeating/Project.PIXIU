@@ -32,11 +32,16 @@
 | GET | `/sync/peers` | 节点列表 | ✅ 已实现（2026-08-10） |
 | GET | `/sync/status` | 同步状态 | ✅ 已实现（2026-08-10） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
-| WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部四类事件） |
+| GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
+| PUT | `/monitor/config` | 写入监控配置（全量提交，热生效） | ✅ 已实现（2026-08-26） |
+| GET | `/monitor/log` | 监控活动日志（分页，最新在前） | ✅ 已实现（2026-08-26） |
+| WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部五类事件） |
 
-> 状态说明（2026-08-24）：16 个 REST 端点已全部按本文档契约真实实现；
-> 四类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
-> sync_event）均已广播。
+> 状态说明（2026-08-26）：19 个 REST 端点已全部按本文档契约真实实现；
+> 五类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
+> sync_event / capture_event）均已广播。
+> 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
+> 转正（Module A + Module C 双方于 2026-08-26 确认）。
 
 ---
 
@@ -416,6 +421,84 @@
 }
 ```
 
+### 3.16 GET /monitor/config
+
+读取当前监控配置（daemon 视角的全量状态）。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "enabled": false,
+  "sources": {
+    "directory": false,
+    "clipboard": false,
+    "behavior": false,
+    "screenshot": false
+  },
+  "directories": ["/home/u/Downloads"]
+}
+```
+
+字段说明：`enabled` 全局总闸（关闭时各数据源开关状态保留）；`sources`
+四类数据源开关，键名固定 `directory | clipboard | behavior | screenshot`；
+`directories` 监视目录绝对路径清单（去重、非空）。
+
+### 3.17 PUT /monitor/config
+
+写入监控配置，请求体结构与 GET 响应一致（**全量提交，不做局部 patch**）。
+服务端持久化配置并对运行中的 daemon **热生效**（开启/关闭采集器、增删
+inotify 监视点），无需重启。每次成功写入追加一条 `state_changed` 活动日志
+并广播 `capture_event`。
+
+**请求体 / 响应体（200，返回归一化后的完整配置）：**
+
+```jsonc
+{
+  "enabled": true,
+  "sources": {
+    "directory": true,
+    "clipboard": false,
+    "behavior": false,
+    "screenshot": false
+  },
+  "directories": ["/home/u/Downloads"]
+}
+```
+
+**错误响应（400）：** 未知 source 名、字段类型错误、目录为相对路径等 →
+`{"error": "INVALID_REQUEST", "message": "...", "request_id": "req_..."}`。
+
+### 3.18 GET /monitor/log
+
+分页查询监控活动记录（按时间倒序，最新在前）。`limit` 缺省 100、上限 500；
+`offset` 缺省 0。空日志返回 `{"events": []}` 而非 404。
+
+**查询参数：** `limit`（1–500，默认 100）、`offset`（≥0，默认 0）
+
+**响应体（200）：**
+
+```jsonc
+{
+  "events": [
+    {
+      "ts": 1756080000,
+      "source": "directory|clipboard|behavior|screenshot|system",
+      "status": "ingested|sensitive_quarantined|ignored|state_changed",
+      "summary": "记住文件 支出清单.xlsx",
+      "evidence_id": "evd_...",
+      "knowledge_id": "knw_..."
+    }
+  ]
+}
+```
+
+字段说明：`ts` Unix 秒时间戳；`source` 含 `system`（监控自身状态变更，
+如总闸开闭）；`status` 四态（ingested / sensitive_quarantined / ignored /
+state_changed）；`evidence_id`/`knowledge_id` 事件未产生入库时允许缺失或为
+null。`summary` 由服务端生成用户可读文案，**不含敏感原文全文**（隔离类条目
+只给脱敏摘要）。
+
 ---
 
 ## 4. WebSocket 事件
@@ -481,6 +564,29 @@
   }
 }
 ```
+
+### 4.5 capture_event ✅ 已实现（2026-08-26，监视捕获/状态变更时已广播）
+
+每次目录捕获（ingested / sensitive_quarantined / ignored）与监控配置变更
+（state_changed）推送；`data` 与 §3.18 日志条目同构，`knowledge_id` 可缺
+（事件未产生入库时为 null）。
+
+```jsonc
+{
+  "event": "capture_event",
+  "data": {
+    "source": "directory",
+    "status": "ingested",
+    "summary": "记住文件 支出清单.xlsx",
+    "ts": 1756080000,
+    "evidence_id": "evd_...",
+    "knowledge_id": "knw_..."
+  }
+}
+```
+
+> 前端行为：普通事件 → 角标 +1（可选）+ 监控中心「活动记录」实时追加；
+> `sensitive_quarantined` 额外弹系统通知（隔离区查看/恢复交互属批次③范围）。
 
 ---
 

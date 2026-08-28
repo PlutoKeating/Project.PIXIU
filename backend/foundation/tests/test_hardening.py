@@ -163,6 +163,7 @@ def test_api_error_contract_violation_and_request_id(tmp_path, monkeypatch):
             self.sync_device_name = "hardening-test"
             self.sync_domain = "shared:home"
             self.sync_key_passphrase = "hardening-test-passphrase-0123"
+            self.monitor_enabled = False  # 不启动 monitor runtime
 
     monkeypatch.setattr(di_module, "settings", _FakeSettings(str(tmp_path / "pixiu.db")))
     di_module._db = None

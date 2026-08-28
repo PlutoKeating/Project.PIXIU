@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import sqlite3 as _sqlite3
 
 import aiosqlite
@@ -22,6 +23,8 @@ from ..core.config import settings
 from ..core.logger import get_logger
 from .dbus_service import PixiuMemoryHandler
 from ..flow import FlowService, SqliteFlowStore
+from ..monitor.config_store import MonitorConfigStore
+from ..monitor.watcher import DirectoryWatcher
 from ..retrieval import RetrievalService
 from ..storage.migrations import apply_pending
 from ..storage.repository import (
@@ -34,11 +37,21 @@ from ..storage.repository import (
 from ..sync import SqliteSyncStore, SyncService
 from ..sync.runtime import SyncRuntime, create_sync_runtime
 from ..sync.materializer import FoundationMaterializer
+from .monitor_log import (
+    MonitorLogStore,
+    broadcast_capture_event,
+)
 
 _log = get_logger(__name__)
 
 _db: aiosqlite.Connection | None = None
 _sync_runtime: SyncRuntime | None = None
+_monitor_config_store: MonitorConfigStore | None = None
+_monitor_log_store: MonitorLogStore | None = None
+_monitor_runtime: DirectoryWatcher | None = None
+#: watcher 回调（watch 线程）把 capture_event 广播调度回的主事件循环；
+#: 由 start_monitor_runtime（_lifespan，主循环）注册。
+_main_loop: asyncio.AbstractEventLoop | None = None
 
 
 async def get_db() -> aiosqlite.Connection:
@@ -221,6 +234,148 @@ async def stop_sync_runtime() -> None:
         await _sync_runtime.stop()
         _sync_runtime = None
         _log.info("Sync networking stopped")
+
+
+# ─── 监视服务（批次② BE-3：配置/日志存储单例 + runtime 生命周期）──────
+
+def get_monitor_config_store() -> MonitorConfigStore:
+    """监视配置存储单例（惰性；db 路径取自 settings，测试 monkeypatch 后置 None）。"""
+    global _monitor_config_store
+    if _monitor_config_store is None:
+        _monitor_config_store = MonitorConfigStore(db_path=settings.db_path)
+    return _monitor_config_store
+
+
+def get_monitor_log_store() -> MonitorLogStore:
+    """monitor_log 活动日志存储单例（惰性；同上）。"""
+    global _monitor_log_store
+    if _monitor_log_store is None:
+        _monitor_log_store = MonitorLogStore(db_path=settings.db_path)
+    return _monitor_log_store
+
+
+def _schedule_capture_broadcast(
+    *,
+    source: str,
+    status: str,
+    summary: str,
+    evidence_id: str | None,
+    knowledge_id: str | None,
+    ts: int,
+) -> None:
+    """把 capture_event 广播调度回主事件循环（watcher 回调运行在 watch 线程）。
+
+    WebSocket 连接绑定主循环，跨线程直发不安全；主循环未注册（测试直连）
+    时静默跳过广播，日志已由调用方落库。
+    """
+    loop = _main_loop
+    if loop is None or not loop.is_running():
+        return
+
+    def _run() -> None:
+        try:
+            asyncio.ensure_future(
+                broadcast_capture_event(
+                    source=source,
+                    status=status,
+                    summary=summary,
+                    evidence_id=evidence_id,
+                    knowledge_id=knowledge_id,
+                    ts=ts,
+                )
+            )
+        except Exception:
+            _log.exception("capture_event broadcast scheduling failed")
+
+    try:
+        loop.call_soon_threadsafe(_run)
+    except RuntimeError:
+        _log.exception("monitor main loop unavailable, skip capture_event broadcast")
+
+
+def _make_capture_callback(log_store: MonitorLogStore):
+    """watcher on_capture 回调：短同步写 monitor_log + 调度广播回主循环。
+
+    回调在 watch 线程的 asyncio 循环上执行（watcher._emit），必须快速返回：
+    日志写为单行短连接 INSERT；广播经 call_soon_threadsafe 调度。
+    """
+
+    def _on_capture(
+        *,
+        source: str,
+        status: str,
+        summary: str,
+        evidence_id: str | None = None,
+        knowledge_id: str | None = None,
+        ts: int | None = None,
+    ) -> None:
+        try:
+            log_store.write_event(
+                source=source,
+                status=status,
+                summary=summary,
+                evidence_id=evidence_id,
+                knowledge_id=knowledge_id,
+                ts=ts,
+            )
+        except Exception:
+            _log.exception("monitor_log write failed (source=%s)", source)
+        try:
+            _schedule_capture_broadcast(
+                source=source,
+                status=status,
+                summary=summary,
+                evidence_id=evidence_id,
+                knowledge_id=knowledge_id,
+                ts=ts,
+            )
+        except Exception:
+            _log.exception("capture_event broadcast failed (source=%s)", source)
+
+    return _on_capture
+
+
+async def get_monitor_runtime() -> DirectoryWatcher:
+    """监视运行时（懒创建、未 start）；端点不直接使用，由 _lifespan 启停。"""
+    global _monitor_runtime
+    if _monitor_runtime is None:
+        from ..monitor.runtime import create_monitor_runtime
+
+        store = get_monitor_config_store()
+        log_store = get_monitor_log_store()
+        _monitor_runtime = await create_monitor_runtime(
+            store,
+            callbacks=[_make_capture_callback(log_store)],
+        )
+        _log.info("Monitor runtime created")
+    return _monitor_runtime
+
+
+async def start_monitor_runtime() -> DirectoryWatcher | None:
+    """_lifespan 启动：PIXIU_MONITOR_ENABLED 时创建并 start watcher。
+
+    启动仅受环境总闸控制；config.enabled=false 时 watcher 照常运行、
+    effective=false 不捕获（热生效由 store.subscribe 驱动）。
+    """
+    global _main_loop
+    if not settings.monitor_enabled:
+        return None
+    _main_loop = asyncio.get_running_loop()
+    watcher = await get_monitor_runtime()
+    watcher.start()
+    _log.info("Monitor runtime started")
+    return watcher
+
+
+async def stop_monitor_runtime() -> None:
+    global _monitor_runtime, _main_loop
+    if _monitor_runtime is not None:
+        try:
+            _monitor_runtime.stop()
+        finally:
+            _monitor_runtime = None
+            _main_loop = None
+        _log.info("Monitor runtime stopped")
 
 
 async def get_dbus_handler(

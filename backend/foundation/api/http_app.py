@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 import time
 from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 
 from ..core.models import SourceType
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
+from ..monitor.config_store import InvalidMonitorConfig
 from ..sync import PairingError, PairingMethod, PeerNotFound
 from .di import (
     get_conflict_repo,
@@ -32,6 +33,8 @@ from .di import (
     get_ingestion_service,
     get_knowledge_service,
     get_knowledge_repo,
+    get_monitor_config_store,
+    get_monitor_log_store,
     get_ocr_service,
     get_optional_sync_service,
     get_preference_repo,
@@ -39,17 +42,26 @@ from .di import (
     get_retrieval_service,
     get_security_service,
     get_sync_service,
+    start_monitor_runtime,
     start_sync_runtime,
+    stop_monitor_runtime,
     stop_sync_runtime,
+)
+from .monitor_log import (
+    DEFAULT_PAGE_SIZE,
+    MAX_PAGE_SIZE,
+    broadcast_capture_event,
 )
 from .ws_manager import ws_manager
 
 @asynccontextmanager
 async def _lifespan(_: FastAPI):
     await start_sync_runtime()
+    await start_monitor_runtime()
     try:
         yield
     finally:
+        await stop_monitor_runtime()
         await stop_sync_runtime()
 
 
@@ -508,6 +520,51 @@ async def sync_revoke(id: str, sync=Depends(get_sync_service)):
         },
     )
     return {"status": "revoked", "peer_id": peer.id, "domain": peer.domain}
+
+
+# ─── 监控配置与活动日志（批次② BE-3，对齐 MONITOR_API_REQUIREMENTS.md）──
+
+@app.get("/monitor/config", tags=["Monitor"], summary="读取监控配置")
+async def monitor_config_get(store=Depends(get_monitor_config_store)):
+    """读取当前监控配置（daemon 视角的全量状态）。"""
+    return store.get()
+
+
+@app.put("/monitor/config", tags=["Monitor"], summary="写入监控配置（热生效）")
+async def monitor_config_put(
+    body: dict = Body(...),
+    store=Depends(get_monitor_config_store),
+    log_store=Depends(get_monitor_log_store),
+):
+    """全量写入监控配置：持久化 + 热生效 + 写 state_changed 日志 + 广播。
+
+    校验委托 MonitorConfigStore（白名单/类型/相对路径），非法 → 400
+    INVALID_REQUEST；热生效由 store.subscribe 驱动 watcher（无需重启 daemon）。
+    """
+    try:
+        normalized = await store.put(body)
+    except InvalidMonitorConfig as exc:
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+
+    summary = "监控已开启" if normalized["enabled"] else "监控已暂停"
+    ts = int(time.time())
+    log_store.write_event(
+        source="system", status="state_changed", summary=summary, ts=ts
+    )
+    await broadcast_capture_event(
+        source="system", status="state_changed", summary=summary, ts=ts
+    )
+    return normalized
+
+
+@app.get("/monitor/log", tags=["Monitor"], summary="监控活动日志（分页）")
+async def monitor_log_get(
+    limit: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
+    offset: int = Query(0, ge=0),
+    log_store=Depends(get_monitor_log_store),
+):
+    """分页查询监控活动记录（按时间倒序，最新在前；空日志返回空数组）。"""
+    return {"events": log_store.list_events(limit=limit, offset=offset)}
 
 
 # WebSocket routes live in a separate module, but the actual uvicorn entrypoint is

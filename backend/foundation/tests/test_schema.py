@@ -37,6 +37,7 @@ EXPECTED_TABLES = {
     "sync_peer_acks",
     "sync_meta",
     "monitor_config",
+    "monitor_log",
 }
 
 
@@ -60,7 +61,9 @@ def test_init_db_creates_all_tables(tmp_path: Path):
     conn.close()
 
     missing = EXPECTED_TABLES - tables
-    extra = tables - EXPECTED_TABLES - {"_schema_version"}
+    # sqlite_sequence 是 AUTOINCREMENT（monitor_log.id）自动创建的 SQLite
+    # 内部表，非应用表，不计入 extra。
+    extra = tables - EXPECTED_TABLES - {"_schema_version", "sqlite_sequence"}
     assert not missing, f"missing tables: {missing}"
     assert not extra, f"unexpected tables: {extra}"
 
@@ -285,13 +288,14 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 4
+    assert apply_pending(conn) == 5
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
     assert "sync_identity" in _table_names(conn)
     assert "monitor_config" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 5
+    assert "monitor_log" in _table_names(conn)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 6
     conn.close()
 
 

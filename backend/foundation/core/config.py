@@ -111,6 +111,9 @@ class Settings:
         self._sync_keyfile = os.getenv("PIXIU_SYNC_KEYFILE")
         self._sync_cafile = os.getenv("PIXIU_SYNC_CAFILE")
         self._sync_tls_key_password = os.getenv("PIXIU_SYNC_TLS_KEY_PASSWORD")
+        # 监视服务环境总闸（代码默认关，产品默认开由打包 pixiu.env 置 1，
+        # 对齐 PIXIU_SYNC_NETWORK_ENABLED 先例；config.enabled 独立门控捕获）。
+        self._monitor_enabled = _env_bool("PIXIU_MONITOR_ENABLED")
         if self._sync_network_enabled:
             if not self._sync_advertise_addresses:
                 raise ValueError(
@@ -167,6 +170,10 @@ class Settings:
     @property
     def sync_network_enabled(self) -> bool:
         return self._sync_network_enabled
+
+    @property
+    def monitor_enabled(self) -> bool:
+        return self._monitor_enabled
 
     @property
     def sync_bind_host(self) -> str:

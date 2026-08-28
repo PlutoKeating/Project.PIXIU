@@ -1,6 +1,6 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 16 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+创建全部 18 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
 知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
 SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 
 # monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
 # 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
@@ -21,6 +21,23 @@ CREATE TABLE IF NOT EXISTS monitor_config (
     updated_at INTEGER NOT NULL
 )
 """
+
+# monitor_log 活动日志表（监视捕获/状态变更事件；BE-3 写 + 分页查询）。
+# 独立常量供 api/monitor_log.py 复用，避免 DDL 双份漂移。
+MONITOR_LOG_DDL = """
+CREATE TABLE IF NOT EXISTS monitor_log (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts           INTEGER NOT NULL,
+    source       TEXT NOT NULL,
+    status       TEXT NOT NULL,
+    summary      TEXT NOT NULL,
+    evidence_id  TEXT,
+    knowledge_id TEXT
+)
+"""
+MONITOR_LOG_INDEX_DDL = (
+    "CREATE INDEX IF NOT EXISTS idx_monitor_log_ts ON monitor_log(ts)"
+)
 
 # FTS5 全文索引（trigram 分词器，支持中文子串检索）。
 # 独立表（不绑定 content=），rowid 手动对应 knowledge_items.rowid，
@@ -273,6 +290,10 @@ DDL_STATEMENTS: list[str] = [
 
     # ─── monitor_config (监视服务配置 KV) ─────────────────
     MONITOR_CONFIG_DDL,
+
+    # ─── monitor_log (监视活动日志) ────────────────────────
+    MONITOR_LOG_DDL,
+    MONITOR_LOG_INDEX_DDL,
 ]
 
 

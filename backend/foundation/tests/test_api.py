@@ -35,6 +35,7 @@ class _FakeSettings:
         self.sync_domain = "shared:home"
         self.sync_key_passphrase = "phase3-api-test-passphrase"
         self.sync_network_enabled = False
+        self.monitor_enabled = False  # API 测试不启动 monitor runtime
 
 
 @pytest.fixture()

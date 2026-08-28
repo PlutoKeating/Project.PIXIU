@@ -111,12 +111,21 @@ def _add_monitor_config(conn: sqlite3.Connection) -> None:
     conn.execute(MONITOR_CONFIG_DDL)
 
 
+def _add_monitor_log(conn: sqlite3.Connection) -> None:
+    """迁移 #6：监视活动日志表（monitor_log，BE-3 写 + 分页查询）。"""
+    from .schema import MONITOR_LOG_DDL, MONITOR_LOG_INDEX_DDL
+
+    conn.execute(MONITOR_LOG_DDL)
+    conn.execute(MONITOR_LOG_INDEX_DDL)
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
     (3, "memory_contexts", _add_memory_contexts),
     (4, "sync_foundation", _add_sync_foundation),
     (5, "monitor_config", _add_monitor_config),
+    (6, "monitor_log", _add_monitor_log),
 ]
 
 
