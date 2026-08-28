@@ -15,9 +15,11 @@ private slots:
     void conflictDetectedIsForwarded();
     void forgetConfirmationIsForwarded();
     void syncEventIsForwarded();
+    void captureEventIsForwarded();
     void unknownEventIsIgnored();
     void nonObjectDataIsIgnored();
     void emptyEventIsIgnored();
+    void captureEventWithoutDataIsIgnored();
 };
 
 void TestEventRouter::memoryReadyIsForwarded()
@@ -105,6 +107,27 @@ void TestEventRouter::syncEventIsForwarded()
              QStringLiteral("PEER_ONLINE"));
 }
 
+void TestEventRouter::captureEventIsForwarded()
+{
+    EventRouter router;
+    QSignalSpy spy(&router, &EventRouter::captureEvent);
+
+    router.handleEvent(QJsonObject{
+        {QStringLiteral("event"), QStringLiteral("capture_event")},
+        {QStringLiteral("data"), QJsonObject{
+            {QStringLiteral("source"), QStringLiteral("directory")},
+            {QStringLiteral("status"), QStringLiteral("ingested")},
+            {QStringLiteral("summary"), QStringLiteral("记住文件 支出清单.xlsx")},
+            {QStringLiteral("ts"), 1756080000}}}});
+
+    QCOMPARE(spy.count(), 1);
+    const QList<QVariant> args = spy.takeFirst();
+    QCOMPARE(args.at(0).toString(), QStringLiteral("directory"));
+    QCOMPARE(args.at(1).toString(), QStringLiteral("ingested"));
+    QCOMPARE(args.at(2).toString(), QStringLiteral("记住文件 支出清单.xlsx"));
+    QCOMPARE(args.at(3).toLongLong(), qint64(1756080000));
+}
+
 void TestEventRouter::unknownEventIsIgnored()
 {
     EventRouter router;
@@ -112,6 +135,7 @@ void TestEventRouter::unknownEventIsIgnored()
     QSignalSpy conflictSpy(&router, &EventRouter::conflictDetected);
     QSignalSpy forgetSpy(&router, &EventRouter::forgetConfirmationReady);
     QSignalSpy syncSpy(&router, &EventRouter::syncEvent);
+    QSignalSpy captureSpy(&router, &EventRouter::captureEvent);
 
     router.handleEvent(QJsonObject{
         {QStringLiteral("event"), QStringLiteral("some_future_event")},
@@ -120,6 +144,7 @@ void TestEventRouter::unknownEventIsIgnored()
     QCOMPARE(conflictSpy.count(), 0);
     QCOMPARE(forgetSpy.count(), 0);
     QCOMPARE(syncSpy.count(), 0);
+    QCOMPARE(captureSpy.count(), 0);
 }
 
 void TestEventRouter::nonObjectDataIsIgnored()
@@ -140,6 +165,23 @@ void TestEventRouter::emptyEventIsIgnored()
 
     router.handleEvent(QJsonObject());
     QCOMPARE(memorySpy.count(), 0);
+}
+
+void TestEventRouter::captureEventWithoutDataIsIgnored()
+{
+    EventRouter router;
+    QSignalSpy captureSpy(&router, &EventRouter::captureEvent);
+
+    // data 缺失：整帧合法（event 字段在），仅缺 data 键。
+    router.handleEvent(QJsonObject{
+        {QStringLiteral("event"), QStringLiteral("capture_event")}});
+    QCOMPARE(captureSpy.count(), 0);
+
+    // data 非对象：同样安全忽略，不发射 captureEvent。
+    router.handleEvent(QJsonObject{
+        {QStringLiteral("event"), QStringLiteral("capture_event")},
+        {QStringLiteral("data"), QJsonArray{QStringLiteral("not-an-object")}}});
+    QCOMPARE(captureSpy.count(), 0);
 }
 
 QTEST_MAIN(TestEventRouter)

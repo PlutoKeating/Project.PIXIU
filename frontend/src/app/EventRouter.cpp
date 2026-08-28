@@ -57,6 +57,20 @@ void EventRouter::handleEvent(const QJsonObject &event)
         emit syncEvent(data);
         return;
     }
+    if (name == QStringLiteral("capture_event")) {
+        // 契约保证 ts 为整数；防御性解析对齐 forget_confirmation 的
+        // expires_at 处理（isDouble → toDouble，否则 toLongLong）。
+        const QJsonValue tsValue = data.value(QStringLiteral("ts"));
+        const qint64 ts =
+            tsValue.isDouble() ? qint64(tsValue.toDouble())
+                               : qint64(tsValue.toVariant().toLongLong());
+        emit captureEvent(
+            data.value(QStringLiteral("source")).toString(),
+            data.value(QStringLiteral("status")).toString(),
+            data.value(QStringLiteral("summary")).toString(),
+            ts);
+        return;
+    }
 
     // 未知事件：仅记录，保持前向兼容。
     qCInfo(lcEvents) << "ignoring unknown event:" << name;
