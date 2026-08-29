@@ -205,6 +205,9 @@ async def get_sync_service(
             preference_repo=SqlitePreferenceRepo(db),
         ),
         mainline=Mainline(store, conflict_service),
+        # SN-4：KV 未写时 enabled 回 env 默认（di 注入 settings 值，
+        # 使测试/生产各自的 settings 替身生效）。
+        runtime_enabled_default=settings.sync_network_enabled,
     )
 
 
@@ -220,19 +223,43 @@ async def get_optional_sync_service(
 
 
 async def start_sync_runtime() -> SyncRuntime | None:
-    """Start LAN synchronization only after explicit opt-in configuration."""
+    """Start LAN synchronization per runtime settings (KV overrides env).
+
+    SN-4 默认开启：enabled 以 KV（sync_runtime:enabled）覆盖 env 默认；装配失败
+    （缺证书/口令/端口占用等）降级为 log warning 并返回 None，不阻塞 API 启动，
+    后续 PUT /sync/settings enabled=true 可重试。
+    """
     global _sync_runtime
-    if not settings.sync_network_enabled:
-        return None
-    if _sync_runtime is None:
+    if _sync_runtime is not None:
+        return _sync_runtime
+    try:
         db = await get_db()
         service = await get_sync_service(db)
-        _sync_runtime = await create_sync_runtime(
+        runtime_settings = await service._runtime_settings()
+        if not runtime_settings["enabled"]:
+            return None
+        runtime = await create_sync_runtime(
             service, SqliteSyncStore(db), settings
         )
-        await _sync_runtime.start()
-        _log.info("Sync networking started on port %s", settings.sync_port)
+        await runtime.start()
+    except Exception as exc:
+        _log.warning("sync runtime not started (degraded): %s", exc)
+        return None
+    _sync_runtime = runtime
+    _log.info("Sync networking started on port %s", settings.sync_port)
     return _sync_runtime
+
+
+async def apply_sync_runtime_settings(*, enabled: bool, paused: bool) -> None:
+    """PUT /sync/settings 热生效：enabled 变更启停 runtime；paused 转发 runtime。"""
+    global _sync_runtime
+    if enabled:
+        await start_sync_runtime()
+    else:
+        await stop_sync_runtime()
+    runtime = _sync_runtime
+    if runtime is not None:
+        runtime.set_paused(paused)
 
 
 async def get_sync_discovery() -> MdnsDiscovery:

@@ -44,6 +44,7 @@ from .di import (
     get_security_service,
     get_sync_discovery,
     get_sync_service,
+    apply_sync_runtime_settings,
     start_monitor_runtime,
     start_sync_runtime,
     stop_monitor_runtime,
@@ -183,6 +184,13 @@ class SyncPairRequestRequest(BaseModel):
 class SyncPairConfirmRequest(BaseModel):
     request_id: str
     accept: bool
+
+
+class SyncSettingsRequest(BaseModel):
+    """SN-4 运行时开关：两者均可缺省，只更新显式传入的键。"""
+
+    enabled: bool | None = None
+    paused: bool | None = None
 
 
 class OcrRequest(BaseModel):
@@ -574,6 +582,24 @@ async def sync_pair_confirm(
 async def sync_status(sync=Depends(get_sync_service)):
     status = await sync.status()
     return status.model_dump(mode="json")
+
+
+@app.put("/sync/settings", tags=["Sync"], summary="更新同步开关")
+async def sync_settings_put(
+    body: SyncSettingsRequest, sync=Depends(get_sync_service)
+):
+    """运行时开关（enabled/paused）KV 持久化 + 热生效。
+
+    enabled=false 停止 runtime（mDNS 注册与监听停）；enabled=true 启动
+    （若未启动）；paused 暂停 gossip 数据流（保留发现与配对）。
+    """
+    result = await sync.set_settings(
+        enabled=body.enabled, paused=body.paused
+    )
+    await apply_sync_runtime_settings(
+        enabled=result["enabled"], paused=result["paused"]
+    )
+    return result
 
 
 @app.post("/sync/peers/{id}/revoke", tags=["Sync"], summary="解绑设备")

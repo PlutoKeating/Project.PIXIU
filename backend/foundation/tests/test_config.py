@@ -239,10 +239,10 @@ def test_env_choice_invalid():
             _env_choice("FOO", "default", frozenset({"opt", "alt"}))
 
 
-def test_sync_network_is_disabled_by_default():
+def test_sync_network_is_enabled_by_default():
     with mock.patch.dict(os.environ, {}, clear=True):
         configured = Settings()
-        assert configured.sync_network_enabled is False
+        assert configured.sync_network_enabled is True
         assert configured.sync_advertise_addresses == ()
 
 
@@ -254,22 +254,20 @@ def test_sync_network_rejects_invalid_boolean():
             Settings()
 
 
-def test_sync_network_requires_addresses_and_tls_paths():
+def test_sync_network_enabled_allows_missing_advertise_and_tls():
+    # SN-4 默认开启：advertise 地址与 TLS 证书均允许缺省（runtime 装配期
+    # 自动取本机 LAN IP / di 层降级），无配置机器不得在启动期崩溃。
     base = {
         "PIXIU_SYNC_NETWORK_ENABLED": "true",
         "PIXIU_SYNC_KEY_PASSPHRASE": "phase3-config-test-passphrase",
     }
     with mock.patch.dict(os.environ, base, clear=True):
-        with pytest.raises(ValueError, match="ADVERTISE_ADDRESSES"):
-            Settings()
-
-    with mock.patch.dict(
-        os.environ,
-        {**base, "PIXIU_SYNC_ADVERTISE_ADDRESSES": "192.168.1.20"},
-        clear=True,
-    ):
-        with pytest.raises(ValueError, match="PIXIU_SYNC_CERTFILE"):
-            Settings()
+        configured = Settings()
+    assert configured.sync_network_enabled is True
+    assert configured.sync_advertise_addresses == ()
+    # TLS 文件路径仍由属性级校验要求（runtime 装配期触发，di 层降级处理）
+    with pytest.raises(ValueError, match="PIXIU_SYNC_CERTFILE"):
+        configured.sync_certfile
 
 
 def test_sync_network_explicit_configuration():

@@ -96,7 +96,8 @@ class Settings:
         )
         self._sync_domain = _env_shared_scope("PIXIU_SYNC_DOMAIN", "shared:home")
         self._sync_key_passphrase = os.getenv("PIXIU_SYNC_KEY_PASSPHRASE")
-        self._sync_network_enabled = _env_bool("PIXIU_SYNC_NETWORK_ENABLED")
+        # SN-4 默认开启：运行时开关（PUT /sync/settings）以 KV 覆盖 env 默认。
+        self._sync_network_enabled = _env_bool("PIXIU_SYNC_NETWORK_ENABLED", True)
         self._sync_bind_host = _env_lan_host("PIXIU_SYNC_BIND_HOST", "127.0.0.1")
         self._sync_port = _env_port("PIXIU_SYNC_PORT", 8766)
         self._sync_server_name = _env_str(
@@ -114,14 +115,11 @@ class Settings:
         # 监视服务环境总闸（代码默认关，产品默认开由打包 pixiu.env 置 1，
         # 对齐 PIXIU_SYNC_NETWORK_ENABLED 先例；config.enabled 独立门控捕获）。
         self._monitor_enabled = _env_bool("PIXIU_MONITOR_ENABLED")
-        if self._sync_network_enabled:
-            if not self._sync_advertise_addresses:
-                raise ValueError(
-                    "PIXIU_SYNC_ADVERTISE_ADDRESSES is required when sync networking is enabled"
-                )
-            for key, value in self._sync_tls_values().items():
-                if not value:
-                    raise ValueError(f"{key} is required when sync networking is enabled")
+        # SN-4 默认开启：advertise 地址与 TLS 证书均允许缺省，避免无配置机器
+        # 启动即崩溃。空 advertise 由 runtime 层自动取本机 LAN IP（回退
+        # 127.0.0.1 告警）；缺证书由 di 层降级（log warning，不阻塞 API）。
+        # TLS 文件路径的要求保留在 sync_certfile/sync_keyfile/sync_cafile
+        # 属性级校验，于 runtime 装配期触发。
 
     @property
     def db_path(self) -> str:

@@ -404,6 +404,8 @@ def test_sync_pair_peers_status_and_revoke(client):
         "pending_outgoing_ops": 0,
         "last_anti_entropy_ts": None,
         "total_ops_synced": 0,
+        "enabled": False,  # SN-4：KV 未写时回 env 默认（测试桩 sync_network_enabled=False）
+        "paused": False,
     }
 
     remote_path = str(Path(di_module.settings.db_path).with_name("remote.db"))
@@ -470,6 +472,32 @@ def test_sync_pair_confirm_accept_returns_status(client):
     assert response.status_code == 200
     assert response.json() == {"status": "accepted"}
 
+
+def test_sync_settings_put_persists_and_status_reflects(client):
+    current = client.get("/sync/status").json()
+    assert current["enabled"] is False
+    assert current["paused"] is False
+
+    updated = client.put("/sync/settings", json={"enabled": False, "paused": True})
+    assert updated.status_code == 200
+    assert updated.json() == {"enabled": False, "paused": True}
+
+    status = client.get("/sync/status").json()
+    assert status["enabled"] is False
+    assert status["paused"] is True
+
+    # 部分更新：只改 enabled，paused 保留
+    reenabled = client.put("/sync/settings", json={"enabled": True})
+    assert reenabled.status_code == 200
+    assert reenabled.json() == {"enabled": True, "paused": True}
+    status = client.get("/sync/status").json()
+    assert status["enabled"] is True
+    assert status["paused"] is True
+
+    # 关闭后状态回读持久化
+    off = client.put("/sync/settings", json={"enabled": False, "paused": False})
+    assert off.json() == {"enabled": False, "paused": False}
+    assert client.get("/sync/status").json()["enabled"] is False
 
 
 def _sync_rows() -> list[tuple[str, dict]]:

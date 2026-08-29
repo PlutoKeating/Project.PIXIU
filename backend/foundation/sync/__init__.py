@@ -8,6 +8,7 @@ import time
 
 from cryptography.exceptions import InvalidSignature
 
+from backend.foundation.core.config import settings as _env_settings
 from backend.foundation.core.idgen import gen_sync_op_id
 from backend.foundation.core.models import SyncOp
 
@@ -74,6 +75,9 @@ class SyncService:
         key_passphrase: str,
         materializer=None,
         mainline=None,
+        # SN-4：KV 未写时 enabled 的 env 默认（di 注入 settings 值；缺省回退
+        # 模块级 env settings，保证直接构造 SyncService 的调用方仍得到默认开启）。
+        runtime_enabled_default: bool | None = None,
     ) -> None:
         self._store = store
         self._device_name = device_name
@@ -83,6 +87,7 @@ class SyncService:
         self._crdt = LWWElementSet()
         self._materializer = materializer
         self._mainline = mainline
+        self._runtime_enabled_default = runtime_enabled_default
 
     async def initialize(self) -> DeviceIdentity:
         if self._identity is None:
@@ -274,6 +279,37 @@ class SyncService:
         )
         return result
 
+    async def set_settings(
+        self, *, enabled: bool | None = None, paused: bool | None = None
+    ) -> dict:
+        """运行时开关持久化（KV：sync_runtime:enabled / sync_runtime:paused）。
+
+        只更新显式传入的键；返回合并后的当前运行时设置（enabled 缺省回 env）。
+        """
+        if enabled is not None:
+            await self._store.set_meta(
+                "sync_runtime:enabled", "1" if enabled else "0"
+            )
+        if paused is not None:
+            await self._store.set_meta(
+                "sync_runtime:paused", "1" if paused else "0"
+            )
+        return await self._runtime_settings()
+
+    async def _runtime_settings(self) -> dict:
+        """读取运行时开关：KV 优先，未写时 enabled 回 env 默认。"""
+        raw_enabled = await self._store.get_meta("sync_runtime:enabled")
+        raw_paused = await self._store.get_meta("sync_runtime:paused")
+        default_enabled = (
+            self._runtime_enabled_default
+            if self._runtime_enabled_default is not None
+            else _env_settings.sync_network_enabled
+        )
+        return {
+            "enabled": raw_enabled != "0" if raw_enabled is not None else default_enabled,
+            "paused": raw_paused == "1",
+        }
+
     async def status(self) -> SyncStatus:
         await self.initialize()
         peers = await self._store.list_peers()
@@ -283,6 +319,7 @@ class SyncService:
                 op.op_id for op in await self._store.pending_ops_for_peer(peer.id)
             )
         anti_entropy = await self._store.get_meta("last_anti_entropy_ts")
+        runtime = await self._runtime_settings()
         return SyncStatus(
             domain=self._domain,
             peers_online=1 + sum(peer.status == PeerStatus.ONLINE for peer in peers),
@@ -290,6 +327,8 @@ class SyncService:
             pending_outgoing_ops=len(pending_ids),
             last_anti_entropy_ts=int(anti_entropy) if anti_entropy else None,
             total_ops_synced=await self._store.total_acknowledgements(),
+            enabled=runtime["enabled"],
+            paused=runtime["paused"],
         )
 
     async def revoke(self, peer_id: str) -> Peer:

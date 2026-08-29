@@ -97,3 +97,6 @@ class SyncStatus(BaseModel):
     pending_outgoing_ops: int = Field(ge=0)
     last_anti_entropy_ts: int | None = None
     total_ops_synced: int = Field(ge=0)
+    # SN-4 运行时开关（GET /sync/status 契约扩展；默认 False 保持向后兼容）
+    enabled: bool = False
+    paused: bool = False

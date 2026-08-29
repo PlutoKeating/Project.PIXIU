@@ -33,7 +33,8 @@
 | GET | `/sync/discover` | 发现局域网设备（含未配对） | ✅ 已实现（2026-08-29） |
 | POST | `/sync/pair/request` | 发起确认式配对请求（含 6 位 PIN） | ✅ 已实现（2026-08-29） |
 | POST | `/sync/pair/confirm` | 确认/拒绝配对请求 | ✅ 已实现（2026-08-29） |
-| GET | `/sync/status` | 同步状态 | ✅ 已实现（2026-08-10） |
+| GET | `/sync/status` | 同步状态（含运行时开关 enabled/paused） | ✅ 已实现（2026-08-10） |
+| PUT | `/sync/settings` | 更新同步开关（enabled/paused，热生效） | ✅ 已实现（2026-08-29） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
 | GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
 | PUT | `/monitor/config` | 写入监控配置（全量提交，热生效） | ✅ 已实现（2026-08-26） |
@@ -397,7 +398,7 @@
 
 ### 3.14 GET /sync/status
 
-同步状态。
+同步状态（SN-4 起含运行时开关）。
 
 **响应体：**
 
@@ -408,9 +409,15 @@
   "peers_total": 3,
   "pending_outgoing_ops": 0,
   "last_anti_entropy_ts": 1714608000,
-  "total_ops_synced": 1285
+  "total_ops_synced": 1285,
+  "enabled": true,
+  "paused": false
 }
 ```
+
+字段说明：`enabled` 为同步总开关（KV `sync_runtime:enabled` 覆盖 env 默认
+`PIXIU_SYNC_NETWORK_ENABLED`，未写时回 env 默认——代码默认 true）；
+`paused` 为数据流暂停（KV `sync_runtime:paused`，默认 false）。
 
 ### 3.15 POST /sync/peers/{id}/revoke
 
@@ -578,6 +585,31 @@ null。`summary` 由服务端生成用户可读文案，**不含敏感原文全�
 
 **错误响应（404）：** `request_id` 不存在 →
 `{"error": "REQUEST_NOT_FOUND", "message": "...", "request_id": "req_..."}`。
+
+### 3.22 PUT /sync/settings
+
+更新同步运行时开关（SN-4）。两字段均可缺省，只更新显式传入的键；
+KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
+`enabled=false` 停止 runtime（mDNS 注册与监听停）；`enabled=true` 启动
+（若未启动）；`paused=true` 暂停 gossip 数据流（保留发现与配对）。
+
+**请求体：**
+
+```jsonc
+{
+  "enabled": false,
+  "paused": true
+}
+```
+
+**响应体（200）：** 合并后的当前运行时设置（enabled 缺省回 env 默认）
+
+```jsonc
+{
+  "enabled": false,
+  "paused": true
+}
+```
 
 ---
 
