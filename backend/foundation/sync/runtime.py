@@ -151,6 +151,7 @@ async def create_sync_runtime(service, store, settings) -> SyncRuntime:
         addresses=settings.sync_advertise_addresses,
         port=settings.sync_port,
         server_name=settings.sync_server_name,
+        pairable=True,  # SN-4 运行时开关细化前默认可配对
     )
     return SyncRuntime(
         identity=identity,
