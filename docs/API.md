@@ -287,11 +287,17 @@
       "new_value": 186,
       "resolution": "NEW_WINS",
       "created_at": 1714608000,
-      "knowledge_title": "2026年4月家庭支出清单"
+      "knowledge_title": "2026年4月家庭支出清单",
+      "severity": "medium"
     }
   ]
 }
 ```
+
+> `severity`（B3-3 起）：`low | medium | high`，按 `resolution` 派生的打扰级别
+> （MERGE→low 自动合并静默 / NEW_WINS→medium 自动裁决但用户应知晓 /
+> MANUAL→high 需人工确认）。读取路径始终按 resolution 派生，保证改判后
+> 自洽；SQL 层列值随 save / resolve 同步维护，供过滤与直查。
 
 ### 3.10 POST /memory/flow/promote
 
@@ -641,10 +647,16 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
     "knowledge_title": "2026年4月家庭支出清单",
     "field": "body.items[2].amount",
     "old_value": 156,
-    "new_value": 186
+    "new_value": 186,
+    "severity": "medium"
   }
 }
 ```
+
+> `severity`（B3-3 起）：`low | medium | high`，按裁决方式派生
+> （MERGE→low / NEW_WINS→medium / MANUAL→high，见 §3.9）。前端按此分流
+> 打扰级别：low 静默仅计数 / medium 温和通知+角标 / high 全动作。
+> 旧后端广播无此字段时，前端缺省按 `high` 处理（宁可打扰不漏报）。
 
 ### 4.3 forget_confirmation ✅ 已实现（遗忘执行后广播，含 targets/forgotten_ids/expires_at）
 
