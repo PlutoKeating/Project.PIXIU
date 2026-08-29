@@ -186,11 +186,9 @@ void HttpBackendTransport::revokePeer(const QString &peerId)
 
 void HttpBackendTransport::discoverDevices()
 {
+    // 与 listPeers 一致携带完整响应体，供上层区分契约成功态与退化态。
     getJson(QStringLiteral("/sync/discover"),
-            [this](quint64, const QJsonObject &obj) {
-                emit devicesLoaded(
-                    obj.value(QStringLiteral("devices")).toArray());
-            });
+            [this](quint64, const QJsonObject &obj) { emit devicesLoaded(obj); });
 }
 
 void HttpBackendTransport::requestPairing(const QString &targetId)
@@ -199,7 +197,7 @@ void HttpBackendTransport::requestPairing(const QString &targetId)
     body.insert(QStringLiteral("target_device_id"), targetId);
     postJson(QStringLiteral("/sync/pair/request"), body,
              [this](quint64, const QJsonObject &obj) {
-                 emit pairingRequested(obj);
+                 emit pairRequestResult(obj);
              });
 }
 
@@ -210,7 +208,7 @@ void HttpBackendTransport::confirmPairing(const QString &requestId, bool accept)
     body.insert(QStringLiteral("accept"), accept);
     postJson(QStringLiteral("/sync/pair/confirm"), body,
              [this](quint64, const QJsonObject &obj) {
-                 emit pairingResult(obj);
+                 emit pairConfirmResult(obj);
              });
 }
 

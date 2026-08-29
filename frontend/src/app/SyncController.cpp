@@ -18,9 +18,9 @@ SyncController::SyncController(BackendTransport *transport, QObject *parent)
             this, &SyncController::handleRevokeResponse);
     connect(m_transport, &BackendTransport::devicesLoaded,
             this, &SyncController::handleDevicesResponse);
-    connect(m_transport, &BackendTransport::pairingRequested,
+    connect(m_transport, &BackendTransport::pairRequestResult,
             this, &SyncController::handlePairRequestResponse);
-    connect(m_transport, &BackendTransport::pairingResult,
+    connect(m_transport, &BackendTransport::pairConfirmResult,
             this, &SyncController::handlePairConfirmResponse);
     connect(m_transport, &BackendTransport::settingsResult,
             this, &SyncController::handleSettingsResponse);
@@ -33,16 +33,27 @@ SyncController::SyncController(BackendTransport *transport, QObject *parent)
                     && !m_pairConfirmPending && !m_settingsPending) {
                     return;
                 }
-                m_peersPending = false;
-                m_statusPending = false;
-                m_revokePending = false;
-                m_discoverPending = false;
-                m_pairRequestPending = false;
-                m_pairConfirmPending = false;
-                m_settingsPending = false;
-                m_revokePeerId.clear();
+                // 全量清理语义：任一同步管理流程失败即清空全部在途标记，
+                // 避免残留 pending 卡死后续请求。代价是其它并发在途流程
+                // （如 discover 与 settings 同时进行）的成功响应随后会被
+                // 各自的 stale 检查丢弃——SN-6 UI 必须序列化 discover/
+                // settings 等交互，不做跨流程并发，本控制器因此无需按
+                // 流程细分清理。
+                clearAllPending();
                 emit failed(code, message);
             });
+}
+
+void SyncController::clearAllPending()
+{
+    m_peersPending = false;
+    m_statusPending = false;
+    m_revokePending = false;
+    m_discoverPending = false;
+    m_pairRequestPending = false;
+    m_pairConfirmPending = false;
+    m_settingsPending = false;
+    m_revokePeerId.clear();
 }
 
 void SyncController::refresh()
@@ -187,13 +198,13 @@ void SyncController::handleRevokeResponse(const QJsonObject &response)
     emit failed(status, tr("解绑失败：%1").arg(status));
 }
 
-void SyncController::handleDevicesResponse(const QJsonArray &devices)
+void SyncController::handleDevicesResponse(const QJsonObject &response)
 {
     if (!m_discoverPending) {
         return; // 无在途请求，忽略过期响应
     }
     m_discoverPending = false;
-    emit discoveredDevices(devices);
+    emit discoveredDevices(response.value(QStringLiteral("devices")).toArray());
 }
 
 void SyncController::handlePairRequestResponse(const QJsonObject &response)
@@ -213,7 +224,7 @@ void SyncController::handlePairRequestResponse(const QJsonObject &response)
                     tr("配对请求响应格式无法识别"));
         return;
     }
-    emit pairingResult(response);
+    emit pairRequestResult(response);
 }
 
 void SyncController::handlePairConfirmResponse(const QJsonObject &response)
@@ -233,7 +244,7 @@ void SyncController::handlePairConfirmResponse(const QJsonObject &response)
                     tr("配对确认响应格式无法识别"));
         return;
     }
-    emit pairingResult(response);
+    emit pairConfirmResult(response);
 }
 
 void SyncController::handleSettingsResponse(const QJsonObject &response)

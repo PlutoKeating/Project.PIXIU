@@ -634,7 +634,9 @@ void TestContractFixtures::syncDiscoverMatchesBackendContract()
     transport->discoverDevices();
 
     QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
-    const QJsonArray devices = spy.takeFirst().at(0).toJsonArray();
+    // 对齐 peersResult 模式：devicesLoaded 携带完整响应体，devices 由上层取。
+    const QJsonObject body = spy.takeFirst().at(0).toJsonObject();
+    const QJsonArray devices = body.value(QStringLiteral("devices")).toArray();
     QCOMPARE(devices.size(), 1);
     const QJsonObject item = devices.first().toObject();
     QVERIFY(item.value(QStringLiteral("device_id")).toString().startsWith(
@@ -650,7 +652,7 @@ void TestContractFixtures::syncDiscoverMatchesBackendContract()
 void TestContractFixtures::syncPairRequestMatchesBackendContract()
 {
     HttpBackendTransport *transport = makeTransport();
-    QSignalSpy spy(transport, &BackendTransport::pairingRequested);
+    QSignalSpy spy(transport, &BackendTransport::pairRequestResult);
 
     transport->requestPairing(
         QStringLiteral("dev_06FAAAAAAAAAAAAAAAAAAAAAA"));
@@ -668,7 +670,7 @@ void TestContractFixtures::syncPairRequestMatchesBackendContract()
 void TestContractFixtures::syncPairConfirmMatchesBackendContract()
 {
     HttpBackendTransport *transport = makeTransport();
-    QSignalSpy spy(transport, &BackendTransport::pairingResult);
+    QSignalSpy spy(transport, &BackendTransport::pairConfirmResult);
 
     transport->confirmPairing(QStringLiteral("req_pair1"), true);
 

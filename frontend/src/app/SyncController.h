@@ -33,11 +33,11 @@ public:
     void discover();
 
     // 发起确认式配对请求（POST /sync/pair/request，targetId 为目标设备）。
-    // 结果经 pairingResult 上抛（request_id/pin/expires_at）。
+    // 结果经 pairRequestResult 上抛（request_id/pin/expires_at）。
     void requestPairing(const QString &targetId);
 
-    // 确认/拒绝一条配对请求（POST /sync/pair/confirm）。结果经 pairingResult
-    // 上抛（status: accepted|rejected|expired）。
+    // 确认/拒绝一条配对请求（POST /sync/pair/confirm）。结果经
+    // pairConfirmResult 上抛（status: accepted|rejected|expired）。
     void confirmPairing(const QString &requestId, bool accept);
 
     // 运行时开关更新（PUT /sync/settings）。结果经 settingsResult 上抛。
@@ -53,9 +53,10 @@ signals:
     void revoked(const QString &peerId);
     // 发现设备列表（GET /sync/discover → devices 数组）。
     void discoveredDevices(const QJsonArray &devices);
-    // 配对请求发起/确认结果（request：request_id/pin/target_device_id/
-    // expires_at；confirm：status accepted|rejected|expired）。
-    void pairingResult(const QJsonObject &response);
+    // 配对请求发起结果（request_id/pin/target_device_id/expires_at）。
+    void pairRequestResult(const QJsonObject &response);
+    // 配对确认结果（status: accepted|rejected|expired）。
+    void pairConfirmResult(const QJsonObject &response);
     // 运行时开关更新结果（enabled/paused）。
     void settingsResult(const QJsonObject &response);
     // feature ∈ {"peers","sync_status","revoke","discover","pair_request",
@@ -67,10 +68,12 @@ private:
     void handlePeersResponse(const QJsonObject &response);
     void handleSyncStatusResponse(const QJsonObject &response);
     void handleRevokeResponse(const QJsonObject &response);
-    void handleDevicesResponse(const QJsonArray &devices);
+    void handleDevicesResponse(const QJsonObject &response);
     void handlePairRequestResponse(const QJsonObject &response);
     void handlePairConfirmResponse(const QJsonObject &response);
     void handleSettingsResponse(const QJsonObject &response);
+    // 通用错误到达时清空全部在途标记（全量清理语义，见 errorOccurred 处理）。
+    void clearAllPending();
 
     BackendTransport *m_transport = nullptr;
     bool m_peersPending = false;

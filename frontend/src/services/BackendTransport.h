@@ -61,9 +61,6 @@ public:
     // 运行时开关更新（PUT /sync/settings，enabled/paused 部分更新，两参必传）。
     // 默认空实现，理由同上。
     virtual void updateSyncSettings(bool enabled, bool paused);
-    // 立即同步：后端未实现 /sync/now 端点，语义由 SyncController::syncNow()
-    // 复用 refresh()（syncStatus + peers）承担，传输层无需额外请求。默认空实现。
-    virtual void syncNow();
 
     // 当前连接状态。
     virtual ConnectionState connectionState() const = 0;
@@ -102,14 +99,18 @@ signals:
     void syncStatusResult(const QJsonObject &status);
     // 解绑（POST /sync/peers/{id}/revoke）。
     void revokeResult(const QJsonObject &response);
-    // 局域网设备列表（GET /sync/discover → {"devices": [...]} 的 devices 数组）。
-    void devicesLoaded(const QJsonArray &devices);
+    // 局域网设备列表（GET /sync/discover）。携带完整响应体（对齐 peersResult
+    // 模式）：契约成功态恒为 {"devices": [...]}，空数组是 runtime 未启动的
+    // 合法退化态（非 not_implemented 占位），上层据此区分。
+    void devicesLoaded(const QJsonObject &response);
     // 配对请求响应（POST /sync/pair/request → request_id/pin/target_device_id/
     // expires_at；4xx/5xx 走 errorOccurred）。
-    void pairingRequested(const QJsonObject &response);
+    // 命名遵循 XxxResult 惯例，与 EventRouter::pairingRequested（WS pair_request
+    // 事件帧）区分——两者同名不同类、载荷相似，SN-6 接线时按本信号名连接。
+    void pairRequestResult(const QJsonObject &response);
     // 配对确认响应（POST /sync/pair/confirm → {"status": accepted|rejected|
     // expired}；404 REQUEST_NOT_FOUND 走 errorOccurred）。
-    void pairingResult(const QJsonObject &response);
+    void pairConfirmResult(const QJsonObject &response);
     // 运行时开关响应（PUT /sync/settings → {"enabled","paused"}）。
     void settingsResult(const QJsonObject &response);
     // 监控配置（GET/PUT /monitor/config → 归一化配置；PUT 失败走 errorOccurred）。

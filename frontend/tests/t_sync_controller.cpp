@@ -72,6 +72,11 @@ private slots:
     void syncNowReusesRefresh();
     void pairingNotImplementedIsReported();
     void newFlowErrorsAreForwarded();
+    void newFlowStaleResponsesAreIgnored();
+    void pairingFlowsIgnoreEmptyIds();
+    void pairConfirmNotImplementedIsReported();
+    void settingsNotImplementedIsReported();
+    void concurrentErrorClearsAllPendings();
 };
 
 void TestSyncController::refreshRequestsPeersAndStatus()
@@ -261,7 +266,8 @@ void TestSyncController::discoverRequestsAndForwardsDevices()
         {QStringLiteral("port"), 8766},
         {QStringLiteral("pairable"), true},
         {QStringLiteral("paired"), false}});
-    emit transport.devicesLoaded(devices);
+    emit transport.devicesLoaded(QJsonObject{
+        {QStringLiteral("devices"), devices}});
 
     QCOMPARE(loadedSpy.count(), 1);
     const QJsonArray result = loadedSpy.takeFirst().at(0).toJsonArray();
@@ -276,13 +282,13 @@ void TestSyncController::requestPairingSendsTargetAndForwardsPin()
 {
     FakeTransport transport;
     SyncController controller(&transport);
-    QSignalSpy pairingSpy(&controller, &SyncController::pairingResult);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairRequestResult);
 
     controller.requestPairing(QStringLiteral("dev_guest"));
     QCOMPARE(transport.requestPairingCalls.size(), 1);
     QCOMPARE(transport.requestPairingCalls.first(), QStringLiteral("dev_guest"));
 
-    emit transport.pairingRequested(QJsonObject{
+    emit transport.pairRequestResult(QJsonObject{
         {QStringLiteral("request_id"), QStringLiteral("req_pair1")},
         {QStringLiteral("pin"), QStringLiteral("483920")},
         {QStringLiteral("target_device_id"), QStringLiteral("dev_guest")},
@@ -300,7 +306,7 @@ void TestSyncController::confirmPairingForwardsResult()
 {
     FakeTransport transport;
     SyncController controller(&transport);
-    QSignalSpy pairingSpy(&controller, &SyncController::pairingResult);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairConfirmResult);
 
     // accept=true → accepted。
     controller.confirmPairing(QStringLiteral("req_pair1"), true);
@@ -308,7 +314,7 @@ void TestSyncController::confirmPairingForwardsResult()
     QCOMPARE(transport.confirmPairingCalls.first().first,
              QStringLiteral("req_pair1"));
     QCOMPARE(transport.confirmPairingCalls.first().second, true);
-    emit transport.pairingResult(QJsonObject{
+    emit transport.pairConfirmResult(QJsonObject{
         {QStringLiteral("status"), QStringLiteral("accepted")}});
     QCOMPARE(pairingSpy.count(), 1);
     QCOMPARE(pairingSpy.takeFirst().at(0).toJsonObject()
@@ -319,7 +325,7 @@ void TestSyncController::confirmPairingForwardsResult()
     controller.confirmPairing(QStringLiteral("req_pair2"), false);
     QCOMPARE(transport.confirmPairingCalls.size(), 2);
     QCOMPARE(transport.confirmPairingCalls.at(1).second, false);
-    emit transport.pairingResult(QJsonObject{
+    emit transport.pairConfirmResult(QJsonObject{
         {QStringLiteral("status"), QStringLiteral("rejected")}});
     QCOMPARE(pairingSpy.count(), 1);
     QCOMPARE(pairingSpy.takeFirst().at(0).toJsonObject()
@@ -363,11 +369,11 @@ void TestSyncController::pairingNotImplementedIsReported()
 {
     FakeTransport transport;
     SyncController controller(&transport);
-    QSignalSpy pairingSpy(&controller, &SyncController::pairingResult);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairRequestResult);
     QSignalSpy pendingSpy(&controller, &SyncController::notImplemented);
 
     controller.requestPairing(QStringLiteral("dev_guest"));
-    emit transport.pairingRequested(QJsonObject{
+    emit transport.pairRequestResult(QJsonObject{
         {QStringLiteral("status"), QStringLiteral("not_implemented")}});
 
     QCOMPARE(pairingSpy.count(), 0);
@@ -394,6 +400,105 @@ void TestSyncController::newFlowErrorsAreForwarded()
     emit transport.errorOccurred(QStringLiteral("HTTP_500"),
                                  QStringLiteral("server error"), QString());
     QCOMPARE(failedSpy.count(), 0);
+}
+
+void TestSyncController::newFlowStaleResponsesAreIgnored()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy discoverSpy(&controller, &SyncController::discoveredDevices);
+    QSignalSpy settingsSpy(&controller, &SyncController::settingsResult);
+
+    // 无在途请求时到达的发现/设置响应视为过期，不向上抛（仿
+    // staleResponsesAreIgnored，覆盖新流程的 stale 检查）。
+    emit transport.devicesLoaded(QJsonObject{
+        {QStringLiteral("devices"), QJsonArray()}});
+    emit transport.settingsResult(QJsonObject{
+        {QStringLiteral("enabled"), true},
+        {QStringLiteral("paused"), false}});
+    QCOMPARE(discoverSpy.count(), 0);
+    QCOMPARE(settingsSpy.count(), 0);
+}
+
+void TestSyncController::pairingFlowsIgnoreEmptyIds()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+
+    // 空/空白 id 的配对请求与确认一律忽略（仿 revokeIgnoresEmptyId）。
+    controller.requestPairing(QString());
+    controller.requestPairing(QStringLiteral("   "));
+    controller.confirmPairing(QString(), true);
+    controller.confirmPairing(QStringLiteral("   "), false);
+    QCOMPARE(transport.requestPairingCalls.size(), 0);
+    QCOMPARE(transport.confirmPairingCalls.size(), 0);
+}
+
+void TestSyncController::pairConfirmNotImplementedIsReported()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairConfirmResult);
+    QSignalSpy pendingSpy(&controller, &SyncController::notImplemented);
+
+    controller.confirmPairing(QStringLiteral("req_pair1"), true);
+    emit transport.pairConfirmResult(QJsonObject{
+        {QStringLiteral("status"), QStringLiteral("not_implemented")}});
+
+    QCOMPARE(pairingSpy.count(), 0);
+    QCOMPARE(pendingSpy.count(), 1);
+    QCOMPARE(pendingSpy.takeFirst().at(0).toString(),
+             QStringLiteral("pair_confirm"));
+}
+
+void TestSyncController::settingsNotImplementedIsReported()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy settingsSpy(&controller, &SyncController::settingsResult);
+    QSignalSpy pendingSpy(&controller, &SyncController::notImplemented);
+
+    controller.updateSettings(false, true);
+    emit transport.settingsResult(QJsonObject{
+        {QStringLiteral("status"), QStringLiteral("not_implemented")}});
+
+    QCOMPARE(settingsSpy.count(), 0);
+    QCOMPARE(pendingSpy.count(), 1);
+    QCOMPARE(pendingSpy.takeFirst().at(0).toString(),
+             QStringLiteral("settings"));
+}
+
+void TestSyncController::concurrentErrorClearsAllPendings()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy settingsSpy(&controller, &SyncController::settingsResult);
+    QSignalSpy failedSpy(&controller, &SyncController::failed);
+
+    // 并发在途：设置更新与设备发现同时进行。全量清理语义（clearAllPending）
+    // 下，任一流程的错误清空全部在途标记，其它流程随后到达的成功响应会被
+    // stale 检查丢弃——SN-6 UI 必须序列化 discover/settings 交互，避免
+    // 跨流程并发竞态（错误后不残留 pending，可立即重发）。
+    controller.updateSettings(false, true);
+    controller.discover();
+    QCOMPARE(transport.settingsCalls.size(), 1);
+    QCOMPARE(transport.discoverCalls, 1);
+
+    emit transport.errorOccurred(QStringLiteral("HTTP_500"),
+                                 QStringLiteral("discover failed"), QString());
+    QCOMPARE(failedSpy.count(), 1);
+    QCOMPARE(failedSpy.takeFirst().at(0).toString(),
+             QStringLiteral("HTTP_500"));
+
+    // 全量清理后，在途 settings 成功响应视为过期，不再上抛。
+    emit transport.settingsResult(QJsonObject{
+        {QStringLiteral("enabled"), false},
+        {QStringLiteral("paused"), true}});
+    QCOMPARE(settingsSpy.count(), 0);
+
+    // 清理后控制器可立即重新发起请求。
+    controller.updateSettings(true, false);
+    QCOMPARE(transport.settingsCalls.size(), 2);
 }
 
 QTEST_MAIN(TestSyncController)
