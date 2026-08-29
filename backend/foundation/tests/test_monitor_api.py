@@ -65,6 +65,7 @@ def _reset_di_singletons() -> None:
     di_module._monitor_config_store = None
     di_module._monitor_log_store = None
     di_module._monitor_runtime = None
+    di_module._behavior_collector = None
     di_module._main_loop = None
 
 

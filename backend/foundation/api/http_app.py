@@ -45,8 +45,10 @@ from .di import (
     get_sync_discovery,
     get_sync_service,
     apply_sync_runtime_settings,
+    start_behavior_collector,
     start_monitor_runtime,
     start_sync_runtime,
+    stop_behavior_collector,
     stop_monitor_runtime,
     stop_sync_runtime,
 )
@@ -63,9 +65,11 @@ _log = get_logger(__name__)
 async def _lifespan(_: FastAPI):
     await start_sync_runtime()
     await start_monitor_runtime()
+    await start_behavior_collector()
     try:
         yield
     finally:
+        await stop_behavior_collector()
         await stop_monitor_runtime()
         await stop_sync_runtime()
 

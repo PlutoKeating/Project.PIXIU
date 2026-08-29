@@ -24,6 +24,7 @@ from ..core.config import settings
 from ..core.logger import get_logger
 from .dbus_service import PixiuMemoryHandler
 from ..flow import FlowService, SqliteFlowStore
+from ..monitor.behavior import BehaviorCollector
 from ..monitor.config_store import MonitorConfigStore
 from ..monitor.watcher import DirectoryWatcher
 from ..retrieval import RetrievalService
@@ -51,6 +52,7 @@ _sync_runtime: SyncRuntime | None = None
 _monitor_config_store: MonitorConfigStore | None = None
 _monitor_log_store: MonitorLogStore | None = None
 _monitor_runtime: DirectoryWatcher | None = None
+_behavior_collector: BehaviorCollector | None = None
 #: watcher 回调（watch 线程）把 capture_event 广播调度回的主事件循环；
 #: 由 start_monitor_runtime（_lifespan，主循环）注册。
 _main_loop: asyncio.AbstractEventLoop | None = None
@@ -449,6 +451,56 @@ async def stop_monitor_runtime() -> None:
             _monitor_runtime = None
             _main_loop = None
         _log.info("Monitor runtime stopped")
+
+
+# ─── 行为采集器（批次③ B3-1：随 monitor runtime 生命周期启停）────
+
+async def get_behavior_collector() -> BehaviorCollector:
+    """行为采集器单例（惰性装配，复用 /memory/write 同进程管线服务）。
+
+    security 可选注入：提供时标题经既有 detector 判定，sensitivity>0 不落库
+    （B3-1 规格比 ingest_bridge 更严格：直接丢弃，不写 evidence）。
+    """
+    global _behavior_collector
+    if _behavior_collector is None:
+        db = await get_db()
+        _behavior_collector = BehaviorCollector(
+            config_store=get_monitor_config_store(),
+            ingestion=await get_ingestion_service(db),
+            knowledge=await get_knowledge_service(db),
+            security=await get_security_service(db),
+        )
+        _log.info("Behavior collector created")
+    return _behavior_collector
+
+
+async def start_behavior_collector() -> None:
+    """_lifespan 启动：PIXIU_MONITOR_ENABLED 时启动行为采集轮询线程。
+
+    装配失败（embedding/DB 等）降级为 log warning 并返回，不阻塞 API 启动
+    （对齐 sync runtime 的降级先例）；config enabled && sources.behavior
+    门控在采集器内部按轮询周期生效。
+    """
+    if not settings.monitor_enabled:
+        return
+    try:
+        collector = await get_behavior_collector()
+        collector.start()
+        _log.info("Behavior collector started")
+    except Exception as exc:
+        _log.warning(
+            "behavior collector not started (degraded): %s", exc, exc_info=True
+        )
+
+
+async def stop_behavior_collector() -> None:
+    global _behavior_collector
+    if _behavior_collector is not None:
+        try:
+            _behavior_collector.stop()
+        finally:
+            _behavior_collector = None
+        _log.info("Behavior collector stopped")
 
 
 async def get_dbus_handler(
