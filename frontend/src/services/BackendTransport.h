@@ -61,6 +61,12 @@ public:
     // 运行时开关更新（PUT /sync/settings，enabled/paused 部分更新，两参必传）。
     // 默认空实现，理由同上。
     virtual void updateSyncSettings(bool enabled, bool paused);
+    // 递送层洞察（GET /delivery/insights?limit=3，B4-1）：最近高质量记忆候选，
+    // 供聊天窗欢迎页渲染动态建议卡。默认空实现，理由同上。
+    virtual void deliveryInsights();
+    // 今日简报（GET /delivery/digest，B4-2）：当日记忆沉淀摘要。默认空实现，
+    // 理由同上。
+    virtual void deliveryDigest();
 
     // 当前连接状态。
     virtual ConnectionState connectionState() const = 0;
@@ -117,6 +123,11 @@ signals:
     void configResult(const QJsonObject &config);
     // 监控活动日志（GET /monitor/log → {"events": [...]} 的 events 数组）。
     void monitorLogResult(const QJsonArray &events);
+    // 递送层洞察（GET /delivery/insights → {"insights": [...]} 的 insights 数组）。
+    // 空数组是空库/runtime 未启动的合法退化态，上层据此保留静态兜底。
+    void insightsResult(const QJsonArray &insights);
+    // 今日简报（GET /delivery/digest → {"date","summary"}）。
+    void digestResult(const QJsonObject &response);
 
     // 通用错误；code 取 API 错误码或 NETWORK_ERROR / TIMEOUT。
     void errorOccurred(const QString &code, const QString &message, const QString &requestId);

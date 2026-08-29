@@ -1,6 +1,8 @@
 #ifndef PIXIU_APP_H
 #define PIXIU_APP_H
 
+#include <QDate>
+#include <QHash>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
@@ -31,6 +33,7 @@ class SyncController;
 class EventRouter;
 class MonitorController;
 class MonitorCenterDialog;
+class DeliveryController;
 class QTimer;
 class QDialog;
 class QLabel;
@@ -97,6 +100,16 @@ private:
     // 监控掌控层：状态单一事实来源 + 监控中心面板（懒创建）。
     MonitorController *m_monitorController = nullptr;
     MonitorCenterDialog *m_monitorCenter = nullptr;
+    // 递送层（B4-3）：洞察流 + 今日简报请求与结果上抛。
+    DeliveryController *m_deliveryController = nullptr;
+    // 最近一次洞察（相关主题提醒的 title token 来源）。
+    QJsonArray m_deliveryInsights;
+    // 相关主题轻提醒每日计数（跨日复位，上限 kRelevanceReminderDailyCap）。
+    QDate m_relevanceReminderDay;
+    int m_relevanceReminderCount = 0;
+    // 偏好列表版本对比（key → 最近观察版本；首次列表为基线不提醒）。
+    QHash<QString, int> m_prefVersions;
+    bool m_prefBaselineEstablished = false;
     // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
     // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。
     bool m_pairPending = false;
@@ -163,6 +176,13 @@ private:
     void startLeaveNetwork();
     void revokeNextPeer();
     void finishLeaveNetwork();
+    // B4-3：目录捕获相关主题轻提醒（文件名 token vs 洞察 title token 交集 +
+    // 每日上限）；偏好列表版本对比轻提醒。
+    void maybeNotifyRelevance(const QString &source, const QString &status,
+                              const QString &summary);
+    void notifyPreferenceChanges(const QJsonArray &preferences);
+    // 相关主题轻提醒每日上限。
+    static constexpr int kRelevanceReminderDailyCap = 3;
 };
 
 #endif // PIXIU_APP_H

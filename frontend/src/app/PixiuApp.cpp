@@ -14,6 +14,7 @@
 #include "app/Severity.h"
 #include "app/ThemeService.h"
 #include "app/MonitorController.h"
+#include "app/DeliveryController.h"
 #include "app/UiTokens.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
@@ -43,11 +44,55 @@
 #include <QPushButton>
 #include <QRect>
 #include <QScreen>
+#include <QSet>
 #include <QStringList>
 #include <QTimer>
 #include <QVBoxLayout>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
+
+namespace {
+
+// 简单 token 化（B4-3 MVP）：按「非字母/数字」字符切分；CJK 汉字属字母，
+// 连续 CJK/ASCII 串成为单个 token（中文无空格分词，整段短语即一个 token）。
+// 过滤长度 < 2 的碎片（单字符/单数字噪声）。
+QSet<QString> tokenizeForRelevance(const QString &text)
+{
+    QSet<QString> tokens;
+    QString current;
+    for (const QChar &ch : text) {
+        if (ch.isLetterOrNumber()) {
+            current.append(ch);
+        } else {
+            if (current.size() >= 2) {
+                tokens.insert(current);
+            }
+            current.clear();
+        }
+    }
+    if (current.size() >= 2) {
+        tokens.insert(current);
+    }
+    return tokens;
+}
+
+// 两个 token 是否“相关”：相等，或一方包含另一方（长度 ≥ 2 才参与包含
+// 匹配，避免短串/单字符过度命中）。
+bool tokensRelated(const QString &a, const QString &b)
+{
+    if (a == b) {
+        return true;
+    }
+    if (a.size() >= 2 && b.contains(a)) {
+        return true;
+    }
+    if (b.size() >= 2 && a.contains(b)) {
+        return true;
+    }
+    return false;
+}
+
+} // namespace
 
 // 私有实现：后续 feature（单实例、托盘、设置、服务与窗口）在此挂载。
 struct PixiuApp::Private
@@ -400,6 +445,38 @@ bool PixiuApp::start()
                 }
             });
 
+    // 递送层（B4-3）：欢迎页动态洞察 + 今日简报。
+    // 洞察加载 → 聊天窗渲染动态建议卡（静态兜底保留）；加载时机：启动时
+    // 一次 + 聊天窗每次可见时刷新（见 ChatWindow::shown 接线）。
+    m_deliveryController = new DeliveryController(m_transport, this);
+    connect(m_deliveryController, &DeliveryController::insightsLoaded, this,
+            [this](const QJsonArray &insights) {
+                m_deliveryInsights = insights;
+                if (m_chatWindow) {
+                    m_chatWindow->setInsights(insights);
+                }
+            });
+    connect(m_deliveryController, &DeliveryController::digestLoaded, this,
+            [this](const QJsonObject &response) {
+                if (m_notify) {
+                    m_notify->notify(
+                        tr("今日简报"),
+                        response.value(QStringLiteral("summary")).toString());
+                }
+            });
+    connect(m_deliveryController, &DeliveryController::failed, this,
+            [](const QString &code, const QString &message) {
+                // 洞察/简报失败不打扰用户：欢迎页保留静态兜底，仅记日志。
+                qCWarning(lcApp) << "delivery request failed:"
+                                 << code << message;
+            });
+    connect(m_chatWindow, &ChatWindow::digestRequested, this, [this]() {
+        if (m_deliveryController) {
+            m_deliveryController->loadDigest();
+        }
+    });
+    m_deliveryController->loadInsights();
+
     // 同步管理：总开关/暂停/发现/确认式配对/退出网络/立即同步（SN-6）。
     // 后端占位返回 not_implemented 时如实呈现，不伪造节点或成功状态。
     m_syncController = new SyncController(m_transport, this);
@@ -751,6 +828,8 @@ bool PixiuApp::start()
     connect(m_preferenceController, &PreferenceController::listLoaded, this,
             [this](const QJsonArray &preferences) {
                 m_memoryPanel->setPreferenceList(preferences);
+                // B4-3：偏好列表版本对比轻提醒（版本提升/基线后新增）。
+                notifyPreferenceChanges(preferences);
             });
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
@@ -858,11 +937,17 @@ bool PixiuApp::start()
                     && m_notify) {
                     m_notify->notify(tr("监控隔离"), summary);
                 }
+                // B4-3：目录捕获且已入库时做相关主题轻提醒（每日上限 3）。
+                maybeNotifyRelevance(source, status, summary);
             });
-    // 聊天窗口可见时视为已读，清除悬浮球角标。
+    // 聊天窗口可见时视为已读，清除悬浮球角标；同时刷新洞察（欢迎页
+    // 动态建议卡每次打开都拿最新数据，在途防重由控制器保证）。
     connect(m_chatWindow, &ChatWindow::shown, this, [this]() {
         if (m_floatingBall) {
             m_floatingBall->clearUnread();
+        }
+        if (m_deliveryController) {
+            m_deliveryController->loadInsights();
         }
     });
 
@@ -1101,6 +1186,98 @@ void PixiuApp::applyMonitorConfig(const QJsonObject &config)
     if (m_monitorCenter) {
         m_monitorCenter->setOfflineHint(false);
     }
+}
+
+void PixiuApp::maybeNotifyRelevance(const QString &source, const QString &status,
+                                    const QString &summary)
+{
+    // 仅目录捕获且已入库（ingested）参与相关主题判断：敏感隔离/忽略/剪贴板
+    // 内容不打扰（隔离另有「监控隔离」通知，且敏感条目不应被回显）。
+    if (source != QStringLiteral("directory")
+        || status != QStringLiteral("ingested")
+        || !m_notify || m_deliveryInsights.isEmpty()) {
+        return;
+    }
+    // 目录捕获 summary 形如「记住文件 NAME」，取 NAME 作为文件名（展示与
+    // token 化均用文件名；前缀 token 对命中无贡献，反而会污染展示文案）。
+    QString fileName = summary;
+    const QString prefix = QStringLiteral("记住文件 ");
+    if (fileName.startsWith(prefix)) {
+        fileName = fileName.mid(prefix.size()).trimmed();
+    }
+    if (fileName.isEmpty()) {
+        return;
+    }
+    // 每日上限：跨日复位（轻提醒避免刷屏打扰）。
+    const QDate today = QDate::currentDate();
+    if (m_relevanceReminderDay != today) {
+        m_relevanceReminderDay = today;
+        m_relevanceReminderCount = 0;
+    }
+    if (m_relevanceReminderCount >= kRelevanceReminderDailyCap) {
+        return;
+    }
+    // 文件名 token vs 近期洞察 title token 交集（按 score 降序返回，取首个命中）。
+    const QSet<QString> fileTokens = tokenizeForRelevance(fileName);
+    for (const QJsonValue &value : m_deliveryInsights) {
+        const QJsonObject obj = value.toObject();
+        const QString title = obj.value(QStringLiteral("title")).toString();
+        if (title.trimmed().isEmpty()) {
+            continue;
+        }
+        const QSet<QString> titleTokens = tokenizeForRelevance(title);
+        bool related = false;
+        for (const QString &ft : fileTokens) {
+            for (const QString &tt : titleTokens) {
+                if (tokensRelated(ft, tt)) {
+                    related = true;
+                    break;
+                }
+            }
+            if (related) {
+                break;
+            }
+        }
+        if (related) {
+            ++m_relevanceReminderCount;
+            m_notify->notify(tr("相关主题提醒"),
+                             tr("已记住 文件 %1（与您近期的 %2 相关）")
+                                 .arg(fileName, title));
+            return;
+        }
+    }
+}
+
+void PixiuApp::notifyPreferenceChanges(const QJsonArray &preferences)
+{
+    if (!m_notify) {
+        return;
+    }
+    QHash<QString, int> seen;
+    for (const QJsonValue &value : preferences) {
+        const QJsonObject obj = value.toObject();
+        const QString key = obj.value(QStringLiteral("key")).toString();
+        if (key.trimmed().isEmpty()) {
+            continue;
+        }
+        const int version = obj.value(QStringLiteral("version")).toInt(0);
+        seen.insert(key, version);
+        // 首次列表只建基线（避免首次打开面板时的通知风暴）；此后版本提升或
+        // 基线后新增偏好才轻提醒，版本未变不重复提醒（不误报）。
+        if (!m_prefBaselineEstablished) {
+            continue;
+        }
+        const auto it = m_prefVersions.constFind(key);
+        if (it == m_prefVersions.constEnd()) {
+            m_notify->notify(tr("偏好提醒"),
+                             tr("已学习您的偏好：%1").arg(key));
+        } else if (version > it.value()) {
+            m_notify->notify(tr("偏好提醒"),
+                             tr("已学习您的偏好：%1").arg(key));
+        }
+    }
+    m_prefVersions = seen;
+    m_prefBaselineEstablished = true;
 }
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)

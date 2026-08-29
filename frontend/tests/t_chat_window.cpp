@@ -34,6 +34,9 @@ private slots:
     void suggestionCardsFillInput();
     void sendButtonForwardsTextAndClears();
     void restoreInputPrefillsEditor();
+    void setInsightsRendersDynamicCardsAndKeepsStatic();
+    void setInsightsEmptyKeepsStaticFallback();
+    void digestCardRequestsDigest();
 };
 
 void TestChatWindow::messageListIsAvailable()
@@ -254,6 +257,75 @@ void TestChatWindow::restoreInputPrefillsEditor()
 
     window.restoreInput(QStringLiteral("失败后保留的输入"));
     QCOMPARE(editor->toPlainText(), QStringLiteral("失败后保留的输入"));
+}
+
+void TestChatWindow::setInsightsRendersDynamicCardsAndKeepsStatic()
+{
+    ChatWindow window;
+    window.show();
+    InputBar *input = window.findChild<InputBar *>();
+    QPlainTextEdit *editor = input->findChild<QPlainTextEdit *>(
+        QStringLiteral("inputEdit"));
+    // 静态建议兜底 4 张，先于动态洞察卡存在。
+    QCOMPARE(window.findChildren<QPushButton *>(
+                 QStringLiteral("suggestionCard")).size(), 4);
+
+    QJsonArray insights;
+    insights.append(QJsonObject{
+        {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
+        {QStringLiteral("summary"),
+         QStringLiteral("2026年4月家庭支出清单：本月水电燃气共支出 434.50 元…")},
+        {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")},
+        {QStringLiteral("score"), 0.94},
+        {QStringLiteral("kind"), QStringLiteral("recent")}});
+    insights.append(QJsonObject{
+        {QStringLiteral("title"), QStringLiteral("会议记录")},
+        {QStringLiteral("summary"), QStringLiteral("会议记录：季度规划…")}});
+    window.setInsights(insights);
+
+    // 动态洞察卡渲染在静态建议卡之后，静态兜底保留。
+    const QList<QPushButton *> dynamic =
+        window.findChildren<QPushButton *>(QStringLiteral("insightCard"));
+    QCOMPARE(dynamic.size(), 2);
+    QCOMPARE(window.findChildren<QPushButton *>(
+                 QStringLiteral("suggestionCard")).size(), 4);
+
+    // 卡片内容：标题 + 摘要。
+    QLabel *title = dynamic.first()->findChild<QLabel *>(
+        QStringLiteral("insightTitle"));
+    QVERIFY(title != nullptr);
+    QCOMPARE(title->text(), QStringLiteral("2026年4月家庭支出清单"));
+    QLabel *summary = dynamic.first()->findChild<QLabel *>(
+        QStringLiteral("insightSummary"));
+    QVERIFY(summary != nullptr);
+    QVERIFY(summary->text().contains(QStringLiteral("水电燃气")));
+
+    // 点击动态卡 → 标题填入输入框（与静态建议卡交互一致，可编辑后发送）。
+    QTest::mouseClick(dynamic.first(), Qt::LeftButton);
+    QCOMPARE(editor->toPlainText(), QStringLiteral("2026年4月家庭支出清单"));
+}
+
+void TestChatWindow::setInsightsEmptyKeepsStaticFallback()
+{
+    ChatWindow window;
+    window.setInsights(QJsonArray());
+    // 空数组是合法空态（空库/runtime 未启动）：不渲染动态卡，静态兜底保留。
+    QCOMPARE(window.findChildren<QPushButton *>(
+                 QStringLiteral("insightCard")).size(), 0);
+    QCOMPARE(window.findChildren<QPushButton *>(
+                 QStringLiteral("suggestionCard")).size(), 4);
+}
+
+void TestChatWindow::digestCardRequestsDigest()
+{
+    ChatWindow window;
+    window.show();
+    QPushButton *digest =
+        window.findChild<QPushButton *>(QStringLiteral("digestCard"));
+    QVERIFY(digest != nullptr);
+    QSignalSpy spy(&window, &ChatWindow::digestRequested);
+    QTest::mouseClick(digest, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
 }
 
 QTEST_MAIN(TestChatWindow)

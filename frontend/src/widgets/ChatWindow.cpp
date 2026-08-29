@@ -75,6 +75,58 @@ private:
     QLabel *m_textLabel = nullptr;
 };
 
+// 动态洞察建议卡（B4-3）：标题（加粗）+ 摘要两行；样式与 SuggestionCard
+// 对齐（浅灰圆角、无强边框），点击由 ChatWindow 接线（标题填入输入框）。
+class InsightCard : public QPushButton
+{
+public:
+    InsightCard(const QString &title, const QString &summary, QWidget *parent = nullptr)
+        : QPushButton(parent)
+    {
+        setObjectName(QStringLiteral("insightCard"));
+        setFlat(true);
+        setCursor(Qt::PointingHandCursor);
+        setAccessibleName(title);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+        QVBoxLayout *layout = new QVBoxLayout(this);
+        layout->setContentsMargins(ui::Spacing::M, 10, ui::Spacing::M, 10);
+        layout->setSpacing(4);
+        m_titleLabel = new QLabel(title, this);
+        m_titleLabel->setObjectName(QStringLiteral("insightTitle"));
+        QFont titleFont = m_titleLabel->font();
+        titleFont.setBold(true);
+        m_titleLabel->setFont(titleFont);
+        m_titleLabel->setWordWrap(true);
+        m_titleLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+        layout->addWidget(m_titleLabel);
+        if (!summary.isEmpty()) {
+            m_summaryLabel = new QLabel(summary, this);
+            m_summaryLabel->setObjectName(QStringLiteral("insightSummary"));
+            m_summaryLabel->setWordWrap(true);
+            m_summaryLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+            layout->addWidget(m_summaryLabel);
+        }
+    }
+
+    QSize sizeHint() const override
+    {
+        constexpr int kTextWidth = 230;
+        const int titleHeight =
+            m_titleLabel ? m_titleLabel->heightForWidth(kTextWidth) : 0;
+        const int summaryHeight =
+            m_summaryLabel ? m_summaryLabel->heightForWidth(kTextWidth) : 0;
+        const int vMargins = 20;   // 上下内边距 10px × 2
+        const int hMargins = 24;   // 左右内边距 12px × 2
+        return QSize(kTextWidth + hMargins,
+                     qMax(52, titleHeight + summaryHeight + vMargins + 4));
+    }
+
+private:
+    QLabel *m_titleLabel = nullptr;
+    QLabel *m_summaryLabel = nullptr;
+};
+
 } // namespace
 
 ChatWindow::ChatWindow(QWidget *parent)
@@ -247,6 +299,18 @@ QWidget *ChatWindow::buildWelcomeView()
         cardsLayout->addWidget(card);
         m_suggestionCards.append(card);
     }
+    // 今日简报入口（B4-3）：区别于问题建议卡（objectName=digestCard，不落入
+    // m_suggestionCards），点击不填输入框，而是发 digestRequested 由应用层
+    // 拉取 GET /delivery/digest 并以系统通知展示摘要。初始排在静态建议之后，
+    // 洞察卡渲染后由 setInsights 移到卡片区末尾。
+    m_digestCard = new SuggestionCard(tr("今日简报"), view);
+    m_digestCard->setObjectName(QStringLiteral("digestCard"));
+    connect(m_digestCard, &QPushButton::clicked,
+            this, &ChatWindow::digestRequested);
+    cardsLayout->addWidget(m_digestCard);
+    // 动态洞察卡（setInsights）追加在静态建议卡之后；简报入口随后被
+    // setInsights 移到卡片区末尾（见 setInsights 注释）。
+    m_suggestionsLayout = cardsLayout;
 
     const QColor iconColor = QApplication::palette().color(QPalette::Mid);
     for (QPushButton *card : m_suggestionCards) {
@@ -332,6 +396,45 @@ void ChatWindow::setMonitorActive(bool active)
 void ChatWindow::restoreInput(const QString &text)
 {
     m_inputBar->setInputText(text);
+}
+
+void ChatWindow::setInsights(const QJsonArray &insights)
+{
+    // 幂等：先移除旧动态卡（洞察刷新时避免重复追加），再渲染新洞察。
+    for (QPushButton *card : m_insightCards) {
+        if (m_suggestionsLayout) {
+            m_suggestionsLayout->removeWidget(card);
+        }
+        card->setParent(nullptr);   // 脱离子控件树，findChild 不可达
+        card->deleteLater();
+    }
+    m_insightCards.clear();
+    if (!m_suggestionsLayout) {
+        return; // 欢迎页尚未构建（不应发生：构造即构建）
+    }
+    for (const QJsonValue &value : insights) {
+        const QJsonObject obj = value.toObject();
+        const QString title = obj.value(QStringLiteral("title")).toString();
+        if (title.trimmed().isEmpty()) {
+            continue; // 缺标题的条目无意义，跳过
+        }
+        const QString summary = obj.value(QStringLiteral("summary")).toString();
+        InsightCard *card = new InsightCard(title, summary, this);
+        // 点击语义与静态建议卡一致：标题填入输入框（可编辑后发送）。
+        connect(card, &QPushButton::clicked, this, [this, title]() {
+            if (m_inputBar) {
+                m_inputBar->setInputText(title);
+            }
+        });
+        m_suggestionsLayout->addWidget(card);
+        m_insightCards.append(card);
+    }
+    // 保持「静态问题 → 动态洞察 → 今日简报」的展示顺序：洞察追加后把简报
+    // 入口移到卡片区末尾（removeWidget 不删除控件，addWidget 重新挂回）。
+    if (m_digestCard && m_suggestionsLayout) {
+        m_suggestionsLayout->removeWidget(m_digestCard);
+        m_suggestionsLayout->addWidget(m_digestCard);
+    }
 }
 
 void ChatWindow::hideAnimated()

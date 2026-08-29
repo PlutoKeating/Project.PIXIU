@@ -14,6 +14,7 @@
 #include "app/EventRouter.h"
 #include "app/MonitorController.h"
 #include "app/PixiuApp.h"
+#include "app/PreferenceController.h"
 #include "app/Severity.h"
 #include "services/BackendTransport.h"
 #include "services/BackendTypes.h"
@@ -188,6 +189,40 @@ public:
     }
     void monitorLog(int, int) override {}
 
+    // ── B4-3 递送层测试缝 ──
+    // 默认不回包（模拟后端静默）；需要回包的用例置 autoEcho* 并填充载荷。
+    bool autoEchoInsights = false;        // deliveryInsights → insightsResult
+    bool autoEchoDigest = false;          // deliveryDigest → digestResult
+    bool autoEchoPreferences = false;     // preferencesList → preferencesListResult
+    QJsonArray insightsPayload;
+    QJsonObject digestPayload;
+    QJsonArray preferencesPayload;
+    int insightsCalls = 0;
+    int digestCalls = 0;
+    int preferencesListCalls = 0;
+
+    void deliveryInsights() override
+    {
+        ++insightsCalls;
+        if (autoEchoInsights) {
+            emit insightsResult(insightsPayload);
+        }
+    }
+    void deliveryDigest() override
+    {
+        ++digestCalls;
+        if (autoEchoDigest) {
+            emit digestResult(digestPayload);
+        }
+    }
+    void preferencesList(const QString &) override
+    {
+        ++preferencesListCalls;
+        if (autoEchoPreferences) {
+            emit preferencesListResult(preferencesPayload);
+        }
+    }
+
     // 手动释放排队中的 GET 响应 / PUT 回声（模拟响应乱序到达）。
     void flushNextGet()
     {
@@ -257,6 +292,11 @@ private slots:
     void conflictSeverityDispatchesDisturbance();
     void severityParsingNormalizesCaseAndUnknown();
     void pairRequestDialogShowsAndConfirms();
+    void insightsLoadedRenderIntoChatWindow();
+    void relevanceReminderMatchesTopicAndSkipsUnrelated();
+    void relevanceReminderDailyCap();
+    void preferenceChangeNotifiesOnVersionBumpOnly();
+    void digestEntryNotifiesSummary();
 
 private:
     template <typename T>
@@ -1178,6 +1218,228 @@ void TestAppNavigation::pairRequestDialogShowsAndConfirms()
     QCOMPARE(fake->confirmPairingCalls.at(1).first,
              QStringLiteral("req_pair2"));
     QCOMPARE(fake->confirmPairingCalls.at(1).second, false);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::insightsLoadedRenderIntoChatWindow()
+{
+    // B4-3：启动时 DeliveryController::loadInsights() → insightsLoaded →
+    // ChatWindow::setInsights 渲染动态洞察卡。
+    qputenv("USER", QStringLiteral("pixiu-nav-insights-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoInsights = true;
+    fake->insightsPayload = QJsonArray{
+        QJsonObject{
+            {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
+            {QStringLiteral("summary"),
+             QStringLiteral("2026年4月家庭支出清单：本月水电燃气共支出 434.50 元…")},
+            {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")},
+            {QStringLiteral("score"), 0.94},
+            {QStringLiteral("kind"), QStringLiteral("recent")}},
+        QJsonObject{
+            {QStringLiteral("title"), QStringLiteral("会议记录")},
+            {QStringLiteral("summary"), QStringLiteral("会议记录：季度规划…")}}};
+
+    const auto chatsBefore = topLevels<ChatWindow>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
+    QVERIFY(chat != nullptr);
+    QCOMPARE(fake->insightsCalls, 1);
+    // 动态洞察卡已渲染；静态建议兜底 4 张保留。
+    QCOMPARE(chat->findChildren<QPushButton *>(
+                 QStringLiteral("insightCard")).size(), 2);
+    QCOMPARE(chat->findChildren<QPushButton *>(
+                 QStringLiteral("suggestionCard")).size(), 4);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::relevanceReminderMatchesTopicAndSkipsUnrelated()
+{
+    // B4-3：目录捕获且已入库时，文件名 token 与近期洞察 title token 交集
+    // 命中 → 相关主题轻提醒；不同主题 / 非目录 / 非 ingested 不触发。
+    qputenv("USER", QStringLiteral("pixiu-nav-rel-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoInsights = true;
+    fake->insightsPayload = QJsonArray{
+        QJsonObject{
+            {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
+            {QStringLiteral("summary"), QStringLiteral("s")},
+            {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")}}};
+    RecordingNotifyService *notify = new RecordingNotifyService(this);
+
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    app.setNotifyServiceForTest(notify);
+    QVERIFY(app.start());
+
+    EventRouter *router = app.findChild<EventRouter *>();
+    QVERIFY(router != nullptr);
+    const int baseline = notify->notifyCalls;
+    QCOMPARE(baseline, 0);   // 启动路径不产生通知
+
+    // 同主题：命中 → 轻提醒。
+    emit router->captureEvent(QStringLiteral("directory"),
+                              QStringLiteral("ingested"),
+                              QStringLiteral("记住文件 2026年4月家庭支出清单.xlsx"),
+                              1756080000);
+    QCOMPARE(notify->notifyCalls, baseline + 1);
+    QCOMPARE(notify->titles.last(), QStringLiteral("相关主题提醒"));
+    QVERIFY(notify->bodies.last().contains(QStringLiteral("2026年4月家庭支出清单")));
+
+    // 不同主题：不触发。
+    emit router->captureEvent(QStringLiteral("directory"),
+                              QStringLiteral("ingested"),
+                              QStringLiteral("记住文件 会议记录.txt"),
+                              1756080060);
+    QCOMPARE(notify->notifyCalls, baseline + 1);
+
+    // 非目录来源 / 非 ingested 状态：不触发。
+    emit router->captureEvent(QStringLiteral("clipboard"),
+                              QStringLiteral("ingested"),
+                              QStringLiteral("记住剪贴板内容"),
+                              1756080120);
+    emit router->captureEvent(QStringLiteral("directory"),
+                              QStringLiteral("ignored"),
+                              QStringLiteral("忽略超大文件 x"),
+                              1756080180);
+    QCOMPARE(notify->notifyCalls, baseline + 1);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::relevanceReminderDailyCap()
+{
+    // B4-3：相关主题轻提醒每日上限 3，第 4 次同主题命中不再提醒。
+    qputenv("USER", QStringLiteral("pixiu-nav-relcap-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoInsights = true;
+    fake->insightsPayload = QJsonArray{
+        QJsonObject{
+            {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
+            {QStringLiteral("summary"), QStringLiteral("s")},
+            {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")}}};
+    RecordingNotifyService *notify = new RecordingNotifyService(this);
+
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    app.setNotifyServiceForTest(notify);
+    QVERIFY(app.start());
+
+    EventRouter *router = app.findChild<EventRouter *>();
+    QVERIFY(router != nullptr);
+
+    for (int i = 0; i < 4; ++i) {
+        emit router->captureEvent(
+            QStringLiteral("directory"), QStringLiteral("ingested"),
+            QStringLiteral("记住文件 2026年4月家庭支出清单-%1.txt").arg(i),
+            1756080000 + i);
+    }
+    // 前 3 次命中提醒，第 4 次被每日上限截断。
+    QCOMPARE(notify->notifyCalls, 3);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::preferenceChangeNotifiesOnVersionBumpOnly()
+{
+    // B4-3：preferencesList 版本对比——首次列表为基线（不提醒，避免首开
+    // 面板通知风暴）；版本提升或基线后新增偏好 → 轻提醒一次；版本未变不
+    // 重复提醒（不误报）。
+    qputenv("USER", QStringLiteral("pixiu-nav-pref-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoPreferences = true;
+    RecordingNotifyService *notify = new RecordingNotifyService(this);
+
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    app.setNotifyServiceForTest(notify);
+    QVERIFY(app.start());
+
+    PreferenceController *pc = app.findChild<PreferenceController *>();
+    QVERIFY(pc != nullptr);
+
+    // 基线：首次列表不提醒。
+    fake->preferencesPayload = QJsonArray{
+        QJsonObject{
+            {QStringLiteral("id"), QStringLiteral("pref_1")},
+            {QStringLiteral("key"), QStringLiteral("output_style.compact")},
+            {QStringLiteral("version"), 1},
+            {QStringLiteral("scope"), QStringLiteral("user:local")}}};
+    pc->loadList();
+    QCOMPARE(notify->notifyCalls, 0);
+
+    // 版本提升：提醒一次。
+    fake->preferencesPayload = QJsonArray{
+        QJsonObject{
+            {QStringLiteral("id"), QStringLiteral("pref_1")},
+            {QStringLiteral("key"), QStringLiteral("output_style.compact")},
+            {QStringLiteral("version"), 2},
+            {QStringLiteral("scope"), QStringLiteral("user:local")}}};
+    pc->loadList();
+    QCOMPARE(notify->notifyCalls, 1);
+    QCOMPARE(notify->titles.last(), QStringLiteral("偏好提醒"));
+    QCOMPARE(notify->bodies.last(),
+             QStringLiteral("已学习您的偏好：output_style.compact"));
+
+    // 版本未变：不重复提醒（不误报）。
+    pc->loadList();
+    QCOMPARE(notify->notifyCalls, 1);
+
+    // 基线后新出现的偏好：提醒一次。
+    fake->preferencesPayload = QJsonArray{
+        QJsonObject{
+            {QStringLiteral("id"), QStringLiteral("pref_1")},
+            {QStringLiteral("key"), QStringLiteral("output_style.compact")},
+            {QStringLiteral("version"), 2},
+            {QStringLiteral("scope"), QStringLiteral("user:local")}},
+        QJsonObject{
+            {QStringLiteral("id"), QStringLiteral("pref_2")},
+            {QStringLiteral("key"), QStringLiteral("security_policy.screen_lock")},
+            {QStringLiteral("version"), 1},
+            {QStringLiteral("scope"), QStringLiteral("user:local")}}};
+    pc->loadList();
+    QCOMPARE(notify->notifyCalls, 2);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::digestEntryNotifiesSummary()
+{
+    // B4-3：聊天窗「今日简报」建议卡 → digestRequested → DeliveryController
+    // 拉取 GET /delivery/digest → 摘要经系统通知展示。
+    qputenv("USER", QStringLiteral("pixiu-nav-digest-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoDigest = true;
+    fake->digestPayload = QJsonObject{
+        {QStringLiteral("date"), QStringLiteral("2026-08-29")},
+        {QStringLiteral("summary"),
+         QStringLiteral("当日新增 2 条记忆（目录 2），另有 1 条敏感内容已隔离")}};
+    RecordingNotifyService *notify = new RecordingNotifyService(this);
+
+    const auto chatsBefore = topLevels<ChatWindow>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    app.setNotifyServiceForTest(notify);
+    QVERIFY(app.start());
+
+    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
+    QVERIFY(chat != nullptr);
+    emit chat->digestRequested();
+    QCOMPARE(fake->digestCalls, 1);
+    QCOMPARE(notify->notifyCalls, 1);
+    QCOMPARE(notify->titles.last(), QStringLiteral("今日简报"));
+    QCOMPARE(notify->bodies.last(),
+             QStringLiteral("当日新增 2 条记忆（目录 2），另有 1 条敏感内容已隔离"));
 
     app.shutdown();
 }

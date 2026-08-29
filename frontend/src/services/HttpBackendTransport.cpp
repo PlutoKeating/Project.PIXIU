@@ -253,6 +253,27 @@ void HttpBackendTransport::monitorLog(int limit, int offset)
             });
 }
 
+void HttpBackendTransport::deliveryInsights()
+{
+    // B4-1：最近 24h 高质量记忆候选（limit 固定 3，欢迎页动态建议卡）。
+    // 空数组是空库/runtime 未启动的合法退化态，透传给上层保留静态兜底。
+    QString path = QStringLiteral("/delivery/insights?limit=3");
+    getJson(path,
+            [this](quint64, const QJsonObject &obj) {
+                emit insightsResult(
+                    obj.value(QStringLiteral("insights")).toArray());
+            });
+}
+
+void HttpBackendTransport::deliveryDigest()
+{
+    // B4-2：今日简报（缺省日期 = 今天，本地时区日边界由服务端处理）。
+    getJson(QStringLiteral("/delivery/digest"),
+            [this](quint64, const QJsonObject &obj) {
+                emit digestResult(obj);
+            });
+}
+
 ConnectionState HttpBackendTransport::connectionState() const
 {
     return m_state;

@@ -52,6 +52,8 @@ public:
     void requestPairing(const QString &targetId) override;
     void confirmPairing(const QString &requestId, bool accept) override;
     void updateSyncSettings(bool enabled, bool paused) override;
+    void deliveryInsights() override;
+    void deliveryDigest() override;
 
     ConnectionState connectionState() const override;
 

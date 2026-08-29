@@ -51,3 +51,11 @@ void BackendTransport::confirmPairing(const QString &, bool)
 void BackendTransport::updateSyncSettings(bool, bool)
 {
 }
+
+void BackendTransport::deliveryInsights()
+{
+}
+
+void BackendTransport::deliveryDigest()
+{
+}
