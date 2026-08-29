@@ -121,6 +121,12 @@ class BehaviorCollector:
     def stop(self) -> None:
         """停止轮询线程（幂等；最多等待 5s）。"""
         self._running = False
+        # 停止前 best-effort 最终 flush：落库最后不足 60s 的聚合数据
+        # （无主循环句柄/测试直调时 _schedule 走内联 fallback；异常不阻断停止）。
+        try:
+            self._flush()
+        except Exception:
+            log.exception("final behavior flush failed during stop")
         if self._thread is not None:
             self._thread.join(timeout=5)
             self._thread = None
@@ -166,8 +172,11 @@ class BehaviorCollector:
                 self._titles[app] = title
             return
 
-        if self._current_app is not None and app is not None:
-            # 焦点从 A 切到 B：结算 A 的活跃时长 [last_flip, now)。
+        if self._current_app is not None:
+            # 焦点离开当前应用（切到 B，或焦点丢失/窗口关闭/锁屏/无活动窗口）
+            # 都结算 A 的活跃时长 [last_flip, now)——焦点消失时整段时长
+            # 不能静默丢弃。None 连续（_current_app 已为 None）已由上方
+            # ``app == self._current_app`` 早退覆盖，不会重复结算。
             self._focus[self._current_app] = (
                 self._focus.get(self._current_app, 0.0) + (now - self._last_flip)
             )
@@ -242,6 +251,9 @@ class BehaviorCollector:
                 return
             except RuntimeError:
                 log.exception("behavior persist scheduling failed")
+                # 调度失败时协程尚未被包装为 task：显式 close() 避免孤儿
+                # 协程 "never awaited" 告警。
+                coro.close()
                 return
         # 主循环句柄缺失（测试直调/降级启动）：当前线程无运行中循环时
         # 内联执行一次（asyncio.run）；有运行中循环则放弃并记录。
@@ -251,11 +263,17 @@ class BehaviorCollector:
             log.exception(
                 "behavior persist fallback failed (no main loop registered)"
             )
+            # asyncio.run 在运行中循环内抛 RuntimeError 时协程从未被启动：
+            # 显式 close() 释放，避免 "coroutine was never awaited" 告警。
+            coro.close()
 
     async def _aggregate(
         self, app: str, title: str, focus_seconds: int
     ) -> None:
         """把单应用聚合量转为行为 evidence 并落库（门控/敏感判定在先）。"""
+        if not title:
+            # S2.1：忽略无标题窗口——无标题不构成可用的行为 evidence。
+            return
         cfg = self._config.get()
         if not (cfg.get("enabled") and cfg.get("sources", {}).get("behavior")):
             return
@@ -269,11 +287,15 @@ class BehaviorCollector:
                     {"title": title}
                 )
             except Exception:
-                # detector 异常只记日志，不阻断采集（降级按非敏感处理）
-                log.exception("behavior sensitivity detect failed")
-                sensitivity = 0
+                # detector 异常时无法确认标题非敏感：fail-closed 直接丢弃
+                # （不落库），与「敏感即丢弃」的隐私姿态一致。
+                log.exception(
+                    "behavior sensitivity detect failed, dropping evidence"
+                )
+                return
             if sensitivity > 0:
-                log.info("drop behavior evidence (sensitive title): %s", title)
+                # 只记 app，不记标题原文（敏感标题不进日志文件）。
+                log.info("drop behavior evidence (sensitive title): app=%s", app)
                 return
 
         now = time.localtime()
@@ -333,7 +355,8 @@ def _parse_wm_class(text: str) -> str | None:
             continue
         value = line.split("=", 1)[1].strip()
         parts = [part.strip().strip('"') for part in value.split(",")]
-        if parts and parts[0]:
+        # xprop 缺失属性时打印 "not found."：视为无应用名，返回 None。
+        if parts and parts[0].lower() not in ("not found.", "not found"):
             return parts[0]
     return None
 
@@ -346,7 +369,11 @@ def _parse_wm_name(text: str) -> str:
     for line in text.splitlines():
         if "WM_NAME" not in line or "=" not in line:
             continue
-        return line.split("=", 1)[1].strip().strip('"')
+        value = line.split("=", 1)[1].strip().strip('"')
+        # xprop 缺失属性时打印 "not found."：视为无标题，返回空串。
+        if value.lower() in ("not found.", "not found"):
+            return ""
+        return value
     return ""
 
 

@@ -5,6 +5,7 @@
   - 60s 聚合产出 {"app","title","focus_seconds","hour_bucket","day_type"} evidence；
   - enabled && sources["behavior"] 双门控（仿 watcher effective）；
   - 标题经既有 security detector 判定，sensitivity>0 不落库（比 ingest_bridge 更严格）；
+    detector 异常时无法确认非敏感，fail-closed 直接丢弃（不落库）；
   - 无 X 环境（xprop 失败）降级记录日志不采集、不崩溃。
 
 测试直调 _aggregate/_poll_focus/_flush 等内部方法，绕开 1s 轮询线程，保证确定性。
@@ -140,7 +141,7 @@ async def test_insensitive_title_persisted():
 
 
 @pytest.mark.asyncio
-async def test_sensitivity_detect_failure_persists():
+async def test_sensitivity_detect_failure_drops():
     class _BrokenSecurity:
         async def detect_sensitivity(self, raw):
             raise RuntimeError("detector boom")
@@ -148,8 +149,8 @@ async def test_sensitivity_detect_failure_persists():
     collector, cfg, ing, _ = _make_collector()
     collector._security = _BrokenSecurity()
     await collector._aggregate("org.kylin.files", "任何标题", 5)
-    # detector 异常只记日志，不阻断采集（降级为按非敏感处理）
-    assert ing.evidence
+    # detector 异常时无法确认标题非敏感：fail-closed 直接丢弃，不落库
+    assert not ing.evidence
 
 
 # ═══════════════════════════════════════════════════════
@@ -191,6 +192,27 @@ def test_poll_focus_accumulates_seconds_on_switch(monkeypatch):
     # 标题随聚合态保留（_flush 落库时读取）
     assert collector._titles.get("org.kylin.files") == "支出清单"
     assert collector._titles.get("org.kylin.office") == "报告"
+
+
+def test_poll_focus_settles_duration_on_focus_loss(monkeypatch):
+    collector, cfg, ing, _ = _make_collector()
+    # A(1000) → 焦点丢失 None(1010) → B(1020)：切到 None 时结算 A 的时长，
+    # 不能把整段活跃时长静默丢弃（C1：_focus 应保留 A 的 10s）。
+    ticks = iter([1000.0, 1010.0, 1020.0])
+    monkeypatch.setattr(behavior_module.time, "monotonic", lambda: next(ticks))
+    reads = iter(
+        [
+            ("org.kylin.files", "支出清单"),
+            (None, ""),
+            ("org.kylin.office", "报告"),
+        ]
+    )
+    monkeypatch.setattr(collector, "_read_focus", lambda: next(reads))
+    for _ in range(3):
+        collector._poll_focus()
+    assert collector._focus.get("org.kylin.files") == 10.0
+    assert collector._current_app == "org.kylin.office"
+    assert collector._current_title == "报告"
 
 
 def test_poll_to_flush_persists_title(monkeypatch):
@@ -310,6 +332,22 @@ def test_parse_wm_class_and_name():
 def test_parse_wm_class_missing():
     assert behavior_module._parse_wm_class("WM_NAME(STRING) = \"x\"\n") is None
     assert behavior_module._parse_wm_name("WM_CLASS(STRING) = \"x\"\n") == ""
+
+
+def test_parse_wm_class_not_found_is_missing():
+    # xprop 缺失属性时打印 "not found."：解析为无应用名/无标题，
+    # 不能变成幻影 app 键或幻影标题。
+    text = "WM_CLASS(STRING) = not found.\nWM_NAME(STRING) = not found.\n"
+    assert behavior_module._parse_wm_class(text) is None
+    assert behavior_module._parse_wm_name(text) == ""
+
+
+@pytest.mark.asyncio
+async def test_no_title_window_skipped():
+    collector, cfg, ing, _ = _make_collector()
+    # S2.1：忽略无标题窗口——无标题不聚合落库
+    await collector._aggregate("org.kylin.files", "", 5)
+    assert not ing.evidence
 
 
 def test_parse_active_window_id():
