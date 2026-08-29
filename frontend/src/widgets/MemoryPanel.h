@@ -9,11 +9,12 @@ class QLabel;
 class QLineEdit;
 class QListWidget;
 class QComboBox;
+class QCheckBox;
+class QDialog;
 class QKeyEvent;
 class QPushButton;
 class QTabWidget;
 class PairDialog;
-class RevokeDialog;
 
 // 记忆管理面板：偏好 / 冲突 / 同步 三个 Tab。
 //
@@ -67,6 +68,18 @@ public:
     // 更新同步 Tab 摘要（来自 GET /sync/status）。
     void setSyncSummary(const QJsonObject &status);
 
+    // 更新同步运行时开关（GET /sync/status 回填 / PUT /sync/settings 回声）。
+    // 程序化回填不发信号（QSignalBlocker 防回环），并按总开关门控下级控件。
+    void setSyncSettings(bool enabled, bool paused);
+
+    // 更新附近设备发现列表（来自 GET /sync/discover）。
+    void setDiscoveredDevices(const QJsonArray &devices);
+
+    // 更新待处理冲突计数（conflictsLoaded 数组长度 / conflictDetected +1）。
+    void setSyncConflictCount(int count);
+    // 当前待处理冲突计数（应用层 conflictDetected 递增用）。
+    int syncConflictCount() const;
+
 signals:
     // 用户请求加载指定偏好 ID 的历史。
     void historyRequested(const QString &preferenceId);
@@ -84,8 +97,16 @@ signals:
     void pairRequested(const QJsonObject &payload);
     // 用户请求刷新节点列表与同步状态。
     void syncRefreshRequested();
-    // 用户已确认解绑指定设备（二次确认通过后发射）。
-    void revokeConfirmed(const QString &peerId);
+    // 用户切换同步运行时开关（enabled / paused 双值，PUT /sync/settings）。
+    void syncSettingsRequested(bool enabled, bool paused);
+    // 用户请求发现局域网设备（GET /sync/discover）。
+    void syncDiscoverRequested();
+    // 用户对发现列表中的设备发起确认式配对（targetId 为目标设备）。
+    void syncPairRequested(const QString &targetId);
+    // 用户已确认退出网络（整网解除，逐台 revoke 由应用层执行）。
+    void syncLeaveRequested();
+    // 用户请求立即同步（复用 refresh 语义）。
+    void syncNowRequested();
 
 protected:
     // Esc 关闭面板（键盘可达）。
@@ -115,10 +136,26 @@ private:
     QLabel *m_syncEmptyLabel = nullptr;
     QListWidget *m_peerList = nullptr;
     PairDialog *m_pairDialog = nullptr;
-    RevokeDialog *m_revokeDialog = nullptr;
-    QString m_pendingRevokePeerId;
+    // SN-6 同步 Tab 管理控件集。
+    QCheckBox *m_syncMasterSwitch = nullptr;
+    QCheckBox *m_syncPauseSwitch = nullptr;
+    QPushButton *m_syncConflictBanner = nullptr;
+    QListWidget *m_discoveredDeviceList = nullptr;
+    QLabel *m_discoverEmptyLabel = nullptr;
+    QPushButton *m_pairButton = nullptr;
+    QPushButton *m_syncNowButton = nullptr;
+    QPushButton *m_leaveNetworkButton = nullptr;
+    QDialog *m_leaveConfirmDialog = nullptr;
+    QLabel *m_leaveConfirmText = nullptr;
+    // 同步运行时状态（GET /sync/status 回填；默认开）。
+    bool m_syncEnabled = true;
+    bool m_syncPaused = false;
+    // 非本机节点数（「退出网络」确认框展示台数；为 0 时入口禁用）。
+    int m_syncPeerCount = 0;
+    int m_syncConflictCount = 0;
 
-    void requestRevoke(const QString &peerId, const QString &peerName);
+    void updateSyncControlsEnabled();
+    void showLeaveConfirm();
 };
 
 #endif // PIXIU_MEMORY_PANEL_H

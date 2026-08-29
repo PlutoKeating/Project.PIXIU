@@ -2,11 +2,12 @@
 
 #include "app/UiTokens.h"
 #include "widgets/PairDialog.h"
-#include "widgets/RevokeDialog.h"
 
+#include <QCheckBox>
 #include <QCoreApplication>
 #include <QComboBox>
 #include <QDateTime>
+#include <QDialog>
 #include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QJsonDocument>
@@ -17,6 +18,7 @@
 #include <QListWidget>
 #include <QLoggingCategory>
 #include <QPushButton>
+#include <QSignalBlocker>
 #include <QStringList>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -62,6 +64,13 @@ MemoryPanel::MemoryPanel(QWidget *parent)
     m_tabs->addTab(createPreferenceTab(), tr("偏好"));
     m_tabs->addTab(createConflictTab(), tr("冲突"));
     m_tabs->addTab(createSyncTab(), tr("同步"));
+
+    // 切到同步 Tab 时触发局域网设备发现（覆盖 chip 入口与面板内手动切换）。
+    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int index) {
+        if (index == 2) {
+            emit syncDiscoverRequested();
+        }
+    });
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(ui::Spacing::M, ui::Spacing::M,
@@ -271,6 +280,7 @@ void MemoryPanel::setSyncStatus(const QString &status, bool ok)
 void MemoryPanel::setPeers(const QJsonArray &peers)
 {
     m_peerList->clear();
+    m_syncPeerCount = 0;
 
     for (const QJsonValue &value : peers) {
         const QJsonObject peer = value.toObject();
@@ -278,6 +288,9 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
         const QString name = peer.value(QStringLiteral("name")).toString();
         const bool isSelf = peer.value(QStringLiteral("is_self")).toBool(false);
         const QString state = peer.value(QStringLiteral("status")).toString();
+        if (!isSelf) {
+            ++m_syncPeerCount;
+        }
 
         QWidget *container = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(container);
@@ -325,22 +338,7 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
             layout->addWidget(metaLabel);
         }
 
-        // 本机不可解绑；其他设备提供“解绑”入口（二次确认在应用层触发）。
-        if (!isSelf) {
-            QPushButton *revokeButton = new QPushButton(tr("解绑"), container);
-            revokeButton->setObjectName(QStringLiteral("revokeButton"));
-            revokeButton->setAccessibleName(tr("解绑设备 %1").arg(name));
-            revokeButton->setCursor(Qt::PointingHandCursor);
-            revokeButton->setFlat(true);
-            connect(revokeButton, &QPushButton::clicked, this,
-                    [this, id, name]() { requestRevoke(id, name); });
-
-            QHBoxLayout *buttonRow = new QHBoxLayout();
-            buttonRow->addStretch(1);
-            buttonRow->addWidget(revokeButton);
-            layout->addLayout(buttonRow);
-        }
-
+        // SN-6：移除单设备解绑（用户决策：仅整网退出，经「退出网络」按钮）。
         QListWidgetItem *item = new QListWidgetItem(m_peerList);
         item->setFlags(Qt::ItemIsEnabled);
         item->setSizeHint(container->sizeHint());
@@ -350,6 +348,7 @@ void MemoryPanel::setPeers(const QJsonArray &peers)
     const bool hasPeers = !peers.isEmpty();
     m_peerList->setVisible(hasPeers);
     m_syncEmptyLabel->setVisible(!hasPeers);
+    updateSyncControlsEnabled();
 }
 
 void MemoryPanel::setSyncSummary(const QJsonObject &status)
@@ -382,6 +381,177 @@ void MemoryPanel::setSyncSummary(const QJsonObject &status)
 
     m_syncSummaryLabel->setText(parts.join(QStringLiteral(" · ")));
     m_syncSummaryLabel->setVisible(!parts.isEmpty());
+}
+
+void MemoryPanel::setSyncSettings(bool enabled, bool paused)
+{
+    m_syncEnabled = enabled;
+    m_syncPaused = paused;
+    // 程序化回填（GET /sync/status / PUT 回声）不得反向触发请求信号。
+    if (m_syncMasterSwitch) {
+        const QSignalBlocker blocker(m_syncMasterSwitch);
+        m_syncMasterSwitch->setChecked(enabled);
+    }
+    if (m_syncPauseSwitch) {
+        const QSignalBlocker blocker(m_syncPauseSwitch);
+        m_syncPauseSwitch->setChecked(paused);
+    }
+    updateSyncControlsEnabled();
+}
+
+void MemoryPanel::updateSyncControlsEnabled()
+{
+    // 总开关关闭时禁用全部下级控件（同步 runtime 已停，管理动作无意义）。
+    const bool active = m_syncEnabled;
+    if (m_syncPauseSwitch) {
+        m_syncPauseSwitch->setEnabled(active);
+    }
+    if (m_pairButton) {
+        m_pairButton->setEnabled(active);
+    }
+    if (m_discoveredDeviceList) {
+        m_discoveredDeviceList->setEnabled(active);
+    }
+    if (m_syncNowButton) {
+        m_syncNowButton->setEnabled(active);
+    }
+    if (m_leaveNetworkButton) {
+        m_leaveNetworkButton->setEnabled(active && m_syncPeerCount > 0);
+    }
+}
+
+void MemoryPanel::setDiscoveredDevices(const QJsonArray &devices)
+{
+    m_discoveredDeviceList->clear();
+
+    for (const QJsonValue &value : devices) {
+        const QJsonObject device = value.toObject();
+        const QString id = device.value(QStringLiteral("device_id")).toString();
+        const QString name = device.value(QStringLiteral("device_name")).toString();
+        const bool pairable = device.value(QStringLiteral("pairable")).toBool(false);
+        const bool paired = device.value(QStringLiteral("paired")).toBool(false);
+        const QString displayName =
+            name.isEmpty() ? tr("（未命名设备）") : name;
+
+        QWidget *container = new QWidget();
+        QVBoxLayout *layout = new QVBoxLayout(container);
+        layout->setContentsMargins(ui::Spacing::S, ui::Spacing::XS,
+                                   ui::Spacing::S, ui::Spacing::XS);
+        layout->setSpacing(ui::Spacing::XS);
+
+        QHBoxLayout *nameRow = new QHBoxLayout();
+        QLabel *nameLabel = new QLabel(displayName, container);
+        nameLabel->setObjectName(QStringLiteral("discoverNameLabel"));
+        nameLabel->setFont(ui::Font::body());
+        nameRow->addWidget(nameLabel);
+        nameRow->addStretch(1);
+
+        // 可配对且未配对设备提供「配对」按钮（一键发起确认式配对）；
+        // 已配对 / 不可配对设备仅展示状态。
+        if (!paired && pairable) {
+            QPushButton *pairButton = new QPushButton(tr("配对"), container);
+            pairButton->setObjectName(QStringLiteral("discoverPairButton"));
+            pairButton->setAccessibleName(tr("与 %1 配对").arg(displayName));
+            pairButton->setCursor(Qt::PointingHandCursor);
+            pairButton->setFlat(true);
+            connect(pairButton, &QPushButton::clicked, this,
+                    [this, id]() { emit syncPairRequested(id); });
+            nameRow->addWidget(pairButton);
+        } else {
+            QLabel *stateLabel = new QLabel(
+                paired ? tr("已配对") : tr("不可配对"), container);
+            stateLabel->setObjectName(QStringLiteral("discoverStateLabel"));
+            stateLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
+            nameRow->addWidget(stateLabel);
+        }
+        layout->addLayout(nameRow);
+
+        QStringList addresses;
+        const QJsonArray addrArray = device.value(QStringLiteral("addresses")).toArray();
+        for (const QJsonValue &addr : addrArray) {
+            const QString text = addr.toString();
+            if (!text.isEmpty()) {
+                addresses << text;
+            }
+        }
+        if (!addresses.isEmpty()) {
+            QLabel *addrLabel = new QLabel(addresses.join(QStringLiteral(", ")), container);
+            addrLabel->setObjectName(QStringLiteral("discoverAddrLabel"));
+            addrLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
+            layout->addWidget(addrLabel);
+        }
+
+        QListWidgetItem *item = new QListWidgetItem(m_discoveredDeviceList);
+        item->setFlags(Qt::ItemIsEnabled);
+        item->setSizeHint(container->sizeHint());
+        m_discoveredDeviceList->setItemWidget(item, container);
+    }
+
+    const bool hasDevices = !devices.isEmpty();
+    m_discoveredDeviceList->setVisible(hasDevices);
+    m_discoverEmptyLabel->setVisible(!hasDevices);
+}
+
+void MemoryPanel::setSyncConflictCount(int count)
+{
+    m_syncConflictCount = count;
+    if (!m_syncConflictBanner) {
+        return;
+    }
+    m_syncConflictBanner->setText(tr("待处理冲突 %1").arg(count));
+    // 仅 N>0 时可见；点击跳转冲突 Tab（接线见 createSyncTab）。
+    m_syncConflictBanner->setVisible(count > 0);
+}
+
+int MemoryPanel::syncConflictCount() const
+{
+    return m_syncConflictCount;
+}
+
+void MemoryPanel::showLeaveConfirm()
+{
+    if (!m_leaveConfirmDialog) {
+        m_leaveConfirmDialog = new QDialog(this);
+        m_leaveConfirmDialog->setObjectName(QStringLiteral("leaveConfirmDialog"));
+        m_leaveConfirmDialog->setWindowTitle(tr("退出同步网络"));
+
+        m_leaveConfirmText = new QLabel(m_leaveConfirmDialog);
+        m_leaveConfirmText->setObjectName(QStringLiteral("leaveConfirmText"));
+        m_leaveConfirmText->setWordWrap(true);
+
+        QPushButton *cancelButton = new QPushButton(tr("取消"), m_leaveConfirmDialog);
+        cancelButton->setObjectName(QStringLiteral("leaveCancelButton"));
+        cancelButton->setAccessibleName(tr("取消退出网络"));
+        cancelButton->setCursor(Qt::PointingHandCursor);
+        QPushButton *confirmButton = new QPushButton(tr("退出网络"), m_leaveConfirmDialog);
+        confirmButton->setObjectName(QStringLiteral("leaveConfirmButton"));
+        confirmButton->setAccessibleName(tr("确认退出网络"));
+        confirmButton->setStyleSheet(ui::dangerButtonStyle());
+        confirmButton->setCursor(Qt::PointingHandCursor);
+        // 危险操作默认聚焦“取消”，Enter 不误触确认。
+        cancelButton->setDefault(true);
+
+        connect(cancelButton, &QPushButton::clicked,
+                m_leaveConfirmDialog, &QDialog::hide);
+        connect(confirmButton, &QPushButton::clicked, this, [this]() {
+            m_leaveConfirmDialog->hide();
+            emit syncLeaveRequested();
+        });
+
+        QHBoxLayout *buttonRow = new QHBoxLayout();
+        buttonRow->addStretch(1);
+        buttonRow->addWidget(cancelButton);
+        buttonRow->addWidget(confirmButton);
+
+        QVBoxLayout *layout = new QVBoxLayout(m_leaveConfirmDialog);
+        layout->addWidget(m_leaveConfirmText);
+        layout->addLayout(buttonRow);
+    }
+    m_leaveConfirmText->setText(
+        tr("将解除全部 %1 台设备配对并停止同步，确定？").arg(m_syncPeerCount));
+    m_leaveConfirmDialog->show();
+    m_leaveConfirmDialog->raise();
+    m_leaveConfirmDialog->activateWindow();
 }
 
 QWidget *MemoryPanel::createPreferenceTab()
@@ -557,6 +727,46 @@ QWidget *MemoryPanel::createSyncTab()
     m_syncSummaryLabel->setWordWrap(true);
     m_syncSummaryLabel->setVisible(false);
 
+    // 总开关：默认开；初始值来自 GET /sync/status.enabled。
+    m_syncMasterSwitch = new QCheckBox(tr("启用同步"), page);
+    m_syncMasterSwitch->setObjectName(QStringLiteral("syncMasterSwitch"));
+    m_syncMasterSwitch->setAccessibleName(tr("启用同步总开关"));
+    m_syncMasterSwitch->setChecked(true);
+    connect(m_syncMasterSwitch, &QCheckBox::toggled, this,
+            [this](bool enabled) { emit syncSettingsRequested(enabled, m_syncPaused); });
+
+    // 暂停传输：仅停数据流，保留发现与配对（PUT /sync/settings paused）。
+    m_syncPauseSwitch = new QCheckBox(tr("暂停传输"), page);
+    m_syncPauseSwitch->setObjectName(QStringLiteral("syncPauseSwitch"));
+    m_syncPauseSwitch->setAccessibleName(tr("暂停数据传输"));
+    connect(m_syncPauseSwitch, &QCheckBox::toggled, this,
+            [this](bool paused) { emit syncSettingsRequested(m_syncEnabled, paused); });
+
+    // 待处理冲突横幅：仅 N>0 可见；点击跳转冲突 Tab。
+    m_syncConflictBanner = new QPushButton(tr("待处理冲突 0"), page);
+    m_syncConflictBanner->setObjectName(QStringLiteral("syncConflictBanner"));
+    m_syncConflictBanner->setAccessibleName(tr("查看待处理冲突"));
+    m_syncConflictBanner->setFlat(true);
+    m_syncConflictBanner->setCursor(Qt::PointingHandCursor);
+    m_syncConflictBanner->setStyleSheet(ui::textStyle(ui::Role::Warning));
+    m_syncConflictBanner->setVisible(false);
+    connect(m_syncConflictBanner, &QPushButton::clicked,
+            this, &MemoryPanel::showConflictTab);
+
+    // 附近设备发现列表（GET /sync/discover；切到同步 Tab 时触发）。
+    QLabel *discoverTitle = new QLabel(tr("附近设备"), page);
+    discoverTitle->setObjectName(QStringLiteral("discoverTitleLabel"));
+    discoverTitle->setFont(ui::Font::body());
+
+    m_discoverEmptyLabel = new QLabel(tr("未发现附近设备"), page);
+    m_discoverEmptyLabel->setObjectName(QStringLiteral("discoverEmptyLabel"));
+    m_discoverEmptyLabel->setAlignment(Qt::AlignCenter);
+    m_discoverEmptyLabel->setStyleSheet(ui::textStyle(ui::Role::Muted));
+
+    m_discoveredDeviceList = new QListWidget(page);
+    m_discoveredDeviceList->setObjectName(QStringLiteral("discoveredDeviceList"));
+    m_discoveredDeviceList->setVisible(false);
+
     m_syncEmptyLabel = new QLabel(tr("暂无节点"), page);
     m_syncEmptyLabel->setObjectName(QStringLiteral("syncEmptyLabel"));
     m_syncEmptyLabel->setAlignment(Qt::AlignCenter);
@@ -565,11 +775,11 @@ QWidget *MemoryPanel::createSyncTab()
     m_peerList->setObjectName(QStringLiteral("peerList"));
     m_peerList->setVisible(false);
 
-    QPushButton *pairButton = new QPushButton(tr("配对设备"), page);
-    pairButton->setObjectName(QStringLiteral("pairDeviceButton"));
-    pairButton->setAccessibleName(tr("打开设备配对"));
-    pairButton->setCursor(Qt::PointingHandCursor);
-    connect(pairButton, &QPushButton::clicked, this, [this]() {
+    m_pairButton = new QPushButton(tr("配对设备"), page);
+    m_pairButton->setObjectName(QStringLiteral("pairDeviceButton"));
+    m_pairButton->setAccessibleName(tr("打开设备配对"));
+    m_pairButton->setCursor(Qt::PointingHandCursor);
+    connect(m_pairButton, &QPushButton::clicked, this, [this]() {
         if (!m_pairDialog) {
             m_pairDialog = new PairDialog(this);
             connect(m_pairDialog, &PairDialog::pairRequested,
@@ -579,6 +789,23 @@ QWidget *MemoryPanel::createSyncTab()
         }
         m_pairDialog->showAndFocus();
     });
+
+    // 立即同步：复用 refresh 语义（后端无 /sync/now 端点）。
+    m_syncNowButton = new QPushButton(tr("立即同步"), page);
+    m_syncNowButton->setObjectName(QStringLiteral("syncNowButton"));
+    m_syncNowButton->setAccessibleName(tr("立即执行同步"));
+    m_syncNowButton->setCursor(Qt::PointingHandCursor);
+    connect(m_syncNowButton, &QPushButton::clicked,
+            this, &MemoryPanel::syncNowRequested);
+
+    // 退出网络：整网解除（逐台 revoke 由应用层执行）。
+    m_leaveNetworkButton = new QPushButton(tr("退出网络"), page);
+    m_leaveNetworkButton->setObjectName(QStringLiteral("leaveNetworkButton"));
+    m_leaveNetworkButton->setAccessibleName(tr("退出同步网络"));
+    m_leaveNetworkButton->setCursor(Qt::PointingHandCursor);
+    m_leaveNetworkButton->setEnabled(false);   // 无节点时禁用（setPeers 后重算）
+    connect(m_leaveNetworkButton, &QPushButton::clicked,
+            this, &MemoryPanel::showLeaveConfirm);
 
     QPushButton *refreshButton = new QPushButton(tr("刷新"), page);
     refreshButton->setObjectName(QStringLiteral("syncRefreshButton"));
@@ -592,7 +819,9 @@ QWidget *MemoryPanel::createSyncTab()
     });
 
     QHBoxLayout *buttonRow = new QHBoxLayout();
-    buttonRow->addWidget(pairButton);
+    buttonRow->addWidget(m_pairButton);
+    buttonRow->addWidget(m_syncNowButton);
+    buttonRow->addWidget(m_leaveNetworkButton);
     buttonRow->addWidget(refreshButton);
     buttonRow->addStretch(1);
 
@@ -600,28 +829,14 @@ QWidget *MemoryPanel::createSyncTab()
     layout->addWidget(m_syncStatusLabel);
     layout->addWidget(descLabel);
     layout->addWidget(m_syncSummaryLabel);
+    layout->addWidget(m_syncMasterSwitch);
+    layout->addWidget(m_syncPauseSwitch);
+    layout->addWidget(m_syncConflictBanner);
+    layout->addWidget(discoverTitle);
+    layout->addWidget(m_discoverEmptyLabel);
+    layout->addWidget(m_discoveredDeviceList);
     layout->addWidget(m_syncEmptyLabel);
     layout->addWidget(m_peerList, 1);
     layout->addLayout(buttonRow);
     return page;
-}
-
-void MemoryPanel::requestRevoke(const QString &peerId, const QString &peerName)
-{
-    if (!m_revokeDialog) {
-        m_revokeDialog = new RevokeDialog(this);
-        connect(m_revokeDialog, &RevokeDialog::confirmed, this, [this]() {
-            const QString id = m_pendingRevokePeerId;
-            m_pendingRevokePeerId.clear();
-            if (!id.isEmpty()) {
-                emit revokeConfirmed(id);
-            }
-        });
-        connect(m_revokeDialog, &RevokeDialog::cancelled, this, [this]() {
-            m_pendingRevokePeerId.clear();
-        });
-    }
-    m_pendingRevokePeerId = peerId;
-    m_revokeDialog->setPeerName(peerName);
-    m_revokeDialog->showAndFocus();
 }

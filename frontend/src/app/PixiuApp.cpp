@@ -13,6 +13,7 @@
 #include "app/EventRouter.h"
 #include "app/ThemeService.h"
 #include "app/MonitorController.h"
+#include "app/UiTokens.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/ImportDialog.h"
@@ -29,15 +30,21 @@
 #include "services/NotifyService.h"
 #include "services/WebSocketClient.h"
 
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QJsonArray>
+#include <QLabel>
 #include <QLoggingCategory>
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QGuiApplication>
 #include <QJsonObject>
+#include <QPushButton>
 #include <QRect>
 #include <QScreen>
 #include <QStringList>
 #include <QTimer>
+#include <QVBoxLayout>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
 
@@ -375,29 +382,97 @@ bool PixiuApp::start()
                 }
             });
 
-    // 同步管理：节点列表 / 同步状态 / 解绑（Phase 6）。
+    // 同步管理：总开关/暂停/发现/确认式配对/退出网络/立即同步（SN-6）。
     // 后端占位返回 not_implemented 时如实呈现，不伪造节点或成功状态。
     m_syncController = new SyncController(m_transport, this);
     connect(m_memoryPanel, &MemoryPanel::syncRefreshRequested,
             m_syncController, &SyncController::refresh);
-    connect(m_memoryPanel, &MemoryPanel::revokeConfirmed,
-            m_syncController, &SyncController::revokePeer);
+    connect(m_memoryPanel, &MemoryPanel::syncSettingsRequested,
+            m_syncController, &SyncController::updateSettings);
+    connect(m_memoryPanel, &MemoryPanel::syncDiscoverRequested,
+            m_syncController, &SyncController::discover);
+    connect(m_memoryPanel, &MemoryPanel::syncPairRequested,
+            m_syncController, &SyncController::requestPairing);
+    connect(m_memoryPanel, &MemoryPanel::syncLeaveRequested,
+            this, &PixiuApp::startLeaveNetwork);
+    connect(m_memoryPanel, &MemoryPanel::syncNowRequested,
+            m_syncController, &SyncController::syncNow);
     connect(m_syncController, &SyncController::peersLoaded, this,
             [this](const QJsonArray &peers) {
+                m_syncPeers = peers;
                 m_memoryPanel->setPeers(peers);
                 m_memoryPanel->setSyncStatus(tr("同步状态已刷新"), true);
             });
     connect(m_syncController, &SyncController::syncStatusLoaded, this,
             [this](const QJsonObject &status) {
                 m_memoryPanel->setSyncSummary(status);
+                // 初始回填总开关/暂停开关（默认 enabled=true）。
+                m_memoryPanel->setSyncSettings(
+                    status.value(QStringLiteral("enabled")).toBool(true),
+                    status.value(QStringLiteral("paused")).toBool(false));
+            });
+    connect(m_syncController, &SyncController::discoveredDevices, this,
+            [this](const QJsonArray &devices) {
+                m_memoryPanel->setDiscoveredDevices(devices);
+            });
+    connect(m_syncController, &SyncController::settingsResult, this,
+            [this](const QJsonObject &response) {
+                // PUT 回声回填开关（QSignalBlocker 防回环，见 MemoryPanel）。
+                m_memoryPanel->setSyncSettings(
+                    response.value(QStringLiteral("enabled")).toBool(true),
+                    response.value(QStringLiteral("paused")).toBool(false));
+                m_memoryPanel->setSyncStatus(tr("同步设置已更新"), true);
+            });
+    connect(m_syncController, &SyncController::pairRequestResult, this,
+            [this](const QJsonObject &response) {
+                m_memoryPanel->setSyncStatus(
+                    tr("配对请求已发送，PIN %1").arg(
+                        response.value(QStringLiteral("pin")).toString()),
+                    true);
+            });
+    connect(m_syncController, &SyncController::pairConfirmResult, this,
+            [this](const QJsonObject &response) {
+                const QString status =
+                    response.value(QStringLiteral("status")).toString();
+                const QString name = m_pendingPairRequestName;
+                m_pendingPairRequestName.clear();
+                if (status == QStringLiteral("accepted")) {
+                    m_memoryPanel->setSyncStatus(
+                        tr("已接受「%1」的配对请求").arg(
+                            name.isEmpty() ? tr("设备") : name),
+                        true);
+                } else if (status == QStringLiteral("rejected")) {
+                    m_memoryPanel->setSyncStatus(
+                        tr("已拒绝「%1」的配对请求").arg(
+                            name.isEmpty() ? tr("设备") : name),
+                        true);
+                } else if (status == QStringLiteral("expired")) {
+                    m_memoryPanel->setSyncStatus(tr("配对请求已过期"));
+                } else {
+                    m_memoryPanel->setSyncStatus(
+                        tr("配对确认失败：%1").arg(
+                            status.isEmpty() ? tr("未知响应") : status));
+                }
             });
     connect(m_syncController, &SyncController::revoked, this,
             [this](const QString &peerId) {
+                if (m_leaveRevoking) {
+                    revokeNextPeer();
+                    return;
+                }
                 m_memoryPanel->setSyncStatus(tr("已解绑设备 %1").arg(peerId), true);
                 m_syncController->refresh();
             });
     connect(m_syncController, &SyncController::notImplemented, this,
             [this](const QString &feature) {
+                if (m_leaveRevoking && feature == QStringLiteral("revoke")) {
+                    m_leaveRevoking = false;
+                    m_leaveRevokeQueue.clear();
+                    m_memoryPanel->setSyncStatus(
+                        tr("退出网络失败：解绑接口待后端实现"));
+                    m_syncController->refresh();
+                    return;
+                }
                 if (feature == QStringLiteral("revoke")) {
                     m_memoryPanel->setSyncStatus(
                         tr("解绑接口待后端实现（Phase 6）"));
@@ -408,6 +483,14 @@ bool PixiuApp::start()
             });
     connect(m_syncController, &SyncController::failed, this,
             [this](const QString &code, const QString &message) {
+                if (m_leaveRevoking) {
+                    m_leaveRevoking = false;
+                    m_leaveRevokeQueue.clear();
+                    m_memoryPanel->setSyncStatus(
+                        tr("退出网络失败（%1）：%2").arg(code, message));
+                    m_syncController->refresh();
+                    return;
+                }
                 m_memoryPanel->setSyncStatus(
                     tr("同步刷新失败（%1）：%2").arg(code, message));
             });
@@ -579,6 +662,8 @@ bool PixiuApp::start()
     connect(m_conflictController, &ConflictController::conflictsLoaded, this,
             [this](const QJsonArray &conflicts) {
                 m_memoryPanel->setConflicts(conflicts);
+                // 冲突横幅计数 = 审计列表长度（conflictDetected 的 +1 由此重算）。
+                m_memoryPanel->setSyncConflictCount(conflicts.size());
             });
     connect(m_conflictController, &ConflictController::failed, this,
             [this](const QString &code, const QString &message) {
@@ -683,6 +768,11 @@ bool PixiuApp::start()
                 if (m_notify) {
                     m_notify->notify(tr("检测到记忆冲突"), title);
                 }
+                // 冲突横幅计数 +1（随后 conflictsLoaded 重算为准确值）。
+                if (m_memoryPanel) {
+                    m_memoryPanel->setSyncConflictCount(
+                        m_memoryPanel->syncConflictCount() + 1);
+                }
                 if (m_conflictController) {
                     m_memoryPanel->setConflictsLoading();
                     m_conflictController->refresh();
@@ -712,6 +802,9 @@ bool PixiuApp::start()
                     m_syncController->refresh();
                 }
             });
+    // 入站配对请求（WS pair_request）：弹确认框，确认/拒绝 → confirmPairing。
+    connect(m_eventRouter, &EventRouter::pairingRequested, this,
+            [this](const QJsonObject &data) { showPairRequestDialog(data); });
     // 监控捕获事件（WS capture_event）：监控中心打开时实时追加活动记录；
     // sensitive_quarantined 额外弹系统通知（隔离区交互属批次③范围）。
     connect(m_eventRouter, &EventRouter::captureEvent, this,
@@ -976,6 +1069,137 @@ void PixiuApp::handleBackendEvent(const QJsonObject &event)
     if (m_eventRouter) {
         m_eventRouter->handleEvent(event);
     }
+}
+
+void PixiuApp::showPairRequestDialog(const QJsonObject &data)
+{
+    const QString requestId = data.value(QStringLiteral("request_id")).toString();
+    if (requestId.trimmed().isEmpty()) {
+        qCWarning(lcApp) << "ignoring pair_request without request_id";
+        return;
+    }
+    m_pendingPairRequestId = requestId;
+    const QString fromName = data.value(QStringLiteral("from_name")).toString();
+    const QString fromDevice = data.value(QStringLiteral("from_device_id")).toString();
+    m_pendingPairRequestName = fromName.isEmpty() ? fromDevice : fromName;
+    const QString pin = data.value(QStringLiteral("pin")).toString();
+
+    if (!m_pairRequestDialog) {
+        // 轻量确认框（挂在主窗口下，随窗口生命周期释放）。
+        m_pairRequestDialog = new QDialog(m_chatWindow);
+        m_pairRequestDialog->setObjectName(QStringLiteral("pairRequestDialog"));
+        m_pairRequestDialog->setWindowTitle(tr("配对请求"));
+        m_pairRequestDialog->setMinimumWidth(280);
+
+        m_pairRequestInfoLabel = new QLabel(m_pairRequestDialog);
+        m_pairRequestInfoLabel->setObjectName(QStringLiteral("pairRequestInfoLabel"));
+        m_pairRequestInfoLabel->setWordWrap(true);
+
+        m_pairRequestPinLabel = new QLabel(m_pairRequestDialog);
+        m_pairRequestPinLabel->setObjectName(QStringLiteral("pairRequestPinLabel"));
+        m_pairRequestPinLabel->setFont(ui::Font::title());
+        m_pairRequestPinLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
+        QPushButton *rejectButton = new QPushButton(tr("拒绝"), m_pairRequestDialog);
+        rejectButton->setObjectName(QStringLiteral("pairRequestRejectButton"));
+        rejectButton->setAccessibleName(tr("拒绝配对请求"));
+        rejectButton->setCursor(Qt::PointingHandCursor);
+        QPushButton *acceptButton = new QPushButton(tr("确认"), m_pairRequestDialog);
+        acceptButton->setObjectName(QStringLiteral("pairRequestAcceptButton"));
+        acceptButton->setAccessibleName(tr("确认配对"));
+        acceptButton->setStyleSheet(ui::accentButtonStyle());
+        acceptButton->setCursor(Qt::PointingHandCursor);
+        // 未知来源请求默认聚焦「拒绝」，避免误触确认。
+        rejectButton->setDefault(true);
+
+        connect(rejectButton, &QPushButton::clicked, this, [this]() {
+            const QString id = m_pendingPairRequestId;
+            m_pendingPairRequestId.clear();
+            if (!id.isEmpty() && m_syncController) {
+                m_syncController->confirmPairing(id, false);
+            }
+            if (m_pairRequestDialog) {
+                m_pairRequestDialog->hide();
+            }
+        });
+        connect(acceptButton, &QPushButton::clicked, this, [this]() {
+            const QString id = m_pendingPairRequestId;
+            m_pendingPairRequestId.clear();
+            if (!id.isEmpty() && m_syncController) {
+                m_syncController->confirmPairing(id, true);
+            }
+            if (m_pairRequestDialog) {
+                m_pairRequestDialog->hide();
+            }
+        });
+
+        QHBoxLayout *buttonRow = new QHBoxLayout();
+        buttonRow->addStretch(1);
+        buttonRow->addWidget(rejectButton);
+        buttonRow->addWidget(acceptButton);
+
+        QVBoxLayout *layout = new QVBoxLayout(m_pairRequestDialog);
+        layout->addWidget(m_pairRequestInfoLabel);
+        layout->addWidget(m_pairRequestPinLabel);
+        layout->addLayout(buttonRow);
+    }
+
+    m_pairRequestInfoLabel->setText(
+        tr("来自「%1」的配对请求").arg(m_pendingPairRequestName));
+    m_pairRequestPinLabel->setText(
+        pin.isEmpty() ? tr("PIN：未知") : tr("PIN：%1").arg(pin));
+    m_pairRequestDialog->show();
+    m_pairRequestDialog->raise();
+    m_pairRequestDialog->activateWindow();
+}
+
+void PixiuApp::startLeaveNetwork()
+{
+    if (m_leaveRevoking) {
+        return;
+    }
+    m_leaveRevokeQueue.clear();
+    for (const QJsonValue &value : m_syncPeers) {
+        const QJsonObject peer = value.toObject();
+        if (peer.value(QStringLiteral("is_self")).toBool(false)) {
+            continue;
+        }
+        const QString id = peer.value(QStringLiteral("id")).toString();
+        if (!id.trimmed().isEmpty()) {
+            m_leaveRevokeQueue.append(id);
+        }
+    }
+    if (m_leaveRevokeQueue.isEmpty()) {
+        m_memoryPanel->setSyncStatus(tr("无可退出的节点"));
+        return;
+    }
+    m_leaveRevoking = true;
+    m_memoryPanel->setSyncStatus(tr("正在退出同步网络…"));
+    revokeNextPeer();
+}
+
+void PixiuApp::revokeNextPeer()
+{
+    // SyncController.revokePeer 一次仅一台在途：串行推进，等待 revoked/
+    // failed/notImplemented 后再发下一台。
+    while (!m_leaveRevokeQueue.isEmpty()) {
+        const QString id = m_leaveRevokeQueue.takeFirst();
+        if (id.trimmed().isEmpty()) {
+            continue;
+        }
+        m_syncController->revokePeer(id);
+        return;
+    }
+    finishLeaveNetwork();
+}
+
+void PixiuApp::finishLeaveNetwork()
+{
+    m_leaveRevoking = false;
+    m_leaveRevokeQueue.clear();
+    m_memoryPanel->setSyncStatus(tr("已退出同步网络"), true);
+    // 完成后刷新：节点列表回落到本机，摘要反映退出后状态。
+    m_syncController->refresh();
 }
 
 void PixiuApp::shutdown()

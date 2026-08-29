@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QObject>
 #include <QScopedPointer>
+#include <QStringList>
 
 class SingleInstanceGuard;
 class TrayIcon;
@@ -31,6 +32,8 @@ class EventRouter;
 class MonitorController;
 class MonitorCenterDialog;
 class QTimer;
+class QDialog;
+class QLabel;
 
 // PixiuApp 是整个前端应用的生命周期所有者。
 //
@@ -119,6 +122,18 @@ private:
     // configEdited → PUT 的去抖定时器（合并连发，减少并发 PUT；
     // 定时器 pending 时只更新暂存载荷）。
     QTimer *m_configPushTimer = nullptr;
+    // 入站配对请求确认对话框（WS pair_request → 确认/拒绝）与在途请求。
+    QDialog *m_pairRequestDialog = nullptr;
+    QLabel *m_pairRequestInfoLabel = nullptr;
+    QLabel *m_pairRequestPinLabel = nullptr;
+    QString m_pendingPairRequestId;
+    QString m_pendingPairRequestName;
+    // 最近一次节点列表（退出网络批处理队列来源）。
+    QJsonArray m_syncPeers;
+    // 退出网络批处理：逐台 revoke 队列（SyncController.revokePeer 一次一台，
+    // 串行等待 revoked 后再发下一台；完成后 refresh）。
+    QStringList m_leaveRevokeQueue;
+    bool m_leaveRevoking = false;
     struct Private;
     QScopedPointer<Private> d;
 
@@ -138,6 +153,12 @@ private:
     // 将远端配置整体应用到控制器（enabled / 四数据源 / 目录）+ 置远端
     // 权威标记 + 清除面板离线提示。
     void applyMonitorConfig(const QJsonObject &config);
+    // SN-6：WS pair_request 帧 → 配对确认对话框（展示设备名 + PIN）。
+    void showPairRequestDialog(const QJsonObject &data);
+    // SN-6：退出网络批处理（逐台 revoke，串行推进）。
+    void startLeaveNetwork();
+    void revokeNextPeer();
+    void finishLeaveNetwork();
 };
 
 #endif // PIXIU_APP_H

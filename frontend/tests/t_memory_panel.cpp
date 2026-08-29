@@ -1,3 +1,5 @@
+#include <QCheckBox>
+#include <QDialog>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QLabel>
@@ -11,7 +13,6 @@
 
 #include "widgets/MemoryPanel.h"
 #include "widgets/PairDialog.h"
-#include "widgets/RevokeDialog.h"
 
 // MemoryPanel 壳测试：三个 Tab 及标题。
 class TestMemoryPanel : public QObject
@@ -41,8 +42,16 @@ private slots:
     void setPeersPopulatesList();
     void setPeersShowsEmptyState();
     void longPeerNameIsElided();
-    void revokeFlowOpensDialogAndConfirms();
     void setSyncSummaryUpdatesLabel();
+    void syncMasterSwitchDefaultOn();
+    void syncMasterToggleEmitsSettingsRequest();
+    void syncPauseToggleEmitsSettingsRequest();
+    void setSyncSettingsGatesChildControls();
+    void discoverListRendersAndPairButtonEmits();
+    void discoverListShowsEmptyState();
+    void syncNowButtonEmitsRequest();
+    void conflictBannerCountsAndJumps();
+    void leaveNetworkFlowShowsConfirmAndEmits();
     void extractButtonEmitsRequest();
     void extractFeedbackShowsResultAndError();
     void escHidesPanel();
@@ -427,10 +436,13 @@ void TestMemoryPanel::setPeersPopulatesList()
     QVERIFY(hasSelfName);
     QVERIFY(!list->isHidden());
 
-    // 本机不提供解绑入口；非本机设备恰好一个“解绑”按钮。
-    const QList<QPushButton *> revokeButtons =
-        panel.findChildren<QPushButton *>(QStringLiteral("revokeButton"));
-    QCOMPARE(revokeButtons.size(), 1);
+    // SN-6：移除单设备解绑——节点行不再提供“解绑”按钮；整网退出改由
+    // 「退出网络」按钮承载（存在非本机节点时可用）。
+    QCOMPARE(panel.findChildren<QPushButton *>(QStringLiteral("revokeButton")).size(), 0);
+    QPushButton *leaveButton =
+        panel.findChild<QPushButton *>(QStringLiteral("leaveNetworkButton"));
+    QVERIFY(leaveButton != nullptr);
+    QVERIFY(leaveButton->isEnabled());
 
     QLabel *emptyLabel =
         panel.findChild<QLabel *>(QStringLiteral("syncEmptyLabel"));
@@ -481,35 +493,237 @@ void TestMemoryPanel::longPeerNameIsElided()
     QVERIFY(nameLabel->text().endsWith(QStringLiteral("…")));
 }
 
-void TestMemoryPanel::revokeFlowOpensDialogAndConfirms()
+void TestMemoryPanel::syncMasterSwitchDefaultOn()
 {
     MemoryPanel panel;
-    QSignalSpy revokeSpy(&panel, &MemoryPanel::revokeConfirmed);
+    QCheckBox *master =
+        panel.findChild<QCheckBox *>(QStringLiteral("syncMasterSwitch"));
+    QVERIFY(master != nullptr);
+    // 总开关默认开。
+    QVERIFY(master->isChecked());
+    QCheckBox *pause =
+        panel.findChild<QCheckBox *>(QStringLiteral("syncPauseSwitch"));
+    QVERIFY(pause != nullptr);
+    QVERIFY(!pause->isChecked());
+    QVERIFY(pause->isEnabled());
+}
 
+void TestMemoryPanel::syncMasterToggleEmitsSettingsRequest()
+{
+    MemoryPanel panel;
+    QSignalSpy spy(&panel, &MemoryPanel::syncSettingsRequested);
+    QCheckBox *master =
+        panel.findChild<QCheckBox *>(QStringLiteral("syncMasterSwitch"));
+    QVERIFY(master != nullptr);
+
+    master->click();   // 关闭总开关
+    QCOMPARE(spy.count(), 1);
+    const QList<QVariant> args = spy.takeFirst();
+    QCOMPARE(args.at(0).toBool(), false);   // enabled
+    QCOMPARE(args.at(1).toBool(), false);   // paused 保持
+}
+
+void TestMemoryPanel::syncPauseToggleEmitsSettingsRequest()
+{
+    MemoryPanel panel;
+    QSignalSpy spy(&panel, &MemoryPanel::syncSettingsRequested);
+    QCheckBox *pause =
+        panel.findChild<QCheckBox *>(QStringLiteral("syncPauseSwitch"));
+    QVERIFY(pause != nullptr);
+
+    pause->click();   // 暂停传输
+    QCOMPARE(spy.count(), 1);
+    const QList<QVariant> args = spy.takeFirst();
+    QCOMPARE(args.at(0).toBool(), true);   // enabled 保持
+    QCOMPARE(args.at(1).toBool(), true);   // paused
+}
+
+void TestMemoryPanel::setSyncSettingsGatesChildControls()
+{
+    MemoryPanel panel;
+    QCheckBox *pause =
+        panel.findChild<QCheckBox *>(QStringLiteral("syncPauseSwitch"));
+    QPushButton *pair =
+        panel.findChild<QPushButton *>(QStringLiteral("pairDeviceButton"));
+    QPushButton *now =
+        panel.findChild<QPushButton *>(QStringLiteral("syncNowButton"));
+    QListWidget *discovered =
+        panel.findChild<QListWidget *>(QStringLiteral("discoveredDeviceList"));
+    QVERIFY(pause != nullptr);
+    QVERIFY(pair != nullptr);
+    QVERIFY(now != nullptr);
+    QVERIFY(discovered != nullptr);
+    QVERIFY(pause->isEnabled());
+    QVERIFY(pair->isEnabled());
+    QVERIFY(now->isEnabled());
+
+    // 程序化回填（GET /sync/status 或 PUT 回声）不得发射请求信号（防回环）。
+    QSignalSpy spy(&panel, &MemoryPanel::syncSettingsRequested);
+    panel.setSyncSettings(false, true);
+    QCOMPARE(spy.count(), 0);
+    QVERIFY(!pause->isEnabled());
+    QVERIFY(!pair->isEnabled());
+    QVERIFY(!now->isEnabled());
+    QVERIFY(!discovered->isEnabled());
+    QVERIFY(pause->isChecked());   // paused=true 回填到开关
+
+    // 重新开启后下级恢复可用。
+    panel.setSyncSettings(true, false);
+    QCOMPARE(spy.count(), 0);
+    QVERIFY(pause->isEnabled());
+    QVERIFY(pair->isEnabled());
+    QVERIFY(now->isEnabled());
+    QVERIFY(!pause->isChecked());
+}
+
+void TestMemoryPanel::discoverListRendersAndPairButtonEmits()
+{
+    MemoryPanel panel;
+    QSignalSpy spy(&panel, &MemoryPanel::syncPairRequested);
+    QJsonArray devices;
+    devices.append(QJsonObject{
+        {QStringLiteral("device_id"), QStringLiteral("dev_alpha")},
+        {QStringLiteral("device_name"), QStringLiteral("Alpha 一体机")},
+        {QStringLiteral("addresses"), QJsonArray{QStringLiteral("192.168.1.10")}},
+        {QStringLiteral("pairable"), true},
+        {QStringLiteral("paired"), false}});
+    devices.append(QJsonObject{
+        {QStringLiteral("device_id"), QStringLiteral("dev_beta")},
+        {QStringLiteral("device_name"), QStringLiteral("Beta 笔记本")},
+        {QStringLiteral("addresses"), QJsonArray{QStringLiteral("192.168.1.11")}},
+        {QStringLiteral("pairable"), false},
+        {QStringLiteral("paired"), false}});
+    devices.append(QJsonObject{
+        {QStringLiteral("device_id"), QStringLiteral("dev_gamma")},
+        {QStringLiteral("device_name"), QStringLiteral("Gamma 平板")},
+        {QStringLiteral("addresses"), QJsonArray{QStringLiteral("192.168.1.12")}},
+        {QStringLiteral("pairable"), true},
+        {QStringLiteral("paired"), true}});
+
+    panel.setDiscoveredDevices(devices);
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("discoveredDeviceList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 3);
+    QVERIFY(!list->isHidden());
+
+    // 可配对且未配对设备有「配对」按钮；已配对 / 不可配对设备无按钮。
+    QWidget *row0 = list->itemWidget(list->item(0));
+    QVERIFY(row0 != nullptr);
+    QLabel *nameLabel = row0->findChild<QLabel *>(QStringLiteral("discoverNameLabel"));
+    QVERIFY(nameLabel != nullptr);
+    QVERIFY(nameLabel->text().contains(QStringLiteral("Alpha 一体机")));
+    QPushButton *pairButton =
+        row0->findChild<QPushButton *>(QStringLiteral("discoverPairButton"));
+    QVERIFY(pairButton != nullptr);
+
+    QWidget *row1 = list->itemWidget(list->item(1));
+    QVERIFY(row1->findChild<QPushButton *>(QStringLiteral("discoverPairButton"))
+            == nullptr);
+    QWidget *row2 = list->itemWidget(list->item(2));
+    QVERIFY(row2->findChild<QPushButton *>(QStringLiteral("discoverPairButton"))
+            == nullptr);
+
+    QTest::mouseClick(pairButton, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.takeFirst().at(0).toString(), QStringLiteral("dev_alpha"));
+
+    QLabel *empty =
+        panel.findChild<QLabel *>(QStringLiteral("discoverEmptyLabel"));
+    QVERIFY(empty != nullptr);
+    QVERIFY(empty->isHidden());
+}
+
+void TestMemoryPanel::discoverListShowsEmptyState()
+{
+    MemoryPanel panel;
+    panel.setDiscoveredDevices(QJsonArray());
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("discoveredDeviceList"));
+    QLabel *empty =
+        panel.findChild<QLabel *>(QStringLiteral("discoverEmptyLabel"));
+    QVERIFY(list != nullptr);
+    QVERIFY(empty != nullptr);
+    QCOMPARE(list->count(), 0);
+    QVERIFY(list->isHidden());
+    QVERIFY(!empty->isHidden());
+}
+
+void TestMemoryPanel::syncNowButtonEmitsRequest()
+{
+    MemoryPanel panel;
+    QSignalSpy spy(&panel, &MemoryPanel::syncNowRequested);
+    QPushButton *button =
+        panel.findChild<QPushButton *>(QStringLiteral("syncNowButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestMemoryPanel::conflictBannerCountsAndJumps()
+{
+    MemoryPanel panel;
+    QPushButton *banner =
+        panel.findChild<QPushButton *>(QStringLiteral("syncConflictBanner"));
+    QVERIFY(banner != nullptr);
+    // 初始计数 0：横幅隐藏。
+    QVERIFY(banner->isHidden());
+
+    panel.setSyncConflictCount(2);
+    QVERIFY(!banner->isHidden());
+    QVERIFY(banner->text().contains(QStringLiteral("2")));
+
+    QTabWidget *tabs = panel.findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    QCOMPARE(tabs->currentIndex(), 0);
+    QTest::mouseClick(banner, Qt::LeftButton);
+    QCOMPARE(tabs->currentIndex(), 1);   // 点击跳转冲突 Tab
+
+    panel.setSyncConflictCount(0);
+    QVERIFY(banner->isHidden());
+}
+
+void TestMemoryPanel::leaveNetworkFlowShowsConfirmAndEmits()
+{
+    MemoryPanel panel;
     panel.setPeers(QJsonArray{
-        QJsonObject{
-            {QStringLiteral("id"), QStringLiteral("dev_guest")},
-            {QStringLiteral("name"), QStringLiteral("客厅一体机")},
-            {QStringLiteral("is_self"), false},
-            {QStringLiteral("status"), QStringLiteral("ONLINE")}}});
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_self")},
+                    {QStringLiteral("name"), QStringLiteral("书房工作站")},
+                    {QStringLiteral("is_self"), true},
+                    {QStringLiteral("status"), QStringLiteral("ONLINE")}},
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_guest1")},
+                    {QStringLiteral("name"), QStringLiteral("客厅一体机")},
+                    {QStringLiteral("is_self"), false},
+                    {QStringLiteral("status"), QStringLiteral("ONLINE")}},
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_guest2")},
+                    {QStringLiteral("name"), QStringLiteral("卧室平板")},
+                    {QStringLiteral("is_self"), false},
+                    {QStringLiteral("status"), QStringLiteral("OFFLINE")}}});
 
-    QPushButton *revokeButton =
-        panel.findChild<QPushButton *>(QStringLiteral("revokeButton"));
-    QVERIFY(revokeButton != nullptr);
-    QTest::mouseClick(revokeButton, Qt::LeftButton);
+    QPushButton *leave =
+        panel.findChild<QPushButton *>(QStringLiteral("leaveNetworkButton"));
+    QVERIFY(leave != nullptr);
+    // 存在 2 台非本机设备：退出入口可用。
+    QVERIFY(leave->isEnabled());
 
-    RevokeDialog *dialog = panel.findChild<RevokeDialog *>();
+    QSignalSpy leaveSpy(&panel, &MemoryPanel::syncLeaveRequested);
+    QTest::mouseClick(leave, Qt::LeftButton);
+
+    QDialog *dialog =
+        panel.findChild<QDialog *>(QStringLiteral("leaveConfirmDialog"));
     QVERIFY(dialog != nullptr);
     QVERIFY(dialog->isVisible());
+    QLabel *text = dialog->findChild<QLabel *>(QStringLiteral("leaveConfirmText"));
+    QVERIFY(text != nullptr);
+    QVERIFY(text->text().contains(QStringLiteral("2")));
 
-    QPushButton *confirmButton =
-        dialog->findChild<QPushButton *>(QStringLiteral("revokeConfirmButton"));
-    QVERIFY(confirmButton != nullptr);
-    QTest::mouseClick(confirmButton, Qt::LeftButton);
-
-    QCOMPARE(revokeSpy.count(), 1);
-    QCOMPARE(revokeSpy.takeFirst().at(0).toString(),
-             QStringLiteral("dev_guest"));
+    QPushButton *confirm =
+        dialog->findChild<QPushButton *>(QStringLiteral("leaveConfirmButton"));
+    QVERIFY(confirm != nullptr);
+    QTest::mouseClick(confirm, Qt::LeftButton);
+    QCOMPARE(leaveSpy.count(), 1);
 }
 
 void TestMemoryPanel::setSyncSummaryUpdatesLabel()

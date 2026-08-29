@@ -1,5 +1,6 @@
 #include <QAction>
 #include <QCheckBox>
+#include <QDialog>
 #include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -56,9 +57,6 @@ public:
     void preferenceHistory(const QString &) override {}
     void promoteMemory(const QJsonObject &) override {}
     void pairDevice(const QJsonObject &) override {}
-    void listPeers() override {}
-    void syncStatus() override {}
-    void revokePeer(const QString &) override {}
     ConnectionState connectionState() const override
     {
         return ConnectionState::Connected;
@@ -67,6 +65,66 @@ public:
     QString baseUrl() const override
     {
         return QStringLiteral("ws://127.0.0.1:1");
+    }
+
+    // ── 同步管理测试缝（SN-6）──
+    // 默认不回包（模拟后端静默）；需要回包的用例置 autoEcho* 并填充载荷。
+    bool autoEchoPeers = false;        // listPeers → peersResult
+    bool autoEchoSyncStatus = false;   // syncStatus → syncStatusResult
+    bool autoEchoSettings = true;      // updateSyncSettings → 回显提交体
+    QJsonArray peersPayload;
+    QJsonObject syncStatusPayload;
+    QJsonArray discoverPayload;
+    QStringList revokePeerCalls;
+    int discoverCalls = 0;
+    QStringList requestPairingCalls;
+    QList<QPair<QString, bool>> confirmPairingCalls;
+    QList<QPair<bool, bool>> settingsCalls;
+
+    void listPeers() override
+    {
+        if (autoEchoPeers) {
+            emit peersResult(QJsonObject{{QStringLiteral("peers"), peersPayload}});
+        }
+    }
+    void syncStatus() override
+    {
+        if (autoEchoSyncStatus) {
+            emit syncStatusResult(syncStatusPayload);
+        }
+    }
+    void revokePeer(const QString &peerId) override
+    {
+        revokePeerCalls.append(peerId);
+        emit revokeResult(QJsonObject{
+            {QStringLiteral("status"), QStringLiteral("revoked")},
+            {QStringLiteral("peer_id"), peerId},
+            {QStringLiteral("domain"), QStringLiteral("shared:home")}});
+    }
+    void discoverDevices() override
+    {
+        ++discoverCalls;
+        emit devicesLoaded(QJsonObject{{QStringLiteral("devices"), discoverPayload}});
+    }
+    void requestPairing(const QString &targetId) override
+    {
+        requestPairingCalls.append(targetId);
+    }
+    void confirmPairing(const QString &requestId, bool accept) override
+    {
+        confirmPairingCalls.append(qMakePair(requestId, accept));
+        emit pairConfirmResult(QJsonObject{
+            {QStringLiteral("status"),
+             accept ? QStringLiteral("accepted") : QStringLiteral("rejected")}});
+    }
+    void updateSyncSettings(bool enabled, bool paused) override
+    {
+        settingsCalls.append(qMakePair(enabled, paused));
+        if (autoEchoSettings) {
+            emit settingsResult(QJsonObject{
+                {QStringLiteral("enabled"), enabled},
+                {QStringLiteral("paused"), paused}});
+        }
     }
 
     // GET /monitor/config：默认同步回包（直接连接下 start() 内即生效）；
@@ -157,6 +215,11 @@ private slots:
     void offlineHintShownWhenPanelCreatedWhileOffline();
     void outOfOrderPutEchoSkipped();
     void dirtyGetDoesNotOverwriteUserEdits();
+    void syncMasterSwitchDefaultOnAndGates();
+    void syncDiscoverListRendersAndPairs();
+    void leaveNetworkButtonShowsConfirmAndRevokesAll();
+    void syncConflictBannerCountsAndJumps();
+    void pairRequestDialogShowsAndConfirms();
 
 private:
     template <typename T>
@@ -655,6 +718,325 @@ void TestAppNavigation::dirtyGetDoesNotOverwriteUserEdits()
 
     // dirty 仍为 true：GET 不覆盖用户本地改动（enabled 保持 true）。
     QVERIFY(controller->isEnabled());
+
+    app.shutdown();
+}
+
+void TestAppNavigation::syncMasterSwitchDefaultOnAndGates()
+{
+    // 同步 Tab 总开关：默认开、PUT /sync/settings 生效、off 禁用下级控件。
+    qputenv("USER", QStringLiteral("pixiu-nav-sync-master-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoSyncStatus = true;
+    fake->syncStatusPayload = QJsonObject{
+        {QStringLiteral("enabled"), true},
+        {QStringLiteral("paused"), false},
+        {QStringLiteral("domain"), QStringLiteral("shared:home")},
+        {QStringLiteral("peers_online"), 1},
+        {QStringLiteral("peers_total"), 2}};
+    fake->autoEchoPeers = true;
+    fake->peersPayload = QJsonArray{
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_self")},
+                    {QStringLiteral("name"), QStringLiteral("书房工作站")},
+                    {QStringLiteral("is_self"), true},
+                    {QStringLiteral("status"), QStringLiteral("ONLINE")}},
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_guest")},
+                    {QStringLiteral("name"), QStringLiteral("客厅一体机")},
+                    {QStringLiteral("is_self"), false},
+                    {QStringLiteral("status"), QStringLiteral("ONLINE")}}};
+
+    const auto chatsBefore = topLevels<ChatWindow>();
+    const auto panelsBefore = topLevels<MemoryPanel>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
+    QVERIFY(chat != nullptr);
+    emit chat->syncPanelRequested();
+
+    MemoryPanel *panel = newTopLevels(panelsBefore).value(0);
+    QVERIFY(panel != nullptr);
+    QCheckBox *master = panel->findChild<QCheckBox *>(
+        QStringLiteral("syncMasterSwitch"));
+    QVERIFY(master != nullptr);
+    // 总开关默认开（GET /sync/status.enabled=true 回填后仍为开）。
+    QVERIFY(master->isChecked());
+
+    // 关闭总开关 → PUT /sync/settings(enabled=false, paused 保持)。
+    master->click();
+    QCOMPARE(fake->settingsCalls.size(), 1);
+    QCOMPARE(fake->settingsCalls.first().first, false);
+    QCOMPARE(fake->settingsCalls.first().second, false);
+    // PUT 回声回填开关。
+    QVERIFY(!master->isChecked());
+
+    // off 禁用下级控件：暂停开关 / 配对 / 立即同步 / 退出网络 / 发现列表。
+    QCheckBox *pause = panel->findChild<QCheckBox *>(
+        QStringLiteral("syncPauseSwitch"));
+    QPushButton *pair = panel->findChild<QPushButton *>(
+        QStringLiteral("pairDeviceButton"));
+    QPushButton *now = panel->findChild<QPushButton *>(
+        QStringLiteral("syncNowButton"));
+    QPushButton *leave = panel->findChild<QPushButton *>(
+        QStringLiteral("leaveNetworkButton"));
+    QListWidget *discovered = panel->findChild<QListWidget *>(
+        QStringLiteral("discoveredDeviceList"));
+    QVERIFY(pause != nullptr);
+    QVERIFY(pair != nullptr);
+    QVERIFY(now != nullptr);
+    QVERIFY(leave != nullptr);
+    QVERIFY(discovered != nullptr);
+    QVERIFY(!pause->isEnabled());
+    QVERIFY(!pair->isEnabled());
+    QVERIFY(!now->isEnabled());
+    QVERIFY(!leave->isEnabled());
+    QVERIFY(!discovered->isEnabled());
+
+    app.shutdown();
+}
+
+void TestAppNavigation::syncDiscoverListRendersAndPairs()
+{
+    // 发现列表：切到同步 Tab 触发 discover；可配对设备渲染「配对」按钮并
+    // 发起 requestPairing。
+    qputenv("USER", QStringLiteral("pixiu-nav-sync-discover-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoSyncStatus = true;
+    fake->syncStatusPayload = QJsonObject{
+        {QStringLiteral("enabled"), true},
+        {QStringLiteral("paused"), false}};
+    fake->discoverPayload = QJsonArray{
+        QJsonObject{{QStringLiteral("device_id"), QStringLiteral("dev_alpha")},
+                    {QStringLiteral("device_name"), QStringLiteral("Alpha 一体机")},
+                    {QStringLiteral("addresses"), QJsonArray{QStringLiteral("192.168.1.10")}},
+                    {QStringLiteral("pairable"), true},
+                    {QStringLiteral("paired"), false}},
+        QJsonObject{{QStringLiteral("device_id"), QStringLiteral("dev_beta")},
+                    {QStringLiteral("device_name"), QStringLiteral("Beta 笔记本")},
+                    {QStringLiteral("addresses"), QJsonArray{QStringLiteral("192.168.1.11")}},
+                    {QStringLiteral("pairable"), false},
+                    {QStringLiteral("paired"), false}}};
+
+    const auto chatsBefore = topLevels<ChatWindow>();
+    const auto panelsBefore = topLevels<MemoryPanel>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
+    QVERIFY(chat != nullptr);
+    emit chat->syncPanelRequested();
+
+    MemoryPanel *panel = newTopLevels(panelsBefore).value(0);
+    QVERIFY(panel != nullptr);
+    // 切到同步 Tab 触发一次发现。
+    QCOMPARE(fake->discoverCalls, 1);
+
+    QListWidget *list = panel->findChild<QListWidget *>(
+        QStringLiteral("discoveredDeviceList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 2);
+
+    QWidget *row0 = list->itemWidget(list->item(0));
+    QVERIFY(row0 != nullptr);
+    QPushButton *pair = row0->findChild<QPushButton *>(
+        QStringLiteral("discoverPairButton"));
+    QVERIFY(pair != nullptr);
+    QTest::mouseClick(pair, Qt::LeftButton);
+    QCOMPARE(fake->requestPairingCalls.size(), 1);
+    QCOMPARE(fake->requestPairingCalls.first(), QStringLiteral("dev_alpha"));
+
+    // 不可配对设备不提供「配对」按钮。
+    QWidget *row1 = list->itemWidget(list->item(1));
+    QVERIFY(row1 != nullptr);
+    QVERIFY(row1->findChild<QPushButton *>(QStringLiteral("discoverPairButton"))
+            == nullptr);
+
+    app.shutdown();
+}
+
+void TestAppNavigation::leaveNetworkButtonShowsConfirmAndRevokesAll()
+{
+    // 退出网络：确认框展示待解除台数；确认后逐台 revoke 全部非本机设备。
+    qputenv("USER", QStringLiteral("pixiu-nav-sync-leave-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->autoEchoSyncStatus = true;
+    fake->syncStatusPayload = QJsonObject{
+        {QStringLiteral("enabled"), true},
+        {QStringLiteral("paused"), false}};
+    fake->autoEchoPeers = true;
+    fake->peersPayload = QJsonArray{
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_self")},
+                    {QStringLiteral("name"), QStringLiteral("书房工作站")},
+                    {QStringLiteral("is_self"), true},
+                    {QStringLiteral("status"), QStringLiteral("ONLINE")}},
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_guest1")},
+                    {QStringLiteral("name"), QStringLiteral("客厅一体机")},
+                    {QStringLiteral("is_self"), false},
+                    {QStringLiteral("status"), QStringLiteral("ONLINE")}},
+        QJsonObject{{QStringLiteral("id"), QStringLiteral("dev_guest2")},
+                    {QStringLiteral("name"), QStringLiteral("卧室平板")},
+                    {QStringLiteral("is_self"), false},
+                    {QStringLiteral("status"), QStringLiteral("OFFLINE")}}};
+
+    const auto chatsBefore = topLevels<ChatWindow>();
+    const auto panelsBefore = topLevels<MemoryPanel>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
+    QVERIFY(chat != nullptr);
+    emit chat->syncPanelRequested();
+
+    MemoryPanel *panel = newTopLevels(panelsBefore).value(0);
+    QVERIFY(panel != nullptr);
+    QPushButton *leave = panel->findChild<QPushButton *>(
+        QStringLiteral("leaveNetworkButton"));
+    QVERIFY(leave != nullptr);
+    QVERIFY(leave->isEnabled());
+
+    QTest::mouseClick(leave, Qt::LeftButton);
+    QDialog *confirm = panel->findChild<QDialog *>(
+        QStringLiteral("leaveConfirmDialog"));
+    QVERIFY(confirm != nullptr);
+    QVERIFY(confirm->isVisible());
+    QLabel *text = confirm->findChild<QLabel *>(QStringLiteral("leaveConfirmText"));
+    QVERIFY(text != nullptr);
+    QVERIFY(text->text().contains(QStringLiteral("2")));
+
+    QPushButton *confirmBtn = confirm->findChild<QPushButton *>(
+        QStringLiteral("leaveConfirmButton"));
+    QVERIFY(confirmBtn != nullptr);
+    QTest::mouseClick(confirmBtn, Qt::LeftButton);
+
+    // 逐台 revoke：非本机设备按序解绑，确认框关闭。
+    QCOMPARE(fake->revokePeerCalls.size(), 2);
+    QCOMPARE(fake->revokePeerCalls.at(0), QStringLiteral("dev_guest1"));
+    QCOMPARE(fake->revokePeerCalls.at(1), QStringLiteral("dev_guest2"));
+    QVERIFY(!confirm->isVisible());
+
+    app.shutdown();
+}
+
+void TestAppNavigation::syncConflictBannerCountsAndJumps()
+{
+    // 冲突横幅：N>0 可见；点击跳转冲突 Tab；conflictDetected WS 计数 +1。
+    // 用注入假 transport 的独立实例，避免真实后端的 conflicts 重算干扰。
+    qputenv("USER", QStringLiteral("pixiu-nav-sync-banner-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+
+    const auto panelsBefore = topLevels<MemoryPanel>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    MemoryPanel *panel = newTopLevels(panelsBefore).value(0);
+    QVERIFY(panel != nullptr);
+    QPushButton *banner = panel->findChild<QPushButton *>(
+        QStringLiteral("syncConflictBanner"));
+    QVERIFY(banner != nullptr);
+    // 初始计数 0：横幅隐藏。
+    QVERIFY(banner->isHidden());
+
+    panel->setSyncConflictCount(2);
+    QVERIFY(!banner->isHidden());
+    QVERIFY(banner->text().contains(QStringLiteral("2")));
+
+    QTabWidget *tabs = panel->findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    QTest::mouseClick(banner, Qt::LeftButton);
+    QCOMPARE(tabs->currentIndex(), 1);   // 点击跳转冲突 Tab
+
+    // conflictDetected WS → 计数 +1（FakeTransport 不回 conflicts，
+    // 计数保持递增，不被重算覆盖）。
+    EventRouter *router = app.findChild<EventRouter *>();
+    QVERIFY(router != nullptr);
+    emit router->conflictDetected(QStringLiteral("2026年4月家庭支出清单"),
+                                  QStringLiteral("body.items[2].amount"),
+                                  QStringLiteral("156"), QStringLiteral("186"));
+    QCOMPARE(panel->syncConflictCount(), 3);
+    QVERIFY(!banner->isHidden());
+    QVERIFY(banner->text().contains(QStringLiteral("3")));
+
+    panel->setSyncConflictCount(0);
+    QVERIFY(banner->isHidden());
+
+    app.shutdown();
+}
+
+void TestAppNavigation::pairRequestDialogShowsAndConfirms()
+{
+    // pair_request WS → 配对确认对话框（设备名 + PIN）；确认/拒绝 →
+    // confirmPairing(requestId, accept)。
+    qputenv("USER", QStringLiteral("pixiu-nav-sync-pairreq-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+
+    const auto chatsBefore = topLevels<ChatWindow>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    QVERIFY(app.start());
+
+    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
+    QVERIFY(chat != nullptr);
+    EventRouter *router = app.findChild<EventRouter *>();
+    QVERIFY(router != nullptr);
+
+    // 入站配对请求：弹确认框，展示设备名与 PIN。
+    emit router->pairingRequested(QJsonObject{
+        {QStringLiteral("type"), QStringLiteral("INCOMING")},
+        {QStringLiteral("request_id"), QStringLiteral("req_pair1")},
+        {QStringLiteral("from_device_id"), QStringLiteral("dev_alpha")},
+        {QStringLiteral("from_name"), QStringLiteral("Alpha 一体机")},
+        {QStringLiteral("pin"), QStringLiteral("483920")},
+        {QStringLiteral("expires_at"), 1756080060}});
+
+    QDialog *dialog = chat->findChild<QDialog *>(
+        QStringLiteral("pairRequestDialog"));
+    QVERIFY(dialog != nullptr);
+    QVERIFY(dialog->isVisible());
+    QLabel *info = dialog->findChild<QLabel *>(
+        QStringLiteral("pairRequestInfoLabel"));
+    QVERIFY(info != nullptr);
+    QVERIFY(info->text().contains(QStringLiteral("Alpha 一体机")));
+    QLabel *pin = dialog->findChild<QLabel *>(
+        QStringLiteral("pairRequestPinLabel"));
+    QVERIFY(pin != nullptr);
+    QVERIFY(pin->text().contains(QStringLiteral("483920")));
+
+    // 确认 → confirmPairing(request_id, true)。
+    QPushButton *accept = dialog->findChild<QPushButton *>(
+        QStringLiteral("pairRequestAcceptButton"));
+    QVERIFY(accept != nullptr);
+    QTest::mouseClick(accept, Qt::LeftButton);
+    QCOMPARE(fake->confirmPairingCalls.size(), 1);
+    QCOMPARE(fake->confirmPairingCalls.first().first,
+             QStringLiteral("req_pair1"));
+    QCOMPARE(fake->confirmPairingCalls.first().second, true);
+    QVERIFY(!dialog->isVisible());
+
+    // 拒绝 → confirmPairing(request_id, false)。
+    emit router->pairingRequested(QJsonObject{
+        {QStringLiteral("type"), QStringLiteral("INCOMING")},
+        {QStringLiteral("request_id"), QStringLiteral("req_pair2")},
+        {QStringLiteral("from_device_id"), QStringLiteral("dev_beta")},
+        {QStringLiteral("from_name"), QStringLiteral("Beta 笔记本")},
+        {QStringLiteral("pin"), QStringLiteral("112233")},
+        {QStringLiteral("expires_at"), 1756080120}});
+    QPushButton *reject = dialog->findChild<QPushButton *>(
+        QStringLiteral("pairRequestRejectButton"));
+    QVERIFY(reject != nullptr);
+    QTest::mouseClick(reject, Qt::LeftButton);
+    QCOMPARE(fake->confirmPairingCalls.size(), 2);
+    QCOMPARE(fake->confirmPairingCalls.at(1).first,
+             QStringLiteral("req_pair2"));
+    QCOMPARE(fake->confirmPairingCalls.at(1).second, false);
 
     app.shutdown();
 }
