@@ -29,43 +29,66 @@ from .transport import (
 _log = get_logger(__name__)
 
 
+def _is_lan_ipv4(address: str) -> bool:
+    """候选可通告地址：私网或链路本地，排除回环/组播/未指定。"""
+    try:
+        ip = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    return (
+        not ip.is_unspecified
+        and not ip.is_multicast
+        and not ip.is_loopback
+        and (ip.is_private or ip.is_link_local)
+    )
+
+
+def _default_route_ipv4() -> str | None:
+    """默认路由 IPv4：UDP connect 只选路由不发包；无路由或非 LAN 返回 None。"""
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            sock.connect(("8.8.8.8", 80))
+            address = sock.getsockname()[0]
+        finally:
+            sock.close()
+    except OSError:
+        return None
+    if not _is_lan_ipv4(address):
+        return None
+    return address
+
+
 def _auto_lan_addresses() -> tuple[str, ...]:
-    """用主机名解析候选 IPv4，过滤为可通告的 LAN/回环地址（非回环优先）。"""
+    """自动发现可通告 LAN IPv4，排除回环（Debian /etc/hosts 常把主机名解析到
+    127.0.1.1，导致两台默认机互相发现但 TLS 连本机回环配对失败）。
+
+    优先取默认路由 IP（UDP connect 8.8.8.8:80 的 getsockname），再拼接主机名
+    解析出的 LAN 地址（去重、保持发现顺序）。无 LAN 地址时返回空，由
+    _resolve_advertise_addresses 落回显式 127.0.0.1 并告警（仅本机可发现）。
+    """
+    candidates: list[str] = []
+    default_route = _default_route_ipv4()
+    if default_route is not None:
+        candidates.append(default_route)
     try:
         infos = socket.getaddrinfo(
             socket.gethostname(), None, socket.AF_INET, socket.SOCK_STREAM
         )
     except OSError:
-        return ()
-    candidates: list[str] = []
+        infos = ()
     for info in infos:
         address = info[4][0]
-        try:
-            ip = ipaddress.ip_address(address)
-        except ValueError:
-            continue
-        if (
-            ip.is_unspecified
-            or ip.is_multicast
-            or not (ip.is_private or ip.is_link_local or ip.is_loopback)
-        ):
-            continue
-        if address not in candidates:
+        if address not in candidates and _is_lan_ipv4(address):
             candidates.append(address)
-
-    def _is_loopback(value: str) -> bool:
-        return ipaddress.ip_address(value).is_loopback
-
-    return tuple(
-        [value for value in candidates if not _is_loopback(value)]
-        + [value for value in candidates if _is_loopback(value)]
-    )
+    return tuple(candidates)
 
 
 def _resolve_advertise_addresses(settings) -> tuple[str, ...]:
     """SN-4 默认开启：advertise 未配置时自动取本机 LAN IP，失败回退 127.0.0.1。
 
-    保证无配置机器默认开启也能运行（build_service_info 要求至少一个地址）。
+    回退仅保证无配置机器默认开启也能运行（build_service_info 要求至少一个
+    地址），但只在本机可发现、不可跨机配对。
     """
     if settings.sync_advertise_addresses:
         return tuple(settings.sync_advertise_addresses)
@@ -79,7 +102,8 @@ def _resolve_advertise_addresses(settings) -> tuple[str, ...]:
         return auto
     _log.warning(
         "PIXIU_SYNC_ADVERTISE_ADDRESSES empty and no LAN address detected; "
-        "falling back to 127.0.0.1 (discovery limited to loopback)"
+        "falling back to 127.0.0.1 (cross-machine pairing unavailable; set "
+        "PIXIU_SYNC_ADVERTISE_ADDRESSES to a LAN address)"
     )
     return ("127.0.0.1",)
 
@@ -187,10 +211,16 @@ class SyncRuntime:
             self._server = None
 
 
-async def create_sync_runtime(service, store, settings) -> SyncRuntime:
-    """Build the production runtime after explicit configuration enabled it."""
-    if not settings.sync_network_enabled:
-        raise ValueError("sync networking is disabled")
+async def create_sync_runtime(
+    service, store, settings, *, paused: bool = False
+) -> SyncRuntime:
+    """Build the production runtime; caller gates on KV runtime settings.
+
+    本函数不再校验 settings.sync_network_enabled：env 只是 KV 未写时的回退
+    默认，唯一生产调用方 di.start_sync_runtime 已用 KV sync_runtime:enabled
+    前置门控——避免 env=false + KV enabled=1 时 API 报 enabled=true 但 runtime
+    永不启动。paused 由调用方从 KV 读取并透传，保证重启后恢复暂停态。
+    """
     identity = await service.initialize()
     discovery = MdnsDiscovery()
     directory = TrustedPeerDirectory(store, identity.domain)
@@ -242,4 +272,5 @@ async def create_sync_runtime(service, store, settings) -> SyncRuntime:
         gossip=gossip,
         service_info=service_info,
         server_starter=start_server,
+        paused=paused,
     )

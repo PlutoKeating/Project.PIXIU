@@ -239,11 +239,18 @@ async def start_sync_runtime() -> SyncRuntime | None:
         if not runtime_settings["enabled"]:
             return None
         runtime = await create_sync_runtime(
-            service, SqliteSyncStore(db), settings
+            service,
+            SqliteSyncStore(db),
+            settings,
+            paused=runtime_settings["paused"],
         )
         await runtime.start()
     except Exception as exc:
-        _log.warning("sync runtime not started (degraded): %s", exc)
+        # exc_info=True：装配失败既可能是预期降级（缺证书/口令/端口占用），
+        # 也可能是编程错误（AttributeError/TypeError）；统一带 traceback 便于诊断。
+        _log.warning(
+            "sync runtime not started (degraded): %s", exc, exc_info=True
+        )
         return None
     _sync_runtime = runtime
     _log.info("Sync networking started on port %s", settings.sync_port)
@@ -265,8 +272,8 @@ async def apply_sync_runtime_settings(*, enabled: bool, paused: bool) -> None:
 async def get_sync_discovery() -> MdnsDiscovery:
     """返回共享的 mDNS 发现实例（随 sync runtime 启动注册）。
 
-    runtime 未启动（PIXIU_SYNC_NETWORK_ENABLED 未开启）时返回空实例：
-    list_advertisements 不打开 socket，直接返回空列表。
+    runtime 未启动（KV sync_runtime:enabled 关闭、env 默认关闭或装配降级）时
+    返回空实例：list_advertisements 不打开 socket，直接返回空列表。
     """
     runtime = _sync_runtime
     if runtime is None:

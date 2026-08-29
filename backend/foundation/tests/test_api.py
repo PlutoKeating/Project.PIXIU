@@ -42,6 +42,7 @@ class _FakeSettings:
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(di_module, "settings", _FakeSettings(str(tmp_path / "pixiu.db")))
     di_module._db = None
+    di_module._sync_runtime = None  # 防测试间 sync runtime 泄漏
 
     # 无麒麟 SDK 的开发机上，用测试专用桩注入 KnowledgeService
     async def _override_knowledge():
@@ -57,6 +58,7 @@ def client(tmp_path, monkeypatch):
         yield c
     app.dependency_overrides.clear()
     di_module._db = None
+    di_module._sync_runtime = None
 
 
 OCR_RAW = {
@@ -493,6 +495,9 @@ def test_sync_settings_put_persists_and_status_reflects(client):
     status = client.get("/sync/status").json()
     assert status["enabled"] is True
     assert status["paused"] is True
+    # SN-4 I-1：env=false 时 KV enabled=true 不再被 env 守卫否决，但测试桩
+    # 无 TLS 配置 → di 装配降级，runtime 实际未启动；PUT/status 如实反映 KV。
+    assert di_module._sync_runtime is None
 
     # 关闭后状态回读持久化
     off = client.put("/sync/settings", json={"enabled": False, "paused": False})
