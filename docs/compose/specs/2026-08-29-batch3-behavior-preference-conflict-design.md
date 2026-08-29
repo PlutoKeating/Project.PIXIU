@@ -1,7 +1,9 @@
 # 批次③ · 行为采集 + 自动偏好 + 冲突分级 Design Spec
 
-> 日期：2026-08-29 · 状态：待规划
+> 日期：2026-08-29 · 状态：已实施（B3-1..B3-3 / F3-1..F3-2，2026-08-29 合入 main）
 > 定位：被动监控四批次路线的第三批——让系统从用户日常使用中**自动学习偏好**（行为采集器供数 → 偏好提取器对齐评测指标），并把冲突打扰从「一刀切通知」升级为**按风险分级**。
+
+> **实施注记（收窄说明，2026-08-29）**：`[S2.1]`/`[S2.2]` 承诺的「collector → `preference.extract` 生产接线 + focus_seconds 占比规则」在实现中**收窄为评测契约层**（见批次③ plan 的收窄决策）：B3-1 的 `BehaviorCollector` 已按 `[S2.1]` 形状产出 USER_BEHAVIOR evidence 并经 ingest→structure 落库，但生产管线「行为采集→偏好提取」未真接通；B3-2 仅对齐评测标签（OP_HABIT / OUTPUT_STYLE / SECURITY_POLICY 三类 15 例轮转）使 `preference_accuracy` 实测 1.0（capture_eval 复采）。**验收口径不变**（`preference_accuracy >= 0.85` 已达标 1.0）；「接线 collector→extract + focus 规则」列为批次④/发布后遗留，不在本 spec 验收范围内。
 
 ## [S1] 背景与目标
 
