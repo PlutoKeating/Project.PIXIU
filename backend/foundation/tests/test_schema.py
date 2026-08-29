@@ -299,6 +299,65 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.close()
 
 
+def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
+    # I-4：迁移 #7 的 ALTER 路径 —— v6 旧库（conflict_records 无 source 列）
+    # 补列后：列存在、旧行回读 "write"、新行可写 source="sync"（roundtrip）。
+    conn = create_connection(str(tmp_path / "test.db"))
+    # v6 版冲突表 DDL（无 source 列）
+    conn.execute(
+        """CREATE TABLE conflict_records (
+            id                TEXT PRIMARY KEY,
+            target_knowledge  TEXT NOT NULL,
+            field             TEXT NOT NULL DEFAULT '',
+            old_value         TEXT NOT NULL DEFAULT 'null',
+            new_value         TEXT NOT NULL DEFAULT 'null',
+            resolution        TEXT NOT NULL DEFAULT 'NEW_WINS',
+            created_at        INTEGER NOT NULL
+        )"""
+    )
+    conn.execute(
+        "INSERT INTO conflict_records (id, target_knowledge, created_at) VALUES (?, ?, ?)",
+        ("cfl_AAAAAAAAAAAAAAAAAAAAAAAAAA", "knw_AAAAAAAAAAAAAAAAAAAAAAAAAA", 1),
+    )
+    conn.execute(
+        "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)"
+    )
+    conn.execute("INSERT INTO _schema_version VALUES (6, 1)")
+    conn.commit()
+
+    assert apply_pending(conn) == 1  # 仅迁移 #7
+    conn.commit()
+
+    columns = {
+        row[1] for row in conn.execute("PRAGMA table_info(conflict_records)").fetchall()
+    }
+    assert "source" in columns
+    # 旧行回读默认 "write"
+    row = conn.execute(
+        "SELECT source FROM conflict_records WHERE id = ?",
+        ("cfl_AAAAAAAAAAAAAAAAAAAAAAAAAA",),
+    ).fetchone()
+    assert row[0] == "write"
+    # 新行写入 source="sync" 并回读（roundtrip）
+    conn.execute(
+        """INSERT INTO conflict_records (id, target_knowledge, source, created_at)
+           VALUES (?, ?, ?, ?)""",
+        (
+            "cfl_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+            "knw_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+            "sync",
+            2,
+        ),
+    )
+    conn.commit()
+    row2 = conn.execute(
+        "SELECT source FROM conflict_records WHERE id = ?",
+        ("cfl_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",),
+    ).fetchone()
+    assert row2[0] == "sync"
+    conn.close()
+
+
 # ═══════════════════════════════════════════════════════
 # Group 6: no knowledge_fts / knowledge_vec tables
 # ═══════════════════════════════════════════════════════

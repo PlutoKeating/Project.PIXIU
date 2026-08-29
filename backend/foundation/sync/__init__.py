@@ -204,8 +204,14 @@ class SyncService:
         # SN-3 mainline：快进（BEFORE/EQUAL/AFTER）自动吸收；并发分叉经
         # ConflictService.arbitrate（SyncOp.payload → KnowledgeItem 的转换在
         # Mainline.knowledge_factory 内完成），MANUAL 拦截不落库等待人工。
+        # NEW_WINS/MERGE 的仲裁产物（merge 合并体 / 抬升后的 version）已由
+        # arbitrate 写入 knowledge repo——这些 op 跳过 materializer 重复落库
+        # （I-1），避免合并体被原始 CRDT payload 覆盖、版本抬升被抹平。
+        arbitrated_op_ids: frozenset[str] = frozenset()
         if self._mainline is not None:
-            operations = await self._mainline.try_fast_forward(operations)
+            result = await self._mainline.try_fast_forward(operations)
+            operations = result.absorbed
+            arbitrated_op_ids = result.arbitrated_op_ids
 
         accepted = 0
         for op in operations:
@@ -215,6 +221,7 @@ class SyncService:
             resolved = self._crdt.resolve(current, op)
             if (
                 self._materializer is not None
+                and op.op_id not in arbitrated_op_ids
                 and (current is None or resolved.op_id != current.op_id)
             ):
                 await self._materializer(resolved)
