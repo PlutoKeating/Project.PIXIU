@@ -83,7 +83,7 @@ PIXIU_VM_HOST=192.168.122.197 bash build/release/scripts/vm-deploy-test.sh
 
 # 方式二：手工两步（等价，供理解）
 sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64   # 1) 系统依赖
-sudo apt-get install -y ./build/release/out/pixiu_0.1.0-1_amd64.deb    # 2) 安装
+sudo apt-get install -y ./build/release/out/pixiu_0.1.1-1_amd64.deb    # 2) 安装
 ```
 
 `provision-target.sh` 与 deb 的 `postinst` 覆盖了麒麟 V11 的全部已知坑：
@@ -96,7 +96,7 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 
 | 变量 | 默认 | 说明 |
 |------|------|------|
-| `PIXIU_VERSION` | `0.1.0` | 软件版本（写入 control Version） |
+| `PIXIU_VERSION` | `0.1.1` | 软件版本（写入 control Version） |
 | `PIXIU_REVISION` | `1` | Debian 修订号 |
 | `PIXIU_ARCH` | `dpkg --print-architecture` | 目标架构（amd64 / arm64） |
 | `PIXIU_KYSDK` | `OFF` | 前端是否链接 KylinSDK（麒麟目标机用 `ON`） |
@@ -111,7 +111,7 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 ## 安装产物（全新麒麟机）
 
 ```bash
-sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.0-1_amd64.deb
+sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.1-1_amd64.deb
 # apt 自动解析并安装依赖（python3、Qt5 运行时等；kysdk 组件为建议项）
 ```
 

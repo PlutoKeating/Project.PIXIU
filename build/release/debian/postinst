@@ -41,17 +41,31 @@ if ! "${PY}" -m pip --version >/dev/null 2>&1; then
     rm -f /tmp/pixiu-get-pip.py
 fi
 
-# 3) Python 解释器：优先 venv（有 python3-venv 的发行版），否则回退系统 Python
+# 3) Python 解释器：venv 存在时优先复用（升级/重装路径——启动器固定跑 venv，
+#    依赖必须装进 venv，否则升级后服务 ModuleNotFoundError 崩溃循环）；
+#    不存在才尝试创建（无 python3-venv 的发行版回退系统 Python）。
 VPY="${PY}"
-if [ ! -x "${VENV}/bin/python" ]; then
-    if "${PY}" -m venv "${VENV}" >/dev/null 2>&1 \
-            && [ -x "${VENV}/bin/python" ]; then
-        echo "pixiu: using venv at ${VENV}"
-        VPY="${VENV}/bin/python"
-        "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
-    else
-        echo "pixiu: python3-venv unavailable — using system Python ${PY}"
-    fi
+if [ -x "${VENV}/bin/python" ]; then
+    echo "pixiu: using existing venv at ${VENV}"
+    VPY="${VENV}/bin/python"
+    "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
+elif "${PY}" -m venv "${VENV}" >/dev/null 2>&1 \
+        && [ -x "${VENV}/bin/python" ]; then
+    echo "pixiu: using venv at ${VENV}"
+    VPY="${VENV}/bin/python"
+    "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
+else
+    echo "pixiu: python3-venv unavailable — using system Python ${PY}"
+fi
+
+# 3.5) conffile 迁移（幂等追加）：升级时 dpkg 保留用户改过的旧 /etc/pixiu/pixiu.env，
+#      新模板变量不落地 → 这里补入缺失的默认变量；全新安装由 dpkg 落包内模板，跳过。
+CONF="/etc/pixiu/pixiu.env"
+if [ -f "${CONF}" ]; then
+    grep -q '^PIXIU_MONITOR_ENABLED=' "${CONF}" \
+        || echo 'PIXIU_MONITOR_ENABLED=1' >> "${CONF}"
+    grep -q '^PIXIU_SYNC_NETWORK_ENABLED=' "${CONF}" \
+        || echo 'PIXIU_SYNC_NETWORK_ENABLED=true' >> "${CONF}"
 fi
 
 REQ="${PIXIU_LIB}/backend/requirements.txt"
