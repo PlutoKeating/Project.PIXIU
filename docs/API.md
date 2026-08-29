@@ -30,6 +30,7 @@
 | POST | `/sync/token` | 生成配对令牌（QR/PIN） | ✅ 已实现（2026-08-24） |
 | POST | `/sync/pair` | 设备配对（QR/PIN + 签名令牌） | ✅ 已实现（2026-08-10） |
 | GET | `/sync/peers` | 节点列表 | ✅ 已实现（2026-08-10） |
+| GET | `/sync/discover` | 发现局域网设备（含未配对） | ✅ 已实现（2026-08-29） |
 | GET | `/sync/status` | 同步状态 | ✅ 已实现（2026-08-10） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
 | GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
@@ -421,7 +422,33 @@
 }
 ```
 
-### 3.16 GET /monitor/config
+### 3.16 GET /sync/discover
+
+发现局域网内已广播的 PIXIU 设备（**含未配对**）。`paired` 标注本地信任关系，
+本机自身被过滤。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "devices": [
+    {
+      "device_id": "dev_...",
+      "device_name": "Alpha",
+      "addresses": ["192.168.1.10"],
+      "port": 8766,
+      "pairable": true,
+      "paired": true
+    }
+  ]
+}
+```
+
+字段说明：`pairable` 来自设备 mDNS 通告（未配对设备广播的可配对标志；
+旧版通告缺省 false）；`paired` 表示该设备是否已在本地信任列表
+（`sync.peers()`）；sync runtime 未启动时返回 `{"devices": []}`。
+
+### 3.17 GET /monitor/config
 
 读取当前监控配置（daemon 视角的全量状态）。
 
@@ -444,7 +471,7 @@
 四类数据源开关，键名固定 `directory | clipboard | behavior | screenshot`；
 `directories` 监视目录绝对路径清单（去重、非空）。
 
-### 3.17 PUT /monitor/config
+### 3.18 PUT /monitor/config
 
 写入监控配置，请求体结构与 GET 响应一致（**全量提交，不做局部 patch**）。
 服务端持久化配置并对运行中的 daemon **热生效**（开启/关闭采集器、增删
@@ -469,7 +496,7 @@ inotify 监视点），无需重启。每次成功写入追加一条 `state_chan
 **错误响应（400）：** 未知 source 名、字段类型错误、目录为相对路径等 →
 `{"error": "INVALID_REQUEST", "message": "...", "request_id": "req_..."}`。
 
-### 3.18 GET /monitor/log
+### 3.19 GET /monitor/log
 
 分页查询监控活动记录（按时间倒序，最新在前）。`limit` 缺省 100、上限 500；
 `offset` 缺省 0。空日志返回 `{"events": []}` 而非 404。
@@ -568,7 +595,7 @@ null。`summary` 由服务端生成用户可读文案，**不含敏感原文全�
 ### 4.5 capture_event ✅ 已实现（2026-08-26，监视捕获/状态变更时已广播）
 
 每次目录捕获（ingested / sensitive_quarantined / ignored）与监控配置变更
-（state_changed）推送；`data` 与 §3.18 日志条目同构，`knowledge_id` 可缺
+（state_changed）推送；`data` 与 §3.19 日志条目同构，`knowledge_id` 可缺
 （事件未产生入库时为 null）。
 
 ```jsonc

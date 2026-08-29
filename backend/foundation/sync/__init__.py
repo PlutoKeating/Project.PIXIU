@@ -12,6 +12,14 @@ from backend.foundation.core.idgen import gen_sync_op_id
 from backend.foundation.core.models import SyncOp
 
 from .crdt import LWWElementSet, increment_clock, record_from_op
+from .discovery import (
+    DiscoveryError,
+    MdnsDiscovery,
+    PeerAdvertisement,
+    TrustedPeerDirectory,
+    build_service_info,
+    parse_service_info,
+)
 from .identity import IdentityManager
 from .models import (
     DeviceIdentity,
@@ -270,11 +278,17 @@ class SyncService:
 
 
 __all__ = [
+    "DiscoveryError",
     "InvalidSyncOperation",
+    "MdnsDiscovery",
     "PairingError",
     "PairingMethod",
+    "PeerAdvertisement",
     "PeerNotFound",
     "ScopeNotShareable",
     "SqliteSyncStore",
     "SyncService",
+    "TrustedPeerDirectory",
+    "build_service_info",
+    "parse_service_info",
 ]

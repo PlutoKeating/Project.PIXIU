@@ -57,6 +57,11 @@ class SyncRuntime:
     def running(self) -> bool:
         return self._task is not None and not self._task.done()
 
+    @property
+    def discovery(self) -> MdnsDiscovery:
+        """共享的 mDNS 实例，供 GET /sync/discover 依赖复用。"""
+        return self._discovery
+
     async def start(self) -> None:
         if self.running:
             return

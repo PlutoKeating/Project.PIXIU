@@ -36,6 +36,7 @@ from ..storage.repository import (
     SqlitePreferenceRepo,
 )
 from ..sync import SqliteSyncStore, SyncService
+from ..sync.discovery import MdnsDiscovery
 from ..sync.runtime import SyncRuntime, create_sync_runtime
 from ..sync.materializer import FoundationMaterializer
 from .monitor_log import (
@@ -227,6 +228,18 @@ async def start_sync_runtime() -> SyncRuntime | None:
         await _sync_runtime.start()
         _log.info("Sync networking started on port %s", settings.sync_port)
     return _sync_runtime
+
+
+async def get_sync_discovery() -> MdnsDiscovery:
+    """返回共享的 mDNS 发现实例（随 sync runtime 启动注册）。
+
+    runtime 未启动（PIXIU_SYNC_NETWORK_ENABLED 未开启）时返回空实例：
+    list_advertisements 不打开 socket，直接返回空列表。
+    """
+    runtime = _sync_runtime
+    if runtime is None:
+        return MdnsDiscovery()
+    return runtime.discovery
 
 
 async def stop_sync_runtime() -> None:

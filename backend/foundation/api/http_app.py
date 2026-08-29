@@ -42,6 +42,7 @@ from .di import (
     get_preference_service,
     get_retrieval_service,
     get_security_service,
+    get_sync_discovery,
     get_sync_service,
     start_monitor_runtime,
     start_sync_runtime,
@@ -499,6 +500,30 @@ async def sync_pair(body: SyncPairRequest, sync=Depends(get_sync_service)):
 @app.get("/sync/peers", tags=["Sync"], summary="节点列表")
 async def sync_peers(sync=Depends(get_sync_service)):
     return {"peers": await sync.peers()}
+
+
+@app.get("/sync/discover", tags=["Sync"], summary="发现局域网设备")
+async def sync_discover(
+    sync=Depends(get_sync_service),
+    discovery=Depends(get_sync_discovery),
+):
+    """列出局域网内已发现设备（含未配对），paired 标注本地信任关系。"""
+    identity = await sync.initialize()
+    advertisements = await discovery.list_advertisements()
+    known = {peer["id"] for peer in await sync.peers()}
+    devices = [
+        {
+            "device_id": adv.device_id,
+            "device_name": adv.name,
+            "addresses": list(adv.addresses),
+            "port": adv.port,
+            "pairable": adv.pairable,
+            "paired": adv.device_id in known,
+        }
+        for adv in advertisements
+        if adv.device_id != identity.id
+    ]
+    return {"devices": devices}
 
 
 @app.get("/sync/status", tags=["Sync"], summary="同步状态")

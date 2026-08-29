@@ -31,6 +31,7 @@ class PeerAdvertisement:
     addresses: tuple[str, ...]
     port: int
     server_name: str
+    pairable: bool = False
 
 
 def _lan_address(value: str) -> str:
@@ -64,6 +65,7 @@ def build_service_info(
     addresses: list[str] | tuple[str, ...],
     port: int,
     server_name: str,
+    pairable: bool = False,
 ) -> ServiceInfo:
     """Build a minimal advertisement containing public identity metadata only."""
     validate_id("device", device_id)
@@ -92,6 +94,7 @@ def build_service_info(
             b"domain": domain.encode("ascii"),
             b"public_key": base64.b64encode(public_key),
             b"server_name": host.encode("utf-8"),
+            b"pairable": b"1" if pairable else b"0",
         },
         server=f"{host}.",
     )
@@ -125,6 +128,8 @@ def parse_service_info(info: ServiceInfo) -> PeerAdvertisement:
         raise DiscoveryError("advertisement has no usable LAN address")
     if not 1 <= info.port <= 65535:
         raise DiscoveryError("invalid advertised port")
+    raw_pairable = properties.get(b"pairable")
+    pairable = raw_pairable == b"1" if raw_pairable is not None else False
     return PeerAdvertisement(
         device_id=device_id,
         name=name,
@@ -133,6 +138,7 @@ def parse_service_info(info: ServiceInfo) -> PeerAdvertisement:
         addresses=addresses,
         port=info.port,
         server_name=server_name,
+        pairable=pairable,
     )
 
 
@@ -177,7 +183,7 @@ class TrustedPeerDirectory:
 
 
 class MdnsDiscovery:
-    """Small async wrapper; no socket is opened until register/discover is called."""
+    """Small async wrapper; no socket is opened until register/discover/browse is called."""
 
     def __init__(self, zeroconf: AsyncZeroconf | None = None) -> None:
         self._zeroconf = zeroconf
@@ -235,6 +241,70 @@ class MdnsDiscovery:
         finally:
             await browser.async_cancel()
         return sorted(found.values(), key=lambda item: item.device_id)
+
+    async def list_advertisements(
+        self, timeout_seconds: float = 10.0
+    ) -> list[PeerAdvertisement]:
+        """Browse every _pixiu advertisement on the LAN (no trust filtering).
+
+        Used by GET /sync/discover to surface both paired and unpaired
+        devices. An instance that has never opened a socket (e.g. the sync
+        runtime is not running) returns an empty list immediately without
+        touching the network.
+        """
+        if self._zeroconf is None:
+            return []
+        if timeout_seconds <= 0:
+            raise ValueError("discovery timeout must be positive")
+        aiozc = await self._instance()
+        found: dict[str, PeerAdvertisement] = {}
+        tasks: set[asyncio.Task] = set()
+
+        async def load(service_type: str, service_name: str) -> None:
+            info = await aiozc.async_get_service_info(
+                service_type, service_name, timeout=3000
+            )
+            if info is None:
+                return
+            try:
+                advertisement = parse_service_info(info)
+            except (DiscoveryError, ValueError):
+                return
+            found[advertisement.device_id] = advertisement
+
+        def on_change(zc, service_type, service_name, state_change) -> None:
+            if state_change not in (
+                ServiceStateChange.Added,
+                ServiceStateChange.Updated,
+            ):
+                return
+            task = asyncio.create_task(load(service_type, service_name))
+            tasks.add(task)
+            task.add_done_callback(tasks.discard)
+
+        async def _browse() -> list[PeerAdvertisement]:
+            browser = AsyncServiceBrowser(
+                aiozc.zeroconf, SERVICE_TYPE, handlers=[on_change]
+            )
+            try:
+                # 短窗口收集（mDNS 响应通常在数百 ms 内到达），首个通告
+                # 解析完成后即可返回，避免前端等待完整窗口。
+                for _ in range(20):
+                    await asyncio.sleep(0.25)
+                    if tasks:
+                        await asyncio.gather(*tuple(tasks), return_exceptions=True)
+                    if found:
+                        break
+                if tasks:
+                    await asyncio.gather(*tuple(tasks), return_exceptions=True)
+            finally:
+                await browser.async_cancel()
+            return sorted(found.values(), key=lambda item: item.device_id)
+
+        try:
+            return await asyncio.wait_for(_browse(), timeout=timeout_seconds)
+        except asyncio.TimeoutError:
+            return []
 
     async def close(self) -> None:
         if self._zeroconf is None:
