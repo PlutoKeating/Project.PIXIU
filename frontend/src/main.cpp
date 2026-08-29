@@ -21,7 +21,10 @@ int main(int argc, char *argv[])
     application.setQuitOnLastWindowClosed(false);
 
     QCoreApplication::setApplicationName(QStringLiteral("PIXIU"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("0.1.0"));
+    // 版本号由 CMake 注入：PIXIU_VERSION 宏派生自 frontend/CMakeLists.txt 的
+    // project VERSION，与 build/release/scripts/functions.sh resolve_version 三处
+    // 同步，发布前由 build-deb.sh 预检把关，杜绝硬编码漂移。
+    QCoreApplication::setApplicationVersion(QStringLiteral(PIXIU_VERSION));
     QCoreApplication::setOrganizationName(QStringLiteral("Project.PIXIU"));
     // 应用窗口/任务栏图标：内嵌 pixiu.svg（desktop 入口与托盘共用同一资源）。
     application.setWindowIcon(QIcon(QStringLiteral(":/icons/pixiu.svg")));

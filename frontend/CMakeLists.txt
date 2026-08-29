@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(pixiu-frontend VERSION 0.1.0 LANGUAGES CXX)
+project(pixiu-frontend VERSION 0.1.1 LANGUAGES CXX)
+
+# PIXIU_VERSION 编译宏：由 project VERSION（${PROJECT_VERSION}）派生，与
+# main.cpp setApplicationVersion 共用单一事实源，防止发布版本二次漂移。
+# 字符串引号经 CMake 变量间接传入——直接写 PIXIU_VERSION="\\\"${PROJECT_VERSION}\\\""
+# 在 CMake 3.28 + Ninja 下会双重转义、宏值残留字面引号（实测不可用）。
+# 发布前由 build/release/scripts/build-deb.sh 预检三处版本一致性。
+set(PIXIU_VERSION_STR "\"${PROJECT_VERSION}\"")
 
 option(PIXIU_HAVE_KYSDK "Build with KylinSDK integration" OFF)
 option(PIXIU_HAVE_QRENCODE "Build QR pairing rendering with libqrencode" ON)
@@ -86,6 +93,8 @@ add_executable(pixiu-frontend
     src/app/UkuiWindow.cpp
     resources/resources.qrc
 )
+
+target_compile_definitions(pixiu-frontend PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
 
 target_link_libraries(pixiu-frontend
     PRIVATE
