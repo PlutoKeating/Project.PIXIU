@@ -1027,6 +1027,10 @@ Your input is kept; edit and retry.</translation>
         <source>已退出同步网络</source>
         <translation>Left sync network</translation>
     </message>
+    <message>
+        <source>记忆已更新</source>
+        <translation>Memory updated</translation>
+    </message>
 </context>
 <context>
     <name>SettingsDialog</name>
