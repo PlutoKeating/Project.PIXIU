@@ -24,10 +24,14 @@ public:
 
 signals:
     void memoryReady(const QJsonObject &data);
+    // conflict_detected 帧：携带 B3-3 的 severity（low/medium/high）供应用层
+    // 按打扰级别分流；旧后端广播无 severity 字段时 EventRouter 缺省补 "high"
+    //（最保守），见 EventRouter.cpp conflict_detected 分支。
     void conflictDetected(const QString &knowledgeTitle,
                           const QString &field,
                           const QString &oldValue,
-                          const QString &newValue);
+                          const QString &newValue,
+                          const QString &severity);
     void forgetConfirmationReady(const QString &command,
                                  const QJsonArray &targets,
                                  const QJsonObject &cascade,

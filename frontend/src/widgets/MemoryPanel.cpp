@@ -51,6 +51,19 @@ QString elidePeerName(const QFont &font, const QString &name, int maxWidth)
 {
     return QFontMetrics(font).elidedText(name, Qt::ElideRight, maxWidth);
 }
+
+// F3-1：冲突条目 severity 标记色（low 灰 / medium 蓝 / high 红）。
+// 未知/缺省 severity 按 high 着色，与 PixiuApp 打扰分流缺省一致（宁可醒目不漏报）。
+QColor severityMarkColor(const QString &severity)
+{
+    if (severity == QStringLiteral("low")) {
+        return ui::semanticColor(ui::Role::Muted);
+    }
+    if (severity == QStringLiteral("medium")) {
+        return ui::semanticColor(ui::Role::Accent);
+    }
+    return ui::semanticColor(ui::Role::Error);
+}
 }
 
 MemoryPanel::MemoryPanel(QWidget *parent)
@@ -133,7 +146,13 @@ void MemoryPanel::setConflicts(const QJsonArray &conflicts)
         } else if (timestamp.isString()) {
             lines << tr("时间：%1").arg(timestamp.toString());
         }
-        m_conflictList->addItem(lines.join(QStringLiteral("\n")));
+        QListWidgetItem *entry =
+            new QListWidgetItem(lines.join(QStringLiteral("\n")));
+        // F3-1：条目按 severity 标记（B3-3 /conflicts 条目已带 severity 字段）。
+        entry->setForeground(
+            severityMarkColor(
+                item.value(QStringLiteral("severity")).toString()));
+        m_conflictList->addItem(entry);
     }
 
     const bool hasConflicts = !conflicts.isEmpty();

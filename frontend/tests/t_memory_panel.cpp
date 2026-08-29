@@ -11,6 +11,7 @@
 #include <QTabWidget>
 #include <QTest>
 
+#include "app/UiTokens.h"
 #include "widgets/MemoryPanel.h"
 #include "widgets/PairDialog.h"
 
@@ -23,6 +24,7 @@ private slots:
     void hasThreeTabs();
     void tabTitlesMatchPlan();
     void setConflictsPopulatesList();
+    void setConflictsMarksSeverityByColor();
     void setConflictsShowsEmptyState();
     void setConflictsLoadingShowsLoadingState();
     void setConflictsErrorShowsErrorAndRetry();
@@ -98,6 +100,47 @@ void TestMemoryPanel::setConflictsPopulatesList()
         QStringLiteral("2026年4月家庭支出清单")));
     QVERIFY(list->item(0)->text().contains(QStringLiteral("156 → 186")));
     QVERIFY(!list->isHidden());
+}
+
+void TestMemoryPanel::setConflictsMarksSeverityByColor()
+{
+    // F3-1：冲突条目按 severity 标记（low 灰 / medium 蓝 / high 红）；
+    // 缺省/未知 severity 按 high 着色（与打扰分流缺省一致）。
+    MemoryPanel panel;
+    QJsonArray conflicts;
+    conflicts.append(QJsonObject{
+        {QStringLiteral("knowledge_title"), QStringLiteral("支出清单")},
+        {QStringLiteral("resolution"), QStringLiteral("MERGE")},
+        {QStringLiteral("severity"), QStringLiteral("low")}});
+    conflicts.append(QJsonObject{
+        {QStringLiteral("knowledge_title"), QStringLiteral("支出清单")},
+        {QStringLiteral("resolution"), QStringLiteral("NEW_WINS")},
+        {QStringLiteral("severity"), QStringLiteral("medium")}});
+    conflicts.append(QJsonObject{
+        {QStringLiteral("knowledge_title"), QStringLiteral("支出清单")},
+        {QStringLiteral("resolution"), QStringLiteral("MANUAL")},
+        {QStringLiteral("severity"), QStringLiteral("high")}});
+    conflicts.append(QJsonObject{
+        {QStringLiteral("knowledge_title"), QStringLiteral("支出清单")},
+        {QStringLiteral("resolution"), QStringLiteral("MANUAL")}});
+
+    panel.setConflicts(conflicts);
+
+    QListWidget *list =
+        panel.findChild<QListWidget *>(QStringLiteral("conflictList"));
+    QVERIFY(list != nullptr);
+    QCOMPARE(list->count(), 4);
+    QCOMPARE(list->item(0)->foreground().color(),
+             ui::semanticColor(ui::Role::Muted));
+    QCOMPARE(list->item(1)->foreground().color(),
+             ui::semanticColor(ui::Role::Accent));
+    QCOMPARE(list->item(2)->foreground().color(),
+             ui::semanticColor(ui::Role::Error));
+    QCOMPARE(list->item(3)->foreground().color(),
+             ui::semanticColor(ui::Role::Error));
+    // severity 标记不破坏既有分辨率文本。
+    QVERIFY(list->item(2)->text().contains(QStringLiteral("裁决：MANUAL")));
+    QVERIFY(list->item(1)->text().contains(QStringLiteral("裁决：NEW_WINS")));
 }
 
 void TestMemoryPanel::setConflictsShowsEmptyState()

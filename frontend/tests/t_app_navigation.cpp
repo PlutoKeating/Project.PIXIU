@@ -16,6 +16,7 @@
 #include "app/PixiuApp.h"
 #include "services/BackendTransport.h"
 #include "services/BackendTypes.h"
+#include "services/NotifyService.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ImportDialog.h"
@@ -53,7 +54,18 @@ public:
     }
     void writeMemory(const QJsonObject &) override {}
     void forget(const QString &, bool) override {}
-    void listConflicts() override {}
+    // conflictDetected 高/缺省分流的「刷新列表」观测缝：统计 refresh 次数。
+    // echoConflicts=true 时 listConflicts 立即回空数组，让 ConflictController
+    // 的 m_inFlight 在途标记复位（否则第二次 refresh 被在途防重跳过）。
+    bool echoConflicts = false;
+    int listConflictsCalls = 0;
+    void listConflicts() override
+    {
+        ++listConflictsCalls;
+        if (echoConflicts) {
+            emit conflictsResult(QJsonArray());
+        }
+    }
     void preferenceHistory(const QString &) override {}
     void promoteMemory(const QJsonObject &) override {}
     void pairDevice(const QJsonObject &) override {}
@@ -190,6 +202,28 @@ public:
     }
 };
 
+// 测试用通知服务：记录 notify 调用（title/body），供 F3-1 打扰分级断言。
+// 经 PixiuApp::setNotifyServiceForTest 注入（与 setTransportForTest 同模式）。
+class RecordingNotifyService : public NotifyService
+{
+public:
+    explicit RecordingNotifyService(QObject *parent = nullptr)
+        : NotifyService(parent)
+    {
+    }
+
+    int notifyCalls = 0;
+    QStringList titles;
+    QStringList bodies;
+    bool notify(const QString &title, const QString &body) override
+    {
+        ++notifyCalls;
+        titles << title;
+        bodies << body;
+        return false;
+    }
+};
+
 // 端到端导航回归：聊天框输入区上方 chip 快捷入口（记忆/设置/导入/同步）
 // 点击后必须真正打开对应窗口/Tab。防止 UI 重构只重建视觉控件、却把原有
 // 功能入口的接线弄丢（本用例直接驱动 PixiuApp 全链路，而不是只测信号层）。
@@ -219,6 +253,7 @@ private slots:
     void syncDiscoverListRendersAndPairs();
     void leaveNetworkButtonShowsConfirmAndRevokesAll();
     void syncConflictBannerCountsAndJumps();
+    void conflictSeverityDispatchesDisturbance();
     void pairRequestDialogShowsAndConfirms();
 
 private:
@@ -959,13 +994,101 @@ void TestAppNavigation::syncConflictBannerCountsAndJumps()
     QVERIFY(router != nullptr);
     emit router->conflictDetected(QStringLiteral("2026年4月家庭支出清单"),
                                   QStringLiteral("body.items[2].amount"),
-                                  QStringLiteral("156"), QStringLiteral("186"));
+                                  QStringLiteral("156"), QStringLiteral("186"),
+                                  QStringLiteral("high"));
     QCOMPARE(panel->syncConflictCount(), 3);
     QVERIFY(!banner->isHidden());
     QVERIFY(banner->text().contains(QStringLiteral("3")));
 
     panel->setSyncConflictCount(0);
     QVERIFY(banner->isHidden());
+
+    app.shutdown();
+}
+
+void TestAppNavigation::conflictSeverityDispatchesDisturbance()
+{
+    // F3-1：conflictDetected 按 severity 分流打扰级别——
+    //   low    → 静默（无通知、角标不动、不切 Tab、不刷新），仅横幅计数 +1；
+    //   medium → 温和通知（「记忆已更新」）+ 角标 +1，不切 Tab、不刷新；
+    //   high / 缺省 → 现状全动作（「检测到记忆冲突」+ 角标 +1 + 刷新列表
+    //                 + 面板可见时切冲突 Tab）。
+    qputenv("USER", QStringLiteral("pixiu-nav-sev-%1")
+                        .arg(QCoreApplication::applicationPid()).toUtf8());
+    FakeTransport *fake = new FakeTransport(this);
+    fake->echoConflicts = true;   // 刷新后立即回包，复位在途标记
+    RecordingNotifyService *notify = new RecordingNotifyService(this);
+
+    const auto panelsBefore = topLevels<MemoryPanel>();
+    const auto ballsBefore = topLevels<FloatingBall>();
+    PixiuApp app;
+    app.setTransportForTest(fake);
+    app.setNotifyServiceForTest(notify);
+    QVERIFY(app.start());
+
+    MemoryPanel *panel = newTopLevels(panelsBefore).value(0);
+    QVERIFY(panel != nullptr);
+    panel->show();   // 面板可见：high 分流才可能触发切 Tab。
+    QTabWidget *tabs = panel->findChild<QTabWidget *>();
+    QVERIFY(tabs != nullptr);
+    FloatingBall *ball = newTopLevels(ballsBefore).value(0);
+    QVERIFY(ball != nullptr);
+    EventRouter *router = app.findChild<EventRouter *>();
+    QVERIFY(router != nullptr);
+
+    // start() 已拉取一次冲突列表。
+    const int refreshBaseline = fake->listConflictsCalls;
+    QVERIFY(refreshBaseline >= 1);
+
+    // ── low：静默 ──
+    tabs->setCurrentIndex(0);
+    const int unreadBefore = ball->unreadCount();
+    const int countBefore = panel->syncConflictCount();
+    emit router->conflictDetected(QStringLiteral("支出清单"),
+                                  QStringLiteral("body.items[0].amount"),
+                                  QStringLiteral("1"), QStringLiteral("2"),
+                                  QStringLiteral("low"));
+    QCOMPARE(panel->syncConflictCount(), countBefore + 1);   // 仅内存计数
+    QCOMPARE(ball->unreadCount(), unreadBefore);             // 角标不动
+    QCOMPARE(tabs->currentIndex(), 0);                       // 不切 Tab
+    QCOMPARE(fake->listConflictsCalls, refreshBaseline);     // 不刷新
+    QCOMPARE(notify->notifyCalls, 0);                        // 不通知
+
+    // ── medium：温和通知 + 角标，不切 Tab、不刷新 ──
+    tabs->setCurrentIndex(0);
+    emit router->conflictDetected(QStringLiteral("支出清单"),
+                                  QStringLiteral("body.items[0].amount"),
+                                  QStringLiteral("1"), QStringLiteral("2"),
+                                  QStringLiteral("medium"));
+    QCOMPARE(panel->syncConflictCount(), countBefore + 2);
+    QCOMPARE(ball->unreadCount(), unreadBefore + 1);         // 角标 +1
+    QCOMPARE(tabs->currentIndex(), 0);                       // 不切 Tab
+    QCOMPARE(fake->listConflictsCalls, refreshBaseline);     // 不刷新
+    QCOMPARE(notify->notifyCalls, 1);
+    QCOMPARE(notify->titles.last(), QStringLiteral("记忆已更新"));
+    QCOMPARE(notify->bodies.last(), QStringLiteral("支出清单"));
+
+    // ── high：现状全动作（含刷新 + 切 Tab）──
+    tabs->setCurrentIndex(0);
+    emit router->conflictDetected(QStringLiteral("支出清单"),
+                                  QStringLiteral("body.items[0].amount"),
+                                  QStringLiteral("1"), QStringLiteral("2"),
+                                  QStringLiteral("high"));
+    QCOMPARE(notify->notifyCalls, 2);
+    QCOMPARE(notify->titles.last(), QStringLiteral("检测到记忆冲突"));
+    QCOMPARE(ball->unreadCount(), unreadBefore + 2);
+    QCOMPARE(fake->listConflictsCalls, refreshBaseline + 1); // 刷新冲突列表
+    QCOMPARE(tabs->currentIndex(), 1);                       // 切到冲突 Tab
+
+    // ── 缺省（旧后端无 severity 帧）：按 high 全动作 ──
+    tabs->setCurrentIndex(0);
+    emit router->conflictDetected(QStringLiteral("支出清单"),
+                                  QStringLiteral("body.items[0].amount"),
+                                  QStringLiteral("1"), QStringLiteral("2"),
+                                  QString());
+    QCOMPARE(notify->notifyCalls, 3);
+    QCOMPARE(notify->titles.last(), QStringLiteral("检测到记忆冲突"));
+    QCOMPARE(tabs->currentIndex(), 1);                       // 切到冲突 Tab
 
     app.shutdown();
 }

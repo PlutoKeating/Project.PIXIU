@@ -33,11 +33,16 @@ void EventRouter::handleEvent(const QJsonObject &event)
         return;
     }
     if (name == QStringLiteral("conflict_detected")) {
+        // B3-3 起 WS 帧携带 severity（low/medium/high，按 resolution 派生）；
+        // 旧后端广播无此字段时缺省 high（最保守：宁可打扰不漏报）。
+        const QString severity =
+            data.value(QStringLiteral("severity")).toString();
         emit conflictDetected(
             data.value(QStringLiteral("knowledge_title")).toString(),
             data.value(QStringLiteral("field")).toString(),
             data.value(QStringLiteral("old_value")).toVariant().toString(),
-            data.value(QStringLiteral("new_value")).toVariant().toString());
+            data.value(QStringLiteral("new_value")).toVariant().toString(),
+            severity.isEmpty() ? QStringLiteral("high") : severity);
         return;
     }
     if (name == QStringLiteral("forget_confirmation")) {

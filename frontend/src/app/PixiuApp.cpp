@@ -76,6 +76,20 @@ void PixiuApp::setTransportForTest(BackendTransport *transport)
     m_transport = transport;
 }
 
+void PixiuApp::setNotifyServiceForTest(NotifyService *service)
+{
+    // 仅测试用：须在 start() 前调用，start() 检测到已注入则不再创建默认
+    // NotifyService。service 所有权仍归调用方（测试对象），与
+    // setTransportForTest 一致；start() 之后替换会静默丢掉既有实例——
+    // 拒绝替换并告警，防止静默覆盖。
+    if (m_notify && m_notify != service) {
+        qCWarning(lcApp) << "setNotifyServiceForTest: notify service already set; "
+                            "refusing to replace";
+        return;
+    }
+    m_notify = service;
+}
+
 bool PixiuApp::start()
 {
     qCInfo(lcApp) << "PIXIU application starting";
@@ -104,7 +118,10 @@ bool PixiuApp::start()
     }
 
     // 桌面通知：托盘可用时展示系统通知，否则降级为日志。
-    m_notify = new NotifyService(this);
+    // 测试注入（setNotifyServiceForTest）时复用注入实例，不重复创建。
+    if (!m_notify) {
+        m_notify = new NotifyService(this);
+    }
     if (m_tray) {
         m_notify->setTrayIcon(m_tray->trayIcon());
     }
@@ -761,17 +778,39 @@ bool PixiuApp::start()
                 }
             });
     connect(m_eventRouter, &EventRouter::conflictDetected, this,
-            [this](const QString &title, const QString &, const QString &, const QString &) {
-                if (m_floatingBall) {
-                    m_floatingBall->setUnreadCount(m_floatingBall->unreadCount() + 1);
-                }
-                if (m_notify) {
-                    m_notify->notify(tr("检测到记忆冲突"), title);
-                }
+            [this](const QString &title, const QString &, const QString &,
+                   const QString &, const QString &severity) {
+                // F3-1：按 severity 分流打扰级别（B3-3 已把 severity 带进
+                // conflict_detected 帧，resolution → severity 纯函数映射）：
+                //   low    → MERGE 自动合并：静默，仅冲突横幅计数 +1；
+                //   medium → NEW_WINS 自动裁决：温和通知（「记忆已更新」）+
+                //            角标 +1，不切 Tab、不刷新（无需用户动作，列表在
+                //            下次打开面板 / high 刷新时自然更新）；
+                //   high / 缺省 / 未知 → MANUAL：现状全动作（「检测到记忆冲突」
+                //            + 角标 +1 + 刷新冲突列表 + 面板可见时切冲突 Tab）。
+                // 未知 severity 一律按 high 处理：宁可打扰不漏报。
+                const bool isLow = severity == QStringLiteral("low");
+                const bool isMedium = severity == QStringLiteral("medium");
                 // 冲突横幅计数 +1（随后 conflictsLoaded 重算为准确值）。
                 if (m_memoryPanel) {
                     m_memoryPanel->setSyncConflictCount(
                         m_memoryPanel->syncConflictCount() + 1);
+                }
+                if (isLow) {
+                    return;
+                }
+                if (m_floatingBall) {
+                    m_floatingBall->setUnreadCount(
+                        m_floatingBall->unreadCount() + 1);
+                }
+                if (isMedium) {
+                    if (m_notify) {
+                        m_notify->notify(tr("记忆已更新"), title);
+                    }
+                    return;
+                }
+                if (m_notify) {
+                    m_notify->notify(tr("检测到记忆冲突"), title);
                 }
                 if (m_conflictController) {
                     m_memoryPanel->setConflictsLoading();

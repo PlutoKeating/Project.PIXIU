@@ -59,6 +59,10 @@ public:
     // 测试注入：替换默认 HTTP transport（仅测试用，须在 start() 前调用）。
     void setTransportForTest(BackendTransport *transport);
 
+    // 测试注入：替换默认桌面通知服务（仅测试用，须在 start() 前调用；
+    // 与 setTransportForTest 同模式，start() 检测到已注入则不再创建默认实例）。
+    void setNotifyServiceForTest(NotifyService *service);
+
     // 退出前清理：停止异步任务、断开连接并释放资源。
     void shutdown();
 

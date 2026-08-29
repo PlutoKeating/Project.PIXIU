@@ -13,6 +13,7 @@ class TestEventRouter : public QObject
 private slots:
     void memoryReadyIsForwarded();
     void conflictDetectedIsForwarded();
+    void conflictDetectedDefaultsSeverityHigh();
     void forgetConfirmationIsForwarded();
     void syncEventIsForwarded();
     void captureEventIsForwarded();
@@ -54,7 +55,8 @@ void TestEventRouter::conflictDetectedIsForwarded()
             {QStringLiteral("knowledge_title"), QStringLiteral("2026年4月家庭支出清单")},
             {QStringLiteral("field"), QStringLiteral("body.items[2].amount")},
             {QStringLiteral("old_value"), 156},
-            {QStringLiteral("new_value"), 186}}}});
+            {QStringLiteral("new_value"), 186},
+            {QStringLiteral("severity"), QStringLiteral("medium")}}}});
 
     QCOMPARE(spy.count(), 1);
     const QList<QVariant> args = spy.takeFirst();
@@ -64,6 +66,27 @@ void TestEventRouter::conflictDetectedIsForwarded()
              QStringLiteral("body.items[2].amount"));
     QCOMPARE(args.at(2).toString(), QStringLiteral("156"));
     QCOMPARE(args.at(3).toString(), QStringLiteral("186"));
+    // F3-1：severity 透传（B3-3 已把 severity 带进 conflict_detected 帧）。
+    QCOMPARE(args.at(4).toString(), QStringLiteral("medium"));
+}
+
+void TestEventRouter::conflictDetectedDefaultsSeverityHigh()
+{
+    // 旧后端广播无 severity 字段：缺省按 high（最保守，宁可打扰不漏报）。
+    EventRouter router;
+    QSignalSpy spy(&router, &EventRouter::conflictDetected);
+
+    router.handleEvent(QJsonObject{
+        {QStringLiteral("event"), QStringLiteral("conflict_detected")},
+        {QStringLiteral("data"), QJsonObject{
+            {QStringLiteral("knowledge_title"), QStringLiteral("2026年4月家庭支出清单")},
+            {QStringLiteral("field"), QStringLiteral("body.items[2].amount")},
+            {QStringLiteral("old_value"), 156},
+            {QStringLiteral("new_value"), 186}}}});
+
+    QCOMPARE(spy.count(), 1);
+    const QList<QVariant> args = spy.takeFirst();
+    QCOMPARE(args.at(4).toString(), QStringLiteral("high"));
 }
 
 void TestEventRouter::forgetConfirmationIsForwarded()
