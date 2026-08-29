@@ -405,6 +405,10 @@ void ChatWindow::setInsights(const QJsonArray &insights)
         if (m_suggestionsLayout) {
             m_suggestionsLayout->removeWidget(card);
         }
+        // 先隐藏再脱离子控件树：可见控件直接 setParent(nullptr) 会瞬时成为
+        // 独立顶层窗口（无样式、可能闪烁），setVisible(false) 先消除该瞬态；
+        // 保留 setParent(nullptr) 以立即脱离 findChild 可达性（幂等刷新依赖）。
+        card->setVisible(false);
         card->setParent(nullptr);   // 脱离子控件树，findChild 不可达
         card->deleteLater();
     }

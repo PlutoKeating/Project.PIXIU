@@ -76,17 +76,18 @@ QSet<QString> tokenizeForRelevance(const QString &text)
     return tokens;
 }
 
-// 两个 token 是否“相关”：相等，或一方包含另一方（长度 ≥ 2 才参与包含
-// 匹配，避免短串/单字符过度命中）。
+// 两个 token 是否“相关”：相等（大小写不敏感），或一方包含另一方
+// （长度 ≥ 2 才参与包含匹配，避免短串/单字符过度命中；CJK 大小写
+// 转换是 no-op，不受影响）。
 bool tokensRelated(const QString &a, const QString &b)
 {
-    if (a == b) {
+    if (a.compare(b, Qt::CaseInsensitive) == 0) {
         return true;
     }
-    if (a.size() >= 2 && b.contains(a)) {
+    if (a.size() >= 2 && b.contains(a, Qt::CaseInsensitive)) {
         return true;
     }
-    if (b.size() >= 2 && a.contains(b)) {
+    if (b.size() >= 2 && a.contains(b, Qt::CaseInsensitive)) {
         return true;
     }
     return false;
@@ -1253,6 +1254,9 @@ void PixiuApp::notifyPreferenceChanges(const QJsonArray &preferences)
     if (!m_notify) {
         return;
     }
+    // 偏好提醒无每日上限（spec 节制原则仅点名相关性提醒/目录事件两类提醒）：
+    // 豁免理由——偏好变更低频（设置面板手动触发，非事件流）+ 首载只建基线
+    // 不提醒 + 版本未变不重复提醒，通知量天然受控，无需再叠加上限。
     QHash<QString, int> seen;
     for (const QJsonValue &value : preferences) {
         const QJsonObject obj = value.toObject();

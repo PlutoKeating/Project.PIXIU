@@ -375,6 +375,41 @@ QPushButton#suggestionCard:pressed {
 QPushButton#suggestionCard:focus {
     border: 1px solid palette(highlight);
 }
+/* 动态洞察卡 / 今日简报卡（B4-3）：镜像 #suggestionCard 规则——这两类卡
+   的 objectName 与 #suggestionCard 不同（InsightCard 原生命名、digestCard
+   覆写自 SuggestionCard），需独立选择器才有圆角浅灰卡片样式。 */
+QPushButton#insightCard {
+    background-color: palette(alternate-base);
+    border: none;
+    border-radius: 10px;
+    text-align: left;
+    padding: 0;
+}
+QPushButton#insightCard:hover {
+    background-color: palette(midlight);
+}
+QPushButton#insightCard:pressed {
+    background-color: palette(mid);
+}
+QPushButton#insightCard:focus {
+    border: 1px solid palette(highlight);
+}
+QPushButton#digestCard {
+    background-color: palette(alternate-base);
+    border: none;
+    border-radius: 10px;
+    text-align: left;
+    padding: 0;
+}
+QPushButton#digestCard:hover {
+    background-color: palette(midlight);
+}
+QPushButton#digestCard:pressed {
+    background-color: palette(mid);
+}
+QPushButton#digestCard:focus {
+    border: 1px solid palette(highlight);
+}
 QLabel#suggestionText {
     font-size: 11pt;
     color: palette(text);

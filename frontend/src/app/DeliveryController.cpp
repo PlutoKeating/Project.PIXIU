@@ -31,6 +31,13 @@ DeliveryController::DeliveryController(BackendTransport *transport, QObject *par
             [this](const QString &code, const QString &message, const QString &) {
                 // 通用错误通道：仅处理递送相关的在途请求；失败清空在途标记，
                 // 避免残留 pending 卡死后续请求。
+                // 全量清理语义（设计债）：errorOccurred 不携带请求身份（第三
+                // 个参数 requestId 未与在途请求关联），任一应用级错误（含无关
+                // 端点的失败）都会清空全部递送 pending——随后真响应到达时会被
+                // 各自的 stale 检查丢弃（insights/digest 的「无在途请求」分支）。
+                // 与 SyncController 既有模式一致：递送请求互斥、不并发，all-or-
+                // nothing 清理的代价可接受；长期修复方向是给在途请求关联
+                // requestId，按请求身份定位失败并仅清理对应 pending（不改行为）。
                 if (!m_insightsPending && !m_digestPending) {
                     return;
                 }
