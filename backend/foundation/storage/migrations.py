@@ -145,6 +145,33 @@ def _add_conflict_source(conn: sqlite3.Connection) -> None:
         )
 
 
+def _add_conflict_severity(conn: sqlite3.Connection) -> None:
+    """迁移 #8：conflict_records.severity —— 冲突打扰分级（B3-3 S3.1）。
+
+    MERGE→low / NEW_WINS→medium / MANUAL→high。新库由初始 DDL 直接建出该列；
+    旧库（<= v7）此处补列，SQL 默认 'high'（最保守兜底；回读时按 resolution
+    派生修正，见 repository._row_to_conflict 的说明）。幂等守卫同 #7：
+    - 表不存在（v1 精简库等场景）→ 跳过，由完整初始 DDL 兜底；
+    - 列已存在（新库）→ 跳过，避免 duplicate column。
+    """
+    tables = {
+        row[0]
+        for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+    }
+    if "conflict_records" not in tables:
+        return
+    columns = {
+        row[1] for row in conn.execute("PRAGMA table_info(conflict_records)").fetchall()
+    }
+    if "severity" not in columns:
+        conn.execute(
+            "ALTER TABLE conflict_records "
+            "ADD COLUMN severity TEXT NOT NULL DEFAULT 'high'"
+        )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -153,6 +180,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (5, "monitor_config", _add_monitor_config),
     (6, "monitor_log", _add_monitor_log),
     (7, "conflict_source", _add_conflict_source),
+    (8, "conflict_severity", _add_conflict_severity),
 ]
 
 

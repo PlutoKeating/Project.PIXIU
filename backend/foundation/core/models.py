@@ -250,6 +250,8 @@ class ConflictRecord(BaseModel):
 
     resolution — NEW_WINS / MERGE / MANUAL
     source — write（本地写入）/ sync（同步分叉转人工，SN-3 mainline）
+    severity — low / medium / high（B3-3 S3.1，按 resolution 映射；
+               默认 high 保证旧构造路径向后兼容且最保守）
     """
 
     id: str
@@ -260,11 +262,30 @@ class ConflictRecord(BaseModel):
     resolution: ConflictResolution = Field(default=ConflictResolution.NEW_WINS)
     created_at: int
     source: str = "write"
+    severity: str = "high"
 
     @field_validator("id")
     @classmethod
     def _validate_id(cls, v: str) -> str:
         return validate_id("conflict", v)
+
+
+def conflict_severity_for(resolution: ConflictResolution | str) -> str:
+    """按裁决方式映射冲突打扰级别（B3-3 [S3.1]）。
+
+    - MERGE    → low：自动合并，静默
+    - NEW_WINS → medium：自动裁决，但用户应知晓
+    - MANUAL   → high：需人工确认
+
+    未知值保守回落 high（宁可打扰不漏报）。str 输入供 DB 回读路径使用
+    （repository._row_to_conflict 的 row["resolution"] 是 str）。
+    """
+    key = resolution.value if isinstance(resolution, ConflictResolution) else str(resolution)
+    return {
+        ConflictResolution.MERGE.value: "low",
+        ConflictResolution.NEW_WINS.value: "medium",
+        ConflictResolution.MANUAL.value: "high",
+    }.get(key, "high")
 
 
 # ══════════════════════════════════════════════════════════

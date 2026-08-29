@@ -287,6 +287,47 @@ def test_conflicts_lists_records(client):
     assert "amount" in conflicts[0]["field"]
 
 
+def test_conflicts_serialize_severity(client):
+    """B3-3：GET /conflicts 每项携带 severity（NEW_WINS → medium）。"""
+    changed = dict(OCR_RAW)
+    changed["body"] = {
+        "items": [
+            {"category": "水电燃气", "vendor": "国家电网", "amount": 186.0}
+        ]
+    }
+    client.post("/memory/write", json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"})
+    client.post("/memory/write", json={"source_type": "OCR", "raw": changed, "scope": "shared:home"})
+
+    resp = client.get("/conflicts")
+    assert resp.status_code == 200
+    conflicts = resp.json()["conflicts"]
+    assert conflicts
+    for item in conflicts:
+        assert "severity" in item
+    assert conflicts[0]["severity"] == "medium"
+
+
+def test_conflict_detected_ws_frame_includes_severity(client):
+    """B3-3：conflict_detected WS 帧 data 携带 severity（NEW_WINS → medium）。"""
+    changed = dict(OCR_RAW)
+    changed["body"] = {
+        "items": [
+            {"category": "水电燃气", "vendor": "国家电网", "amount": 186.0}
+        ]
+    }
+    with client.websocket_connect("/events") as ws:
+        assert ws.receive_json() == {"event": "connected", "data": {}}
+
+        client.post("/memory/write", json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"})
+        assert ws.receive_json()["event"] == "memory_ready"  # 首次写入无冲突
+
+        client.post("/memory/write", json={"source_type": "OCR", "raw": changed, "scope": "shared:home"})
+        assert ws.receive_json()["event"] == "memory_ready"
+        frame = ws.receive_json()
+        assert frame["event"] == "conflict_detected"
+        assert frame["data"]["severity"] == "medium"
+
+
 def test_flow_promote_contract(client):
     # 先触发数据库迁移，再从会话生产者边界写入一个短期上下文。
     assert client.get("/conflicts").status_code == 200

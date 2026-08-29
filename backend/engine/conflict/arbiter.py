@@ -12,7 +12,12 @@ import time
 from typing import Any, Optional
 
 from backend.foundation.core.idgen import gen_conflict_id
-from backend.foundation.core.models import ConflictRecord, ConflictResolution, KnowledgeItem
+from backend.foundation.core.models import (
+    ConflictRecord,
+    ConflictResolution,
+    KnowledgeItem,
+    conflict_severity_for,
+)
 
 from .entity_matcher import EntityMatcher
 from .field_matcher import FieldConflict, FieldMatcher
@@ -108,6 +113,7 @@ class Arbiter:
             old_value=conflict.old_value,
             new_value=conflict.new_value,
             resolution=resolution,
+            severity=conflict_severity_for(resolution),
             created_at=int(time.time()),
         )
 

@@ -262,6 +262,7 @@ async def memory_write(
                 "field": record.field,
                 "old_value": record.old_value,
                 "new_value": record.new_value,
+                "severity": record.severity,
             },
         )
 

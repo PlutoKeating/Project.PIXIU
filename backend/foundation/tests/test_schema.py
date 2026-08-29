@@ -288,14 +288,14 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 6
+    assert apply_pending(conn) == 7
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
     assert "sync_identity" in _table_names(conn)
     assert "monitor_config" in _table_names(conn)
     assert "monitor_log" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 7
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 8
     conn.close()
 
 
@@ -325,13 +325,14 @@ def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
     conn.execute("INSERT INTO _schema_version VALUES (6, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 1  # 仅迁移 #7
+    assert apply_pending(conn) == 2  # 迁移 #7 + #8
     conn.commit()
 
     columns = {
         row[1] for row in conn.execute("PRAGMA table_info(conflict_records)").fetchall()
     }
     assert "source" in columns
+    assert "severity" in columns  # 迁移 #8 同路径补列
     # 旧行回读默认 "write"
     row = conn.execute(
         "SELECT source FROM conflict_records WHERE id = ?",
@@ -355,6 +356,69 @@ def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
         ("cfl_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",),
     ).fetchone()
     assert row2[0] == "sync"
+    conn.close()
+
+
+def test_pending_migrations_add_conflict_severity_to_v7_database(tmp_path):
+    # B3-3：迁移 #8 的 ALTER 路径 —— v7 旧库（conflict_records 有 source 无
+    # severity 列）补列后：列存在、旧行列值 "high"（SQL 默认，最保守兜底）、
+    # 新行可写 severity（roundtrip）。回读按 resolution 派生的语义在
+    # test_conflict_severity.py::test_repo_legacy_row_severity_derived_from_resolution。
+    conn = create_connection(str(tmp_path / "test.db"))
+    # v7 版冲突表 DDL（有 source 列，无 severity 列）
+    conn.execute(
+        """CREATE TABLE conflict_records (
+            id                TEXT PRIMARY KEY,
+            target_knowledge  TEXT NOT NULL,
+            field             TEXT NOT NULL DEFAULT '',
+            old_value         TEXT NOT NULL DEFAULT 'null',
+            new_value         TEXT NOT NULL DEFAULT 'null',
+            resolution        TEXT NOT NULL DEFAULT 'NEW_WINS',
+            created_at        INTEGER NOT NULL,
+            source            TEXT NOT NULL DEFAULT 'write'
+        )"""
+    )
+    conn.execute(
+        "INSERT INTO conflict_records (id, target_knowledge, resolution, created_at) "
+        "VALUES (?, ?, ?, ?)",
+        ("cfl_AAAAAAAAAAAAAAAAAAAAAAAAAA", "knw_AAAAAAAAAAAAAAAAAAAAAAAAAA", "NEW_WINS", 1),
+    )
+    conn.execute(
+        "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)"
+    )
+    conn.execute("INSERT INTO _schema_version VALUES (7, 1)")
+    conn.commit()
+
+    assert apply_pending(conn) == 1  # 仅迁移 #8
+    conn.commit()
+
+    columns = {
+        row[1] for row in conn.execute("PRAGMA table_info(conflict_records)").fetchall()
+    }
+    assert "severity" in columns
+    # 旧行列值 = SQL 默认 high（保守兜底）
+    row = conn.execute(
+        "SELECT severity FROM conflict_records WHERE id = ?",
+        ("cfl_AAAAAAAAAAAAAAAAAAAAAAAAAA",),
+    ).fetchone()
+    assert row[0] == "high"
+    # 新行写入 severity 并回读（roundtrip）
+    conn.execute(
+        """INSERT INTO conflict_records (id, target_knowledge, severity, created_at)
+           VALUES (?, ?, ?, ?)""",
+        (
+            "cfl_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+            "knw_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+            "low",
+            2,
+        ),
+    )
+    conn.commit()
+    row2 = conn.execute(
+        "SELECT severity FROM conflict_records WHERE id = ?",
+        ("cfl_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",),
+    ).fetchone()
+    assert row2[0] == "low"
     conn.close()
 
 

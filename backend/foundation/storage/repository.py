@@ -22,6 +22,7 @@ from ..core.models import (
     Preference,
     PreferenceSnapshot,
     Relation,
+    conflict_severity_for,
 )
 from ..core.repository import (
     ConflictRepository,
@@ -82,6 +83,10 @@ def _row_to_entity(row: aiosqlite.Row) -> Entity:
 
 
 def _row_to_conflict(row: aiosqlite.Row) -> ConflictRecord:
+    # severity 按 resolution 派生而非直读列值：迁移 #8 给旧行补的列默认是
+    # 'high'（SQL 层最保守兜底），直读会把旧 NEW_WINS/MERGE 记录误标 high；
+    # 派生语义保证任何 resolution（含 resolve() 改判后）的 severity 都自洽。
+    # 列仍随 save 落库，供 SQL 级过滤/直查。
     return ConflictRecord(
         id=row["id"],
         target_knowledge=row["target_knowledge"],
@@ -91,6 +96,7 @@ def _row_to_conflict(row: aiosqlite.Row) -> ConflictRecord:
         resolution=row["resolution"],
         created_at=row["created_at"],
         source=row["source"],
+        severity=conflict_severity_for(row["resolution"]),
     )
 
 
@@ -620,8 +626,8 @@ class SqliteConflictRepo(ConflictRepository):
     async def save(self, record: ConflictRecord) -> str:
         await self._db.execute(
             """INSERT OR REPLACE INTO conflict_records (id, target_knowledge,
-               field, old_value, new_value, resolution, created_at, source)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+               field, old_value, new_value, resolution, created_at, source, severity)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 record.id,
                 record.target_knowledge,
@@ -631,6 +637,7 @@ class SqliteConflictRepo(ConflictRepository):
                 record.resolution,
                 record.created_at,
                 record.source,
+                record.severity,
             ),
         )
         await self._db.commit()
