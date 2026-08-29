@@ -1,5 +1,6 @@
 #include "widgets/MemoryPanel.h"
 
+#include "app/Severity.h"
 #include "app/UiTokens.h"
 #include "widgets/PairDialog.h"
 
@@ -53,14 +54,17 @@ QString elidePeerName(const QFont &font, const QString &name, int maxWidth)
 }
 
 // F3-1：冲突条目 severity 标记色（low 灰 / medium 蓝 / high 红）。
-// 未知/缺省 severity 按 high 着色，与 PixiuApp 打扰分流缺省一致（宁可醒目不漏报）。
+// 归一化走 ui::parseSeverity（大小写不敏感；未知/缺省回落 high），
+// 与 PixiuApp 打扰分流缺省一致（宁可醒目不漏报），见 app/Severity.h。
 QColor severityMarkColor(const QString &severity)
 {
-    if (severity == QStringLiteral("low")) {
+    switch (ui::parseSeverity(severity)) {
+    case ui::Severity::Low:
         return ui::semanticColor(ui::Role::Muted);
-    }
-    if (severity == QStringLiteral("medium")) {
+    case ui::Severity::Medium:
         return ui::semanticColor(ui::Role::Accent);
+    case ui::Severity::High:
+        return ui::semanticColor(ui::Role::Error);
     }
     return ui::semanticColor(ui::Role::Error);
 }

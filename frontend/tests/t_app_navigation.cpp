@@ -14,6 +14,7 @@
 #include "app/EventRouter.h"
 #include "app/MonitorController.h"
 #include "app/PixiuApp.h"
+#include "app/Severity.h"
 #include "services/BackendTransport.h"
 #include "services/BackendTypes.h"
 #include "services/NotifyService.h"
@@ -254,6 +255,7 @@ private slots:
     void leaveNetworkButtonShowsConfirmAndRevokesAll();
     void syncConflictBannerCountsAndJumps();
     void conflictSeverityDispatchesDisturbance();
+    void severityParsingNormalizesCaseAndUnknown();
     void pairRequestDialogShowsAndConfirms();
 
 private:
@@ -1091,6 +1093,22 @@ void TestAppNavigation::conflictSeverityDispatchesDisturbance()
     QCOMPARE(tabs->currentIndex(), 1);                       // 切到冲突 Tab
 
     app.shutdown();
+}
+
+void TestAppNavigation::severityParsingNormalizesCaseAndUnknown()
+{
+    // F3-1 收编 Minor：ui::parseSeverity 是 severity→行为映射的单一事实来源
+    // （PixiuApp 分流 / MemoryPanel 着色共用），比较大小写不敏感，
+    // 未知/空一律回落 high（宁可打扰不漏报）。
+    QCOMPARE(ui::parseSeverity(QStringLiteral("low")), ui::Severity::Low);
+    QCOMPARE(ui::parseSeverity(QStringLiteral("LOW")), ui::Severity::Low);
+    QCOMPARE(ui::parseSeverity(QStringLiteral("  Low ")), ui::Severity::Low);
+    QCOMPARE(ui::parseSeverity(QStringLiteral("medium")), ui::Severity::Medium);
+    QCOMPARE(ui::parseSeverity(QStringLiteral("MEDIUM")), ui::Severity::Medium);
+    QCOMPARE(ui::parseSeverity(QStringLiteral("high")), ui::Severity::High);
+    QCOMPARE(ui::parseSeverity(QStringLiteral("HIGH")), ui::Severity::High);
+    QCOMPARE(ui::parseSeverity(QString()), ui::Severity::High);      // 缺省
+    QCOMPARE(ui::parseSeverity(QStringLiteral("banana")), ui::Severity::High);
 }
 
 void TestAppNavigation::pairRequestDialogShowsAndConfirms()

@@ -11,6 +11,7 @@
 #include "app/PreferenceController.h"
 #include "app/SyncController.h"
 #include "app/EventRouter.h"
+#include "app/Severity.h"
 #include "app/ThemeService.h"
 #include "app/MonitorController.h"
 #include "app/UiTokens.h"
@@ -788,22 +789,22 @@ bool PixiuApp::start()
                 //            下次打开面板 / high 刷新时自然更新）；
                 //   high / 缺省 / 未知 → MANUAL：现状全动作（「检测到记忆冲突」
                 //            + 角标 +1 + 刷新冲突列表 + 面板可见时切冲突 Tab）。
-                // 未知 severity 一律按 high 处理：宁可打扰不漏报。
-                const bool isLow = severity == QStringLiteral("low");
-                const bool isMedium = severity == QStringLiteral("medium");
+                // 未知/空 severity 经 parseSeverity 一律回落 high：
+                // 宁可打扰不漏报（大小写不敏感，见 app/Severity.h）。
+                const ui::Severity sev = ui::parseSeverity(severity);
                 // 冲突横幅计数 +1（随后 conflictsLoaded 重算为准确值）。
                 if (m_memoryPanel) {
                     m_memoryPanel->setSyncConflictCount(
                         m_memoryPanel->syncConflictCount() + 1);
                 }
-                if (isLow) {
+                if (sev == ui::Severity::Low) {
                     return;
                 }
                 if (m_floatingBall) {
                     m_floatingBall->setUnreadCount(
                         m_floatingBall->unreadCount() + 1);
                 }
-                if (isMedium) {
+                if (sev == ui::Severity::Medium) {
                     if (m_notify) {
                         m_notify->notify(tr("记忆已更新"), title);
                     }
