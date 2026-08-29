@@ -249,6 +249,7 @@ class ConflictRecord(BaseModel):
     """冲突审计记录。
 
     resolution — NEW_WINS / MERGE / MANUAL
+    source — write（本地写入）/ sync（同步分叉转人工，SN-3 mainline）
     """
 
     id: str
@@ -258,6 +259,7 @@ class ConflictRecord(BaseModel):
     new_value: Any = None
     resolution: ConflictResolution = Field(default=ConflictResolution.NEW_WINS)
     created_at: int
+    source: str = "write"
 
     @field_validator("id")
     @classmethod

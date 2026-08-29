@@ -21,6 +21,7 @@ from .discovery import (
     parse_service_info,
 )
 from .identity import IdentityManager
+from .mainline import Mainline
 from .models import (
     DeviceIdentity,
     PairingMethod,
@@ -72,6 +73,7 @@ class SyncService:
         domain: str,
         key_passphrase: str,
         materializer=None,
+        mainline=None,
     ) -> None:
         self._store = store
         self._device_name = device_name
@@ -80,6 +82,7 @@ class SyncService:
         self._identity: DeviceIdentity | None = None
         self._crdt = LWWElementSet()
         self._materializer = materializer
+        self._mainline = mainline
 
     async def initialize(self) -> DeviceIdentity:
         if self._identity is None:
@@ -192,6 +195,12 @@ class SyncService:
         # 整批先验签和校验，避免恶意批次产生部分落库副作用。
         for op in operations:
             await self._verify_operation(op, identity)
+
+        # SN-3 mainline：快进（BEFORE/EQUAL/AFTER）自动吸收；并发分叉经
+        # ConflictService.arbitrate（SyncOp.payload → KnowledgeItem 的转换在
+        # Mainline.knowledge_factory 内完成），MANUAL 拦截不落库等待人工。
+        if self._mainline is not None:
+            operations = await self._mainline.try_fast_forward(operations)
 
         accepted = 0
         for op in operations:
@@ -306,6 +315,7 @@ class SyncService:
 __all__ = [
     "DiscoveryError",
     "InvalidSyncOperation",
+    "Mainline",
     "MdnsDiscovery",
     "PairRequestError",
     "PairRequestManager",

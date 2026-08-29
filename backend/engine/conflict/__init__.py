@@ -50,8 +50,17 @@ class ConflictService:
         self._arbiter = arbiter or Arbiter(text_detector=detector)
         self._entity_matcher = entity_matcher or EntityMatcher(entity_repo=entity_repo)
 
-    async def arbitrate(self, new_item: KnowledgeItem) -> Optional[ConflictRecord]:
-        """Detect contradiction with ACTIVE knowledge; apply chosen resolution."""
+    async def arbitrate(
+        self,
+        new_item: KnowledgeItem,
+        *,
+        source: str = "write",
+    ) -> Optional[ConflictRecord]:
+        """Detect contradiction with ACTIVE knowledge; apply chosen resolution.
+
+        source — 冲突来源标记：本地写入默认 "write"，同步分叉（SN-3 mainline
+        try_fast_forward 触发）置 "sync"，随 ConflictRecord 持久化。
+        """
         candidates = await self._knw_repo.list_active()
         for existing in candidates:
             if not await self._is_candidate(new_item, existing):
@@ -59,6 +68,8 @@ class ConflictService:
             record = self._arbiter.detect(new_item, existing)
             if record is None:
                 continue
+            if source != "write":
+                record.source = source
             await self._apply_resolution(existing, new_item, record)
             return record
 

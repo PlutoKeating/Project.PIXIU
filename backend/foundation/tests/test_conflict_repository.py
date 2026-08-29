@@ -66,6 +66,18 @@ async def test_save_and_get_roundtrip(repo):
     assert fetched.old_value == 156
     assert fetched.new_value == 186
     assert fetched.resolution == ConflictResolution.NEW_WINS
+    assert fetched.source == "write"  # 默认来源
+
+
+@pytest.mark.asyncio
+async def test_source_roundtrip_sync_marker(repo):
+    """SN-3：同步分叉转人工的 ConflictRecord source="sync" 需持久化回读。"""
+    rec = _cfl(source="sync")
+    await repo.save(rec)
+
+    fetched = await repo.get(rec.id)
+    assert fetched is not None
+    assert fetched.source == "sync"
 
 
 @pytest.mark.asyncio

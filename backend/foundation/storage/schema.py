@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 # monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
 # 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
@@ -204,7 +204,8 @@ DDL_STATEMENTS: list[str] = [
         old_value         TEXT NOT NULL DEFAULT 'null',
         new_value         TEXT NOT NULL DEFAULT 'null',
         resolution        TEXT NOT NULL DEFAULT 'NEW_WINS',
-        created_at        INTEGER NOT NULL
+        created_at        INTEGER NOT NULL,
+        source            TEXT NOT NULL DEFAULT 'write'
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_cfl_knw ON conflict_records(target_knowledge)",

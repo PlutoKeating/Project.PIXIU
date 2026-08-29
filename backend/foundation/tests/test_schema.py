@@ -288,14 +288,14 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 5
+    assert apply_pending(conn) == 6
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
     assert "sync_identity" in _table_names(conn)
     assert "monitor_config" in _table_names(conn)
     assert "monitor_log" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 6
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 7
     conn.close()
 
 

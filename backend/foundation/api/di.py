@@ -35,7 +35,7 @@ from ..storage.repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
-from ..sync import SqliteSyncStore, SyncService
+from ..sync import Mainline, SqliteSyncStore, SyncService
 from ..sync.discovery import MdnsDiscovery
 from ..sync.runtime import SyncRuntime, create_sync_runtime
 from ..sync.materializer import FoundationMaterializer
@@ -190,8 +190,12 @@ async def get_flow_service(
 async def get_sync_service(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> SyncService:
+    store = SqliteSyncStore(db)
+    # SN-3 mainline：注入 ConflictService（arbitrate 在调用时才解析，
+    # 无循环依赖）。同步分叉且判 MANUAL 的 op 转人工仲裁（source="sync"）。
+    conflict_service = await get_conflict_service(db)
     return SyncService(
-        SqliteSyncStore(db),
+        store,
         device_name=settings.sync_device_name,
         domain=settings.sync_domain,
         key_passphrase=settings.sync_key_passphrase,
@@ -200,6 +204,7 @@ async def get_sync_service(
             knowledge_repo=SqliteKnowledgeRepo(db),
             preference_repo=SqlitePreferenceRepo(db),
         ),
+        mainline=Mainline(store, conflict_service),
     )
 
 

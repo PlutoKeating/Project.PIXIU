@@ -90,6 +90,7 @@ def _row_to_conflict(row: aiosqlite.Row) -> ConflictRecord:
         new_value=json.loads(row["new_value"]),
         resolution=row["resolution"],
         created_at=row["created_at"],
+        source=row["source"],
     )
 
 
@@ -619,8 +620,8 @@ class SqliteConflictRepo(ConflictRepository):
     async def save(self, record: ConflictRecord) -> str:
         await self._db.execute(
             """INSERT OR REPLACE INTO conflict_records (id, target_knowledge,
-               field, old_value, new_value, resolution, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+               field, old_value, new_value, resolution, created_at, source)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 record.id,
                 record.target_knowledge,
@@ -629,6 +630,7 @@ class SqliteConflictRepo(ConflictRepository):
                 json.dumps(record.new_value, ensure_ascii=False),
                 record.resolution,
                 record.created_at,
+                record.source,
             ),
         )
         await self._db.commit()

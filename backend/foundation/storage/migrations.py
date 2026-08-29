@@ -119,6 +119,32 @@ def _add_monitor_log(conn: sqlite3.Connection) -> None:
     conn.execute(MONITOR_LOG_INDEX_DDL)
 
 
+def _add_conflict_source(conn: sqlite3.Connection) -> None:
+    """迁移 #7：conflict_records.source —— 区分同步分叉（sync）与本地写入（write）。
+
+    SN-3 mainline 转人工仲裁时生成的 ConflictRecord 带 source="sync"。
+    新库由初始 DDL 直接建出该列；旧库（<= v6）此处补列。幂等守卫：
+    - 表不存在（v1 精简库等场景）→ 跳过，由完整初始 DDL 兜底；
+    - 列已存在（新库）→ 跳过，避免 duplicate column。
+    """
+    tables = {
+        row[0]
+        for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+    }
+    if "conflict_records" not in tables:
+        return
+    columns = {
+        row[1] for row in conn.execute("PRAGMA table_info(conflict_records)").fetchall()
+    }
+    if "source" not in columns:
+        conn.execute(
+            "ALTER TABLE conflict_records "
+            "ADD COLUMN source TEXT NOT NULL DEFAULT 'write'"
+        )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -126,6 +152,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (4, "sync_foundation", _add_sync_foundation),
     (5, "monitor_config", _add_monitor_config),
     (6, "monitor_log", _add_monitor_log),
+    (7, "conflict_source", _add_conflict_source),
 ]
 
 
