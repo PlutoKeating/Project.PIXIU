@@ -63,6 +63,10 @@
         <source>取消置顶</source>
         <translation>Unpin</translation>
     </message>
+    <message>
+        <source>今日简报</source>
+        <translation>Today&apos;s Briefing</translation>
+    </message>
 </context>
 <context>
     <name>EvidenceCard</name>
@@ -1030,6 +1034,26 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>记忆已更新</source>
         <translation>Memory updated</translation>
+    </message>
+    <message>
+        <source>今日简报</source>
+        <translation>Today&apos;s Briefing</translation>
+    </message>
+    <message>
+        <source>相关主题提醒</source>
+        <translation>Related topic reminder</translation>
+    </message>
+    <message>
+        <source>已记住 文件 %1（与您近期的 %2 相关）</source>
+        <translation>Remembered file %1 (related to your recent %2)</translation>
+    </message>
+    <message>
+        <source>偏好提醒</source>
+        <translation>Preference reminder</translation>
+    </message>
+    <message>
+        <source>已学习您的偏好：%1</source>
+        <translation>Learned your preference: %1</translation>
     </message>
 </context>
 <context>
