@@ -440,6 +440,37 @@ def test_sync_pair_maps_invalid_token(client):
     assert response.json()["request_id"]
 
 
+def test_sync_pair_request_rejects_invalid_target_id(client):
+    response = client.post(
+        "/sync/pair/request", json={"target_device_id": "not-a-device-id"}
+    )
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+    assert response.json()["request_id"]
+
+
+def test_sync_pair_confirm_unknown_request_not_found(client):
+    response = client.post(
+        "/sync/pair/confirm",
+        json={"request_id": "req_missing_0001", "accept": True},
+    )
+    assert response.status_code == 404
+    assert response.json()["error"] == "REQUEST_NOT_FOUND"
+
+
+def test_sync_pair_confirm_accept_returns_status(client):
+    created = client.post(
+        "/sync/pair/request", json={"target_device_id": "dev_" + "B" * 26}
+    )
+    assert created.status_code == 200
+    response = client.post(
+        "/sync/pair/confirm",
+        json={"request_id": created.json()["request_id"], "accept": True},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"status": "accepted"}
+
+
 
 def _sync_rows() -> list[tuple[str, dict]]:
     connection = sqlite3.connect(di_module.settings.db_path)

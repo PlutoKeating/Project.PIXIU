@@ -42,6 +42,7 @@ class PairRequestManager:
         payload = {
             "request_id": request_id,
             "from_device_id": self._identity.id,
+            "target_device_id": target_device_id,
             "pin": pin,
             "expires_at": timestamp + ttl_seconds,
         }
@@ -55,12 +56,6 @@ class PairRequestManager:
             "expires_at": payload["expires_at"],
         }
 
-    async def pending(self) -> list[dict]:
-        # 简单实现：遍历本机发出的请求键（MVP 规模小，直接按前缀扫描）
-        results: list[dict] = []
-        # store 未暴露前缀扫描；此处返回空并由 confirm 按 request_id 直查。
-        return results
-
     async def confirm(
         self,
         request_id: str,
@@ -68,15 +63,24 @@ class PairRequestManager:
         accept: bool,
         now: int | None = None,
     ) -> str:
-        validate_id("request", request_id)
+        # 判定顺序：先查存在性 → 已记录 status 优先返回 → 再判 TTL。
         raw = await self._store.get_meta(f"pair_request:{request_id}")
         if raw is None:
             return "not_found"
         payload = json.loads(raw)
+        if "status" in payload:
+            return payload["status"]
         timestamp = int(time.time()) if now is None else now
         if payload["expires_at"] < timestamp:
-            return "expired"
-        if accept:
+            status = "expired"
+        elif accept:
             # 由 SyncService 层完成令牌交换（见 Step 4）
-            return "accepted"
-        return "rejected"
+            status = "accepted"
+        else:
+            status = "rejected"
+        # 落 status 使 confirm 单次生效：后续 confirm 返回已记录状态，不再重新判定。
+        payload["status"] = status
+        await self._store.set_meta(
+            f"pair_request:{request_id}", json.dumps(payload)
+        )
+        return status

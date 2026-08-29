@@ -44,6 +44,7 @@ async def test_create_request_stores_pin_and_ttl():
     payload = json.loads(raw)
     assert payload["request_id"] == result["request_id"]
     assert payload["from_device_id"] == _FakeIdentity.id
+    assert payload["target_device_id"] == result["target_device_id"]
     assert payload["pin"] == result["pin"]
     assert payload["expires_at"] == 1_000_000 + 60
 
@@ -72,6 +73,46 @@ async def test_confirm_accept():
     result = await mgr.create(_device("beta"), now=1_000_000)
     status = await mgr.confirm(result["request_id"], accept=True, now=1_000_010)
     assert status == "accepted"
+
+
+@pytest.mark.asyncio
+async def test_confirm_accept_is_single_use():
+    """防重放：首次 confirm 记录 status，二次 confirm 返回已记录状态不再重新判定。"""
+    store = _FakeStore()
+    mgr = PairRequestManager(store, _FakeIdentity())
+    result = await mgr.create(_device("beta"), now=1_000_000)
+    assert (
+        await mgr.confirm(result["request_id"], accept=True, now=1_000_010)
+        == "accepted"
+    )
+    # 翻转 accept 或已过 TTL，均返回已记录状态
+    assert (
+        await mgr.confirm(result["request_id"], accept=False, now=1_000_010)
+        == "accepted"
+    )
+    assert (
+        await mgr.confirm(result["request_id"], accept=True, now=1_000_100)
+        == "accepted"
+    )
+    payload = json.loads(store.meta[f"pair_request:{result['request_id']}"])
+    assert payload["status"] == "accepted"
+
+
+@pytest.mark.asyncio
+async def test_confirm_reject_is_single_use():
+    store = _FakeStore()
+    mgr = PairRequestManager(store, _FakeIdentity())
+    result = await mgr.create(_device("beta"), now=1_000_000)
+    assert (
+        await mgr.confirm(result["request_id"], accept=False, now=1_000_010)
+        == "rejected"
+    )
+    assert (
+        await mgr.confirm(result["request_id"], accept=True, now=1_000_010)
+        == "rejected"
+    )
+    payload = json.loads(store.meta[f"pair_request:{result['request_id']}"])
+    assert payload["status"] == "rejected"
 
 
 @pytest.mark.asyncio
