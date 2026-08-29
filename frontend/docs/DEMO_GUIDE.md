@@ -63,9 +63,11 @@
 
 - `/memory/query`：后端已实现混合检索（BM25+ANN+图），真实环境验证需麒麟
   embedding；开发机可用演示桩（见 §5）走通前端全流程。
-- `/sync/*`：后端已实现配对/节点/状态/解绑；PIN 配对需在对话框填写另一台
-  设备生成的配对令牌（base64）与 6 位 PIN——令牌生成端点在 Module C 侧尚未
-  暴露给前端，当前可粘贴手工生成的令牌，或用演示桩完整走通 UI 流程。
+- `/sync/*`：后端已实现配对/节点/状态/解绑；同步 Tab（2026-08-29）已接
+  确认式配对主路径——`GET /sync/discover` 发现附近设备（含未配对）→ 对
+  目标机发起 `POST /sync/pair/request`（6 位 PIN）→ 目标机弹「配对请求」
+  确认/拒绝（`POST /sync/pair/confirm`）→ 确认后自动走既有 `/sync/pair`
+  签名入网；QR/PIN 令牌流程保留为备选。
 
 ## 5. 两种运行模式（2026-08-10 补充）
 
@@ -112,7 +114,7 @@ python -m backend.foundation.api.http_app        # 127.0.0.1:8765
 | 项 | 状态 | 说明 |
 |----|------|------|
 | `/memory/query` 检索 | ✅ 后端已实现 | 真实检索需麒麟 embedding；开发机用演示桩走通 UI |
-| `/sync/*` 设备同步 | ✅ 后端已实现 | PIN 配对需粘贴令牌；令牌生成端点未暴露，UI 流程用演示桩演示 |
+| `/sync/*` 设备同步 | ✅ 后端已实现 | 同步 Tab 已接确认式配对（发现→请求→目标机确认，2026-08-29）；QR/PIN 令牌流程保留为备选 |
 | `/memory/flow/promote` | ✅ 后端已实现 | 前端已具备 transport 契约；ctx 上下文来源无端点，UI 暂不开放 |
 | WS `/events` 真实事件 | ⬜ 待 Module C | `/events` 未注册 + `ws.py` 导入缺失，见 `BACKEND_ISSUES.md` |
 | 证据原文/详情 | ⬜ 契约缺失 | `source_evidence` 仅 ID，点击提示待后端提供 |
