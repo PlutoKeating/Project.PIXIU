@@ -308,7 +308,7 @@ void HttpBackendTransport::postJson(const QString &path,
     QNetworkRequest request(endpoint(path));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
     request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader,
-                      QStringLiteral("PIXIU-Frontend/0.1.0"));
+                      QStringLiteral("PIXIU-Frontend/") + QStringLiteral(PIXIU_VERSION));
     request.setTransferTimeout(kTransferTimeoutMs);
     const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
     QNetworkReply *reply = m_network->post(request, payload);
@@ -323,7 +323,7 @@ void HttpBackendTransport::putJson(const QString &path,
     QNetworkRequest request(endpoint(path));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
     request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader,
-                      QStringLiteral("PIXIU-Frontend/0.1.0"));
+                      QStringLiteral("PIXIU-Frontend/") + QStringLiteral(PIXIU_VERSION));
     request.setTransferTimeout(kTransferTimeoutMs);
     const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
     QNetworkReply *reply = m_network->put(request, payload);

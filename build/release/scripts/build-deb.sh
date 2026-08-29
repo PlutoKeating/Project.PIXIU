@@ -45,13 +45,16 @@ PIXIU_FRONTEND_BUILD_DIR="${PIXIU_FRONTEND_BUILD_DIR:-$(frontend_build_dir)}"
 resolve_version
 log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSDK} wheels=${PIXIU_BUNDLE_WHEELS} py=${PIXIU_PYTHON_VERSION}"
 
-# ── 0/5 版本一致性预检（S2.1：三处版本源同步，不一致即中止发布）────────
+# ── 0/5 版本一致性预检（S2.1：四处版本源同步，不一致即中止发布）────────
 # 用户宗旨①的可执行化：frontend/CMakeLists.txt（project VERSION 及其派生的
 # PIXIU_VERSION 宏）、frontend/src/main.cpp（消费宏、不得硬编码）、
-# build/release/scripts/functions.sh（resolve_version 默认值）三处必须一致。
+# frontend/src/services/HttpBackendTransport.cpp（User-Agent 消费宏、不得
+# 硬编码，S4 曾因硬编码 0.1.0 漏检）、build/release/scripts/functions.sh
+# （resolve_version 默认值）四处必须一致。
 check_version_consistency() {
     local frontend_cmake="${PIXIU_ROOT}/frontend/CMakeLists.txt"
     local frontend_main="${PIXIU_ROOT}/frontend/src/main.cpp"
+    local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
     local funcs_file="${PIXIU_ROOT}/build/release/scripts/functions.sh"
     local cmake_ver pixiu_ver funcs_ver
 
@@ -78,20 +81,30 @@ check_version_consistency() {
     if grep -qE 'setApplicationVersion\(QStringLiteral\("[0-9]+\.[0-9]+\.[0-9]+"\)\)' "${frontend_main}"; then
         die "frontend/src/main.cpp 的 setApplicationVersion 存在硬编码版本（应改用 PIXIU_VERSION 宏）"
     fi
+    # 5) HttpBackendTransport.cpp（第 4 处版本源，S4 曾漏检）：User-Agent 必须
+    #    消费 PIXIU_VERSION 宏、不得残留 "PIXIU-Frontend/<版本>" 硬编码字面量。
+    if ! grep -qF 'QStringLiteral(PIXIU_VERSION)' "${frontend_http}"; then
+        die "frontend/src/services/HttpBackendTransport.cpp 未使用 PIXIU_VERSION 宏" \
+            "（User-Agent 应改为 QStringLiteral(\"PIXIU-Frontend/\") + QStringLiteral(PIXIU_VERSION)）"
+    fi
+    if grep -qF 'PIXIU-Frontend/0.1.' "${frontend_http}"; then
+        die "frontend/src/services/HttpBackendTransport.cpp 存在硬编码 User-Agent 版本" \
+            "（应改用 PIXIU_VERSION 宏，杜绝第 4 处版本源漂移）"
+    fi
 
-    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?}"
+    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?} HttpTransport=macro-ok"
     if [ -z "${cmake_ver}" ] || [ -z "${pixiu_ver}" ] || [ -z "${funcs_ver}" ] \
        || [ "${cmake_ver}" != "${pixiu_ver}" ] || [ "${pixiu_ver}" != "${funcs_ver}" ]; then
-        die "版本不一致（用户宗旨①：三处同步不得遗漏）：" \
+        die "版本不一致（用户宗旨①：四处同步不得遗漏）：" \
             "frontend/CMakeLists.txt=${cmake_ver:-<未提取>}，" \
             "PIXIU_VERSION 宏=${pixiu_ver:-<未提取>}，" \
             "functions.sh=${funcs_ver:-<未提取>}"
     fi
-    # 5) 显式 PIXIU_VERSION 覆盖（CI tag/手动输入）若与三处文件版本不一致，
+    # 6) 显式 PIXIU_VERSION 覆盖（CI tag/手动输入）若与四处文件版本不一致，
     #    .deb 包版本将与 App 内版本不符——同样中止发布。
     if [ -n "${PIXIU_VERSION:-}" ] && [ "${PIXIU_VERSION}" != "${funcs_ver}" ]; then
-        die "环境变量 PIXIU_VERSION=${PIXIU_VERSION} 与三处版本 ${funcs_ver} 不一致：" \
-            "deb 包版本将与 App 版本不符，请先同步三处版本再发布"
+        die "环境变量 PIXIU_VERSION=${PIXIU_VERSION} 与四处版本 ${funcs_ver} 不一致：" \
+            "deb 包版本将与 App 版本不符，请先同步四处版本再发布"
     fi
     log "version consistency OK: ${funcs_ver}"
 }

@@ -3,10 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 project(pixiu-frontend VERSION 0.1.1 LANGUAGES CXX)
 
 # PIXIU_VERSION 编译宏：由 project VERSION（${PROJECT_VERSION}）派生，与
-# main.cpp setApplicationVersion 共用单一事实源，防止发布版本二次漂移。
+# main.cpp setApplicationVersion / HttpBackendTransport.cpp User-Agent
+# 共用单一事实源，防止发布版本二次漂移。
 # 字符串引号经 CMake 变量间接传入——直接写 PIXIU_VERSION="\\\"${PROJECT_VERSION}\\\""
 # 在 CMake 3.28 + Ninja 下会双重转义、宏值残留字面引号（实测不可用）。
-# 发布前由 build/release/scripts/build-deb.sh 预检三处版本一致性。
+# 发布前由 build/release/scripts/build-deb.sh 预检四处版本一致性
+# （CMakeLists / main.cpp / HttpBackendTransport.cpp / functions.sh）。
 set(PIXIU_VERSION_STR "\"${PROJECT_VERSION}\"")
 
 option(PIXIU_HAVE_KYSDK "Build with KylinSDK integration" OFF)
@@ -177,6 +179,9 @@ if(BUILD_TESTING)
         src/services/HttpBackendTransport.cpp
     )
     target_include_directories(t_http_backend PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    # HttpBackendTransport.cpp 消费 PIXIU_VERSION 宏：凡编译该文件的测试目标
+    # 都必须注入同一宏，否则 User-Agent 编译失败（与 pixiu-frontend 同源）。
+    target_compile_definitions(t_http_backend PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
     target_link_libraries(t_http_backend PRIVATE Qt5::Test Qt5::Network)
     add_test(NAME http_backend COMMAND t_http_backend)
 
@@ -189,6 +194,7 @@ if(BUILD_TESTING)
         src/services/HttpBackendTransport.cpp
     )
     target_include_directories(t_contract_fixtures PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_definitions(t_contract_fixtures PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
     target_link_libraries(t_contract_fixtures PRIVATE Qt5::Test Qt5::Network)
     add_test(NAME contract_fixtures COMMAND t_contract_fixtures)
 
@@ -563,6 +569,7 @@ if(BUILD_TESTING)
         resources/resources.qrc
     )
     target_include_directories(t_app_navigation PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_definitions(t_app_navigation PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
     target_link_libraries(t_app_navigation
         PRIVATE
             Qt5::Test
@@ -646,6 +653,7 @@ if(BUILD_TESTING)
         resources/resources.qrc
     )
     target_include_directories(t_window_restore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_definitions(t_window_restore PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
     target_link_libraries(t_window_restore
         PRIVATE
             Qt5::Test
