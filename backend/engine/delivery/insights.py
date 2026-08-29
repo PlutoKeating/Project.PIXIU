@@ -2,9 +2,12 @@
 
 生成规则（对齐 docs/compose/specs/2026-08-29-batch4-delivery-layer-design.md [S2.1]）：
   - 候选 = 最近 24h 入库（created_at >= now-24h）的 ACTIVE knowledge，scope 精确匹配；
+    窗口/scope/status 过滤由 knowledge_repo.list_recent 单条 SQL 下沉（不先全量
+    list_active 再内存过滤）；
   - 质量分 / 敏感度取自关联 Evidence（knowledge_evidence 链接）。KnowledgeItem 本身
     不携带 quality_score/sensitivity（见 foundation/core/models.py），故服务可选注入
-    evidence_repo 逐条解析；未注入时回退读取 item 上的同名属性（测试桩路径）；
+    evidence_repo 一次性 get_many 批量解析；未注入时回退读取 item 上的同名属性
+    （测试桩路径）；
   - 过滤 sensitivity > 0 的候选（敏感原文不出洞察）；
   - 按 quality_score 降序取 top limit；
   - 任一 MANUAL 冲突待处理 → 整体抑制（返回空列表，避免干扰人工裁决）。
@@ -56,6 +59,10 @@ class DeliveryInsightsService:
 
         MANUAL 冲突待处理时返回空列表（抑制递送）。
         """
+        # 抑制边界说明（B4-1 审查 M2）：SqliteConflictRepo.list() 默认 limit=50、
+        # 按 created_at DESC 取最近 50 条。若同窗口内出现 50+ 条更新冲突，较早的
+        # 未决 MANUAL 会被挤出扫描范围而漏抑制——罕见（人工裁决通常停留最新几条），
+        # 属已知边界；如需全量扫描，改显式更大 limit 或新增 resolution 过滤查询。
         conflicts = await self._conflicts.list()
         if any(
             _resolution_of(record) == ConflictResolution.MANUAL for record in conflicts
@@ -63,16 +70,26 @@ class DeliveryInsightsService:
             return []
 
         since = int(time.time()) - _SINCE_WINDOW_S
-        items = await self._knowledge.list_active()
-        candidates = [
-            item
-            for item in items
-            if item.scope == scope and item.created_at >= since
-        ]
+        # 窗口/scope/status 过滤下沉到仓储单条 SQL（list_recent）；limit=None
+        # 保留窗口内全部候选，保证按 quality 重排后取 top-limit 不截断。
+        items = await self._knowledge.list_recent(scope, since_ts=since, limit=None)
+
+        # 批量解析证据：一次 get_many 取回全部关联证据（IN 占位符批量查询），
+        # 替代逐候选逐 evidence_id 调 get() 的 N+1 往返。
+        evidence_by_id: dict[str, Any] = {}
+        if self._evidence is not None:
+            ids = {
+                eid
+                for item in items
+                for eid in (getattr(item, "evidence_ids", None) or [])
+            }
+            if ids:
+                for evidence in await self._evidence.get_many(list(ids)):
+                    evidence_by_id[evidence.id] = evidence
 
         scored: list[tuple[float, int, Any]] = []
-        for item in candidates:
-            score, sensitivity = await self._quality(item)
+        for item in items:
+            score, sensitivity = self._quality(item, evidence_by_id)
             if sensitivity <= _SENSITIVE_THRESHOLD:
                 scored.append((score, sensitivity, item))
         scored.sort(key=lambda t: t[0], reverse=True)
@@ -88,8 +105,14 @@ class DeliveryInsightsService:
             for score, _sensitivity, item in scored[:limit]
         ]
 
-    async def _quality(self, item: Any) -> tuple[float, int]:
-        """解析单个候选的质量分与敏感度（取关联证据中的最大值）。"""
+    def _quality(
+        self, item: Any, evidence_by_id: dict[str, Any]
+    ) -> tuple[float, int]:
+        """解析单个候选的质量分与敏感度（取关联证据中的最大值）。
+
+        evidence_by_id 由 insights() 用一次 get_many 批量构建（evidence_repo 注入
+        时）；未注入时回退 item 自带 quality_score/sensitivity（测试桩路径）。
+        """
         if self._evidence is None:
             # 测试桩路径：item 自带 quality_score/sensitivity 属性
             return (
@@ -99,7 +122,7 @@ class DeliveryInsightsService:
         best_score = 0.0
         worst_sensitivity = 0
         for evidence_id in getattr(item, "evidence_ids", None) or []:
-            evidence = await self._evidence.get(evidence_id)
+            evidence = evidence_by_id.get(evidence_id)
             if evidence is None:
                 continue
             best_score = max(best_score, float(evidence.quality_score or 0.0))

@@ -6,7 +6,7 @@ http_app.py 底部 ``from . import delivery`` 触发注册。
 
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException, Query
+from fastapi import Depends, Query
 
 from .di import get_delivery_service
 from .http_app import app
@@ -19,14 +19,13 @@ _INSIGHTS_MAX_LIMIT = 10
 
 @app.get("/delivery/insights", tags=["Delivery"], summary="洞察流（最近高质量记忆）")
 async def delivery_insights(
-    limit: int = Query(_INSIGHTS_DEFAULT_LIMIT, ge=1),
+    limit: int = Query(_INSIGHTS_DEFAULT_LIMIT, ge=1, le=_INSIGHTS_MAX_LIMIT),
     delivery=Depends(get_delivery_service),
 ):
     """返回最近 24h 高质量记忆候选（quality 降序），供聊天窗欢迎页动态建议。
 
-    limit 缺省 3、上限 10（>10 或 <1 → 400 INVALID_REQUEST）；MANUAL 冲突待处理时
-    整体抑制返回空列表；空库/无候选 → {"insights": []}。
+    limit 缺省 3、上限 10（>10 或 <1 → 400 INVALID_REQUEST，经 Query 校验 +
+    统一 RequestValidationError handler，对齐 http_app.py monitor_log 先例）；
+    MANUAL 冲突待处理时整体抑制返回空列表；空库/无候选 → {"insights": []}。
     """
-    if limit > _INSIGHTS_MAX_LIMIT:
-        raise HTTPException(status_code=400, detail="INVALID_REQUEST")
     return {"insights": await delivery.insights(_INSIGHTS_SCOPE, limit=limit)}

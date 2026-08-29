@@ -44,6 +44,17 @@ class EvidenceRepository(ABC):
         """按 id 获取证据。"""
         ...
 
+    async def get_many(self, ids: list[str]) -> list[Evidence]:
+        """按 id 批量获取证据（顺序与 ids 一致，缺失 id 跳过）。
+
+        洞察流等批量解析场景使用，替代逐 id 调 get() 的 N+1 查询。
+        默认抛 NotImplementedError；存储层实现应使用单条
+        ``WHERE id IN (...)`` 批量查询（镜像 flow/store.py 的 get_many 模式）。
+        """
+        raise NotImplementedError(
+            "get_many is not implemented by this repository"
+        )
+
     @abstractmethod
     async def list_by_scope(self, scope: str, limit: int) -> list[Evidence]:
         """按 scope 列出证据，按创建时间降序。"""
@@ -87,6 +98,24 @@ class KnowledgeRepository(ABC):
     async def list_active(self) -> list[KnowledgeItem]:
         """列出全部 ACTIVE 状态的知识条目（引擎冲突仲裁/遗忘定位使用）。"""
         ...
+
+    async def list_recent(
+        self,
+        scope: str,
+        since_ts: int | None = None,
+        limit: int | None = 50,
+    ) -> list[KnowledgeItem]:
+        """按 scope 列出最近入库的 ACTIVE 知识条目（created_at 降序）。
+
+        窗口（since_ts）与 limit 过滤下沉到存储层单条 SQL，洞察流等窗口型
+        查询使用，避免先全量 list_active() 再内存过滤。limit=None 表示不限制
+        数量（质量重排需要窗口内全部候选）。
+        默认抛 NotImplementedError；存储层实现应把 scope/status/窗口/limit
+        过滤写入单条 SQL。
+        """
+        raise NotImplementedError(
+            "list_recent is not implemented by this repository"
+        )
 
     @abstractmethod
     async def list_vectors(self) -> list[tuple[str, int, bytes]]:

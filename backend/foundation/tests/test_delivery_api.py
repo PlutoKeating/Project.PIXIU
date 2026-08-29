@@ -262,6 +262,23 @@ def test_insights_limit_above_max_returns_400(client):
     assert body["request_id"]
 
 
+def test_insights_limit_below_one_returns_400(client):
+    # Query(ge=1) 校验：limit=0 → RequestValidationError → 400 统一错误体
+    resp = client.get("/delivery/insights", params={"limit": 0})
+    assert resp.status_code == 400
+    body = resp.json()
+    assert body["error"] == "INVALID_REQUEST"
+    assert body["message"]
+    assert body["request_id"]
+
+
+def test_insights_limit_at_max_ok(client):
+    # Query(le=10) 边界内：limit=10 → 200，不触发 400
+    resp = client.get("/delivery/insights", params={"limit": 10})
+    assert resp.status_code == 200
+    assert resp.json() == {"insights": []}
+
+
 def test_insights_summary_contains_title_and_body_prefix(client):
     db_path = di_module.settings.db_path
     _seed(

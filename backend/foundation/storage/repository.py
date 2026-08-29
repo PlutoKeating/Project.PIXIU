@@ -136,6 +136,22 @@ class SqliteEvidenceRepo(EvidenceRepository):
         row = await cursor.fetchone()
         return _row_to_evidence(row) if row else None
 
+    async def get_many(self, ids: list[str]) -> list[Evidence]:
+        """按 id 批量获取证据（顺序与 ids 一致，缺失 id 跳过）。
+
+        单条 ``WHERE id IN (...)`` 占位符批量查询（镜像 _attach_evidence_ids /
+        flow/store.py get_many 模式），替代逐 id get() 的 N+1 往返。
+        """
+        if not ids:
+            return []
+        placeholders = ",".join("?" * len(ids))
+        cursor = await self._db.execute(
+            f"SELECT * FROM evidence WHERE id IN ({placeholders})", ids
+        )
+        rows = await cursor.fetchall()
+        by_id = {row["id"]: _row_to_evidence(row) for row in rows}
+        return [by_id[eid] for eid in ids if eid in by_id]
+
     async def list_by_scope(self, scope: str, limit: int = 50) -> list[Evidence]:
         cursor = await self._db.execute(
             "SELECT * FROM evidence WHERE scope = ? ORDER BY created_at DESC LIMIT ?",
@@ -417,6 +433,30 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             "SELECT * FROM knowledge_items WHERE status = ? ORDER BY updated_at DESC",
             (KnowledgeStatus.ACTIVE.value,),
         )
+        rows = await cursor.fetchall()
+        return await self._attach_metadata([_row_to_knowledge(r) for r in rows])
+
+    async def list_recent(
+        self,
+        scope: str,
+        since_ts: int | None = None,
+        limit: int | None = 50,
+    ) -> list[KnowledgeItem]:
+        """列出 scope 内最近入库的 ACTIVE 知识（created_at 降序），窗口过滤下沉 SQL。
+
+        洞察流使用：替代先 list_active() 全量拉取再内存过滤 scope/窗口。
+        since_ts=None 不限窗口；limit=None 不加 LIMIT（质量重排需窗口内全量候选）。
+        """
+        sql = "SELECT * FROM knowledge_items WHERE scope = ? AND status = ?"
+        params: list = [scope, KnowledgeStatus.ACTIVE.value]
+        if since_ts is not None:
+            sql += " AND created_at >= ?"
+            params.append(since_ts)
+        sql += " ORDER BY created_at DESC"
+        if limit is not None:
+            sql += " LIMIT ?"
+            params.append(limit)
+        cursor = await self._db.execute(sql, params)
         rows = await cursor.fetchall()
         return await self._attach_metadata([_row_to_knowledge(r) for r in rows])
 

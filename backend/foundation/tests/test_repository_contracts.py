@@ -136,6 +136,9 @@ class FakeEvidenceRepo(EvidenceRepository):
     async def get(self, id: str) -> Optional[Evidence]:
         return None
 
+    async def get_many(self, ids: list[str]) -> list[Evidence]:
+        return []
+
     async def list_by_scope(self, scope: str, limit: int) -> list[Evidence]:
         return []
 
@@ -160,6 +163,14 @@ class FakeKnowledgeRepo(KnowledgeRepository):
         pass
 
     async def list_active(self) -> list[KnowledgeItem]:
+        return []
+
+    async def list_recent(
+        self,
+        scope: str,
+        since_ts: int | None = None,
+        limit: int | None = 50,
+    ) -> list[KnowledgeItem]:
         return []
 
     async def list_vectors(self) -> list[tuple[str, int, bytes]]:
@@ -397,3 +408,37 @@ async def test_fake_conflict_get_returns_optional():
     repo = FakeConflictRepo()
     result = await repo.get("cfl_x")
     assert result is None
+
+
+# ─── Batch methods (B4-1 审查 I1: list_recent / get_many) ──────
+
+
+@pytest.mark.asyncio
+async def test_fake_knowledge_list_recent_returns_list():
+    repo = FakeKnowledgeRepo()
+    result = await repo.list_recent("user:alice", since_ts=NOW, limit=50)
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_knowledge_list_recent_accepts_none_limit():
+    # 洞察流以 limit=None 请求窗口内全量候选（质量重排不截断）
+    repo = FakeKnowledgeRepo()
+    result = await repo.list_recent("user:alice", since_ts=NOW, limit=None)
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_fake_evidence_get_many_returns_list():
+    repo = FakeEvidenceRepo()
+    result = await repo.get_many(["evd_x", "evd_y"])
+    assert isinstance(result, list)
+
+
+@pytest.mark.asyncio
+async def test_abc_defaults_raise_not_implemented():
+    # ABC 默认实现抛 NotImplementedError（契约兜底，子类须显式覆盖）
+    with pytest.raises(NotImplementedError):
+        await KnowledgeRepository.list_recent(object(), "user:alice")
+    with pytest.raises(NotImplementedError):
+        await EvidenceRepository.get_many(object(), ["evd_x"])

@@ -49,11 +49,20 @@ class _Conflict:
 
 
 class _FakeKnowledgeRepo:
+    """模拟 KnowledgeRepository.list_recent（窗口/scope 过滤在内存模拟）。"""
+
     def __init__(self, items) -> None:
         self.items = items
+        self.calls: list[tuple] = []
 
-    async def list_active(self):
-        return list(self.items)
+    async def list_recent(self, scope, since_ts=None, limit=50):
+        self.calls.append((scope, since_ts, limit))
+        out = [i for i in self.items if i.scope == scope]
+        if since_ts is not None:
+            out = [i for i in out if i.created_at >= since_ts]
+        if limit is not None:
+            out = out[:limit]
+        return list(out)
 
 
 class _FakeConflictRepo:
@@ -67,9 +76,11 @@ class _FakeConflictRepo:
 class _FakeEvidenceRepo:
     def __init__(self, by_id) -> None:
         self.by_id = by_id
+        self.get_many_calls: list[list[str]] = []
 
-    async def get(self, eid: str):
-        return self.by_id.get(eid)
+    async def get_many(self, ids: list[str]):
+        self.get_many_calls.append(list(ids))
+        return [self.by_id[i] for i in ids if i in self.by_id]
 
 
 def _service(items, conflicts=(), evidence_repo=None) -> DeliveryInsightsService:
@@ -82,6 +93,13 @@ def _service(items, conflicts=(), evidence_repo=None) -> DeliveryInsightsService
 
 def _item(kid: str, title: str, quality: float, created_at: int, **kw) -> _Item:
     return _Item(kid, title, quality, created_at, **kw)
+
+
+def _evd(eid: str, quality: float, sensitivity: int = 0):
+    """模拟 Evidence（真实模型含 id/quality_score/sensitivity，见 core/models.py）。"""
+    return type(
+        "E", (), {"id": eid, "quality_score": quality, "sensitivity": sensitivity}
+    )()
 
 
 @pytest.mark.asyncio
@@ -192,9 +210,9 @@ def test_summarize_title_only_when_no_body_text():
 async def test_insights_resolves_quality_from_linked_evidence():
     """真实数据路径：KnowledgeItem 不携带 quality/sensitivity，从关联 Evidence 解析。"""
     evidence = {
-        "e1": type("E", (), {"quality_score": 0.2, "sensitivity": 0})(),
-        "e2": type("E", (), {"quality_score": 0.95, "sensitivity": 3})(),
-        "e3": type("E", (), {"quality_score": 0.6, "sensitivity": 0})(),
+        "e1": _evd("e1", 0.2, 0),
+        "e2": _evd("e2", 0.95, 3),
+        "e3": _evd("e3", 0.6, 0),
     }
     items = [
         _item("k1", "A", 0.0, _NOW, evidence_ids=["e1"]),
@@ -213,3 +231,126 @@ async def test_insights_resolves_quality_from_linked_evidence():
     # e2 敏感（sensitivity=3）→ 排除；e3(0.6) > e1(0.2)
     assert [i["knowledge_id"] for i in out] == ["k3", "k1"]
     assert out[0]["score"] == 0.6
+
+
+# ─── B4-1 审查 M3：_summarize 防御分支 ─────────────────────────
+
+
+@pytest.mark.parametrize(
+    "body,expected",
+    [
+        ({"text": "abc"}, "标题：abc"),
+        ({"text": 123}, "标题：123"),  # text 为数字 → str() 归一
+        ({"text": 1.5}, "标题：1.5"),
+        ({"text": 0}, "标题"),  # 数字 0 为 falsy → 视为无正文
+        ({"text": None}, "标题"),
+        ({"text": ""}, "标题"),
+        ({"text": "  padded  "}, "标题：padded"),  # 前 60 字后 strip
+        ({"text": "x" * 100}, "标题：" + "x" * 60),  # 截断前 60 字
+        ("plain string", "标题"),  # body 为 str → 非 dict 回退 {}
+        (None, "标题"),  # body 为 None → 非 dict 回退 {}
+        ([], "标题"),  # body 为 list → 非 dict 回退 {}
+    ],
+)
+def test_summarize_defensive(body, expected):
+    item = _item("k1", "标题", 0.9, _NOW)
+    item.body = body
+    assert _summarize(item) == expected
+
+
+# ─── B4-1 审查 I1：窗口下沉 + 批量证据 ────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_insights_window_and_scope_pushed_to_repo():
+    """窗口/scope 过滤下沉到 list_recent 单条 SQL（不再全量 list_active 后内存过滤）。"""
+    svc = _service([_item("k1", "A", 0.9, _NOW)])
+    await svc.insights("user:local")
+    scope, since, limit = svc._knowledge.calls[0]
+    assert scope == "user:local"
+    assert abs(since - (int(time.time()) - 24 * 3600)) <= 1
+    assert limit is None  # 质量重排需窗口内全量候选，不截断
+
+
+@pytest.mark.asyncio
+async def test_insights_batches_evidence_fetch():
+    """证据解析走一次 get_many（IN 批量），替代逐 evidence_id 调 get() 的 N+1。"""
+    evidence = {
+        "e1": _evd("e1", 0.2, 0),
+        "e2": _evd("e2", 0.95, 0),
+    }
+    items = [
+        _item("k1", "A", 0.0, _NOW, evidence_ids=["e1", "e2"]),
+        _item("k2", "B", 0.0, _NOW, evidence_ids=["e2"]),
+    ]
+    for it in items:
+        delattr(it, "quality_score")
+        delattr(it, "sensitivity")
+    ev_repo = _FakeEvidenceRepo(evidence)
+    svc = DeliveryInsightsService(
+        _FakeKnowledgeRepo(items),
+        _FakeConflictRepo(),
+        evidence_repo=ev_repo,
+    )
+    out = await svc.insights("user:local", limit=3)
+    assert len(ev_repo.get_many_calls) == 1  # 只一次批量取
+    assert sorted(ev_repo.get_many_calls[0]) == ["e1", "e2"]  # 全部 id 一次取回
+    assert out[0]["knowledge_id"] == "k1"
+    assert out[0]["score"] == 0.95  # 多条证据取 quality 最大值
+
+
+@pytest.mark.asyncio
+async def test_insights_missing_evidence_tolerated():
+    """关联证据已删除/缺失 → 按 0 质量分兜底，不抛异常。"""
+    items = [_item("k1", "A", 0.0, _NOW, evidence_ids=["missing"])]
+    for it in items:
+        delattr(it, "quality_score")
+        delattr(it, "sensitivity")
+    svc = DeliveryInsightsService(
+        _FakeKnowledgeRepo(items),
+        _FakeConflictRepo(),
+        evidence_repo=_FakeEvidenceRepo({}),
+    )
+    out = await svc.insights("user:local")
+    assert out[0]["knowledge_id"] == "k1"
+    assert out[0]["score"] == 0.0
+
+
+@pytest.mark.asyncio
+async def test_insights_quality_takes_max_over_multiple_evidence():
+    items = [_item("k1", "A", 0.0, _NOW, evidence_ids=["e1", "e2"])]
+    for it in items:
+        delattr(it, "quality_score")
+        delattr(it, "sensitivity")
+    svc = DeliveryInsightsService(
+        _FakeKnowledgeRepo(items),
+        _FakeConflictRepo(),
+        evidence_repo=_FakeEvidenceRepo(
+            {
+                "e1": _evd("e1", 0.2, 0),
+                "e2": _evd("e2", 0.9, 0),
+            }
+        ),
+    )
+    out = await svc.insights("user:local")
+    assert out[0]["score"] == 0.9
+
+
+@pytest.mark.asyncio
+async def test_insights_sensitivity_max_filters_out():
+    """多条证据中任一 sensitivity>0 → 候选整体过滤（取最差值）。"""
+    items = [_item("k1", "A", 0.0, _NOW, evidence_ids=["e1", "e2"])]
+    for it in items:
+        delattr(it, "quality_score")
+        delattr(it, "sensitivity")
+    svc = DeliveryInsightsService(
+        _FakeKnowledgeRepo(items),
+        _FakeConflictRepo(),
+        evidence_repo=_FakeEvidenceRepo(
+            {
+                "e1": _evd("e1", 0.2, 0),
+                "e2": _evd("e2", 0.9, 2),
+            }
+        ),
+    )
+    assert await svc.insights("user:local") == []
