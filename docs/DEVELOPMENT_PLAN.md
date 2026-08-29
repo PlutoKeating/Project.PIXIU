@@ -27,9 +27,9 @@
 5. CI 必须持续验证 Debian 系通用构建；麒麟真机/自托管 runner 验证单独记录，
    不能用软件降级测试冒充 KylinSDK 验收。
 
-### 1.5 当前进度总览（2026-08-07）
+### 1.5 当前进度总览（2026-08-07 · 历史基线）
 
-> 本小节随实际开发状态持续更新；各模块详细任务清单见模块内 `DEV_TASKS.md`。
+> 本节为 2026-08-07 历史基线，仅作进度回溯；最新状态见 §1.6。
 
 | 模块 | 负责人 | 当前状态 | 已实现 | 待实现 |
 |------|--------|----------|--------|--------|
@@ -46,17 +46,18 @@
 - 移除全部 mock（`engine/mocks`、`MockEmbedding`、`PIXIU_EMBEDDING=mock`），接入麒麟 SDK（官方仓库以 submodule 纳入 `third_party/`）
 - 测试：229 项通过（含引擎 × SQLite 全链路集成测试与 API 端点测试）
 
-### 1.6 当前进度总览（2026-08-10 更新）
+### 1.6 当前进度总览（2026-08-29 更新）
 
-> 本节为最新状态快照（2026-08-10），覆盖 `feat/foundation` 与 `feature/frontend`
-> 两个远端分支的新提交；§1.5 为 2026-08-07 历史基线。
+> 本节为最新状态快照（2026-08-29，发布收尾）：同步网络批次（SN-1..SN-7）与被动监控
+> 四批次（①掌控层 → ②目录监视 → ③行为偏好 → ④递送层）已全部完成并合入 main；
+> §1.5 为 2026-08-07 历史基线，§1.7 保留 2026-08-10 的分支同步摘要。
 
 | 模块 | 负责人 | 当前状态 | 已实现 | 待实现 / 阻塞 |
 |------|--------|----------|--------|--------|
-| A · frontend | 团队负责人 | ✅ 独立功能完成 + UI/UX polish 完成 | Qt5/CMake 应用骨架；悬浮球/聊天框/记忆面板/遗忘/录入/设置/配对/解绑/同步 Tab；WS 事件路由；i18n（180 条）；UKUI 主题跟随/通知/快捷键/`.deb` 打包；双路径 ctest 31/31 全绿；真实桌面截图留证 | 真实麒麟会话人工复测（全局快捷键等）；后端契约阻塞：偏好列表/证据详情/二维码令牌/真实配对闭环/真实 WS 事件广播 |
-| B · engine | @Ø是铯 | ✅ 核心管线已实现并集成（较 08-07 无新增） | ingest/knowledge/conflict/security/preference 全部 Service；core 契约对齐；真实麒麟 SDK 绑定源码（pybind11） | 麒麟环境 SDK 绑定构建与端到端验证；向量库检索接入 |
-| C · foundation | @17% | ✅ Phase 0~7 全部完成（功能冻结） | core/storage/api、retrieval 混合检索（`/memory/query` 上线）、flow 记忆流转、sync P2P CRDT 同步、eval 评测框架+基准、D-Bus 服务、request_id 统一错误契约、Phase 7 压测证据（P95=19.18ms）；同步/流转 API 全部真实接入；测试全绿（麒麟 V11 真机 377 passed） | 麒麟真实 SDK 性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作；WS `/events` 注册修复（见 §1.7 阻塞项） |
-| D · tests/support | @捌嘎君 | 🟡 测试已由各模块补齐，正式支持工作未开工 | foundation+engine 测试全绿（麒麟 V11 真机 377 passed）；frontend ctest 31/31；自动回归脚本 `frontend/scripts/regression.sh`；打包发布脚手架 `build/release/` | 测试数据集、性能压测、正式评测报告（见 `backend/docs/SUPPORT_TASKS.md`） |
+| A · frontend | 团队负责人 | ✅ 全部完成（含四批次前端） | Qt5/CMake 桌面应用：悬浮球/聊天框/记忆面板/遗忘/设置/配对/同步 Tab；监控中心双 Tab 面板 + 三处暂停入口 + 徽标；确认式配对（发现+弹窗确认）+ 同步 Tab 全量管理（整网退出）；洞察卡/「今日简报」/相关主题提醒；i18n 279 条 0 未完成；ctest 32/32 + `regression.sh` 双路径绿 | 真实麒麟会话人工复测（全局快捷键真机按键、xprop 方言验证） |
+| B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
+| C · foundation | @17% | ✅ Phase 0~7 + 同步网络/监控批次全部完成 | core/storage/api、retrieval（`/memory/query`）、flow、sync P2P CRDT（默认开启）、eval 评测框架+基准、monitor daemon（目录监视 + 配置热生效 + 行为采集）、D-Bus 服务、24 个 REST 端点 + 六类 WS 事件；后端 pytest 673 passed | 麒麟真实 SDK 性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作 |
+| D · tests/support | @捌嘎君 | ✅ 测试/压测/验收评测已完成 | foundation+engine 全量测试绿（后端 pytest 673 passed）；前端 ctest 32/32 + `regression.sh`；验收基线报告 `docs/acceptance/`（100%/96%/115ms 全项达标）；打包发布脚手架 `.deb` 已发布 `v0.1.0-staging` | 真机人工验收清单（`docs/AcceptanceTestSpecification.md`） |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -140,7 +141,7 @@
 ┌──────────────────────────────────────────────────────────┐
 │  模块 A: UKUI 桌面客户端 (frontend/)                       │  C++17 · Qt5 · KylinSDK
 │  负责：悬浮球 · 聊天框 · 记忆面板 · 设备配对 · IPC 通信      │
-│  与后端契约：仅通过 12 个预定义 REST API + WS 事件通信       │
+│  与后端契约：仅通过 `docs/API.md` 定义的全部 REST API + WS 事件通信     │
 └────────────────────────┬─────────────────────────────────┘
                          │  ★ 固定 API 契约（JSON over HTTP / D-Bus）
                          │  前端不引用后端一行代码
@@ -174,11 +175,16 @@
 | 与其他模块 | **零代码依赖** — 仅通过 HTTP REST / WebSocket / D-Bus 调用后端 API |
 | 自身完整 | 含完整 src/（widgets/services/models/app）+ CMakeLists.txt + resources/ |
 
-**对外契约**：`docs/API.md` 中定义的 12 个端点及其请求/响应 JSON 结构。
+**对外契约**：`docs/API.md` 中定义的全部端点（当前 24 个 REST + WS）及其请求/响应 JSON 结构。
 
 **状态（2026-08-11）**：独立功能与 UI/UX polish 全部完成（双路径 ctest 31/31、
 i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与后端契约阻塞，
 详见 §1.7。
+
+**状态（2026-08-29）**：被动监控四批次前端 + 同步网络前端全部落地——监控中心
+双 Tab 面板与三处暂停入口、确认式配对（发现+弹窗确认）、同步 Tab 全量管理
+（总开关/暂停/整网退出/立即同步）、洞察卡/「今日简报」/相关主题提醒；
+ctest 32/32、i18n 279 条 0 未完成；见 §1.6。
 
 ### 2.2 模块 B — 记忆业务引擎
 
@@ -197,6 +203,10 @@ i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与�
 **状态（2026-08-11）**：无新增实现变更；麒麟 V11 真机全量测试 377 passed，
 整包 .deb 已随包安装引擎源码，SDK 绑定构建待验证。
 
+**状态（2026-08-29）**：新增行为采集（USER_BEHAVIOR 证据，B3-1）、冲突 severity
+三态映射（B3-3）、递送层 insights/digest（B4-1/B4-2）；麒麟 SDK 绑定
+（embedding/OCR）已在本机构建成功；见 §1.6。
+
 ### 2.3 模块 C — 后台基础设施
 
 | 属性 | 说明 |
@@ -214,6 +224,11 @@ flow（`/memory/flow/promote`）、sync（`/sync/*`）、eval（评测框架+基
 D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 377 项测试通过；
 剩余为麒麟真实 SDK 性能验收与真实局域网互操作。
 
+**状态（2026-08-29）**：sync 网络运行时默认开启（SN-4）+ 确认式配对/mainline 仲裁
+（SN-1..SN-3）、monitor daemon（目录监视 + 配置热生效 + 行为采集）与递送层端点
+（/delivery/*）全部落地；24 个 REST 端点 + 六类 WS 事件真实实现；后端 pytest
+673 passed；见 §1.6。
+
 ### 2.4 支持岗 D — 测试与工具
 
 | 属性 | 说明 |
@@ -230,6 +245,10 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 已发布 `v0.1.0-staging`）；正式支持工作（测试数据集、性能压测、
 验收评测报告）尚未开工。
 
+**状态（2026-08-29）**：正式支持工作全部完成——测试数据集 `pixiu-family-expense-v1`
+（50 检索 + 15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告
+`docs/acceptance/`（全项达标）；后端 pytest 673 passed；见 §1.6。
+
 ---
 
 ## 3. 契约定义
@@ -238,7 +257,7 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 
 唯一定义在 `docs/API.md`。包含：
 
-- 12 个 REST 端点的路径、方法、请求体/响应体 JSON Schema
+- 全部 REST 端点（当前 24 个）的路径、方法、请求体/响应体 JSON Schema
 - WebSocket 事件名称与 payload 格式
 - 错误码枚举
 

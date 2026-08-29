@@ -3,10 +3,12 @@
 > 本文档从后端整体视角阐述系统设计，详细设计分别见 engine/ 和 foundation/ 的子架构文档。
 > 这是两端开发者之间的"接口层"文档。
 >
-> **状态（2026-08-11）**：引擎核心管线已完成并集成；foundation Phase 0~5 全部完成
-> （retrieval/flow/sync/eval/D-Bus，12 个 REST 端点真实实现）；全量测试通过
-> （麒麟 V11 真机 pytest 364 passed）。剩余：麒麟 SDK 绑定构建与真机性能验收、
-> WS `/events` 路由注册修复。
+> **状态（2026-08-29）**：引擎核心管线 + foundation 全部阶段完成；24 个 REST 端点
+> 与六类 WS 事件（memory_ready / conflict_detected / forget_confirmation / sync_event /
+> capture_event / pair_request）真实实现；WS `/events` 注册已于 2026-08-20 修复；
+> 麒麟 SDK 绑定（embedding/OCR）本机构建成功；同步网络（默认开启）与被动监控四批次
+> （掌控层/目录监视/行为偏好/递送层）已全部落地。全量测试：后端 pytest 673 passed、
+> 前端 ctest 32/32、`regression.sh` 双路径绿。
 
 ---
 
@@ -45,7 +47,7 @@
     engine/knowledge: Structurer → Graph → EmbedWriter
     engine/preference: Extractor（若含偏好信号）
     engine/conflict: Arbiter（与既有知识比对）
-  → foundation/sync: CRDT 广播（✅ Phase 3 已实现，网络运行时默认关闭）
+  → foundation/sync: CRDT 广播（✅ Phase 3 已实现，网络运行时默认开启）
 ```
 
 ### 2.2 检索路径（基础设施主导）

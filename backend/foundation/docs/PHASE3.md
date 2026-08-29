@@ -35,7 +35,10 @@ vclock 判断因果关系；并发或相同因果上下文按 (ts, op_id) 决胜
 
 ## 3. 安全边界
 
-- 网络默认关闭。未设置 PIXIU_SYNC_NETWORK_ENABLED=true 时，不创建监听、mDNS 或连接。
+- 网络默认开启（SN-4 起，`config.py` 对 `PIXIU_SYNC_NETWORK_ENABLED` 缺省 true）；
+  显式 `false` 或运行时 `enabled=false` 时停止监听、mDNS 与连接；缺 advertise 地址
+  由 runtime 自动取本机 LAN IP（回退 loopback 并告警），缺 TLS 证书由 di 层降级
+  （log warning，不阻塞 API）。
 - 仅 shared:* 可进入 oplog；user:* 会被拒绝，payload 内嵌 scope 也必须与 envelope 一致。
 - mDNS 广告不是信任来源。只有本地已配对、未撤销、同域且 Ed25519 公钥完全一致的广告可用。
 - 地址只接受私网、链路本地或 loopback；全局公网、multicast 和 unspecified 地址被拒绝。
@@ -46,7 +49,8 @@ vclock 判断因果关系；并发或相同因果上下文按 (ts, op_id) 决胜
 
 ## 4. 运行时
 
-FastAPI lifespan 调用同步运行时，但只有显式配置启用时才真正启动。一个同步轮次执行：
+FastAPI lifespan 调用同步运行时；默认开启（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true，
+SN-4），显式置 false 或运行时 `enabled=false` 时不再启动。一个同步轮次执行：
 
 1. mDNS 发现候选端点。
 2. 用持久化配对记录过滤候选。

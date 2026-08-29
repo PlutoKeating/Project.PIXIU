@@ -233,7 +233,8 @@ TTL：短期默认 30 分钟，中期默认 7 天；到期保留审计行、清�
 
 ### 1.6 sync/ —— P2P CRDT 同步
 
-> ✅ **Phase 3 已实现**。网络运行时默认关闭，需显式安全配置后启动。
+> ✅ **Phase 3 已实现**；SN-4（2026-08-29）起网络运行时默认开启
+> （`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），缺 advertise/TLS 证书自动降级不阻塞 API。
 
 **核心创新**：去中心化多设备记忆网络。
 
@@ -252,7 +253,7 @@ sync/
 ├── materializer.py # CRDT 胜者物化到本地仓储
 ├── gc.py           # 全网 ACK 后 tombstone 回收
 ├── scheduler.py    # 有界退避调度
-└── runtime.py      # 默认关闭的 mDNS/mTLS 生命周期
+└── runtime.py      # 默认开启的 mDNS/mTLS 生命周期（缺配置自动降级）
 ```
 
 **同步流程**：
@@ -276,7 +277,9 @@ sync/
 
 **安全与运行边界**：
 
-- 网络默认关闭；只有 `PIXIU_SYNC_NETWORK_ENABLED=true` 且地址、证书、CA 均显式配置后启动。
+- 网络默认开启（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true，SN-4）；地址、证书、CA 允许
+  缺省——空 advertise 自动取本机 LAN IP（回退 loopback 并告警），缺证书由 di 层降级
+  （log warning，不阻塞 API）；显式 `false` 或运行时 `enabled=false` 时停止广播与监听。
 - mDNS 结果必须与本地已配对、未撤销 peer 的设备 ID、`shared:*` 域和 Ed25519 公钥完全匹配。
 - `user:*` 不进入 oplog；嵌套 payload scope 必须与签名 envelope scope 一致。
 - 传输固定 TLS 1.3 双向认证；单帧和单批分别限制为 1 MiB、256 个操作。

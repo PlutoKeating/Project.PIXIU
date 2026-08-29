@@ -24,7 +24,7 @@
 - `flow/`：短/中期上下文持久化、批量预校验与幂等 promote、长期知识可逆 demote、
   分层 TTL 和到期内容清理
 - `sync/`：加密 Ed25519 身份、QR/PIN 配对、LWW+vclock、反熵、ACK/墓碑回收、
-  mDNS 信任过滤、TLS 1.3 mTLS、Gossip 重传、远端物化及默认关闭的运行时
+  mDNS 信任过滤、TLS 1.3 mTLS、Gossip 重传、远端物化及默认开启的运行时（SN-4）
 - `eval/`：评测引擎（Recall@1/3/5、P50/P95/P99、scope 隔离、聚合/追溯/冲突/偏好指标）、
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
@@ -140,7 +140,7 @@ git submodule update --init --recursive
 | `sync/protocol.py` | ★★ | 已配对 sender + 签名 SyncOp 协议 |
 | `sync/gossip.py` | ★★ | 有界 fanout、ACK 与持久化重传 |
 | `sync/materializer.py` | ★★ | CRDT 胜者物化到本地仓储 |
-| `sync/runtime.py` | ★ | 默认关闭的 mDNS/mTLS 生命周期 |
+| `sync/runtime.py` | ★ | 默认开启的 mDNS/mTLS 生命周期（缺配置自动降级） |
 | `sync/scheduler.py` | ★ | 同步轮次调度 + 退避 |
 
 ### eval/ —— 评测框架

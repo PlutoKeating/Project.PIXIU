@@ -25,7 +25,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 ┌──────────────────────────────────────────────────────────┐
 │  Module A: UKUI 桌面客户端 (frontend/)                     │  C++17 + Qt5 + Kysdk
 │  悬浮球 · 聊天框 · 记忆面板 · 设备配对                     │
-│  ★ 与后端仅通过固定 API 契约（12 端点）通信                 │
+│  ★ 与后端仅通过固定 API 契约（docs/API.md，24 端点）通信              │
 └────────────────────────┬─────────────────────────────────┘
                          │ HTTP REST · WS · D-Bus
 ┌────────────────────────┴─────────────────────────────────┐
@@ -33,10 +33,12 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 │                                                           │
 │  Module B: 记忆业务引擎 (engine/)                          │  Python 3.10 + C++
 │  多源接入 · 偏好捕捉 · 知识结构化 · 冲突仲裁 · 安全遗忘     │
+│  行为采集 · 主动递送(insights/digest)                       │
 │  ★ 通过 Repository ABC 接口消费存储层                      │
 │                                                           │
 │  Module C: 后台基础设施 (foundation/)                      │  Python 3.10 + SQLite
 │  API 网关 · 存储层 · 混合检索 · 记忆流转 · P2P 同步 · 评测  │
+│  监控引擎(目录监视/行为采集/配置热生效)                     │
 │  ★ 提供 core/ 契约 + 在 api/ 注入引擎 Service              │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -103,12 +105,12 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
       engine/knowledge:embed_writer → 麒麟 coreai/embedding（真实 SDK）→ INT8 量化 → 写 knowledge_vec + knowledge_fts
       engine/preference:extractor → 偏好提取
       engine/conflict:arbiter → 与既有知识比对仲裁
-  → foundation/sync:CRDT 广播（⚠️ 待实现，Phase 3）
+  → foundation/sync:CRDT 广播（✅ 已实现，Phase 3）
 ```
 
 > 现状（2026-08-11）：`POST /memory/write` 在请求内同步执行
 > ingest → knowledge → preference → conflict 整条管线；`shared:*` 写入会追加
-> 签名 SyncOp 进入 `sync_oplog` 供 CRDT 广播（网络运行时默认关闭）。
+> 签名 SyncOp 进入 `sync_oplog` 供 CRDT 广播（网络运行时默认开启，SN-4）。
 
 **三索引齐写**：一条知识同时进 FTS5（关键词）、向量表（语义）、图（实体关系），这是混合检索的前提。
 当前 FTS 写入、INT8 向量写入与图（`knowledge_entities`/`relations`）均已实现；
@@ -165,6 +167,35 @@ query + context_hint
 为真实链路，复用引擎 ingest→knowledge 管线；短/中期上下文 SQLite 持久化、
 批量预校验与幂等 promote、长期知识 demote、分层 TTL 与到期清理均已落地。
 
+### 3.7 被动监控（目录监视 + 行为采集）
+
+✅ **已实现**（批次①掌控层 2026-08-26 / 批次②目录监视 2026-08-26 / 批次③行为采集
+2026-08-29，均合入 main）：
+
+- **掌控层**：前端 MonitorController + 监控中心双 Tab 面板、托盘/悬浮球/设置三处
+  暂停入口与 ⏸ 徽标；`/monitor/config` 读写 + `/monitor/log` 分页 + `capture_event`
+  WS 广播；配置持久化并热生效（GET/PUT 全量提交）。
+- **目录监视**：后端常驻 monitor daemon（Module C，独立于前端生命周期）；
+  watchdog 防抖 + 稳定性检查 → 图片走麒麟 OCR 管线、文本走 ingest 管线入库；
+  敏感条目按 detector 结果以 `sensitive_quarantined` 广播，不入 `shared:*`。
+- **行为采集**：BehaviorCollector 轮询窗口焦点 + 应用活跃时长，产出 USER_BEHAVIOR
+  evidence（`{"app","title","focus_seconds","hour_bucket","day_type"}`），敏感标题
+  fail-closed 丢弃；无 X 环境降级不采集。
+- **默认状态**：`PIXIU_MONITOR_ENABLED` 代码默认关，随包 `pixiu.env` 置 1（产品
+  默认开）；`config.enabled` 为独立门控。
+
+### 3.8 主动递送（洞察流 / 定时简报 / 相关性提醒）
+
+✅ **已实现**（批次④，2026-08-29 合入 main）：
+
+- **洞察流**：`GET /delivery/insights`——最近 24h 高质量记忆按 quality 降序，
+  敏感过滤 + MANUAL 冲突抑制，欢迎页动态建议卡（`kind:"recent"`；偏好类洞察
+  `kind:"preference"` 为发布后增强项）。
+- **定时简报**：`GET /delivery/digest`——按日聚合当日记忆沉淀（ingested 分组
+  计数 + sensitive 单列），服务端生成中文文案，空日返回「当日无新记忆」。
+- **相关性提醒**：前端在既有 captureEvent/偏好事件路径上做 token 交集相关性
+  判断 + 每日上限 3 条；偏好学习即时通知。
+
 ---
 
 ## 4. 分布式记忆共享（去中心化）
@@ -173,9 +204,10 @@ query + context_hint
 
 > ✅ **Phase 3 已实现**（2026-08-10 合入 main）：Ed25519 身份、QR/PIN 配对、
 > LWW-Element-Set + 版本向量、签名 oplog、Gossip + 反熵对账、墓碑回收、
-> mDNS 信任过滤、TLS 1.3 mTLS、CRDT 胜者物化；`/sync/*` 四端点已真实接入。
-> **网络运行时默认关闭**，需 `PIXIU_SYNC_NETWORK_ENABLED=true` 且显式配置
-> 地址与 TLS 证书后启动（安全边界见 `backend/foundation/docs/ARCHITECTURE.md` §1.6）。
+> mDNS 信任过滤、TLS 1.3 mTLS、CRDT 胜者物化；`/sync/*` 端点已真实接入。
+> SN-4（2026-08-29）起**网络运行时默认开启**（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），
+> 缺 advertise/TLS 证书自动降级不阻塞 API；显式 `false` 或运行时 `enabled=false`
+> 停止广播与监听（安全边界见 `backend/foundation/docs/ARCHITECTURE.md` §1.6）。
 
 - **对等架构**：每台设备运行完整副本，AP + 最终一致
 - **同步单元**：`sync_oplog` 中的 op，CRDT（LWW-Element-Set + 版本向量）合并
@@ -209,9 +241,9 @@ query + context_hint
 
 | 能力 | SDK | 用途 | 调用者 | 状态 |
 |------|-----|------|--------|------|
-| 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 源码就绪，待麒麟环境构建验证 |
-| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin（pybind11 绑定） | 🟡 客户端就绪，检索阶段接入 |
-| OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ⬜ 待接入 |
+| 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 本机构建成功（麒麟运行时验收待真机） |
+| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin（pybind11 绑定） | 🟡 客户端就绪，检索由 foundation/retrieval INT8 扫描承担 |
+| OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ✅ 已接入（2026-08-24，`POST /memory/ocr`） |
 | 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference | ⬜ 待接入 |
 | 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为系统托盘通知 |
 | 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为 QShortcut |
@@ -229,16 +261,28 @@ query + context_hint
 |------|------|------|
 | POST | `/memory/write` | 写入记忆（✅ 已实现） |
 | POST | `/memory/query` | 混合检索（✅ 已实现） |
+| GET | `/evidence/{id}` | 证据详情（✅ 已实现，2026-08-24） |
+| POST | `/memory/ocr` | 图片 OCR 识别（✅ 已实现，2026-08-24） |
 | POST | `/preference/extract` | 偏好提取（✅ 已实现） |
+| GET | `/preferences` | 偏好列表（✅ 已实现，2026-08-24） |
 | GET | `/preference/{id}/history` | 偏好回溯（✅ 已实现） |
 | POST | `/forget` | 自然语言遗忘（✅ 已实现） |
 | GET | `/conflicts` | 冲突审计（✅ 已实现） |
 | POST | `/memory/flow/promote` | 记忆流转（✅ 已实现） |
-| POST | `/sync/pair` | 设备配对（✅ 已实现） |
+| POST | `/sync/token` | 生成配对令牌（QR/PIN）（✅ 已实现，2026-08-24） |
+| POST | `/sync/pair` | 设备配对（QR/PIN + 签名令牌）（✅ 已实现） |
 | GET | `/sync/peers` | 节点列表（✅ 已实现） |
-| GET | `/sync/status` | 同步状态（✅ 已实现） |
+| GET | `/sync/discover` | 发现局域网设备（含未配对）（✅ 已实现，2026-08-29） |
+| POST | `/sync/pair/request` | 发起确认式配对（含 6 位 PIN）（✅ 已实现，2026-08-29） |
+| POST | `/sync/pair/confirm` | 确认/拒绝配对请求（✅ 已实现，2026-08-29） |
+| GET | `/sync/status` | 同步状态（enabled/paused）（✅ 已实现） |
+| PUT | `/sync/settings` | 更新同步开关（✅ 已实现，2026-08-29） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备（✅ 已实现） |
-| WS | `/events` | 事件推送（🟡 契约已实现；路由注册待 Module C 修复） |
+| GET/PUT | `/monitor/config` | 监控配置读写（✅ 已实现，2026-08-26） |
+| GET | `/monitor/log` | 监控活动日志（✅ 已实现，2026-08-26） |
+| GET | `/delivery/insights` | 洞察流（✅ 已实现，2026-08-29） |
+| GET | `/delivery/digest` | 定时简报（✅ 已实现，2026-08-29） |
+| WS | `/events` | 事件推送（✅ 已实现，2026-08-20 修复注册；六类事件广播） |
 
 ## 8. 仓库结构
 

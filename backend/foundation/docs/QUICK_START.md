@@ -56,13 +56,20 @@ curl -X POST http://127.0.0.1:8765/memory/flow/promote \
 > 只承担沉淀动作。`/sync/*` 已按 `docs/API.md` 接入真实本地状态。
 
 
-## 可选：启用局域网同步
+## 局域网同步（默认开启）
 
-默认不打开任何同步监听或 mDNS 资源。启用前需为每台设备准备由同一受信 CA 签发的客户端/服务端证书；
+同步网络**默认开启**（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true，SN-4 起）：代码默认
+即创建监听/mDNS；空 advertise 由 runtime 自动取本机 LAN IP（回退 127.0.0.1 并告警），
+缺 TLS 证书由 di 层降级（log warning，不阻塞 API）。如需显式关闭：
+
+```bash
+export PIXIU_SYNC_NETWORK_ENABLED=false
+```
+
+正式多设备互连前，建议为每台设备准备由同一受信 CA 签发的客户端/服务端证书；
 证书 SAN 必须包含 `PIXIU_SYNC_SERVER_NAME`，广告地址只能是私网、链路本地或 loopback 地址。
 
 ```bash
-export PIXIU_SYNC_NETWORK_ENABLED=true
 export PIXIU_SYNC_DEVICE_NAME='study-workstation'
 export PIXIU_SYNC_DOMAIN='shared:home'
 export PIXIU_SYNC_KEY_PASSPHRASE='<at-least-16-characters>'
