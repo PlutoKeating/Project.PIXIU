@@ -15,8 +15,9 @@
 - ✅ **打包发布脚手架**：`build/release/` 提供整包 .deb 构建、目标机预置
   （`provision-target.sh`）、麒麟 VM 部署冒烟（`vm-deploy-test.sh`）与
   staging/production 发布；已在麒麟 V11 真机验证并发布 `v0.1.0-staging`。
-- ⬜ **待办**：正式测试数据集、性能压测（P95≤500ms、召回率≥85%）、
-  验收评测报告——见下任务清单。
+- ✅ **已完成（2026-08-29）**：正式测试数据集（`pixiu-family-expense-v1`：50 检索 +
+  15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告
+  `docs/acceptance/`（100%/96%/115ms 全项达标，真实管线采集非桩注入）。
 - ❌ **Docker 容器化**：本项目交付物为原生 `.deb` 安装包，不依赖 Docker，相关文件已移除。
 
 ---

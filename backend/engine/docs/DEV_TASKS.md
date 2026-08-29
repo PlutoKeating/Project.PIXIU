@@ -13,14 +13,15 @@
 - ✅ **已完成**：`kylin/` 真实麒麟 SDK 适配——`embedding.py`（coreai/embedding）、
   `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本；另有
   Debian 可移植特征哈希向量器作为明确的软件降级路径。
-- 🟡 **待验证**：麒麟环境构建 `_kylin_text_embedding` / `_kylin_vector_client`
-  并完成真实端到端调用（AI 运行时 / 向量引擎需在线）。
+- 🟡 **麒麟 SDK 绑定已本机构建成功**（2026-08-24，`backend/engine/kylin/cpp/` pybind11
+  编译导入通过）；麒麟环境 AI 运行时 / 向量引擎在线后的真实端到端调用仍待验证。
 - 🟡 **OCR（kysdk-ocr / libkyocr）已接入**（2026-08-24）：pybind11 绑定
   `_kylin_ocr` + `engine/kylin/ocr.py` 适配层 + REST `POST /memory/ocr`
   （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）。
-- ⬜ **待实现**：向量库检索接入（配合 foundation/retrieval 阶段）；离线文本
-  生成（AI SDK 9.5.1，当前麒麟 apt 源未提供对应开发包，需在带该 SDK 的
-  目标环境接入）。
+- 🟡 **向量库检索接入**：检索已由 foundation/retrieval 的 INT8 向量扫描承担；
+  `engine/kylin/vector.py`（vector-engine-client）客户端已就绪，生产接线待麒麟环境。
+- ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
+  带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
 - 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），

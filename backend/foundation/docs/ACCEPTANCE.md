@@ -1,7 +1,9 @@
 # Module C · 最终验收清单（2026-09-09 冻结）
 
 > 对照 `docs/AcceptanceTestSpecification.md` 与赛题验收追踪重点。
-> 状态列：✅=本地已验证（377 测试 + 压测证据）；🟡=需麒麟环境执行。
+> 状态列：✅=本地已验证（后端 pytest 673 passed + 压测证据）；🟡=需麒麟环境执行。
+> 刷新于 2026-08-29：Module A 已联调完成（前端 ctest 32/32 + regression.sh 双路径），
+> 验收基线报告见 `docs/acceptance/`（100%/96%/115ms 全项达标）。
 
 ## 一、验收追踪重点映射
 
@@ -15,7 +17,7 @@
 | 跨文档聚合 | SC-09 / SC-K3 | `retrieval/assembler.py` 金额聚合（`aggregation_accuracy`=1.0 门槛） | ✅ |
 | 证据追溯 | SC-05 / SC-K4 | `source_evidence` 回溯 + `evidence_trace_accuracy`=1.0 门槛；S1 故事验证 | ✅ |
 | 去中心化同步 | 核心创新 | `sync/` 全链路（身份/CRDT/配对/TLS/Gossip/反熵/墓碑）；`test_sync_*`（33 项）；S4 双设备故事 | ✅ |
-| API/WS/D-Bus | Module A 联调 | REST 全部真实端点 + WS 事件 + D-Bus（Write/Query/Forget/SyncStatus）；`test_api.py`（18 项）、`test_dbus_service.py`（10 项） | ✅（联调待 Module A） |
+| API/WS/D-Bus | Module A 联调 | REST 全部真实端点 + WS 事件 + D-Bus（Write/Query/Forget/SyncStatus）；`test_api.py`（18 项）、`test_dbus_service.py`（10 项） | ✅（2026-08-29 已与 Module A 真实联调：前端 ctest 32/32 + regression.sh 双路径绿） |
 
 ## 二、Phase 7 专项验收
 
@@ -53,7 +55,7 @@
 
 ## 五、遗留（功能冻结后仅验收，不新增功能）
 
-1. 麒麟环境：真实 embedding 绑定构建 + reference-v1 数据集验收（产出 runtime="kylin" 报告）
-2. vector-engine-client 对接（submodule 就位）
-3. Module A 三通道联调（Module A 未开始）
-4. 根文档/API 实现状态由 Module D/Human 更新
+1. 麒麟环境：真实 embedding 绑定构建（本机已构建成功，真机 AI 运行时端到端验收）+ reference-v1 数据集验收（产出 runtime="kylin" 报告）
+2. vector-engine-client 对接（submodule 就位；检索当前由 foundation/retrieval INT8 扫描承担）
+3. ~~Module A 三通道联调~~ ✅ 已完成（2026-08-29，前端全量回归绿）
+4. 根文档/API 实现状态由 Module D/Human 更新（2026-08-29 已随文档巡检刷新）

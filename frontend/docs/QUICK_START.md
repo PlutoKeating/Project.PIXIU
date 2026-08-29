@@ -51,9 +51,10 @@ PIXIU_BACKEND_URL=http://127.0.0.1:8877 ./build/frontend/pixiu-frontend
 
 ## 当前已知边界
 
-- 后端 WS `/events` 路由注册未修复：前端实时事件暂不可用（前端自动重连，
-  见 `frontend/docs/BACKEND_ISSUES.md`）。
-- 引擎麒麟 SDK 绑定未构建时：写入/检索返回 `KylinSDKUnavailableError`，前端
-  如实呈现错误与重试。
-- 证据原文详情、偏好列表、QR 配对令牌展示依赖后端契约（当前为 ID 输入 /
-  占位/令牌粘贴方式）。
+- 后端 WS `/events` 已修复（2026-08-20），六类事件真实广播；前端事件路由
+  已全部接线（见 `frontend/docs/BACKEND_ISSUES.md` 的闭环记录）。
+- 引擎麒麟 SDK 绑定未构建/未运行时：写入/检索/OCR 按 `PIXIU_EMBEDDING` 降级
+  （portable 特征哈希 / OCR_UNAVAILABLE），前端如实呈现错误与重试。
+- 证据原文详情（`GET /evidence/{id}`）、偏好列表（`GET /preferences`）、
+  QR 配对令牌（`POST /sync/token`）均已落地（2026-08-24）；剩余为真机人工
+  复测项（全局快捷键真机按键、xprop 方言、麒麟 AI 运行时端到端）。
