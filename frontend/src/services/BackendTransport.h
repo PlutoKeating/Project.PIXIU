@@ -51,6 +51,19 @@ public:
     virtual void listPeers() = 0;
     virtual void syncStatus() = 0;
     virtual void revokePeer(const QString &peerId) = 0;
+    // 局域网设备发现（GET /sync/discover）。默认空实现，理由同上。
+    virtual void discoverDevices();
+    // 确认式配对请求（POST /sync/pair/request，targetId 为目标设备）。
+    // 默认空实现，理由同上。
+    virtual void requestPairing(const QString &targetId);
+    // 确认/拒绝配对请求（POST /sync/pair/confirm）。默认空实现，理由同上。
+    virtual void confirmPairing(const QString &requestId, bool accept);
+    // 运行时开关更新（PUT /sync/settings，enabled/paused 部分更新，两参必传）。
+    // 默认空实现，理由同上。
+    virtual void updateSyncSettings(bool enabled, bool paused);
+    // 立即同步：后端未实现 /sync/now 端点，语义由 SyncController::syncNow()
+    // 复用 refresh()（syncStatus + peers）承担，传输层无需额外请求。默认空实现。
+    virtual void syncNow();
 
     // 当前连接状态。
     virtual ConnectionState connectionState() const = 0;
@@ -89,6 +102,16 @@ signals:
     void syncStatusResult(const QJsonObject &status);
     // 解绑（POST /sync/peers/{id}/revoke）。
     void revokeResult(const QJsonObject &response);
+    // 局域网设备列表（GET /sync/discover → {"devices": [...]} 的 devices 数组）。
+    void devicesLoaded(const QJsonArray &devices);
+    // 配对请求响应（POST /sync/pair/request → request_id/pin/target_device_id/
+    // expires_at；4xx/5xx 走 errorOccurred）。
+    void pairingRequested(const QJsonObject &response);
+    // 配对确认响应（POST /sync/pair/confirm → {"status": accepted|rejected|
+    // expired}；404 REQUEST_NOT_FOUND 走 errorOccurred）。
+    void pairingResult(const QJsonObject &response);
+    // 运行时开关响应（PUT /sync/settings → {"enabled","paused"}）。
+    void settingsResult(const QJsonObject &response);
     // 监控配置（GET/PUT /monitor/config → 归一化配置；PUT 失败走 errorOccurred）。
     void configResult(const QJsonObject &config);
     // 监控活动日志（GET /monitor/log → {"events": [...]} 的 events 数组）。

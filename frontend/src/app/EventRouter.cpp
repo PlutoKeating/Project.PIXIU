@@ -71,6 +71,10 @@ void EventRouter::handleEvent(const QJsonObject &event)
             ts);
         return;
     }
+    if (name == QStringLiteral("pair_request")) {
+        emit pairingRequested(data);
+        return;
+    }
 
     // 未知事件：仅记录，保持前向兼容。
     qCInfo(lcEvents) << "ignoring unknown event:" << name;

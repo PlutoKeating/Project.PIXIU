@@ -48,6 +48,10 @@ public:
     void listPeers() override;
     void syncStatus() override;
     void revokePeer(const QString &peerId) override;
+    void discoverDevices() override;
+    void requestPairing(const QString &targetId) override;
+    void confirmPairing(const QString &requestId, bool accept) override;
+    void updateSyncSettings(bool enabled, bool paused) override;
 
     ConnectionState connectionState() const override;
 

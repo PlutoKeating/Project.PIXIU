@@ -25,6 +25,7 @@ private slots:
     void controlEventsAreNotForwarded();
     void memoryReadyIsForwarded();
     void captureEventIsForwarded();
+    void pairRequestIsForwarded();
     void unknownEventIsIgnored();
     void malformedFrameIsIgnored();
     void reconnectAfterServerDrop();
@@ -143,6 +144,29 @@ void TestWebSocketClient::captureEventIsForwarded()
     QCOMPARE(data.value(QStringLiteral("summary")).toString(),
              QStringLiteral("记住文件 支出清单.xlsx"));
     QCOMPARE(data.value(QStringLiteral("ts")).toDouble(), 1756080000.0);
+}
+
+void TestWebSocketClient::pairRequestIsForwarded()
+{
+    QSignalSpy spy(m_client, &WebSocketClient::eventReceived);
+    connectClientAndWaitServer();
+
+    // pair_request 已在 WebSocketClient 白名单（kKnownEvents）中；正向确认
+    // 其不被 control/unknown 过滤路径吞掉（误删白名单条目时本用例即变红）。
+    sendFrame("{\"event\":\"pair_request\",\"data\":{"
+              "\"type\":\"INCOMING\",\"request_id\":\"req_pair1\","
+              "\"from_device_id\":\"dev_def\",\"from_name\":\"\","
+              "\"pin\":\"483920\",\"expires_at\":1756080060}}");
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+
+    const QJsonObject event = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(event.value(QStringLiteral("event")).toString(),
+             QStringLiteral("pair_request"));
+    const QJsonObject data = event.value(QStringLiteral("data")).toObject();
+    QCOMPARE(data.value(QStringLiteral("request_id")).toString(),
+             QStringLiteral("req_pair1"));
+    QCOMPARE(data.value(QStringLiteral("pin")).toString(),
+             QStringLiteral("483920"));
 }
 
 void TestWebSocketClient::unknownEventIsIgnored()

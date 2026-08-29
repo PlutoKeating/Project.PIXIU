@@ -8,9 +8,9 @@
 
 // WebSocket 业务事件路由器：把 WS 事件帧解析为语义信号，UI 层只订阅语义。
 //
-// 覆盖 docs/API.md §4 定义的五类业务事件（memory_ready / conflict_detected /
-// forget_confirmation / sync_event / capture_event）。未知事件与 data 缺失/
-// 类型错误的帧安全忽略：不崩溃、不断开连接、不向 UI 抛原始 payload。
+// 覆盖 docs/API.md §4 定义的六类业务事件（memory_ready / conflict_detected /
+// forget_confirmation / sync_event / capture_event / pair_request）。未知事件与
+// data 缺失/类型错误的帧安全忽略：不崩溃、不断开连接、不向 UI 抛原始 payload。
 // WebSocketClient 已过滤未知事件，本类做应用层二次防御。
 class EventRouter : public QObject
 {
@@ -40,6 +40,9 @@ signals:
                       const QString &status,
                       const QString &summary,
                       qint64 ts);
+    // 入站配对请求（docs/API.md §4.6 pair_request）：携带契约 data 原样透传，
+    // 由应用层（SN-6）过滤展示并弹确认框。
+    void pairingRequested(const QJsonObject &data);
 };
 
 #endif // PIXIU_EVENT_ROUTER_H

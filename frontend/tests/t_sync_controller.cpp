@@ -7,7 +7,8 @@
 #include "app/SyncController.h"
 #include "services/BackendTransport.h"
 
-// 测试替身：记录 listPeers / syncStatus / revokePeer 调用，测试可主动发射结果信号。
+// 测试替身：记录 listPeers / syncStatus / revokePeer / discoverDevices /
+// requestPairing / confirmPairing / updateSyncSettings 调用，测试可主动发射结果信号。
 class FakeTransport : public BackendTransport
 {
 public:
@@ -23,12 +24,29 @@ public:
     void listPeers() override { ++listPeersCalls; }
     void syncStatus() override { ++syncStatusCalls; }
     void revokePeer(const QString &peerId) override { revokePeerCalls.append(peerId); }
+    void discoverDevices() override { ++discoverCalls; }
+    void requestPairing(const QString &targetId) override
+    {
+        requestPairingCalls.append(targetId);
+    }
+    void confirmPairing(const QString &requestId, bool accept) override
+    {
+        confirmPairingCalls.append(qMakePair(requestId, accept));
+    }
+    void updateSyncSettings(bool enabled, bool paused) override
+    {
+        settingsCalls.append(qMakePair(enabled, paused));
+    }
     ConnectionState connectionState() const override { return ConnectionState::Connected; }
     QString baseUrl() const override { return QStringLiteral("http://127.0.0.1:8765"); }
 
     int listPeersCalls = 0;
     int syncStatusCalls = 0;
+    int discoverCalls = 0;
     QStringList revokePeerCalls;
+    QStringList requestPairingCalls;
+    QList<QPair<QString, bool>> confirmPairingCalls;
+    QList<QPair<bool, bool>> settingsCalls;
 };
 
 // SyncController：节点列表 / 同步状态 / 解绑的请求与结果契约测试。
@@ -47,6 +65,13 @@ private slots:
     void revokeIgnoresEmptyId();
     void staleResponsesAreIgnored();
     void errorsAreForwarded();
+    void discoverRequestsAndForwardsDevices();
+    void requestPairingSendsTargetAndForwardsPin();
+    void confirmPairingForwardsResult();
+    void updateSettingsSendsBothAndForwards();
+    void syncNowReusesRefresh();
+    void pairingNotImplementedIsReported();
+    void newFlowErrorsAreForwarded();
 };
 
 void TestSyncController::refreshRequestsPeersAndStatus()
@@ -214,6 +239,158 @@ void TestSyncController::errorsAreForwarded()
              QStringLiteral("NETWORK_ERROR"));
 
     // 错误后未再刷新，后续错误与同步管理无关，不应重复上抛。
+    emit transport.errorOccurred(QStringLiteral("HTTP_500"),
+                                 QStringLiteral("server error"), QString());
+    QCOMPARE(failedSpy.count(), 0);
+}
+
+void TestSyncController::discoverRequestsAndForwardsDevices()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy loadedSpy(&controller, &SyncController::discoveredDevices);
+
+    controller.discover();
+    QCOMPARE(transport.discoverCalls, 1);
+
+    QJsonArray devices;
+    devices.append(QJsonObject{
+        {QStringLiteral("device_id"), QStringLiteral("dev_guest")},
+        {QStringLiteral("device_name"), QStringLiteral("客厅一体机")},
+        {QStringLiteral("addresses"), QJsonArray{QStringLiteral("192.168.1.10")}},
+        {QStringLiteral("port"), 8766},
+        {QStringLiteral("pairable"), true},
+        {QStringLiteral("paired"), false}});
+    emit transport.devicesLoaded(devices);
+
+    QCOMPARE(loadedSpy.count(), 1);
+    const QJsonArray result = loadedSpy.takeFirst().at(0).toJsonArray();
+    QCOMPARE(result.size(), 1);
+    QCOMPARE(result.first().toObject().value(QStringLiteral("device_id")).toString(),
+             QStringLiteral("dev_guest"));
+    QCOMPARE(result.first().toObject().value(QStringLiteral("pairable")).toBool(),
+             true);
+}
+
+void TestSyncController::requestPairingSendsTargetAndForwardsPin()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairingResult);
+
+    controller.requestPairing(QStringLiteral("dev_guest"));
+    QCOMPARE(transport.requestPairingCalls.size(), 1);
+    QCOMPARE(transport.requestPairingCalls.first(), QStringLiteral("dev_guest"));
+
+    emit transport.pairingRequested(QJsonObject{
+        {QStringLiteral("request_id"), QStringLiteral("req_pair1")},
+        {QStringLiteral("pin"), QStringLiteral("483920")},
+        {QStringLiteral("target_device_id"), QStringLiteral("dev_guest")},
+        {QStringLiteral("expires_at"), 1756080060}});
+
+    QCOMPARE(pairingSpy.count(), 1);
+    const QJsonObject result = pairingSpy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(result.value(QStringLiteral("pin")).toString(),
+             QStringLiteral("483920"));
+    QCOMPARE(result.value(QStringLiteral("request_id")).toString(),
+             QStringLiteral("req_pair1"));
+}
+
+void TestSyncController::confirmPairingForwardsResult()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairingResult);
+
+    // accept=true → accepted。
+    controller.confirmPairing(QStringLiteral("req_pair1"), true);
+    QCOMPARE(transport.confirmPairingCalls.size(), 1);
+    QCOMPARE(transport.confirmPairingCalls.first().first,
+             QStringLiteral("req_pair1"));
+    QCOMPARE(transport.confirmPairingCalls.first().second, true);
+    emit transport.pairingResult(QJsonObject{
+        {QStringLiteral("status"), QStringLiteral("accepted")}});
+    QCOMPARE(pairingSpy.count(), 1);
+    QCOMPARE(pairingSpy.takeFirst().at(0).toJsonObject()
+                 .value(QStringLiteral("status")).toString(),
+             QStringLiteral("accepted"));
+
+    // accept=false → rejected。
+    controller.confirmPairing(QStringLiteral("req_pair2"), false);
+    QCOMPARE(transport.confirmPairingCalls.size(), 2);
+    QCOMPARE(transport.confirmPairingCalls.at(1).second, false);
+    emit transport.pairingResult(QJsonObject{
+        {QStringLiteral("status"), QStringLiteral("rejected")}});
+    QCOMPARE(pairingSpy.count(), 1);
+    QCOMPARE(pairingSpy.takeFirst().at(0).toJsonObject()
+                 .value(QStringLiteral("status")).toString(),
+             QStringLiteral("rejected"));
+}
+
+void TestSyncController::updateSettingsSendsBothAndForwards()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy settingsSpy(&controller, &SyncController::settingsResult);
+
+    controller.updateSettings(false, true);
+    QCOMPARE(transport.settingsCalls.size(), 1);
+    QCOMPARE(transport.settingsCalls.first().first, false);
+    QCOMPARE(transport.settingsCalls.first().second, true);
+
+    emit transport.settingsResult(QJsonObject{
+        {QStringLiteral("enabled"), false},
+        {QStringLiteral("paused"), true}});
+
+    QCOMPARE(settingsSpy.count(), 1);
+    const QJsonObject result = settingsSpy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(result.value(QStringLiteral("enabled")).toBool(), false);
+    QCOMPARE(result.value(QStringLiteral("paused")).toBool(), true);
+}
+
+void TestSyncController::syncNowReusesRefresh()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+
+    // 后端无 /sync/now 端点：立即同步复用 refresh（listPeers + syncStatus）。
+    controller.syncNow();
+    QCOMPARE(transport.listPeersCalls, 1);
+    QCOMPARE(transport.syncStatusCalls, 1);
+}
+
+void TestSyncController::pairingNotImplementedIsReported()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy pairingSpy(&controller, &SyncController::pairingResult);
+    QSignalSpy pendingSpy(&controller, &SyncController::notImplemented);
+
+    controller.requestPairing(QStringLiteral("dev_guest"));
+    emit transport.pairingRequested(QJsonObject{
+        {QStringLiteral("status"), QStringLiteral("not_implemented")}});
+
+    QCOMPARE(pairingSpy.count(), 0);
+    QCOMPARE(pendingSpy.count(), 1);
+    QCOMPARE(pendingSpy.takeFirst().at(0).toString(),
+             QStringLiteral("pair_request"));
+}
+
+void TestSyncController::newFlowErrorsAreForwarded()
+{
+    FakeTransport transport;
+    SyncController controller(&transport);
+    QSignalSpy failedSpy(&controller, &SyncController::failed);
+
+    // 发现/配对/设置类在途请求的通用错误统一走 failed，且错误后不重复上抛。
+    controller.discover();
+    controller.requestPairing(QStringLiteral("dev_guest"));
+    emit transport.errorOccurred(QStringLiteral("NETWORK_ERROR"),
+                                 QStringLiteral("connection refused"), QString());
+    QCOMPARE(failedSpy.count(), 1);
+    QCOMPARE(failedSpy.takeFirst().at(0).toString(),
+             QStringLiteral("NETWORK_ERROR"));
+
     emit transport.errorOccurred(QStringLiteral("HTTP_500"),
                                  QStringLiteral("server error"), QString());
     QCOMPARE(failedSpy.count(), 0);

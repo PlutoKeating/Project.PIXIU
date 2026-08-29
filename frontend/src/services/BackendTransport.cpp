@@ -35,3 +35,23 @@ void BackendTransport::updateMonitorConfig(const QJsonObject &)
 void BackendTransport::monitorLog(int, int)
 {
 }
+
+void BackendTransport::discoverDevices()
+{
+}
+
+void BackendTransport::requestPairing(const QString &)
+{
+}
+
+void BackendTransport::confirmPairing(const QString &, bool)
+{
+}
+
+void BackendTransport::updateSyncSettings(bool, bool)
+{
+}
+
+void BackendTransport::syncNow()
+{
+}

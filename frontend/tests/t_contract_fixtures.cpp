@@ -233,6 +233,47 @@ private:
                 {QStringLiteral("total_ops_synced"), 1285},
             };
         }
+        if (path == QStringLiteral("/sync/discover")) {
+            return QJsonObject{
+                {QStringLiteral("devices"),
+                 QJsonArray{
+                     QJsonObject{
+                         {QStringLiteral("device_id"), peerDev},
+                         {QStringLiteral("device_name"),
+                          QStringLiteral("客厅一体机")},
+                         {QStringLiteral("addresses"),
+                          QJsonArray{QStringLiteral("192.168.1.10")}},
+                         {QStringLiteral("port"), 8766},
+                         {QStringLiteral("pairable"), true},
+                         {QStringLiteral("paired"), false},
+                     }}},
+            };
+        }
+        if (path == QStringLiteral("/sync/pair/request")) {
+            return QJsonObject{
+                {QStringLiteral("request_id"), QStringLiteral("req_pair1")},
+                {QStringLiteral("pin"), QStringLiteral("483920")},
+                {QStringLiteral("target_device_id"),
+                 body.value(QStringLiteral("target_device_id")).toString()},
+                {QStringLiteral("expires_at"), 1756080060},
+            };
+        }
+        if (path == QStringLiteral("/sync/pair/confirm")) {
+            return QJsonObject{
+                {QStringLiteral("status"),
+                 body.value(QStringLiteral("accept")).toBool(false)
+                     ? QStringLiteral("accepted")
+                     : QStringLiteral("rejected")},
+            };
+        }
+        if (path == QStringLiteral("/sync/settings")) {
+            return QJsonObject{
+                {QStringLiteral("enabled"),
+                 body.value(QStringLiteral("enabled")).toBool(false)},
+                {QStringLiteral("paused"),
+                 body.value(QStringLiteral("paused")).toBool(false)},
+            };
+        }
         if (path == QStringLiteral("/sync/pair")) {
             return QJsonObject{
                 {QStringLiteral("peer_id"), peerDev},
@@ -374,6 +415,10 @@ private slots:
     void preferenceHistoryMatchesBackendContract();
     void syncPeersAndStatusMatchBackendContract();
     void syncPairAndRevokeMatchBackendContract();
+    void syncDiscoverMatchesBackendContract();
+    void syncPairRequestMatchesBackendContract();
+    void syncPairConfirmMatchesBackendContract();
+    void updateSyncSettingsMatchesBackendContract();
     void flowPromoteMatchesBackendContract();
     void monitorConfigMatchesBackendContract();
     void updateMonitorConfigMatchesBackendContract();
@@ -579,6 +624,73 @@ void TestContractFixtures::syncPairAndRevokeMatchBackendContract()
              QStringLiteral("revoked"));
     QCOMPARE(revoke.value(QStringLiteral("peer_id")).toString(),
              QStringLiteral("dev_06FAAAAAAAAAAAAAAAAAAAAAA"));
+}
+
+void TestContractFixtures::syncDiscoverMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::devicesLoaded);
+
+    transport->discoverDevices();
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    const QJsonArray devices = spy.takeFirst().at(0).toJsonArray();
+    QCOMPARE(devices.size(), 1);
+    const QJsonObject item = devices.first().toObject();
+    QVERIFY(item.value(QStringLiteral("device_id")).toString().startsWith(
+        QStringLiteral("dev_")));
+    QCOMPARE(item.value(QStringLiteral("device_name")).toString(),
+             QStringLiteral("客厅一体机"));
+    QCOMPARE(item.value(QStringLiteral("addresses")).toArray().size(), 1);
+    QCOMPARE(item.value(QStringLiteral("port")).toInt(), 8766);
+    QCOMPARE(item.value(QStringLiteral("pairable")).toBool(), true);
+    QCOMPARE(item.value(QStringLiteral("paired")).toBool(), false);
+}
+
+void TestContractFixtures::syncPairRequestMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::pairingRequested);
+
+    transport->requestPairing(
+        QStringLiteral("dev_06FAAAAAAAAAAAAAAAAAAAAAA"));
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    const QJsonObject response = spy.takeFirst().at(0).toJsonObject();
+    QVERIFY(response.value(QStringLiteral("request_id")).toString().startsWith(
+        QStringLiteral("req_")));
+    QCOMPARE(response.value(QStringLiteral("pin")).toString().size(), 6);
+    QCOMPARE(response.value(QStringLiteral("target_device_id")).toString(),
+             QStringLiteral("dev_06FAAAAAAAAAAAAAAAAAAAAAA"));
+    QVERIFY(response.value(QStringLiteral("expires_at")).toInt() > 0);
+}
+
+void TestContractFixtures::syncPairConfirmMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::pairingResult);
+
+    transport->confirmPairing(QStringLiteral("req_pair1"), true);
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    const QJsonObject response = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(response.value(QStringLiteral("status")).toString(),
+             QStringLiteral("accepted"));
+}
+
+void TestContractFixtures::updateSyncSettingsMatchesBackendContract()
+{
+    HttpBackendTransport *transport = makeTransport();
+    QSignalSpy spy(transport, &BackendTransport::settingsResult);
+
+    transport->updateSyncSettings(false, true);
+
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    // 桩端记录最近一次请求方法：/sync/settings 必须走 PUT（A-1 putJson 复用）。
+    QCOMPARE(m_server->lastMethod(), QStringLiteral("PUT"));
+    const QJsonObject response = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(response.value(QStringLiteral("enabled")).toBool(), false);
+    QCOMPARE(response.value(QStringLiteral("paused")).toBool(), true);
 }
 
 void TestContractFixtures::flowPromoteMatchesBackendContract()

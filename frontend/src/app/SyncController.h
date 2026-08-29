@@ -29,11 +29,37 @@ public:
     // 解绑设备（危险操作，UI 二次确认后调用）。
     void revokePeer(const QString &peerId);
 
+    // 发现局域网设备（GET /sync/discover；幂等，在途时忽略重复调用）。
+    void discover();
+
+    // 发起确认式配对请求（POST /sync/pair/request，targetId 为目标设备）。
+    // 结果经 pairingResult 上抛（request_id/pin/expires_at）。
+    void requestPairing(const QString &targetId);
+
+    // 确认/拒绝一条配对请求（POST /sync/pair/confirm）。结果经 pairingResult
+    // 上抛（status: accepted|rejected|expired）。
+    void confirmPairing(const QString &requestId, bool accept);
+
+    // 运行时开关更新（PUT /sync/settings）。结果经 settingsResult 上抛。
+    void updateSettings(bool enabled, bool paused);
+
+    // 立即同步：后端无 /sync/now 端点，复用 refresh()（syncStatus + peers）
+    // 语义，结果仍经 syncStatusLoaded/peersLoaded 上抛（无独立结果信号）。
+    void syncNow();
+
 signals:
     void peersLoaded(const QJsonArray &peers);
     void syncStatusLoaded(const QJsonObject &status);
     void revoked(const QString &peerId);
-    // feature ∈ {"peers","sync_status","revoke"}。
+    // 发现设备列表（GET /sync/discover → devices 数组）。
+    void discoveredDevices(const QJsonArray &devices);
+    // 配对请求发起/确认结果（request：request_id/pin/target_device_id/
+    // expires_at；confirm：status accepted|rejected|expired）。
+    void pairingResult(const QJsonObject &response);
+    // 运行时开关更新结果（enabled/paused）。
+    void settingsResult(const QJsonObject &response);
+    // feature ∈ {"peers","sync_status","revoke","discover","pair_request",
+    // "pair_confirm","settings"}。
     void notImplemented(const QString &feature);
     void failed(const QString &code, const QString &message);
 
@@ -41,11 +67,19 @@ private:
     void handlePeersResponse(const QJsonObject &response);
     void handleSyncStatusResponse(const QJsonObject &response);
     void handleRevokeResponse(const QJsonObject &response);
+    void handleDevicesResponse(const QJsonArray &devices);
+    void handlePairRequestResponse(const QJsonObject &response);
+    void handlePairConfirmResponse(const QJsonObject &response);
+    void handleSettingsResponse(const QJsonObject &response);
 
     BackendTransport *m_transport = nullptr;
     bool m_peersPending = false;
     bool m_statusPending = false;
     bool m_revokePending = false;
+    bool m_discoverPending = false;
+    bool m_pairRequestPending = false;
+    bool m_pairConfirmPending = false;
+    bool m_settingsPending = false;
     QString m_revokePeerId;
 };
 

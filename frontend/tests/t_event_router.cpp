@@ -16,6 +16,7 @@ private slots:
     void forgetConfirmationIsForwarded();
     void syncEventIsForwarded();
     void captureEventIsForwarded();
+    void pairRequestIsForwarded();
     void unknownEventIsIgnored();
     void nonObjectDataIsIgnored();
     void emptyEventIsIgnored();
@@ -128,6 +129,31 @@ void TestEventRouter::captureEventIsForwarded()
     QCOMPARE(args.at(3).toLongLong(), qint64(1756080000));
 }
 
+void TestEventRouter::pairRequestIsForwarded()
+{
+    EventRouter router;
+    QSignalSpy spy(&router, &EventRouter::pairingRequested);
+
+    router.handleEvent(QJsonObject{
+        {QStringLiteral("event"), QStringLiteral("pair_request")},
+        {QStringLiteral("data"), QJsonObject{
+            {QStringLiteral("type"), QStringLiteral("INCOMING")},
+            {QStringLiteral("request_id"), QStringLiteral("req_pair1")},
+            {QStringLiteral("from_device_id"), QStringLiteral("dev_def")},
+            {QStringLiteral("from_name"), QStringLiteral("")},
+            {QStringLiteral("pin"), QStringLiteral("483920")},
+            {QStringLiteral("expires_at"), 1756080060}}}});
+
+    QCOMPARE(spy.count(), 1);
+    const QJsonObject data = spy.takeFirst().at(0).toJsonObject();
+    QCOMPARE(data.value(QStringLiteral("type")).toString(),
+             QStringLiteral("INCOMING"));
+    QCOMPARE(data.value(QStringLiteral("request_id")).toString(),
+             QStringLiteral("req_pair1"));
+    QCOMPARE(data.value(QStringLiteral("pin")).toString(),
+             QStringLiteral("483920"));
+}
+
 void TestEventRouter::unknownEventIsIgnored()
 {
     EventRouter router;
@@ -136,6 +162,7 @@ void TestEventRouter::unknownEventIsIgnored()
     QSignalSpy forgetSpy(&router, &EventRouter::forgetConfirmationReady);
     QSignalSpy syncSpy(&router, &EventRouter::syncEvent);
     QSignalSpy captureSpy(&router, &EventRouter::captureEvent);
+    QSignalSpy pairingSpy(&router, &EventRouter::pairingRequested);
 
     router.handleEvent(QJsonObject{
         {QStringLiteral("event"), QStringLiteral("some_future_event")},
@@ -145,6 +172,7 @@ void TestEventRouter::unknownEventIsIgnored()
     QCOMPARE(forgetSpy.count(), 0);
     QCOMPARE(syncSpy.count(), 0);
     QCOMPARE(captureSpy.count(), 0);
+    QCOMPARE(pairingSpy.count(), 0);
 }
 
 void TestEventRouter::nonObjectDataIsIgnored()

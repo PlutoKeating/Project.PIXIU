@@ -16,16 +16,30 @@ SyncController::SyncController(BackendTransport *transport, QObject *parent)
             this, &SyncController::handleSyncStatusResponse);
     connect(m_transport, &BackendTransport::revokeResult,
             this, &SyncController::handleRevokeResponse);
+    connect(m_transport, &BackendTransport::devicesLoaded,
+            this, &SyncController::handleDevicesResponse);
+    connect(m_transport, &BackendTransport::pairingRequested,
+            this, &SyncController::handlePairRequestResponse);
+    connect(m_transport, &BackendTransport::pairingResult,
+            this, &SyncController::handlePairConfirmResponse);
+    connect(m_transport, &BackendTransport::settingsResult,
+            this, &SyncController::handleSettingsResponse);
     connect(m_transport, &BackendTransport::errorOccurred, this,
             [this](const QString &code, const QString &message, const QString &) {
                 // 通用错误通道：仅处理同步管理相关的在途请求，避免误吞
                 // 配对/写入/冲突等其他端点的错误。
-                if (!m_peersPending && !m_statusPending && !m_revokePending) {
+                if (!m_peersPending && !m_statusPending && !m_revokePending
+                    && !m_discoverPending && !m_pairRequestPending
+                    && !m_pairConfirmPending && !m_settingsPending) {
                     return;
                 }
                 m_peersPending = false;
                 m_statusPending = false;
                 m_revokePending = false;
+                m_discoverPending = false;
+                m_pairRequestPending = false;
+                m_pairConfirmPending = false;
+                m_settingsPending = false;
                 m_revokePeerId.clear();
                 emit failed(code, message);
             });
@@ -54,6 +68,56 @@ void SyncController::revokePeer(const QString &peerId)
     m_revokePeerId = peerId.trimmed();
     qCInfo(lcSync) << "revoking peer:" << m_revokePeerId;
     m_transport->revokePeer(m_revokePeerId);
+}
+
+void SyncController::discover()
+{
+    if (m_discoverPending) {
+        return;
+    }
+    m_discoverPending = true;
+    qCInfo(lcSync) << "discovering lan devices";
+    m_transport->discoverDevices();
+}
+
+void SyncController::requestPairing(const QString &targetId)
+{
+    if (m_pairRequestPending || targetId.trimmed().isEmpty()) {
+        return;
+    }
+    m_pairRequestPending = true;
+    qCInfo(lcSync) << "requesting pairing with:" << targetId;
+    m_transport->requestPairing(targetId.trimmed());
+}
+
+void SyncController::confirmPairing(const QString &requestId, bool accept)
+{
+    if (m_pairConfirmPending || requestId.trimmed().isEmpty()) {
+        return;
+    }
+    m_pairConfirmPending = true;
+    qCInfo(lcSync) << "confirming pairing request" << requestId
+                   << (accept ? QStringLiteral("accept")
+                              : QStringLiteral("reject"));
+    m_transport->confirmPairing(requestId.trimmed(), accept);
+}
+
+void SyncController::updateSettings(bool enabled, bool paused)
+{
+    if (m_settingsPending) {
+        return;
+    }
+    m_settingsPending = true;
+    qCInfo(lcSync) << "updating sync settings: enabled" << enabled
+                   << "paused" << paused;
+    m_transport->updateSyncSettings(enabled, paused);
+}
+
+void SyncController::syncNow()
+{
+    // 后端无 /sync/now 端点（SN-4 未实现）：立即同步复用 refresh() 语义，
+    // 即重新拉取同步状态与节点列表，结果经 syncStatusLoaded/peersLoaded 上抛。
+    refresh();
 }
 
 void SyncController::handlePeersResponse(const QJsonObject &response)
@@ -121,4 +185,73 @@ void SyncController::handleRevokeResponse(const QJsonObject &response)
         return;
     }
     emit failed(status, tr("解绑失败：%1").arg(status));
+}
+
+void SyncController::handleDevicesResponse(const QJsonArray &devices)
+{
+    if (!m_discoverPending) {
+        return; // 无在途请求，忽略过期响应
+    }
+    m_discoverPending = false;
+    emit discoveredDevices(devices);
+}
+
+void SyncController::handlePairRequestResponse(const QJsonObject &response)
+{
+    if (!m_pairRequestPending) {
+        return; // 无在途请求，忽略过期响应
+    }
+    m_pairRequestPending = false;
+
+    if (response.value(QStringLiteral("status")).toString()
+        == QStringLiteral("not_implemented")) {
+        emit notImplemented(QStringLiteral("pair_request"));
+        return;
+    }
+    if (response.isEmpty()) {
+        emit failed(QStringLiteral("UNKNOWN_RESPONSE"),
+                    tr("配对请求响应格式无法识别"));
+        return;
+    }
+    emit pairingResult(response);
+}
+
+void SyncController::handlePairConfirmResponse(const QJsonObject &response)
+{
+    if (!m_pairConfirmPending) {
+        return; // 无在途请求，忽略过期响应
+    }
+    m_pairConfirmPending = false;
+
+    const QString status = response.value(QStringLiteral("status")).toString();
+    if (status == QStringLiteral("not_implemented")) {
+        emit notImplemented(QStringLiteral("pair_confirm"));
+        return;
+    }
+    if (status.isEmpty()) {
+        emit failed(QStringLiteral("UNKNOWN_RESPONSE"),
+                    tr("配对确认响应格式无法识别"));
+        return;
+    }
+    emit pairingResult(response);
+}
+
+void SyncController::handleSettingsResponse(const QJsonObject &response)
+{
+    if (!m_settingsPending) {
+        return; // 无在途请求，忽略过期响应
+    }
+    m_settingsPending = false;
+
+    if (response.value(QStringLiteral("status")).toString()
+        == QStringLiteral("not_implemented")) {
+        emit notImplemented(QStringLiteral("settings"));
+        return;
+    }
+    if (!response.contains(QStringLiteral("enabled"))) {
+        emit failed(QStringLiteral("UNKNOWN_RESPONSE"),
+                    tr("同步设置响应格式无法识别"));
+        return;
+    }
+    emit settingsResult(response);
 }

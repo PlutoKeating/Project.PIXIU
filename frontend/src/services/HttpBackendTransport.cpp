@@ -184,6 +184,47 @@ void HttpBackendTransport::revokePeer(const QString &peerId)
              [this](quint64, const QJsonObject &obj) { emit revokeResult(obj); });
 }
 
+void HttpBackendTransport::discoverDevices()
+{
+    getJson(QStringLiteral("/sync/discover"),
+            [this](quint64, const QJsonObject &obj) {
+                emit devicesLoaded(
+                    obj.value(QStringLiteral("devices")).toArray());
+            });
+}
+
+void HttpBackendTransport::requestPairing(const QString &targetId)
+{
+    QJsonObject body;
+    body.insert(QStringLiteral("target_device_id"), targetId);
+    postJson(QStringLiteral("/sync/pair/request"), body,
+             [this](quint64, const QJsonObject &obj) {
+                 emit pairingRequested(obj);
+             });
+}
+
+void HttpBackendTransport::confirmPairing(const QString &requestId, bool accept)
+{
+    QJsonObject body;
+    body.insert(QStringLiteral("request_id"), requestId);
+    body.insert(QStringLiteral("accept"), accept);
+    postJson(QStringLiteral("/sync/pair/confirm"), body,
+             [this](quint64, const QJsonObject &obj) {
+                 emit pairingResult(obj);
+             });
+}
+
+void HttpBackendTransport::updateSyncSettings(bool enabled, bool paused)
+{
+    QJsonObject body;
+    body.insert(QStringLiteral("enabled"), enabled);
+    body.insert(QStringLiteral("paused"), paused);
+    putJson(QStringLiteral("/sync/settings"), body,
+            [this](quint64, const QJsonObject &obj) {
+                emit settingsResult(obj);
+            });
+}
+
 void HttpBackendTransport::monitorConfig()
 {
     getJson(QStringLiteral("/monitor/config"),
