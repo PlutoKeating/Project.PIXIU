@@ -14,6 +14,7 @@ from __future__ import annotations
 import sqlite3
 import time
 from contextlib import closing
+from datetime import datetime, timedelta
 from typing import Any
 
 from ..core.config import settings
@@ -37,6 +38,28 @@ SOURCE_SYSTEM = "system"
 #: 分页契约（§2 验收）：limit 缺省 100、上限 500。
 DEFAULT_PAGE_SIZE = 100
 MAX_PAGE_SIZE = 500
+
+
+def _parse_day(date: str) -> datetime:
+    """严格解析 YYYY-MM-DD（strptime 宽松接受 2026-1-1，round-trip 收紧）。
+
+    非法（非 YYYY-MM-DD 格式 / 无效日历日如 2026-02-30）→ ValueError。
+    """
+    parsed = datetime.strptime(date, "%Y-%m-%d")
+    if parsed.strftime("%Y-%m-%d") != date:
+        raise ValueError(f"invalid date format: {date!r}")
+    return parsed
+
+
+def day_range(date: str) -> tuple[int, int]:
+    """YYYY-MM-DD → 本地时区 [当日 00:00, 次日 00:00) 的 Unix 秒区间。
+
+    naive datetime.timestamp() 按进程本地时区解释（无显式 tz 依赖），满足
+    「本地时区日边界」语义；供 digest 按日过滤与 API 层日期校验复用。
+    """
+    start = _parse_day(date)
+    end = start + timedelta(days=1)
+    return int(start.timestamp()), int(end.timestamp())
 
 
 class MonitorLogStore:
@@ -120,6 +143,34 @@ class MonitorLogStore:
             for row in rows
         ]
 
+    def list_events_by_day(self, date: str) -> list[dict]:
+        """按日查询事件（本地时区日边界 [00:00, 次日 00:00)，时间正序）。
+
+        供递送层 digest（B4-2）按日聚合使用：date 必须为严格 YYYY-MM-DD 有效
+        日历日，非法 → ValueError（API 层已先校验返回 400，此为直连防御）；
+        当日无事件 → []。行结构与 list_events 一致。
+        """
+        start, end = day_range(date)
+        with closing(self._open()) as conn:
+            rows = conn.execute(
+                """SELECT ts, source, status, summary, evidence_id, knowledge_id
+                   FROM monitor_log
+                   WHERE ts >= ? AND ts < ?
+                   ORDER BY ts ASC, id ASC""",
+                (start, end),
+            ).fetchall()
+        return [
+            {
+                "ts": row[0],
+                "source": row[1],
+                "status": row[2],
+                "summary": row[3],
+                "evidence_id": row[4],
+                "knowledge_id": row[5],
+            }
+            for row in rows
+        ]
+
 
 async def broadcast_capture_event(
     *,
@@ -159,4 +210,5 @@ __all__ = [
     "STATUS_SENSITIVE_QUARANTINED",
     "STATUS_STATE_CHANGED",
     "broadcast_capture_event",
+    "day_range",
 ]

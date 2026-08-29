@@ -40,6 +40,7 @@
 | PUT | `/monitor/config` | 写入监控配置（全量提交，热生效） | ✅ 已实现（2026-08-26） |
 | GET | `/monitor/log` | 监控活动日志（分页，最新在前） | ✅ 已实现（2026-08-26） |
 | GET | `/delivery/insights` | 洞察流（欢迎页动态建议，最近高质量记忆） | ✅ 已实现（2026-08-29） |
+| GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部五类事件） |
 
 > 状态说明（2026-08-29）：22 个 REST 端点已全部按本文档契约真实实现；
@@ -657,6 +658,41 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 ```
 
 **错误（400）：** `limit > 10` 或 `limit < 1` → `INVALID_REQUEST`（错误体见 §5）。
+
+---
+
+### 3.24 GET /delivery/digest
+
+定时简报（批次④ B4-2）：按日聚合当日 `monitor_log` 捕获事件，服务端规则化
+生成中文简报（无 LLM、离线可运行），供前端「今日简报」入口消费。
+
+**查询参数：**
+
+| 参数 | 类型 | 缺省 | 说明 |
+|------|------|------|------|
+| `date` | str | 今天（本地时区） | `YYYY-MM-DD`；非法格式/无效日历日 → 400 `INVALID_REQUEST` |
+
+**生成规则（服务端，无 LLM）：**
+- 按本地时区日边界取当日 `monitor_log` 事件（跨日不串）；
+- 仅 `status == "ingested"` 计为「新增记忆」，按 `source` 分组计数
+  （`directory|clipboard|behavior|screenshot|system`，无独立「文本」枚举——
+  文本文件经目录捕获走 `directory`，见批次②）；
+- `sensitive_quarantined` 不计入新增，> 0 时单列「另有 N 条敏感内容已隔离」；
+  `ignored` / `state_changed` 不计入；
+- summary 为模板计数文案，不含任何事件原始 summary 文本（敏感隔离原则）；
+- 空日 → summary 为「当日无新记忆」。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "date": "2026-08-29",
+  "summary": "当日新增 12 条记忆（目录 8、剪贴板 3、行为 1），另有 1 条敏感内容已隔离"
+}
+```
+
+**错误（400）：** `date` 非严格 `YYYY-MM-DD`（如 `2026-13-01` / `2026-02-30` /
+`2026-1-1` / 非日期）→ `INVALID_REQUEST`（错误体见 §5）。
 
 ---
 

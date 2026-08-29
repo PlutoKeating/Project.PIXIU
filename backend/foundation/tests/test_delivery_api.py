@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import sqlite3
 import time
+from datetime import datetime
 
 import aiosqlite
 import pytest
@@ -18,6 +19,7 @@ from fastapi.testclient import TestClient
 
 import backend.foundation.api.di as di_module
 from backend.foundation.api import app
+from backend.foundation.api.monitor_log import MonitorLogStore
 from backend.foundation.core.idgen import gen_conflict_id, gen_evidence_id, gen_knowledge_id
 from backend.foundation.core.models import (
     ConflictRecord,
@@ -52,12 +54,14 @@ def client(tmp_path, monkeypatch):
     di_module._db = None
     di_module._sync_runtime = None
     di_module._delivery_service = None
+    di_module._monitor_log_store = None
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
     di_module._db = None
     di_module._sync_runtime = None
     di_module._delivery_service = None
+    di_module._monitor_log_store = None
 
 
 def _seed(
@@ -289,3 +293,85 @@ def test_insights_summary_contains_title_and_body_prefix(client):
     )
     resp = client.get("/delivery/insights")
     assert resp.json()["insights"][0]["summary"] == "标题甲：" + "x" * 60
+
+
+# ═══════════════════════════════════════════════════════
+# GET /delivery/digest（批次④ B4-2）：按日聚合 monitor_log 生成中文简报
+# ═══════════════════════════════════════════════════════
+
+def _local_ts(y: int, m: int, d: int, hh: int = 12) -> int:
+    """本地时区时间戳（与后端日边界计算同源，断言与运行机时区无关）。"""
+    return int(datetime(y, m, d, hh, 0, 0).timestamp())
+
+
+def test_digest_empty_defaults_to_today(client):
+    resp = client.get("/delivery/digest")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["date"] == datetime.now().strftime("%Y-%m-%d")
+    assert data["summary"] == "当日无新记忆"
+
+
+def test_digest_aggregates_seeded_day(client):
+    store = MonitorLogStore(str(di_module.settings.db_path))
+    store.write_event(
+        source="directory", status="ingested", summary="记住文件 a.txt", ts=_local_ts(2026, 8, 29)
+    )
+    store.write_event(
+        source="directory", status="ingested", summary="记住文件 b.txt", ts=_local_ts(2026, 8, 29)
+    )
+    store.write_event(
+        source="clipboard", status="ingested", summary="剪贴板内容", ts=_local_ts(2026, 8, 29)
+    )
+    store.write_event(
+        source="clipboard", status="sensitive_quarantined", summary="敏感剪贴板", ts=_local_ts(2026, 8, 29)
+    )
+    resp = client.get("/delivery/digest", params={"date": "2026-08-29"})
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "date": "2026-08-29",
+        "summary": "当日新增 3 条记忆（目录 2、剪贴板 1），另有 1 条敏感内容已隔离",
+    }
+
+
+def test_digest_ignores_events_outside_day(client):
+    store = MonitorLogStore(str(di_module.settings.db_path))
+    store.write_event(
+        source="directory", status="ingested", summary="昨日", ts=_local_ts(2026, 8, 28)
+    )
+    store.write_event(
+        source="directory", status="ingested", summary="今日", ts=_local_ts(2026, 8, 29)
+    )
+    resp = client.get("/delivery/digest", params={"date": "2026-08-29"})
+    assert resp.json()["summary"] == "当日新增 1 条记忆（目录 1）"
+
+
+def test_digest_summary_contains_no_raw_summary(client):
+    store = MonitorLogStore(str(di_module.settings.db_path))
+    raw = "含医保卡号 12345 的敏感文件内容"
+    store.write_event(
+        source="directory", status="ingested", summary=raw, ts=_local_ts(2026, 8, 29)
+    )
+    resp = client.get("/delivery/digest", params={"date": "2026-08-29"})
+    assert "12345" not in resp.json()["summary"]
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "",             # 空串：显式传空 → 400（区别于缺省回退今天）
+        "2026-13-01",   # 月越界
+        "2026-02-30",   # 无效日历日
+        "2026-1-1",     # 非严格两位
+        "20260829",     # 非分隔格式
+        "2026/08/29",   # 错误分隔符
+        "not-a-date",   # 非日期
+    ],
+)
+def test_digest_invalid_date_returns_400(client, bad):
+    resp = client.get("/delivery/digest", params={"date": bad})
+    assert resp.status_code == 400
+    body = resp.json()
+    assert body["error"] == "INVALID_REQUEST"
+    assert body["message"]
+    assert body["request_id"]

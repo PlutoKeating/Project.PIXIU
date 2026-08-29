@@ -14,7 +14,7 @@ import aiosqlite
 from fastapi import Depends
 
 from backend.engine.conflict import ConflictService
-from backend.engine.delivery import DeliveryInsightsService
+from backend.engine.delivery import DeliveryDigestService, DeliveryInsightsService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.kylin import get_embedder, get_ocr
@@ -523,6 +523,16 @@ async def get_delivery_service() -> DeliveryInsightsService:
         )
         _log.info("Delivery insights service created")
     return _delivery_service
+
+
+def get_delivery_digest_service() -> DeliveryDigestService:
+    """定时简报服务（B4-2）：monitor_log 按日聚合。
+
+    MonitorLogStore 为同步短连接单例（get_monitor_log_store），服务层 async
+    digest 内部以 asyncio.to_thread 包装同步查询；每次请求轻量组装新实例
+    （仅持 store 引用，无跨请求状态，无需单例化）。
+    """
+    return DeliveryDigestService(monitor_log=get_monitor_log_store())
 
 
 async def get_dbus_handler(
