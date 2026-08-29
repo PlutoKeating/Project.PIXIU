@@ -25,7 +25,7 @@ from ..core.logger import get_logger
 from ..core.models import SourceType
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from ..monitor.config_store import InvalidMonitorConfig
-from ..sync import PairingError, PairingMethod, PeerNotFound
+from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound
 from .di import (
     get_conflict_repo,
     get_conflict_service,
@@ -174,6 +174,15 @@ class SyncTokenRequest(BaseModel):
     method: PairingMethod
     pin: str | None = Field(default=None, min_length=6, max_length=6)
     ttl_seconds: int = Field(default=300, ge=1, le=900)
+
+
+class SyncPairRequestRequest(BaseModel):
+    target_device_id: str
+
+
+class SyncPairConfirmRequest(BaseModel):
+    request_id: str
+    accept: bool
 
 
 class OcrRequest(BaseModel):
@@ -524,6 +533,41 @@ async def sync_discover(
         if adv.device_id != identity.id
     ]
     return {"devices": devices}
+
+
+@app.post("/sync/pair/request", tags=["Sync"], summary="发起配对请求")
+async def sync_pair_request(
+    body: SyncPairRequestRequest, sync=Depends(get_sync_service)
+):
+    """发起确认式配对请求（含 6 位 PIN，TTL 60s）；确认由目标机弹窗完成。"""
+    try:
+        result = await sync.create_pair_request(body.target_device_id)
+    except PairRequestError as exc:
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+    await ws_manager.broadcast(
+        "pair_request",
+        {
+            "type": "INCOMING",
+            "request_id": result["request_id"],
+            "from_device_id": result["target_device_id"],
+            "from_name": "",
+            "pin": result["pin"],
+            "expires_at": result["expires_at"],
+        },
+    )
+    return result
+
+
+@app.post("/sync/pair/confirm", tags=["Sync"], summary="确认/拒绝配对请求")
+async def sync_pair_confirm(
+    body: SyncPairConfirmRequest, sync=Depends(get_sync_service)
+):
+    status = await sync.confirm_pair_request(
+        body.request_id, accept=body.accept
+    )
+    if status == "not_found":
+        raise HTTPException(status_code=404, detail="REQUEST_NOT_FOUND")
+    return {"status": status}
 
 
 @app.get("/sync/status", tags=["Sync"], summary="同步状态")

@@ -31,6 +31,8 @@
 | POST | `/sync/pair` | 设备配对（QR/PIN + 签名令牌） | ✅ 已实现（2026-08-10） |
 | GET | `/sync/peers` | 节点列表 | ✅ 已实现（2026-08-10） |
 | GET | `/sync/discover` | 发现局域网设备（含未配对） | ✅ 已实现（2026-08-29） |
+| POST | `/sync/pair/request` | 发起确认式配对请求（含 6 位 PIN） | ✅ 已实现（2026-08-29） |
+| POST | `/sync/pair/confirm` | 确认/拒绝配对请求 | ✅ 已实现（2026-08-29） |
 | GET | `/sync/status` | 同步状态 | ✅ 已实现（2026-08-10） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
 | GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
@@ -38,11 +40,13 @@
 | GET | `/monitor/log` | 监控活动日志（分页，最新在前） | ✅ 已实现（2026-08-26） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部五类事件） |
 
-> 状态说明（2026-08-26）：19 个 REST 端点已全部按本文档契约真实实现；
-> 五类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
-> sync_event / capture_event）均已广播。
+> 状态说明（2026-08-29）：21 个 REST 端点已全部按本文档契约真实实现；
+> 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
+> sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
 > 转正（Module A + Module C 双方于 2026-08-26 确认）。
+> pair_request/pair/confirm 通道按计划（2026-08-29）实现；confirm 后仍由前端
+> 走既有 `/sync/pair` 完成签名入网。
 
 ---
 
@@ -526,6 +530,55 @@ state_changed）；`evidence_id`/`knowledge_id` 事件未产生入库时允许�
 null。`summary` 由服务端生成用户可读文案，**不含敏感原文全文**（隔离类条目
 只给脱敏摘要）。
 
+### 3.20 POST /sync/pair/request
+
+发起确认式配对请求（「一键发现+确认配对」GUI 主路径）：本机生成 6 位 PIN
+并落库（`pair_request:{request_id}`，TTL 60s），随后向所有 WebSocket 客户端
+广播 `pair_request`（`type: "INCOMING"`）供目标机弹窗确认。确认后仍复用既有
+`POST /sync/pair` 完成签名入网（QR/PIN 令牌流程保留为备选）。
+
+**请求体：**
+
+```jsonc
+{
+  "target_device_id": "dev_..."
+}
+```
+
+**响应体（200）：**
+
+```jsonc
+{
+  "request_id": "req_...",
+  "pin": "483920",
+  "target_device_id": "dev_...",
+  "expires_at": 1756080060
+}
+```
+
+**错误响应（400）：** 目标 ID 格式非法或自配对 →
+`{"error": "INVALID_REQUEST", "message": "...", "request_id": "req_..."}`。
+
+### 3.21 POST /sync/pair/confirm
+
+确认或拒绝一条配对请求（按 `request_id` 直查本机存储）。`accept=true` 返回
+`accepted`，实际签名入网由前端在确认成功后自动执行既有 `POST /sync/pair`
+（Task SN-6 接线），后端 confirm 仅返回状态。
+
+**请求体：**
+
+```jsonc
+{
+  "request_id": "req_...",
+  "accept": true
+}
+```
+
+**响应体（200）：** `{"status": "accepted" | "rejected" | "expired"}`
+
+**错误响应（404）：** `request_id` 不存在 →
+`{"error": "REQUEST_NOT_FOUND", "message": "...", "request_id": "req_..."}`。
+
 ---
 
 ## 4. WebSocket 事件
@@ -615,6 +668,27 @@ null。`summary` 由服务端生成用户可读文案，**不含敏感原文全�
 > 前端行为：普通事件 → 角标 +1（可选）+ 监控中心「活动记录」实时追加；
 > `sensitive_quarantined` 额外弹系统通知（隔离区查看/恢复交互属批次③范围）。
 
+### 4.6 pair_request ✅ 已实现（2026-08-29，发起配对请求时已广播）
+
+本机发起 `POST /sync/pair/request` 后全局广播（前端按目标设备过滤展示，
+确认对话框接线见 Task SN-6）。MVP 语义：`from_device_id` 为请求目标设备
+（request_id 由本机生成，confirm 也按 request_id 查本机存储）；`from_name`
+留空，由前端在确认成功后展示目标设备名。
+
+```jsonc
+{
+  "event": "pair_request",
+  "data": {
+    "type": "INCOMING",
+    "request_id": "req_...",
+    "from_device_id": "dev_...",
+    "from_name": "",
+    "pin": "483920",
+    "expires_at": 1756080060
+  }
+}
+```
+
 ---
 
 ## 5. 错误码
@@ -626,6 +700,7 @@ null。`summary` 由服务端生成用户可读文案，**不含敏感原文全�
 | `CONFLICT_TIMEOUT` | 408 | 遗忘确认超时 |
 | `PAIRING_FAILED` | 422 | 设备配对失败 |
 | `PEER_NOT_FOUND` | 404 | 解绑的设备 ID 不存在 |
+| `REQUEST_NOT_FOUND` | 404 | 配对请求 ID 不存在 |
 | `INTERNAL_ERROR` | 500 | 后端内部错误 |
 
 错误响应体格式：

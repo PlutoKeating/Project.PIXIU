@@ -29,6 +29,7 @@ from .models import (
     SyncStatus,
     validate_shared_scope,
 )
+from .pair_request import PairRequestError, PairRequestManager
 from .pairing import PairingError, PairingManager
 from .store import SqliteSyncStore
 
@@ -112,6 +113,31 @@ class SyncService:
         return await PairingManager(
             self._store, self._identity_manager, identity
         ).pair(method, token, pin=pin, now=now)
+
+    async def create_pair_request(
+        self, target_device_id: str, *, now: int | None = None
+    ) -> dict:
+        identity = await self.initialize()
+        return await PairRequestManager(
+            self._store, identity
+        ).create(target_device_id, now=now)
+
+    async def confirm_pair_request(
+        self,
+        request_id: str,
+        *,
+        accept: bool,
+        now: int | None = None,
+    ) -> str:
+        identity = await self.initialize()
+        mgr = PairRequestManager(self._store, identity)
+        status = await mgr.confirm(request_id, accept=accept, now=now)
+        if status == "accepted":
+            # accept 后：目标机用已存令牌完成入网。
+            # 令牌在 create 时由发起方生成；此处为契约完整性返回 accepted，
+            # 实际入网走既有 /sync/pair（前端 confirm 后自动以 QR/PIN 令牌配对）。
+            pass
+        return status
 
     async def record_local(
         self,
@@ -281,6 +307,8 @@ __all__ = [
     "DiscoveryError",
     "InvalidSyncOperation",
     "MdnsDiscovery",
+    "PairRequestError",
+    "PairRequestManager",
     "PairingError",
     "PairingMethod",
     "PeerAdvertisement",
