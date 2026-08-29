@@ -7,7 +7,9 @@
 
 ## [S1] 背景与目标
 
-- 当前偏好提取 `preference_accuracy=0.33`（FAIL，target=0.85）——赛题硬指标缺口，主因是提取规则与评测语料标签（OP_HABIT / OUTPUT_STYLE / SECURITY_POLICY 三类）未对齐；
+- 设计时偏好提取 `preference_accuracy=0.33`（FAIL，target=0.85；B3-2 对齐后实测
+  1.0，见上方实施注记）——赛题硬指标缺口，主因是提取规则与评测语料标签
+  （OP_HABIT / OUTPUT_STYLE / SECURITY_POLICY 三类）未对齐；
 - 行为采集缺失：MonitorController 的 `behavior` 源开关已存在但无真实数据供给；
 - 冲突打扰一刀切：任何冲突都弹通知+角标+切 Tab，MERGE/NEW_WINS 的自动处理也打扰用户。
 
