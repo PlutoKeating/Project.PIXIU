@@ -94,3 +94,6 @@ pixiu.db-*
 # Docker local data/caches
 .docker/
 docker-compose.override.yml
+
+# AI agent session/tooling data (never commit)
+.mimocode/
