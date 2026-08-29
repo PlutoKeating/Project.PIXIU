@@ -6,6 +6,9 @@
     的 source 枚举是 directory|clipboard|behavior|screenshot|system，**无独立
     「文本」枚举**——文本文件经 ingest_bridge 也走 directory source（见批次②），
     故模板按 source 枚举分组即可；
+  - **新增 source 枚举须同步 _SOURCE_LABELS**：total 与分组明细同源（只累计
+    _SOURCE_LABELS 已知键），未登记的 source 不膨胀总数、也不出现在明细——
+    保证「总数 == 各组之和」不变量，避免简报静默不一致；
   - sensitive_quarantined 不计入新增记忆（隔离语义：未沉淀为记忆），>0 时
     作为「敏感内容已隔离」单列；ignored / state_changed 不计入；
   - summary 为服务端规则化中文文案，不含任何事件 summary 原文（敏感隔离原则）；
@@ -21,6 +24,14 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 
+# 常量定义在 foundation.monitor.ingest_bridge（monitor_log.py 再导出于此）：
+# engine → foundation 直接导入定义模块（insights.py 导入 ConflictResolution
+# 先例），避免经 foundation.api 包 __init__（http_app → di → engine）回环。
+from backend.foundation.monitor.ingest_bridge import (
+    STATUS_INGESTED,
+    STATUS_SENSITIVE_QUARANTINED,
+)
+
 #: 新增记忆按 source 分组的固定展示顺序（与契约 §2 枚举一致）。
 _SOURCE_LABELS = {
     "directory": "目录",
@@ -33,7 +44,9 @@ _SOURCE_LABELS = {
 
 def _build_summary(counts: dict[str, int], quarantined: int) -> str:
     """规则化中文简报文案（模板计数，不含任何原始 summary 文本）。"""
-    total = sum(counts.values())
+    # total 与渲染组同源：只累计 _SOURCE_LABELS 已知键，未来新增 source 枚举
+    # 未同步 _SOURCE_LABELS 时不会出现「总数 > 各组之和」的静默不一致。
+    total = sum(counts.get(src, 0) for src in _SOURCE_LABELS)
     parts: list[str] = []
     if total > 0:
         groups = "、".join(
@@ -69,9 +82,9 @@ class DeliveryDigestService:
         counts: Counter[str] = Counter()
         quarantined = 0
         for event in events:
-            if event["status"] == "ingested":
+            if event["status"] == STATUS_INGESTED:
                 counts[event["source"]] += 1
-            elif event["status"] == "sensitive_quarantined":
+            elif event["status"] == STATUS_SENSITIVE_QUARANTINED:
                 quarantined += 1
             # ignored / state_changed：不沉淀为记忆，不计入
         return {"date": date, "summary": _build_summary(counts, quarantined)}

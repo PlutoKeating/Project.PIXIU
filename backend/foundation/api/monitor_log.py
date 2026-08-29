@@ -147,8 +147,8 @@ class MonitorLogStore:
         """按日查询事件（本地时区日边界 [00:00, 次日 00:00)，时间正序）。
 
         供递送层 digest（B4-2）按日聚合使用：date 必须为严格 YYYY-MM-DD 有效
-        日历日，非法 → ValueError（API 层已先校验返回 400，此为直连防御）；
-        当日无事件 → []。行结构与 list_events 一致。
+        日历日，非法 → ValueError（API 层捕获本方法抛出的 ValueError 并映射
+        为 400）；当日无事件 → []。行结构与 list_events 一致。
         """
         start, end = day_range(date)
         with closing(self._open()) as conn:

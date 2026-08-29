@@ -66,6 +66,20 @@ async def test_digest_lists_only_nonzero_source_groups(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_digest_unknown_source_not_inflate_total(tmp_path):
+    """未登记 source（新增枚举未同步 _SOURCE_LABELS）不膨胀总数、也不进明细。
+
+    total 与渲染组同源自 _SOURCE_LABELS：未知 source 的 ingested 事件不计入
+    总数，保证「总数 == 各组之和」不变量不因新 producer 静默破坏。
+    """
+    store = MonitorLogStore(str(tmp_path / "p.db"))
+    _write(store, source="directory", status="ingested", summary="已知源", ts=_ts(2026, 8, 29))
+    _write(store, source="future_source", status="ingested", summary="未来新增源", ts=_ts(2026, 8, 29))
+    out = await _service(str(tmp_path / "p.db")).digest("2026-08-29")
+    assert out["summary"] == "当日新增 1 条记忆（目录 1）"
+
+
+@pytest.mark.asyncio
 async def test_digest_day_filter_no_leak_across_days(tmp_path):
     """日边界：当日 [00:00, 次日 00:00)，前后一日 23:59:59 / 00:00:00 不串。"""
     store = MonitorLogStore(str(tmp_path / "p.db"))
