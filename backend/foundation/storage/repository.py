@@ -662,7 +662,11 @@ class SqliteConflictRepo(ConflictRepository):
         return [_row_to_conflict(r) for r in rows]
 
     async def resolve(self, id: str, resolution: str) -> None:
+        # 改判时同步维护 severity 列：读取路径（_row_to_conflict）按 resolution
+        # 派生 severity，列值供 SQL 级直查/过滤使用——若只改 resolution 不改列，
+        # 直查会看到与新裁决不匹配的陈旧 severity（B3-3 收编 Minor）。
         await self._db.execute(
-            "UPDATE conflict_records SET resolution = ? WHERE id = ?", (resolution, id)
+            "UPDATE conflict_records SET resolution = ?, severity = ? WHERE id = ?",
+            (resolution, conflict_severity_for(resolution), id),
         )
         await self._db.commit()

@@ -254,6 +254,41 @@ async def test_repo_severity_roundtrip(repo):
 
 
 @pytest.mark.asyncio
+async def test_repo_resolve_reclassifies_severity(repo):
+    """B3-3 收编 Minor：resolve 改判必须同步维护 severity 列。
+
+    save NEW_WINS → resolve MANUAL → 回读与 SQL 列直查都应落到 high，
+    避免列值停留在 NEW_WINS 的 medium（直查/过滤被陈旧列值误导）。
+    """
+    rec = ConflictRecord(
+        id=CFL_ID,
+        target_knowledge=KNW_ID,
+        field="x",
+        old_value=1,
+        new_value=2,
+        resolution=ConflictResolution.NEW_WINS,
+        created_at=NOW,
+        severity=conflict_severity_for(ConflictResolution.NEW_WINS),
+    )
+    await repo.save(rec)
+
+    await repo.resolve(CFL_ID, ConflictResolution.MANUAL.value)
+
+    fetched = await repo.get(CFL_ID)
+    assert fetched is not None
+    assert fetched.resolution == ConflictResolution.MANUAL
+    assert fetched.severity == "high"
+
+    # 列级直查（读取路径按 resolution 派生，此处验证列本身被同步维护）。
+    cursor = await repo._db.execute(
+        "SELECT severity FROM conflict_records WHERE id = ?", (CFL_ID,)
+    )
+    row = await cursor.fetchone()
+    assert row is not None
+    assert row[0] == "high"
+
+
+@pytest.mark.asyncio
 async def test_repo_legacy_row_severity_derived_from_resolution(tmp_path):
     """迁移 #8 后旧行（SQL 默认 'high'）回读按 resolution 派生，避免一律高打扰。"""
     db_path = str(tmp_path / "legacy.db")
