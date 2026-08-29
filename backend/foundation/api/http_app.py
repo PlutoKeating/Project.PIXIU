@@ -683,6 +683,9 @@ async def monitor_log_get(
 # this module. Import only after ``app`` exists to register /events safely.
 from . import ws as _ws  # noqa: E402,F401
 
+# 递送层端点（B4-1）：delivery.py 导入 app 并注册 /delivery/insights。
+from . import delivery as _delivery  # noqa: E402,F401
+
 
 if __name__ == "__main__":
     import uvicorn

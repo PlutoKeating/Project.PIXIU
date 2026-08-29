@@ -14,6 +14,7 @@ import aiosqlite
 from fastapi import Depends
 
 from backend.engine.conflict import ConflictService
+from backend.engine.delivery import DeliveryInsightsService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.kylin import get_embedder, get_ocr
@@ -53,6 +54,7 @@ _monitor_config_store: MonitorConfigStore | None = None
 _monitor_log_store: MonitorLogStore | None = None
 _monitor_runtime: DirectoryWatcher | None = None
 _behavior_collector: BehaviorCollector | None = None
+_delivery_service: DeliveryInsightsService | None = None
 #: watcher 回调（watch 线程）把 capture_event 广播调度回的主事件循环；
 #: 由 start_monitor_runtime（_lifespan，主循环）注册。
 _main_loop: asyncio.AbstractEventLoop | None = None
@@ -501,6 +503,26 @@ async def stop_behavior_collector() -> None:
         finally:
             _behavior_collector = None
         _log.info("Behavior collector stopped")
+
+
+# ─── 递送服务（批次④ B4-1：洞察流单例，复用 knowledge/conflict/evidence 仓储）────
+
+async def get_delivery_service() -> DeliveryInsightsService:
+    """洞察流服务单例（惰性装配）。
+
+    质量分/敏感度需从关联 Evidence 解析（KnowledgeItem 不携带），
+    故注入 evidence_repo；复用 get_db 的单例连接。
+    """
+    global _delivery_service
+    if _delivery_service is None:
+        db = await get_db()
+        _delivery_service = DeliveryInsightsService(
+            knowledge_repo=SqliteKnowledgeRepo(db),
+            conflict_repo=SqliteConflictRepo(db),
+            evidence_repo=SqliteEvidenceRepo(db),
+        )
+        _log.info("Delivery insights service created")
+    return _delivery_service
 
 
 async def get_dbus_handler(

@@ -39,9 +39,10 @@
 | GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
 | PUT | `/monitor/config` | 写入监控配置（全量提交，热生效） | ✅ 已实现（2026-08-26） |
 | GET | `/monitor/log` | 监控活动日志（分页，最新在前） | ✅ 已实现（2026-08-26） |
+| GET | `/delivery/insights` | 洞察流（欢迎页动态建议，最近高质量记忆） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部五类事件） |
 
-> 状态说明（2026-08-29）：21 个 REST 端点已全部按本文档契约真实实现；
+> 状态说明（2026-08-29）：22 个 REST 端点已全部按本文档契约真实实现；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
@@ -616,6 +617,46 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
   "paused": true
 }
 ```
+
+---
+
+### 3.23 GET /delivery/insights
+
+洞察流（批次④ B4-1）：返回最近 24h 入库的高质量记忆候选（按关联证据
+`quality_score` 降序、过滤 `sensitivity>0`），供聊天窗欢迎页渲染动态建议卡。
+
+**查询参数：**
+
+| 参数 | 类型 | 缺省 | 说明 |
+|------|------|------|------|
+| `limit` | int | 3 | 返回条数；上限 10，`>10` 或 `<1` → 400 `INVALID_REQUEST` |
+
+**生成规则（服务端，无 LLM）：**
+- 候选 = 最近 24h 入库（`created_at >= now-24h`）的 ACTIVE knowledge，scope 为本机
+  `user:local`；
+- 质量分/敏感度取自关联 Evidence（`knowledge_evidence` 链接）；
+- `sensitivity > 0` 的候选不出现；summary 为服务端生成文案（标题 + 正文前 60 字），
+  不含敏感原文；
+- 任一 `MANUAL` 冲突待处理 → 整体抑制（返回空列表，避免干扰人工裁决）；
+- 空库/无候选 → `{"insights": []}`。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "insights": [
+    {
+      "title": "2026年4月家庭支出清单",
+      "summary": "2026年4月家庭支出清单：本月水电燃气共支出 434.50 元，其中电费 210 元、水费…",
+      "knowledge_id": "knw_02K...",
+      "score": 0.94,
+      "kind": "recent"
+    }
+  ]
+}
+```
+
+**错误（400）：** `limit > 10` 或 `limit < 1` → `INVALID_REQUEST`（错误体见 §5）。
 
 ---
 
