@@ -475,14 +475,6 @@ This action cannot be undone.</translation>
         <translation>%1 ops pending</translation>
     </message>
     <message>
-        <source>解绑</source>
-        <translation>Unbind</translation>
-    </message>
-    <message>
-        <source>解绑设备 %1</source>
-        <translation>Unbind device %1</translation>
-    </message>
-    <message>
         <source>共享域 %1</source>
         <translation>Domain %1</translation>
     </message>
@@ -533,6 +525,90 @@ This action cannot be undone.</translation>
     <message>
         <source>刷新偏好列表</source>
         <translation>Refresh preference list</translation>
+    </message>
+    <message>
+        <source>配对</source>
+        <translation>Pair</translation>
+    </message>
+    <message>
+        <source>与 %1 配对</source>
+        <translation>Pair with %1</translation>
+    </message>
+    <message>
+        <source>已配对</source>
+        <translation>Paired</translation>
+    </message>
+    <message>
+        <source>不可配对</source>
+        <translation>Not pairable</translation>
+    </message>
+    <message>
+        <source>待处理冲突 %1</source>
+        <translation>%1 pending conflicts</translation>
+    </message>
+    <message>
+        <source>退出同步网络</source>
+        <translation>Leave sync network</translation>
+    </message>
+    <message>
+        <source>取消</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <source>取消退出网络</source>
+        <translation>Cancel leaving network</translation>
+    </message>
+    <message>
+        <source>退出网络</source>
+        <translation>Leave network</translation>
+    </message>
+    <message>
+        <source>确认退出网络</source>
+        <translation>Confirm leaving network</translation>
+    </message>
+    <message>
+        <source>将解除全部 %1 台设备配对并停止同步，确定？</source>
+        <translation>This will unpair all %1 devices and stop sync. Continue?</translation>
+    </message>
+    <message>
+        <source>启用同步</source>
+        <translation>Enable sync</translation>
+    </message>
+    <message>
+        <source>启用同步总开关</source>
+        <translation>Enable sync master switch</translation>
+    </message>
+    <message>
+        <source>暂停传输</source>
+        <translation>Pause transfer</translation>
+    </message>
+    <message>
+        <source>暂停数据传输</source>
+        <translation>Pause data transfer</translation>
+    </message>
+    <message>
+        <source>待处理冲突 0</source>
+        <translation>0 pending conflicts</translation>
+    </message>
+    <message>
+        <source>查看待处理冲突</source>
+        <translation>View pending conflicts</translation>
+    </message>
+    <message>
+        <source>附近设备</source>
+        <translation>Nearby devices</translation>
+    </message>
+    <message>
+        <source>未发现附近设备</source>
+        <translation>No nearby devices found</translation>
+    </message>
+    <message>
+        <source>立即同步</source>
+        <translation>Sync now</translation>
+    </message>
+    <message>
+        <source>立即执行同步</source>
+        <translation>Run sync now</translation>
     </message>
 </context>
 <context>
@@ -875,36 +951,81 @@ Your input is kept; edit and retry.</translation>
         <source>监控隔离</source>
         <translation>Monitoring quarantine</translation>
     </message>
-</context>
-<context>
-    <name>RevokeDialog</name>
     <message>
-        <source>确认解绑设备</source>
-        <translation>Confirm device unbind</translation>
+        <source>同步设置已更新</source>
+        <translation>Sync settings updated</translation>
     </message>
     <message>
-        <source>即将解绑设备：%1</source>
-        <translation>Unbind device: %1</translation>
+        <source>配对请求已发送，PIN %1</source>
+        <translation>Pairing request sent, PIN %1</translation>
     </message>
     <message>
-        <source>解绑后该设备将退出共享域，记忆同步停止；可重新配对恢复。</source>
-        <translation>The device will leave the shared domain and stop syncing. You can pair it again later.</translation>
+        <source>已接受「%1」的配对请求</source>
+        <translation>Accepted pairing request from “%1”</translation>
     </message>
     <message>
-        <source>取消</source>
-        <translation>Cancel</translation>
+        <source>已拒绝「%1」的配对请求</source>
+        <translation>Rejected pairing request from “%1”</translation>
     </message>
     <message>
-        <source>取消解绑</source>
-        <translation>Cancel unbind</translation>
+        <source>配对请求已过期</source>
+        <translation>Pairing request expired</translation>
     </message>
     <message>
-        <source>解绑</source>
-        <translation>Unbind</translation>
+        <source>配对确认失败：%1</source>
+        <translation>Pairing confirmation failed: %1</translation>
     </message>
     <message>
-        <source>确认解绑</source>
-        <translation>Confirm unbind</translation>
+        <source>退出网络失败：解绑接口待后端实现</source>
+        <translation>Failed to leave network: unbind API pending backend implementation</translation>
+    </message>
+    <message>
+        <source>退出网络失败（%1）：%2</source>
+        <translation>Failed to leave network (%1): %2</translation>
+    </message>
+    <message>
+        <source>配对请求</source>
+        <translation>Pairing request</translation>
+    </message>
+    <message>
+        <source>拒绝</source>
+        <translation>Reject</translation>
+    </message>
+    <message>
+        <source>拒绝配对请求</source>
+        <translation>Reject pairing request</translation>
+    </message>
+    <message>
+        <source>确认</source>
+        <translation>Confirm</translation>
+    </message>
+    <message>
+        <source>确认配对</source>
+        <translation>Confirm pairing</translation>
+    </message>
+    <message>
+        <source>来自「%1」的配对请求</source>
+        <translation>Pairing request from “%1”</translation>
+    </message>
+    <message>
+        <source>PIN：未知</source>
+        <translation>PIN: Unknown</translation>
+    </message>
+    <message>
+        <source>PIN：%1</source>
+        <translation>PIN: %1</translation>
+    </message>
+    <message>
+        <source>无可退出的节点</source>
+        <translation>No peers to leave</translation>
+    </message>
+    <message>
+        <source>正在退出同步网络…</source>
+        <translation>Leaving sync network…</translation>
+    </message>
+    <message>
+        <source>已退出同步网络</source>
+        <translation>Left sync network</translation>
     </message>
 </context>
 <context>
@@ -995,6 +1116,18 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>解绑失败：%1</source>
         <translation>Unbind failed: %1</translation>
+    </message>
+    <message>
+        <source>配对请求响应格式无法识别</source>
+        <translation>Unrecognized pairing request response</translation>
+    </message>
+    <message>
+        <source>配对确认响应格式无法识别</source>
+        <translation>Unrecognized pairing confirmation response</translation>
+    </message>
+    <message>
+        <source>同步设置响应格式无法识别</source>
+        <translation>Unrecognized sync settings response</translation>
     </message>
 </context>
 <context>
