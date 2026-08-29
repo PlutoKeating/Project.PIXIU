@@ -199,13 +199,19 @@ def _security_from_config(
     evidence: Evidence, body: dict[str, Any], raw: dict[str, Any]
 ) -> Optional[Candidate]:
     key = str(raw.get("title") or body.get("key") or "")
-    if "security" not in key.casefold() and body.get("no_exfiltrate") is None:
+    lower_key = key.casefold()
+    if "security" not in lower_key and body.get("no_exfiltrate") is None:
         return None
+    # canonical key 稳定：身份 = 配置键的小写形态；前缀判断与触发判断同用 casefold，
+    # 避免大写变体（如 SECURITY.confirm_sensitive）落入默认 security.no_exfiltrate。
+    canonical = (
+        lower_key
+        if lower_key.startswith("security")
+        else "security.no_exfiltrate"
+    )
     return {
         "category": "SECURITY_POLICY",
-        "key": "security.no_exfiltrate" if not key else (
-            key if key.startswith("security") else "security.no_exfiltrate"
-        ),
+        "key": canonical,
         "value": dict(body) if body else {"no_exfiltrate": True},
         "confidence": 0.92,
     }
