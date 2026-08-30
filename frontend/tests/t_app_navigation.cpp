@@ -339,9 +339,9 @@ private:
 
 void TestAppNavigation::initTestCase()
 {
-    // 与 main.cpp 相同的应用版本（CMake 注入 0.1.1）：更新对话框展示当前
-    // 版本，接线断言须与真实发布一致。
-    QCoreApplication::setApplicationVersion(QStringLiteral("0.1.1"));
+    // 与 main.cpp 相同的应用版本（PIXIU_VERSION 由 CMake 注入，单一事实源）：
+    // 更新对话框展示当前版本，接线断言须与真实发布一致。
+    QCoreApplication::setApplicationVersion(QStringLiteral(PIXIU_VERSION));
     // 单实例守卫的 socket 以 USER 命名；测试里隔离 USER，避免与桌面上正在
     // 运行的 PIXIU 实例互抢主实例（不影响被测代码路径）。
     qputenv("USER", QStringLiteral("pixiu-nav-test-%1")
@@ -598,7 +598,7 @@ void TestAppNavigation::settingsOpensAboutTermsPrivacyAndUpdatePages()
     QTRY_VERIFY(privacyDialogs.first()->isVisible());
     QCOMPARE(privacyDialogs.first()->windowTitle(), QStringLiteral("隐私政策"));
 
-    // 检查更新：懒创建 CheckUpdateDialog，展示当前版本（0.1.1）。
+    // 检查更新：懒创建 CheckUpdateDialog，展示当前版本（与 applicationVersion 一致）。
     const auto updatesBefore = topLevels<CheckUpdateDialog>();
     QPushButton *update = settings->findChild<QPushButton *>(
         QStringLiteral("checkUpdateButton"));
@@ -610,7 +610,7 @@ void TestAppNavigation::settingsOpensAboutTermsPrivacyAndUpdatePages()
     QLabel *updateBody = updates.first()->findChild<QLabel *>(
         QStringLiteral("checkUpdateBodyLabel"));
     QVERIFY(updateBody != nullptr);
-    QVERIFY(updateBody->text().contains(QStringLiteral("0.1.1")));
+    QVERIFY(updateBody->text().contains(QCoreApplication::applicationVersion()));
 }
 
 void TestAppNavigation::remoteConfigOverridesControllerOnStart()

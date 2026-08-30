@@ -273,6 +273,7 @@ if(BUILD_TESTING)
         src/widgets/CheckUpdateDialog.cpp
     )
     target_include_directories(t_settings_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_definitions(t_settings_dialog PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
     target_link_libraries(t_settings_dialog PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME settings_dialog COMMAND t_settings_dialog)
     set_tests_properties(settings_dialog PROPERTIES

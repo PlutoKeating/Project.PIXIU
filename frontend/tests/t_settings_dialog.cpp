@@ -44,9 +44,9 @@ private slots:
 
 void TestSettingsDialog::initTestCase()
 {
-    // 与 main.cpp 相同的应用版本（版本号由 CMake 注入 0.1.1）：
+    // 与 main.cpp 相同的应用版本（PIXIU_VERSION 由 CMake 注入，单一事实源）：
     // 更新对话框展示当前版本，断言须与真实发布一致。
-    QCoreApplication::setApplicationVersion(QStringLiteral("0.1.1"));
+    QCoreApplication::setApplicationVersion(QStringLiteral(PIXIU_VERSION));
 }
 
 void TestSettingsDialog::defaultLanguageFollowsSystem()
@@ -297,12 +297,12 @@ void TestSettingsDialog::infoDialogCloseOnlyClosesItself()
 
 void TestSettingsDialog::checkUpdateDialogShowsCurrentVersionAndGuide()
 {
-    // 更新对话框：展示当前版本（0.1.1）+ 官方渠道升级指引；「知道了」关闭。
+    // 更新对话框：展示当前版本（与 applicationVersion 一致）+ 官方渠道升级指引；「知道了」关闭。
     CheckUpdateDialog dialog;
     QLabel *body = dialog.findChild<QLabel *>(
         QStringLiteral("checkUpdateBodyLabel"));
     QVERIFY(body != nullptr);
-    QVERIFY(body->text().contains(QStringLiteral("0.1.1")));
+    QVERIFY(body->text().contains(QCoreApplication::applicationVersion()));
     QVERIFY(body->text().contains(QStringLiteral("官方渠道")));
     QCOMPARE(dialog.windowModality(), Qt::NonModal);
     QPushButton *close = dialog.findChild<QPushButton *>(

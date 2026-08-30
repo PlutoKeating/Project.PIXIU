@@ -106,6 +106,9 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     infoGrid->addWidget(aboutUsButton, 0, 1);
     infoGrid->addWidget(termsButton, 1, 0);
     infoGrid->addWidget(privacyButton, 1, 1);
+    // 两列对称拉伸：按钮宽度均分，避免右列贴边、视觉失衡。
+    infoGrid->setColumnStretch(0, 1);
+    infoGrid->setColumnStretch(1, 1);
 
     m_okButton = new QPushButton(tr("确定"), this);
     m_okButton->setObjectName(QStringLiteral("settingsOkButton"));

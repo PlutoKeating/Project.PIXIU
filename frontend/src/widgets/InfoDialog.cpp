@@ -32,6 +32,7 @@ InfoDialog::InfoDialog(const QString &title, const QString &body,
     QPushButton *closeButton = new QPushButton(tr("关闭"), this);
     closeButton->setObjectName(QStringLiteral("infoCloseButton"));
     closeButton->setAccessibleName(tr("关闭"));
+    closeButton->setDefault(true);
     closeButton->setCursor(Qt::PointingHandCursor);
     connect(closeButton, &QPushButton::clicked, this, &QDialog::hide);
 
