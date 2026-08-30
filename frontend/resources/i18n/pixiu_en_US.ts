@@ -69,6 +69,21 @@
     </message>
 </context>
 <context>
+    <name>CheckUpdateDialog</name>
+    <message>
+        <source>检查更新</source>
+        <translation>Check for Updates</translation>
+    </message>
+    <message>
+        <source>当前版本 %1。请从官方渠道获取最新版本，通过安装包直接升级；升级将保留您的记忆与配置。</source>
+        <translation>Current version %1. Get the latest version from the official channel and upgrade directly with the installer; your memory and configuration will be preserved.</translation>
+    </message>
+    <message>
+        <source>知道了</source>
+        <translation>Got it</translation>
+    </message>
+</context>
+<context>
     <name>EvidenceCard</name>
     <message>
         <source>📄 原始证据</source>
@@ -247,6 +262,13 @@ This action cannot be undone.</translation>
     <message>
         <source>可拖入图片，录入时附带附件预览（OCR 接入后自动识别）</source>
         <translation>Drag in an image; attachment preview is attached on import (OCR pending)</translation>
+    </message>
+</context>
+<context>
+    <name>InfoDialog</name>
+    <message>
+        <source>关闭</source>
+        <translation>Close</translation>
     </message>
 </context>
 <context>
@@ -1055,6 +1077,58 @@ Your input is kept; edit and retry.</translation>
         <source>已学习您的偏好：%1</source>
         <translation>Learned your preference: %1</translation>
     </message>
+    <message>
+        <source>关于 PIXIU</source>
+        <translation>About PIXIU</translation>
+    </message>
+    <message>
+        <source>PIXIU 貔貅是面向银河麒麟桌面操作系统的 OS Agent 记忆优化助手。
+
+它专注偏好捕捉、知识整合与高效检索，让记忆的沉淀、复用与遗忘更自然。
+
+记忆数据仅保存在本机，敏感信息可识别过滤，您可随时掌控与清除。
+
+当前版本 %1。</source>
+        <translation>PIXIU is a memory-optimization assistant for the Kylin desktop OS Agent.
+
+It focuses on preference capture, knowledge consolidation and efficient retrieval — making memory storage, reuse and forgetting more natural.
+
+Memory data is stored locally only, with sensitive-information detection and filtering — you can control and clear it anytime.
+
+Current version %1.</translation>
+    </message>
+    <message>
+        <source>服务条款</source>
+        <translation>Terms of Service</translation>
+    </message>
+    <message>
+        <source>PIXIU 为参赛作品，按现状提供，不构成任何明示或默示的担保。
+
+您对使用本软件产生的数据负责；本软件不收集、不上传您的个人数据，记忆数据仅存储于本机。
+
+如对作品有疑问或建议，请通过官方渠道联系我们。</source>
+        <translation>PIXIU is a competition entry provided as-is, without any express or implied warranty.
+
+You are responsible for the data you produce while using it; PIXIU does not collect or upload your personal data, and memory data is stored locally only.
+
+If you have questions or suggestions about the entry, please contact us through the official channel.</translation>
+    </message>
+    <message>
+        <source>隐私政策</source>
+        <translation>Privacy Policy</translation>
+    </message>
+    <message>
+        <source>您的记忆数据仅存储在本机，不会上传至任何服务器。
+
+PIXIU 提供敏感信息识别过滤，并可在监控中心随时关闭监控总开关。
+
+您可以通过自然语言指令遗忘任意记忆，数据可随时掌控与清除。</source>
+        <translation>Your memory data is stored locally only and is never uploaded to any server.
+
+PIXIU offers sensitive-information detection and filtering, and the master monitoring switch can be turned off anytime in Monitor Center.
+
+You can forget any memory with natural-language instructions — your data stays under your control and can be cleared anytime.</translation>
+    </message>
 </context>
 <context>
     <name>SettingsDialog</name>
@@ -1126,6 +1200,38 @@ Your input is kept; edit and retry.</translation>
         <source>打开监控中心</source>
         <translation>Open Monitor Center</translation>
     </message>
+    <message>
+        <source>检查更新…</source>
+        <translation>Check for Updates…</translation>
+    </message>
+    <message>
+        <source>打开检查更新</source>
+        <translation>Open Check for Updates</translation>
+    </message>
+    <message>
+        <source>关于 PIXIU</source>
+        <translation>About PIXIU</translation>
+    </message>
+    <message>
+        <source>打开关于页面</source>
+        <translation>Open about page</translation>
+    </message>
+    <message>
+        <source>服务条款</source>
+        <translation>Terms of Service</translation>
+    </message>
+    <message>
+        <source>打开服务条款</source>
+        <translation>Open Terms of Service</translation>
+    </message>
+    <message>
+        <source>隐私政策</source>
+        <translation>Privacy Policy</translation>
+    </message>
+    <message>
+        <source>打开隐私政策</source>
+        <translation>Open Privacy Policy</translation>
+    </message>
 </context>
 <context>
     <name>SyncController</name>
@@ -1156,6 +1262,17 @@ Your input is kept; edit and retry.</translation>
     <message>
         <source>同步设置响应格式无法识别</source>
         <translation>Unrecognized sync settings response</translation>
+    </message>
+</context>
+<context>
+    <name>TestSettingsDialog</name>
+    <message>
+        <source>服务条款</source>
+        <translation>Terms of Service</translation>
+    </message>
+    <message>
+        <source>关于 PIXIU</source>
+        <translation>About PIXIU</translation>
     </message>
 </context>
 <context>
