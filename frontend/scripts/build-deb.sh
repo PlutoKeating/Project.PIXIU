@@ -24,6 +24,20 @@ if [[ ! -f "${control}" ]]; then
 fi
 
 version="$(sed -n 's/^Version: //p' "${control}")"
+
+# ── 版本一致性预检（镜像 build/release/scripts/build-deb.sh 的
+#    check_version_consistency 思路）：debian/control 的 Version 上游部分
+#    必须与 frontend/CMakeLists.txt 的 project VERSION（单一事实源）一致，
+#    防止 dpkg -l 显示版本与应用内版本漂移（V-3 曾实测 0.1.0-1 vs 0.1.1）。
+cmake_ver="$(sed -nE 's/.*project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
+    "${ROOT}/CMakeLists.txt" | head -n1)"
+upstream_ver="${version%-*}"   # 剥离 Debian 修订号（如 0.1.1-1 → 0.1.1）
+if [ -z "${cmake_ver}" ] || [ "${upstream_ver}" != "${cmake_ver}" ]; then
+    echo "error: 版本不一致：debian/control Version=${version:-<未提取>} 上游 ${upstream_ver:-<未提取>}，" \
+         "frontend/CMakeLists.txt project VERSION=${cmake_ver:-<未提取>}（应同步为同一版本）" >&2
+    exit 1
+fi
+
 arch="$(dpkg --print-architecture)"
 deb_name="pixiu-frontend_${version}_${arch}.deb"
 
