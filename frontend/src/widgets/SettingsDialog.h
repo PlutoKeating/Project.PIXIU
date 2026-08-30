@@ -37,6 +37,12 @@ signals:
     void cancelled();
     // “监控中心…”按钮：由应用层打开监控中心面板（懒创建）。
     void monitorCenterRequested();
+    // 关于与法律四入口：由应用层懒创建并打开对应页面
+    //（检查更新 / 关于 PIXIU / 服务条款 / 隐私政策）。
+    void checkUpdateRequested();
+    void aboutUsRequested();
+    void termsRequested();
+    void privacyRequested();
 
 private:
     void updateOkEnabled();

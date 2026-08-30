@@ -1,17 +1,24 @@
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QKeySequenceEdit>
+#include <QLabel>
 #include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
+#include <QTextBrowser>
 
+#include "widgets/CheckUpdateDialog.h"
+#include "widgets/InfoDialog.h"
 #include "widgets/SettingsDialog.h"
 
-// SettingsDialog 语义测试：语言选择、OK/取消/Esc/关闭与稳定语言代码。
+// SettingsDialog 语义测试：语言选择、OK/取消/Esc/关闭、稳定语言代码，
+// 以及关于与法律四入口（检查更新/关于/条款/隐私）按钮与信号。
 class TestSettingsDialog : public QObject
 {
     Q_OBJECT
 
 private slots:
+    void initTestCase();
     void defaultLanguageFollowsSystem();
     void setLanguageSelectsSavedValue();
     void languageOptionsCarryStableCodes();
@@ -25,7 +32,22 @@ private slots:
     void dialogIsNonModalSoClosingNeverBlocksChat();
     void buttonsHaveAccessibleNames();
     void dialogCanGrowForLongHints();
+    void fourEntryButtonsExistAndNamed();
+    void checkUpdateButtonEmitsSignal();
+    void aboutUsButtonEmitsSignal();
+    void termsButtonEmitsSignal();
+    void privacyButtonEmitsSignal();
+    void infoDialogRendersTitleAndBodyReadOnly();
+    void infoDialogCloseOnlyClosesItself();
+    void checkUpdateDialogShowsCurrentVersionAndGuide();
 };
+
+void TestSettingsDialog::initTestCase()
+{
+    // 与 main.cpp 相同的应用版本（版本号由 CMake 注入 0.1.1）：
+    // 更新对话框展示当前版本，断言须与真实发布一致。
+    QCoreApplication::setApplicationVersion(QStringLiteral("0.1.1"));
+}
 
 void TestSettingsDialog::defaultLanguageFollowsSystem()
 {
@@ -179,6 +201,116 @@ void TestSettingsDialog::dialogCanGrowForLongHints()
     QVERIFY(dialog.minimumWidth() >= 400);
     QVERIFY(dialog.minimumHeight() >= 330);
     QVERIFY(dialog.maximumHeight() > 500);
+}
+
+void TestSettingsDialog::fourEntryButtonsExistAndNamed()
+{
+    // V-2：关于与法律四入口按钮齐全、可访问名非空、手型光标。
+    SettingsDialog dialog;
+    const char *const names[] = {
+        "checkUpdateButton", "aboutUsButton", "termsButton", "privacyButton"};
+    for (const char *name : names) {
+        QPushButton *button =
+            dialog.findChild<QPushButton *>(QLatin1String(name));
+        QVERIFY2(button != nullptr, name);
+        QVERIFY(!button->accessibleName().isEmpty());
+        QCOMPARE(button->cursor().shape(), Qt::PointingHandCursor);
+    }
+}
+
+void TestSettingsDialog::checkUpdateButtonEmitsSignal()
+{
+    SettingsDialog dialog;
+    QSignalSpy spy(&dialog, &SettingsDialog::checkUpdateRequested);
+    dialog.show();
+    QPushButton *button = dialog.findChild<QPushButton *>(
+        QStringLiteral("checkUpdateButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestSettingsDialog::aboutUsButtonEmitsSignal()
+{
+    SettingsDialog dialog;
+    QSignalSpy spy(&dialog, &SettingsDialog::aboutUsRequested);
+    dialog.show();
+    QPushButton *button = dialog.findChild<QPushButton *>(
+        QStringLiteral("aboutUsButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestSettingsDialog::termsButtonEmitsSignal()
+{
+    SettingsDialog dialog;
+    QSignalSpy spy(&dialog, &SettingsDialog::termsRequested);
+    dialog.show();
+    QPushButton *button = dialog.findChild<QPushButton *>(
+        QStringLiteral("termsButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestSettingsDialog::privacyButtonEmitsSignal()
+{
+    SettingsDialog dialog;
+    QSignalSpy spy(&dialog, &SettingsDialog::privacyRequested);
+    dialog.show();
+    QPushButton *button = dialog.findChild<QPushButton *>(
+        QStringLiteral("privacyButton"));
+    QVERIFY(button != nullptr);
+    QTest::mouseClick(button, Qt::LeftButton);
+    QCOMPARE(spy.count(), 1);
+}
+
+void TestSettingsDialog::infoDialogRendersTitleAndBodyReadOnly()
+{
+    // InfoDialog：标题 + 只读正文渲染（关键词可断言）+ 非模态（不阻塞聊天）。
+    InfoDialog dialog(tr("服务条款"),
+                      QStringLiteral("PIXIU 为参赛作品，按现状提供。\n\n"
+                                     "本软件不收集、不上传您的个人数据。"));
+    QCOMPARE(dialog.windowTitle(), QStringLiteral("服务条款"));
+    QTextBrowser *browser = dialog.findChild<QTextBrowser *>(
+        QStringLiteral("infoTextBrowser"));
+    QVERIFY(browser != nullptr);
+    QVERIFY(browser->isReadOnly());
+    const QString text = browser->toPlainText();
+    QVERIFY(text.contains(QStringLiteral("参赛作品")));
+    QVERIFY(text.contains(QStringLiteral("不上传")));
+    QCOMPARE(dialog.windowModality(), Qt::NonModal);
+}
+
+void TestSettingsDialog::infoDialogCloseOnlyClosesItself()
+{
+    // 关闭按钮只隐藏本弹窗：非模态下不波及其他窗口。
+    InfoDialog dialog(tr("关于 PIXIU"), QStringLiteral("正文"));
+    QPushButton *close = dialog.findChild<QPushButton *>(
+        QStringLiteral("infoCloseButton"));
+    QVERIFY(close != nullptr);
+    dialog.show();
+    QTest::mouseClick(close, Qt::LeftButton);
+    QVERIFY(!dialog.isVisible());
+}
+
+void TestSettingsDialog::checkUpdateDialogShowsCurrentVersionAndGuide()
+{
+    // 更新对话框：展示当前版本（0.1.1）+ 官方渠道升级指引；「知道了」关闭。
+    CheckUpdateDialog dialog;
+    QLabel *body = dialog.findChild<QLabel *>(
+        QStringLiteral("checkUpdateBodyLabel"));
+    QVERIFY(body != nullptr);
+    QVERIFY(body->text().contains(QStringLiteral("0.1.1")));
+    QVERIFY(body->text().contains(QStringLiteral("官方渠道")));
+    QCOMPARE(dialog.windowModality(), Qt::NonModal);
+    QPushButton *close = dialog.findChild<QPushButton *>(
+        QStringLiteral("checkUpdateCloseButton"));
+    QVERIFY(close != nullptr);
+    dialog.show();
+    QTest::mouseClick(close, Qt::LeftButton);
+    QVERIFY(!dialog.isVisible());
 }
 
 QTEST_MAIN(TestSettingsDialog)

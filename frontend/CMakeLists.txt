@@ -79,6 +79,10 @@ add_executable(pixiu-frontend
     src/widgets/PairDialog.cpp
     src/widgets/SettingsDialog.h
     src/widgets/SettingsDialog.cpp
+    src/widgets/InfoDialog.h
+    src/widgets/InfoDialog.cpp
+    src/widgets/CheckUpdateDialog.h
+    src/widgets/CheckUpdateDialog.cpp
     src/app/ConflictController.h
     src/app/ConflictController.cpp
     src/app/PreferenceController.h
@@ -263,6 +267,10 @@ if(BUILD_TESTING)
         tests/t_settings_dialog.cpp
         src/widgets/SettingsDialog.h
         src/widgets/SettingsDialog.cpp
+        src/widgets/InfoDialog.h
+        src/widgets/InfoDialog.cpp
+        src/widgets/CheckUpdateDialog.h
+        src/widgets/CheckUpdateDialog.cpp
     )
     target_include_directories(t_settings_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(t_settings_dialog PRIVATE Qt5::Test Qt5::Widgets)
@@ -552,6 +560,10 @@ if(BUILD_TESTING)
         src/widgets/PairDialog.cpp
         src/widgets/SettingsDialog.h
         src/widgets/SettingsDialog.cpp
+        src/widgets/InfoDialog.h
+        src/widgets/InfoDialog.cpp
+        src/widgets/CheckUpdateDialog.h
+        src/widgets/CheckUpdateDialog.cpp
         src/app/ConflictController.h
         src/app/ConflictController.cpp
         src/app/PreferenceController.h
@@ -636,6 +648,10 @@ if(BUILD_TESTING)
         src/widgets/PairDialog.cpp
         src/widgets/SettingsDialog.h
         src/widgets/SettingsDialog.cpp
+        src/widgets/InfoDialog.h
+        src/widgets/InfoDialog.cpp
+        src/widgets/CheckUpdateDialog.h
+        src/widgets/CheckUpdateDialog.cpp
         src/app/ConflictController.h
         src/app/ConflictController.cpp
         src/app/PreferenceController.h

@@ -34,6 +34,8 @@ class EventRouter;
 class MonitorController;
 class MonitorCenterDialog;
 class DeliveryController;
+class InfoDialog;
+class CheckUpdateDialog;
 class QTimer;
 class QDialog;
 class QLabel;
@@ -100,6 +102,12 @@ private:
     // 监控掌控层：状态单一事实来源 + 监控中心面板（懒创建）。
     MonitorController *m_monitorController = nullptr;
     MonitorCenterDialog *m_monitorCenter = nullptr;
+    // 关于与法律四入口页面（懒创建）。About/T&C/Privacy 三份 InfoDialog
+    // 独立实例：各页文案在创建时固定，杜绝复用同一实例时的文案混杂。
+    InfoDialog *m_aboutDialog = nullptr;
+    InfoDialog *m_termsDialog = nullptr;
+    InfoDialog *m_privacyDialog = nullptr;
+    CheckUpdateDialog *m_checkUpdateDialog = nullptr;
     // 递送层（B4-3）：洞察流 + 今日简报请求与结果上抛。
     DeliveryController *m_deliveryController = nullptr;
     // 最近一次洞察（相关主题提醒的 title token 来源）。
@@ -158,6 +166,11 @@ private:
     void toggleChatWindow();
     void openSettings();
     void openMonitorCenter();
+    // 关于与法律四入口：懒创建各自页面并打开（接线于 openSettings 懒创建块）。
+    void showAboutUs();
+    void showTerms();
+    void showPrivacy();
+    void showCheckUpdate();
     void refreshMonitorUi();
     void handleBackendEvent(const QJsonObject &event);
     // 远端监控配置（A-3）：启动拉取 / 回包应用 / 面板改动上送。

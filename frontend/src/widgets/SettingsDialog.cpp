@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QFormLayout>
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QKeySequenceEdit>
@@ -67,6 +68,45 @@ SettingsDialog::SettingsDialog(QWidget *parent)
         tr("版本 %1").arg(QCoreApplication::applicationVersion()), this);
     versionLabel->setObjectName(QStringLiteral("versionLabel"));
 
+    // 关于与法律四入口：检查更新 / 关于 PIXIU / 服务条款 / 隐私政策。
+    // 布局用 2×2 grid 而非单行：400px 窄窗下单行四按钮总宽超出内容区会
+    // 裁剪（按钮文字不可压缩），两行两列保证任何窗口宽度都不裁剪。
+    QPushButton *checkUpdateButton = new QPushButton(tr("检查更新…"), this);
+    checkUpdateButton->setObjectName(QStringLiteral("checkUpdateButton"));
+    checkUpdateButton->setAccessibleName(tr("打开检查更新"));
+    checkUpdateButton->setCursor(Qt::PointingHandCursor);
+    connect(checkUpdateButton, &QPushButton::clicked,
+            this, &SettingsDialog::checkUpdateRequested);
+
+    QPushButton *aboutUsButton = new QPushButton(tr("关于 PIXIU"), this);
+    aboutUsButton->setObjectName(QStringLiteral("aboutUsButton"));
+    aboutUsButton->setAccessibleName(tr("打开关于页面"));
+    aboutUsButton->setCursor(Qt::PointingHandCursor);
+    connect(aboutUsButton, &QPushButton::clicked,
+            this, &SettingsDialog::aboutUsRequested);
+
+    QPushButton *termsButton = new QPushButton(tr("服务条款"), this);
+    termsButton->setObjectName(QStringLiteral("termsButton"));
+    termsButton->setAccessibleName(tr("打开服务条款"));
+    termsButton->setCursor(Qt::PointingHandCursor);
+    connect(termsButton, &QPushButton::clicked,
+            this, &SettingsDialog::termsRequested);
+
+    QPushButton *privacyButton = new QPushButton(tr("隐私政策"), this);
+    privacyButton->setObjectName(QStringLiteral("privacyButton"));
+    privacyButton->setAccessibleName(tr("打开隐私政策"));
+    privacyButton->setCursor(Qt::PointingHandCursor);
+    connect(privacyButton, &QPushButton::clicked,
+            this, &SettingsDialog::privacyRequested);
+
+    QGridLayout *infoGrid = new QGridLayout();
+    infoGrid->setHorizontalSpacing(ui::Spacing::S);
+    infoGrid->setVerticalSpacing(ui::Spacing::S);
+    infoGrid->addWidget(checkUpdateButton, 0, 0);
+    infoGrid->addWidget(aboutUsButton, 0, 1);
+    infoGrid->addWidget(termsButton, 1, 0);
+    infoGrid->addWidget(privacyButton, 1, 1);
+
     m_okButton = new QPushButton(tr("确定"), this);
     m_okButton->setObjectName(QStringLiteral("settingsOkButton"));
     m_okButton->setAccessibleName(tr("保存设置"));
@@ -96,6 +136,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     layout->addStretch(1);
     layout->addWidget(aboutLabel);
     layout->addWidget(versionLabel);
+    layout->addLayout(infoGrid);
     layout->addLayout(buttonRow);
 
     connect(m_shortcutEdit, &QKeySequenceEdit::keySequenceChanged,

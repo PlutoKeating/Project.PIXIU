@@ -21,6 +21,8 @@
 #include "widgets/ImportDialog.h"
 #include "widgets/ForgetDialog.h"
 #include "widgets/SettingsDialog.h"
+#include "widgets/InfoDialog.h"
+#include "widgets/CheckUpdateDialog.h"
 #include "widgets/MemoryPanel.h"
 #include "widgets/MonitorCenterDialog.h"
 #include "widgets/EvidenceDetailDialog.h"
@@ -1003,6 +1005,16 @@ void PixiuApp::openSettings()
         // 监控中心入口：懒创建的设置对话框只接线一次。
         connect(m_settingsDialog, &SettingsDialog::monitorCenterRequested,
                 this, &PixiuApp::openMonitorCenter);
+        // 关于与法律四入口：懒创建各自页面（About/T&C/Privacy 独立
+        // InfoDialog 实例防文案混杂，检查更新为 CheckUpdateDialog）。
+        connect(m_settingsDialog, &SettingsDialog::checkUpdateRequested,
+                this, &PixiuApp::showCheckUpdate);
+        connect(m_settingsDialog, &SettingsDialog::aboutUsRequested,
+                this, &PixiuApp::showAboutUs);
+        connect(m_settingsDialog, &SettingsDialog::termsRequested,
+                this, &PixiuApp::showTerms);
+        connect(m_settingsDialog, &SettingsDialog::privacyRequested,
+                this, &PixiuApp::showPrivacy);
     }
     m_settingsDialog->setLanguage(
         m_settings->value(AppSettings::keyLanguage).toString());
@@ -1035,6 +1047,59 @@ void PixiuApp::openMonitorCenter()
                                         && !m_monitorConfigPending);
     }
     m_monitorCenter->showAndFocus();
+}
+
+void PixiuApp::showAboutUs()
+{
+    if (!m_aboutDialog) {
+        m_aboutDialog = new InfoDialog(
+            tr("关于 PIXIU"),
+            tr("PIXIU 貔貅是面向银河麒麟桌面操作系统的 OS Agent 记忆优化"
+               "助手。\n\n"
+               "它专注偏好捕捉、知识整合与高效检索，让记忆的沉淀、复用与"
+               "遗忘更自然。\n\n"
+               "记忆数据仅保存在本机，敏感信息可识别过滤，您可随时掌控与"
+               "清除。\n\n"
+               "当前版本 %1。")
+                .arg(QCoreApplication::applicationVersion()));
+    }
+    m_aboutDialog->showAndFocus();
+}
+
+void PixiuApp::showTerms()
+{
+    if (!m_termsDialog) {
+        m_termsDialog = new InfoDialog(
+            tr("服务条款"),
+            tr("PIXIU 为参赛作品，按现状提供，不构成任何明示或默示的担保。"
+               "\n\n"
+               "您对使用本软件产生的数据负责；本软件不收集、不上传您的个人"
+               "数据，记忆数据仅存储于本机。\n\n"
+               "如对作品有疑问或建议，请通过官方渠道联系我们。"));
+    }
+    m_termsDialog->showAndFocus();
+}
+
+void PixiuApp::showPrivacy()
+{
+    if (!m_privacyDialog) {
+        m_privacyDialog = new InfoDialog(
+            tr("隐私政策"),
+            tr("您的记忆数据仅存储在本机，不会上传至任何服务器。\n\n"
+               "PIXIU 提供敏感信息识别过滤，并可在监控中心随时关闭监控"
+               "总开关。\n\n"
+               "您可以通过自然语言指令遗忘任意记忆，数据可随时掌控与"
+               "清除。"));
+    }
+    m_privacyDialog->showAndFocus();
+}
+
+void PixiuApp::showCheckUpdate()
+{
+    if (!m_checkUpdateDialog) {
+        m_checkUpdateDialog = new CheckUpdateDialog();
+    }
+    m_checkUpdateDialog->showAndFocus();
 }
 
 void PixiuApp::refreshMonitorUi()

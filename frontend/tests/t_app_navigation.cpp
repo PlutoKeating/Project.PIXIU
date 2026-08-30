@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QTabWidget>
 #include <QTest>
+#include <QTextBrowser>
 
 #include "app/EventRouter.h"
 #include "app/MonitorController.h"
@@ -20,8 +21,10 @@
 #include "services/BackendTypes.h"
 #include "services/NotifyService.h"
 #include "widgets/ChatWindow.h"
+#include "widgets/CheckUpdateDialog.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ImportDialog.h"
+#include "widgets/InfoDialog.h"
 #include "widgets/InputBar.h"
 #include "widgets/MemoryPanel.h"
 #include "widgets/MonitorCenterDialog.h"
@@ -279,6 +282,7 @@ private slots:
     void chipClickRespondsWhenWindowNotActive();
     void pauseToggleFromBallFlipsController();
     void settingsOpensMonitorCenter();
+    void settingsOpensAboutTermsPrivacyAndUpdatePages();
     void remoteConfigOverridesControllerOnStart();
     void captureEventAppendsWhenCenterOpen();
     void reconnectRepullsConfigWhenNotAuthoritative();
@@ -335,6 +339,9 @@ private:
 
 void TestAppNavigation::initTestCase()
 {
+    // 与 main.cpp 相同的应用版本（CMake 注入 0.1.1）：更新对话框展示当前
+    // 版本，接线断言须与真实发布一致。
+    QCoreApplication::setApplicationVersion(QStringLiteral("0.1.1"));
     // 单实例守卫的 socket 以 USER 命名；测试里隔离 USER，避免与桌面上正在
     // 运行的 PIXIU 实例互抢主实例（不影响被测代码路径）。
     qputenv("USER", QStringLiteral("pixiu-nav-test-%1")
@@ -545,6 +552,65 @@ void TestAppNavigation::settingsOpensMonitorCenter()
     QTest::mouseClick(button, Qt::LeftButton);
     QTRY_VERIFY(!topLevels<MonitorCenterDialog>().isEmpty());
     QTRY_VERIFY(topLevels<MonitorCenterDialog>().first()->isVisible());
+}
+
+void TestAppNavigation::settingsOpensAboutTermsPrivacyAndUpdatePages()
+{
+    // V-2：设置对话框四入口 → 各自懒创建并打开对应页面。About/T&C/Privacy
+    // 为独立 InfoDialog 实例（防文案混杂），检查更新为 CheckUpdateDialog。
+    clickChip("settingsChip");
+    SettingsDialog *settings = topLevels<SettingsDialog>().first();
+
+    // 关于 PIXIU：懒创建第一份 InfoDialog，标题正确。
+    const auto aboutsBefore = topLevels<InfoDialog>();
+    QPushButton *about = settings->findChild<QPushButton *>(
+        QStringLiteral("aboutUsButton"));
+    QVERIFY(about != nullptr);
+    QTest::mouseClick(about, Qt::LeftButton);
+    const auto abouts = newTopLevels(aboutsBefore);
+    QCOMPARE(abouts.size(), 1);
+    QTRY_VERIFY(abouts.first()->isVisible());
+    QCOMPARE(abouts.first()->windowTitle(), QStringLiteral("关于 PIXIU"));
+
+    // 服务条款：第二份独立 InfoDialog，文案为条款页关键词。
+    const auto termsBefore = topLevels<InfoDialog>();
+    QPushButton *terms = settings->findChild<QPushButton *>(
+        QStringLiteral("termsButton"));
+    QVERIFY(terms != nullptr);
+    QTest::mouseClick(terms, Qt::LeftButton);
+    const auto termsDialogs = newTopLevels(termsBefore);
+    QCOMPARE(termsDialogs.size(), 1);
+    QTRY_VERIFY(termsDialogs.first()->isVisible());
+    QCOMPARE(termsDialogs.first()->windowTitle(), QStringLiteral("服务条款"));
+    QTextBrowser *termsBrowser = termsDialogs.first()->findChild<QTextBrowser *>(
+        QStringLiteral("infoTextBrowser"));
+    QVERIFY(termsBrowser != nullptr);
+    QVERIFY(termsBrowser->toPlainText().contains(QStringLiteral("参赛作品")));
+
+    // 隐私政策：第三份独立 InfoDialog。
+    const auto privacyBefore = topLevels<InfoDialog>();
+    QPushButton *privacy = settings->findChild<QPushButton *>(
+        QStringLiteral("privacyButton"));
+    QVERIFY(privacy != nullptr);
+    QTest::mouseClick(privacy, Qt::LeftButton);
+    const auto privacyDialogs = newTopLevels(privacyBefore);
+    QCOMPARE(privacyDialogs.size(), 1);
+    QTRY_VERIFY(privacyDialogs.first()->isVisible());
+    QCOMPARE(privacyDialogs.first()->windowTitle(), QStringLiteral("隐私政策"));
+
+    // 检查更新：懒创建 CheckUpdateDialog，展示当前版本（0.1.1）。
+    const auto updatesBefore = topLevels<CheckUpdateDialog>();
+    QPushButton *update = settings->findChild<QPushButton *>(
+        QStringLiteral("checkUpdateButton"));
+    QVERIFY(update != nullptr);
+    QTest::mouseClick(update, Qt::LeftButton);
+    const auto updates = newTopLevels(updatesBefore);
+    QCOMPARE(updates.size(), 1);
+    QTRY_VERIFY(updates.first()->isVisible());
+    QLabel *updateBody = updates.first()->findChild<QLabel *>(
+        QStringLiteral("checkUpdateBodyLabel"));
+    QVERIFY(updateBody != nullptr);
+    QVERIFY(updateBody->text().contains(QStringLiteral("0.1.1")));
 }
 
 void TestAppNavigation::remoteConfigOverridesControllerOnStart()
