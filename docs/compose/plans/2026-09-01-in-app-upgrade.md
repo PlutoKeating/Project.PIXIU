@@ -25,8 +25,8 @@
 - `QString pixiu::normalizeVersion(const QString &tag)`（去掉 `v` 前缀，`v0.1.6`→`0.1.6`）
 - `int pixiu::compareVersions(const QString &a, const QString &b)`（`-1/0/1`；按点分段数字比较，处理不等长 `0.1.6` vs `0.1.6.1`——按段数补零或先段数）
 - `QByteArray pixiu::sha256(const QByteArray &data)`（QCryptographicHash::Sha256 hex）
-- `bool pixiu::verifySha256(const QString &filePath, const QString &expectedHex)`（读文件重算比对，大小写不敏感）
-- GitHub API/asset 解析辅助：`struct ReleaseInfo { QString tag; QString debUrl; QString shaUrl; }`、`bool pixiu::parseRelease(const QByteArray &json, ReleaseInfo &out)`（解析 `tag_name` + 找 `pixiu_*.deb`/`.sha256` 的 `browser_download_url`）
+- `bool ui::verifySha256(const QString &filePath, const QString &expectedHex)`（读文件重算比对，大小写不敏感）
+- GitHub API/asset 解析辅助：`struct ReleaseInfo { QString tag; QString debUrl; QString shaUrl; }`、`bool ui::parseRelease(const QByteArray &json, ReleaseInfo &out)`（解析 `tag_name` + 找 `pixiu_*.deb`/`.sha256` 的 `browser_download_url`）
 
 **Covers:** [S2.1, S2.2]
 
