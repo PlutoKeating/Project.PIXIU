@@ -445,6 +445,15 @@ if(BUILD_TESTING)
     target_link_libraries(t_user_identity PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME user_identity COMMAND t_user_identity)
 
+    add_executable(t_upgrade_utils
+        tests/t_upgrade_utils.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+    )
+    target_include_directories(t_upgrade_utils PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_upgrade_utils PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME upgrade_utils COMMAND t_upgrade_utils)
+
     add_executable(t_chat_window
         tests/t_chat_window.cpp
         src/widgets/ChatWindow.h
@@ -705,5 +714,6 @@ if(BUILD_TESTING)
         sync_controller event_router settings_dialog
         app_navigation window_restore monitor_controller monitor_center
         user_identity
+        upgrade_utils
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
