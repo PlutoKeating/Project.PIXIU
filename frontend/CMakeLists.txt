@@ -277,10 +277,14 @@ if(BUILD_TESTING)
         src/widgets/InfoDialog.cpp
         src/widgets/CheckUpdateDialog.h
         src/widgets/CheckUpdateDialog.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+        src/app/UpgradeController.h
+        src/app/UpgradeController.cpp
     )
     target_include_directories(t_settings_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_compile_definitions(t_settings_dialog PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
-    target_link_libraries(t_settings_dialog PRIVATE Qt5::Test Qt5::Widgets)
+    target_link_libraries(t_settings_dialog PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
     add_test(NAME settings_dialog COMMAND t_settings_dialog)
     set_tests_properties(settings_dialog PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
@@ -468,6 +472,19 @@ if(BUILD_TESTING)
     target_include_directories(t_upgrade_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(t_upgrade_controller PRIVATE Qt5::Test Qt5::Network)
     add_test(NAME upgrade_controller COMMAND t_upgrade_controller)
+
+    add_executable(t_check_update_dialog
+        tests/t_check_update_dialog.cpp
+        src/widgets/CheckUpdateDialog.h
+        src/widgets/CheckUpdateDialog.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+        src/app/UpgradeController.h
+        src/app/UpgradeController.cpp
+    )
+    target_include_directories(t_check_update_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_check_update_dialog PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
+    add_test(NAME check_update_dialog COMMAND t_check_update_dialog)
 
     add_executable(t_chat_window
         tests/t_chat_window.cpp
@@ -739,5 +756,6 @@ if(BUILD_TESTING)
         user_identity
         upgrade_utils
         upgrade_controller
+        check_update_dialog
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

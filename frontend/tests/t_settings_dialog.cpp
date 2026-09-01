@@ -297,16 +297,21 @@ void TestSettingsDialog::infoDialogCloseOnlyClosesItself()
 
 void TestSettingsDialog::checkUpdateDialogShowsCurrentVersionAndGuide()
 {
-    // 更新对话框：展示当前版本（与 applicationVersion 一致）+ 官方渠道升级指引；「知道了」关闭。
+    // 更新对话框：展示当前版本（与 applicationVersion 一致）；未注入升级
+    // 控制器时禁用「一键升级」；「知道了」关闭。
     CheckUpdateDialog dialog;
-    QLabel *body = dialog.findChild<QLabel *>(
-        QStringLiteral("checkUpdateBodyLabel"));
-    QVERIFY(body != nullptr);
-    QVERIFY(body->text().contains(QCoreApplication::applicationVersion()));
-    QVERIFY(body->text().contains(QStringLiteral("官方渠道")));
+    QLabel *current = dialog.findChild<QLabel *>(
+        QStringLiteral("currentVersionLabel"));
+    QVERIFY(current != nullptr);
+    QVERIFY(current->text().contains(QCoreApplication::applicationVersion()));
+    QPushButton *upgrade = dialog.findChild<QPushButton *>(
+        QStringLiteral("upgradeButton"));
+    QVERIFY(upgrade != nullptr);
+    QVERIFY(!upgrade->isEnabled());   // 无控制器注入 → 禁用升级
+    QCOMPARE(dialog.controller(), nullptr);
     QCOMPARE(dialog.windowModality(), Qt::NonModal);
     QPushButton *close = dialog.findChild<QPushButton *>(
-        QStringLiteral("checkUpdateCloseButton"));
+        QStringLiteral("closeButton"));
     QVERIFY(close != nullptr);
     dialog.show();
     QTest::mouseClick(close, Qt::LeftButton);

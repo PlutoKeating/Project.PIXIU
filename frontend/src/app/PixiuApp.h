@@ -36,6 +36,7 @@ class MonitorCenterDialog;
 class DeliveryController;
 class InfoDialog;
 class CheckUpdateDialog;
+class UpgradeController;
 class QTimer;
 class QDialog;
 class QLabel;
@@ -67,6 +68,10 @@ public:
     // 测试注入：替换默认桌面通知服务（仅测试用，须在 start() 前调用；
     // 与 setTransportForTest 同模式，start() 检测到已注入则不再创建默认实例）。
     void setNotifyServiceForTest(NotifyService *service);
+
+    // 测试注入：替换默认升级控制器（仅测试用，须在 showCheckUpdate() 前
+    // 调用；检测到已注入则不再创建默认实例，避免测试触发真实 GitHub 网络）。
+    void setUpgradeControllerForTest(UpgradeController *controller);
 
     // 退出前清理：停止异步任务、断开连接并释放资源。
     void shutdown();
@@ -108,6 +113,8 @@ private:
     InfoDialog *m_termsDialog = nullptr;
     InfoDialog *m_privacyDialog = nullptr;
     CheckUpdateDialog *m_checkUpdateDialog = nullptr;
+    // 应用内一键升级状态机（懒创建，注入 CheckUpdateDialog；测试可注入替身）。
+    UpgradeController *m_upgradeController = nullptr;
     // 递送层（B4-3）：洞察流 + 今日简报请求与结果上抛。
     DeliveryController *m_deliveryController = nullptr;
     // 最近一次洞察（相关主题提醒的 title token 来源）。

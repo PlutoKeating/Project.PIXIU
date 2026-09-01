@@ -15,6 +15,7 @@
 #include "app/ThemeService.h"
 #include "app/MonitorController.h"
 #include "app/DeliveryController.h"
+#include "app/UpgradeController.h"
 #include "app/UiTokens.h"
 #include "widgets/FloatingBall.h"
 #include "widgets/ChatWindow.h"
@@ -1096,10 +1097,18 @@ void PixiuApp::showPrivacy()
 
 void PixiuApp::showCheckUpdate()
 {
-    if (!m_checkUpdateDialog) {
-        m_checkUpdateDialog = new CheckUpdateDialog();
+    if (!m_upgradeController) {
+        m_upgradeController = new UpgradeController(this);
     }
-    m_checkUpdateDialog->showAndFocus();
+    if (!m_checkUpdateDialog) {
+        m_checkUpdateDialog = new CheckUpdateDialog(m_upgradeController);
+    }
+    m_checkUpdateDialog->open();
+}
+
+void PixiuApp::setUpgradeControllerForTest(UpgradeController *controller)
+{
+    m_upgradeController = controller;
 }
 
 void PixiuApp::refreshMonitorUi()

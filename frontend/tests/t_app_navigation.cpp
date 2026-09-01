@@ -2,13 +2,18 @@
 #include <QCheckBox>
 #include <QDialog>
 #include <QGuiApplication>
+#include <QHash>
+#include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QLabel>
 #include <QListWidget>
+#include <QNetworkAccessManager>
 #include <QPushButton>
 #include <QSettings>
 #include <QTabWidget>
+#include <QTcpServer>
+#include <QTcpSocket>
 #include <QTest>
 #include <QTextBrowser>
 
@@ -17,6 +22,7 @@
 #include "app/PixiuApp.h"
 #include "app/PreferenceController.h"
 #include "app/Severity.h"
+#include "app/UpgradeController.h"
 #include "services/BackendTransport.h"
 #include "services/BackendTypes.h"
 #include "services/NotifyService.h"
@@ -263,6 +269,114 @@ public:
     }
 };
 
+// ─── 本地假 HTTP server（TCP 桩）：仅供升级控制器「检查更新」使用 ───
+// 以真实 QNetworkAccessManager 走全网络栈（不经 backend transport），
+// /releases/latest 返回带新版 tag 的 release JSON → 控制器进入 Updatable。
+class FakeServer : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit FakeServer(QObject *parent = nullptr)
+        : QObject(parent)
+    {
+        m_server = new QTcpServer(this);
+        connect(m_server, &QTcpServer::newConnection, this,
+                &FakeServer::onNewConnection);
+    }
+
+    bool start() { return m_server->listen(QHostAddress::LocalHost); }
+    quint16 port() const { return m_server->serverPort(); }
+    QString baseUrl() const
+    {
+        return QStringLiteral("http://127.0.0.1:%1").arg(port());
+    }
+    void addJson(const QString &path, const QByteArray &json)
+    {
+        m_routes.insert(path, json);
+    }
+
+private:
+    void onNewConnection()
+    {
+        while (m_server->hasPendingConnections()) {
+            QTcpSocket *socket = m_server->nextPendingConnection();
+            socket->setParent(m_server);
+            connect(socket, &QTcpSocket::readyRead, this,
+                    [this, socket]() {
+                        while (socket->canReadLine()) {
+                            const QByteArray line =
+                                socket->readLine().trimmed();
+                            if (line.startsWith("GET ")) {
+                                handle(socket, line.split(' ').value(1));
+                                return;
+                            }
+                        }
+                    });
+            connect(socket, &QTcpSocket::disconnected,
+                    socket, &QTcpSocket::deleteLater);
+        }
+    }
+
+    void handle(QTcpSocket *socket, const QByteArray &path)
+    {
+        const auto it = m_routes.constFind(QString::fromLatin1(path));
+        if (it == m_routes.constEnd()) {
+            const QByteArray resp =
+                "HTTP/1.1 404 Not Found\r\n"
+                "Content-Length: 0\r\n"
+                "Connection: close\r\n"
+                "\r\n";
+            socket->write(resp);
+            socket->flush();
+            socket->disconnectFromHost();
+            return;
+        }
+        const QByteArray body = it.value();
+        const QByteArray resp =
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: application/json\r\n"
+            "Content-Length: " + QByteArray::number(body.size()) +
+            "\r\n"
+            "Connection: close\r\n"
+            "\r\n" +
+            body;
+        socket->write(resp);
+        socket->flush();
+        socket->disconnectFromHost();
+    }
+
+    QTcpServer *m_server = nullptr;
+    QHash<QString, QByteArray> m_routes;
+};
+
+namespace {
+
+// release/latest JSON（与 UpgradeUtils::parseRelease 期望形状一致），
+// 资产 browser_download_url 指回本地 server（检查更新阶段不会真正下载）。
+QByteArray upgradeReleaseJson(const QString &base, const QString &tag)
+{
+    const QByteArray tagName = ("v" + tag).toUtf8();
+    const QByteArray b = base.toUtf8();
+    QByteArray j = R"({ "tag_name": ")"
+        + tagName
+        + R"(", "assets": [
+          {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
+        + b
+        + R"(/deb"},
+          {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
+        + b + R"(/deb.sha256"} ]})";
+    return j;
+}
+
+bool acceptLocalSource(const QUrl &url)
+{
+    const QString host = url.host();
+    return host == QLatin1String("127.0.0.1") || host == QLatin1String("localhost");
+}
+
+} // namespace
+
 // 端到端导航回归：聊天框输入区上方 chip 快捷入口（记忆/设置/导入/同步）
 // 点击后必须真正打开对应窗口/Tab。防止 UI 重构只重建视觉控件、却把原有
 // 功能入口的接线弄丢（本用例直接驱动 PixiuApp 全链路，而不是只测信号层）。
@@ -335,6 +449,11 @@ private:
 
     PixiuApp *m_app = nullptr;
     ChatWindow *m_chatWindow = nullptr;
+    // 注入假升级控制器（本地假 server），避免测试点击「检查更新」触发真实
+    // GitHub 网络；父为测试对象，生命周期覆盖类级 m_app 的全部使用。
+    FakeServer *m_upgradeServer = nullptr;
+    QNetworkAccessManager *m_upgradeNetwork = nullptr;
+    UpgradeController *m_upgradeController = nullptr;
 };
 
 void TestAppNavigation::initTestCase()
@@ -357,6 +476,21 @@ void TestAppNavigation::initTestCase()
     }
     m_app = new PixiuApp();
     QVERIFY(m_app->start());
+
+    // 注入假升级控制器（本地假 server）：避免设置对话框点「检查更新」触发
+    // 真实 GitHub 网络。release JSON 指向新版 0.1.6 → 控制器进入 Updatable。
+    m_upgradeServer = new FakeServer(this);
+    QVERIFY(m_upgradeServer->start());
+    m_upgradeServer->addJson("/releases/latest",
+                             upgradeReleaseJson(m_upgradeServer->baseUrl(),
+                                                QStringLiteral("0.1.6")));
+    m_upgradeNetwork = new QNetworkAccessManager(this);
+    m_upgradeController = new UpgradeController(
+        m_upgradeNetwork,
+        QUrl(m_upgradeServer->baseUrl() + QStringLiteral("/releases/latest")),
+        this);
+    m_upgradeController->setSourceValidator(acceptLocalSource);
+    m_app->setUpgradeControllerForTest(m_upgradeController);
 
     m_chatWindow = chatWindow();
     QVERIFY(m_chatWindow != nullptr);
@@ -598,7 +732,8 @@ void TestAppNavigation::settingsOpensAboutTermsPrivacyAndUpdatePages()
     QTRY_VERIFY(privacyDialogs.first()->isVisible());
     QCOMPARE(privacyDialogs.first()->windowTitle(), QStringLiteral("隐私政策"));
 
-    // 检查更新：懒创建 CheckUpdateDialog，展示当前版本（与 applicationVersion 一致）。
+    // 检查更新：懒创建 CheckUpdateDialog，注入升级控制器；点击即触发检查，
+    // 假 server 返回新版 0.1.6 → Updatable → 一键升级可用 + 远程版本展示。
     const auto updatesBefore = topLevels<CheckUpdateDialog>();
     QPushButton *update = settings->findChild<QPushButton *>(
         QStringLiteral("checkUpdateButton"));
@@ -607,10 +742,21 @@ void TestAppNavigation::settingsOpensAboutTermsPrivacyAndUpdatePages()
     const auto updates = newTopLevels(updatesBefore);
     QCOMPARE(updates.size(), 1);
     QTRY_VERIFY(updates.first()->isVisible());
-    QLabel *updateBody = updates.first()->findChild<QLabel *>(
-        QStringLiteral("checkUpdateBodyLabel"));
-    QVERIFY(updateBody != nullptr);
-    QVERIFY(updateBody->text().contains(QCoreApplication::applicationVersion()));
+    // 注入的控制器非空（PixiuApp 接线成功），不触发真实网络。
+    QVERIFY(updates.first()->controller() != nullptr);
+    QLabel *current = updates.first()->findChild<QLabel *>(
+        QStringLiteral("currentVersionLabel"));
+    QVERIFY(current != nullptr);
+    QVERIFY(current->text().contains(QCoreApplication::applicationVersion()));
+    // Updatable：一键升级可用 + 远程最新版本展示。
+    QPushButton *upgrade = updates.first()->findChild<QPushButton *>(
+        QStringLiteral("upgradeButton"));
+    QVERIFY(upgrade != nullptr);
+    QTRY_VERIFY(upgrade->isEnabled());
+    QLabel *remote = updates.first()->findChild<QLabel *>(
+        QStringLiteral("remoteVersionLabel"));
+    QVERIFY(remote != nullptr);
+    QTRY_VERIFY(remote->text().contains(QStringLiteral("远程最新版本")));
 }
 
 void TestAppNavigation::remoteConfigOverridesControllerOnStart()
