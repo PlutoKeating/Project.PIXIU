@@ -723,11 +723,14 @@ void TestUpgradeController::invalidSourceRejected()
         FakeServer *server = new FakeServer(this);
         QVERIFY(server->start());
         const QString base = server->baseUrl();
-        QByteArray json = R"({ "tag_name": "v0.1.6", "assets": [
-            {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
-            + c.debUrl + R"("},
-            {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
-            + c.shaUrl + R"("} ]})";
+        const QByteArray assetBase =
+            "pixiu_0.1.6-1_" + ui::debianArchitecture().toUtf8() + ".deb";
+        QByteArray json =
+            R"({ "tag_name": "v0.1.6", "assets": [{"name":")" + assetBase
+            + R"(","browser_download_url":")" + c.debUrl
+            + R"("},{"name":")" + assetBase
+            + R"(.sha256","browser_download_url":")" + c.shaUrl
+            + R"("} ]})";
         server->addJson("/releases/latest", json);
 
         QNetworkAccessManager net;
