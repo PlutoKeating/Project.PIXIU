@@ -28,6 +28,8 @@ add_executable(pixiu-frontend
     src/app/PixiuApp.cpp
     src/app/SingleInstanceGuard.h
     src/app/SingleInstanceGuard.cpp
+    src/app/UserIdentity.h
+    src/app/UserIdentity.cpp
     src/app/TrayIcon.h
     src/app/TrayIcon.cpp
     src/app/AppSettings.h
@@ -434,10 +436,21 @@ if(BUILD_TESTING)
     target_link_libraries(t_monitor_center PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME monitor_center COMMAND t_monitor_center)
 
+    add_executable(t_user_identity
+        tests/t_user_identity.cpp
+        src/app/UserIdentity.h
+        src/app/UserIdentity.cpp
+    )
+    target_include_directories(t_user_identity PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_user_identity PRIVATE Qt5::Test Qt5::Core)
+    add_test(NAME user_identity COMMAND t_user_identity)
+
     add_executable(t_chat_window
         tests/t_chat_window.cpp
         src/widgets/ChatWindow.h
         src/widgets/ChatWindow.cpp
+        src/app/UserIdentity.h
+        src/app/UserIdentity.cpp
         src/widgets/InputBar.h
         src/widgets/InputBar.cpp
         src/widgets/MessageList.h
@@ -510,6 +523,8 @@ if(BUILD_TESTING)
         src/app/PixiuApp.cpp
         src/app/SingleInstanceGuard.h
         src/app/SingleInstanceGuard.cpp
+        src/app/UserIdentity.h
+        src/app/UserIdentity.cpp
         src/app/TrayIcon.h
         src/app/TrayIcon.cpp
         src/app/AppSettings.h
@@ -598,6 +613,8 @@ if(BUILD_TESTING)
         src/app/PixiuApp.cpp
         src/app/SingleInstanceGuard.h
         src/app/SingleInstanceGuard.cpp
+        src/app/UserIdentity.h
+        src/app/UserIdentity.cpp
         src/app/TrayIcon.h
         src/app/TrayIcon.cpp
         src/app/AppSettings.h
@@ -687,5 +704,6 @@ if(BUILD_TESTING)
         chat_window input_bar message_list import_dialog evidence_card i18n
         sync_controller event_router settings_dialog
         app_navigation window_restore monitor_controller monitor_center
+        user_identity
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()

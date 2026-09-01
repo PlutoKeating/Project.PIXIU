@@ -21,6 +21,7 @@
 #include "app/UkuiWindow.h"
 #include "app/UiIcons.h"
 #include "app/UiTokens.h"
+#include "app/UserIdentity.h"
 #include "widgets/InputBar.h"
 #include "widgets/MessageList.h"
 
@@ -267,11 +268,14 @@ QWidget *ChatWindow::buildWelcomeView()
     logo->setAlignment(Qt::AlignCenter);
     logo->setAccessibleName(tr("PIXIU 标识"));
 
-    QLabel *title = new QLabel(tr("你好，我是 PIXIU"), view);
+    // 问候动态化（G-1）：主标题叫出用户名字（displayUserName），PIXIU
+    // 产品身份并入副标题，避免把用户唤作貔貅/产品名。
+    QLabel *title = new QLabel(tr("你好，%1").arg(ui::displayUserName()), view);
     title->setObjectName(QStringLiteral("welcomeTitle"));
     title->setAlignment(Qt::AlignCenter);
 
-    QLabel *subtitle = new QLabel(tr("问问你的记忆，或录入新的知识"), view);
+    QLabel *subtitle =
+        new QLabel(tr("我是 PIXIU — 问问你的记忆，或录入新的知识"), view);
     subtitle->setObjectName(QStringLiteral("welcomeSubtitle"));
     subtitle->setAlignment(Qt::AlignCenter);
     subtitle->setWordWrap(true);

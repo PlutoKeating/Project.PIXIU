@@ -7,6 +7,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
+#include "app/UserIdentity.h"
 #include "services/BackendTypes.h"
 #include "widgets/ChatWindow.h"
 #include "widgets/InputBar.h"
@@ -31,6 +32,7 @@ private slots:
     void dragMovesWindowAndEmitsMoved();
     void defaultSizeIsNarrowTall();
     void welcomeShownInitiallyThenHiddenAfterMessage();
+    void welcomeTitleGreetsByUserNameKeepsProductIdentity();
     void suggestionCardsFillInput();
     void sendButtonForwardsTextAndClears();
     void restoreInputPrefillsEditor();
@@ -211,6 +213,35 @@ void TestChatWindow::welcomeShownInitiallyThenHiddenAfterMessage()
     // 清空消息后回到欢迎页（行删除经零延迟定时器处理）。
     window.messageList()->clearMessages();
     QTRY_VERIFY(welcome->isVisible());
+}
+
+void TestChatWindow::welcomeTitleGreetsByUserNameKeepsProductIdentity()
+{
+    ChatWindow window;
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+
+    QLabel *title =
+        window.findChild<QLabel *>(QStringLiteral("welcomeTitle"));
+    QLabel *subtitle =
+        window.findChild<QLabel *>(QStringLiteral("welcomeSubtitle"));
+    QVERIFY(title != nullptr);
+    QVERIFY(subtitle != nullptr);
+
+    // 主标题叫出用户名字（displayUserName，GECOS 全名 → $USER 兜底 → “用户”），
+    // 且不把用户称作貔貅/产品名——PIXIU 只出现在产品自称处（副标题）。
+    QVERIFY2(title->text().startsWith(QStringLiteral("你好，")),
+             qPrintable(title->text()));
+    QVERIFY2(title->text().contains(ui::displayUserName()),
+             qPrintable(title->text()));
+    QVERIFY2(!title->text().contains(QStringLiteral("貔貅")),
+             qPrintable(title->text()));
+    QVERIFY2(!title->text().contains(QStringLiteral("我是 PIXIU")),
+             qPrintable(title->text()));
+
+    // 产品身份并入副标题。
+    QVERIFY2(subtitle->text().contains(QStringLiteral("我是 PIXIU")),
+             qPrintable(subtitle->text()));
 }
 
 void TestChatWindow::suggestionCardsFillInput()
