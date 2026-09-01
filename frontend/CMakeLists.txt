@@ -99,6 +99,10 @@ add_executable(pixiu-frontend
     src/app/ThemeService.cpp
     src/app/UkuiWindow.h
     src/app/UkuiWindow.cpp
+    src/app/UpgradeUtils.h
+    src/app/UpgradeUtils.cpp
+    src/app/UpgradeController.h
+    src/app/UpgradeController.cpp
     resources/resources.qrc
 )
 
@@ -454,6 +458,17 @@ if(BUILD_TESTING)
     target_link_libraries(t_upgrade_utils PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME upgrade_utils COMMAND t_upgrade_utils)
 
+    add_executable(t_upgrade_controller
+        tests/t_upgrade_controller.cpp
+        src/app/UpgradeController.h
+        src/app/UpgradeController.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+    )
+    target_include_directories(t_upgrade_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_upgrade_controller PRIVATE Qt5::Test Qt5::Network)
+    add_test(NAME upgrade_controller COMMAND t_upgrade_controller)
+
     add_executable(t_chat_window
         tests/t_chat_window.cpp
         src/widgets/ChatWindow.h
@@ -603,6 +618,10 @@ if(BUILD_TESTING)
         src/app/ThemeService.cpp
         src/app/UkuiWindow.h
         src/app/UkuiWindow.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+        src/app/UpgradeController.h
+        src/app/UpgradeController.cpp
         resources/resources.qrc
     )
     target_include_directories(t_app_navigation PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -693,6 +712,10 @@ if(BUILD_TESTING)
         src/app/ThemeService.cpp
         src/app/UkuiWindow.h
         src/app/UkuiWindow.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+        src/app/UpgradeController.h
+        src/app/UpgradeController.cpp
         resources/resources.qrc
     )
     target_include_directories(t_window_restore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -715,5 +738,6 @@ if(BUILD_TESTING)
         app_navigation window_restore monitor_controller monitor_center
         user_identity
         upgrade_utils
+        upgrade_controller
         PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
