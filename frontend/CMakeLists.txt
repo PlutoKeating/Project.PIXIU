@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(pixiu-frontend VERSION 0.1.4 LANGUAGES CXX)
+project(pixiu-frontend VERSION 0.1.5 LANGUAGES CXX)
 
 # PIXIU_VERSION 编译宏：由 project VERSION（${PROJECT_VERSION}）派生，与
 # main.cpp setApplicationVersion / HttpBackendTransport.cpp User-Agent
