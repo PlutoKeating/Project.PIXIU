@@ -20,14 +20,6 @@
         <translation>PIXIU welcome</translation>
     </message>
     <message>
-        <source>你好，我是 PIXIU</source>
-        <translation type="vanished">Hi, I&apos;m PIXIU</translation>
-    </message>
-    <message>
-        <source>问问你的记忆，或录入新的知识</source>
-        <translation type="vanished">Ask your memories, or record something new</translation>
-    </message>
-    <message>
         <source>按 Ctrl+Alt+P 随时唤起</source>
         <translation>Press Ctrl+Alt+P anytime to summon</translation>
     </message>
@@ -83,12 +75,72 @@
         <translation>Check for Updates</translation>
     </message>
     <message>
-        <source>当前版本 %1。请从官方渠道获取最新版本，通过安装包直接升级；升级将保留您的记忆与配置。</source>
-        <translation>Current version %1. Get the latest version from the official channel and upgrade directly with the installer; your memory and configuration will be preserved.</translation>
-    </message>
-    <message>
         <source>知道了</source>
         <translation>Got it</translation>
+    </message>
+    <message>
+        <source>当前版本 %1</source>
+        <translation>Current version %1</translation>
+    </message>
+    <message>
+        <source>检测中…</source>
+        <translation>Checking…</translation>
+    </message>
+    <message>
+        <source>正在检查更新…</source>
+        <translation>Checking for updates…</translation>
+    </message>
+    <message>
+        <source>一键升级</source>
+        <translation>Upgrade Now</translation>
+    </message>
+    <message>
+        <source>取消</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <source>检测到新版本</source>
+        <translation>New version detected</translation>
+    </message>
+    <message>
+        <source>远程最新版本 %1</source>
+        <translation>Latest remote version: %1</translation>
+    </message>
+    <message>
+        <source>发现新版本，可一键升级</source>
+        <translation>New version found; one-click upgrade available</translation>
+    </message>
+    <message>
+        <source>已是最新</source>
+        <translation>Up to date</translation>
+    </message>
+    <message>
+        <source>已是最新版本</source>
+        <translation>Already up to date</translation>
+    </message>
+    <message>
+        <source>下载中…%1%</source>
+        <translation>Downloading…%1%</translation>
+    </message>
+    <message>
+        <source>校验正在下载包…</source>
+        <translation>Verifying download…</translation>
+    </message>
+    <message>
+        <source>正在申请安装权限…</source>
+        <translation>Requesting install permissions…</translation>
+    </message>
+    <message>
+        <source>升级成功，请手动重启应用以生效</source>
+        <translation>Upgrade successful. Please restart the app manually for it to take effect.</translation>
+    </message>
+    <message>
+        <source>已取消</source>
+        <translation>Cancelled</translation>
+    </message>
+    <message>
+        <source>更新失败</source>
+        <translation>Update failed</translation>
     </message>
 </context>
 <context>
@@ -1300,6 +1352,45 @@ You can forget any memory with natural-language instructions — your data stays
     <message>
         <source>暂停监控</source>
         <translation>Pause monitoring</translation>
+    </message>
+</context>
+<context>
+    <name>UpgradeController</name>
+    <message>
+        <source>无法连接更新服务器</source>
+        <translation>Cannot connect to the update server.</translation>
+    </message>
+    <message>
+        <source>已是最新版本</source>
+        <translation>Already up to date</translation>
+    </message>
+    <message>
+        <source>更新源无效</source>
+        <translation>Invalid update source</translation>
+    </message>
+    <message>
+        <source>下载失败</source>
+        <translation>Download failed</translation>
+    </message>
+    <message>
+        <source>校验失败，已中止</source>
+        <translation>Verification failed; aborted.</translation>
+    </message>
+    <message>
+        <source>升级成功，请手动重启应用以生效</source>
+        <translation>Upgrade successful. Please restart the app manually for it to take effect.</translation>
+    </message>
+    <message>
+        <source>已取消，升级未执行</source>
+        <translation>Cancelled; the upgrade was not executed.</translation>
+    </message>
+    <message>
+        <source>升级失败，请检查系统日志</source>
+        <translation>Upgrade failed. Please check the system logs.</translation>
+    </message>
+    <message>
+        <source>已取消</source>
+        <translation>Cancelled</translation>
     </message>
 </context>
 </TS>
