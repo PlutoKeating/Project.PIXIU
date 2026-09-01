@@ -57,6 +57,11 @@ public:
         const QString &program, const QStringList &args,
         const std::function<void(int)> &onFinished)>;
 
+    // 下载源可信判定：默认要求 https + GitHub host allowlist（防篡改的 release
+    // 元数据把 deb/sha URL 指向任意 http:// host 造成 MITM）。测试注入宽松判定
+    // 覆盖本地假 server 的 http://127.0.0.1 下载 URL。
+    using SourceValidator = std::function<bool(const QUrl &)>;
+
     explicit UpgradeController(QObject *parent = nullptr);
 
     // 测试 seam：注入网络管理器与 release-latest URL（指向本地假 server）。
@@ -84,6 +89,12 @@ public:
 
     // 测试 seam：注入安装执行器（替换默认 QProcess pkexec 路径）。
     void setInstallRunner(InstallRunner runner);
+
+    // 测试 seam：覆盖「下载源可信」判定（默认 https + GitHub host allowlist）。
+    void setSourceValidator(SourceValidator validator)
+    {
+        m_sourceValidator = std::move(validator);
+    }
 
 signals:
     void stateChanged(State state);
@@ -116,6 +127,7 @@ private:
     QSaveFile *m_downloadFile = nullptr;
     QProcess *m_installProcess = nullptr;
     InstallRunner m_installRunner;
+    SourceValidator m_sourceValidator;
 };
 
 // 使 State 可用于 QVariant（QSignalSpy 记录 / 信号跨线程排队依赖）。

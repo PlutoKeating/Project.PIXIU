@@ -12,12 +12,35 @@
 
 Q_LOGGING_CATEGORY(lcUpgrade, "pixiu.upgrade")
 
+namespace {
+// 检查/下载/校验三请求的传输超时（ms）。Qt 5.15 默认 transferTimeout=0 禁用：
+// 黑洞 server 会让状态机永远挂起。仿 HttpBackendTransport::kTransferTimeoutMs
+// 先例（10000ms），升级传输取 15s（deb 较大）。
+constexpr int kUpgradeTransferTimeoutMs = 15000;
+
+// GitHub 资产下载源的铁律校验：HTTPS + host allowlist。GitHub 的
+// browser_download_url 初始指向 github.com，302 后跳到
+// objects.githubusercontent.com；release/latest API 亦在 api.github.com。
+// 恶意/被篡改的 release 元数据若把 deb/sha 指向任意 http:// host 即在此拦截。
+bool isGitHubDownloadSource(const QUrl &url)
+{
+    if (url.scheme() != QLatin1String("https")) {
+        return false;
+    }
+    const QString host = url.host().toLower();
+    return host == QLatin1String("github.com") || //
+        host == QLatin1String("objects.githubusercontent.com") || //
+        host == QLatin1String("api.github.com");
+}
+} // namespace
+
 UpgradeController::UpgradeController(QObject *parent)
     : QObject(parent)
     , m_releaseUrl(QStringLiteral(
           "https://api.github.com/repos/PlutoKeating/Project.PIXIU/releases/latest"))
 {
     m_network = new QNetworkAccessManager(this);
+    m_sourceValidator = [](const QUrl &u) { return isGitHubDownloadSource(u); };
     qRegisterMetaType<UpgradeController::State>("UpgradeController::State");
 }
 
@@ -27,6 +50,7 @@ UpgradeController::UpgradeController(QNetworkAccessManager *network,
     , m_network(network)
     , m_releaseUrl(releaseUrl)
 {
+    m_sourceValidator = [](const QUrl &u) { return isGitHubDownloadSource(u); };
     qRegisterMetaType<UpgradeController::State>("UpgradeController::State");
 }
 
@@ -106,6 +130,11 @@ void UpgradeController::checkForUpdate()
 
     QNetworkRequest request(m_releaseUrl);
     request.setRawHeader("User-Agent", QByteArrayLiteral("Pixiu-Update/1.0"));
+    // Qt 5.15 默认 ManualRedirectPolicy（不跟随）。GitHub release/latest 走
+    // api.github.com，无需 302；仍统一跟随以防御中间层重定向（https→https）。
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+    request.setTransferTimeout(kUpgradeTransferTimeoutMs);
     m_checkReply = m_network->get(request);
     connect(m_checkReply, &QNetworkReply::finished, this,
             &UpgradeController::handleCheckFinished);
@@ -118,11 +147,17 @@ void UpgradeController::handleCheckFinished()
     if (!reply) {
         return;
     }
+    if (m_state != State::Checking) {
+        reply->deleteLater();
+        return; // 已取消/复位，忽略迟到回调
+    }
     const bool ok = reply->error() == QNetworkReply::NoError;
     const QByteArray body = reply->readAll();
     reply->deleteLater();
 
     if (!ok) {
+        // 传输超时（setTransferTimeout → OperationCanceledError）与网络/HTTP
+        // 失败同归「无法连接」路径（非 NoError 即判定失败）。
         qCWarning(lcUpgrade) << "check failed (network/http):" << m_releaseUrl;
         setState(State::Failed);
         emit upgradeFinished(false, tr("无法连接更新服务器"));
@@ -156,6 +191,17 @@ void UpgradeController::downloadAndInstall()
     if (m_state != State::Updatable || m_release.debUrl.isEmpty()) {
         return; // 仅 Updatable 且需含有效 deb 下载地址
     }
+    // 安全铁律（HTTPS + GitHub host allowlist）：deb 与 sha 均为可信下载源才
+    // 允许发起下载；否则 Failed + 更新源无效（不发起下载，不落盘）。
+    const QUrl debUrl(m_release.debUrl);
+    const QUrl shaUrl(m_release.shaUrl);
+    if (!m_sourceValidator(debUrl) || !m_sourceValidator(shaUrl)) {
+        qCWarning(lcUpgrade) << "untrusted download source:"
+                             << m_release.debUrl << m_release.shaUrl;
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("更新源无效"));
+        return;
+    }
     resetTransport();
     setState(State::Downloading);
 
@@ -171,7 +217,16 @@ void UpgradeController::downloadAndInstall()
         return;
     }
 
-    QNetworkRequest request(QUrl(m_release.debUrl));
+    QNetworkRequest request(debUrl);
+    request.setRawHeader("User-Agent", QByteArrayLiteral("Pixiu-Update/1.0"));
+    // Qt 5.15 默认 ManualRedirectPolicy（不跟随）：GitHub browser_download_url
+    // 302 → objects.githubusercontent.com，manual 下 reply 以 302 + 空 body
+    // 终止（error==NoError）→ 空文件 commit → verifySha256 失败 → 永远「校验
+    // 失败」。须跟随 https→https、同 host / github.com→objects.githubusercontent
+    // .com 的安全重定向。
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+    request.setTransferTimeout(kUpgradeTransferTimeoutMs);
     m_downloadReply = m_network->get(request);
     connect(m_downloadReply, &QNetworkReply::readyRead, this, [this]() {
         if (m_downloadFile && m_downloadReply) {
@@ -206,6 +261,8 @@ void UpgradeController::handleDownloadFinished()
     const bool ok = reply->error() == QNetworkReply::NoError;
     reply->deleteLater();
 
+    // 传输超时（setTransferTimeout → OperationCanceledError）与网络/HTTP 失败
+    // 同归「下载失败」路径（非 NoError 即判定失败）。
     if (!ok || !m_downloadFile || !m_downloadFile->commit()) {
         if (m_downloadFile) {
             m_downloadFile->cancelWriting();
@@ -228,6 +285,12 @@ void UpgradeController::handleDownloadFinished()
 void UpgradeController::fetchSha()
 {
     QNetworkRequest request(QUrl(m_release.shaUrl));
+    request.setRawHeader("User-Agent", QByteArrayLiteral("Pixiu-Update/1.0"));
+    // 同 deb：GitHub .deb.sha256 browser_download_url 亦会 302 →
+    // objects.githubusercontent.com，须跟随；并设传输超时。
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+    request.setTransferTimeout(kUpgradeTransferTimeoutMs);
     m_shaReply = m_network->get(request);
     QNetworkReply *sha = m_shaReply;
     connect(sha, &QNetworkReply::finished, this,
@@ -249,9 +312,17 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
     if (m_state != State::Verifying) {
         return; // 已取消/失败，忽略迟到回调
     }
+    // sha 获取失败（网络错误 / 传输超时 → OperationCanceledError）：并入
+    // 「下载失败」路径，与校验不通过区分，避免把网络问题误报为「校验失败」。
+    if (!ok) {
+        QFile::remove(m_debPath);
+        m_debPath.clear();
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("下载失败"));
+        return;
+    }
     const QString expected = QString::fromLatin1(body);
-    const bool valid = ok && ui::verifySha256(m_debPath, expected);
-    if (!valid) {
+    if (!ui::verifySha256(m_debPath, expected)) {
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);

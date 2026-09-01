@@ -43,7 +43,7 @@
 **Files:** Create `frontend/src/app/UpgradeController.h/.cpp`；Modify `frontend/CMakeLists.txt`（主目标 + 编译 PixiuApp.cpp 的目标源列表）；Test `frontend/tests/t_upgrade_controller.cpp`
 
 **Interfaces:**
-- `UpgradeController(QObject* parent)` — `void checkForUpdate()`、`void downloadAndInstall()`、`void cancel()`；信号 `checkStateChanged(State)`、`remoteVersionFound(const QString &version)`、`progressChanged(int percent)`、`upgradeFinished(bool success, const QString &message)`；`enum class State { Idle, Checking, Updatable, UpToDate, Downloading, Verifying, Installing, Success, Cancelled, Failed }`
+- `UpgradeController(QObject* parent)` — `void checkForUpdate()`、`void downloadAndInstall()`、`void cancel()`；信号 `stateChanged(State)`、`remoteVersionFound(const QString &version)`、`progressChanged(int percent)`、`upgradeFinished(bool success, const QString &message)`；`enum class State { Idle, Checking, Updatable, UpToDate, Downloading, Verifying, Installing, Success, Cancelled, Failed }`
 - 网络：`QNetworkAccessManager` 拉 `GET https://api.github.com/repos/PlutoKeating/Project.PIXIU/releases/latest`；`parseRelease` 解析；`compareVersions(remote, applicationVersion) > 0` → Updatable
 - 下载：`GET debUrl`（`QNetworkReply` 流式，进度信号）→ 存 `QStandardPaths::writableLocation(TempLocation) + "/pixiu-update.deb"`；再 `GET shaUrl` 或直接 fetch `.sha256` 内容 → `verifySha256(deb, expected)` → 通过才 Verifying→Installing
 - 安装：`QProcess::start("pkexec", {"dpkg", "-i", debPath})`（pkexec 弹 polkit 认证框）；退出 0 → Success；126/127（polkit 取消）→ Cancelled；其他 → Failed（附错误摘要）

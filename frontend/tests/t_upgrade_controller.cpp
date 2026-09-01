@@ -17,7 +17,9 @@
 // ─── 本地假 HTTP server（TCP 桩），仿 t_http_backend / t_contract_fixtures ───
 // 以真实 QNetworkAccessManager 走全网络栈（不经 backend transport），路由按
 // 请求路径返回：完整响应 / 404 / 立即断开（网络故障）/ 半包不封尾（挂起下载，
-// 供取消测试）。ReleaseInfo.debUrl/shaUrl 由 release JSON 指回同一 server。
+// 供取消测试）/ 302 重定向（模拟 GitHub browser_download_url 跳转）/ 接受后
+// 挂起不响应（传输超时测试）。ReleaseInfo.debUrl/shaUrl 由 release JSON 指回
+// 同一 server。
 class FakeServer : public QObject
 {
     Q_OBJECT
@@ -56,6 +58,15 @@ public:
         m_partial.insert(path, body);
         m_partialChunk.insert(path, firstChunk);
     }
+    // 接受请求后不发任何响应（保持连接开启）→ 客户端 transferTimeout 超时
+    // （QNetworkReply::OperationCanceledError）。
+    void addHang(const QString &path) { m_hang.insert(path); }
+    // 302 重定向到 location（绝对或相对 URL）→ 模拟 GitHub browser_download_url
+    // 302 → objects.githubusercontent.com。
+    void addRedirect(const QString &path, const QString &location)
+    {
+        m_redirects.insert(path, location);
+    }
 
 private:
     struct Route {
@@ -88,8 +99,24 @@ private:
     void handle(QTcpSocket *socket, const QByteArray &path)
     {
         const QString p = QString::fromLatin1(path);
+        if (m_hang.contains(p)) {
+            return; // 接收请求但从不响应（保持连接开启）→ 客户端 transferTimeout
+        }
         if (m_drop.contains(p)) {
             socket->abort(); // 立即断开，模拟网络中断
+            return;
+        }
+        const auto rit = m_redirects.constFind(p);
+        if (rit != m_redirects.constEnd()) {
+            const QByteArray resp =
+                "HTTP/1.1 302 Found\r\n"
+                "Location: " + rit.value().toUtf8() + "\r\n"
+                "Content-Length: 0\r\n"
+                "Connection: close\r\n"
+                "\r\n";
+            socket->write(resp);
+            socket->flush();
+            socket->disconnectFromHost();
             return;
         }
         if (m_partial.contains(p)) {
@@ -142,6 +169,8 @@ private:
     QSet<QString> m_drop;
     QHash<QString, QByteArray> m_partial;
     QHash<QString, int> m_partialChunk;
+    QSet<QString> m_hang;
+    QHash<QString, QString> m_redirects;
 };
 
 namespace {
@@ -176,6 +205,14 @@ QString tempDebPath()
         + QStringLiteral("/pixiu-update.deb");
 }
 
+// 本地假 server 的下载源判定（http://127.0.0.1）。生产默认 validator 要求
+// https + GitHub host allowlist，测试须放宽以走本地 TCP 桩。
+bool acceptLocalSource(const QUrl &url)
+{
+    const QString host = url.host();
+    return host == QLatin1String("127.0.0.1") || host == QLatin1String("localhost");
+}
+
 } // namespace
 
 // UpgradeController：检查 / 版本比较 / 下载校验安装 / 取消的状态机契约测试。
@@ -201,6 +238,9 @@ private slots:
     void installHandlesExitCodes();
     void cancelDuringDownload();
     void downloadIgnoredWhenNotUpdatable();
+    void downloadFollowsRedirect();       // C1：GitHub 302 重定向须跟随
+    void checkTimeoutFails();             // 传输超时 → Failed
+    void invalidSourceRejected();         // 下载源非 https/非 allowlist → 更新源无效
 
 private:
     // 部署一个「本地有新版 0.1.6 可升级」的假 server，返回该 server 供路由。
@@ -351,6 +391,8 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
 
     QNetworkAccessManager net;
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+    // 本地假 server 用 http://127.0.0.1（非生产 allowlist），放宽下载源判定。
+    controller.setSourceValidator(acceptLocalSource);
     QSignalSpy progressSpy(&controller, &UpgradeController::progressChanged);
     QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
     QList<UpgradeController::State> seen;
@@ -412,6 +454,7 @@ void TestUpgradeController::downloadAndInstallVerifyFails()
 
     QNetworkAccessManager net;
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
     QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
     int runnerCalls = 0;
     controller.setInstallRunner(
@@ -451,6 +494,7 @@ void TestUpgradeController::installHandlesExitCodes()
         QNetworkAccessManager net;
         UpgradeController controller(
             &net, QUrl(server->baseUrl() + "/releases/latest"));
+        controller.setSourceValidator(acceptLocalSource);
         QSignalSpy finishedSpy(&controller,
                                &UpgradeController::upgradeFinished);
 
@@ -485,6 +529,7 @@ void TestUpgradeController::cancelDuringDownload()
 
     QNetworkAccessManager net;
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
     QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
 
     controller.checkForUpdate();
@@ -509,6 +554,118 @@ void TestUpgradeController::downloadIgnoredWhenNotUpdatable()
     UpgradeController controller;
     controller.downloadAndInstall();
     QCOMPARE(controller.state(), UpgradeController::State::Idle);
+}
+
+void TestUpgradeController::downloadFollowsRedirect()
+{
+    // C1：Qt 5.15 默认 ManualRedirectPolicy 不跟随 302。GitHub browser_download_url
+    // 初始指向 github.com，302 → objects.githubusercontent.com；manual 策略下
+    // reply 以 302 + 空 body 终止（error==NoError）→ 空文件 commit →
+    // verifySha256 永远失败。此处用本地 server 模拟：/deb 返回 302 →
+    // /real-deb（真实 body），断言 下载+校验+安装 依然完成。
+    const QByteArray deb = QByteArrayLiteral("redirected-deb-payload-0123456789");
+    FakeServer *server = new FakeServer(this);
+    QVERIFY(server->start());
+    const QString base = server->baseUrl();
+    server->addJson("/releases/latest", releaseJson(base, "0.1.6"));
+    server->addRedirect("/deb", base + "/real-deb");
+    server->addRoute("/real-deb", 200, "application/octet-stream", deb);
+    server->addRoute("/deb.sha256", 200, "text/plain", shaOf(deb));
+
+    QNetworkAccessManager net;
+    UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+    int runnerCalls = 0;
+    controller.setInstallRunner(
+        [&](const QString &, const QStringList &, std::function<void(int)> onFinished) {
+            ++runnerCalls;
+            onFinished(0);
+        });
+
+    controller.checkForUpdate();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+    controller.downloadAndInstall();
+
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
+    QCOMPARE(finishedSpy.count(), 1);
+    QCOMPARE(finishedSpy.at(0).at(0).toBool(), true);
+    QCOMPARE(runnerCalls, 1); // 302 被跟随，真实 body 下载校验后进入安装
+    QVERIFY(!QFile::exists(tempDebPath()));
+}
+
+void TestUpgradeController::checkTimeoutFails()
+{
+    // 传输超时：/releases/latest 接受连接后从不响应 → setTransferTimeout(15s)
+    // 到时触发 OperationCanceledError → 并入「无法连接更新服务器」失败路径。
+    FakeServer server;
+    QVERIFY(server.start());
+    server.addHang("/releases/latest");
+
+    QNetworkAccessManager net;
+    UpgradeController controller(
+        &net, QUrl(server.baseUrl() + "/releases/latest"));
+    QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+
+    controller.checkForUpdate();
+    QTRY_COMPARE_WITH_TIMEOUT(controller.state(),
+                              UpgradeController::State::Failed, 20000);
+    QCOMPARE(finishedSpy.count(), 1);
+    QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
+    QCOMPARE(finishedSpy.at(0).at(1).toString(),
+             QStringLiteral("无法连接更新服务器"));
+}
+
+void TestUpgradeController::invalidSourceRejected()
+{
+    // 无效下载源：http:// 协议 或 https:// 非 allowlist host → Failed +
+    // 更新源无效，且不发起下载（默认 m_sourceValidator 要求
+    // https + GitHub host allowlist；校验在 downloadAndInstall 最前，早于
+    // setState(Downloading) 与 get()）。
+    struct Case {
+        const char *name;
+        QByteArray debUrl;
+        QByteArray shaUrl;
+    };
+    const Case cases[] = {
+        {"http-scheme", QByteArrayLiteral("http://127.0.0.1:1/deb"),
+         QByteArrayLiteral("http://127.0.0.1:1/deb.sha256")},
+        {"non-allowlist-host", QByteArrayLiteral("https://evil.example.com/deb"),
+         QByteArrayLiteral("https://evil.example.com/deb.sha256")},
+    };
+
+    for (const Case &c : cases) {
+        FakeServer *server = new FakeServer(this);
+        QVERIFY(server->start());
+        const QString base = server->baseUrl();
+        QByteArray json = R"({ "tag_name": "v0.1.6", "assets": [
+            {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
+            + c.debUrl + R"("},
+            {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
+            + c.shaUrl + R"("} ]})";
+        server->addJson("/releases/latest", json);
+
+        QNetworkAccessManager net;
+        UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+        QList<UpgradeController::State> seen;
+        connect(&controller, &UpgradeController::stateChanged, this,
+                [&seen](UpgradeController::State s) { seen.append(s); });
+        QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+
+        controller.checkForUpdate();
+        QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+        controller.downloadAndInstall();
+
+        QCOMPARE(controller.state(), UpgradeController::State::Failed);
+        QCOMPARE(finishedSpy.count(), 1);
+        QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
+        QCOMPARE(finishedSpy.at(0).at(1).toString(),
+                 QStringLiteral("更新源无效"));
+        // 校验在 setState(Downloading) 之前拦截 → 状态机从未进入下载。
+        QVERIFY(!seen.contains(UpgradeController::State::Downloading));
+        QVERIFY(!QFile::exists(tempDebPath()));
+        delete server;
+    }
 }
 
 QTEST_MAIN(TestUpgradeController)
