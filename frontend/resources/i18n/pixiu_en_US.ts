@@ -21,11 +21,11 @@
     </message>
     <message>
         <source>你好，我是 PIXIU</source>
-        <translation>Hi, I&apos;m PIXIU</translation>
+        <translation type="vanished">Hi, I&apos;m PIXIU</translation>
     </message>
     <message>
         <source>问问你的记忆，或录入新的知识</source>
-        <translation>Ask your memories, or record something new</translation>
+        <translation type="vanished">Ask your memories, or record something new</translation>
     </message>
     <message>
         <source>按 Ctrl+Alt+P 随时唤起</source>
@@ -66,6 +66,14 @@
     <message>
         <source>今日简报</source>
         <translation>Today&apos;s Briefing</translation>
+    </message>
+    <message>
+        <source>你好，%1</source>
+        <translation>Hi, %1</translation>
+    </message>
+    <message>
+        <source>我是 PIXIU — 问问你的记忆，或录入新的知识</source>
+        <translation>I&apos;m PIXIU — ask your memories, or record something new</translation>
     </message>
 </context>
 <context>
