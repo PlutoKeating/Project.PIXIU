@@ -23,7 +23,7 @@ QString gecosFullName(const char *gecos)
     const char *comma = std::strchr(gecos, ',');
     const QByteArray first =
         comma ? QByteArray(gecos, comma - gecos) : QByteArray(gecos);
-    return QString::fromUtf8(first).trimmed();
+    return QString::fromLocal8Bit(first).trimmed();
 }
 
 } // namespace

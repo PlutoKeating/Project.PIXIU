@@ -273,6 +273,7 @@ QWidget *ChatWindow::buildWelcomeView()
     QLabel *title = new QLabel(tr("你好，%1").arg(ui::displayUserName()), view);
     title->setObjectName(QStringLiteral("welcomeTitle"));
     title->setAlignment(Qt::AlignCenter);
+    title->setWordWrap(true);
 
     QLabel *subtitle =
         new QLabel(tr("我是 PIXIU — 问问你的记忆，或录入新的知识"), view);
