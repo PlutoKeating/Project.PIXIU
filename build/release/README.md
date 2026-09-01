@@ -169,6 +169,8 @@ GitHub Release 使用原生 amd64 与 arm64 托管 runner、`KYSDK=OFF`，分别
 arm64 在麒麟画像完成真机取证前仅采用 `generic-ubuntu` 画像。因此 ARM 产物
 只证明 Debian 通用降级画像可构建运行；麒麟 SDK 原生能力仍须在装有 SDK
 开发包的麒麟自托管 runner 或真机（x86_64 / aarch64）分开验收。
+该通用发布工作流不拉取 Gitee SDK submodule，避免未使用的外部源码服务影响
+`KYSDK=OFF` 发布；原生验收工作流必须另行初始化并固定官方 submodule。
 
 ## 实测记录（麒麟 V11 VM，2026-08-11 更新）
 

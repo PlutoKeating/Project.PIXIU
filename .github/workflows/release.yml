@@ -28,8 +28,6 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: recursive
 
       - uses: actions/setup-python@v7
         with:
