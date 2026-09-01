@@ -46,6 +46,19 @@ QPushButton:flat:focus {
     border-radius: 8px;
 }
 
+/* ── 设置入口按钮：文字色用 palette(text)（而非默认 palette(button-text)）─────
+    ThemeService::applyTheme() 实测 QSS 的 palette(role) 在换肤时不自动重新解析，
+    UKUI 深色主题下 palette(button-text) 冻结为浅色主题的深色文字 → 深底深字不可读；
+    palette(text) 与其他按钮类（chip/suggestionCard 的 QLabel#suggestionText）一致，
+    随 Palette 更新为可读亮色。hover/pressed/focus 沿用上方通用按钮规则。 */
+QPushButton#openMonitorCenterButton,
+QPushButton#checkUpdateButton,
+QPushButton#aboutUsButton,
+QPushButton#termsButton,
+QPushButton#privacyButton {
+    color: palette(text);
+}
+
 /* ── 输入控件：浅灰填充、弱边框、大圆角 ─────────────────── */
 QLineEdit, QPlainTextEdit, QComboBox, QKeySequenceEdit {
     background-color: palette(alternate-base);
