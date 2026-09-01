@@ -47,10 +47,12 @@ QPushButton:flat:focus {
 }
 
 /* ── 设置入口按钮：文字色用 palette(text)（而非默认 palette(button-text)）─────
-    ThemeService::applyTheme() 实测 QSS 的 palette(role) 在换肤时不自动重新解析，
-    UKUI 深色主题下 palette(button-text) 冻结为浅色主题的深色文字 → 深底深字不可读；
-    palette(text) 与其他按钮类（chip/suggestionCard 的 QLabel#suggestionText）一致，
-    随 Palette 更新为可读亮色。hover/pressed/focus 沿用上方通用按钮规则。 */
+    真机运行日志为 “using Qt default palette”（theme following disabled），此时
+    Qt 默认 palette 的 button-text 为暗字，在 UKUI 深色主题背景（kfashion-dark.css）
+    上不可读。本仓库 lightPalette()/darkPalette() 中 Text==ButtonText，但那只在
+    ThemeService darkPalette 生效时成立；真机 default palette 下两者不同，故改用
+    随 palette 更新的 palette(text)（深色下解析为亮色）。hover/pressed/focus 沿用
+    上方通用按钮规则。 */
 QPushButton#openMonitorCenterButton,
 QPushButton#checkUpdateButton,
 QPushButton#aboutUsButton,
