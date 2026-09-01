@@ -79,7 +79,12 @@ jobs:
         run: |
           deb="$(realpath build/release/out/*.deb)"
           checksum="${deb}.sha256"
-          sha256sum --check "${checksum}"
+          deb_name="$(basename "${deb}")"
+          test "$(awk '{print $2}' "${checksum}")" = "${deb_name}"
+          (
+            cd "$(dirname "${deb}")"
+            sha256sum --check "$(basename "${checksum}")"
+          )
           test "$(dpkg-deb --field "${deb}" Architecture)" = \
             "${{ matrix.architecture }}"
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${deb}"

@@ -43,6 +43,7 @@ build/release/
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
 前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
 同等验证、打入离线 wheels，并把 `.deb` 与 SHA-256 校验文件发布到 GitHub Release。
+校验清单使用标准 `<sha256>  <asset-basename>` 格式，不写入构建机绝对路径。
 
 流水线产物：
 

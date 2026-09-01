@@ -219,6 +219,10 @@ install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
 log "[5/5] dpkg-deb"
 DEB="${OUT}/pixiu_${PIXIU_VERSION}-${PIXIU_REVISION}_${PIXIU_ARCH}.deb"
 dpkg-deb --build --root-owner-group "${STAGE}" "${DEB}" >/dev/null
-sha256sum "${DEB}" > "${DEB}.sha256"
+DEB_NAME="$(basename "${DEB}")"
+(
+    cd "${OUT}"
+    sha256sum "${DEB_NAME}" > "${DEB_NAME}.sha256"
+)
 log "done: ${DEB}"
 log "checksum: $(awk '{print $1}' "${DEB}.sha256")"
