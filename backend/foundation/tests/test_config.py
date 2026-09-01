@@ -105,6 +105,39 @@ def test_sync_domain_rejects_private_scope():
             Settings()
 
 
+def test_sync_passphrase_rejects_public_placeholder():
+    """公开占位符 change-me-before-production 必须于启动期 fail-fast 拒绝。"""
+    with mock.patch.dict(
+        os.environ,
+        {"PIXIU_SYNC_KEY_PASSPHRASE": "change-me-before-production"},
+        clear=True,
+    ):
+        with pytest.raises(ValueError, match="public placeholder"):
+            Settings()
+
+
+def test_sync_passphrase_rejects_legacy_local_placeholder():
+    """历史示例值 pixiu-local-sync-change-me-2026 必须同样拒绝。"""
+    with mock.patch.dict(
+        os.environ,
+        {"PIXIU_SYNC_KEY_PASSPHRASE": "pixiu-local-sync-change-me-2026"},
+        clear=True,
+    ):
+        with pytest.raises(ValueError, match="public placeholder"):
+            Settings()
+
+
+def test_sync_passphrase_accepts_strong_custom():
+    """非占位符的强口令（≥16 字符）应被接受。"""
+    with mock.patch.dict(
+        os.environ,
+        {"PIXIU_SYNC_KEY_PASSPHRASE": "强口令1234567890abcdef"},
+        clear=True,
+    ):
+        settings = Settings()
+        assert settings.sync_key_passphrase == "强口令1234567890abcdef"
+
+
 # ─── Env var reading ─────────────────────────────────────
 
 def test_embedding_mock_rejected():

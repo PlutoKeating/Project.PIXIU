@@ -13,6 +13,15 @@ import socket
 _VALID_EMBEDDING = frozenset({"auto", "kylin", "portable"})
 _VALID_OCR = frozenset({"auto", "kylin", "portable"})
 _VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR"})
+# 公开占位符/示例值：转公开 repo 后这些常量会暴露，禁止被用作 Ed25519
+# 加密口令（否则攻击者可解密任意用户的同步私钥）。仅当显式设置了这些值
+# 才拒绝；None（未设置）不受影响。
+_PLACEHOLDER_PASSPHRASES = frozenset(
+    {
+        "change-me-before-production",
+        "pixiu-local-sync-change-me-2026",
+    }
+)
 
 
 # ─── 内部辅助函数 ────────────────────────────────────────
@@ -96,6 +105,14 @@ class Settings:
         )
         self._sync_domain = _env_shared_scope("PIXIU_SYNC_DOMAIN", "shared:home")
         self._sync_key_passphrase = os.getenv("PIXIU_SYNC_KEY_PASSPHRASE")
+        # fail-fast：公开占位符/示例值禁止用作加密口令（None 未设置不受影响）。
+        if (
+            self._sync_key_passphrase is not None
+            and self._sync_key_passphrase in _PLACEHOLDER_PASSPHRASES
+        ):
+            raise ValueError(
+                "PIXIU_SYNC_KEY_PASSPHRASE must be changed from the public placeholder"
+            )
         # SN-4 默认开启：运行时开关（PUT /sync/settings）以 KV 覆盖 env 默认。
         self._sync_network_enabled = _env_bool("PIXIU_SYNC_NETWORK_ENABLED", True)
         self._sync_bind_host = _env_lan_host("PIXIU_SYNC_BIND_HOST", "127.0.0.1")
@@ -159,6 +176,11 @@ class Settings:
 
     @property
     def sync_key_passphrase(self) -> str:
+        # 防御性复查：公开占位符/示例值禁止用作加密口令。
+        if self._sync_key_passphrase in _PLACEHOLDER_PASSPHRASES:
+            raise ValueError(
+                "PIXIU_SYNC_KEY_PASSPHRASE must be changed from the public placeholder"
+            )
         if self._sync_key_passphrase is None or len(self._sync_key_passphrase) < 16:
             raise ValueError(
                 "PIXIU_SYNC_KEY_PASSPHRASE must contain at least 16 characters"
