@@ -8,14 +8,24 @@ on:
       version:
         description: Debian package version used for a manual validation build
         required: true
-        default: "0.1.0"
+        default: "0.1.6"
 
 permissions:
   contents: read
 
 jobs:
   build-release:
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            architecture: amd64
+            profile: kylin-v11-x86_64
+          - runner: ubuntu-24.04-arm
+            architecture: arm64
+            profile: generic-ubuntu
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -35,7 +45,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            cmake ninja-build dpkg-dev \
+            cmake ninja-build dpkg-dev python3-venv curl \
             qtbase5-dev libqt5websockets5-dev libqt5svg5 libqrencode-dev
           python -m pip install \
             -r backend/requirements.txt \
@@ -58,15 +68,53 @@ jobs:
 
       - name: Build release package
         env:
-          PIXIU_PROFILE: generic-ubuntu
+          PIXIU_PROFILE: ${{ matrix.profile }}
+          PIXIU_ARCH: ${{ matrix.architecture }}
           PIXIU_BUNDLE_WHEELS: "1"
           PIXIU_SKIP_TESTS: "0"
         run: make -C build/release build-deb
 
+      - name: Verify and install release package
+        shell: bash
+        run: |
+          deb="$(echo build/release/out/*.deb)"
+          checksum="${deb}.sha256"
+          sha256sum --check "${checksum}"
+          test "$(dpkg-deb --field "${deb}" Architecture)" = \
+            "${{ matrix.architecture }}"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${deb}"
+          test "$(stat -c '%a' /etc/pixiu/pixiu.env)" = "640"
+          test -x /usr/lib/pixiu/install-update
+          value="$(sudo awk -F= \
+            '/^PIXIU_SYNC_KEY_PASSPHRASE=/{print substr($0,index($0,"=")+1);exit}' \
+            /etc/pixiu/pixiu.env)"
+          test "${#value}" -ge 16
+          test "${value}" != "change-me-before-production"
+          test "${value}" != "pixiu-local-sync-change-me-2026"
+          sudo -u pixiu env PYTHONPATH=/usr/lib/pixiu \
+            /usr/lib/pixiu/venv/bin/python -c \
+            'from backend.foundation.api.http_app import app; assert app'
+          set +e
+          sudo /usr/lib/pixiu/install-update "${deb}" \
+            0000000000000000000000000000000000000000000000000000000000000000
+          helper_rc=$?
+          set -e
+          test "${helper_rc}" -eq 3
+          oversized="$(mktemp)"
+          truncate --size=513M "${oversized}"
+          set +e
+          sudo /usr/lib/pixiu/install-update "${oversized}" \
+            0000000000000000000000000000000000000000000000000000000000000000
+          size_rc=$?
+          set -e
+          rm -f "${oversized}"
+          test "${size_rc}" -eq 2
+          test -z "$(compgen -G '/var/tmp/pixiu-update-root.*.deb' || true)"
+
       - name: Upload release artifact
         uses: actions/upload-artifact@v7
         with:
-          name: pixiu-release-${{ github.ref_name }}
+          name: pixiu-release-${{ github.ref_name }}-${{ matrix.architecture }}
           path: |
             build/release/out/*.deb
             build/release/out/*.sha256
@@ -81,7 +129,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
-          name: pixiu-release-${{ github.ref_name }}
+          pattern: pixiu-release-${{ github.ref_name }}-*
+          merge-multiple: true
           path: dist
 
       - name: Publish GitHub Release

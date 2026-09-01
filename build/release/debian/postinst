@@ -22,7 +22,7 @@ if ! getent passwd "${PIXIU_USER}" >/dev/null 2>&1; then
             --shell /usr/sbin/nologin "${PIXIU_USER}" 2>/dev/null || true
 fi
 mkdir -p "${PIXIU_HOME}" "${PIXIU_HOME}/data"
-chown -R "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
+chown -Rh "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
 
 # 2) pip 引导（缺失时下载 get-pip.py）
 if ! "${PY}" -m pip --version >/dev/null 2>&1; then
@@ -101,8 +101,25 @@ else
     fi
 fi
 if [ -d "${VENV}" ]; then
-    chown -R "${PIXIU_USER}:${PIXIU_USER}" "${VENV}"
+    # 运行服务只需读取 venv；保持 root 所有，避免低权限后端进程改写下一次
+    # 启动将执行的解释器或依赖。
+    chown -Rh root:root "${VENV}"
 fi
+
+# 3.6) 同步私钥口令：包内只携带公开占位符，安装时生成每机随机值。
+#      从历史公开默认值升级且已有 sync_identity 时，先原地重加密私钥；
+#      device_id / public_key / peers / CRDT 状态均保持不变。迁移由 root-only
+#      journal 保护，数据库提交与配置替换之间掉电也可在下次配置时恢复。
+if [ -f "${CONF}" ]; then
+    PYTHONPATH="${PIXIU_LIB}${PYTHONPATH:+:${PYTHONPATH}}" \
+        "${VPY}" -m backend.foundation.sync.install_passphrase \
+        --config "${CONF}" --default-database "${PIXIU_HOME}/pixiu.db"
+    chown root:"${PIXIU_USER}" "${CONF}"
+    chmod 0640 "${CONF}"
+fi
+# 口令迁移以 root 打开 SQLite，WAL/SHM 可能被重新创建；服务启动前恢复运行时
+# 目录所有权，避免 pixiu 用户因旁车文件属主错误而无法写库。
+chown -Rh "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
 
 # 4) systemd 服务
 if command -v systemctl >/dev/null 2>&1; then

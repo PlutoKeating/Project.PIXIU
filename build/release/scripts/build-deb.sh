@@ -190,7 +190,7 @@ mkdir -p "${STAGE}/DEBIAN" \
          "${STAGE}/usr/bin"
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
-    PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), python3-venv, dbus, \
+    PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, pkexec, \
 libqt5widgets5, libqt5network5, libqt5websockets5, libqt5svg5, \
 libkysdk-shortcut, libkysdk-notification, libkysdk-qtwidgets, libgsettings-qt1"
 fi
@@ -207,11 +207,13 @@ install -m 0755 "${DEB_SRC}/postinst" "${STAGE}/DEBIAN/postinst"
 install -m 0755 "${DEB_SRC}/prerm"    "${STAGE}/DEBIAN/prerm"
 install -m 0755 "${DEB_SRC}/postrm"   "${STAGE}/DEBIAN/postrm"
 install -m 0644 "${DEB_SRC}/conffiles" "${STAGE}/DEBIAN/conffiles"
-install -m 0644 "${DEB_SRC}/pixiu.env" "${STAGE}/etc/pixiu/pixiu.env"
+install -m 0640 "${DEB_SRC}/pixiu.env" "${STAGE}/etc/pixiu/pixiu.env"
 install -m 0644 "${DEB_SRC}/pixiu-backend.service" \
     "${STAGE}/lib/systemd/system/pixiu-backend.service"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
+install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
+    "${STAGE}/usr/lib/pixiu/install-update"
 
 # ── 5/5 dpkg 打包 ──────────────────────────────────────────────
 log "[5/5] dpkg-deb"

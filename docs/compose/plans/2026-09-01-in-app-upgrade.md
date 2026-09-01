@@ -4,7 +4,7 @@
 
 **Goal:** 「检查更新」对话框升级为真正的一键升级：检测公开 GitHub repo 最新版本 → 下载 deb + sha256 校验 → pkexec 特权安装 → 重启提示。
 
-**Architecture:** 前端新增 `UpgradeController`（仿 SyncController/DeliveryController 状态机）；`CheckUpdateDialog` 全面改造（远程版本对比 + 状态机 + 一键升级按钮 + 进度）；网络用 `QNetworkAccessManager`；下载/校验/安装用 `QProcess` + `QCryptographicHash::Sha256`；安装经 `pkexec dpkg -i`。
+**Architecture:** 前端新增 `UpgradeController`（仿 SyncController/DeliveryController 状态机）；`CheckUpdateDialog` 全面改造（远程版本对比 + 状态机 + 一键升级按钮 + 进度）；网络用 `QNetworkAccessManager`；下载/校验/安装用 `QProcess` + `QCryptographicHash::Sha256`；安装经 `pkexec` 调用 root-only 副本二次校验 helper，再执行 `dpkg -i`。
 
 **Tech Stack:** C++17 · Qt5 Widgets · QNetworkAccessManager · QProcess · QtTest(offscreen)
 
@@ -22,11 +22,11 @@
 **Files:** Create `frontend/src/app/UpgradeUtils.h/.cpp`；Test `frontend/tests/t_upgrade_utils.cpp`
 
 **Interfaces:**
-- `QString pixiu::normalizeVersion(const QString &tag)`（去掉 `v` 前缀，`v0.1.6`→`0.1.6`）
-- `int pixiu::compareVersions(const QString &a, const QString &b)`（`-1/0/1`；按点分段数字比较，处理不等长 `0.1.6` vs `0.1.6.1`——按段数补零或先段数）
-- `QByteArray pixiu::sha256(const QByteArray &data)`（QCryptographicHash::Sha256 hex）
-- `bool ui::verifySha256(const QString &filePath, const QString &expectedHex)`（读文件重算比对，大小写不敏感）
-- GitHub API/asset 解析辅助：`struct ReleaseInfo { QString tag; QString debUrl; QString shaUrl; }`、`bool ui::parseRelease(const QByteArray &json, ReleaseInfo &out)`（解析 `tag_name` + 找 `pixiu_*.deb`/`.sha256` 的 `browser_download_url`）
+- `QString ui::normalizeVersion(...)` / `int ui::compareVersions(...)`
+- `QByteArray ui::sha256Hex(...)`
+- `bool ui::verifySha256(...)`（1 MiB 分块重算，并绑定清单资产文件名）
+- `QString ui::debianArchitecture()` + `parseRelease(..., architecture)`：严格选择
+  tag 对应的 amd64/arm64 `.deb` 与同名 `.sha256`
 
 **Covers:** [S2.1, S2.2]
 
@@ -45,10 +45,14 @@
 **Interfaces:**
 - `UpgradeController(QObject* parent)` — `void checkForUpdate()`、`void downloadAndInstall()`、`void cancel()`；信号 `stateChanged(State)`、`remoteVersionFound(const QString &version)`、`progressChanged(int percent)`、`upgradeFinished(bool success, const QString &message)`；`enum class State { Idle, Checking, Updatable, UpToDate, Downloading, Verifying, Installing, Success, Cancelled, Failed }`
 - 网络：`QNetworkAccessManager` 拉 `GET https://api.github.com/repos/PlutoKeating/Project.PIXIU/releases/latest`；`parseRelease` 解析；`compareVersions(remote, applicationVersion) > 0` → Updatable
-- 下载：`GET debUrl`（`QNetworkReply` 流式，进度信号）→ 存 `QStandardPaths::writableLocation(TempLocation) + "/pixiu-update.deb"`；再 `GET shaUrl` 或直接 fetch `.sha256` 内容 → `verifySha256(deb, expected)` → 通过才 Verifying→Installing
-- 安装：`QProcess::start("pkexec", {"dpkg", "-i", debPath})`（pkexec 弹 polkit 认证框）；退出 0 → Success；126/127（polkit 取消）→ Cancelled；其他 → Failed（附错误摘要）
+- 下载：流式写入唯一 `pixiu-update-XXXXXX.deb`，下载和每次重定向均验证
+  来源；再获取 `.sha256` 并流式校验
+- 安装：`QProcess::start("/usr/bin/pkexec", {"/usr/lib/pixiu/install-update",
+  debPath, expectedSha256})`；helper 复制为 root-only 临时文件并二次校验后才调用
+  非交互执行 `dpkg --force-confdef --force-confold -i`；退出 0 → Success；
+  126/127 → Cancelled；启动失败/其他退出 → Failed
 - **不自动重启**：Success 后发 `upgradeFinished(true, tr("升级成功，请手动重启应用以生效"))`
-- 每次操作可 cancel：下载/安装中 cancel → 清理临时 deb + 停止 reply/process
+- 仅下载/校验可 cancel；安装开始后禁止强制取消，避免中断 dpkg
 - 依赖：仅 Qt（QNetworkAccessManager/QNetworkReply/QProcess/QStandardPaths/QCryptographicHash）
 
 **Covers:** [S2.1, S2.2, S2.3]
@@ -93,5 +97,19 @@
 
 ---
 
+## Task U-5: 0.1.6 发布前加固
+
+- [x] 公开占位口令不再阻断核心 API 启动；安装时生成每机随机口令
+- [x] 旧默认口令对应的 Ed25519 私钥原地重加密，保留设备身份与配对关系
+- [x] 配置权限收紧为 `root:pixiu 0640`，包声明 `pkexec` 运行依赖
+- [x] SHA-256 改分块读取并绑定资产名；严格匹配 tag + Debian 架构
+- [x] 30x 目标重新校验，唯一临时文件，安装启动失败显式处理
+- [x] 元数据/校验/DEB 大小设限；特权边界复制并二次校验，消除 TOCTOU
+- [x] 安装中禁用取消/关闭，避免破坏 dpkg 状态
+- [x] Release 工作流原生构建 amd64 + arm64 资产
+- [ ] Debian 通用画像完整门禁与麒麟 V11 真机增量升级验收
+
+---
+
 ## 执行顺序
-U-1 → U-2（依赖 U-1）→ U-3（依赖 U-2）→ U-4 收尾。每任务两阶段审查。转公开与发布由主代理在 U-4 后执行。
+U-1 → U-2（依赖 U-1）→ U-3（依赖 U-2）→ U-4 → U-5 收尾。仓库公开由用户执行；tag、远端 Release 与真机验收在公开后执行。

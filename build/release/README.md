@@ -36,6 +36,10 @@ build/release/
         └── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
 ```
 
+打包时还会将 `frontend/scripts/install-update` 安装到
+`/usr/lib/pixiu/install-update`，作为 root-only 副本二次校验后调用 `dpkg`
+的 `pkexec` 特权边界。
+
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
 前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
 同等验证、打入离线 wheels，并把 `.deb` 与 SHA-256 校验文件发布到 GitHub Release。
@@ -83,7 +87,7 @@ PIXIU_VM_HOST=192.168.122.197 bash build/release/scripts/vm-deploy-test.sh
 
 # 方式二：手工两步（等价，供理解）
 sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64   # 1) 系统依赖
-sudo apt-get install -y ./build/release/out/pixiu_0.1.1-1_amd64.deb    # 2) 安装
+sudo apt-get install -y ./build/release/out/pixiu_0.1.6-1_amd64.deb    # 2) 安装
 ```
 
 `provision-target.sh` 与 deb 的 `postinst` 覆盖了麒麟 V11 的全部已知坑：
@@ -96,7 +100,7 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 
 | 变量 | 默认 | 说明 |
 |------|------|------|
-| `PIXIU_VERSION` | `0.1.1` | 软件版本（写入 control Version） |
+| `PIXIU_VERSION` | `0.1.6` | 软件版本（写入 control Version） |
 | `PIXIU_REVISION` | `1` | Debian 修订号 |
 | `PIXIU_ARCH` | `dpkg --print-architecture` | 目标架构（amd64 / arm64） |
 | `PIXIU_KYSDK` | `OFF` | 前端是否链接 KylinSDK（麒麟目标机用 `ON`） |
@@ -111,7 +115,7 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 ## 安装产物（全新麒麟机）
 
 ```bash
-sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.1-1_amd64.deb
+sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.6-1_amd64.deb
 # apt 自动解析并安装依赖（python3、Qt5 运行时等；kysdk 组件为建议项）
 ```
 
@@ -121,6 +125,8 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.1-1_amd64.deb
   SQLite 数据库自动创建于 `/var/lib/pixiu/pixiu.db`（首次启动自动迁移）；
 - 桌面菜单出现 PIXIU 客户端；或在终端执行 `pixiu`（自动拉起后端后打开前端）；
 - 配置在 `/etc/pixiu/pixiu.env`（API 端口、DB 路径、sync 开关等）；
+- 安装脚本会生成每机唯一同步私钥口令，并将配置设为 `root:pixiu 0640`；
+  从历史公开默认口令升级时会先重加密 Ed25519 私钥，设备 ID 与配对关系不变；
 - P2P 同步网络默认关闭；需要时在 `/etc/pixiu/pixiu.env` 开启
   `PIXIU_SYNC_NETWORK_ENABLED=true` 并配置证书后重启服务。
 
@@ -157,8 +163,11 @@ git clone git@github-personal:PlutoKeating/Project.PIXIU.git
 4. 验收通过后推送 `v*` tag，GitHub Actions 自动构建并发布 Release；也可以从
    Actions 页面手动运行 release workflow，只生成验证产物而不创建 Release。
 
-GitHub 托管 runner 使用 `generic-ubuntu` 画像与 `KYSDK=OFF`。麒麟 SDK 原生绑定
-仍需切换到安装了 SDK 开发包的麒麟自托管 runner（x86_64 / aarch64）。
+GitHub Release 使用原生 amd64 与 arm64 托管 runner、`KYSDK=OFF`，分别产出
+架构匹配的 `.deb`/`.sha256`。amd64 采用 `kylin-v11-x86_64` 运行依赖画像，
+arm64 在麒麟画像完成真机取证前仅采用 `generic-ubuntu` 画像。因此 ARM 产物
+只证明 Debian 通用降级画像可构建运行；麒麟 SDK 原生能力仍须在装有 SDK
+开发包的麒麟自托管 runner 或真机（x86_64 / aarch64）分开验收。
 
 ## 实测记录（麒麟 V11 VM，2026-08-11 更新）
 
@@ -184,6 +193,6 @@ KYSDK=OFF，35 个 cp312 wheels）→ `vm-deploy-test.sh`（force reinstall）�
 本轮发现并已沉淀的修复：PEP 668 pip 自举、`--ignore-installed`（RECORD 缺失包）、
 profile 优先级（默认值不得覆盖画像）、`PYTHONPATH=/usr/lib/pixiu`（顶层包 backend）、
 uvicorn CLI 启动（避免双导入告警）、`apt-get install ./deb`（dpkg 锁等待）、
-HTTP 级就绪等待（systemd active ≠ 端口就绪）、`PIXIU_SYNC_KEY_PASSPHRASE` ≥16
-字符默认值（后端强制要求，否则 `/sync/*` 500）、前端单实例守护（冒烟前先
+HTTP 级就绪等待（systemd active ≠ 端口就绪）、安装时生成唯一
+`PIXIU_SYNC_KEY_PASSPHRASE`（后端同步私钥加密要求 ≥16 字符）、前端单实例守护（冒烟前先
 `pkill -x pixiu-frontend`）。
