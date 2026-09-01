@@ -160,7 +160,8 @@ void UpgradeController::handleCheckFinished()
         // 失败同归「无法连接」路径（非 NoError 即判定失败）。
         qCWarning(lcUpgrade) << "check failed (network/http):" << m_releaseUrl;
         setState(State::Failed);
-        emit upgradeFinished(false, tr("无法连接更新服务器"));
+        emit upgradeFinished(false, tr("无法连接更新服务器"),
+                             FailedReason::Network);
         return;
     }
 
@@ -168,7 +169,8 @@ void UpgradeController::handleCheckFinished()
     if (!ui::parseRelease(body, info)) {
         qCWarning(lcUpgrade) << "release/latest parse failed";
         setState(State::Failed);
-        emit upgradeFinished(false, tr("无法连接更新服务器"));
+        emit upgradeFinished(false, tr("无法连接更新服务器"),
+                             FailedReason::Network);
         return;
     }
     m_release = info;
@@ -182,7 +184,7 @@ void UpgradeController::handleCheckFinished()
         emit remoteVersionFound(m_release.tag);
     } else {
         setState(State::UpToDate);
-        emit upgradeFinished(true, tr("已是最新版本"));
+        emit upgradeFinished(true, tr("已是最新版本"), FailedReason::None);
     }
 }
 
@@ -199,7 +201,8 @@ void UpgradeController::downloadAndInstall()
         qCWarning(lcUpgrade) << "untrusted download source:"
                              << m_release.debUrl << m_release.shaUrl;
         setState(State::Failed);
-        emit upgradeFinished(false, tr("更新源无效"));
+        emit upgradeFinished(false, tr("更新源无效"),
+                             FailedReason::InvalidSource);
         return;
     }
     resetTransport();
@@ -213,7 +216,7 @@ void UpgradeController::downloadAndInstall()
         m_downloadFile = nullptr;
         QFile::remove(m_debPath);
         setState(State::Failed);
-        emit upgradeFinished(false, tr("下载失败"));
+        emit upgradeFinished(false, tr("下载失败"), FailedReason::Download);
         return;
     }
 
@@ -272,7 +275,7 @@ void UpgradeController::handleDownloadFinished()
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);
-        emit upgradeFinished(false, tr("下载失败"));
+        emit upgradeFinished(false, tr("下载失败"), FailedReason::Download);
         return;
     }
     delete m_downloadFile;
@@ -318,7 +321,7 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);
-        emit upgradeFinished(false, tr("下载失败"));
+        emit upgradeFinished(false, tr("下载失败"), FailedReason::Download);
         return;
     }
     const QString expected = QString::fromLatin1(body);
@@ -326,7 +329,8 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);
-        emit upgradeFinished(false, tr("校验失败，已中止"));
+        emit upgradeFinished(false, tr("校验失败，已中止"),
+                             FailedReason::Verify);
         return;
     }
     startInstall();
@@ -372,13 +376,16 @@ void UpgradeController::handleInstallFinished(int exitCode)
     }
     if (exitCode == 0) {
         setState(State::Success);
-        emit upgradeFinished(true, tr("升级成功，请手动重启应用以生效"));
+        emit upgradeFinished(true, tr("升级成功，请手动重启应用以生效"),
+                             FailedReason::None);
     } else if (exitCode == 126 || exitCode == 127) {
         setState(State::Cancelled);
-        emit upgradeFinished(false, tr("已取消，升级未执行"));
+        emit upgradeFinished(false, tr("已取消，升级未执行"),
+                             FailedReason::Other);
     } else {
         setState(State::Failed);
-        emit upgradeFinished(false, tr("升级失败，请检查系统日志"));
+        emit upgradeFinished(false, tr("升级失败，请检查系统日志"),
+                             FailedReason::Other);
     }
 }
 
@@ -394,5 +401,5 @@ void UpgradeController::cancel()
     }
     setState(State::Cancelled);
     resetTransport();
-    emit upgradeFinished(false, tr("已取消"));
+    emit upgradeFinished(false, tr("已取消"), FailedReason::Other);
 }

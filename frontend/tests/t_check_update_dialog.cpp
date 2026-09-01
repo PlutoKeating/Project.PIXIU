@@ -208,6 +208,10 @@ private slots:
     void upgradeFinishedSuccessShowsManualRestart();
     void invalidSourceRejectedShowsInvalidSource();
     void cancelVisibleDuringDownloadAndCancels();
+    // U-3-1：陈旧缓存残留——先前 Updatable 后重查 UpToDate 不得回填旧版本；
+    //        取消后重进 Downloading 不得回填旧百分比。
+    void previousUpdatableThenUpToDateClearsStaleVersion();
+    void cancelThenRedownloadResetsProgress();
 
 private:
     // 部署一个「本地有新版 0.1.6 可升级」的假 server，返回该 server。
@@ -229,6 +233,9 @@ private:
 void TestCheckUpdateDialog::initTestCase()
 {
     qRegisterMetaType<UpgradeController::State>("UpgradeController::State");
+    // moc 对嵌套枚举记录的类型名是「FailedReason」（非全限定），QSignalSpy
+    // 按该名字段查 Metatype，注册名须与之匹配，否则 reason 参数无法被捕获。
+    qRegisterMetaType<UpgradeController::FailedReason>("FailedReason");
 }
 
 void TestCheckUpdateDialog::init()
@@ -253,7 +260,7 @@ void TestCheckUpdateDialog::updatableEnablesUpgradeAndShowsRemoteVersion()
     CheckUpdateDialog dialog(&controller);
 
     // 打开对话框触发一次检查 → 假 server 返回新版 → Updatable。
-    dialog.open();
+    dialog.showAndCheck();
 
     QPushButton *upgrade = dialog.findChild<QPushButton *>(
         QStringLiteral("upgradeButton"));
@@ -283,7 +290,7 @@ void TestCheckUpdateDialog::upToDateDisablesUpgradeAndShowsLatest()
     controller.setSourceValidator(acceptLocalSource);
     CheckUpdateDialog dialog(&controller);
 
-    dialog.open();
+    dialog.showAndCheck();
 
     // UpToDate（可能短暂经过 Checking）：以远程标签「已是最新」为权威断言。
     QLabel *remote = dialog.findChild<QLabel *>(
@@ -314,7 +321,7 @@ void TestCheckUpdateDialog::networkFailureShowsCannotConnect()
     controller.setSourceValidator(acceptLocalSource);
     CheckUpdateDialog dialog(&controller);
 
-    dialog.open();
+    dialog.showAndCheck();
 
     QLabel *remote = dialog.findChild<QLabel *>(
         QStringLiteral("remoteVersionLabel"));
@@ -342,7 +349,7 @@ void TestCheckUpdateDialog::progressUpdatesBarDuringDownload()
         });
     CheckUpdateDialog dialog(&controller);
 
-    dialog.open();
+    dialog.showAndCheck();
     QPushButton *upgrade = dialog.findChild<QPushButton *>(
         QStringLiteral("upgradeButton"));
     QVERIFY(upgrade != nullptr);
@@ -386,7 +393,7 @@ void TestCheckUpdateDialog::upgradeFinishedSuccessShowsManualRestart()
         });
     CheckUpdateDialog dialog(&controller);
 
-    dialog.open();
+    dialog.showAndCheck();
     QPushButton *upgrade = dialog.findChild<QPushButton *>(
         QStringLiteral("upgradeButton"));
     QVERIFY(upgrade != nullptr);
@@ -420,7 +427,7 @@ void TestCheckUpdateDialog::invalidSourceRejectedShowsInvalidSource()
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
     CheckUpdateDialog dialog(&controller);   // 默认 validator（https+allowlist）
 
-    dialog.open();
+    dialog.showAndCheck();
     QPushButton *upgrade = dialog.findChild<QPushButton *>(
         QStringLiteral("upgradeButton"));
     QVERIFY(upgrade != nullptr);
@@ -447,7 +454,7 @@ void TestCheckUpdateDialog::cancelVisibleDuringDownloadAndCancels()
     controller.setSourceValidator(acceptLocalSource);
     CheckUpdateDialog dialog(&controller);
 
-    dialog.open();
+    dialog.showAndCheck();
     QPushButton *upgrade = dialog.findChild<QPushButton *>(
         QStringLiteral("upgradeButton"));
     QVERIFY(upgrade != nullptr);
@@ -467,6 +474,84 @@ void TestCheckUpdateDialog::cancelVisibleDuringDownloadAndCancels()
     QCOMPARE(status->text(), QStringLiteral("已取消"));
     QVERIFY(!cancel->isVisible());
     QVERIFY(!QFile::exists(tempDebPath()));
+}
+
+void TestCheckUpdateDialog::previousUpdatableThenUpToDateClearsStaleVersion()
+{
+    // U-3-1a：先前 Updatable（m_remoteVersion="0.1.6"）后重查 UpToDate——
+    // 远程行不得被 onUpgradeFinished 据残留 m_remoteVersion 覆写回旧版本。
+    // （修复前：状态显示「已是最新版本」，远程行却回填「远程最新版本 0.1.6」。）
+    const QByteArray deb = QByteArrayLiteral("fake-deb-payload-0123456789");
+    FakeServer *server = seedUpdatable(deb);   // 假 server 恒返回 0.1.6
+    const QString base = server->baseUrl();
+
+    QNetworkAccessManager net;
+    UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    CheckUpdateDialog dialog(&controller);
+
+    // 首次检查（应用 0.1.5）→ Updatable，远程行显示旧版本 0.1.6。
+    dialog.showAndCheck();
+    QPushButton *upgrade = dialog.findChild<QPushButton *>(
+        QStringLiteral("upgradeButton"));
+    QVERIFY(upgrade != nullptr);
+    QTRY_VERIFY(upgrade->isEnabled());
+    QLabel *remote = dialog.findChild<QLabel *>(
+        QStringLiteral("remoteVersionLabel"));
+    QVERIFY(remote != nullptr);
+    QTRY_COMPARE(remote->text(), QStringLiteral("远程最新版本 0.1.6"));
+
+    // 应用升至 0.1.6 后重查 → UpToDate：远程行应为「已是最新」，而非旧版本。
+    QCoreApplication::setApplicationVersion(QStringLiteral("0.1.6"));
+    dialog.showAndCheck();
+    QTRY_COMPARE(remote->text(), QStringLiteral("已是最新"));
+    QTRY_VERIFY(!upgrade->isEnabled());
+}
+
+void TestCheckUpdateDialog::cancelThenRedownloadResetsProgress()
+{
+    // U-3-1b：完整下载把进度推进到 100 后停在 Installing（installRunner 不回调
+    // 退出码）；取消后重查再进 Downloading 时进度条不得回填上次的旧百分比
+    // （应为 0，fresh 从头）。
+    // （修复前：m_progress 残留旧值 100，重进 Downloading setValue(m_progress)
+    //   短暂显示「下载中…100%」。）
+    const QByteArray deb = QByteArrayLiteral("fake-deb-body-0123456789");
+    FakeServer *server = seedUpdatable(deb);
+    const QString base = server->baseUrl();
+
+    QNetworkAccessManager net;
+    UpgradeController controller(&net, QUrl(base + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    // 注入的安装执行器停在 Installing：不回调 onFinished，避免进度快速推进收尾。
+    controller.setInstallRunner(
+        [](const QString &, const QStringList &, std::function<void(int)>) {});
+    CheckUpdateDialog dialog(&controller);
+
+    QProgressBar *bar = dialog.findChild<QProgressBar *>(
+        QStringLiteral("updateProgressBar"));
+    QVERIFY(bar != nullptr);
+    QPushButton *upgrade = dialog.findChild<QPushButton *>(
+        QStringLiteral("upgradeButton"));
+    QVERIFY(upgrade != nullptr);
+    QPushButton *cancel = dialog.findChild<QPushButton *>(
+        QStringLiteral("cancelButton"));
+    QVERIFY(cancel != nullptr);
+
+    dialog.showAndCheck();
+    QTRY_VERIFY(upgrade->isEnabled());
+    upgrade->click();                  // 下载 → 校验 → 安装（停在 Installing）
+    QTRY_COMPARE(bar->value(), 100);   // 进度已推进到 100（m_progress=100）
+    cancel->click();                   // Installing 可取消 → Cancelled
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Cancelled);
+
+    // 重查 → 重进 Downloading：进度条应复位为 0（不闪上次旧值）。
+    dialog.showAndCheck();
+    QTRY_VERIFY(upgrade->isEnabled());
+    upgrade->click();
+    QCOMPARE(bar->value(), 0);
+
+    controller.cancel();               // 清理：中止在途流程
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Cancelled);
 }
 
 QTEST_MAIN(TestCheckUpdateDialog)

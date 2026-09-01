@@ -262,6 +262,9 @@ private:
 void TestUpgradeController::initTestCase()
 {
     qRegisterMetaType<UpgradeController::State>("UpgradeController::State");
+    // moc 对嵌套枚举记录的类型名是「FailedReason」（非全限定），QSignalSpy
+    // 按该名字段查 Metatype，注册名须与之匹配，否则 reason 参数无法被捕获。
+    qRegisterMetaType<UpgradeController::FailedReason>("FailedReason");
 }
 
 void TestUpgradeController::init()
@@ -327,6 +330,8 @@ void TestUpgradeController::checkUpToDateWhenSameVersion()
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), true);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
              QStringLiteral("已是最新版本"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::None);
 }
 
 void TestUpgradeController::checkUpToDateWhenRemoteOlder()
@@ -362,6 +367,8 @@ void TestUpgradeController::checkNetworkFailure()
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
              QStringLiteral("无法连接更新服务器"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Network);
 }
 
 void TestUpgradeController::checkHttpErrorIsFailure()
@@ -381,6 +388,8 @@ void TestUpgradeController::checkHttpErrorIsFailure()
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
              QStringLiteral("无法连接更新服务器"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Network);
 }
 
 void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
@@ -431,6 +440,8 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), true);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
              QStringLiteral("升级成功，请手动重启应用以生效"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::None);
 
     // 状态机曾经过 Downloading/Verifying/Installing。
     QVERIFY(seen.contains(UpgradeController::State::Downloading));
@@ -470,6 +481,8 @@ void TestUpgradeController::downloadAndInstallVerifyFails()
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
              QStringLiteral("校验失败，已中止"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Verify);
     QCOMPARE(runnerCalls, 0); // 校验失败未进入安装
     QVERIFY(!QFile::exists(tempDebPath())); // 临时 deb 清理
 }
@@ -513,6 +526,11 @@ void TestUpgradeController::installHandlesExitCodes()
         QCOMPARE(finishedSpy.at(0).at(0).toBool(), c.exitCode == 0);
         QCOMPARE(finishedSpy.at(0).at(1).toString(),
                  QString::fromUtf8(c.message));
+        const UpgradeController::FailedReason expectedReason =
+            c.exitCode == 0 ? UpgradeController::FailedReason::None
+                            : UpgradeController::FailedReason::Other;
+        QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+                 expectedReason);
         QVERIFY(!QFile::exists(tempDebPath()));
 
         delete server;
@@ -545,6 +563,8 @@ void TestUpgradeController::cancelDuringDownload()
     QCOMPARE(finishedSpy.count(), 1);
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
     QCOMPARE(finishedSpy.at(0).at(1).toString(), QStringLiteral("已取消"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Other);
     QVERIFY(!QFile::exists(tempDebPath()));
 }
 
@@ -590,6 +610,8 @@ void TestUpgradeController::downloadFollowsRedirect()
     QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
     QCOMPARE(finishedSpy.count(), 1);
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), true);
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::None);
     QCOMPARE(runnerCalls, 1); // 302 被跟随，真实 body 下载校验后进入安装
     QVERIFY(!QFile::exists(tempDebPath()));
 }
@@ -614,6 +636,8 @@ void TestUpgradeController::checkTimeoutFails()
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
              QStringLiteral("无法连接更新服务器"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Network);
 }
 
 void TestUpgradeController::invalidSourceRejected()
@@ -661,6 +685,8 @@ void TestUpgradeController::invalidSourceRejected()
         QCOMPARE(finishedSpy.at(0).at(0).toBool(), false);
         QCOMPARE(finishedSpy.at(0).at(1).toString(),
                  QStringLiteral("更新源无效"));
+        QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+                 UpgradeController::FailedReason::InvalidSource);
         // 校验在 setState(Downloading) 之前拦截 → 状态机从未进入下载。
         QVERIFY(!seen.contains(UpgradeController::State::Downloading));
         QVERIFY(!QFile::exists(tempDebPath()));

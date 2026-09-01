@@ -51,6 +51,18 @@ public:
         Failed,
     };
 
+    // 失败类别（upgradeFinished 的 reason 参数；None 表示非失败路径）。
+    // 供 UI 按原因分发，避免对本地化 message 做字符串比较（message 经
+    // tr() 本地化，跨 tr() 上下文/语言比较会在非中文 locale 分化）。
+    enum class FailedReason {
+        None,          // 非失败路径（成功 / UpToDate / 取消按终态处理）
+        Network,       // 无法连接更新服务器 / 网络 / HTTP / 超时错误
+        Verify,        // 下载包校验未通过
+        InvalidSource, // 更新源非可信下载源（http / 非 allowlist host）
+        Download,      // 下载失败（网络 / 写入 / 提交失败）
+        Other,         // 其它失败（本地文件 / 进程异常等）
+    };
+
     // 安装执行器：接收 program（"pkexec"）、argv（["dpkg","-i",debPath]）与
     // 完成后回调退出码。默认实现用 pkexec 启动；测试注入替身记录并自行回调。
     using InstallRunner = std::function<void(
@@ -74,8 +86,8 @@ public:
 
     // 检测新版本：State->Checking；GET release/latest → parseRelease →
     // compareVersions(remote, applicationVersion)。>0 → Updatable +
-    // remoteVersionFound；否则 UpToDate；失败 → Failed + upgradeFinished(false,
-    // tr("无法连接更新服务器"))。
+    // remoteVersionFound；否则 UpToDate；失败 → Failed +
+    // upgradeFinished(false, tr("无法连接更新服务器"), FailedReason::Network)。
     void checkForUpdate();
 
     // 下载 + 校验 + 安装（仅 Updatable 可调）。下载流式写入 TempLocation
@@ -84,7 +96,7 @@ public:
     void downloadAndInstall();
 
     // 取消下载/校验/安装：清理临时 deb + 停止进行中的 reply/process →
-    // State->Cancelled + upgradeFinished(false, tr("已取消"))。
+    // State->Cancelled + upgradeFinished(false, tr("已取消"), FailedReason::Other)。
     void cancel();
 
     // 测试 seam：注入安装执行器（替换默认 QProcess pkexec 路径）。
@@ -103,7 +115,10 @@ signals:
     // 下载进度 0-100。
     void progressChanged(int percent);
     // 流程结束：check 完成 / 下载校验安装完成 / 失败 / 取消。
-    void upgradeFinished(bool success, const QString &message);
+    // reason 区分失败类别（None 表示非失败路径），供 UI 按原因而非 message
+    // 分发——message 经 tr() 本地化，跨上下文/语言做字符串比较不可靠。
+    void upgradeFinished(bool success, const QString &message,
+                         FailedReason reason);
 
 private:
     void setState(State state);
@@ -130,7 +145,8 @@ private:
     SourceValidator m_sourceValidator;
 };
 
-// 使 State 可用于 QVariant（QSignalSpy 记录 / 信号跨线程排队依赖）。
+// 使 State / FailedReason 可用于 QVariant（QSignalSpy 记录 / 信号跨线程排队依赖）。
 Q_DECLARE_METATYPE(UpgradeController::State)
+Q_DECLARE_METATYPE(UpgradeController::FailedReason)
 
 #endif // PIXIU_UPGRADE_CONTROLLER_H

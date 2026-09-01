@@ -1103,12 +1103,18 @@ void PixiuApp::showCheckUpdate()
     if (!m_checkUpdateDialog) {
         m_checkUpdateDialog = new CheckUpdateDialog(m_upgradeController);
     }
-    m_checkUpdateDialog->open();
+    m_checkUpdateDialog->showAndCheck();
 }
 
 void PixiuApp::setUpgradeControllerForTest(UpgradeController *controller)
 {
     m_upgradeController = controller;
+    // 强制重建：若已创建过对话框，其内部仍接线到旧的 m_upgradeController——
+    // 直接复用会让状态机信号落到被替换的旧控制器上。删除旧对话框使其在
+    // 下次 showCheckUpdate() 以新控制器重建（测试用，删除 parentless 顶层
+    // 窗口安全）。
+    delete m_checkUpdateDialog;
+    m_checkUpdateDialog = nullptr;
 }
 
 void PixiuApp::refreshMonitorUi()

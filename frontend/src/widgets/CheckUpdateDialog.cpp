@@ -130,7 +130,7 @@ void CheckUpdateDialog::showAndFocus()
     activateWindow();
 }
 
-void CheckUpdateDialog::open()
+void CheckUpdateDialog::showAndCheck()
 {
     showAndFocus();
     if (m_controller) {
@@ -142,9 +142,27 @@ void CheckUpdateDialog::open()
 void CheckUpdateDialog::onStateChanged(UpgradeController::State state)
 {
     switch (state) {
-    case UpgradeController::State::Checking:
+    case UpgradeController::State::Idle:
+        // 未来兼容：进入初始 Idle（复位后）重置所有陈旧缓存与 UI，避免
+        // 上次检查/下载的残留版本、进度在下次流程开始时闪现旧值。
+        m_remoteVersion.clear();
+        m_progress = 0;
         m_remoteVersionLabel->setText(tr("检测中…"));
         m_updateStatusLabel->setText(tr("正在检查更新…"));
+        m_updateProgressBar->setValue(0);
+        m_updateProgressBar->hide();
+        m_upgradeButton->setEnabled(false);
+        m_cancelButton->hide();
+        break;
+    case UpgradeController::State::Checking:
+        // 关键：每次重新检查必须清空上次的缓存。否则先前 Updatable（如
+        // "0.1.6"）后重查 UpToDate，onUpgradeFinished 会据残留 m_remoteVersion
+        // 把远程行覆写回旧版本；残余 m_progress 会在 Downloading 短暂显示旧 %。
+        m_remoteVersion.clear();
+        m_progress = 0;
+        m_remoteVersionLabel->setText(tr("检测中…"));
+        m_updateStatusLabel->setText(tr("正在检查更新…"));
+        m_updateProgressBar->setValue(0);
         m_updateProgressBar->hide();
         m_upgradeButton->setEnabled(false);
         m_cancelButton->hide();
@@ -219,11 +237,15 @@ void CheckUpdateDialog::onProgressChanged(int percent)
     m_updateStatusLabel->setText(tr("下载中…%1%").arg(percent));
 }
 
-void CheckUpdateDialog::onUpgradeFinished(bool success, const QString &message)
+void CheckUpdateDialog::onUpgradeFinished(bool success, const QString &message,
+                                         UpgradeController::FailedReason reason)
 {
     // 终态文案以控制器消息为准（成功提示手动重启 / 各类失败原因精确区分）。
     m_updateStatusLabel->setText(message);
-    if (!success && message == tr("无法连接更新服务器")) {
+    // 按 reason 而非 message 分发：message 经 tr() 本地化，跨 tr() 上下文
+    // 比较会在非中文 locale 分化，静默破坏「网络失败→远程行显示错误」分支。
+    // 网络失败无法回填远程版本，远程行直接显示错误文案。
+    if (!success && reason == UpgradeController::FailedReason::Network) {
         m_remoteVersionLabel->setText(message);
         return;
     }

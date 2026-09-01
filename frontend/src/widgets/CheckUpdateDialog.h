@@ -18,7 +18,8 @@ class QPushButton;
 //   stateChanged          → updateStatusLabel + 按钮 enabled/visible
 //   remoteVersionFound    → remoteVersionLabel（远程最新版本）
 //   progressChanged       → updateProgressBar（0-100，下载中显示）
-//   upgradeFinished       → updateStatusLabel（成功提示手动重启）
+//   upgradeFinished       → updateStatusLabel（成功提示手动重启；
+//                           失败按 reason 分发，网络失败时远程行显示错误文案）
 //
 // UI 不自动重启：升级成功后仅提示「请手动重启应用以生效」，由用户自行重启。
 class CheckUpdateDialog : public QDialog
@@ -33,7 +34,10 @@ public:
 
     // 显示对话框并触发一次检查（controller 已注入时）。若 controller 为
     // nullptr 则仅显示（升级按钮禁用）。
-    void open();
+    // 注意：不能命名为 open()——与基类 QDialog::open()（public slot）同签名，
+    // 经 QDialog* 或 QMetaObject::invokeMethod 调用会落到基类模态行为而非
+    // 本实现，须改名规避（showAndCheck）。
+    void showAndCheck();
 
     // 注入的升级控制器（为 nullptr 表示未注入，升级按钮禁用）。
     UpgradeController *controller() const { return m_controller; }
@@ -43,7 +47,8 @@ private:
     void onStateChanged(UpgradeController::State state);
     void onRemoteVersionFound(const QString &version);
     void onProgressChanged(int percent);
-    void onUpgradeFinished(bool success, const QString &message);
+    void onUpgradeFinished(bool success, const QString &message,
+                           UpgradeController::FailedReason reason);
 
     UpgradeController *m_controller = nullptr;
     QLabel *m_currentVersionLabel = nullptr;

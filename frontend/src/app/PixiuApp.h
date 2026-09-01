@@ -69,8 +69,9 @@ public:
     // 与 setTransportForTest 同模式，start() 检测到已注入则不再创建默认实例）。
     void setNotifyServiceForTest(NotifyService *service);
 
-    // 测试注入：替换默认升级控制器（仅测试用，须在 showCheckUpdate() 前
-    // 调用；检测到已注入则不再创建默认实例，避免测试触发真实 GitHub 网络）。
+    // 测试注入：替换默认升级控制器（仅测试用，避免测试触发真实 GitHub 网络）。
+    // 替换同时销毁既有检测对话框（若已创建），强制下次 showCheckUpdate() 用
+    // 新控制器重建，防止对话框仍接线到被替换的旧控制器。
     void setUpgradeControllerForTest(UpgradeController *controller);
 
     // 退出前清理：停止异步任务、断开连接并释放资源。
