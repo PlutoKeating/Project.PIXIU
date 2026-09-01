@@ -131,6 +131,10 @@
         <translation>Requesting install permissions…</translation>
     </message>
     <message>
+        <source>升级需要系统授权；您的记忆、配置和同步身份将被保留。</source>
+        <translation>System authorization is required. Your memories, settings, and sync identity will be preserved.</translation>
+    </message>
+    <message>
         <source>升级成功，请手动重启应用以生效</source>
         <translation>Upgrade successful. Please restart the app manually for it to take effect.</translation>
     </message>
@@ -1387,6 +1391,14 @@ You can forget any memory with natural-language instructions — your data stays
     <message>
         <source>升级失败，请检查系统日志</source>
         <translation>Upgrade failed. Please check the system logs.</translation>
+    </message>
+    <message>
+        <source>无法启动系统安装程序</source>
+        <translation>Unable to start the system installer.</translation>
+    </message>
+    <message>
+        <source>升级失败：%1</source>
+        <translation>Upgrade failed: %1</translation>
     </message>
     <message>
         <source>已取消</source>

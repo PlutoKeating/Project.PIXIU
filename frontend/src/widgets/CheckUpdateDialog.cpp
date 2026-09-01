@@ -41,6 +41,12 @@ CheckUpdateDialog::CheckUpdateDialog(UpgradeController *controller,
     m_updateStatusLabel->setFont(ui::Font::caption());
     m_updateStatusLabel->setWordWrap(true);
 
+    QLabel *securityHintLabel = new QLabel(
+        tr("升级需要系统授权；您的记忆、配置和同步身份将被保留。"), this);
+    securityHintLabel->setObjectName(QStringLiteral("updateSecurityHintLabel"));
+    securityHintLabel->setFont(ui::Font::caption());
+    securityHintLabel->setWordWrap(true);
+
     m_updateProgressBar = new QProgressBar(this);
     m_updateProgressBar->setObjectName(QStringLiteral("updateProgressBar"));
     m_updateProgressBar->setRange(0, 100);
@@ -102,6 +108,7 @@ CheckUpdateDialog::CheckUpdateDialog(UpgradeController *controller,
     layout->addWidget(m_currentVersionLabel);
     layout->addWidget(m_remoteVersionLabel);
     layout->addWidget(m_updateStatusLabel);
+    layout->addWidget(securityHintLabel);
     layout->addWidget(m_updateProgressBar);
     layout->addStretch(1);
     layout->addLayout(buttonRow);
@@ -139,8 +146,32 @@ void CheckUpdateDialog::showAndCheck()
     }
 }
 
+bool CheckUpdateDialog::operationActive() const
+{
+    if (!m_controller) {
+        return false;
+    }
+    const UpgradeController::State state = m_controller->state();
+    return state == UpgradeController::State::Downloading
+        || state == UpgradeController::State::Verifying
+        || state == UpgradeController::State::Installing;
+}
+
+void CheckUpdateDialog::reject()
+{
+    if (!operationActive()) {
+        QDialog::reject();
+    }
+}
+
 void CheckUpdateDialog::onStateChanged(UpgradeController::State state)
 {
+    const bool active = state == UpgradeController::State::Downloading
+        || state == UpgradeController::State::Verifying
+        || state == UpgradeController::State::Installing;
+    m_checkAgainButton->setEnabled(!active);
+    m_closeButton->setEnabled(!active);
+
     switch (state) {
     case UpgradeController::State::Idle:
         // 未来兼容：进入初始 Idle（复位后）重置所有陈旧缓存与 UI，避免
@@ -200,7 +231,8 @@ void CheckUpdateDialog::onStateChanged(UpgradeController::State state)
         m_updateStatusLabel->setText(tr("正在申请安装权限…"));
         m_updateProgressBar->hide();
         m_upgradeButton->setEnabled(false);
-        m_cancelButton->show();
+        // dpkg 启动后禁止强制取消，避免留下半配置的软件包。
+        m_cancelButton->hide();
         break;
     case UpgradeController::State::Success:
         m_updateStatusLabel->setText(tr("升级成功，请手动重启应用以生效"));

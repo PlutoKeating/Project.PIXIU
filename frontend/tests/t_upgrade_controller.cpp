@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QHash>
 #include <QHostAddress>
 #include <QNetworkAccessManager>
@@ -57,6 +58,14 @@ public:
     {
         m_partial.insert(path, body);
         m_partialChunk.insert(path, firstChunk);
+    }
+    void addPartialWithDeclaredLength(const QString &path,
+                                      const QByteArray &firstChunk,
+                                      qint64 declaredLength)
+    {
+        m_partial.insert(path, firstChunk);
+        m_partialChunk.insert(path, firstChunk.size());
+        m_declaredLength.insert(path, declaredLength);
     }
     // 接受请求后不发任何响应（保持连接开启）→ 客户端 transferTimeout 超时
     // （QNetworkReply::OperationCanceledError）。
@@ -125,7 +134,9 @@ private:
             const QByteArray head =
                 "HTTP/1.1 200 OK\r\n"
                 "Content-Type: application/octet-stream\r\n"
-                "Content-Length: " + QByteArray::number(body.size()) +
+                "Content-Length: "
+                + QByteArray::number(m_declaredLength.value(p, body.size()))
+                +
                 "\r\n"
                 "Connection: close\r\n"
                 "\r\n";
@@ -169,6 +180,7 @@ private:
     QSet<QString> m_drop;
     QHash<QString, QByteArray> m_partial;
     QHash<QString, int> m_partialChunk;
+    QHash<QString, qint64> m_declaredLength;
     QSet<QString> m_hang;
     QHash<QString, QString> m_redirects;
 };
@@ -181,13 +193,16 @@ QByteArray releaseJson(const QString &base, const QString &tag)
 {
     const QByteArray tagName = ("v" + tag).toUtf8();
     const QByteArray b = base.toUtf8();
+    const QByteArray arch = ui::debianArchitecture().toUtf8();
     QByteArray j = R"({ "tag_name": ")"
         + tagName
         + R"(", "assets": [
-          {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
+          {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb","browser_download_url":")"
         + b
         + R"(/deb"},
-          {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
+          {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb.sha256","browser_download_url":")"
         + b + R"(/deb.sha256"} ]})";
     return j;
 }
@@ -195,14 +210,25 @@ QByteArray releaseJson(const QString &base, const QString &tag)
 // .sha256 asset 内容形状："<hash>  <filename>"。
 QByteArray shaOf(const QByteArray &data)
 {
-    return ui::sha256Hex(data) + "  pixiu_0.1.6-1_amd64.deb\n";
+    return ui::sha256Hex(data) + "  pixiu_0.1.6-1_"
+        + ui::debianArchitecture().toUtf8() + ".deb\n";
 }
 
-// 下载落盘的临时 deb 路径（与 UpgradeController 内部路径一致）。
-QString tempDebPath()
+QStringList tempDebFiles()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::TempLocation)
-        + QStringLiteral("/pixiu-update.deb");
+    QDir directory(
+        QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    return directory.entryList(
+        {QStringLiteral("pixiu-update-*.deb")}, QDir::Files);
+}
+
+void removeTempDebFiles()
+{
+    QDir directory(
+        QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    for (const QString &file : tempDebFiles()) {
+        directory.remove(file);
+    }
 }
 
 // 本地假 server 的下载源判定（http://127.0.0.1）。生产默认 validator 要求
@@ -239,8 +265,12 @@ private slots:
     void cancelDuringDownload();
     void downloadIgnoredWhenNotUpdatable();
     void downloadFollowsRedirect();       // C1：GitHub 302 重定向须跟随
+    void downloadRejectsUntrustedRedirect();
     void checkTimeoutFails();             // 传输超时 → Failed
     void invalidSourceRejected();         // 下载源非 https/非 allowlist → 更新源无效
+    void installProcessStartFailureIsReported();
+    void oversizedDownloadIsRejected();
+    void oversizedChecksumIsRejected();
 
 private:
     // 部署一个「本地有新版 0.1.6 可升级」的假 server，返回该 server 供路由。
@@ -270,11 +300,12 @@ void TestUpgradeController::initTestCase()
 void TestUpgradeController::init()
 {
     QCoreApplication::setApplicationVersion(QStringLiteral("0.1.5"));
+    removeTempDebFiles();
 }
 
 void TestUpgradeController::cleanup()
 {
-    QFile::remove(tempDebPath());
+    removeTempDebFiles();
 }
 
 void TestUpgradeController::initialStateIsIdle()
@@ -426,12 +457,14 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
     // 下载 → 校验 → 安装（注入 runner 退出码 0）→ Success。
     QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
 
-    QCOMPARE(installProgram, QStringLiteral("pkexec"));
+    QCOMPARE(installProgram, QStringLiteral("/usr/bin/pkexec"));
     QCOMPARE(installArgs.size(), 3);
-    QCOMPARE(installArgs.at(0), QStringLiteral("dpkg"));
-    QCOMPARE(installArgs.at(1), QStringLiteral("-i"));
-    QVERIFY(installArgs.at(2).endsWith(QStringLiteral("pixiu-update.deb")));
-    QCOMPARE(installArgs.at(2), tempDebPath());
+    QCOMPARE(installArgs.at(0),
+             QStringLiteral("/usr/lib/pixiu/install-update"));
+    QVERIFY(QFileInfo(installArgs.at(1)).fileName().startsWith(
+        QStringLiteral("pixiu-update-")));
+    QCOMPARE(installArgs.at(2),
+             QString::fromLatin1(ui::sha256Hex(deb)));
 
     QVERIFY(progressSpy.count() > 0);
     QCOMPARE(progressSpy.last().at(0).toInt(), 100);
@@ -449,7 +482,7 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
     QVERIFY(seen.contains(UpgradeController::State::Installing));
 
     // 安装完成后临时 deb 清理。
-    QVERIFY(!QFile::exists(tempDebPath()));
+    QVERIFY(!QFile::exists(installArgs.at(1)));
 }
 
 void TestUpgradeController::downloadAndInstallVerifyFails()
@@ -484,7 +517,7 @@ void TestUpgradeController::downloadAndInstallVerifyFails()
     QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
              UpgradeController::FailedReason::Verify);
     QCOMPARE(runnerCalls, 0); // 校验失败未进入安装
-    QVERIFY(!QFile::exists(tempDebPath())); // 临时 deb 清理
+    QVERIFY(tempDebFiles().isEmpty()); // 临时 deb 清理
 }
 
 void TestUpgradeController::installHandlesExitCodes()
@@ -528,10 +561,12 @@ void TestUpgradeController::installHandlesExitCodes()
                  QString::fromUtf8(c.message));
         const UpgradeController::FailedReason expectedReason =
             c.exitCode == 0 ? UpgradeController::FailedReason::None
-                            : UpgradeController::FailedReason::Other;
+            : (c.exitCode == 126 || c.exitCode == 127)
+            ? UpgradeController::FailedReason::Other
+            : UpgradeController::FailedReason::Install;
         QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
                  expectedReason);
-        QVERIFY(!QFile::exists(tempDebPath()));
+        QVERIFY(tempDebFiles().isEmpty());
 
         delete server;
     }
@@ -565,7 +600,7 @@ void TestUpgradeController::cancelDuringDownload()
     QCOMPARE(finishedSpy.at(0).at(1).toString(), QStringLiteral("已取消"));
     QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
              UpgradeController::FailedReason::Other);
-    QVERIFY(!QFile::exists(tempDebPath()));
+    QVERIFY(tempDebFiles().isEmpty());
 }
 
 void TestUpgradeController::downloadIgnoredWhenNotUpdatable()
@@ -613,7 +648,33 @@ void TestUpgradeController::downloadFollowsRedirect()
     QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
              UpgradeController::FailedReason::None);
     QCOMPARE(runnerCalls, 1); // 302 被跟随，真实 body 下载校验后进入安装
-    QVERIFY(!QFile::exists(tempDebPath()));
+    QVERIFY(tempDebFiles().isEmpty());
+}
+
+void TestUpgradeController::downloadRejectsUntrustedRedirect()
+{
+    const QByteArray deb = QByteArrayLiteral("redirect-target-deb");
+    FakeServer *server = seedUpdatable(deb);
+    server->addRedirect(
+        "/deb", QStringLiteral("https://evil.example.com/pixiu.deb"));
+
+    QNetworkAccessManager net;
+    UpgradeController controller(
+        &net, QUrl(server->baseUrl() + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+
+    controller.checkForUpdate();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+    controller.downloadAndInstall();
+
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Failed);
+    QCOMPARE(finishedSpy.count(), 1);
+    QCOMPARE(finishedSpy.at(0).at(1).toString(),
+             QStringLiteral("更新源无效"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::InvalidSource);
+    QVERIFY(tempDebFiles().isEmpty());
 }
 
 void TestUpgradeController::checkTimeoutFails()
@@ -689,9 +750,82 @@ void TestUpgradeController::invalidSourceRejected()
                  UpgradeController::FailedReason::InvalidSource);
         // 校验在 setState(Downloading) 之前拦截 → 状态机从未进入下载。
         QVERIFY(!seen.contains(UpgradeController::State::Downloading));
-        QVERIFY(!QFile::exists(tempDebPath()));
+        QVERIFY(tempDebFiles().isEmpty());
         delete server;
     }
+}
+
+void TestUpgradeController::installProcessStartFailureIsReported()
+{
+    const QByteArray deb = QByteArrayLiteral("failed-start-deb-payload");
+    FakeServer *server = seedUpdatable(deb);
+    QNetworkAccessManager net;
+    UpgradeController controller(
+        &net, QUrl(server->baseUrl() + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    controller.setInstallProgramForTest(
+        QStringLiteral("/definitely/missing/pixiu-pkexec"));
+    QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+
+    controller.checkForUpdate();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+    controller.downloadAndInstall();
+
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Failed);
+    QCOMPARE(finishedSpy.count(), 1);
+    QCOMPARE(finishedSpy.at(0).at(1).toString(),
+             QStringLiteral("无法启动系统安装程序"));
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Install);
+    QVERIFY(tempDebFiles().isEmpty());
+}
+
+void TestUpgradeController::oversizedDownloadIsRejected()
+{
+    const QByteArray deb = QByteArrayLiteral("declared-oversized-package");
+    FakeServer *server = seedUpdatable(deb);
+    server->addPartialWithDeclaredLength(
+        "/deb", QByteArrayLiteral("x"), 600LL * 1024 * 1024);
+
+    QNetworkAccessManager net;
+    UpgradeController controller(
+        &net, QUrl(server->baseUrl() + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+
+    controller.checkForUpdate();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+    controller.downloadAndInstall();
+
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Failed);
+    QCOMPARE(finishedSpy.count(), 1);
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Download);
+    QVERIFY(tempDebFiles().isEmpty());
+}
+
+void TestUpgradeController::oversizedChecksumIsRejected()
+{
+    const QByteArray deb = QByteArrayLiteral("normal-package");
+    FakeServer *server = seedUpdatable(deb);
+    server->addRoute(
+        "/deb.sha256", 200, "text/plain", QByteArray(70 * 1024, 'a'));
+
+    QNetworkAccessManager net;
+    UpgradeController controller(
+        &net, QUrl(server->baseUrl() + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    QSignalSpy finishedSpy(&controller, &UpgradeController::upgradeFinished);
+
+    controller.checkForUpdate();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+    controller.downloadAndInstall();
+
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Failed);
+    QCOMPARE(finishedSpy.count(), 1);
+    QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
+             UpgradeController::FailedReason::Download);
+    QVERIFY(tempDebFiles().isEmpty());
 }
 
 QTEST_MAIN(TestUpgradeController)

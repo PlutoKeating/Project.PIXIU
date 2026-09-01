@@ -42,7 +42,11 @@ public:
     // 注入的升级控制器（为 nullptr 表示未注入，升级按钮禁用）。
     UpgradeController *controller() const { return m_controller; }
 
+public slots:
+    void reject() override;
+
 private:
+    bool operationActive() const;
     void connectController();
     void onStateChanged(UpgradeController::State state);
     void onRemoteVersionFound(const QString &version);

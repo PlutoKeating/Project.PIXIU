@@ -1,5 +1,5 @@
 Package: pixiu-frontend
-Version: 0.1.5-1
+Version: 0.1.6-1
 Section: utils
 Priority: optional
 Architecture: amd64
@@ -7,6 +7,7 @@ Maintainer: PIXIU Team <pixiu@example.invalid>
 Depends: libqt5widgets5t64,
          libqt5network5t64,
          libqt5websockets5,
+         pkexec,
          libkysdk-shortcut,
          libkysdk-notification,
          libkysdk-qtwidgets,

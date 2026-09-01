@@ -1,0 +1,62 @@
+#!/bin/sh
+# Privileged upgrade boundary: copy the unprivileged download into a root-only
+# file, verify that immutable copy, and only then pass it to dpkg.
+set -eu
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+umask 077
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: install-update <package.deb> <sha256>" >&2
+    exit 2
+fi
+
+SOURCE=$1
+EXPECTED=$2
+case "${EXPECTED}" in
+    *[!0-9A-Fa-f]*|"")
+        echo "pixiu: invalid expected SHA-256" >&2
+        exit 2
+        ;;
+esac
+if [ "${#EXPECTED}" -ne 64 ]; then
+    echo "pixiu: invalid expected SHA-256 length" >&2
+    exit 2
+fi
+if [ ! -f "${SOURCE}" ] || [ -L "${SOURCE}" ]; then
+    echo "pixiu: update package must be a regular non-symlink file" >&2
+    exit 2
+fi
+SOURCE_SIZE=$(/usr/bin/stat --format='%s' "${SOURCE}")
+if [ "${SOURCE_SIZE}" -gt 536870912 ]; then
+    echo "pixiu: update package exceeds the 512 MiB limit" >&2
+    exit 2
+fi
+# Limit files created by this process and its children to 512 MiB.  This also
+# protects the root-owned copy if SOURCE is raced after the stat above.
+ulimit -f 1048576
+
+ROOT_PACKAGE=$(/usr/bin/mktemp /var/tmp/pixiu-update-root.XXXXXX.deb)
+cleanup() {
+    /usr/bin/rm -f -- "${ROOT_PACKAGE}"
+}
+trap cleanup EXIT HUP INT TERM
+
+/usr/bin/cp -- "${SOURCE}" "${ROOT_PACKAGE}"
+/usr/bin/chown root:root "${ROOT_PACKAGE}"
+/usr/bin/chmod 0600 "${ROOT_PACKAGE}"
+
+ACTUAL=$(/usr/bin/sha256sum "${ROOT_PACKAGE}")
+ACTUAL=${ACTUAL%% *}
+EXPECTED=$(printf '%s' "${EXPECTED}" | /usr/bin/tr 'A-F' 'a-f')
+if [ "${ACTUAL}" != "${EXPECTED}" ]; then
+    echo "pixiu: privileged SHA-256 verification failed" >&2
+    exit 3
+fi
+
+ulimit -f unlimited
+DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND
+# postinst provisions a per-device passphrase in the conffile.  Preserve that
+# installed configuration without an interactive dpkg prompt during upgrades.
+/usr/bin/dpkg --force-confdef --force-confold -i "${ROOT_PACKAGE}"

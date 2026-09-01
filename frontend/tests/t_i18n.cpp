@@ -77,6 +77,17 @@ void TestI18n::englishTranslationLoadsAndApplies()
                  "PixiuApp", "后端服务未连接，请先启动 PIXIU 后端服务后重试。"),
              QStringLiteral("Backend service is offline. Please start the "
                             "PIXIU backend service and retry."));
+    QCOMPARE(QCoreApplication::translate(
+                 "CheckUpdateDialog",
+                 "升级需要系统授权；您的记忆、配置和同步身份将被保留。"),
+             QStringLiteral("System authorization is required. Your memories, "
+                            "settings, and sync identity will be preserved."));
+    QCOMPARE(QCoreApplication::translate(
+                 "UpgradeController", "无法启动系统安装程序"),
+             QStringLiteral("Unable to start the system installer."));
+    QCOMPARE(QCoreApplication::translate(
+                 "UpgradeController", "升级失败：%1"),
+             QStringLiteral("Upgrade failed: %1"));
 }
 
 QTEST_MAIN(TestI18n)

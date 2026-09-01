@@ -1,6 +1,7 @@
 #ifndef PIXIU_UPGRADE_CONTROLLER_H
 #define PIXIU_UPGRADE_CONTROLLER_H
 
+#include <QByteArray>
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -21,8 +22,9 @@ class QSaveFile;
 // 流程：checkForUpdate → (Checking) → Updatable | UpToDate | Failed；
 //       仅 Updatable 可 downloadAndInstall → Downloading → Verifying →
 //       Installing → Success | Failed | Cancelled。
-// 安全铁律：HTTPS + sha256 双校验（ui::verifySha256），安装经 pkexec（polkit
-//       认证框），不绕过授权；失败/取消清理临时 deb，不自动重启（手动提示）。
+// 安全铁律：HTTPS + sha256 双校验（ui::verifySha256），安装经 pkexec 调用
+//       root-only 副本二次校验 helper，不绕过授权；失败/取消清理临时 deb，
+//       不自动重启（手动提示）。
 //
 // 测试 seam：
 //   - 网络：默认用内部 QNetworkAccessManager 直连 GitHub；测试可通过注入
@@ -60,6 +62,7 @@ public:
         Verify,        // 下载包校验未通过
         InvalidSource, // 更新源非可信下载源（http / 非 allowlist host）
         Download,      // 下载失败（网络 / 写入 / 提交失败）
+        Install,       // pkexec/dpkg 启动或执行失败
         Other,         // 其它失败（本地文件 / 进程异常等）
     };
 
@@ -95,12 +98,16 @@ public:
     // ui::verifySha256；通过才 Installing，不通过清理 + Failed。
     void downloadAndInstall();
 
-    // 取消下载/校验/安装：清理临时 deb + 停止进行中的 reply/process →
-    // State->Cancelled + upgradeFinished(false, tr("已取消"), FailedReason::Other)。
+    // 取消下载/校验：清理临时 deb + 停止进行中的 reply。安装开始后不允许
+    // 强制取消，避免中断 dpkg 后留下半配置的软件包。
     void cancel();
 
     // 测试 seam：注入安装执行器（替换默认 QProcess pkexec 路径）。
     void setInstallRunner(InstallRunner runner);
+    void setInstallProgramForTest(const QString &program)
+    {
+        m_installProgram = program;
+    }
 
     // 测试 seam：覆盖「下载源可信」判定（默认 https + GitHub host allowlist）。
     void setSourceValidator(SourceValidator validator)
@@ -129,20 +136,30 @@ private:
     void handleShaFinished(QNetworkReply *reply);
     void startInstall();
     void handleInstallFinished(int exitCode);
+    void protectRedirect(QNetworkReply *reply);
+    void collectBoundedReply(QNetworkReply *reply, QByteArray &target,
+                             qint64 maximumBytes);
+    void failInstall(const QString &message);
 
     QNetworkAccessManager *m_network = nullptr;
     QUrl m_releaseUrl;
     ui::ReleaseInfo m_release;
     State m_state = State::Idle;
     QString m_debPath;
+    QString m_expectedSha256;
 
     QNetworkReply *m_checkReply = nullptr;
     QNetworkReply *m_downloadReply = nullptr;
     QNetworkReply *m_shaReply = nullptr;
     QSaveFile *m_downloadFile = nullptr;
+    QByteArray m_checkBody;
+    QByteArray m_shaBody;
+    qint64 m_downloadBytes = 0;
     QProcess *m_installProcess = nullptr;
+    QString m_installErrorOutput;
     InstallRunner m_installRunner;
     SourceValidator m_sourceValidator;
+    QString m_installProgram = QStringLiteral("/usr/bin/pkexec");
 };
 
 // 使 State / FailedReason 可用于 QVariant（QSignalSpy 记录 / 信号跨线程排队依赖）。

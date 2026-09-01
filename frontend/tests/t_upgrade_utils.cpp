@@ -26,7 +26,11 @@ private slots:
     void verifyCorrect();
     void verifyWrong();
     void verifyMissingFile();
+    void verifyRejectsMismatchedFilename();
+    void debianArchitectureMapsKnownNames();
     void parseReleaseValid();
+    void parseReleaseSelectsRequestedArchitecture();
+    void parseReleaseRejectsMismatchedAssetPair();
     void parseReleaseMissingDeb();
     void parseReleaseMissingSha();
     void parseReleaseInvalidJson();
@@ -143,6 +147,27 @@ void TestUpgradeUtils::verifyMissingFile()
         "0000000000000000000000000000000000000000000000000000000000000000")));
 }
 
+void TestUpgradeUtils::verifyRejectsMismatchedFilename()
+{
+    const QByteArray content = QByteArrayLiteral("pixiu-package-data");
+    const QString path = writeTempFile(content);
+    QVERIFY(!path.isEmpty());
+    const QString manifest =
+        QString::fromLatin1(ui::sha256Hex(content))
+        + QStringLiteral("  another-package.deb\n");
+    QVERIFY(!ui::verifySha256(
+        path, manifest, QStringLiteral("pixiu_0.1.6-1_amd64.deb")));
+    QFile::remove(path);
+}
+
+void TestUpgradeUtils::debianArchitectureMapsKnownNames()
+{
+    const QString architecture = ui::debianArchitecture();
+    QVERIFY(!architecture.isEmpty());
+    QVERIFY(architecture != QStringLiteral("x86_64"));
+    QVERIFY(architecture != QStringLiteral("aarch64"));
+}
+
 void TestUpgradeUtils::parseReleaseValid()
 {
     const QByteArray json = QByteArray(R"(
@@ -157,12 +182,50 @@ void TestUpgradeUtils::parseReleaseValid()
         }
     )");
     ui::ReleaseInfo info;
-    QVERIFY(ui::parseRelease(json, info));
+    QVERIFY(ui::parseRelease(json, info, QStringLiteral("amd64")));
     QCOMPARE(info.tag, QStringLiteral("0.1.6"));
+    QCOMPARE(info.architecture, QStringLiteral("amd64"));
+    QCOMPARE(info.debName, QStringLiteral("pixiu_0.1.6-1_amd64.deb"));
     QCOMPARE(info.debUrl,
              QStringLiteral("https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb"));
     QCOMPARE(info.shaUrl,
              QStringLiteral("https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb.sha256"));
+}
+
+void TestUpgradeUtils::parseReleaseSelectsRequestedArchitecture()
+{
+    const QByteArray json = QByteArray(R"({
+        "tag_name": "v0.1.6",
+        "assets": [
+            {"name":"pixiu_0.1.6-1_amd64.deb",
+             "browser_download_url":"https://github.com/a/amd64.deb"},
+            {"name":"pixiu_0.1.6-1_amd64.deb.sha256",
+             "browser_download_url":"https://github.com/a/amd64.deb.sha256"},
+            {"name":"pixiu_0.1.6-1_arm64.deb",
+             "browser_download_url":"https://github.com/a/arm64.deb"},
+            {"name":"pixiu_0.1.6-1_arm64.deb.sha256",
+             "browser_download_url":"https://github.com/a/arm64.deb.sha256"}
+        ]
+    })");
+    ui::ReleaseInfo info;
+    QVERIFY(ui::parseRelease(json, info, QStringLiteral("arm64")));
+    QCOMPARE(info.debName, QStringLiteral("pixiu_0.1.6-1_arm64.deb"));
+    QCOMPARE(info.debUrl, QStringLiteral("https://github.com/a/arm64.deb"));
+}
+
+void TestUpgradeUtils::parseReleaseRejectsMismatchedAssetPair()
+{
+    const QByteArray json = QByteArray(R"({
+        "tag_name": "v0.1.6",
+        "assets": [
+            {"name":"pixiu_0.1.5-1_amd64.deb",
+             "browser_download_url":"https://github.com/a/old.deb"},
+            {"name":"pixiu_0.1.6-1_arm64.deb.sha256",
+             "browser_download_url":"https://github.com/a/wrong.sha256"}
+        ]
+    })");
+    ui::ReleaseInfo info;
+    QVERIFY(!ui::parseRelease(json, info, QStringLiteral("amd64")));
 }
 
 void TestUpgradeUtils::parseReleaseMissingDeb()
@@ -178,7 +241,7 @@ void TestUpgradeUtils::parseReleaseMissingDeb()
         }
     )");
     ui::ReleaseInfo info;
-    QVERIFY(!ui::parseRelease(json, info));
+    QVERIFY(!ui::parseRelease(json, info, QStringLiteral("amd64")));
 }
 
 void TestUpgradeUtils::parseReleaseMissingSha()
@@ -194,13 +257,14 @@ void TestUpgradeUtils::parseReleaseMissingSha()
         }
     )");
     ui::ReleaseInfo info;
-    QVERIFY(!ui::parseRelease(json, info));
+    QVERIFY(!ui::parseRelease(json, info, QStringLiteral("amd64")));
 }
 
 void TestUpgradeUtils::parseReleaseInvalidJson()
 {
     ui::ReleaseInfo info;
-    QVERIFY(!ui::parseRelease(QByteArrayLiteral("not a json {"), info));
+    QVERIFY(!ui::parseRelease(
+        QByteArrayLiteral("not a json {"), info, QStringLiteral("amd64")));
 }
 
 QTEST_APPLESS_MAIN(TestUpgradeUtils)

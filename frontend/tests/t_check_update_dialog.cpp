@@ -156,13 +156,16 @@ QByteArray releaseJson(const QString &base, const QString &tag)
 {
     const QByteArray tagName = ("v" + tag).toUtf8();
     const QByteArray b = base.toUtf8();
+    const QByteArray arch = ui::debianArchitecture().toUtf8();
     QByteArray j = R"({ "tag_name": ")"
         + tagName
         + R"(", "assets": [
-          {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
+          {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb","browser_download_url":")"
         + b
         + R"(/deb"},
-          {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
+          {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb.sha256","browser_download_url":")"
         + b + R"(/deb.sha256"} ]})";
     return j;
 }
@@ -170,14 +173,25 @@ QByteArray releaseJson(const QString &base, const QString &tag)
 // .sha256 asset 内容形状："<hash>  <filename>"。
 QByteArray shaOf(const QByteArray &data)
 {
-    return ui::sha256Hex(data) + "  pixiu_0.1.6-1_amd64.deb\n";
+    return ui::sha256Hex(data) + "  pixiu_0.1.6-1_"
+        + ui::debianArchitecture().toUtf8() + ".deb\n";
 }
 
-// 下载落盘的临时 deb 路径（与 UpgradeController 内部路径一致）。
-QString tempDebPath()
+QStringList tempDebFiles()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::TempLocation)
-        + QStringLiteral("/pixiu-update.deb");
+    QDir directory(
+        QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    return directory.entryList(
+        {QStringLiteral("pixiu-update-*.deb")}, QDir::Files);
+}
+
+void removeTempDebFiles()
+{
+    QDir directory(
+        QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    for (const QString &file : tempDebFiles()) {
+        directory.remove(file);
+    }
 }
 
 // 本地假 server 的下载源判定（http://127.0.0.1）。生产默认 validator 要求
@@ -241,11 +255,12 @@ void TestCheckUpdateDialog::initTestCase()
 void TestCheckUpdateDialog::init()
 {
     QCoreApplication::setApplicationVersion(QStringLiteral("0.1.5"));
+    removeTempDebFiles();
 }
 
 void TestCheckUpdateDialog::cleanup()
 {
-    QFile::remove(tempDebPath());
+    removeTempDebFiles();
 }
 
 void TestCheckUpdateDialog::updatableEnablesUpgradeAndShowsRemoteVersion()
@@ -276,6 +291,11 @@ void TestCheckUpdateDialog::updatableEnablesUpgradeAndShowsRemoteVersion()
         QStringLiteral("updateStatusLabel"));
     QVERIFY(status != nullptr);
     QCOMPARE(status->text(), QStringLiteral("发现新版本，可一键升级"));
+    QLabel *security = dialog.findChild<QLabel *>(
+        QStringLiteral("updateSecurityHintLabel"));
+    QVERIFY(security != nullptr);
+    QVERIFY(security->text().contains(QStringLiteral("系统授权")));
+    QVERIFY(security->text().contains(QStringLiteral("同步身份将被保留")));
 }
 
 void TestCheckUpdateDialog::upToDateDisablesUpgradeAndShowsLatest()
@@ -343,9 +363,11 @@ void TestCheckUpdateDialog::progressUpdatesBarDuringDownload()
     QNetworkAccessManager net;
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
     controller.setSourceValidator(acceptLocalSource);
+    std::function<void(int)> finishInstall;
     controller.setInstallRunner(
-        [](const QString &, const QStringList &, std::function<void(int)>) {
-            // 停在 Installing：不回调 onFinished，避免安装后状态机快速推进。
+        [&finishInstall](const QString &, const QStringList &,
+                         std::function<void(int)> onFinished) {
+            finishInstall = std::move(onFinished);
         });
     CheckUpdateDialog dialog(&controller);
 
@@ -367,15 +389,21 @@ void TestCheckUpdateDialog::progressUpdatesBarDuringDownload()
     // 下载/校验/安装后停在 Installing（申请安装权限）。
     QTRY_COMPARE(status->text(), QStringLiteral("正在申请安装权限…"));
     QVERIFY(!upgrade->isEnabled());
-    // 安装中取消按钮可见。
+    // 安装中禁止强制取消/关闭，避免杀死 dpkg 留下半配置包。
     QPushButton *cancel = dialog.findChild<QPushButton *>(
         QStringLiteral("cancelButton"));
+    QPushButton *close = dialog.findChild<QPushButton *>(
+        QStringLiteral("closeButton"));
     QVERIFY(cancel != nullptr);
-    QVERIFY(cancel->isVisible());
+    QVERIFY(close != nullptr);
+    QVERIFY(!cancel->isVisible());
+    QVERIFY(!close->isEnabled());
+    dialog.reject();
+    QVERIFY(dialog.isVisible());
 
-    // 清理：取消中止在途流程，避免挂起事件循环阻塞测试退出。
-    controller.cancel();
-    QTRY_COMPARE(controller.state(), UpgradeController::State::Cancelled);
+    QVERIFY(bool(finishInstall));
+    finishInstall(0);
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
 }
 
 void TestCheckUpdateDialog::upgradeFinishedSuccessShowsManualRestart()
@@ -406,7 +434,7 @@ void TestCheckUpdateDialog::upgradeFinishedSuccessShowsManualRestart()
     QTRY_COMPARE(status->text(),
                  QStringLiteral("升级成功，请手动重启应用以生效"));
     QVERIFY(!upgrade->isEnabled());
-    QVERIFY(!QFile::exists(tempDebPath()));   // 安装后清理临时 deb
+    QVERIFY(tempDebFiles().isEmpty());   // 安装后清理临时 deb
 }
 
 void TestCheckUpdateDialog::invalidSourceRejectedShowsInvalidSource()
@@ -416,10 +444,13 @@ void TestCheckUpdateDialog::invalidSourceRejectedShowsInvalidSource()
     const QByteArray deb = QByteArrayLiteral("deb");
     FakeServer *server = seedUpdatable(deb);
     const QString base = server->baseUrl();
+    const QByteArray arch = ui::debianArchitecture().toUtf8();
     QByteArray json = R"({ "tag_name": "v0.1.6", "assets": [
-        {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
+        {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb","browser_download_url":")"
         + QByteArrayLiteral("http://evil.example.com/deb") + R"("},
-        {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
+        {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb.sha256","browser_download_url":")"
         + QByteArrayLiteral("http://evil.example.com/deb.sha256") + R"("} ]})";
     server->addJson("/releases/latest", json);
 
@@ -473,7 +504,7 @@ void TestCheckUpdateDialog::cancelVisibleDuringDownloadAndCancels()
     QVERIFY(status != nullptr);
     QCOMPARE(status->text(), QStringLiteral("已取消"));
     QVERIFY(!cancel->isVisible());
-    QVERIFY(!QFile::exists(tempDebPath()));
+    QVERIFY(tempDebFiles().isEmpty());
 }
 
 void TestCheckUpdateDialog::previousUpdatableThenUpToDateClearsStaleVersion()
@@ -510,9 +541,8 @@ void TestCheckUpdateDialog::previousUpdatableThenUpToDateClearsStaleVersion()
 
 void TestCheckUpdateDialog::cancelThenRedownloadResetsProgress()
 {
-    // U-3-1b：完整下载把进度推进到 100 后停在 Installing（installRunner 不回调
-    // 退出码）；取消后重查再进 Downloading 时进度条不得回填上次的旧百分比
-    // （应为 0，fresh 从头）。
+    // U-3-1b：完整下载把进度推进到 100 后，用户在 polkit 认证框取消；
+    // 重查再进 Downloading 时进度条不得回填上次的旧百分比（应为 0）。
     // （修复前：m_progress 残留旧值 100，重进 Downloading setValue(m_progress)
     //   短暂显示「下载中…100%」。）
     const QByteArray deb = QByteArrayLiteral("fake-deb-body-0123456789");
@@ -522,9 +552,13 @@ void TestCheckUpdateDialog::cancelThenRedownloadResetsProgress()
     QNetworkAccessManager net;
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
     controller.setSourceValidator(acceptLocalSource);
-    // 注入的安装执行器停在 Installing：不回调 onFinished，避免进度快速推进收尾。
+    int installCalls = 0;
     controller.setInstallRunner(
-        [](const QString &, const QStringList &, std::function<void(int)>) {});
+        [&installCalls](const QString &, const QStringList &,
+                        std::function<void(int)> onFinished) {
+            ++installCalls;
+            onFinished(126); // 模拟用户取消 polkit 认证
+        });
     CheckUpdateDialog dialog(&controller);
 
     QProgressBar *bar = dialog.findChild<QProgressBar *>(
@@ -533,18 +567,16 @@ void TestCheckUpdateDialog::cancelThenRedownloadResetsProgress()
     QPushButton *upgrade = dialog.findChild<QPushButton *>(
         QStringLiteral("upgradeButton"));
     QVERIFY(upgrade != nullptr);
-    QPushButton *cancel = dialog.findChild<QPushButton *>(
-        QStringLiteral("cancelButton"));
-    QVERIFY(cancel != nullptr);
 
     dialog.showAndCheck();
     QTRY_VERIFY(upgrade->isEnabled());
-    upgrade->click();                  // 下载 → 校验 → 安装（停在 Installing）
+    upgrade->click();                  // 下载 → 校验 → polkit 取消
     QTRY_COMPARE(bar->value(), 100);   // 进度已推进到 100（m_progress=100）
-    cancel->click();                   // Installing 可取消 → Cancelled
     QTRY_COMPARE(controller.state(), UpgradeController::State::Cancelled);
+    QCOMPARE(installCalls, 1);
 
     // 重查 → 重进 Downloading：进度条应复位为 0（不闪上次旧值）。
+    server->addPartial("/deb", deb, 5);
     dialog.showAndCheck();
     QTRY_VERIFY(upgrade->isEnabled());
     upgrade->click();

@@ -59,6 +59,9 @@ cmake --install "${BUILD_DIR}" --prefix "${stage}/usr" >/dev/null
 mkdir -p "${stage}/DEBIAN"
 cp "${control}" "${stage}/DEBIAN/control"
 install -m 0755 "${postinst}" "${stage}/DEBIAN/postinst"
+mkdir -p "${stage}/usr/lib/pixiu"
+install -m 0755 "${ROOT}/scripts/install-update" \
+    "${stage}/usr/lib/pixiu/install-update"
 
 mkdir -p "${DIST_DIR}"
 echo "==> building ${DIST_DIR}/${deb_name}"

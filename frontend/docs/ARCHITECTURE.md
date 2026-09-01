@@ -250,6 +250,27 @@ PIXIU 前端
 
 > 前端仅做配对、展示与解绑；CRDT 合并、Gossip/反熵对账等由后端同步层完成（见 `backend/docs/ARCHITECTURE.md` 第 7 章）。
 
+### 6.6 应用内安全升级
+
+```
+设置 → 检查更新
+  → UpgradeController 请求公开 GitHub Release latest API
+  → 按当前 Debian 架构（amd64 / arm64）选择同版本 .deb + .sha256
+  → 流式下载到唯一临时文件 → 流式 SHA-256 校验（含资产文件名绑定）
+  → pkexec /usr/lib/pixiu/install-update <deb> <sha256> → polkit 系统授权
+  → 特权 helper 复制到 root-only 文件并再次校验
+  → 非交互 dpkg（保留已安装的设备配置）
+  → 成功后提示用户手动重启
+```
+
+- 下载及每次重定向均限制为 HTTPS 和 GitHub 精确域名白名单。
+- 元数据、校验清单和 DEB 均有限额；特权 helper 对 root-only 副本再次校验，
+  消除 polkit 授权等待期间替换用户临时文件的竞态。
+- 下载/校验可取消；`dpkg` 启动后禁用关闭与强制取消，避免产生半配置包。
+- 安装进程启动失败、授权取消和 `dpkg` 错误分别呈现；错误输出限制长度。
+- 安装包 `postinst` 保留 SQLite 记忆与配置，并在轮换历史公开同步口令时原地
+  重加密 Ed25519 私钥，保留设备 ID、peer 与配对关系。
+
 ---
 
 ## 7. 视觉设计系统（Design System）
@@ -319,7 +340,9 @@ PIXIU 前端
 - **高 DPI**：Qt 高 DPI 缩放，悬浮球/图标提供多倍图。
 - **明暗主题**：监听 UKUI 主题切换信号实时换肤（8.5）。
 - **多语言 i18n**：中/英文案经 Qt `tr()` 与 `.ts` 资源管理。
-- **x86 / ARM**：在两类已适配麒麟机型验证（D-08）。
+- **x86 / ARM**：升级器按运行架构选择 Debian 资产；GitHub Release 在原生
+  amd64/arm64 runner 分别构建。麒麟 V11 x86_64 已验证，ARM 麒麟真机仍须按
+  独立平台画像完成 D-08 验收，不以通用 ARM CI 代替真机结论。
 
 ---
 
@@ -333,7 +356,9 @@ frontend/
 │   ├── main.cpp                 # 应用入口，注册全局快捷键，常驻托盘
 │   ├── app/
 │   │   ├── PixiuApp.{h,cpp}     # 应用生命周期、主题监听、单例守护
-│   │   └── ShortcutManager.*    # kysdk-shortcut 唤起聊天框
+│   │   ├── ShortcutManager.*    # kysdk-shortcut 唤起聊天框
+│   │   ├── UpgradeController.*  # 检查/下载/校验/polkit 安装状态机
+│   │   └── UpgradeUtils.*       # 版本、架构、Release 资产与流式 SHA-256
 │   ├── widgets/
 │   │   ├── FloatingBall.*       # 桌面悬浮球（KTranslucentFloor + KDragWidget）
 │   │   ├── ChatWindow.*         # 聊天主窗口（无边框、圆角、UKUI 风格）
@@ -342,7 +367,8 @@ frontend/
 │   │   ├── EvidenceCard.*       # 检索结果证据卡（可追溯 source_evidence）
 │   │   ├── MemoryPanel.*        # 记忆/偏好/冲突/同步管理面板
 │   │   ├── ForgetDialog.*       # 遗忘确认对话框（4.1.2 Dialog）
-│   │   └── PairDialog.*         # 设备配对对话框（二维码/PIN）
+│   │   ├── PairDialog.*         # 设备配对对话框（二维码/PIN）
+│   │   └── CheckUpdateDialog.*  # 应用内升级状态、进度与安全提示
 │   ├── services/
 │   │   ├── MemoryClient.*       # 后端 IPC 客户端（DBus/HTTP/WS）
 │   │   ├── SyncClient.*         # 同步管理客户端（/sync/* 配对/节点/状态/解绑）

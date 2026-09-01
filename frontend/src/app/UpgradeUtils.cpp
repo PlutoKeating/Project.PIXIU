@@ -2,11 +2,14 @@
 
 #include <QCryptographicHash>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
+#include <QRegularExpression>
 #include <QStringList>
+#include <QSysInfo>
 #include <QtGlobal>
 
 namespace ui {
@@ -44,23 +47,70 @@ QByteArray sha256Hex(const QByteArray &data)
     return QCryptographicHash::hash(data, QCryptographicHash::Sha256).toHex();
 }
 
-bool verifySha256(const QString &filePath, const QString &expectedHex)
+QString sha256FromManifest(const QString &manifest,
+                           const QString &expectedFileName)
+{
+    const QStringList tokens = manifest.trimmed().split(
+        QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts);
+    if (tokens.isEmpty() || tokens.size() > 2
+        || !QRegularExpression(QStringLiteral("^[0-9A-Fa-f]{64}$"))
+                .match(tokens.first())
+                .hasMatch()) {
+        return QString();
+    }
+    if (!expectedFileName.isEmpty()
+        && (tokens.size() != 2
+            || QFileInfo(tokens.last()).fileName() != expectedFileName)) {
+        return QString();
+    }
+    return tokens.first().toLower();
+}
+
+bool verifySha256(const QString &filePath, const QString &expectedHex,
+                  const QString &expectedFileName)
 {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    const QByteArray data = file.readAll();
+
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+    while (!file.atEnd()) {
+        const QByteArray chunk = file.read(1024 * 1024);
+        if (chunk.isEmpty() && file.error() != QFileDevice::NoError) {
+            return false;
+        }
+        hash.addData(chunk);
+    }
     file.close();
 
-    // release 的 .sha256 asset 内容常为 "<hash>  <filename>"，取首个空白
-    // 分隔 token；纯 hex 入参原样比较；大小写不敏感。
+    // release 的 .sha256 asset 必须是纯 hash 或标准 "<hash>  <filename>"。
     const QString expected =
-        expectedHex.trimmed().section(QLatin1Char(' '), 0, 0);
-    return sha256Hex(data).compare(expected.toLatin1(), Qt::CaseInsensitive) == 0;
+        sha256FromManifest(expectedHex, expectedFileName);
+    if (expected.isEmpty()) {
+        return false;
+    }
+    return hash.result().toHex().compare(
+               expected.toLatin1(), Qt::CaseInsensitive)
+        == 0;
 }
 
-bool parseRelease(const QByteArray &json, ReleaseInfo &out)
+QString debianArchitecture()
+{
+    const QString architecture = QSysInfo::currentCpuArchitecture().toLower();
+    if (architecture == QLatin1String("x86_64")
+        || architecture == QLatin1String("amd64")) {
+        return QStringLiteral("amd64");
+    }
+    if (architecture == QLatin1String("aarch64")
+        || architecture == QLatin1String("arm64")) {
+        return QStringLiteral("arm64");
+    }
+    return architecture;
+}
+
+bool parseRelease(const QByteArray &json, ReleaseInfo &out,
+                  const QString &architecture)
 {
     out = ReleaseInfo();
 
@@ -76,6 +126,16 @@ bool parseRelease(const QByteArray &json, ReleaseInfo &out)
         return false;
     }
     out.tag = normalizeVersion(tagName);
+    if (!QRegularExpression(QStringLiteral("^\\d+\\.\\d+\\.\\d+$"))
+             .match(out.tag)
+             .hasMatch()
+        || architecture.trimmed().isEmpty()) {
+        return false;
+    }
+    out.architecture = architecture;
+    out.debName = QStringLiteral("pixiu_%1-1_%2.deb")
+                      .arg(out.tag, architecture);
+    out.shaName = out.debName + QStringLiteral(".sha256");
 
     bool foundDeb = false;
     bool foundSha = false;
@@ -86,11 +146,16 @@ bool parseRelease(const QByteArray &json, ReleaseInfo &out)
         const QString url =
             asset.value(QLatin1String("browser_download_url")).toString();
 
-        if (name.startsWith(QLatin1String("pixiu_"))
-            && name.endsWith(QLatin1String("-1_amd64.deb"))) {
+        if (name == out.debName) {
+            if (foundDeb) {
+                return false;
+            }
             out.debUrl = url;
             foundDeb = true;
-        } else if (name.endsWith(QLatin1String(".deb.sha256"))) {
+        } else if (name == out.shaName) {
+            if (foundSha) {
+                return false;
+            }
             out.shaUrl = url;
             foundSha = true;
         }

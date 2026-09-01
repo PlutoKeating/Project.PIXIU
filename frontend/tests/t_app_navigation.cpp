@@ -23,6 +23,7 @@
 #include "app/PreferenceController.h"
 #include "app/Severity.h"
 #include "app/UpgradeController.h"
+#include "app/UpgradeUtils.h"
 #include "services/BackendTransport.h"
 #include "services/BackendTypes.h"
 #include "services/NotifyService.h"
@@ -358,13 +359,18 @@ QByteArray upgradeReleaseJson(const QString &base, const QString &tag)
 {
     const QByteArray tagName = ("v" + tag).toUtf8();
     const QByteArray b = base.toUtf8();
+    const QByteArray version = tag.toUtf8();
+    const QByteArray architecture = ui::debianArchitecture().toUtf8();
     QByteArray j = R"({ "tag_name": ")"
         + tagName
         + R"(", "assets": [
-          {"name":"pixiu_0.1.6-1_amd64.deb","browser_download_url":")"
+          {"name":"pixiu_)"
+        + version + "-1_" + architecture + R"(.deb","browser_download_url":")"
         + b
         + R"(/deb"},
-          {"name":"pixiu_0.1.6-1_amd64.deb.sha256","browser_download_url":")"
+          {"name":"pixiu_)"
+        + version + "-1_" + architecture
+        + R"(.deb.sha256","browser_download_url":")"
         + b + R"(/deb.sha256"} ]})";
     return j;
 }
@@ -483,7 +489,7 @@ void TestAppNavigation::initTestCase()
     QVERIFY(m_upgradeServer->start());
     m_upgradeServer->addJson("/releases/latest",
                              upgradeReleaseJson(m_upgradeServer->baseUrl(),
-                                                QStringLiteral("0.1.6")));
+                                                QStringLiteral("0.1.7")));
     m_upgradeNetwork = new QNetworkAccessManager(this);
     m_upgradeController = new UpgradeController(
         m_upgradeNetwork,

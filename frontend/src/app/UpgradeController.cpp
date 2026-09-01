@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <QSaveFile>
 #include <QStandardPaths>
+#include <QTemporaryFile>
 
 Q_LOGGING_CATEGORY(lcUpgrade, "pixiu.upgrade")
 
@@ -17,10 +18,14 @@ namespace {
 // 黑洞 server 会让状态机永远挂起。仿 HttpBackendTransport::kTransferTimeoutMs
 // 先例（10000ms），升级传输取 15s（deb 较大）。
 constexpr int kUpgradeTransferTimeoutMs = 15000;
+constexpr qint64 kMaxReleaseMetadataBytes = 1024 * 1024;
+constexpr qint64 kMaxChecksumBytes = 64 * 1024;
+constexpr qint64 kMaxPackageBytes = 512LL * 1024 * 1024;
 
 // GitHub 资产下载源的铁律校验：HTTPS + host allowlist。GitHub 的
 // browser_download_url 初始指向 github.com，302 后跳到
-// objects.githubusercontent.com；release/latest API 亦在 api.github.com。
+// objects.githubusercontent.com / release-assets.githubusercontent.com；
+// release/latest API 亦在 api.github.com。
 // 恶意/被篡改的 release 元数据若把 deb/sha 指向任意 http:// host 即在此拦截。
 bool isGitHubDownloadSource(const QUrl &url)
 {
@@ -30,6 +35,7 @@ bool isGitHubDownloadSource(const QUrl &url)
     const QString host = url.host().toLower();
     return host == QLatin1String("github.com") || //
         host == QLatin1String("objects.githubusercontent.com") || //
+        host == QLatin1String("release-assets.githubusercontent.com") || //
         host == QLatin1String("api.github.com");
 }
 } // namespace
@@ -56,7 +62,7 @@ UpgradeController::UpgradeController(QNetworkAccessManager *network,
 
 UpgradeController::~UpgradeController()
 {
-    // 中止在途请求 / 进程并清理临时 deb（test seam 下无 pkexec，安全）。
+    // 中止网络请求；已进入系统安装的进程必须继续，避免中断 dpkg。
     resetTransport();
 }
 
@@ -78,6 +84,7 @@ void UpgradeController::setState(State state)
 // 状态变迁后错误地再次推进状态机（cancel/destructor 语义下的安全中止）。
 void UpgradeController::resetTransport()
 {
+    bool preserveDebForInstaller = false;
     if (m_checkReply) {
         m_checkReply->disconnect(this);
         m_checkReply->abort();
@@ -103,15 +110,27 @@ void UpgradeController::resetTransport()
     }
     if (m_installProcess) {
         m_installProcess->disconnect(this);
-        m_installProcess->kill();
-        m_installProcess->waitForFinished(1000);
-        m_installProcess->deleteLater();
+        if (m_state == State::Installing
+            && m_installProcess->state() != QProcess::NotRunning) {
+            // 应用退出也不能杀死正在写包数据库的 dpkg。解除 QObject 所有权，
+            // 让已启动的系统安装进程自行完成，并保留其仍可能读取的 deb。
+            preserveDebForInstaller = true;
+            m_installProcess->setParent(nullptr);
+        } else {
+            m_installProcess->kill();
+            m_installProcess->waitForFinished(1000);
+            m_installProcess->deleteLater();
+        }
         m_installProcess = nullptr;
     }
-    if (!m_debPath.isEmpty()) {
+    if (!m_debPath.isEmpty() && !preserveDebForInstaller) {
         QFile::remove(m_debPath);
         m_debPath.clear();
     }
+    m_checkBody.clear();
+    m_shaBody.clear();
+    m_downloadBytes = 0;
+    m_expectedSha256.clear();
 }
 
 void UpgradeController::checkForUpdate()
@@ -136,6 +155,12 @@ void UpgradeController::checkForUpdate()
                          QNetworkRequest::NoLessSafeRedirectPolicy);
     request.setTransferTimeout(kUpgradeTransferTimeoutMs);
     m_checkReply = m_network->get(request);
+    protectRedirect(m_checkReply);
+    connect(m_checkReply, &QNetworkReply::readyRead, this,
+            [this]() {
+                collectBoundedReply(
+                    m_checkReply, m_checkBody, kMaxReleaseMetadataBytes);
+            });
     connect(m_checkReply, &QNetworkReply::finished, this,
             &UpgradeController::handleCheckFinished);
 }
@@ -151,11 +176,22 @@ void UpgradeController::handleCheckFinished()
         reply->deleteLater();
         return; // 已取消/复位，忽略迟到回调
     }
+    collectBoundedReply(reply, m_checkBody, kMaxReleaseMetadataBytes);
+    const bool invalidRedirect =
+        reply->property("pixiuInvalidRedirect").toBool();
+    const bool tooLarge = reply->property("pixiuTooLarge").toBool();
     const bool ok = reply->error() == QNetworkReply::NoError;
-    const QByteArray body = reply->readAll();
+    const QByteArray body = std::move(m_checkBody);
+    m_checkBody.clear();
     reply->deleteLater();
 
-    if (!ok) {
+    if (invalidRedirect) {
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("更新源无效"),
+                             FailedReason::InvalidSource);
+        return;
+    }
+    if (!ok || tooLarge) {
         // 传输超时（setTransferTimeout → OperationCanceledError）与网络/HTTP
         // 失败同归「无法连接」路径（非 NoError 即判定失败）。
         qCWarning(lcUpgrade) << "check failed (network/http):" << m_releaseUrl;
@@ -208,8 +244,18 @@ void UpgradeController::downloadAndInstall()
     resetTransport();
     setState(State::Downloading);
 
-    m_debPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation)
-        + QStringLiteral("/pixiu-update.deb");
+    QTemporaryFile temporary(
+        QStandardPaths::writableLocation(QStandardPaths::TempLocation)
+        + QStringLiteral("/pixiu-update-XXXXXX.deb"));
+    temporary.setAutoRemove(false);
+    if (!temporary.open()) {
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("下载失败"), FailedReason::Download);
+        return;
+    }
+    m_debPath = temporary.fileName();
+    temporary.close();
+    QFile::remove(m_debPath);
     m_downloadFile = new QSaveFile(m_debPath);
     if (!m_downloadFile->open(QIODevice::WriteOnly)) {
         delete m_downloadFile;
@@ -231,13 +277,45 @@ void UpgradeController::downloadAndInstall()
                          QNetworkRequest::NoLessSafeRedirectPolicy);
     request.setTransferTimeout(kUpgradeTransferTimeoutMs);
     m_downloadReply = m_network->get(request);
+    protectRedirect(m_downloadReply);
+    connect(m_downloadReply, &QNetworkReply::metaDataChanged, this,
+            [this]() {
+                if (!m_downloadReply) {
+                    return;
+                }
+                const qint64 length = m_downloadReply
+                    ->header(QNetworkRequest::ContentLengthHeader)
+                    .toLongLong();
+                if (length > kMaxPackageBytes) {
+                    m_downloadReply->setProperty("pixiuTooLarge", true);
+                    m_downloadReply->abort();
+                }
+            });
     connect(m_downloadReply, &QNetworkReply::readyRead, this, [this]() {
         if (m_downloadFile && m_downloadReply) {
-            m_downloadFile->write(m_downloadReply->readAll());
+            const QByteArray chunk = m_downloadReply->readAll();
+            if (m_downloadBytes + chunk.size() > kMaxPackageBytes) {
+                m_downloadReply->setProperty("pixiuTooLarge", true);
+                m_downloadReply->abort();
+                return;
+            }
+            if (m_downloadFile->write(chunk) != chunk.size()) {
+                m_downloadReply->setProperty("pixiuWriteFailed", true);
+                m_downloadReply->abort();
+                return;
+            }
+            m_downloadBytes += chunk.size();
         }
     });
     connect(m_downloadReply, &QNetworkReply::downloadProgress, this,
             [this](qint64 received, qint64 total) {
+                if (m_downloadReply
+                    && (received > kMaxPackageBytes
+                        || total > kMaxPackageBytes)) {
+                    m_downloadReply->setProperty("pixiuTooLarge", true);
+                    m_downloadReply->abort();
+                    return;
+                }
                 if (total > 0) {
                     emit progressChanged(
                         qBound(0, int(received * 100 / total), 100));
@@ -258,15 +336,28 @@ void UpgradeController::handleDownloadFinished()
         reply->deleteLater();
         return; // 已取消/失败，忽略迟到回调
     }
-    if (m_downloadFile) {
-        m_downloadFile->write(reply->readAll()); // 排空剩余数据
+    if (m_downloadFile && reply->isOpen()) {
+        const QByteArray remaining = reply->readAll();
+        if (m_downloadBytes + remaining.size() > kMaxPackageBytes) {
+            reply->setProperty("pixiuTooLarge", true);
+        } else if (m_downloadFile->write(remaining) != remaining.size()) {
+            reply->setProperty("pixiuWriteFailed", true);
+        } else {
+            m_downloadBytes += remaining.size();
+        }
     }
+    const bool invalidRedirect =
+        reply->property("pixiuInvalidRedirect").toBool();
+    const bool tooLarge = reply->property("pixiuTooLarge").toBool();
+    const bool writeFailed =
+        reply->property("pixiuWriteFailed").toBool();
     const bool ok = reply->error() == QNetworkReply::NoError;
     reply->deleteLater();
 
     // 传输超时（setTransferTimeout → OperationCanceledError）与网络/HTTP 失败
     // 同归「下载失败」路径（非 NoError 即判定失败）。
-    if (!ok || !m_downloadFile || !m_downloadFile->commit()) {
+    if (invalidRedirect || tooLarge || writeFailed || !ok || !m_downloadFile
+        || !m_downloadFile->commit()) {
         if (m_downloadFile) {
             m_downloadFile->cancelWriting();
             delete m_downloadFile;
@@ -275,7 +366,10 @@ void UpgradeController::handleDownloadFinished()
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);
-        emit upgradeFinished(false, tr("下载失败"), FailedReason::Download);
+        emit upgradeFinished(
+            false, invalidRedirect ? tr("更新源无效") : tr("下载失败"),
+            invalidRedirect ? FailedReason::InvalidSource
+                            : FailedReason::Download);
         return;
     }
     delete m_downloadFile;
@@ -295,7 +389,12 @@ void UpgradeController::fetchSha()
                          QNetworkRequest::NoLessSafeRedirectPolicy);
     request.setTransferTimeout(kUpgradeTransferTimeoutMs);
     m_shaReply = m_network->get(request);
+    protectRedirect(m_shaReply);
     QNetworkReply *sha = m_shaReply;
+    connect(sha, &QNetworkReply::readyRead, this,
+            [this, sha]() {
+                collectBoundedReply(sha, m_shaBody, kMaxChecksumBytes);
+            });
     connect(sha, &QNetworkReply::finished, this,
             [this, sha]() { handleShaFinished(sha); });
 }
@@ -308,8 +407,13 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
     if (!reply) {
         return;
     }
+    collectBoundedReply(reply, m_shaBody, kMaxChecksumBytes);
+    const bool invalidRedirect =
+        reply->property("pixiuInvalidRedirect").toBool();
+    const bool tooLarge = reply->property("pixiuTooLarge").toBool();
     const bool ok = reply->error() == QNetworkReply::NoError;
-    const QByteArray body = reply->readAll();
+    const QByteArray body = std::move(m_shaBody);
+    m_shaBody.clear();
     reply->deleteLater();
 
     if (m_state != State::Verifying) {
@@ -317,15 +421,21 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
     }
     // sha 获取失败（网络错误 / 传输超时 → OperationCanceledError）：并入
     // 「下载失败」路径，与校验不通过区分，避免把网络问题误报为「校验失败」。
-    if (!ok) {
+    if (invalidRedirect || tooLarge || !ok) {
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);
-        emit upgradeFinished(false, tr("下载失败"), FailedReason::Download);
+        emit upgradeFinished(
+            false, invalidRedirect ? tr("更新源无效") : tr("下载失败"),
+            invalidRedirect ? FailedReason::InvalidSource
+                            : FailedReason::Download);
         return;
     }
     const QString expected = QString::fromLatin1(body);
-    if (!ui::verifySha256(m_debPath, expected)) {
+    m_expectedSha256 =
+        ui::sha256FromManifest(expected, m_release.debName);
+    if (m_expectedSha256.isEmpty()
+        || !ui::verifySha256(m_debPath, expected, m_release.debName)) {
         QFile::remove(m_debPath);
         m_debPath.clear();
         setState(State::Failed);
@@ -339,24 +449,40 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
 void UpgradeController::startInstall()
 {
     setState(State::Installing);
+    m_installErrorOutput.clear();
 
-    const QStringList args{QStringLiteral("dpkg"), QStringLiteral("-i"),
-                           m_debPath};
+    const QStringList args{
+        QStringLiteral("/usr/lib/pixiu/install-update"),
+        m_debPath,
+        m_expectedSha256,
+    };
     if (m_installRunner) {
         // test seam：注入的执行器记录 program/argv 并自行回调退出码。
-        m_installRunner(QStringLiteral("pkexec"), args, [this](int exitCode) {
+        m_installRunner(m_installProgram, args, [this](int exitCode) {
             handleInstallFinished(exitCode);
         });
         return;
     }
 
     m_installProcess = new QProcess(this);
+    m_installProcess->setProcessChannelMode(QProcess::SeparateChannels);
     connect(m_installProcess,
             QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             this, [this](int exitCode, QProcess::ExitStatus) {
+                if (m_installProcess) {
+                    m_installErrorOutput = QString::fromLocal8Bit(
+                        m_installProcess->readAllStandardError());
+                }
                 handleInstallFinished(exitCode);
             });
-    m_installProcess->setProgram(QStringLiteral("pkexec"));
+    connect(m_installProcess, &QProcess::errorOccurred, this,
+            [this](QProcess::ProcessError error) {
+                if (error == QProcess::FailedToStart
+                    && m_state == State::Installing) {
+                    failInstall(tr("无法启动系统安装程序"));
+                }
+            });
+    m_installProcess->setProgram(m_installProgram);
     m_installProcess->setArguments(args);
     m_installProcess->start();
 }
@@ -383,9 +509,10 @@ void UpgradeController::handleInstallFinished(int exitCode)
         emit upgradeFinished(false, tr("已取消，升级未执行"),
                              FailedReason::Other);
     } else {
-        setState(State::Failed);
-        emit upgradeFinished(false, tr("升级失败，请检查系统日志"),
-                             FailedReason::Other);
+        QString detail = m_installErrorOutput.simplified().left(300);
+        failInstall(
+            detail.isEmpty() ? tr("升级失败，请检查系统日志")
+                             : tr("升级失败：%1").arg(detail));
     }
 }
 
@@ -394,12 +521,57 @@ void UpgradeController::cancel()
     switch (m_state) {
     case State::Downloading:
     case State::Verifying:
-    case State::Installing:
         break;
     default:
-        return; // 仅下载/校验/安装中可取消
+        return; // 仅下载/校验中可取消
     }
     setState(State::Cancelled);
     resetTransport();
     emit upgradeFinished(false, tr("已取消"), FailedReason::Other);
+}
+
+void UpgradeController::protectRedirect(QNetworkReply *reply)
+{
+    connect(reply, &QNetworkReply::redirected, this,
+            [this, reply](const QUrl &target) {
+                const QUrl resolved = reply->url().resolved(target);
+                if (!m_sourceValidator(resolved)) {
+                    reply->setProperty("pixiuInvalidRedirect", true);
+                    reply->abort();
+                }
+            });
+}
+
+void UpgradeController::collectBoundedReply(
+    QNetworkReply *reply, QByteArray &target, qint64 maximumBytes)
+{
+    if (!reply || !reply->isOpen()
+        || reply->property("pixiuTooLarge").toBool()) {
+        return;
+    }
+    const QByteArray chunk = reply->readAll();
+    if (target.size() + chunk.size() > maximumBytes) {
+        reply->setProperty("pixiuTooLarge", true);
+        reply->abort();
+        return;
+    }
+    target.append(chunk);
+}
+
+void UpgradeController::failInstall(const QString &message)
+{
+    if (m_state != State::Installing) {
+        return;
+    }
+    if (m_installProcess) {
+        m_installProcess->disconnect(this);
+        m_installProcess->deleteLater();
+        m_installProcess = nullptr;
+    }
+    if (!m_debPath.isEmpty()) {
+        QFile::remove(m_debPath);
+        m_debPath.clear();
+    }
+    setState(State::Failed);
+    emit upgradeFinished(false, message, FailedReason::Install);
 }
