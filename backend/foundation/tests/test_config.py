@@ -106,14 +106,15 @@ def test_sync_domain_rejects_private_scope():
 
 
 def test_sync_passphrase_rejects_public_placeholder():
-    """公开占位符 change-me-before-production 必须于启动期 fail-fast 拒绝。"""
+    """公开占位符必须禁用同步，但不能阻止核心配置与 API 启动。"""
     with mock.patch.dict(
         os.environ,
         {"PIXIU_SYNC_KEY_PASSPHRASE": "change-me-before-production"},
         clear=True,
     ):
+        settings = Settings()
         with pytest.raises(ValueError, match="public placeholder"):
-            Settings()
+            _ = settings.sync_key_passphrase
 
 
 def test_sync_passphrase_rejects_legacy_local_placeholder():
@@ -123,8 +124,22 @@ def test_sync_passphrase_rejects_legacy_local_placeholder():
         {"PIXIU_SYNC_KEY_PASSPHRASE": "pixiu-local-sync-change-me-2026"},
         clear=True,
     ):
+        settings = Settings()
         with pytest.raises(ValueError, match="public placeholder"):
-            Settings()
+            _ = settings.sync_key_passphrase
+
+
+@pytest.mark.parametrize(
+    "value",
+    [" Change-Me-Before-Production ", "PIXIU-LOCAL-SYNC-CHANGE-ME-2026"],
+)
+def test_sync_passphrase_rejects_placeholder_case_and_whitespace_variants(value):
+    with mock.patch.dict(
+        os.environ, {"PIXIU_SYNC_KEY_PASSPHRASE": value}, clear=True
+    ):
+        settings = Settings()
+        with pytest.raises(ValueError, match="public placeholder"):
+            _ = settings.sync_key_passphrase
 
 
 def test_sync_passphrase_accepts_strong_custom():

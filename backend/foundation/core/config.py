@@ -82,6 +82,13 @@ def _env_shared_scope(key: str, default: str) -> str:
     return value
 
 
+def _is_placeholder_passphrase(value: str | None) -> bool:
+    return (
+        value is not None
+        and value.strip().casefold() in _PLACEHOLDER_PASSPHRASES
+    )
+
+
 # ─── Settings ────────────────────────────────────────────
 
 class Settings:
@@ -105,14 +112,8 @@ class Settings:
         )
         self._sync_domain = _env_shared_scope("PIXIU_SYNC_DOMAIN", "shared:home")
         self._sync_key_passphrase = os.getenv("PIXIU_SYNC_KEY_PASSPHRASE")
-        # fail-fast：公开占位符/示例值禁止用作加密口令（None 未设置不受影响）。
-        if (
-            self._sync_key_passphrase is not None
-            and self._sync_key_passphrase in _PLACEHOLDER_PASSPHRASES
-        ):
-            raise ValueError(
-                "PIXIU_SYNC_KEY_PASSPHRASE must be changed from the public placeholder"
-            )
+        # 同步服务装配时由 sync_key_passphrase 属性拒绝公开占位符。Settings
+        # 构造本身保持可用，使无同步配置或升级迁移失败时核心 API 仍可降级启动。
         # SN-4 默认开启：运行时开关（PUT /sync/settings）以 KV 覆盖 env 默认。
         self._sync_network_enabled = _env_bool("PIXIU_SYNC_NETWORK_ENABLED", True)
         self._sync_bind_host = _env_lan_host("PIXIU_SYNC_BIND_HOST", "127.0.0.1")
@@ -177,7 +178,7 @@ class Settings:
     @property
     def sync_key_passphrase(self) -> str:
         # 防御性复查：公开占位符/示例值禁止用作加密口令。
-        if self._sync_key_passphrase in _PLACEHOLDER_PASSPHRASES:
+        if _is_placeholder_passphrase(self._sync_key_passphrase):
             raise ValueError(
                 "PIXIU_SYNC_KEY_PASSPHRASE must be changed from the public placeholder"
             )
