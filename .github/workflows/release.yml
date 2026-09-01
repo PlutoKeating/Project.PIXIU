@@ -77,7 +77,7 @@ jobs:
       - name: Verify and install release package
         shell: bash
         run: |
-          deb="$(echo build/release/out/*.deb)"
+          deb="$(realpath build/release/out/*.deb)"
           checksum="${deb}.sha256"
           sha256sum --check "${checksum}"
           test "$(dpkg-deb --field "${deb}" Architecture)" = \
