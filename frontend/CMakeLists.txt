@@ -486,6 +486,20 @@ if(BUILD_TESTING)
     target_link_libraries(t_check_update_dialog PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
     add_test(NAME check_update_dialog COMMAND t_check_update_dialog)
 
+    # 真实 GitHub 应用内升级验收：默认 QSKIP，不进常规 ctest 耗时/副作用路径。
+    add_executable(t_upgrade_live
+        tests/t_upgrade_live.cpp
+        src/widgets/CheckUpdateDialog.h
+        src/widgets/CheckUpdateDialog.cpp
+        src/app/UpgradeUtils.h
+        src/app/UpgradeUtils.cpp
+        src/app/UpgradeController.h
+        src/app/UpgradeController.cpp
+    )
+    target_include_directories(t_upgrade_live PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(t_upgrade_live PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
+    add_test(NAME upgrade_live COMMAND t_upgrade_live)
+
     add_executable(t_chat_window
         tests/t_chat_window.cpp
         src/widgets/ChatWindow.h

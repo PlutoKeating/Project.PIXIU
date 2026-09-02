@@ -8,6 +8,19 @@
 
 ---
 
+## 实现状态（2026-09-02 · v0.1.6 本机验收）
+
+- ✅ 本机 GitHub 应用内升级闭环：`CheckUpdateDialog` + `UpgradeController`
+  拉 `releases/latest`，下载/校验公开发布的 `0.1.6` amd64 包，经与生产相同
+  的 `/usr/lib/pixiu/install-update` 参数完成安装。因已装版本等于 latest，
+  验收把 `applicationVersion` 压到 `0.1.5` 才会进入 Updatable。无人值守
+  会话用 `sudo -n` 替代图形 `pkexec`。`/etc/pixiu/pixiu.env` 与
+  `sync_identity.device_id` 安装前后一致，后端保持 active。
+- ✅ 本机 `PIXIU_HAVE_KYSDK=ON`：ctest 37/37；offscreen 冒烟确认 UKUI 主题
+  跟随、窗口阴影、麒麟全局快捷键 `Ctrl+Alt+P`，并连上本机 `pixiu-backend`。
+- ✅ 可选验收：`PIXIU_LIVE_UPGRADE=1 PIXIU_LIVE_UPGRADE_INSTALL=1`
+  `frontend/scripts/live-upgrade-accept.sh`（默认 ctest 跳过真实下载）。
+
 ## 实现状态（2026-09-01 · 0.1.6 发布候选）
 
 - ✅ 应用内一键升级已完成并加固：按本机 Debian 架构严格选择同版本
