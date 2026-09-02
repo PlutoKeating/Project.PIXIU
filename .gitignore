@@ -43,6 +43,10 @@ bin/
 
 # Kylin SDK 原生绑定编译产物（在目标机按 backend/engine/kylin/cpp/README 构建）
 backend/engine/kylin/*.so
+backend/engine/kylin/cpp/build/
+
+# 前端本地构建树（含 KYSDK=ON / 升级验收工作目录）
+frontend/build*/
 
 # Dependency directories
 node_modules/
