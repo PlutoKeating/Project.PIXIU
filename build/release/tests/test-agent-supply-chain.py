@@ -213,7 +213,28 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                             "licenseDeclared": runtime_policy["declared_license"],
                             "downloadLocation": runtime_policy["source_url"],
                         },
-                        {"name": "aiohttp", "SPDXID": "SPDXRef-Package-aiohttp"},
+                        {
+                            "name": "kylin-agent-runtime",
+                            "SPDXID": "SPDXRef-Wheel-kylin-agent-runtime",
+                            "versionInfo": "0.9.8",
+                            "checksums": [
+                                {
+                                    "algorithm": "SHA256",
+                                    "checksumValue": AUDIT.sha256_file(runtime_wheel),
+                                }
+                            ],
+                        },
+                        {
+                            "name": "aiohttp",
+                            "SPDXID": "SPDXRef-Package-aiohttp",
+                            "versionInfo": "3.13.3",
+                            "checksums": [
+                                {
+                                    "algorithm": "SHA256",
+                                    "checksumValue": AUDIT.sha256_file(aiohttp_wheel),
+                                }
+                            ],
+                        },
                     ],
                     "hasExtractedLicensingInfos": [
                         {

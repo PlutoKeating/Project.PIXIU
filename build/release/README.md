@@ -38,6 +38,7 @@ build/release/
 │   ├── functions.sh          # 公共函数（版本/架构/路径解析）
 │   ├── build-deb.sh          # 主流水线：构建前端 + 打包后端 + 可选 wheels + dpkg
 │   ├── audit-agent-supply-chain.py # Agent 固定版本/敏感地址/发行证据门禁
+│   ├── record-agent-supply-chain.py # 从真实构建/wheel 实物记录摘要并生成 SPDX/NOTICE
 │   ├── three-device-evidence.py # 三台 V11 拓扑及并发更新检查点取证
 │   ├── generate-release-manifest.py # 从源码/构建输入生成包内组件清单
 │   ├── test.sh               # 独立测试入口（前端 ctest + 可选后端 pytest）
@@ -83,6 +84,27 @@ python3 build/release/scripts/audit-agent-supply-chain.py \
   --evidence-dir build/release/evidence/agent-supply-chain \
   --require-ready
 ```
+
+目标环境取得真实实物后，按顺序记录。`--network-isolated` 是对该次构建/安装环境的
+明确声明，并不代替日志；生成器还会拒绝日志/锁文件中的认证式 URL，自动读取每个
+wheel 的 `METADATA`，不接受手填包名和版本：
+
+```bash
+python3 build/release/scripts/record-agent-supply-chain.py \
+  --root . --evidence-dir EVIDENCE host-build --target-arch amd64 \
+  --artifact HOST --source-archive SOURCE --build-log BUILD_LOG \
+  --network-isolated
+python3 build/release/scripts/record-agent-supply-chain.py \
+  --root . --evidence-dir EVIDENCE runtime-wheelhouse --target-arch amd64 \
+  --python-abi cp311 --wheelhouse WHEELS --lockfile LOCK \
+  --offline-install-log INSTALL_LOG --network-isolated
+python3 build/release/scripts/record-agent-supply-chain.py \
+  --root . --evidence-dir EVIDENCE legal
+```
+
+`EVIDENCE`、`HOST` 等大写项是发布人员选择的候选归档路径/实物路径，不是可原样复制的
+默认值。记录器复制实物进入证据目录，遇到同名但摘要不同的文件时拒绝覆盖；随后仍须
+运行审计器，且认证式 URL 的上游源码阻塞必须独立解决。
 
 策略文件固定两个上游 commit 和 Runtime 的三项真实版本声明。报告仅列出命中认证式
 URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿主的目标架构产物、完整

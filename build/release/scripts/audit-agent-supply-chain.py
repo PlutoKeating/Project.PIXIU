@@ -290,16 +290,19 @@ def validate_evidence(
             wheelhouse = read_json(
                 evidence_dir / evidence["runtime_wheelhouse"]["file"]
             )
-            wheel_names = {
-                package.get("name")
-                for package in wheelhouse.get("packages", [])
-                if isinstance(package, dict)
-            }
-            sbom_names = {
-                package.get("name")
-                for package in packages or []
-                if isinstance(package, dict)
-            }
+            def covers_wheel(wheel: dict[str, Any]) -> bool:
+                return any(
+                    package.get("name") == wheel.get("name")
+                    and package.get("versionInfo") == wheel.get("version")
+                    and {
+                        (checksum.get("algorithm"), checksum.get("checksumValue"))
+                        for checksum in package.get("checksums", [])
+                        if isinstance(checksum, dict)
+                    }
+                    >= {("SHA256", wheel.get("sha256"))}
+                    for package in packages or []
+                    if isinstance(package, dict)
+                )
             valid = (
                 sbom.get("spdxVersion") == "SPDX-2.3"
                 and sbom.get("SPDXID") == "SPDXRef-DOCUMENT"
@@ -311,7 +314,10 @@ def validate_evidence(
                     for component in policy["components"].values()
                 }.issubset(described)
                 and component_packages_valid
-                and wheel_names.issubset(sbom_names)
+                and all(
+                    isinstance(wheel, dict) and covers_wheel(wheel)
+                    for wheel in wheelhouse.get("packages", [])
+                )
             )
         except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
             valid = False

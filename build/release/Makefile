@@ -17,6 +17,7 @@ governance:
 	bash $(ROOT)/build/release/tests/test-config-upgrade-policy.sh
 	bash $(ROOT)/build/release/tests/test-agent-integration.sh
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain.py
+	python3 $(ROOT)/build/release/tests/test-agent-supply-chain-record.py
 
 test:
 	$(SCRIPTS)/test.sh
