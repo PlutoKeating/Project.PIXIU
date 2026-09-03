@@ -19,7 +19,7 @@
   `backend/foundation/docs/QUICK_START.md`）；前端回归脚本
   `frontend/scripts/regression.sh` 已固化。
 - ✅ **打包发布脚手架**：`build/release/` 提供整包 .deb 构建、目标机预置
-  （`provision-target.sh`）、麒麟 VM 部署冒烟（`vm-deploy-test.sh`）与
+  （`provision-target.sh`）、目标系统本地安装验收与
   staging/production 发布；已在麒麟 V11 真机验证并发布 `v0.1.0-staging`。
 - 🟡 **portable 回归已完成（2026-08-29），最终验收未完成**：自建测试数据集（`pixiu-family-expense-v1`：50 检索 +
   15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告

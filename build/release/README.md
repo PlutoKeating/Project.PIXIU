@@ -38,7 +38,6 @@ build/release/
 │   ├── build-deb.sh          # 主流水线：构建前端 + 打包后端 + 可选 wheels + dpkg
 │   ├── test.sh               # 独立测试入口（前端 ctest + 可选后端 pytest）
 │   ├── provision-target.sh   # 目标机预置：幂等安装 .deb 所需系统依赖（全新机器可用）
-│   ├── vm-deploy-test.sh     # 麒麟测试 VM 部署+冒烟：上传/安装/服务/API/前端离屏
 │   └── publish.sh            # 发布 staging/production（本地 dist + 可选 rsync 远端）
 ├── profiles/                 # 目标平台画像（发行版事实全部沉淀于此）
 │   ├── kylin-v11-x86_64.env  # 麒麟 V11（openKylin）x86_64 —— 真机实测画像
@@ -101,11 +100,7 @@ PIXIU_PUBLISH_URI=user@host:/srv/releases make -C build/release publish-producti
 ## 全新麒麟机安装（生产流程）
 
 ```bash
-# 方式一：脚本化（推荐，可重复）
-make -C build/release build-deb                      # 产 .deb（含离线 wheels）
-PIXIU_VM_HOST=192.168.122.197 bash build/release/scripts/vm-deploy-test.sh
-
-# 方式二：手工两步（等价，供理解）
+# 在目标系统本地构建或取得匹配架构的正式资产后安装
 sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64   # 1) 系统依赖
 sudo apt-get install -y ./build/release/out/pixiu_0.1.7-1_amd64.deb    # 2) 安装
 ```
@@ -184,17 +179,6 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
   同一 release commit 重跑真实前后端联调，不沿用历史 403 记录。
 - **OCR / 文本生成**：OCR 已接入；离线文本生成仍待目标 SDK 环境，不影响安装结构。
 
-## 在测试机上克隆仓库（如需在目标机编译）
-
-目标机使用 `github-personal` 作为 `github.com` 的 SSH 别名（配置于
-`~/.ssh/config`，走 `ssh.github.com:443`）：
-
-```bash
-git clone git@github-personal:PlutoKeating/Project.PIXIU.git
-```
-
-不要使用 `git@github.com:...`（私有仓库会因密钥不匹配而失败）。
-
 ## 完整 CICD 建议流程
 
 1. 开发分支合并到 `main`（本仓库既有流程：feature → staging → production）。
@@ -211,30 +195,7 @@ arm64 在麒麟画像完成真机取证前仅采用 `generic-ubuntu` 画像。�
 该通用发布工作流不拉取 Gitee SDK submodule，避免未使用的外部源码服务影响
 `KYSDK=OFF` 发布；原生验收工作流必须另行初始化并固定官方 submodule。
 
-## 实测记录（麒麟 V11 VM，2026-08-11 更新）
+## V11 验收信息边界
 
-目标机：`192.168.122.197`（Kylin V11，x86_64，Python 3.12.3，Qt 5.15.19，
-无 python3-pip/venv、无 kysdk 开发头文件）。
-
-流水线：`make -C build/release build-deb`（profile=kylin-v11-x86_64，
-KYSDK=OFF，35 个 cp312 wheels）→ `vm-deploy-test.sh`（force reinstall）。
-
-| 验证项 | 结果 |
-|--------|------|
-| apt 预置 + `apt-get install ./deb` | ✅ 一次通过（venv 由 postinst 创建，依赖离线 wheels 安装） |
-| `pixiu-backend.service` | ✅ active；uvicorn 监听 127.0.0.1:8765 |
-| SQLite 数据库 | ✅ 首次请求自动创建 `/var/lib/pixiu/pixiu.db`（229KB，属主 pixiu） |
-| `GET /conflicts` | ✅ 200 `{"conflicts":[]}` |
-| `GET /sync/status`、`GET /sync/peers` | ✅ 200（真实状态；Ed25519 身份自动创建；口令配置修复后可用） |
-| `POST /memory/write` | ⚠️ 当时为 500（旧版尚无 Debian embedding 降级；现已由 `auto` 模式修复） |
-| 错误契约（400/404/422/500） | ✅ 统一 `{error, message, request_id}` + `X-Request-Id` 头 |
-| 后端全量测试（VM 上跑最新源码） | ✅ 377 passed（foundation + engine） |
-| 前端离屏冒烟 | ✅ 进程存活（timeout 正常退出 124） |
-| 前端真实桌面 | ✅ 窗口映射确认（`wmctrl -l` 显示 PIXIU）；WS `/events` 403 为已知后端问题 |
-
-本轮发现并已沉淀的修复：PEP 668 pip 自举、`--ignore-installed`（RECORD 缺失包）、
-profile 优先级（默认值不得覆盖画像）、`PYTHONPATH=/usr/lib/pixiu`（顶层包 backend）、
-uvicorn CLI 启动（避免双导入告警）、`apt-get install ./deb`（dpkg 锁等待）、
-HTTP 级就绪等待（systemd active ≠ 端口就绪）、安装时生成唯一
-`PIXIU_SYNC_KEY_PASSPHRASE`（后端同步私钥加密要求 ≥16 字符）、前端单实例守护（冒烟前先
-`pkill -x pixiu-frontend`）。
+仓库只保存脱敏后的候选版本测试报告和公开复现步骤，不记录任何本地测试设施的
+地址、账号、连接方式、拓扑、SSH 配置或临时调试流程。

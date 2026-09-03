@@ -160,11 +160,11 @@
   `PIXIU_SYNC_KEY_PASSPHRASE` ≥16 字符默认值（后端强制要求，否则 `/sync/*` 500）、
   前端单实例守护（冒烟前先结束桌面实例）。
 
-**麒麟 V11 真机验证（VM 192.168.122.197，2026-08-11）**
+**麒麟 V11 历史验证（2026-08-11）**
 
 - 安装：apt 预置 + `apt-get install ./deb` 一次通过，依赖从包内 wheels 离线安装。
 - 后端：`pixiu-backend.service` active，`/conflicts` 200，SQLite 库自动创建；
-  VM 上克隆源码跑全量 pytest **377 passed**。
+  当时版本全量 pytest **377 passed**。
 - 前端：真实桌面窗口映射确认，团队负责人验收"整体比较丝滑"。
 - 已发布 GitHub staging Release：`v0.1.0-staging`（附 deb + sha256）。
 
