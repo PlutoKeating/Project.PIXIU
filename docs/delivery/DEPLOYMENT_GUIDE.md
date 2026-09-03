@@ -22,6 +22,10 @@ systemctl status pixiu-backend.service
 替代 V11 双 SDK 严格画像。最终安装必须记录系统版本、架构、包版本、宿主/runtime、
 双 SDK capability、服务状态和首次完整 Agent 操作。
 
+V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
+`PIXIU_KYSDK=ON` 同时约束桌面 KylinSDK 和后端 Embedding/Vector 原生扩展；构建、
+安装及真实写入/检索由独立 `pixiu-kylin-v11-native` 工作流执行并输出脱敏证据。
+
 ## 升级、卸载与恢复
 
 设置页可检查并一键下载安装现有 PIXIU 包；最终版还需独立签名、兼容矩阵、备份/

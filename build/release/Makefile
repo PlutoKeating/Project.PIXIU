@@ -13,6 +13,7 @@ clean:
 governance:
 	$(SCRIPTS)/verify-governance.sh
 	bash $(ROOT)/build/release/tests/test-governance.sh
+	bash $(ROOT)/build/release/tests/test-native-profile.sh
 
 test:
 	$(SCRIPTS)/test.sh

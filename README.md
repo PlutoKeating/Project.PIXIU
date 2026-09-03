@@ -131,3 +131,5 @@ git clone --recurse-submodules <repository-url>
 ```
 
 平台策略与启动方法见 [快速启动](docs/QUICK_START.md)。任何 `KYSDK=OFF` 或 portable 结果都必须与银河麒麟 V11、`KYSDK=ON` 的最终验收结果分开汇报。
+仓库已提供独立 `kylin-v11-native-x86_64` 严格画像和手动原生 CI 工作流；首次
+双 SDK 真实写入/检索证据生成前，H-02/H-03 状态仍保持未通过/待最终证据。

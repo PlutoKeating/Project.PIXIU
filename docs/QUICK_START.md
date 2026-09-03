@@ -65,7 +65,16 @@ PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
 
 # 全新麒麟机安装
 sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64
-sudo apt-get install -y ./build/release/out/pixiu_0.1.0-1_amd64.deb
+sudo apt-get install -y ./build/release/out/pixiu_0.1.7-1_amd64.deb
+```
+
+上述是 `KYSDK=OFF` 兼容包。双 SDK 严格包必须在麒麟 V11 使用独立画像；该命令会
+同时构建前端 KylinSDK 与后端两个原生扩展，缺任何依赖即失败：
+
+```bash
+sudo bash build/release/scripts/provision-target.sh \
+  kylin-v11-native-x86_64 --with-build-deps
+PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ```
 
 安装后后端以 `pixiu-backend.service` 常驻，SQLite 数据库自动创建于

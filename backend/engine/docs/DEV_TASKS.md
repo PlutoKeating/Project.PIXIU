@@ -42,8 +42,9 @@
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
 - 测试：2026-09-03 当前 Engine 全量 144 项通过；Foundation 结果单独记录；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
-- 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），
-  麒麟 SDK 绑定在目标机构建后提供正式语义能力；无绑定时核心链路保持降级可用。
+- 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
+  打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，
+  缺任一扩展即失败；无绑定时仅 portable 核心链路可用且不计原生验收。
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
 

@@ -1,0 +1,2 @@
+# Build-only Python dependencies for Kylin native bindings.
+pybind11>=2.11,<4

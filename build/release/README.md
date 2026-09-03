@@ -41,6 +41,7 @@ build/release/
 │   └── publish.sh            # 发布 staging/production（本地 dist + 可选 rsync 远端）
 ├── profiles/                 # 目标平台画像（发行版事实全部沉淀于此）
 │   ├── kylin-v11-x86_64.env  # 麒麟 V11（openKylin）x86_64 —— 真机实测画像
+│   ├── kylin-v11-native-x86_64.env # 麒麟 V11 双 SDK 严格原生画像
 │   └── generic-ubuntu.env    # 通用 Ubuntu（CI 默认）
 └── debian/                   # .deb 元数据模板与维护脚本
     ├── control.in            # control 模板（@VERSION@/@ARCH@/@DEPENDS@ 由脚本替换）
@@ -79,6 +80,7 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 | 画像 | 适用 | 关键事实 |
 |------|------|----------|
 | `kylin-v11-x86_64` | 麒麟 V11（openKylin）x86_64 | Python 3.12 无 pip/venv（postinst 自举）；Qt5 运行时包名 t64；apt 无 qtbase5-dev/kysdk-dev → KYSDK=OFF；wheels 按 cp312 |
+| `kylin-v11-native-x86_64` | 麒麟 V11 x86_64 严格验收 | `KYSDK=ON`；前端 KylinSDK 与后端 Embedding/Vector pybind 扩展缺一即构建失败；双 SDK 为 Depends |
 | `generic-ubuntu` | Ubuntu CI/开发机 | python3-venv 可用；Qt5 非 t64 包名；wheels 按 cp312 |
 
 新增平台时：拷贝一份画像并修改事实字段即可，流水线其余部分无需改动。
@@ -90,8 +92,10 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 # 一键：测试 + 构建 .deb（默认画像 kylin-v11-x86_64，KYSDK=OFF，离线 wheels）
 PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
 
-# 麒麟环境拿到 kysdk 开发包后构建原生版
-PIXIU_PROFILE=kylin-v11-x86_64 PIXIU_KYSDK=ON make -C build/release deb
+# 麒麟 V11 严格原生版（先按画像安装公开构建依赖）
+sudo bash build/release/scripts/provision-target.sh \
+  kylin-v11-native-x86_64 --with-build-deps
+PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 
 # 发布到 staging / production（生成本地 dist + 校验和；可选远端同步）
 PIXIU_PUBLISH_URI=user@host:/srv/releases make -C build/release publish-production
@@ -118,7 +122,7 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 | `PIXIU_VERSION` | `0.1.7` | 软件版本（写入 control Version） |
 | `PIXIU_REVISION` | `1` | Debian 修订号 |
 | `PIXIU_ARCH` | `dpkg --print-architecture` | 目标架构（amd64 / arm64） |
-| `PIXIU_KYSDK` | `OFF` | 前端是否链接 KylinSDK（麒麟目标机用 `ON`） |
+| `PIXIU_KYSDK` | `OFF` | `ON` 时同时强制前端链接 KylinSDK、构建后端双 SDK 原生扩展并打入包；缺依赖即失败 |
 | `PIXIU_BUNDLE_WHEELS` | `1` | 打包时 `pip download` 后端依赖为离线 wheels |
 | `PIXIU_PYTHON` | `python3` | 打包机 Python（wheels 按 `PIXIU_PYTHON_VERSION` 目标解析） |
 | `PIXIU_PYTHON_VERSION` | `310` | wheels 目标 Python 版本（麒麟 V10 为 3.10） |
@@ -167,8 +171,9 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
   MemoryProvider 生命周期。完成后需把适配器、依赖探测、服务启动顺序、卸载边界和
   固定上游版本纳入 profile/包元数据；不得直接把两个上游 submodule 当团队产物打包。
 
-- **引擎麒麟 SDK 绑定**：`backend/engine/kylin/cpp` 的 pybind11 扩展需在目标
-  麒麟环境构建，本流水线暂以源码随包安装（`/usr/lib/pixiu/backend/engine/kylin`）；
+- **引擎麒麟 SDK 绑定**：通用 `KYSDK=OFF` 包只携带 Python 源码；严格
+  `kylin-v11-native-x86_64` 画像会在构建中生成两个 pybind11 扩展并装入
+  `/usr/lib/pixiu/backend/engine/kylin`，任一扩展缺失即中止打包；
   默认 `PIXIU_EMBEDDING=auto` 会优先调用真实 SDK，未构建绑定的 Debian 系机器
   自动使用可移植特征哈希向量器，`/memory/write` 与 `/memory/query` 保持可用；
   该路径语义质量低于麒麟模型，不计作正式召回率/时延验收。麒麟验收应设置
@@ -187,13 +192,12 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 4. 验收通过后推送 `v*` tag，GitHub Actions 自动构建并发布 Release；也可以从
    Actions 页面手动运行 release workflow，只生成验证产物而不创建 Release。
 
-GitHub Release 使用原生 amd64 与 arm64 托管 runner、`KYSDK=OFF`，分别产出
-架构匹配的 `.deb`/`.sha256`。amd64 采用 `kylin-v11-x86_64` 运行依赖画像，
-arm64 在麒麟画像完成真机取证前仅采用 `generic-ubuntu` 画像。因此 ARM 产物
-只证明 Debian 通用降级画像可构建运行；麒麟 SDK 原生能力仍须在装有 SDK
-开发包的麒麟自托管 runner 或真机（x86_64 / aarch64）分开验收。
-该通用发布工作流不拉取 Gitee SDK submodule，避免未使用的外部源码服务影响
-`KYSDK=OFF` 发布；原生验收工作流必须另行初始化并固定官方 submodule。
+GitHub 通用 Release 使用 amd64 与 arm64 托管 runner、`generic-ubuntu`、
+`KYSDK=OFF`，产物只证明 Debian 通用降级画像可构建安装，不宣称麒麟原生验收。
+独立的 `pixiu-kylin-v11-native` 工作流仅在带 `kylin-v11` 标签的 x64 自托管 runner
+手动执行：校验 V11、递归固定官方 submodule、按 strict profile 构建并安装，强制
+`PIXIU_EMBEDDING=kylin` 和 `PIXIU_VECTOR_STORE=kylin`，最后通过
+`/capabilities` 及真实记忆写入/检索生成脱敏证据。两类产物和报告始终分栏。
 
 ## V11 验收信息边界
 

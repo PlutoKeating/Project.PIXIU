@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PIXIU 全量 .deb 构建流水线：
-#   前端（CMake/Qt5，KYSDK 可切 ON/OFF）+ 后端（Python 源码随包安装）
+#   前端（CMake/Qt5）+ 后端（Python 源码；KYSDK=ON 时强制构建原生扩展）
 #   + 可选离线 Python wheels + systemd 服务 + 一键启动器
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/functions.sh"
@@ -149,6 +149,27 @@ if [ "${PIXIU_INCLUDE_TESTS}" != "1" ]; then
 fi
 find "${BK}" -name '__pycache__' -type d -prune -exec rm -rf {} +
 find "${BK}" -name '*.pyc' -delete
+
+if [ "${PIXIU_KYSDK}" = "ON" ]; then
+    log "[2.5/5] backend Kylin SDK native bindings"
+    NATIVE_BUILD_DIR="${OUT}/kylin-native"
+    PYBIND11_CMAKE_DIR="$("${PIXIU_PYTHON}" -m pybind11 --cmakedir)" || \
+        die "pybind11 Python package is required for PIXIU_KYSDK=ON"
+    cmake -S "${PIXIU_ROOT}/backend/engine/kylin/cpp" \
+        -B "${NATIVE_BUILD_DIR}" \
+        -Dpybind11_DIR="${PYBIND11_CMAKE_DIR}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -G Ninja
+    cmake --build "${NATIVE_BUILD_DIR}" -j"$(nproc)"
+    EMBEDDING_MODULE="$(find "${NATIVE_BUILD_DIR}" -maxdepth 1 -type f \
+        -name '_kylin_text_embedding*.so' -print -quit)"
+    VECTOR_MODULE="$(find "${NATIVE_BUILD_DIR}" -maxdepth 1 -type f \
+        -name '_kylin_vector_client*.so' -print -quit)"
+    [ -n "${EMBEDDING_MODULE}" ] || die "embedding native module was not built"
+    [ -n "${VECTOR_MODULE}" ] || die "vector native module was not built"
+    install -m 0755 "${EMBEDDING_MODULE}" "${BK}/engine/kylin/"
+    install -m 0755 "${VECTOR_MODULE}" "${BK}/engine/kylin/"
+fi
 
 # ── 3/5 可选离线 wheels（目标 Python 版本；含 sync 额外依赖）─────
 log "[3/5] python wheels (target py${PIXIU_PYTHON_VERSION})"

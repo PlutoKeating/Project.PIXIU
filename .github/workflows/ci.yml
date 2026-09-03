@@ -51,6 +51,7 @@ jobs:
       - name: Run backend tests
         env:
           PIXIU_EMBEDDING: portable
+          PIXIU_VECTOR_STORE: portable
         run: python -m pytest backend/foundation/tests backend/engine/tests -q
 
   build-deb:

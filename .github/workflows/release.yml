@@ -21,7 +21,7 @@ jobs:
         include:
           - runner: ubuntu-22.04
             architecture: amd64
-            profile: kylin-v11-x86_64
+            profile: generic-ubuntu
           - runner: ubuntu-24.04-arm
             architecture: arm64
             profile: generic-ubuntu
@@ -62,6 +62,7 @@ jobs:
       - name: Run backend tests
         env:
           PIXIU_EMBEDDING: portable
+          PIXIU_VECTOR_STORE: portable
         run: python -m pytest backend/foundation/tests backend/engine/tests -q
 
       - name: Build release package
