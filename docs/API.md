@@ -103,7 +103,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 {
   "product_version": "0.1.7",
   "component": "pixiu-memory-backend",
-  "api_version": "0.3.0",
+  "api_version": "0.4.0",
   "agent_memory_api": 1,
   "schema_version": 12
 }
@@ -125,7 +125,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 
 数据库未迁移到代码要求版本时返回 `503 SCHEMA_NOT_READY`。此端点不证明指定双 SDK
 或 V11 合规；最终赛题能力必须再检查 `/capabilities.contest_ready`。Module E 当前
-接受经固定上游验证的 Agent runtime 0.9.x，要求 HTTP API 0.3.x 与
+接受经固定上游验证的 Agent runtime 0.9.x，兼容 HTTP API 0.3.x/0.4.x，并要求
 `agent_memory_api=1`，并在发布态要求
 Provider 与后端 `product_version` 相同；0.10+、不可解析宿主、错误组件、API 漂移、
 混装版本或未就绪数据库均在初始化前 fail closed。

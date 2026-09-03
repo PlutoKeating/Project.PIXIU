@@ -62,7 +62,7 @@ runtime 均报告 compliant，产品 `/memory/write`、`/memory/query`、两阶�
 `kylin-agent` 和 `agent-runtime`，按 A-11/A-12 门禁提前拒绝。故本节仍保持“不通过”，
 但应把“SDK/产品记忆链已实证”与“完整 Agent/可交付依赖未完成”分开记录。
 
-当前公共 API 0.3.0 已补 `POST /memory/update`：目标知识 ID 保持不变，存储层以原子
+当前公共 API 0.4.0（0.3.0 起）已补 `POST /memory/update`：目标知识 ID 保持不变，存储层以原子
 compare-and-swap 校验 `expected_version`，更新产生独立 evidence、重建图/向量索引，
 并让 shared 更新进入同一 CRDT 实体。双连接并发回归证明同一基线版本只有一个本地
 更新可提交；Module E 工具接线和三台真实设备的并发收敛仍未取证，故 A-08 不升级。

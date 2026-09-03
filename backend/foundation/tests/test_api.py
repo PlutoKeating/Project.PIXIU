@@ -101,7 +101,7 @@ def test_version_distinguishes_product_api_and_schema_versions(client, monkeypat
     assert response.json() == {
         "product_version": "0.1.7",
         "component": "pixiu-memory-backend",
-        "api_version": "0.3.0",
+        "api_version": "0.4.0",
         "agent_memory_api": 1,
         "schema_version": SCHEMA_VERSION,
     }

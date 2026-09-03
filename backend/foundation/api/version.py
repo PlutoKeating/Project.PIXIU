@@ -7,7 +7,7 @@ import re
 
 from ..storage.schema import SCHEMA_VERSION
 
-API_VERSION = "0.3.0"
+API_VERSION = "0.4.0"
 AGENT_MEMORY_API_VERSION = 1
 COMPONENT_NAME = "pixiu-memory-backend"
 

@@ -143,7 +143,7 @@ system service 或移动数据。
 | W3.2 | ✅ 已完成：会话/工具写入、provenance、schema v12 幂等 receipt、一次性失败恢复授权与写入前置敏感策略 | 同键重放/冲突、恢复审计、用户域标敏隔离、共享域拒绝和检测故障 fail-closed 已测 |
 | W3.3 | ✅ 已完成：`POST /agent/context` 提供字符预算、来源引用、scope、freshness、冲突状态与敏感 evidence fail-closed | 多候选/隔离/裁剪/敏感排除及 Module E 消费契约测试通过 |
 | W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件、独立命名空间失败恢复及 Module E 触发测试完成；长期化和真实宿主证据待补 |
-| W3.5 | 🟡 search/store/update/forget/status 已有 Agent 工具；HTTP API 0.3.0 `/memory/update` 具备 scope、敏感检测、原子版本 CAS、更新 evidence、图/向量重建、幂等/恢复与 shared 同步 op | 真实模型自主选择 update 的行为证据待补 |
+| W3.5 | 🟡 search/store/update/forget/status 已有 Agent 工具；HTTP API 0.4.0（update 自 0.3.0）具备 scope、敏感检测、原子版本 CAS、更新 evidence、图/向量重建、幂等/恢复与 shared 同步 op，并增加去载荷墓碑取证状态 | 真实模型自主选择 update 的行为证据待补 |
 | W3.6 | ✅ `/capabilities`、`/health`、`/version` 已实现 | Module E 可按 schema/API/组件/产品/双 SDK 状态在启动前 fail closed |
 
 所有新增端点先写入 `docs/API.md` 并版本化；不得让 Module E 导入后端私有模块。
