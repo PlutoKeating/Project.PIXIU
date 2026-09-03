@@ -7,7 +7,8 @@
 >
 > **后续状态说明（2026-09-03）**：本文是 2026-08-19 代码快照。麒麟 OCR、
 > `CONVERSATION` Connector、evidence provenance 与 Foundation 完成态持久化幂等已在
-> 后续实现；失败恢复、专用语义/敏感策略及 Module E 生命周期仍待完成。下文历史
+> 后续实现；失败恢复和专用语义策略仍待完成。2026-09-03 已由 Foundation 写入入口
+> 接通敏感检测及隔离策略，Module E 生命周期亦已实现。下文历史
 > 状态只作审计快照，不是当前结论。
 
 ---
@@ -120,7 +121,9 @@ ingest **不负责**：Preference、Knowledge 结构化、Conflict、Repository 
 
 **TOOL_RESULT**：`tool_name` 用作 title 后，不再进入 `body`。Preference 若在 `Evidence.raw` 上找 `tool_name`，只能靠 title。  
 **OCR**：`vendor` 原文留在 items，与归一后的 entities 可能不一致（同 ING-E1）。  
-**sensitivity**：ingest 接受 kwargs，默认 0，**不调用** `SecurityService.detect_sensitivity`。架构写「写入前置 detector」；归属见第 4/5 节，不完全是 cleaner 的问题。
+**sensitivity**：ingest 接受 kwargs，默认 0，且自身**不调用**
+`SecurityService.detect_sensitivity`。2026-09-03 起 `/memory/write` 调用方已在写入前检测
+并显式传入该值；保持这一依赖方向，不把 SecurityService 反向耦合进 ingest。
 
 ## ING-E6 测试未覆盖跨条去重、异常类型、Quality 边界
 

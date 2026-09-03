@@ -81,7 +81,7 @@ PYTHONPATH 仓库根目录
 |----|------|
 | ING-E3 | Connector 双抽象 / 闲置 `base.py` |
 | ING-E4 | Quality 权重与来源置信度硬编码 |
-| ING-E5 | TOOL_RESULT `tool_name` 进入 title 后不再单独保留；`sensitivity` 不调用 Security |
+| ING-E5 | TOOL_RESULT `tool_name` 进入 title 后不再单独保留；ingest 仍由调用方传 sensitivity。2026-09-03：Foundation `/memory/write` 已完成前置 Security 调用 |
 | 跨条去重 | 相同 payload 仍生成两个 Evidence id |
 | 麒麟 OCR SDK | 当前仍是结构化文本适配器 |
 | hash 时机 | 指纹仍在 Cleaner 之后、Normalizer 之前计算；归一后的 vendor 不进入指纹 |

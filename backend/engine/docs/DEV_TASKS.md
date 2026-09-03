@@ -20,8 +20,9 @@
   由独立 provenance/evidence 字段承载并持久化。
 - ✅ B-A2：Agent `TOOL_RESULT` provenance 校验 run_id、tool_call_id、工具名、审批状态
   和时间；保留无 provenance 的旧版非 Agent 工具采集兼容路径。
-- 🟡 B-A3：Connector、清洗、质量评分和 evidence 追溯已支持新来源；专用敏感判断与
-  对话/工具语义抽取策略仍待补齐。
+- 🟡 B-A3：Connector、清洗、质量评分和 evidence 追溯已支持新来源；Foundation
+  写入入口已调用 Security detector 并执行本地隔离/共享域拒绝，对话/工具专用语义
+  抽取策略仍待补齐。
 - 🟡 B-A4：B/C 基础契约测试已完成；与 Module E 的端到端契约尚待实现。禁止用
   `TOOL_RESULT` 类型伪装普通对话。
 

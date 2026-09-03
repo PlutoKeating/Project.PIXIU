@@ -132,6 +132,9 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 > 现状（2026-08-11）：`POST /memory/write` 在请求内同步执行
 > ingest → knowledge → preference → conflict 整条管线；`shared:*` 写入会追加
 > 签名 SyncOp 进入 `sync_oplog` 供 CRDT 广播（网络运行时默认开启，SN-4）。
+> 2026-09-03 补齐写入前置安全门：先检测、后占用幂等 receipt；`user:*` 敏感
+> evidence 本地标记并从 Agent 上下文隔离，敏感内容拒绝进入 `shared:*`；检测故障
+> fail closed，因而不会以 sensitivity=0 静默绕过或进入同步链路。
 
 **三索引齐写**：一条知识同时进 FTS5（关键词）、向量表（语义）、图（实体关系），这是混合检索的前提。
 当前 FTS 写入、INT8 向量写入与图（`knowledge_entities`/`relations`）均已实现；

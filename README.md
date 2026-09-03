@@ -59,7 +59,9 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 当前 Agent 记忆接入进度：`POST /memory/write` 已支持独立 `CONVERSATION` 来源，
 并将 session/run/turn/tool-call/审批/时间 provenance 与原始正文分离持久化；完成态
 请求具备跨重启幂等 receipt；`POST /agent/context` 已提供 scope/敏感度硬过滤、字符
-预算、freshness/冲突状态和 evidence 引用。Module E 已实现独立 `pixiu`
+预算、freshness/冲突状态和 evidence 引用。写入入口现已先执行敏感检测：`user:*`
+内容可本地标记隔离，敏感内容不得写入 `shared:*` 或同步；检测异常时 fail closed。
+Module E 已实现独立 `pixiu`
 MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、四个显式
 记忆工具、背压诊断及两阶段遗忘均有契约测试；`.deb` 已携带 Provider，并在用户
 启动 PIXIU 时幂等安装/升级到当前 Agent profile。尚未完成的是真实宿主多轮取证、

@@ -68,7 +68,8 @@ DetectionResult(score=3, types=["id_card", "phone"])
 ### sensitivity 语义
 
 - Engine 仍使用 **0~3**（身份证/银行卡=3，手机=2）
-- Foundation `Evidence.sensitivity` 允许 0~10 —— 映射与写入前置属 **Foundation/API 协同**（本阶段未改 ingest/API）
+- Foundation `Evidence.sensitivity` 允许 0~10；Detector 输出仍为 0~3。2026-09-03
+  Foundation/API 已完成写入前置检测与策略执行，ingest 继续只接收显式评分。
 
 ---
 
@@ -170,7 +171,7 @@ Foundation/API 侧 `forget` 仍调用旧签名（无 scope）——属 **Module 
 | Vector / FTS 删除 | 不在 Engine |
 | tombstone / Sync | `http_app` 在 shared forget 后调 sync；Engine 不实现 |
 | API `POST /forget` | 需增加 **scope** 并传入 `SecurityService.forget` |
-| API `POST /memory/write` | 未调用 `detect_sensitivity` |
+| API `POST /memory/write` | 2026-09-03 已调用 `detect_sensitivity`；用户域标敏隔离，共享域敏感写入拒绝，检测故障 fail closed |
 | FTS trigram 环境 | 阻塞部分 sqlite 集成测 |
 
 **不要把「目标识别 + Knowledge 软删」描述为「彻底遗忘」。**

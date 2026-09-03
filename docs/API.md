@@ -167,8 +167,12 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 - 首次执行仍在进行中或已失败时，重试分别返回 `IDEMPOTENCY_IN_PROGRESS` 或
   `IDEMPOTENCY_FAILED`，不自动重放可能已发生的外部向量/同步副作用。失败恢复管理
   端点尚待实现。
-- provenance 单独持久化并由 `GET /evidence/{id}` 原样返回；当前尚未提供基于这些
-  标识的查询索引或生命周期端点。
+- 服务端在占用幂等 receipt **之前**执行敏感检测。`user:*` 内容可在本机保存，但按
+  检测结果写入 `sensitivity`，且 `sensitivity > 0` 不进入 Agent 上下文；敏感内容写
+  往 `shared:*` 返回 `422 SENSITIVE_SHARED_SCOPE`，不会落 evidence、receipt 或同步
+  日志。检测器异常返回 `503 SENSITIVITY_CHECK_FAILED`，同样不占用幂等键。
+- provenance 单独持久化并由 `GET /evidence/{id}` 原样返回；生命周期事件使用
+  `POST /agent/lifecycle`，当前尚未提供按 provenance 标识查询的索引端点。
 
 **响应体（200）：**
 

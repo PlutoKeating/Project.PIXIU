@@ -125,6 +125,11 @@ MemoryProvider 适配 PIXIU。官方材料未点名允许或禁止该具体基�
 | F5-04 | 级联遗忘 | 清理向量、FTS、关系、缓存和证据引用，保留最小合规审计 |
 | F5-05 | 分布式遗忘 | shared 记忆的墓碑传播、离线重连与防复活通过 |
 
+当前自动化取证：`backend/foundation/tests/test_api.py` 覆盖手机号自动标敏并从 Agent
+上下文排除、敏感 `shared:*` 写入零落库/零 receipt、检测器故障 fail closed；
+`backend/engine/tests/test_security.py` 覆盖身份证、银行卡和手机号规则。F5-03～F5-05
+仍须按本表完成最终集成与多设备验收，自动化通过不替代 V11 交付证据。
+
 ### 3.6 短/中/长期记忆流转 `[M]`
 
 | 编号 | 验收内容 | 通过标准 |

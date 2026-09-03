@@ -287,7 +287,9 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 
 **Agent 记忆契约进展（2026-09-03）**：`/memory/write` 已校验并传递结构化 Agent
 provenance，SQLite schema v11 完成兼容迁移与持久化幂等 receipt；关联日志/查询、
-失败恢复和 context 生命周期仍待完成。
+失败恢复和长期化仍待完成。六类 context 生命周期端点已实现；写入入口已接入
+Security detector，`user:*` 敏感 evidence 本地隔离，`shared:*` 敏感写入与检测故障
+均 fail closed。
 
 ### 2.4 支持岗 D — 测试与工具
 

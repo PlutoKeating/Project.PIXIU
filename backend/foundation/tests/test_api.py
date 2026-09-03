@@ -16,7 +16,11 @@ import backend.foundation.api.di as di_module
 from backend.foundation.api import app
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.tests.fakes import StubTextEmbedder
-from backend.foundation.api.di import get_flow_service, get_knowledge_service
+from backend.foundation.api.di import (
+    get_flow_service,
+    get_knowledge_service,
+    get_security_service,
+)
 from backend.foundation.api.capabilities import platform_capability
 from backend.foundation.flow import FlowContextNotFound, InvalidFlowTransition
 from backend.foundation.storage.repository import (
@@ -413,7 +417,10 @@ def test_agent_context_excludes_sensitive_evidence(client):
         "/memory/write",
         json={
             "source_type": "CONVERSATION",
-            "raw": {"user": "银行卡密码是秘密", "assistant": "不会主动展示"},
+            "raw": {
+                "user": "我的手机号是 13812345678",
+                "assistant": "不会主动展示",
+            },
             "scope": "user:alice",
             "idempotency_key": "session-sensitive:turn-1",
             "provenance": {
@@ -425,16 +432,14 @@ def test_agent_context_excludes_sensitive_evidence(client):
         },
     )
     assert write.status_code == 200
-    with sqlite3.connect(di_module.settings.db_path) as conn:
-        conn.execute(
-            "UPDATE evidence SET sensitivity = 3 WHERE id = ?",
-            (write.json()["evidence_id"],),
-        )
+    assert write.json()["sensitivity"] == 2
+    evidence = client.get(f"/evidence/{write.json()['evidence_id']}").json()
+    assert evidence["sensitivity"] == 2
 
     response = client.post(
         "/agent/context",
         json={
-            "query": "银行卡密码秘密",
+            "query": "手机号 13812345678",
             "scope": "user:alice",
             "session_id": "session-sensitive",
             "turn_id": "turn-2",
@@ -444,6 +449,51 @@ def test_agent_context_excludes_sensitive_evidence(client):
     assert response.status_code == 200
     assert response.json()["context"] == ""
     assert response.json()["items"] == []
+
+
+def test_memory_write_rejects_sensitive_content_in_shared_scope(client):
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "OCR",
+            "raw": {"text": "联系人手机号 13812345678"},
+            "scope": "shared:home",
+            "idempotency_key": "shared-sensitive-1",
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["error"] == "SENSITIVE_SHARED_SCOPE"
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM evidence").fetchone()[0] == 0
+        assert conn.execute(
+            "SELECT COUNT(*) FROM agent_ingest_receipts"
+        ).fetchone()[0] == 0
+
+
+def test_memory_write_fails_closed_when_sensitivity_check_fails(client):
+    class _FailingSecurity:
+        async def detect_sensitivity(self, raw):
+            raise RuntimeError("detector unavailable")
+
+    app.dependency_overrides[get_security_service] = lambda: _FailingSecurity()
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "OCR",
+            "raw": {"text": "ordinary text"},
+            "scope": "user:alice",
+            "idempotency_key": "security-failure-1",
+        },
+    )
+
+    assert response.status_code == 503
+    assert response.json()["error"] == "SENSITIVITY_CHECK_FAILED"
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM evidence").fetchone()[0] == 0
+        assert conn.execute(
+            "SELECT COUNT(*) FROM agent_ingest_receipts"
+        ).fetchone()[0] == 0
 
 
 @pytest.mark.parametrize(

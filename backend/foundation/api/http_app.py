@@ -357,11 +357,23 @@ async def memory_write(
     knowledge=Depends(get_knowledge_service),
     preference=Depends(get_preference_service),
     conflict=Depends(get_conflict_service),
+    security=Depends(get_security_service),
     sync=Depends(get_optional_sync_service),
     idempotency=Depends(get_agent_ingest_receipt_store),
 ):
     """同步落 evidence，随后执行结构化/偏好提取/冲突仲裁，并推送 memory_ready 事件。"""
     started = time.monotonic()
+    try:
+        sensitivity = await security.detect_sensitivity(body.raw)
+    except Exception as exc:
+        _log.exception("sensitivity detector failed")
+        raise HTTPException(
+            status_code=503,
+            detail="SENSITIVITY_CHECK_FAILED",
+        ) from exc
+    if sensitivity > 0 and body.scope.startswith("shared:"):
+        raise HTTPException(status_code=422, detail="SENSITIVE_SHARED_SCOPE")
+
     request_hash = hashlib.sha256(
         json.dumps(
             body.model_dump(mode="json"),
@@ -387,6 +399,7 @@ async def memory_write(
             body.source_type.value,
             body.raw,
             body.scope,
+            sensitivity=sensitivity,
             provenance=body.provenance,
         )
         item = await knowledge.structure(evidence)
