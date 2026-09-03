@@ -43,14 +43,15 @@ V11 的真实输出。
 失败关闭或直接桌面用户调用冒充产品 H-02/H-03 闭环。
 继续隔离诊断发现两个更具体的问题：Vector 客户端使用了官方头文件标为测试用途的
 host/port 构造，因而错误连接未监听的 `127.0.0.1:19530`；现已改用官方 demo 的
-`ConnectParam(appId)` 并增加契约测试，待原生重编。Embedding 在 ABI 修复后已连接
-runtime 1.3.0，但系统模型元数据缺少 runtime 所需的 `model_catalog`，导致
-`getModelList` err=3；显式以已安装模型名调用初始化仍返回 err=10（Text model not
-found），因此不能绕过模型发现。官方 `kylin-ai-runtime` `devel/26w` 提交
+`ConnectParam(appId)` 并增加契约测试。Embedding 在 ABI 修复后已连接 runtime
+1.3.0；原系统组件组合因缺少 `model_catalog` 导致 `getModelList` err=3、显式
+初始化 err=10。官方 `kylin-ai-runtime` `devel/26w` 提交
 `34843d14363a1c1dff932a9a1cf9b4f09ea75de2` 的
 `LifecycleAwareEmbeddingEngine::parseModelInfo()` 明确要求对象型 `model_catalog`，
-并从 `TEXT`/`IMAGE` 目录建立模型组，与运行日志一致。Vector 后续已取得下述独立
-成功切片；Embedding 仍未产生成功生命周期证据，H-02/H-03 状态不变。
+并从 `TEXT`/`IMAGE` 目录建立模型组。官方 embedding engine `3fbfeb6` 与
+abstract-models/model_bank `b999d89`（首个包含标签 `build/1.2.0.0-0k0.16`）补齐
+上下游目录契约；兼容性构建后，官方 demo 与 PIXIU 安装包内 binding 均返回
+gte-base 768 维非零向量、错误码 0。该手工对齐不是最终依赖交付，H-03 状态不变。
 
 随后提交 `4011d0d` 的 strict revision 7 修正本地连接并补齐数据库生命周期：前端
 ctest 38/38、双原生扩展链接及包安装通过；Vector Engine direct SDK 使用独立临时
@@ -60,15 +61,20 @@ deleted-hidden/drop/disconnect，全部返回 passed。该成功记录没有调�
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-04 最新组合回归为 Foundation
-621 项、Engine 149 项、Module E 17 项（合计 pytest 787 passed），最近前端 ctest
-38/38；Python 回归另报告 11 条既有依赖弃用/异步线程退出告警但无失败。新增安装健康
+623 项、Engine 150 项、Module E 17 项（合计 pytest 790 passed），最近前端 ctest
+38/38；Python 回归报告 10 条既有依赖弃用告警但无失败。新增安装健康
 切片另由 7 项单元测试及发布 helper 脚本覆盖。提交最终稿前仍必须从
 同一候选 commit 重新运行并保存原始日志。
 
 同日还修复了升级停服风险：`SyncRuntime.stop()` 原先只设置调度停止事件，却会等待
 当前 mDNS/反熵/对端请求完整超时；现改为取消当前调度任务、等待协程清理并关闭
-discovery/TLS server。永久阻塞轮次的有界停止测试及上述 621 项 Foundation 回归通过；
+discovery/TLS server。永久阻塞轮次的有界停止测试通过；当前 Foundation 623 项回归通过；
 目标 V11 安装包的实际 systemd 停止时长仍须随下一候选重验。
+
+同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
+可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已
+加入 `PIXIU_VECTOR_DB_PATH`、strict 启动实际装载、进程级 store 复用和退出断开；
+上述 790 项回归通过，V11 新候选产品生命周期尚待重跑。
 
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和

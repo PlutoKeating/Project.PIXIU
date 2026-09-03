@@ -26,8 +26,8 @@
 | 编号 | 验收项 | 测试方法 | 通过标准 | PIXIU 当前状态 |
 |------|--------|----------|----------|----------------|
 | H-01 `[GATE]` | 部署于银河麒麟桌面操作系统 V11 | 记录系统版本、架构；安装最终包并完成全链路演示 | 最终版本在 V11 可安装、启动、操作；PPT 明示不满足计 0 分 | **部分通过，须对最终版本重验** |
-| H-02 `[GATE]` | 数据库使用系统向量数据库 SDK | 跟踪建库、索引、写入、删除、查询调用；检查链接/进程与运行日志 | 生产向量存储和检索实际调用 `kylin-ai-vector-engine`/官方客户端；严格模式缺失即失败 | **不通过：V11 direct SDK 独立数据库生命周期已通过；系统服务 UID/用户会话边界及产品生产链证据待补** |
-| H-03 `[GATE]` | 文本向量使用系统 Embedding 接口 | 运行 `runtime=kylin` 端到端用例；检查调用日志和缺失 SDK 失败行为 | 实际调用 `kylin-coreai-embedding`；不能由 portable/hash/stub 顶替 | **不通过：原生绑定已编译，用户会话 runtime 边界尚未闭环** |
+| H-02 `[GATE]` | 数据库使用系统向量数据库 SDK | 跟踪建库、索引、写入、删除、查询调用；检查链接/进程与运行日志 | 生产向量存储和检索实际调用 `kylin-ai-vector-engine`/官方客户端；严格模式缺失即失败 | **不通过：direct SDK 生命周期已通过；生产 DI 漏调 `LoadDBFile` 已在当前源码修复，待新候选产品链重验** |
+| H-03 `[GATE]` | 文本向量使用系统 Embedding 接口 | 运行 `runtime=kylin` 端到端用例；检查调用日志和缺失 SDK 失败行为 | 实际调用 `kylin-coreai-embedding`；不能由 portable/hash/stub 顶替 | **不通过：官方组件修复组合下 PIXIU 绑定已返回真实 768 维向量；最终安装依赖和用户会话产品链未闭环** |
 
 H-02 允许 SQLite 保存结构化元数据、关系和审计，但向量的生产存储/检索必须经过指定系统向量数据库。BGE-M3 等模型只能作为对比实验，不能替代 H-03。
 
@@ -43,13 +43,18 @@ strict 模式错配，组件清单记录 `install_strict=true`。这些门禁只
 必须完成用户会话 SDK 边界、验证最小系统运行依赖，并在同一候选包上重跑本节用例。
 Vector Engine 的生产连接还必须使用官方 demo 的 `ConnectParam(appId)` 本地传输；
 host/port 重载在官方头文件中标为测试用途，不得再以 `127.0.0.1:19530` 作为验收假设。
-Embedding 另有独立系统组件阻断：目标 V11 上 `getModelList` 返回 err=3，显式以已安装
-模型名调用初始化仍返回 err=10（Text model not found）。官方 `kylin-ai-runtime`
+Embedding 的独立系统组件阻断已完成根因与兼容性验证：原目标组合的 `getModelList`
+返回 err=3，显式初始化返回 err=10。官方 `kylin-ai-runtime`
 `devel/26w` 提交 `34843d14363a1c1dff932a9a1cf9b4f09ea75de2` 的
 `LifecycleAwareEmbeddingEngine::parseModelInfo()` 明确要求对象型 `model_catalog`，并从
-其中的 `TEXT`/`IMAGE` 目录建立模型组；目标系统模型元数据不满足该契约。该证据证明
-不能通过跳过模型枚举或硬编码模型名规避，须修复/对齐系统 runtime、引擎与模型包后
-重新取证，不能把 portable 向量或 direct Vector 成功计入 H-03。
+其中的 `TEXT`/`IMAGE` 目录建立模型组。官方 embedding engine 提交 `3fbfeb6` 增加
+目录输出；abstract-models 提交 `b999d89`（首个包含发布标签
+`build/1.2.0.0-0k0.16`）让 model_bank 输出 YAML `others_info`。对齐两项官方修复后，
+官方 demo 与 PIXIU 安装包内绑定均通过 runtime 1.3.0 返回 gte-base 768 维非零向量。
+该结果是组件兼容性/直接适配证据，不是最终候选产品证据；发布前必须把兼容版本纳入
+可复现依赖方案并重跑全链路。紧接着的产品探针在写入时暴露 Vector Engine 未执行
+`LoadDBFile`，且旧 `/capabilities` 仍误报 ready；当前源码已让 strict 预检实际装载
+应用数据库并在进程退出时断开，尚待新包 V11 复验。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

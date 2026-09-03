@@ -6,8 +6,9 @@
 
 > [!CAUTION]
 > 2026-09-03 赛题复核：当前实现是记忆子系统和记忆控制台，不是完整 OS Agent；
-> 生产向量检索仍由 SQLite/INT8 扫描承担，也尚未满足 PPT 指定的系统向量数据库
-> SDK 硬门槛。团队已批准新增 openKylin `kylin-agent`/`agent-runtime` 宿主与
+> portable 路径仍由 SQLite/INT8 扫描承担；strict 路径已接入系统 Vector Engine，
+> 但最终候选的产品全链路尚未通过，仍不满足 PPT 硬门槛。团队已批准新增
+> openKylin `kylin-agent`/`agent-runtime` 宿主与
 > Module E MemoryProvider 适配层；这是一项团队工程决策，并非赛方指定技术栈。
 > 完整差距、决策和验收状态见
 > `OS_AGENT_INTEGRATION_ASSESSMENT.md` 与 `AcceptanceTestSpecification.md`。

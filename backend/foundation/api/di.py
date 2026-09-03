@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import sqlite3 as _sqlite3
 import time
+from pathlib import Path
 
 import aiosqlite
 from fastapi import Depends
@@ -59,6 +60,7 @@ from .monitor_log import (
 _log = get_logger(__name__)
 
 _db: aiosqlite.Connection | None = None
+_vector_store: VectorStore | None = None
 _sync_runtime: SyncRuntime | None = None
 _monitor_config_store: MonitorConfigStore | None = None
 _monitor_log_store: MonitorLogStore | None = None
@@ -105,22 +107,46 @@ async def get_vector_store(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> VectorStore:
     """Select the system vector engine or the explicit portable adapter."""
+    global _vector_store
+    if _vector_store is not None:
+        return _vector_store
     if settings.vector_store == "portable":
-        return SqliteVectorStore(db)
+        _vector_store = SqliteVectorStore(db)
+        return _vector_store
+    client = None
     try:
         client = VectorEngineClient(app_id=settings.vector_app_id)
+        vector_db_path = Path(settings.vector_db_path)
+        vector_db_path.parent.mkdir(parents=True, exist_ok=True)
+        await asyncio.to_thread(client.load_db_file, str(vector_db_path))
     except Exception:
+        if client is not None:
+            try:
+                await asyncio.to_thread(client.disconnect)
+            except Exception:
+                _log.warning("Vector Engine cleanup after failed startup failed")
         if settings.vector_store == "kylin":
             raise
         _log.warning(
             "Kylin Vector Engine unavailable; using explicit portable fallback"
         )
-        return SqliteVectorStore(db)
-    return KylinVectorStore(
+        _vector_store = SqliteVectorStore(db)
+        return _vector_store
+    _vector_store = KylinVectorStore(
         client,
         SqliteVectorIdMap(db),
         collection=settings.vector_collection,
     )
+    return _vector_store
+
+
+async def stop_vector_store() -> None:
+    """Release the process-wide Vector Engine connection during shutdown."""
+    global _vector_store
+    store = _vector_store
+    _vector_store = None
+    if isinstance(store, KylinVectorStore):
+        await store.close()
 
 
 async def get_evidence_repo(

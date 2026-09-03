@@ -208,6 +208,9 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
   分别用于组件版本、数据库就绪和赛题双 SDK 能力判定；
 - 桌面菜单出现 PIXIU 客户端；或在终端执行 `pixiu`（自动拉起后端后打开前端）；
 - 配置在 `/etc/pixiu/pixiu.env`（API 端口、DB 路径、sync 开关等）；
+- Vector Engine 的应用数据库由 `PIXIU_VECTOR_DB_PATH` 指定（默认
+  `/var/lib/pixiu/data/vector-engine.db`）；strict 启动会实际执行 `LoadDBFile`，失败
+  即拒绝就绪，进程退出时执行 `Disconnect`；
 - 包只在 `/usr/share/pixiu/pixiu.env.default` 携带公开默认模板；`postinst` 仅在
   `/etc/pixiu/pixiu.env` 不存在时创建，升级保留现有配置并幂等补字段。运行配置不再
   注册为 dpkg conffile，避免随机口令使非交互升级触发冲突提示；

@@ -12,9 +12,10 @@
 `pixiu-backend.service` 却以系统账户 `pixiu` 运行，因此无法访问桌面用户的 AI
 runtime。strict 模式正确地失败关闭，但 H-02/H-03 无法形成产品生产链证据。
 
-Embedding 还存在独立系统组件契约问题：runtime 生命周期层要求模型元数据提供
-对象型 `model_catalog` 及 `TEXT`/`IMAGE` 目录；目标系统枚举返回 err=3，显式模型
-初始化仍返回 err=10。改变服务账户不会掩盖或自动修复该问题，两个阻断必须分别闭环。
+Embedding 的独立系统组件契约问题已经定位并完成兼容性探针：对齐官方 embedding
+engine `3fbfeb6` 与 abstract-models/model_bank `b999d89` 后，PIXIU binding 经
+runtime 1.3.0 返回 768 维真实向量。该结果尚未形成最终可安装依赖，因此改变服务
+账户仍不能自动宣称 H-03 闭环；用户会话边界与组件供应链必须分别完成。
 
 PIXIU 处理的是用户记忆、行为采集、Agent 会话与设备身份。让系统级共享守护进程
 代替多个桌面用户访问这些数据，会同时引入跨用户隔离、AI socket 代理和端口归属问题。

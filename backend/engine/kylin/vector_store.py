@@ -27,6 +27,7 @@ class KylinVectorStore(VectorStore):
         self._collection = collection
         self._dimension: int | None = None
         self._ready_lock = asyncio.Lock()
+        self._closed = False
 
     @property
     def runtime(self) -> str:
@@ -40,6 +41,8 @@ class KylinVectorStore(VectorStore):
             raise ValueError("vector values must be finite")
 
     async def _ensure_collection(self, dimension: int) -> None:
+        if self._closed:
+            raise RuntimeError("Vector Engine store is closed")
         async with self._ready_lock:
             if self._dimension is not None:
                 if self._dimension != dimension:
@@ -103,6 +106,14 @@ class KylinVectorStore(VectorStore):
                 f"Vector Engine delete affected {count} rows, expected at most 1"
             )
         await self._id_map.remove(knowledge_id)
+
+    async def close(self) -> None:
+        """Release the SDK connection owned by this store exactly once."""
+        async with self._ready_lock:
+            if self._closed:
+                return
+            await asyncio.to_thread(self._client.disconnect)
+            self._closed = True
 
 
 __all__ = ["KylinVectorStore"]

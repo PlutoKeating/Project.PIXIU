@@ -34,8 +34,8 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 2026-09-04 最新组合回归：pytest 787 passed（Foundation 621 + Engine 149 +
-  Module E 17；11 条既有依赖弃用/异步线程退出告警，无失败）；Foundation 356 + Engine 21
+- 2026-09-04 最新组合回归：pytest 790 passed（Foundation 623 + Engine 150 +
+  Module E 17；10 条既有依赖弃用告警，无失败）；Foundation 356 + Engine 21
   = 377 仅保留为 2026-08-11 阶段快照
 
 ### 🔴 赛题 P0 待完成
@@ -67,7 +67,9 @@
 生产 DI 的知识写入和 ANN 查询已注入并通过禁用旧扫描的端到端组合根测试；Kylin
 Kylin 适配与 strict/auto/portable 选择已完成；生产遗忘已注入 seam 并在确认后
 删除向量；组合根已改用官方 `ConnectParam(appId)` 本地传输，不再传递测试专用
-host/port；`GET /capabilities` 已报告实际适配器。V11 真服务端到端证据仍未完成。
+host/port；当前源码还会在 strict 预检时装载 `PIXIU_VECTOR_DB_PATH`，进程级复用
+store 并在退出时断开，修复旧探针“capabilities 假绿、首次写入无 local storage”的
+问题。`GET /capabilities` 已报告实际适配器。V11 新候选端到端证据仍未完成。
 - C-A5：与 Module E 做 HTTP/WS 契约测试，禁止 E 直接导入本模块。
 
 > Module A 三通道联调与 WS `/events` 注册已在 2026-08-29 前完成，已从当前 P0

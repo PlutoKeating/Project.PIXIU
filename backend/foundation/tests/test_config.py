@@ -33,6 +33,7 @@ def test_default_vector_store_is_auto():
         assert settings.vector_store == "auto"
         assert settings.vector_app_id == "pixiu"
         assert settings.vector_collection == "pixiu_memory"
+        assert settings.vector_db_path == "data/vector-engine.db"
 
 
 def test_default_db_path():
@@ -249,6 +250,17 @@ def test_empty_db_path_rejected():
     with mock.patch.dict(os.environ, {"PIXIU_DB_PATH": ""}):
         with pytest.raises(ValueError, match="PIXIU_DB_PATH"):
             Settings()
+
+
+def test_vector_db_path_defaults_under_data_dir_and_can_be_overridden():
+    with mock.patch.dict(os.environ, {"PIXIU_DATA_DIR": "/srv/pixiu"}, clear=True):
+        assert Settings().vector_db_path == "/srv/pixiu/vector-engine.db"
+    with mock.patch.dict(
+        os.environ,
+        {"PIXIU_VECTOR_DB_PATH": "/var/lib/pixiu/custom-vector.db"},
+        clear=True,
+    ):
+        assert Settings().vector_db_path == "/var/lib/pixiu/custom-vector.db"
 
 
 # ─── Log level ────────────────────────────────────────────

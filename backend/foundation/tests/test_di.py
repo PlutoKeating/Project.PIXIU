@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 import backend.foundation.api.di as di_module
@@ -25,6 +27,7 @@ from backend.foundation.api.di import (
     get_sync_service,
     get_vector_store,
     preflight_strict_capabilities,
+    stop_vector_store,
 )
 from backend.foundation.core.idgen import gen_evidence_id
 from backend.foundation.core.models import Evidence, SourceType
@@ -47,6 +50,7 @@ class _FakeSettings:
         self.vector_store = "portable"
         self.vector_app_id = "pixiu-test"
         self.vector_collection = "pixiu_test"
+        self.vector_db_path = str(Path(db_path).parent / "vector-engine.db")
         self.sync_device_name = "test-device"
         self.sync_domain = "shared:test"
         self.sync_key_passphrase = "phase3-di-test-passphrase"
@@ -58,8 +62,10 @@ def fresh_di(tmp_path, monkeypatch):
     """替换 settings.db_path 并重置 get_db 单例。"""
     monkeypatch.setattr(di_module, "settings", _FakeSettings(str(tmp_path / "pixiu.db")))
     di_module._db = None
+    di_module._vector_store = None
     yield
     di_module._db = None
+    di_module._vector_store = None
 
 
 @pytest.mark.asyncio
@@ -113,7 +119,7 @@ async def test_strict_kylin_vector_store_fails_closed(fresh_di, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_kylin_vector_store_uses_official_local_connection(
-    fresh_di, monkeypatch
+    fresh_di, monkeypatch, tmp_path
 ):
     db = await get_db()
     di_module.settings.vector_store = "kylin"
@@ -123,10 +129,49 @@ async def test_kylin_vector_store_uses_official_local_connection(
         def __init__(self, **kwargs):
             received.update(kwargs)
 
+        def load_db_file(self, path):
+            received["db_path"] = path
+
+        def disconnect(self):
+            received["disconnected"] = True
+
     monkeypatch.setattr(di_module, "VectorEngineClient", _Client)
     try:
         await get_vector_store(db)
-        assert received == {"app_id": "pixiu-test"}
+        assert received == {
+            "app_id": "pixiu-test",
+            "db_path": str(tmp_path / "vector-engine.db"),
+        }
+    finally:
+        await stop_vector_store()
+        await db.close()
+    assert received["disconnected"] is True
+
+
+@pytest.mark.asyncio
+async def test_strict_vector_load_failure_disconnects_and_fails_closed(
+    fresh_di, monkeypatch
+):
+    db = await get_db()
+    di_module.settings.vector_store = "kylin"
+    calls = []
+
+    class _Client:
+        def __init__(self, **_kwargs):
+            pass
+
+        def load_db_file(self, _path):
+            calls.append("load")
+            raise RuntimeError("vector database unavailable")
+
+        def disconnect(self):
+            calls.append("disconnect")
+
+    monkeypatch.setattr(di_module, "VectorEngineClient", _Client)
+    try:
+        with pytest.raises(RuntimeError, match="vector database unavailable"):
+            await get_vector_store(db)
+        assert calls == ["load", "disconnect"]
     finally:
         await db.close()
 

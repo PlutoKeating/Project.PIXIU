@@ -38,6 +38,9 @@ class _FakeClient:
         self.calls.append(("delete", name, ids))
         return len(ids)
 
+    def disconnect(self) -> None:
+        self.calls.append(("disconnect",))
+
 
 class _FakeIdMap:
     def __init__(self) -> None:
@@ -101,3 +104,16 @@ async def test_delete_removes_remote_vector_before_mapping() -> None:
 
     assert client.calls == [("delete", "pixiu_memory", [77])]
     assert id_map.removed == ["knw_test"]
+
+
+@pytest.mark.asyncio
+async def test_close_disconnects_once_and_rejects_future_operations() -> None:
+    client = _FakeClient(exists=True)
+    store = KylinVectorStore(client, _FakeIdMap(), collection="pixiu_memory")
+
+    await store.close()
+    await store.close()
+
+    assert client.calls == [("disconnect",)]
+    with pytest.raises(RuntimeError, match="store is closed"):
+        await store.search([0.2, 0.8], limit=1)

@@ -10,6 +10,7 @@ import ipaddress
 import os
 import re
 import socket
+from pathlib import Path
 
 _VALID_EMBEDDING = frozenset({"auto", "kylin", "portable"})
 _VALID_OCR = frozenset({"auto", "kylin", "portable"})
@@ -110,6 +111,7 @@ class Settings:
 
     def __init__(self):
         self._db_path = _env_str("PIXIU_DB_PATH", "./pixiu.db")
+        self._data_dir = _env_str("PIXIU_DATA_DIR", "./data")
         self._api_host = _env_str("PIXIU_API_HOST", "127.0.0.1")
         self._api_port = _env_port("PIXIU_API_PORT", 8765)
         self._embedding = _env_choice("PIXIU_EMBEDDING", "auto", _VALID_EMBEDDING)
@@ -120,9 +122,12 @@ class Settings:
         self._vector_collection = _env_identifier(
             "PIXIU_VECTOR_COLLECTION", "pixiu_memory"
         )
+        self._vector_db_path = _env_str(
+            "PIXIU_VECTOR_DB_PATH",
+            str(Path(self._data_dir) / "vector-engine.db"),
+        )
         self._ocr = _env_choice("PIXIU_OCR", "auto", _VALID_OCR)
         self._log_level = _env_choice("PIXIU_LOG_LEVEL", "INFO", _VALID_LOG_LEVELS)
-        self._data_dir = _env_str("PIXIU_DATA_DIR", "./data")
         self._sync_device_name = _env_str(
             "PIXIU_SYNC_DEVICE_NAME", socket.gethostname()
         )
@@ -182,6 +187,10 @@ class Settings:
     @property
     def vector_collection(self) -> str:
         return self._vector_collection
+
+    @property
+    def vector_db_path(self) -> str:
+        return self._vector_db_path
 
     @property
     def ocr(self) -> str:

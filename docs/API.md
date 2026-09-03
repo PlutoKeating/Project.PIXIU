@@ -144,7 +144,8 @@ IP、文件路径或测试环境拓扑。
 
 `contest_ready` 仅在平台为麒麟 V11 且 Embedding、Vector Engine 的实际 runtime 均为
 `kylin` 时为 `true`。任一后端配置为严格 `kylin` 且无法实例化时，应用在启动预检
-阶段直接失败，不等待首个业务请求，也不静默降级。
+阶段直接失败，不等待首个业务请求，也不静默降级。Vector Engine 预检还必须成功
+执行 `LoadDBFile(PIXIU_VECTOR_DB_PATH)`，不能只凭客户端构造成功返回 ready。
 
 ### 3.1 POST /memory/write
 

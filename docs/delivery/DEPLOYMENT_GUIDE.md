@@ -66,6 +66,8 @@ portable 静默降级或据此声明 H-02/H-03 通过。
 Vector Engine 无需配置 TCP host/port：生产使用系统 SDK 的 `ConnectParam(appId)`
 本地连接。旧配置中可能残留的 `PIXIU_VECTOR_HOST`/`PIXIU_VECTOR_PORT` 已被忽略；
 新装模板不再生成它们，`PIXIU_VECTOR_APP_ID` 仍用于隔离应用数据库。
+实际数据库文件由 `PIXIU_VECTOR_DB_PATH` 指定；strict 启动必须完成 `LoadDBFile`，
+失败时服务拒绝就绪，不得等到第一个记忆写入才暴露错误。
 
 ## 升级、卸载与恢复
 

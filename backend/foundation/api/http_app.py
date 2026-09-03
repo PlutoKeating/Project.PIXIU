@@ -69,6 +69,7 @@ from .di import (
     stop_behavior_collector,
     stop_monitor_runtime,
     stop_sync_runtime,
+    stop_vector_store,
 )
 from .capabilities import capability_report
 from backend.engine.kylin.embedding import TextEmbedder
@@ -95,6 +96,7 @@ async def _lifespan(_: FastAPI):
         await stop_behavior_collector()
         await stop_monitor_runtime()
         await stop_sync_runtime()
+        await stop_vector_store()
 
 
 

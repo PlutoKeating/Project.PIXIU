@@ -83,7 +83,8 @@ PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ```
 
 安装后后端以 `pixiu-backend.service` 常驻，SQLite 数据库自动创建于
-`/var/lib/pixiu/pixiu.db`；桌面菜单/`pixiu` 命令打开前端。详见
+`/var/lib/pixiu/pixiu.db`；strict Vector Engine 另由 `PIXIU_VECTOR_DB_PATH` 指定
+应用数据库并在启动时执行 `LoadDBFile`。桌面菜单/`pixiu` 命令打开前端。详见
 `build/release/README.md` 与 `frontend/docs/DEMO_GUIDE.md`。
 
 ## 开发降级

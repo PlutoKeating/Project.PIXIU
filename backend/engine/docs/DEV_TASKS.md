@@ -44,13 +44,14 @@
   写入/检索/遗忘接线；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
   生命周期封装和 `KylinVectorStore` 契约测试。真机检查已纠正把 SDK 测试专用
   host/port 构造误用于生产的问题，默认改走官方 `ConnectParam(appId)` 本地连接。
-  绑定已补齐官方 demo 要求的 `LoadDBFile`/`Disconnect` 数据库生命周期。
-  仍必须证明系统 Vector Engine 在
+  绑定已补齐官方 demo 要求的 `LoadDBFile`/`Disconnect` 数据库生命周期；真机产品
+  探针发现组合根漏调装载后，当前源码已补 `PIXIU_VECTOR_DB_PATH`、strict 启动装载、
+  进程级复用与退出断开。仍必须以重建候选证明系统 Vector Engine 在
   V11 严格画像中实际承担生产建库、写入、删除和查询。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-03 当前 Engine 全量 145 项通过；Foundation 619 项通过（组合回归 11 条
-  依赖弃用/测试退出资源告警，无失败）；
+- 测试：2026-09-04 当前 Engine 150 项、Foundation 623 项、Module E 17 项通过
+  （组合回归 790 passed，10 条既有依赖弃用告警，无失败）；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
   打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，

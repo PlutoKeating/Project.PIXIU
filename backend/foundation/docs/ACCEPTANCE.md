@@ -52,16 +52,15 @@
 
 ## 四、测试统计
 
-- 2026-09-04 最新组合回归：pytest 787 passed（Foundation 621 + Engine 149 +
-  Module E 17），11 条既有依赖弃用/异步线程退出告警，无失败；
-  全部组合回归有 11 条依赖弃用/异步线程退出告警，无失败。
+- 2026-09-04 最新组合回归：pytest 790 passed（Foundation 623 + Engine 150 +
+  Module E 17），10 条既有依赖弃用告警，无失败。
 - 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`
 
 ## 五、赛题 P0 遗留（允许并要求实现）
 
-1. 麒麟环境：真实 embedding 绑定构建（本机已构建成功，真机 AI 运行时端到端验收）+ reference-v1 数据集验收（产出 runtime="kylin" 报告）
-2. **H-02 阻塞项**：vector-engine-client 生产对接（检索当前由 SQLite INT8 扫描承担）
+1. 麒麟环境：官方组件修复组合下 PIXIU binding 已返回 768 维真实向量；仍需最终可安装依赖和 reference-v1 数据集验收（产出 runtime="kylin" 报告）
+2. **H-02 阻塞项**：当前源码已修复生产 `LoadDBFile`、store 复用与退出断开；待重建 strict 候选验证写入/检索/遗忘
 3. agent-runtime MemoryProvider 适配与多轮/工具结果端到端闭环
 4. Agent 公共契约：capability、`CONVERSATION`、evidence 关联 ID、完成态持久化
    幂等、审计式失败恢复、预算化安全查询上下文和六类 context 生命周期已完成；
