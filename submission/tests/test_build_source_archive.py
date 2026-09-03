@@ -75,11 +75,39 @@ class SourceArchiveTest(unittest.TestCase):
             )
             self.assertEqual(embedded, manifest)
             self.assertEqual(manifest["release_commit"], "a" * 40)
-            with mock.patch.object(BUILDER, "git", return_value="1" * 40):
+            expected_sources = {
+                relative.as_posix(): {
+                    "type": "file",
+                    "sha256": MODULE.sha256_file(root / relative),
+                }
+                for relative in relative_paths
+            }
+            with (
+                mock.patch.object(BUILDER, "git", return_value="1" * 40),
+                mock.patch.object(
+                    BUILDER, "worktree_source_entries", return_value=expected_sources
+                ),
+            ):
                 self.assertEqual(
                     BUILDER.validate_source_archive(output, release_commit="a" * 40),
                     [],
                 )
+                changed_sources = dict(expected_sources)
+                changed_sources["README.md"] = {
+                    "type": "file",
+                    "sha256": "f" * 64,
+                }
+                with mock.patch.object(
+                    BUILDER,
+                    "worktree_source_entries",
+                    return_value=changed_sources,
+                ):
+                    self.assertIn(
+                        "source archive differs from release checkout: README.md",
+                        BUILDER.validate_source_archive(
+                            output, release_commit="a" * 40
+                        ),
+                    )
 
     def test_existing_archive_is_not_overwritten(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

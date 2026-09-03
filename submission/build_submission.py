@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import posixpath
 import re
 import subprocess
@@ -77,6 +78,28 @@ def git(*args: str) -> str:
     ).strip()
 
 
+def worktree_source_entries() -> dict[str, dict[str, str]]:
+    """Return the exact tracked source identity of the clean release checkout."""
+    raw = git("ls-files", "--recurse-submodules", "-z")
+    paths = [value for value in raw.split("\0") if value]
+    if not paths or len(paths) != len(set(paths)):
+        raise ValueError("release source list is empty or contains duplicates")
+    entries: dict[str, dict[str, str]] = {}
+    for relative in paths:
+        path = ROOT / relative
+        if path.is_symlink():
+            target = os.readlink(path)
+            entries[relative] = {
+                "type": "symlink",
+                "sha256": hashlib.sha256(target.encode("utf-8")).hexdigest(),
+            }
+        elif path.is_file():
+            entries[relative] = {"type": "file", "sha256": sha256(path)}
+        else:
+            raise ValueError(f"tracked release source is unavailable: {relative}")
+    return entries
+
+
 def validate_source_archive(path: Path, *, release_commit: str) -> list[str]:
     errors: list[str] = []
     prefix = "Project.PIXIU-source/"
@@ -127,6 +150,14 @@ def validate_source_archive(path: Path, *, release_commit: str) -> list[str]:
                 for item in tracked
                 if isinstance(item, dict) and isinstance(item.get("path"), str)
             }
+            if len(tracked_paths) != len(tracked):
+                errors.append("source archive manifest contains invalid or duplicate source paths")
+            try:
+                expected_sources = worktree_source_entries()
+            except (OSError, subprocess.SubprocessError, ValueError):
+                return ["release checkout source identity is unavailable"]
+            if tracked_paths != set(expected_sources):
+                errors.append("source archive source list does not match release checkout")
             if not all(
                 required in tracked_paths
                 if not required.endswith("/")
@@ -189,6 +220,10 @@ def validate_source_archive(path: Path, *, release_commit: str) -> list[str]:
                     actual = digest_builder.hexdigest()
                 if actual != digest:
                     errors.append(f"source archive member hash mismatch: {relative}")
+                    break
+                expected = expected_sources.get(relative)
+                if expected is None or expected != {"type": kind, "sha256": digest}:
+                    errors.append(f"source archive differs from release checkout: {relative}")
                     break
             for item in evidence:
                 if not isinstance(item, dict):

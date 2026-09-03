@@ -57,4 +57,6 @@ wheel `METADATA` 自动记录并生成，避免手填包名、版本或摘要。
 由 `submission/build_source_archive.py` 收集 Git 跟踪文件及四个 submodule 的实际
 文件，并把 Agent 供应链证据一并收入归档；内嵌 `SOURCE_MANIFEST.json` 记录 release
 commit、submodule commit 和逐文件 SHA-256。`build_submission.py --package` 会复算
-这些摘要并检查各源码树，任意同名占位压缩包、缺失 submodule 或篡改文件均拒绝。
+这些摘要并检查各源码树，还会把归档中的完整路径集合、文件/符号链接类型和摘要逐项
+反向核对到当前洁净 release checkout。任意同名占位压缩包、缺失 submodule，或同时
+篡改源码与内嵌 manifest 的归档均会被拒绝。

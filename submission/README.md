@@ -105,7 +105,8 @@ operation JSON、动作前后快照和 proof 均须作为 `--attachment` 加入�
 并与 `release_commit` 和最终 `.deb` SHA-256 一致；仅将任意 JSON 放入目录无法通过。
 D-03 也不接受普通 `git archive` 或任意同名压缩包：最终打包器会读取内嵌
 `SOURCE_MANIFEST.json`，逐项复算源码和 Agent 供应链证据摘要，并要求后端、前端、
-Module E、发布工具、交付文档及四个固定 submodule 的实体文件全部存在。
+Module E、发布工具、交付文档及四个固定 submodule 的实体文件全部存在；完整路径集合、
+成员类型和摘要还必须与当前洁净 release checkout 相同，不能同时替换源码和 manifest。
 最终打包器还会检查 PDF/DOCX/PPTX/ZIP/视频的实际文件签名或内部结构，复算 `.deb`
 摘要并用仓库固定 Ed25519 公钥验证签名，不能用改扩展名的占位文件过门。
 其中 `原始证据.zip` 还会再次运行七类证据策略校验，普通可读 ZIP 不算通过。
