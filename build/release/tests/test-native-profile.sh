@@ -28,6 +28,12 @@ case "${APT_BUILD_DEPS}" in
     *libkylin-coreai-embedding-dev*libkysdk-vector-engine-client-dev*) ;;
     *) echo "native build dependencies missing" >&2; exit 1 ;;
 esac
+for package in libkysdk-shortcut-dev libkysdk-notification-dev libkysdk-qtwidgets-dev; do
+    case " ${APT_BUILD_DEPS} " in
+        *" ${package} "*) ;;
+        *) echo "native desktop SDK build dependency missing: ${package}" >&2; exit 1 ;;
+    esac
+done
 grep -q 'PIXIU_VECTOR_STORE: portable' "${ROOT}/.github/workflows/ci.yml"
 grep -q 'profile: generic-ubuntu' "${ROOT}/.github/workflows/release.yml"
 grep -q 'runs-on: \[self-hosted, linux, x64, kylin-v11\]' \

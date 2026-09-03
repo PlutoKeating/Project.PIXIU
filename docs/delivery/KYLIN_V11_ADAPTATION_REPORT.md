@@ -33,6 +33,9 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 摘要/commit、已装 manifest、dpkg 架构与 PIXIU/双 SDK 版本、Agent runtime 和三个
 运行端点，再以唯一临时集合直测 SDK 全生命周期并清理。当前仅完成脚本及隔离测试，
 尚无最终候选的目标 V11 输出。
+严格画像的首次目标构建发现桌面 KylinSDK 运行包不提供 `pkg-config` 开发元数据；画像
+已补入系统仓库确认存在的 shortcut/notification/qtwidgets 三个 `-dev` 包。该修正仍须
+以同一 commit 的原生重建结果确认，不据此提前更新 H-01～H-03 状态。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 

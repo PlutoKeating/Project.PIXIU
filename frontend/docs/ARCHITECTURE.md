@@ -484,7 +484,8 @@ target_link_libraries(pixiu-frontend
   ${KYSDK_NOTIFY_LIBRARIES} ${KYSDK_SHORTCUT_LIBRARIES})
 ```
 
-- 安装依赖：`sudo apt install libkysdk-notification-dev libkysdk-shortcut-dev`。
+- 原生构建依赖：`libkysdk-notification-dev`、`libkysdk-shortcut-dev`、
+  `libkysdk-qtwidgets-dev`；发布画像统一维护准确包名，不以运行包代替开发包。
 - 打包为 `.deb` + `.desktop`，注册自启动与全局快捷键。
 - 提供麒麟桌面适配测试报告（D-08）：快捷键唤起、通知、主题跟随、悬浮窗在已适配机型（x86/ARM）验证。
 
