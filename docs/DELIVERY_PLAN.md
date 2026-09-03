@@ -167,7 +167,7 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 | D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | V11 portable 跨 revision、离线依赖、健康/配置保留已重验；图形、原生最终包待验 |
 | D-05 | 演示视频 | `delivery/PRESENTATION_AND_VIDEO.md` | `.mp4` 优先，≤7 分钟 | 脚本完成，录制待完成 |
 | D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，Agent UI 待补 |
-| D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV | portable 已有，最终 V11 待补 |
+| D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV + `three-device-final-suite.json` | portable 已有，最终 V11 待补；总报告已列为打包硬门 |
 | D-08 | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Agent 实证待补 |
 | D-09 | 实际应用案例 | `delivery/APPLICATION_CASES.md` | `.pdf`/报告章节 | 流程完成，最终取证待补 |
 | D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | V11 portable 升级基线已刷新，最终双 SDK 待补 |
@@ -189,6 +189,9 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 最终归档应保存只读 manifest，列出每个文件的名称、版本、大小、SHA-256、签名、
 生成命令和对应 Git commit。任何文档内容变更都要随代码提交审查，禁止答辩前复制
 出脱离仓库维护的“最终版”。
+
+`build_submission.py --package` 会额外解析 D-07 三设备总报告，核对四场景、关键检查、
+严格 V11 画像、Agent Runtime、release commit 和最终 `.deb` 摘要，而非只做存在性检查。
 
 最终外层目录和 ZIP 名固定为
 `华南理工大学－OSAgent记忆优化及高效应用研究－PIXIU`；自动打包前还必须放入团队

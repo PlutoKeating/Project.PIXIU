@@ -19,7 +19,24 @@ FINAL_ROOT = SUBMISSION_ROOT / "final"
 PLAN_PATH = SUBMISSION_ROOT / "submission-plan.json"
 PASS = "passed"
 SHA1 = re.compile(r"[0-9a-f]{40}")
+SHA256 = re.compile(r"[0-9a-f]{64}")
 VIDEO_SUFFIXES = {".avi", ".mp4", ".wmv"}
+FINAL_DEVICE_EVIDENCE = Path("07-效果与测试证据/three-device-final-suite.json")
+EXPECTED_DEVICE_SCENARIOS = {
+    "concurrent-update-and-conflict-resolution",
+    "offline-write-and-reconnect",
+    "private-scope-non-propagation",
+    "tombstone-propagation-and-no-resurrection",
+}
+EXPECTED_DEVICE_CHECKS = {
+    "same_release_run_devices_and_domain",
+    "fresh_final_three_device_topology",
+    "all_required_scenarios_bound",
+    "all_scenario_checks_passed",
+    "all_scenarios_between_topology_captures",
+    "final_online_quiescent_full_mesh",
+    "final_logical_view_convergence",
+}
 
 
 def sha256(path: Path) -> str:
@@ -39,6 +56,62 @@ def git(*args: str) -> str:
 def load_plan() -> dict:
     with PLAN_PATH.open(encoding="utf-8") as stream:
         return json.load(stream)
+
+
+def validate_final_device_evidence(
+    evidence_path: Path, *, release_commit: str, candidate_package: Path
+) -> list[str]:
+    errors: list[str] = []
+    try:
+        report = json.loads(evidence_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return ["three-device final evidence is not readable JSON"]
+    if not isinstance(report, dict):
+        return ["three-device final evidence must be a JSON object"]
+    release = report.get("release")
+    checks = report.get("checks")
+    scenarios = report.get("scenarios")
+    scenario_hashes = report.get("source_scenario_sha256")
+    if not (
+        report.get("evidence_schema") == 1
+        and report.get("evidence_class") == "kylin-v11-three-device-final-suite"
+        and report.get("real_device_evidence") is True
+        and report.get("final_device_evidence") is True
+        and report.get("status") == "pass"
+        and report.get("remaining_required_scenarios") == []
+        and isinstance(scenarios, list)
+        and all(isinstance(value, str) for value in scenarios)
+        and set(scenarios) == EXPECTED_DEVICE_SCENARIOS
+        and isinstance(checks, dict)
+        and EXPECTED_DEVICE_CHECKS.issubset(checks)
+        and all(checks[name] == PASS for name in EXPECTED_DEVICE_CHECKS)
+        and isinstance(scenario_hashes, list)
+        and len(scenario_hashes) == 4
+        and all(isinstance(value, str) and SHA256.fullmatch(value) for value in scenario_hashes)
+        and len(set(scenario_hashes)) == 4
+        and isinstance(report.get("initial_topology_evidence_sha256"), str)
+        and SHA256.fullmatch(report["initial_topology_evidence_sha256"])
+        and isinstance(report.get("final_topology_evidence_sha256"), str)
+        and SHA256.fullmatch(report["final_topology_evidence_sha256"])
+        and report["initial_topology_evidence_sha256"]
+        != report["final_topology_evidence_sha256"]
+        and isinstance(release, dict)
+    ):
+        errors.append("three-device final evidence contract is incomplete")
+        return errors
+    if release.get("git_commit") != release_commit:
+        errors.append("three-device evidence commit does not match release_commit")
+    if release.get("profile") != "kylin-v11-native-x86_64":
+        errors.append("three-device evidence is not a strict Kylin V11 profile")
+    if release.get("architecture") != "amd64":
+        errors.append("three-device evidence architecture is not amd64")
+    if release.get("candidate_package_sha256") != sha256(candidate_package):
+        errors.append("three-device evidence package hash does not match final .deb")
+    if not isinstance(release.get("agent_runtime_version"), str) or not re.fullmatch(
+        r"0\.9\.[0-9]+", release["agent_runtime_version"]
+    ):
+        errors.append("three-device evidence Agent runtime is unsupported")
+    return errors
 
 
 def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
@@ -86,6 +159,20 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
             relative = item.get("path", "")
             if not relative or not (FINAL_ROOT / name / relative).is_file():
                 errors.append(f"missing external material: {relative}")
+        evidence_path = FINAL_ROOT / name / FINAL_DEVICE_EVIDENCE
+        package_paths = [
+            FINAL_ROOT / name / relative
+            for relative in paths
+            if relative.startswith("11-") and relative.endswith(".deb")
+        ]
+        if evidence_path.is_file() and len(package_paths) == 1 and package_paths[0].is_file():
+            errors.extend(
+                validate_final_device_evidence(
+                    evidence_path,
+                    release_commit=commit if isinstance(commit, str) else "",
+                    candidate_package=package_paths[0],
+                )
+            )
     return errors
 
 

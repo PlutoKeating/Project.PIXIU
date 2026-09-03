@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -36,6 +37,60 @@ class SubmissionBuilderTest(unittest.TestCase):
             self.assertIn("document.pdf", checksums)
             self.assertIn("SUBMISSION_MANIFEST.json", checksums)
             self.assertNotIn("SHA256SUMS", checksums)
+
+    def test_final_device_evidence_binds_release_and_candidate_package(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / "candidate.deb"
+            package.write_bytes(b"candidate package")
+            commit = "a" * 40
+            report = {
+                "evidence_schema": 1,
+                "evidence_class": "kylin-v11-three-device-final-suite",
+                "real_device_evidence": True,
+                "final_device_evidence": True,
+                "status": "pass",
+                "remaining_required_scenarios": [],
+                "scenarios": sorted(MODULE.EXPECTED_DEVICE_SCENARIOS),
+                "checks": {name: "passed" for name in MODULE.EXPECTED_DEVICE_CHECKS},
+                "source_scenario_sha256": [
+                    MODULE.hashlib.sha256(f"scenario-{index}".encode()).hexdigest()
+                    for index in range(4)
+                ],
+                "initial_topology_evidence_sha256": "b" * 64,
+                "final_topology_evidence_sha256": "c" * 64,
+                "release": {
+                    "git_commit": commit,
+                    "profile": "kylin-v11-native-x86_64",
+                    "architecture": "amd64",
+                    "candidate_package_sha256": MODULE.sha256(package),
+                    "agent_runtime_version": "0.9.8",
+                },
+            }
+            evidence = root / "evidence.json"
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            self.assertEqual(
+                MODULE.validate_final_device_evidence(
+                    evidence, release_commit=commit, candidate_package=package
+                ),
+                [],
+            )
+            report["release"]["git_commit"] = "d" * 40
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            self.assertIn(
+                "three-device evidence commit does not match release_commit",
+                MODULE.validate_final_device_evidence(
+                    evidence, release_commit=commit, candidate_package=package
+                ),
+            )
+            report["scenarios"] = [{}]
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            self.assertEqual(
+                MODULE.validate_final_device_evidence(
+                    evidence, release_commit=commit, candidate_package=package
+                ),
+                ["three-device final evidence contract is incomplete"],
+            )
 
 
 if __name__ == "__main__":

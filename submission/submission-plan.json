@@ -66,7 +66,7 @@
       "id": "D-07",
       "title": "效果与测试证据",
       "source": "docs/delivery/TEST_REPORT.md;docs/acceptance",
-      "paths": ["07-效果与测试证据/PIXIU效果与测试报告.pdf", "07-效果与测试证据/原始证据.zip"],
+      "paths": ["07-效果与测试证据/PIXIU效果与测试报告.pdf", "07-效果与测试证据/原始证据.zip", "07-效果与测试证据/three-device-final-suite.json"],
       "producer": "repository"
     },
     {

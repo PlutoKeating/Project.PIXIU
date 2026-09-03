@@ -39,5 +39,7 @@ python3 submission/build_submission.py --package
 ```
 
 `--package` 在任何门未通过、文件缺失、命名/格式错误、官方原件哈希改变或工作区不
-洁净时都会失败。视频和 PPT 只校验，不由自动化生成；其他文档及源码包必须在最终
+洁净时都会失败。D-07 的 `three-device-final-suite.json` 还必须满足最终三设备契约，
+并与 `release_commit` 和最终 `.deb` SHA-256 一致；仅将任意 JSON 放入目录无法通过。
+视频和 PPT 只校验，不由自动化生成；其他文档及源码包必须在最终
 候选完成后由仓库维护源生成并经人工审核，禁止以当前工作稿占位提交。
