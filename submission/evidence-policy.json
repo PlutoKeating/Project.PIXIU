@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "records": {
+    "agent_supply_chain": {
+      "filename": "agent-supply-chain.json",
+      "evidence_class": "agent-supply-chain-audit",
+      "commit_path": ["release_commit"],
+      "requires_ready": true
+    },
+    "native_sdk": {
+      "filename": "native-sdk-lifecycle.json",
+      "evidence_class": "kylin-v11-native-sdk-product-lifecycle",
+      "commit_path": ["release", "git_commit"],
+      "package_sha256_path": ["candidate_package", "sha256"],
+      "real_device_evidence": true,
+      "required_checks": ["contest_ready", "memory_write", "vector_search", "vector_delete", "deleted_memory_hidden"]
+    },
+    "agent_lifecycle": {
+      "filename": "agent-lifecycle.json",
+      "evidence_class": "kylin-v11-agent-lifecycle",
+      "commit_path": ["release", "git_commit"],
+      "package_sha256_path": ["release", "candidate_package_sha256"],
+      "real_device_evidence": true,
+      "required_checks": ["three_turn_session", "session_restore", "autonomous_memory_read", "autonomous_memory_write", "shell_tool", "web_search_tool", "approval", "tool_result_persisted", "cross_session_recall"]
+    },
+    "performance": {
+      "filename": "final-performance.json",
+      "evidence_class": "kylin-v11-final-performance",
+      "commit_path": ["release", "git_commit"],
+      "package_sha256_path": ["release", "candidate_package_sha256"],
+      "real_device_evidence": true,
+      "required_checks": ["preference_accuracy", "knowledge_recall", "retrieval_p95", "conflict_accuracy", "comparison_and_ablation"]
+    },
+    "three_device": {
+      "filename": "three-device-final-suite.json",
+      "evidence_class": "kylin-v11-three-device-final-suite",
+      "commit_path": ["release", "git_commit"],
+      "package_sha256_path": ["release", "candidate_package_sha256"],
+      "real_device_evidence": true,
+      "requires_final_device_evidence": true
+    },
+    "install_update": {
+      "filename": "install-update-matrix.json",
+      "evidence_class": "kylin-v11-install-update-matrix",
+      "commit_path": ["release", "git_commit"],
+      "package_sha256_path": ["release", "candidate_package_sha256"],
+      "real_device_evidence": true,
+      "required_checks": ["fresh_install", "reinstall", "upgrade", "rollback", "uninstall", "gui_update", "data_preserved"]
+    },
+    "dataset": {
+      "filename": "dataset-manifest.json",
+      "evidence_class": "pixiu-final-dataset-manifest",
+      "commit_path": ["release", "git_commit"],
+      "package_sha256_path": ["release", "candidate_package_sha256"],
+      "real_device_evidence": false,
+      "required_checks": ["source_legal", "schema_valid", "no_sensitive_data", "split_frozen"]
+    }
+  }
+}

@@ -48,5 +48,7 @@ bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/submission/tests/test_render_documents.py"
 "${PIXIU_PYTHON:-python3}" \
+    "${PIXIU_ROOT}/submission/tests/test_build_evidence_archive.py"
+"${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/submission/build_submission.py" --check
 log "tests OK"

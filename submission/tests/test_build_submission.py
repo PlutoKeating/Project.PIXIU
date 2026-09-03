@@ -49,6 +49,22 @@ class SubmissionBuilderTest(unittest.TestCase):
             checksum.write_text(f"{'0' * 64}  {package.name}\n", encoding="ascii")
             self.assertTrue(MODULE.validate_deliverable_format(checksum))
 
+    def test_raw_evidence_policy_failure_is_not_hidden(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, package = root / "evidence.zip", root / "pixiu.deb"
+            archive.write_bytes(b"not relevant to delegated validator")
+            package.write_bytes(b"!<arch>\nfixture")
+            with mock.patch.object(
+                MODULE.subprocess,
+                "run",
+                return_value=MODULE.subprocess.CompletedProcess([], 1, "rejected"),
+            ):
+                self.assertEqual(
+                    MODULE.validate_raw_evidence_archive(archive, package),
+                    ["raw evidence archive failed policy validation"],
+                )
+
     def test_repository_plan_is_structurally_valid(self) -> None:
         self.assertEqual(MODULE.validate_plan(MODULE.load_plan(), require_ready=False), [])
 

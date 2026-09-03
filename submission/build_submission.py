@@ -25,6 +25,7 @@ SHA1 = re.compile(r"[0-9a-f]{40}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 VIDEO_SUFFIXES = {".avi", ".mp4", ".wmv"}
 FINAL_DEVICE_EVIDENCE = Path("07-效果与测试证据/three-device-final-suite.json")
+RAW_EVIDENCE_ARCHIVE = Path("07-效果与测试证据/原始证据.zip")
 SOURCE_ARCHIVE = Path("03-源代码及规范/Project.PIXIU-source.tar.gz")
 REQUIRED_SOURCE_PATHS = {
     "README.md",
@@ -362,6 +363,27 @@ def validate_final_device_evidence(
     return errors
 
 
+def validate_raw_evidence_archive(archive: Path, package: Path) -> list[str]:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(SUBMISSION_ROOT / "build_evidence_archive.py"),
+            "--validate",
+            "--root",
+            str(ROOT),
+            "--package",
+            str(package),
+            "--output",
+            str(archive),
+        ],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    return [] if result.returncode == 0 else ["raw evidence archive failed policy validation"]
+
+
 def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
     errors: list[str] = []
     if plan.get("schema_version") != 1:
@@ -427,6 +449,9 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
                     candidate_package=package_paths[0],
                 )
             )
+        raw_evidence = FINAL_ROOT / name / RAW_EVIDENCE_ARCHIVE
+        if raw_evidence.is_file() and len(package_paths) == 1 and package_paths[0].is_file():
+            errors.extend(validate_raw_evidence_archive(raw_evidence, package_paths[0]))
         source_archive = FINAL_ROOT / name / SOURCE_ARCHIVE
         if source_archive.is_file():
             errors.extend(
