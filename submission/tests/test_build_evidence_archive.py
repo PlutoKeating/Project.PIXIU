@@ -265,6 +265,61 @@ class EvidenceArchiveTest(unittest.TestCase):
             "uninstall_policy": "remove-preserves-user-data; purge-deletes-user-data",
         }
         records["install_update"].write_text(json.dumps(install), encoding="utf-8")
+
+        three_sources = []
+        for name in (
+            "initial-topology.json", "final-topology.json", "concurrency-scenario.json",
+            "offline-scenario.json", "privacy-scenario.json", "tombstone-scenario.json",
+        ):
+            source = root / name
+            source.write_text(json.dumps({"source": name}), encoding="utf-8")
+            attachments.append(source)
+            three_sources.append(MODULE.sha256_file(source))
+        three_device = json.loads(records["three_device"].read_text())
+        three_device.update({
+            "run_id": "run-20260905",
+            "generated_at_utc": "2026-09-05T00:12:00Z",
+            "generated_at_epoch": 1788567120,
+            "initial_topology_evidence_sha256": three_sources[0],
+            "final_topology_evidence_sha256": three_sources[1],
+            "source_scenario_sha256": sorted(three_sources[2:]),
+            "scenarios": [
+                "concurrent-update-and-conflict-resolution",
+                "offline-write-and-reconnect",
+                "private-scope-non-propagation",
+                "tombstone-propagation-and-no-resurrection",
+            ],
+            "checks": {
+                "same_release_run_devices_and_domain": "passed",
+                "fresh_final_three_device_topology": "passed",
+                "all_required_scenarios_bound": "passed",
+                "all_scenario_checks_passed": "passed",
+                "all_scenarios_between_topology_captures": "passed",
+                "final_online_quiescent_full_mesh": "passed",
+                "final_logical_view_convergence": "passed",
+            },
+            "remaining_required_scenarios": [],
+        })
+        three_device["release"]["architecture"] = "amd64"
+        records["three_device"].write_text(json.dumps(three_device), encoding="utf-8")
+
+        supply = json.loads(records["agent_supply_chain"].read_text())
+        supply_evidence = {}
+        for index, (name, filename) in enumerate({
+            "host_build": "agent-host-build.json",
+            "runtime_wheelhouse": "runtime-wheelhouse.json",
+            "sbom": "agent-components.spdx.json",
+            "notice": "NOTICE.agent.txt",
+        }.items()):
+            artifact = root / filename
+            artifact.write_text(f"supply artifact {index}\n", encoding="utf-8")
+            attachments.append(artifact)
+            supply_evidence[name] = {
+                "file": filename, "present": True, "nonempty": True, "valid": True,
+                "sha256": MODULE.sha256_file(artifact),
+            }
+        supply["evidence"] = supply_evidence
+        records["agent_supply_chain"].write_text(json.dumps(supply), encoding="utf-8")
         return policy, package, records, attachments
 
     def test_complete_archive_round_trips_and_binds_package(self) -> None:
@@ -275,7 +330,11 @@ class EvidenceArchiveTest(unittest.TestCase):
             attachment.write_text("metric,value\nrecall,0.91\n", encoding="utf-8")
             attachments.append(attachment)
             output = root / "evidence.zip"
-            with patch.object(MODULE, "validate_deep_record", return_value=[]):
+            with (
+                patch.object(MODULE, "validate_deep_record", return_value=[]),
+                patch.object(MODULE, "validate_three_device_sources", return_value=[]),
+                patch.object(MODULE, "validate_supply_chain_sources", return_value=[]),
+            ):
                 MODULE.build_archive(
                     output, records, attachments, policy,
                     release_commit="a" * 40, package=package, epoch=315532800,
@@ -318,6 +377,15 @@ class EvidenceArchiveTest(unittest.TestCase):
             {"evidence_schema": 1, "evidence_class": "kylin-v11-agent-lifecycle", "status": "pass"},
         )
         self.assertTrue(any("deep evidence validation failed" in error for error in errors))
+        for name, evidence_class in (
+            ("three_device", "kylin-v11-three-device-final-suite"),
+            ("agent_supply_chain", "agent-supply-chain-audit"),
+        ):
+            errors = MODULE.validate_deep_record(
+                name,
+                {"evidence_schema": 1, "evidence_class": evidence_class, "status": "pass"},
+            )
+            self.assertTrue(any("deep evidence validation failed" in error for error in errors))
 
     def test_cross_references_require_raw_performance_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -365,6 +433,22 @@ class EvidenceArchiveTest(unittest.TestCase):
             documents = {name: MODULE.read_json(path) for name, path in records.items()}
             errors = MODULE.validate_install_sources(documents, attachments)
             self.assertTrue(any("install/update" in error for error in errors))
+
+    def test_three_device_source_validation_rejects_fake_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _, _, records, attachments = self.fixtures(root)
+            documents = {name: MODULE.read_json(path) for name, path in records.items()}
+            errors = MODULE.validate_three_device_sources(documents, attachments)
+            self.assertTrue(any("three-device" in error for error in errors))
+
+    def test_supply_chain_source_validation_rejects_fake_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _, _, records, attachments = self.fixtures(root)
+            documents = {name: MODULE.read_json(path) for name, path in records.items()}
+            errors = MODULE.validate_supply_chain_sources(documents, attachments)
+            self.assertTrue(any("supply-chain" in error for error in errors))
 
 
 if __name__ == "__main__":

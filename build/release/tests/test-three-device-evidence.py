@@ -889,6 +889,11 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
         self.assertTrue(report["final_device_evidence"])
         self.assertEqual(report["remaining_required_scenarios"], [])
         self.assertEqual(len(report["scenarios"]), 4)
+        MODULE.validate_final_report(report)
+
+        report["checks"].pop("final_logical_view_convergence")
+        with self.assertRaisesRegex(MODULE.EvidenceError, "contract"):
+            MODULE.validate_final_report(report)
 
     def test_final_suite_rejects_reused_topology_and_missing_checks(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

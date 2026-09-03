@@ -33,6 +33,8 @@ DEEP_VALIDATORS = {
     "performance": ("build/release/scripts/final-performance-evidence.py", "validate_final"),
     "dataset": ("build/release/scripts/final-dataset-manifest.py", "validate_manifest"),
     "install_update": ("build/release/scripts/install-update-evidence.py", "validate_final"),
+    "three_device": ("build/release/scripts/three-device-evidence.py", "validate_final_report"),
+    "agent_supply_chain": ("build/release/scripts/audit-agent-supply-chain.py", "validate_report"),
 }
 
 
@@ -242,6 +244,195 @@ def validate_install_sources(
     return []
 
 
+def validate_three_device_sources(
+    documents: dict[str, dict[str, Any]], attachment_paths: list[Path]
+) -> list[str]:
+    try:
+        final = documents["three_device"]
+        by_digest = {sha256_file(path): path for path in attachment_paths}
+        relative_path, _ = DEEP_VALIDATORS["three_device"]
+        spec = importlib.util.spec_from_file_location(
+            "pixiu_embedded_three_device_validator", ROOT / relative_path
+        )
+        if spec is None or spec.loader is None:
+            raise RuntimeError("three-device validator cannot be loaded")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        initial_path = by_digest[final["initial_topology_evidence_sha256"]]
+        final_path = by_digest[final["final_topology_evidence_sha256"]]
+        scenario_paths = [by_digest[digest] for digest in final["source_scenario_sha256"]]
+
+        rebuilt = module.validate_final_scenario_suite(
+            initial_topology_path=initial_path,
+            final_topology_path=final_path,
+            scenario_paths=scenario_paths,
+        )
+        for field in (
+            "run_id", "release", "initial_topology_evidence_sha256",
+            "final_topology_evidence_sha256", "source_scenario_sha256",
+            "scenarios", "checks", "remaining_required_scenarios",
+        ):
+            if rebuilt.get(field) != final.get(field):
+                raise ValueError(f"three-device final report differs from sources: {field}")
+
+        for topology_path in (initial_path, final_path):
+            topology = read_json(topology_path)
+            node_paths = [
+                by_digest[digest] for digest in topology["source_node_manifest_sha256"]
+            ]
+            rebuilt_topology = module.validate_cluster(node_paths)
+            for field in ("run_id", "release", "topology", "source_node_manifest_sha256"):
+                if rebuilt_topology.get(field) != topology.get(field):
+                    raise ValueError(f"three-device topology differs from nodes: {field}")
+
+        validators = {
+            "concurrent-update-and-conflict-resolution": module.validate_concurrency_scenario,
+            "offline-write-and-reconnect": module.validate_offline_scenario,
+            "private-scope-non-propagation": module.validate_privacy_scenario,
+            "tombstone-propagation-and-no-resurrection": module.validate_tombstone_scenario,
+        }
+        for scenario_path in scenario_paths:
+            scenario = read_json(scenario_path)
+            checkpoint_paths = [
+                by_digest[digest] for digest in scenario["source_checkpoint_sha256"]
+            ]
+            rebuilt_scenario = validators[scenario["scenario"]](
+                topology_path=initial_path, checkpoint_paths=checkpoint_paths
+            )
+            for field in (
+                "run_id", "release", "topology_evidence_sha256", "source_checkpoint_sha256",
+                "scenario", "checks", "remaining_required_scenarios",
+            ):
+                if rebuilt_scenario.get(field) != scenario.get(field):
+                    raise ValueError(f"three-device scenario differs from checkpoints: {field}")
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError, RuntimeError) as exc:
+        return [f"embedded three-device validation failed: {exc}"]
+    return []
+
+
+def validate_supply_chain_sources(
+    documents: dict[str, dict[str, Any]], attachment_paths: list[Path]
+) -> list[str]:
+    try:
+        report = documents["agent_supply_chain"]
+        policy = read_json(ROOT / "build/release/agent-supply-chain-policy.json")
+        by_digest = {sha256_file(path): path for path in attachment_paths}
+        evidence = report["evidence"]
+        top_paths = {
+            name: by_digest[item["sha256"]] for name, item in evidence.items()
+        }
+        host = read_json(top_paths["host_build"])
+        wheelhouse = read_json(top_paths["runtime_wheelhouse"])
+        sbom = read_json(top_paths["sbom"])
+        notice = top_paths["notice"].read_text(encoding="utf-8")
+
+        def bound_artifact(document: dict[str, Any], path_key: str, digest_key: str) -> Path:
+            path = by_digest[document[digest_key]]
+            if Path(str(document[path_key])).name != path.name:
+                raise ValueError(f"supply-chain artifact filename mismatch: {path_key}")
+            return path
+
+        agent_policy = policy["components"]["kylin_agent"]
+        runtime_policy = policy["components"]["agent_runtime"]
+        if not (
+            host.get("schema_version") == 1
+            and host.get("source_commit") == agent_policy["source_commit"]
+            and host.get("target_os") == policy["target_os"]
+            and host.get("target_arch") in policy["target_architectures"]
+            and host.get("rebuild_verified") is True
+            and host.get("network_access_during_build") is False
+        ):
+            raise ValueError("archived Agent host build record is invalid")
+        for path_key, digest_key in (
+            ("artifact", "artifact_sha256"),
+            ("source_archive", "source_archive_sha256"),
+            ("build_log", "build_log_sha256"),
+        ):
+            bound_artifact(host, path_key, digest_key)
+
+        packages = wheelhouse.get("packages")
+        if not (
+            wheelhouse.get("schema_version") == 1
+            and wheelhouse.get("source_commit") == runtime_policy["source_commit"]
+            and wheelhouse.get("target_os") == policy["target_os"]
+            and wheelhouse.get("target_arch") in policy["target_architectures"]
+            and bool(str(wheelhouse.get("python_abi", "")).strip())
+            and wheelhouse.get("offline_install_verified") is True
+            and wheelhouse.get("network_access_during_install") is False
+            and isinstance(packages, list)
+            and bool(packages)
+            and set(policy["runtime_required_packages"]).issubset(
+                {item.get("name") for item in packages if isinstance(item, dict)}
+            )
+        ):
+            raise ValueError("archived Agent Runtime wheelhouse record is invalid")
+        bound_artifact(wheelhouse, "lockfile", "lockfile_sha256")
+        bound_artifact(wheelhouse, "offline_install_log", "offline_install_log_sha256")
+        for package in packages:
+            if not isinstance(package, dict):
+                raise ValueError("archived Runtime package entry is invalid")
+            wheel = bound_artifact(package, "filename", "sha256")
+            if wheel.suffix != ".whl" or not package.get("name") or not package.get("version"):
+                raise ValueError("archived Runtime wheel is invalid")
+
+        sbom_packages = sbom.get("packages")
+        if not (
+            sbom.get("spdxVersion") == "SPDX-2.3"
+            and sbom.get("SPDXID") == "SPDXRef-DOCUMENT"
+            and sbom.get("dataLicense") == "CC0-1.0"
+            and isinstance(sbom_packages, list)
+            and bool(sbom_packages)
+        ):
+            raise ValueError("archived Agent SBOM is invalid")
+        by_spdx = {
+            item.get("SPDXID"): item for item in sbom_packages if isinstance(item, dict)
+        }
+        described = set(sbom.get("documentDescribes", []))
+        extracted_licenses = {
+            item.get("licenseId")
+            for item in sbom.get("hasExtractedLicensingInfos", [])
+            if isinstance(item, dict)
+        }
+        for component in policy["components"].values():
+            item = by_spdx.get(component["spdx_id"])
+            if not (
+                component["spdx_id"] in described
+                and isinstance(item, dict)
+                and item.get("name") == component["package_name"]
+                and item.get("versionInfo") == component["source_commit"]
+                and item.get("licenseDeclared") == component["declared_license"]
+                and item.get("downloadLocation") == component["source_url"]
+                and (
+                    not component["declared_license"].startswith("LicenseRef-")
+                    or component["declared_license"] in extracted_licenses
+                )
+            ):
+                raise ValueError("archived Agent component SBOM entry is invalid")
+            for required in (
+                component["package_name"], component["source_commit"],
+                component["source_url"], component["declared_license"],
+            ):
+                if required not in notice:
+                    raise ValueError("archived Agent NOTICE is incomplete")
+        for wheel in packages:
+            if not any(
+                item.get("name") == wheel["name"]
+                and item.get("versionInfo") == wheel["version"]
+                and any(
+                    checksum.get("algorithm") == "SHA256"
+                    and checksum.get("checksumValue") == wheel["sha256"]
+                    for checksum in item.get("checksums", [])
+                    if isinstance(checksum, dict)
+                )
+                for item in sbom_packages
+                if isinstance(item, dict)
+            ):
+                raise ValueError("archived Runtime wheel is absent from SBOM")
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError, UnicodeError) as exc:
+        return [f"embedded Agent supply-chain validation failed: {exc}"]
+    return []
+
+
 def recompute_primary_metrics(
     dataset: dict[str, Any], report: dict[str, Any]
 ) -> dict[str, float]:
@@ -373,9 +564,30 @@ def validate_cross_references(
         ):
             if install_sources.get(operation) not in attachment_digests:
                 errors.append(f"install_update: {operation} record is not archived")
+    three_device = documents.get("three_device", {})
+    topology_digests = {
+        three_device.get("initial_topology_evidence_sha256"),
+        three_device.get("final_topology_evidence_sha256"),
+    }
+    scenario_digests = three_device.get("source_scenario_sha256")
+    if (
+        None in topology_digests
+        or not isinstance(scenario_digests, list)
+        or len(scenario_digests) != 4
+        or not topology_digests.union(scenario_digests).issubset(attachment_digests)
+    ):
+        errors.append("three_device: topology/scenario sources are not archived")
+    supply_evidence = documents.get("agent_supply_chain", {}).get("evidence")
+    if not isinstance(supply_evidence, dict) or any(
+        not isinstance(item, dict) or item.get("sha256") not in attachment_digests
+        for item in supply_evidence.values()
+    ):
+        errors.append("agent_supply_chain: audited artifacts are not archived")
     if not errors:
         errors.extend(validate_embedded_sources(documents, attachment_paths))
         errors.extend(validate_install_sources(documents, attachment_paths))
+        errors.extend(validate_three_device_sources(documents, attachment_paths))
+        errors.extend(validate_supply_chain_sources(documents, attachment_paths))
     return errors
 
 

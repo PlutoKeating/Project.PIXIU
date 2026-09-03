@@ -19,6 +19,61 @@ SPEC.loader.exec_module(AUDIT)
 
 
 class AgentSupplyChainAuditTest(unittest.TestCase):
+    def ready_report(self) -> tuple[dict, dict]:
+        policy = AUDIT.read_json(
+            ROOT / "build/release/agent-supply-chain-policy.json"
+        )
+        report = {
+            "schema_version": 1,
+            "evidence_schema": 1,
+            "evidence_class": "agent-supply-chain-audit",
+            "release_commit": "a" * 40,
+            "status": "pass",
+            "ready": True,
+            "blockers": [],
+            "components": {
+                name: {
+                    "path": component["path"],
+                    "expected_commit": component["source_commit"],
+                    "gitlink_commit": component["source_commit"],
+                    "checkout_commit": component["source_commit"],
+                    "checkout_clean": True,
+                    "license_files_present": True,
+                    "passed": True,
+                }
+                for name, component in policy["components"].items()
+            },
+            "runtime_version_facts": {
+                "actual": policy["components"]["agent_runtime"]["declared_versions"],
+                "expected": policy["components"]["agent_runtime"]["declared_versions"],
+                "match": True,
+            },
+            "sensitive_scan": {
+                "rule": "authenticated-url-userinfo",
+                "passed": True,
+                "files": [],
+                "matched_values_redacted": True,
+            },
+            "evidence": {
+                name: {
+                    "file": filename,
+                    "present": True,
+                    "nonempty": True,
+                    "valid": True,
+                    "sha256": str(index + 1) * 64,
+                }
+                for index, (name, filename) in enumerate(policy["evidence"].items())
+            },
+        }
+        return report, policy
+
+    def test_ready_report_deep_contract(self) -> None:
+        report, policy = self.ready_report()
+        AUDIT.validate_report(report, policy)
+        report["components"]["kylin_agent"]["checkout_clean"] = False
+        with self.assertRaisesRegex(ValueError, "not pinned"):
+            AUDIT.validate_report(report, policy)
+
     def test_authenticated_url_scan_redacts_value(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

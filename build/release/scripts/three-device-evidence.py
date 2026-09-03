@@ -1858,7 +1858,7 @@ def validate_final_scenario_suite(
         _validate_timestamp(report.get("generated_at_utc"), report["generated_at_epoch"])
 
     generated_at_utc, generated_at_epoch = _utc_now()
-    return {
+    report = {
         "evidence_schema": SCHEMA_VERSION,
         "evidence_class": FINAL_REPORT_CLASS,
         "real_device_evidence": True,
@@ -1885,6 +1885,66 @@ def validate_final_scenario_suite(
         },
         "remaining_required_scenarios": [],
     }
+    validate_final_report(report)
+    return report
+
+
+def validate_final_report(value: dict[str, Any]) -> None:
+    """Validate the payload-free final-suite contract without source files."""
+    release = value.get("release")
+    checks = value.get("checks")
+    scenarios = value.get("scenarios")
+    scenario_hashes = value.get("source_scenario_sha256")
+    required_scenarios = {
+        "concurrent-update-and-conflict-resolution",
+        "offline-write-and-reconnect",
+        "private-scope-non-propagation",
+        "tombstone-propagation-and-no-resurrection",
+    }
+    required_checks = {
+        "same_release_run_devices_and_domain",
+        "fresh_final_three_device_topology",
+        "all_required_scenarios_bound",
+        "all_scenario_checks_passed",
+        "all_scenarios_between_topology_captures",
+        "final_online_quiescent_full_mesh",
+        "final_logical_view_convergence",
+    }
+    if not (
+        value.get("evidence_schema") == SCHEMA_VERSION
+        and value.get("evidence_class") == FINAL_REPORT_CLASS
+        and value.get("real_device_evidence") is True
+        and value.get("final_device_evidence") is True
+        and value.get("status") == "pass"
+        and isinstance(value.get("run_id"), str)
+        and RUN_ID_PATTERN.fullmatch(value["run_id"])
+        and isinstance(release, dict)
+        and COMMIT_PATTERN.fullmatch(str(release.get("git_commit", "")))
+        and SHA256_PATTERN.fullmatch(str(release.get("candidate_package_sha256", "")))
+        and release.get("architecture") == "amd64"
+        and isinstance(value.get("initial_topology_evidence_sha256"), str)
+        and SHA256_PATTERN.fullmatch(value["initial_topology_evidence_sha256"])
+        and isinstance(value.get("final_topology_evidence_sha256"), str)
+        and SHA256_PATTERN.fullmatch(value["final_topology_evidence_sha256"])
+        and value["initial_topology_evidence_sha256"]
+        != value["final_topology_evidence_sha256"]
+        and isinstance(scenario_hashes, list)
+        and len(scenario_hashes) == 4
+        and len(set(scenario_hashes)) == 4
+        and all(
+            isinstance(digest, str) and SHA256_PATTERN.fullmatch(digest)
+            for digest in scenario_hashes
+        )
+        and isinstance(scenarios, list)
+        and set(scenarios) == required_scenarios
+        and len(scenarios) == len(required_scenarios)
+        and isinstance(checks, dict)
+        and set(checks) == required_checks
+        and all(checks[name] == "passed" for name in required_checks)
+        and value.get("remaining_required_scenarios") == []
+    ):
+        raise EvidenceError("final three-device suite contract is invalid")
+    _validate_timestamp(value.get("generated_at_utc"), value.get("generated_at_epoch"))
 
 
 def build_parser() -> argparse.ArgumentParser:

@@ -190,10 +190,12 @@ python3 build/release/scripts/final-dataset-manifest.py validate \
 无 train/validation 集。数据集 JSON 和 manifest 都进入 D-07，且不得覆盖已有输出。
 
 D-07 归档不是对这些输出的简单打包：`build_evidence_archive.py` 会直接加载 native、
-Agent、性能、数据集和安装/升级矩阵的深度验证函数，并核对 Agent→native、performance→三主记录及
+Agent、性能、数据集、安装/升级矩阵、三设备和 Agent 供应链的深度验证函数，并核对 Agent→native、performance→三主记录及
 两个原始附件、dataset manifest→冻结 JSON 的摘要关系。冻结 JSON 会再次规范化并
 检查 50/15/25 样本构成；逐样本报告与消融矩阵会重新评分且必须与性能摘要一致。
-同样检查会在 ZIP 解包复验时重跑。
+三设备最终套件还会递归重建两份拓扑、四份场景，并从归档内节点清单/检查点重新运行
+原场景校验器；供应链会重读构建产物、对应源码、日志、wheel、锁文件、SBOM 与 NOTICE，
+核对摘要、固定 commit、离线性和许可证覆盖。同样检查会在 ZIP 解包复验时重跑。
 
 ## 安装、升级、回滚与卸载矩阵取证
 

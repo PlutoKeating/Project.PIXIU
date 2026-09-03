@@ -354,6 +354,64 @@ def validate_evidence(
     return blockers
 
 
+def validate_report(report: dict[str, Any], policy: dict[str, Any] | None = None) -> None:
+    """Validate a release-ready audit report without trusting its top-level booleans."""
+    policy = policy or read_json(
+        Path(__file__).resolve().parents[1] / "agent-supply-chain-policy.json"
+    )
+    components = report.get("components")
+    versions = report.get("runtime_version_facts")
+    sensitive = report.get("sensitive_scan")
+    evidence = report.get("evidence")
+    expected_evidence = set(policy["evidence"])
+    if not (
+        report.get("schema_version") == 1
+        and report.get("evidence_schema") == 1
+        and report.get("evidence_class") == "agent-supply-chain-audit"
+        and report.get("status") == "pass"
+        and report.get("ready") is True
+        and re.fullmatch(r"[0-9a-f]{40}", str(report.get("release_commit", "")))
+        and report.get("blockers") == []
+        and isinstance(components, dict)
+        and set(components) == set(policy["components"])
+        and isinstance(versions, dict)
+        and versions.get("actual") == policy["components"]["agent_runtime"]["declared_versions"]
+        and versions.get("expected") == versions.get("actual")
+        and versions.get("match") is True
+        and isinstance(sensitive, dict)
+        and sensitive.get("passed") is True
+        and sensitive.get("files") == []
+        and sensitive.get("matched_values_redacted") is True
+        and isinstance(evidence, dict)
+        and set(evidence) == expected_evidence
+    ):
+        raise ValueError("Agent supply-chain audit is not release-ready")
+    for name, component_policy in policy["components"].items():
+        component = components[name]
+        if not (
+            isinstance(component, dict)
+            and component.get("path") == component_policy["path"]
+            and component.get("expected_commit") == component_policy["source_commit"]
+            and component.get("gitlink_commit") == component_policy["source_commit"]
+            and component.get("checkout_commit") == component_policy["source_commit"]
+            and component.get("checkout_clean") is True
+            and component.get("license_files_present") is True
+            and component.get("passed") is True
+        ):
+            raise ValueError(f"Agent component is not pinned and clean: {name}")
+    for name, expected_filename in policy["evidence"].items():
+        item = evidence[name]
+        if not (
+            isinstance(item, dict)
+            and item.get("file") == expected_filename
+            and item.get("present") is True
+            and item.get("nonempty") is True
+            and item.get("valid") is True
+            and SHA256.fullmatch(str(item.get("sha256", "")))
+        ):
+            raise ValueError(f"Agent supply-chain artifact is invalid: {name}")
+
+
 def audit(root: Path, policy_path: Path, evidence_dir: Path) -> dict[str, Any]:
     policy = read_json(policy_path)
     components = {
