@@ -147,8 +147,9 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 
 - 一个发布输入派生 tag、CMake、Debian control、Release 资产和 manifest，CI 检查不一致；
 - manifest 记录 Git/API/schema/provider/宿主/双 SDK 版本和兼容范围；
-- 双架构签名 CI 与 Kylin V11 有效/篡改签名已验证；仍需完成“旧钥签发含新公钥
-  版本、下一版切换新钥”的轮换演练；
+- 双架构签名 CI 与 Kylin V11 有效/篡改签名已验证；
+  `tests/test-release-key-rotation.sh` 用临时密钥和两个真实 `.deb` 验证“旧钥签发含
+  新公钥的过渡版本、下一版切换新钥、旧钥拒绝下一版”，不接触或落盘生产私钥；
 - `dpkg-repack` 旧包、SQLite/配置快照和健康失败自动回滚已通过提交 `ca35117` 的
   amd64/arm64 CI；Kylin V11 amd64 跨 revision 注入也以退出码 5 恢复旧版本、数据、
   配置和服务，最终候选仍须随完整安装矩阵重验；

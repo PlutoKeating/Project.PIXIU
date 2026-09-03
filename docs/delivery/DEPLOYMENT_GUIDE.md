@@ -48,7 +48,9 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 安装后核对实际 dpkg 版本，并轮询 `/version`、`/health` 和包内 Provider manifest；
 产品/API/schema/数据库/Provider 任一不一致都返回健康失败，GUI 不报告成功。最终版
 发布流水线现生成 Ed25519 `.sha256.sig`，helper 以包内固定公钥在 dpkg 前验签；
-双架构 CI 资产及 Kylin V11 有效/篡改签名已验证，轮换演练仍待取证。另需完整兼容矩阵。
+双架构 CI 资产及 Kylin V11 有效/篡改签名已验证；临时密钥和两个真实 `.deb` 的
+旧钥到新钥轮换演练也已通过。生产轮换仍必须遵循相同的双版本顺序并保留发布记录。
+另需完整兼容矩阵。
 helper 会在安装前用 `dpkg-repack` 重建当前包、停服并以 SQLite backup
 API 保存一致数据库和配置；安装或健康失败时恢复旧包、数据和服务。恢复成功/失败会
 显示不同提示。提交 `ca35117` 的 CI run `33770727108` 已在 amd64/arm64 验证注入恢复；

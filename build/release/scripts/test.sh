@@ -27,4 +27,5 @@ else
 fi
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-update-helper.sh"
+bash "${PIXIU_ROOT}/build/release/tests/test-release-key-rotation.sh"
 log "tests OK"
