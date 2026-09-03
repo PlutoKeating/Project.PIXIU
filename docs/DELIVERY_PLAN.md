@@ -67,7 +67,11 @@ Gateway 与 PIXIU Provider 无模型探针通过；但公开源码标签不能�
 `build/release/scripts/audit-agent-supply-chain.py` 已把该边界变成机器门禁：固定双上游
 commit 与 Runtime 三套版本事实，扫描时只披露命中文件名；正式候选以
 `--require-ready` 要求 V11 宿主重建、Runtime 离线 wheelhouse、SPDX SBOM 和 NOTICE
-同时有效。当前缺证据且上游扫描有命中，报告必须保持 `ready=false`。
+同时有效。证据不能仅靠布尔声明：宿主产物、完整对应源码和构建日志，Runtime 全量
+wheel、锁文件和离线安装日志均须提供路径与匹配摘要；目标 OS/架构/Python ABI 必须
+显式记录。SPDX 2.3 必须覆盖固定宿主、Runtime 及 wheelhouse 全部包，NOTICE 必须
+复述固定来源、commit 和许可证边界。当前缺证据且上游扫描有命中，报告必须保持
+`ready=false`。
 
 ## 2. 版本管理唯一真相源
 

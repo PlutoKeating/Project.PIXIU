@@ -23,6 +23,7 @@ AUTHENTICATED_URL = re.compile(
     r"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@"
 )
 SHA256 = re.compile(r"[0-9a-f]{64}")
+ARCHITECTURE = re.compile(r"(?:amd64|arm64)")
 
 
 def git(root: Path, *args: str) -> str:
@@ -147,6 +148,30 @@ def load_evidence(evidence_dir: Path, policy: dict[str, str]) -> dict[str, Any]:
     return result
 
 
+def verified_file(
+    evidence_dir: Path, document: dict[str, Any], path_key: str, digest_key: str
+) -> Path | None:
+    path = evidence_file(evidence_dir, document.get(path_key))
+    digest = str(document.get(digest_key, ""))
+    if (
+        path is None
+        or not SHA256.fullmatch(digest)
+        or path.stat().st_size == 0
+        or sha256_file(path) != digest
+    ):
+        return None
+    return path
+
+
+def valid_target(document: dict[str, Any], policy: dict[str, Any]) -> bool:
+    architecture = str(document.get("target_arch", ""))
+    return (
+        document.get("target_os") == policy["target_os"]
+        and bool(ARCHITECTURE.fullmatch(architecture))
+        and architecture in policy["target_architectures"]
+    )
+
+
 def validate_evidence(
     evidence_dir: Path,
     evidence: dict[str, Any],
@@ -159,18 +184,24 @@ def validate_evidence(
     else:
         try:
             host = read_json(evidence_dir / host_item["file"])
-            artifact = evidence_file(evidence_dir, host.get("artifact"))
-            declared_digest = str(host.get("artifact_sha256", ""))
             valid = (
-                host.get("source_commit")
+                host.get("schema_version") == 1
+                and host.get("source_commit")
                 == policy["components"]["kylin_agent"]["source_commit"]
-                and host.get("target_os") == "kylin-v11"
+                and valid_target(host, policy)
                 and host.get("rebuild_verified") is True
-                and artifact is not None
-                and bool(SHA256.fullmatch(declared_digest))
-                and sha256_file(artifact) == declared_digest
+                and host.get("network_access_during_build") is False
+                and verified_file(
+                    evidence_dir, host, "artifact", "artifact_sha256"
+                ) is not None
+                and verified_file(
+                    evidence_dir, host, "source_archive", "source_archive_sha256"
+                ) is not None
+                and verified_file(
+                    evidence_dir, host, "build_log", "build_log_sha256"
+                ) is not None
             )
-        except (OSError, ValueError, json.JSONDecodeError):
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
             valid = False
         host_item["valid"] = valid
         if not valid:
@@ -183,22 +214,44 @@ def validate_evidence(
         try:
             wheelhouse = read_json(evidence_dir / wheel_item["file"])
             packages = wheelhouse.get("packages")
+            package_names = {
+                str(package.get("name", ""))
+                for package in packages or []
+                if isinstance(package, dict)
+            }
             valid_packages = isinstance(packages, list) and bool(packages) and all(
                 isinstance(package, dict)
+                and bool(str(package.get("name", "")).strip())
+                and bool(str(package.get("version", "")).strip())
                 and bool(SHA256.fullmatch(str(package.get("sha256", ""))))
                 and (package_file := evidence_file(
                     evidence_dir, package.get("filename")
                 )) is not None
+                and package_file.suffix == ".whl"
                 and sha256_file(package_file) == package["sha256"]
                 for package in packages
             )
             valid = (
-                wheelhouse.get("source_commit")
+                wheelhouse.get("schema_version") == 1
+                and wheelhouse.get("source_commit")
                 == policy["components"]["agent_runtime"]["source_commit"]
+                and valid_target(wheelhouse, policy)
+                and bool(str(wheelhouse.get("python_abi", "")).strip())
                 and wheelhouse.get("offline_install_verified") is True
+                and wheelhouse.get("network_access_during_install") is False
+                and set(policy["runtime_required_packages"]).issubset(package_names)
+                and verified_file(
+                    evidence_dir, wheelhouse, "lockfile", "lockfile_sha256"
+                ) is not None
+                and verified_file(
+                    evidence_dir,
+                    wheelhouse,
+                    "offline_install_log",
+                    "offline_install_log_sha256",
+                ) is not None
                 and valid_packages
             )
-        except (OSError, ValueError, json.JSONDecodeError):
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
             valid = False
         wheel_item["valid"] = valid
         if not valid:
@@ -210,13 +263,57 @@ def validate_evidence(
     else:
         try:
             sbom = read_json(evidence_dir / sbom_item["file"])
-            valid = (
-                str(sbom.get("spdxVersion", "")).startswith("SPDX-")
-                and sbom.get("SPDXID") == "SPDXRef-DOCUMENT"
-                and isinstance(sbom.get("packages"), list)
-                and bool(sbom["packages"])
+            packages = sbom.get("packages")
+            package_by_id = {
+                package.get("SPDXID"): package
+                for package in packages or []
+                if isinstance(package, dict)
+            }
+            described = set(sbom.get("documentDescribes", []))
+            extracted_license_ids = {
+                item.get("licenseId")
+                for item in sbom.get("hasExtractedLicensingInfos", [])
+                if isinstance(item, dict)
+            }
+            component_packages_valid = all(
+                (item := package_by_id.get(component["spdx_id"])) is not None
+                and item.get("name") == component["package_name"]
+                and item.get("versionInfo") == component["source_commit"]
+                and item.get("licenseDeclared") == component["declared_license"]
+                and item.get("downloadLocation") == component["source_url"]
+                and (
+                    not component["declared_license"].startswith("LicenseRef-")
+                    or component["declared_license"] in extracted_license_ids
+                )
+                for component in policy["components"].values()
             )
-        except (OSError, ValueError, json.JSONDecodeError):
+            wheelhouse = read_json(
+                evidence_dir / evidence["runtime_wheelhouse"]["file"]
+            )
+            wheel_names = {
+                package.get("name")
+                for package in wheelhouse.get("packages", [])
+                if isinstance(package, dict)
+            }
+            sbom_names = {
+                package.get("name")
+                for package in packages or []
+                if isinstance(package, dict)
+            }
+            valid = (
+                sbom.get("spdxVersion") == "SPDX-2.3"
+                and sbom.get("SPDXID") == "SPDXRef-DOCUMENT"
+                and sbom.get("dataLicense") == "CC0-1.0"
+                and isinstance(packages, list)
+                and bool(packages)
+                and {
+                    component["spdx_id"]
+                    for component in policy["components"].values()
+                }.issubset(described)
+                and component_packages_valid
+                and wheel_names.issubset(sbom_names)
+            )
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
             valid = False
         sbom_item["valid"] = valid
         if not valid:
@@ -228,7 +325,26 @@ def validate_evidence(
     elif not notice_item.get("nonempty"):
         blockers.append("empty-agent-notice")
     else:
-        notice_item["valid"] = True
+        try:
+            notice = (evidence_dir / notice_item["file"]).read_text(
+                encoding="utf-8"
+            )
+            required_notice_values = [
+                value
+                for component in policy["components"].values()
+                for value in (
+                    component["package_name"],
+                    component["source_commit"],
+                    component["source_url"],
+                    component["declared_license"],
+                )
+            ]
+            valid = all(value in notice for value in required_notice_values)
+        except (KeyError, OSError, TypeError):
+            valid = False
+        notice_item["valid"] = valid
+        if not valid:
+            blockers.append("invalid-agent-notice")
     return blockers
 
 

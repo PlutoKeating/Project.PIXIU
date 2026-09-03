@@ -1,9 +1,18 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "target_os": "kylin-v11",
+  "target_architectures": [
+    "amd64",
+    "arm64"
+  ],
   "components": {
     "kylin_agent": {
       "path": "third_party/kylin-agent",
       "source_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+      "package_name": "kylin-agent",
+      "spdx_id": "SPDXRef-Package-kylin-agent",
+      "declared_license": "LicenseRef-AGPL-3.0-family-pending",
+      "source_url": "https://gitee.com/openkylin/kylin-agent",
       "license_files": [
         "LICENSE"
       ]
@@ -11,6 +20,10 @@
     "agent_runtime": {
       "path": "third_party/kylin-agent-runtime",
       "source_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+      "package_name": "kylin-agent-runtime",
+      "spdx_id": "SPDXRef-Package-kylin-agent-runtime",
+      "declared_license": "MIT",
+      "source_url": "https://gitee.com/openkylin/kylin-agent-runtime",
       "license_files": [
         "LICENSE"
       ],
@@ -21,6 +34,10 @@
       }
     }
   },
+  "runtime_required_packages": [
+    "kylin-agent-runtime",
+    "aiohttp"
+  ],
   "sensitive_scan_paths": [
     "third_party/kylin-agent/scripts",
     "third_party/kylin-agent-runtime/scripts"

@@ -38,6 +38,9 @@ AGPL 义务、锁定 wheelhouse、SBOM 和敏感扫描共同形成可分发组�
 
 上述条件现由 `build/release/agent-supply-chain-policy.json` 与
 `audit-agent-supply-chain.py` 自动检查。普通模式输出可归档 JSON 事实报告；候选发布
-必须使用 `--require-ready`，并提供宿主重建记录、逐包 SHA-256 的离线 wheelhouse
-记录、SPDX JSON 和 NOTICE。敏感扫描报告只保存规则与相对文件名，不保存匹配文本；
+必须使用 `--require-ready`，并提供宿主目标架构产物、完整对应源码、构建日志，及
+Runtime 全量 wheel、锁文件、离线安装日志；每个实物均须有 SHA-256。SPDX 2.3 必须
+精确覆盖固定宿主/Runtime 及 wheelhouse 全部包，NOTICE 必须记录两组件的来源、commit
+和许可证边界；任意包列表或非空占位文本不再算有效证据。敏感扫描报告只保存规则与
+相对文件名，不保存匹配文本；
 当前报告不通过是已知供应链阻塞，不得将“脚本执行成功”误写为“供应链通过”。

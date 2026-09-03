@@ -71,6 +71,9 @@ compare-and-swap 校验 `expected_version`，更新产生独立 evidence、重�
 Runtime 的 Gateway `/health`、`/api/sessions` 通过，且 Module E 被发现并选中为
 `memory.provider=pixiu`。但官方源码标签不可重建宿主，0.9.7 二进制又与 V11 C++ ABI
 不兼容；宿主/Runtime 的固定、离线和许可证供应链仍未闭环，故 A-01～A-10 不升级。
+供应链验收器已经拒绝仅凭 `rebuild_verified`/`offline_install_verified` 自述或占位
+SBOM/NOTICE 过门：正式 A-11/A-12 证据还必须绑定宿主产物、对应源码、构建日志、
+Runtime wheels/锁文件/离线安装日志的摘要，并由 SPDX 2.3 覆盖固定组件和所有 wheel。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

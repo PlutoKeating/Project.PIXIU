@@ -70,11 +70,19 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                     "kylin_agent": {
                         "path": "third_party/kylin-agent",
                         "source_commit": "1" * 40,
+                        "package_name": "kylin-agent",
+                        "spdx_id": "SPDXRef-Package-kylin-agent",
+                        "declared_license": "LicenseRef-AGPL",
+                        "source_url": "https://example.invalid/agent",
                         "license_files": ["LICENSE"],
                     },
                     "agent_runtime": {
                         "path": "third_party/kylin-agent-runtime",
                         "source_commit": "2" * 40,
+                        "package_name": "kylin-agent-runtime",
+                        "spdx_id": "SPDXRef-Package-kylin-agent-runtime",
+                        "declared_license": "MIT",
+                        "source_url": "https://example.invalid/runtime",
                         "license_files": ["LICENSE"],
                         "declared_versions": {
                             "cli": "0.9.4",
@@ -83,6 +91,9 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                         },
                     },
                 },
+                "target_os": "kylin-v11",
+                "target_architectures": ["amd64", "arm64"],
+                "runtime_required_packages": ["kylin-agent-runtime", "aiohttp"],
                 "sensitive_scan_paths": [],
                 "evidence": {
                     "host_build": "agent-host-build.json",
@@ -122,36 +133,97 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
             evidence_dir = Path(temporary)
             host_artifact = evidence_dir / "kylin-agent"
             host_artifact.write_bytes(b"reproducible host artifact")
+            host_source = evidence_dir / "kylin-agent-source.tar.zst"
+            host_source.write_bytes(b"complete corresponding source")
+            host_log = evidence_dir / "host-build.log"
+            host_log.write_text("clean V11 rebuild passed\n", encoding="utf-8")
             wheelhouse = evidence_dir / "wheelhouse"
             wheelhouse.mkdir()
-            runtime_wheel = wheelhouse / "runtime.whl"
+            runtime_wheel = wheelhouse / "kylin_agent_runtime-0.9.8-py3-none-any.whl"
             runtime_wheel.write_bytes(b"locked runtime wheel")
+            aiohttp_wheel = wheelhouse / "aiohttp-3.13.3-cp311-manylinux.whl"
+            aiohttp_wheel.write_bytes(b"locked aiohttp wheel")
+            lockfile = evidence_dir / "runtime.lock"
+            lockfile.write_text("fully locked runtime dependencies\n", encoding="utf-8")
+            install_log = evidence_dir / "offline-install.log"
+            install_log.write_text("offline install passed\n", encoding="utf-8")
+            agent_policy = policy["components"]["kylin_agent"]
+            runtime_policy = policy["components"]["agent_runtime"]
             documents = {
                 "agent-host-build.json": {
-                    "source_commit": policy["components"]["kylin_agent"][
-                        "source_commit"
-                    ],
+                    "schema_version": 1,
+                    "source_commit": agent_policy["source_commit"],
                     "target_os": "kylin-v11",
+                    "target_arch": "amd64",
                     "rebuild_verified": True,
+                    "network_access_during_build": False,
                     "artifact": "kylin-agent",
                     "artifact_sha256": AUDIT.sha256_file(host_artifact),
+                    "source_archive": host_source.name,
+                    "source_archive_sha256": AUDIT.sha256_file(host_source),
+                    "build_log": host_log.name,
+                    "build_log_sha256": AUDIT.sha256_file(host_log),
                 },
                 "runtime-wheelhouse.json": {
-                    "source_commit": policy["components"]["agent_runtime"][
-                        "source_commit"
-                    ],
+                    "schema_version": 1,
+                    "source_commit": runtime_policy["source_commit"],
+                    "target_os": "kylin-v11",
+                    "target_arch": "amd64",
+                    "python_abi": "cp311",
                     "offline_install_verified": True,
+                    "network_access_during_install": False,
+                    "lockfile": lockfile.name,
+                    "lockfile_sha256": AUDIT.sha256_file(lockfile),
+                    "offline_install_log": install_log.name,
+                    "offline_install_log_sha256": AUDIT.sha256_file(install_log),
                     "packages": [
                         {
-                            "filename": "wheelhouse/runtime.whl",
+                            "name": "kylin-agent-runtime",
+                            "version": "0.9.8",
+                            "filename": f"wheelhouse/{runtime_wheel.name}",
                             "sha256": AUDIT.sha256_file(runtime_wheel),
-                        }
+                        },
+                        {
+                            "name": "aiohttp",
+                            "version": "3.13.3",
+                            "filename": f"wheelhouse/{aiohttp_wheel.name}",
+                            "sha256": AUDIT.sha256_file(aiohttp_wheel),
+                        },
                     ],
                 },
                 "agent-components.spdx.json": {
                     "spdxVersion": "SPDX-2.3",
                     "SPDXID": "SPDXRef-DOCUMENT",
-                    "packages": [{"name": "agent-host"}],
+                    "dataLicense": "CC0-1.0",
+                    "documentDescribes": [
+                        agent_policy["spdx_id"], runtime_policy["spdx_id"]
+                    ],
+                    "packages": [
+                        {
+                            "name": agent_policy["package_name"],
+                            "SPDXID": agent_policy["spdx_id"],
+                            "versionInfo": agent_policy["source_commit"],
+                            "licenseDeclared": agent_policy["declared_license"],
+                            "downloadLocation": agent_policy["source_url"],
+                        },
+                        {
+                            "name": runtime_policy["package_name"],
+                            "SPDXID": runtime_policy["spdx_id"],
+                            "versionInfo": runtime_policy["source_commit"],
+                            "licenseDeclared": runtime_policy["declared_license"],
+                            "downloadLocation": runtime_policy["source_url"],
+                        },
+                        {"name": "aiohttp", "SPDXID": "SPDXRef-Package-aiohttp"},
+                    ],
+                    "hasExtractedLicensingInfos": [
+                        {
+                            "licenseId": agent_policy["declared_license"],
+                            "extractedText": (
+                                "GNU Affero GPL version 3 family; exact only/or-later "
+                                "operator remains pending legal review."
+                            ),
+                        }
+                    ],
                 },
             }
             for filename, document in documents.items():
@@ -159,7 +231,17 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                     json.dumps(document), encoding="utf-8"
                 )
             (evidence_dir / "NOTICE.agent.txt").write_text(
-                "Agent distribution notices\n", encoding="utf-8"
+                "\n".join(
+                    str(value)
+                    for component in policy["components"].values()
+                    for value in (
+                        component["package_name"],
+                        component["source_commit"],
+                        component["source_url"],
+                        component["declared_license"],
+                    )
+                ),
+                encoding="utf-8",
             )
 
             evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
@@ -167,6 +249,55 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
 
         self.assertEqual(blockers, [])
         self.assertTrue(all(item.get("valid") for item in evidence.values()))
+
+    def test_claim_only_evidence_is_rejected(self) -> None:
+        policy = AUDIT.read_json(
+            ROOT / "build/release/agent-supply-chain-policy.json"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            evidence_dir = Path(temporary)
+            (evidence_dir / "agent-host-build.json").write_text(
+                json.dumps(
+                    {
+                        "source_commit": policy["components"]["kylin_agent"][
+                            "source_commit"
+                        ],
+                        "target_os": "kylin-v11",
+                        "rebuild_verified": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
+            blockers = AUDIT.validate_evidence(evidence_dir, evidence, policy)
+
+        self.assertIn("invalid-host-build-evidence", blockers)
+
+    def test_placeholder_legal_evidence_is_rejected(self) -> None:
+        policy = AUDIT.read_json(
+            ROOT / "build/release/agent-supply-chain-policy.json"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            evidence_dir = Path(temporary)
+            (evidence_dir / "agent-components.spdx.json").write_text(
+                json.dumps(
+                    {
+                        "spdxVersion": "SPDX-2.3",
+                        "SPDXID": "SPDXRef-DOCUMENT",
+                        "dataLicense": "CC0-1.0",
+                        "packages": [{"name": "placeholder"}],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (evidence_dir / "NOTICE.agent.txt").write_text(
+                "placeholder\n", encoding="utf-8"
+            )
+            evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
+            blockers = AUDIT.validate_evidence(evidence_dir, evidence, policy)
+
+        self.assertIn("invalid-agent-sbom", blockers)
+        self.assertIn("invalid-agent-notice", blockers)
 
 
 if __name__ == "__main__":

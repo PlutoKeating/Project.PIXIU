@@ -85,8 +85,11 @@ python3 build/release/scripts/audit-agent-supply-chain.py \
 ```
 
 策略文件固定两个上游 commit 和 Runtime 的三项真实版本声明。报告仅列出命中认证式
-URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿主重建证据、带逐包摘要且
-完成离线安装验证的 Runtime wheelhouse 清单、SPDX JSON 和非空 NOTICE。当前上游
+URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿主的目标架构产物、完整
+对应源码归档、无网络构建记录与三者摘要，Runtime 的 Python ABI、全量 wheel、锁文件、
+无网络离线安装日志与逐项摘要。SPDX 2.3 必须精确描述两个固定上游并覆盖 wheelhouse
+全部包；NOTICE 必须包含组件名、来源、固定 commit 和许可证结论/未决标识，不能再用
+任意非空文件占位。当前上游
 脚本与发行证据尚未满足这些条件，因此预期 `ready=false`；不得删掉门禁或伪造证据
 来取得绿色结果。未初始化 submodule 时，普通模式会把组件固定与 Runtime 版本事实
 记为不可用而不是崩溃；强制模式仍必然失败。
