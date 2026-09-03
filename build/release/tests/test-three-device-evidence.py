@@ -170,6 +170,54 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                 ),
             )
 
+    def _offline_checkpoint(
+        self,
+        topology_path: Path,
+        node_path: Path,
+        *,
+        checkpoint: str,
+        role: str,
+        value: str,
+        version: int,
+        paused: bool,
+        peers_online: int,
+        at: int,
+    ):
+        context = {
+            "context": value,
+            "items": [
+                {
+                    "knowledge_id": "knw_" + "K" * 26,
+                    "version": version,
+                    "title": value,
+                    "scope": "shared:evidence",
+                    "evidence_ids": ["evd_" + value[0] * 26],
+                    "conflict_status": "none",
+                }
+            ],
+        }
+        status = _status() | {"paused": paused, "peers_online": peers_online}
+        with patch.object(
+            MODULE,
+            "request_json",
+            side_effect=[context, status, {"conflicts": []}],
+        ):
+            return MODULE.capture_offline_checkpoint(
+                topology_path=topology_path,
+                node_path=node_path,
+                base_url="http://127.0.0.1:8765",
+                checkpoint=checkpoint,
+                role=role,
+                query="private offline scenario marker",
+                scope="shared:evidence",
+                captured_at=(
+                    MODULE.datetime.fromtimestamp(at, MODULE.timezone.utc).strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    ),
+                    at,
+                ),
+            )
+
     def test_capture_is_strict_and_does_not_leak_identity_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = self._capture(Path(directory), 0)
@@ -364,6 +412,112 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
             observations[0].write_text(json.dumps(tampered), encoding="utf-8")
             with self.assertRaisesRegex(MODULE.EvidenceError, "two offline branches"):
                 MODULE.validate_concurrency_scenario(
+                    topology_path=topology_path,
+                    checkpoint_paths=observations,
+                )
+
+    def test_offline_checkpoint_proves_online_write_and_reconnect_catch_up(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            topology_path, node_paths = self._topology(root)
+            observations = []
+            phases = [
+                (
+                    "baseline",
+                    ["baseline"] * 3,
+                    ["view-seed-private"] * 3,
+                    [1] * 3,
+                    [False] * 3,
+                    [3] * 3,
+                ),
+                (
+                    "diverged",
+                    ["isolated", "writer", "online-observer"],
+                    ["view-seed-private", "view-update-private", "view-update-private"],
+                    [1, 2, 2],
+                    [True, False, False],
+                    [1, 2, 2],
+                ),
+                (
+                    "converged",
+                    ["converged"] * 3,
+                    ["view-update-private"] * 3,
+                    [2] * 3,
+                    [False] * 3,
+                    [3] * 3,
+                ),
+            ]
+            for phase_index, phase_data in enumerate(phases):
+                phase, roles, values, versions, pauses, peers = phase_data
+                for node_index, node_path in enumerate(node_paths):
+                    observation = self._offline_checkpoint(
+                        topology_path,
+                        node_path,
+                        checkpoint=phase,
+                        role=roles[node_index],
+                        value=values[node_index],
+                        version=versions[node_index],
+                        paused=pauses[node_index],
+                        peers_online=peers[node_index],
+                        at=2_000_003_000 + phase_index * 100 + node_index,
+                    )
+                    encoded = json.dumps(observation, sort_keys=True)
+                    self.assertNotIn("private offline scenario marker", encoded)
+                    self.assertNotIn(values[node_index], encoded)
+                    self.assertNotIn("shared:evidence", encoded)
+                    path = root / f"offline-{phase}-{node_index}.json"
+                    path.write_text(json.dumps(observation), encoding="utf-8")
+                    observations.append(path)
+
+            report = MODULE.validate_offline_scenario(
+                topology_path=topology_path,
+                checkpoint_paths=observations,
+            )
+
+        self.assertEqual(report["status"], "pass")
+        self.assertTrue(report["real_device_evidence"])
+        self.assertFalse(report["final_device_evidence"])
+        self.assertEqual(report["scenario"], "offline-write-and-reconnect")
+        self.assertNotIn(
+            "offline-write-and-reconnect", report["remaining_required_scenarios"]
+        )
+
+    def test_offline_validator_rejects_unpropagated_online_write(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            topology_path, node_paths = self._topology(root)
+            observations = []
+            specifications = [
+                ("baseline", ["baseline"] * 3, ["seed"] * 3, [1] * 3, [False] * 3, [3] * 3),
+                (
+                    "diverged",
+                    ["isolated", "writer", "online-observer"],
+                    ["seed", "updated", "seed"],
+                    [1, 2, 1],
+                    [True, False, False],
+                    [1, 2, 2],
+                ),
+                ("converged", ["converged"] * 3, ["updated"] * 3, [2] * 3, [False] * 3, [3] * 3),
+            ]
+            for phase_index, phase_data in enumerate(specifications):
+                phase, roles, values, versions, pauses, peers = phase_data
+                for node_index, node_path in enumerate(node_paths):
+                    value = self._offline_checkpoint(
+                        topology_path,
+                        node_path,
+                        checkpoint=phase,
+                        role=roles[node_index],
+                        value=values[node_index],
+                        version=versions[node_index],
+                        paused=pauses[node_index],
+                        peers_online=peers[node_index],
+                        at=2_000_004_000 + phase_index * 100 + node_index,
+                    )
+                    path = root / f"bad-offline-{phase}-{node_index}.json"
+                    path.write_text(json.dumps(value), encoding="utf-8")
+                    observations.append(path)
+            with self.assertRaisesRegex(MODULE.EvidenceError, "online propagation"):
+                MODULE.validate_offline_scenario(
                     topology_path=topology_path,
                     checkpoint_paths=observations,
                 )

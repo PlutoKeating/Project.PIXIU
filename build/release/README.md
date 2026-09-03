@@ -160,6 +160,46 @@ python3 build/release/scripts/three-device-evidence.py validate-concurrency \
 逻辑视图/版本与在线静默状态。输出只含加盐摘要、版本和同步计数，不含查询、正文、
 域名或设备信息。单场景通过仍固定 `final_device_evidence=false`，并列出其余四项，
 不得提升为完整三设备验收。
+
+### 单节点离线写入与重连场景取证
+
+先建立一条三端一致的 shared 基线并采集三份 `baseline/baseline`。随后隔离设备 A
+并等待在线成员计数反映断连；在设备 B 更新该知识，等待 B、C 彼此传播完成且待发
+队列归零。此时 A 以 `diverged/isolated` 采集，B、C 分别以
+`diverged/writer`、`diverged/online-observer` 采集。恢复 A 并等待三端在线静默后，
+再采集三份 `converged/converged`：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py capture-offline \
+  --topology three-device-topology.json \
+  --node sync-node-evidence.json \
+  --scope shared:team-demo \
+  --checkpoint diverged --role isolated \
+  --query-file scenario-query.txt \
+  --output offline-node-a-diverged.json
+```
+
+将三阶段各三份、共九份检查点传给校验器：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py validate-offline \
+  --topology three-device-topology.json \
+  --checkpoint node-a-baseline.json \
+  --checkpoint node-b-baseline.json \
+  --checkpoint node-c-baseline.json \
+  --checkpoint node-a-diverged.json \
+  --checkpoint node-b-diverged.json \
+  --checkpoint node-c-diverged.json \
+  --checkpoint node-a-converged.json \
+  --checkpoint node-b-converged.json \
+  --checkpoint node-c-converged.json \
+  --output offline-write-reconnect-scenario.json
+```
+
+校验器要求隔离阶段 A 保持基线且在线成员不超过两个，B、C 在仅两个在线成员时仍
+形成相同的 v+1 新视图；恢复后 A 必须精确追平，三端重新在线且队列归零。报告不含
+查询、正文、共享域或设备信息。它为 N-02/N-03/N-05 建立证据契约，但没有真实三机
+检查点输入、且其余场景未汇总前，仍固定为非最终证据。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取
