@@ -508,6 +508,10 @@ void UpgradeController::handleInstallFinished(int exitCode)
         setState(State::Cancelled);
         emit upgradeFinished(false, tr("已取消，升级未执行"),
                              FailedReason::Other);
+    } else if (exitCode == 4) {
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("升级后健康检查失败，已停止继续操作"),
+                             FailedReason::Health);
     } else {
         QString detail = m_installErrorOutput.simplified().left(300);
         failInstall(

@@ -54,9 +54,43 @@ if [ "${ACTUAL}" != "${EXPECTED}" ]; then
     exit 3
 fi
 
+PACKAGE_NAME=$(/usr/bin/dpkg-deb --field "${ROOT_PACKAGE}" Package)
+PACKAGE_VERSION=$(/usr/bin/dpkg-deb --field "${ROOT_PACKAGE}" Version)
+PACKAGE_ARCH=$(/usr/bin/dpkg-deb --field "${ROOT_PACKAGE}" Architecture)
+SYSTEM_ARCH=$(/usr/bin/dpkg --print-architecture)
+if [ "${PACKAGE_NAME}" != "pixiu" ]; then
+    echo "pixiu: update package identity mismatch" >&2
+    exit 3
+fi
+if [ "${PACKAGE_ARCH}" != "${SYSTEM_ARCH}" ] && [ "${PACKAGE_ARCH}" != "all" ]; then
+    echo "pixiu: update package architecture mismatch" >&2
+    exit 3
+fi
+# Debian's final hyphen separates the package revision.  Preserve a SemVer
+# prerelease suffix such as 1.2.3-rc.1 while removing only "-1".
+PRODUCT_VERSION=${PACKAGE_VERSION%-*}
+
 ulimit -f unlimited
 DEBIAN_FRONTEND=noninteractive
 export DEBIAN_FRONTEND
 # Current packages keep runtime configuration outside dpkg conffiles.  Retain
 # these flags so upgrades from legacy packages also preserve their old config.
 /usr/bin/dpkg --force-confdef --force-confold -i "${ROOT_PACKAGE}"
+
+INSTALLED_VERSION=$(/usr/bin/dpkg-query -W -f='${Version}' pixiu)
+if [ "${INSTALLED_VERSION}" != "${PACKAGE_VERSION}" ]; then
+    echo "pixiu: installed package version mismatch" >&2
+    exit 4
+fi
+HEALTH_PY=/usr/lib/pixiu/venv/bin/python
+if [ ! -x "${HEALTH_PY}" ]; then
+    HEALTH_PY=/usr/bin/python3
+fi
+if ! PYTHONPATH=/usr/lib/pixiu "${HEALTH_PY}" \
+        -m backend.foundation.api.install_health \
+        --expected-version "${PRODUCT_VERSION}" \
+        --provider-manifest \
+        /usr/lib/pixiu/integrations/kylin_agent/pixiu/plugin.yaml; then
+    echo "pixiu: post-upgrade health verification failed" >&2
+    exit 4
+fi

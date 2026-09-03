@@ -13,13 +13,18 @@ R-01～R-06 分层。每组结果记录 release commit、机器、V11 版本、�
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine
-145 项、Foundation 612 项、Module E 16 项（合计 pytest 773 passed），前端 ctest
-37/37；Python 回归另报告 10 条依赖弃用告警但无失败。提交最终稿前仍必须从
+145 项、Foundation 619 项、Module E 16 项（合计 pytest 780 passed），前端 ctest
+37/37；Python 回归另报告 11 条依赖弃用/异步线程退出告警但无失败。新增安装健康
+切片另由 7 项单元测试及发布 helper 脚本覆盖。提交最终稿前仍必须从
 同一候选 commit 重新运行并保存原始日志。
 
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和
 `contest_ready=false`。该结果只覆盖 D-04/R-05 的一个升级切片。
+
+当前升级 helper 已自动校验包名/版本/架构、实际 dpkg 版本，以及后端产品/API/
+schema、数据库就绪状态和包内 Provider 版本；健康失败不会被 GUI 误报为成功。该
+开发证据尚不包含独立签名、旧包自动回滚、受控前端重启或最终 V11 图形操作。
 
 ## 最终必须补齐
 

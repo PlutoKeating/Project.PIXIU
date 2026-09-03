@@ -1389,6 +1389,10 @@ You can forget any memory with natural-language instructions — your data stays
         <translation>Cancelled; the upgrade was not executed.</translation>
     </message>
     <message>
+        <source>升级后健康检查失败，已停止继续操作</source>
+        <translation>Post-upgrade health verification failed; no further action was taken.</translation>
+    </message>
+    <message>
         <source>升级失败，请检查系统日志</source>
         <translation>Upgrade failed. Please check the system logs.</translation>
     </message>

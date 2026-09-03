@@ -63,6 +63,7 @@ public:
         InvalidSource, // 更新源非可信下载源（http / 非 allowlist host）
         Download,      // 下载失败（网络 / 写入 / 提交失败）
         Install,       // pkexec/dpkg 启动或执行失败
+        Health,        // dpkg 成功但新组件版本/schema/服务健康校验失败
         Other,         // 其它失败（本地文件 / 进程异常等）
     };
 

@@ -32,6 +32,7 @@
 | 日志敏感数据脱敏 | PASS（password/token→***） | `test_logger.py` + `test_hardening.py` |
 | 数据库升级迁移 | PASS（幂等 + 失败回滚） | `test_hardening.py::test_migration_*` |
 | 进程崩溃恢复 | PASS（未 commit 自动回滚） | `test_hardening.py::test_crash_recovery_*` |
+| 安装后组件健康 | PASS（版本/API/schema/数据库/Provider 不一致拒绝） | `test_install_health.py` + `build/release/tests/test-update-helper.sh` |
 | 磁盘/内存占用 | PASS（<10MB / <256MB 峰值） | `test_hardening.py` |
 | 1000 次查询压测 | P50=16.99 / P95=19.18 / P99=20.73 ms，0 错误 | `evidence/pressure_report.json`、`pressure_latencies.csv`、`pressure_test_report.md` |
 | ARM/x86 麒麟兼容 | 🟡 需麒麟环境 | `engine/kylin/cpp/` 绑定源码 + submodule 已就位 |
@@ -51,8 +52,8 @@
 
 ## 四、测试统计
 
-- 最新后端全量回归记录：pytest 757 passed（Engine 145 + Foundation 612）；
-  Foundation 有 10 条依赖弃用告警，无失败。
+- 最新后端全量回归记录：pytest 764 passed（Engine 145 + Foundation 619）；
+  全部组合回归有 11 条依赖弃用/异步线程退出告警，无失败。
 - 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`
 
