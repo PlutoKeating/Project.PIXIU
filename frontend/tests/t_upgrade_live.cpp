@@ -8,6 +8,7 @@
 #include <functional>
 
 #include "app/UpgradeController.h"
+#include "app/UpgradeUtils.h"
 #include "widgets/CheckUpdateDialog.h"
 
 // 本机验收：真实 GitHub releases/latest + 应用内 CheckUpdateDialog +
@@ -38,8 +39,8 @@ void TestUpgradeLive::githubDialogCheckAndInstall()
         QSKIP("set PIXIU_LIVE_UPGRADE=1 to run GitHub in-app upgrade acceptance");
     }
 
-    // 已安装包与 latest 同为 0.1.6 时，生产 UI 会走 UpToDate。验收必须把
-    // 本地版本压到更低，才能走下载/校验/安装；资产仍是公开发布的 latest。
+    // 已安装包若等于 latest，生产 UI 会走 UpToDate。验收把本地版本压到
+    // 0.1.5，才能走下载/校验/安装；资产始终是公开发布的 latest。
     QCoreApplication::setApplicationVersion(QStringLiteral("0.1.5"));
 
     UpgradeController controller;
@@ -78,7 +79,10 @@ void TestUpgradeLive::githubDialogCheckAndInstall()
     QLabel *remote = dialog.findChild<QLabel *>(
         QStringLiteral("remoteVersionLabel"));
     QVERIFY(remote != nullptr);
-    QVERIFY(remote->text().contains(QStringLiteral("0.1.6")));
+    QVERIFY(remote->text().startsWith(QStringLiteral("远程最新版本 ")));
+    const QString remoteVersion =
+        remote->text().mid(QStringLiteral("远程最新版本 ").size());
+    QVERIFY(ui::compareVersions(remoteVersion, QStringLiteral("0.1.5")) > 0);
 
     QSignalSpy finished(&controller, &UpgradeController::upgradeFinished);
     QTest::mouseClick(upgrade, Qt::LeftButton);
