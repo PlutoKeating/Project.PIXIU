@@ -148,7 +148,9 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 - manifest 记录 Git/API/schema/provider/宿主/双 SDK 版本和兼容范围；
 - 双架构签名 CI 与 Kylin V11 有效/篡改签名已验证；仍需完成“旧钥签发含新公钥
   版本、下一版切换新钥”的轮换演练；
-- `dpkg-repack` 旧包、SQLite/配置快照和健康失败自动回滚已实现，真实故障注入待验；
+- `dpkg-repack` 旧包、SQLite/配置快照和健康失败自动回滚已通过提交 `ca35117` 的
+  amd64/arm64 CI；Kylin V11 amd64 跨 revision 注入也以退出码 5 恢复旧版本、数据、
+  配置和服务，最终候选仍须随完整安装矩阵重验；
 - GUI 中显示版本、通道、发行说明、进度、授权、失败恢复和受控重启状态；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
 - `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
@@ -187,7 +189,8 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 - **Agent 宿主与适配**：当前包已含 Module E 和幂等激活工具；Provider 已对经固定
   上游验证的 runtime 0.9.x、API/组件/产品版本及后端健康执行启动拒绝；安装器健康
   联动也已覆盖包内 Provider 版本。仍须完成 openKylin Agent 真实多轮/工具/生命周期
-  验证，并补服务启动顺序、自动回滚和卸载边界；不得直接把两个上游 submodule 当
+  验证，并补服务启动顺序和卸载边界；自动回滚当前切片虽已实证，最终候选仍须重验；
+  不得直接把两个上游 submodule 当
   团队产物打包。
 
 - **引擎麒麟 SDK 绑定**：通用 `KYSDK=OFF` 包只携带 Python 源码；严格

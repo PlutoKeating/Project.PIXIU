@@ -21,9 +21,10 @@
 - ✅ 真实 GitHub live 升级用例不再写死远端 `0.1.6`，只要求 latest 高于 `0.1.5`。
 - 🟡 一键升级已实现 Ed25519 固定公钥验签、包名/版本/架构校验及安装后的
   dpkg、后端、schema、Provider 健康判定，失败不会误报成功；双架构 CI 签名资产及
-  Kylin V11 有效/篡改签名已验证，最终发布门尚缺密钥轮换演练、完整 Module E/宿主兼容
-  矩阵、自动回滚故障注入实证、受控前端重启与最终 V11 图形升级证据；helper 已用
-  `dpkg-repack` + SQLite backup 实现旧包/数据恢复，详见
+  Kylin V11 有效/篡改签名已验证；自动回滚已通过双架构 CI 与 Kylin V11 amd64
+  跨 revision 健康失败注入，旧版本、配置、核心数据和服务均恢复。最终发布门尚缺
+  密钥轮换演练、完整 Module E/宿主兼容矩阵、受控前端重启与最终 V11 图形升级证据；
+  helper 使用 `dpkg-repack` + SQLite backup 实现旧包/数据恢复，详见
   `docs/DELIVERY_PLAN.md`，不得将现状表述为完整版本管理验收通过。
 - ✅ 2026-09-03 修复非交互升级配置冲突：运行配置改由 postinst 从只读模板首装
   创建并在升级时保留；Kylin V11 portable 已从 `0.1.7-3` 跨 revision 到测试包

@@ -24,7 +24,7 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 | Embedding SDK | 待最终证据 | 待真机 | runtime、调用日志、严格失败 |
 | Vector Engine SDK | H-02 未通过 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
 | UKUI/KYSDK | 历史基线 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
-| GUI 一键升级 | 签名/健康已验，事务回滚已实现、故障注入待验；完整门禁待验 | 待真机 | 图形授权、回滚故障注入、受控重启 |
+| GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；完整门禁待验 | 待真机 | 图形授权、最终候选回滚重验、受控重启 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |
 
 最终报告必须列出目标镜像/内核/桌面、系统包和 SDK 版本、profile 差异、已知问题、
@@ -40,5 +40,8 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 - `pixiu-backend.service` 为 active，`GET /capabilities` 正确识别 Kylin V11；
 - CI run `33769179956` 的 amd64 签名资产经固定公钥和 helper 验证成功；篡改签名
   在 dpkg 前以退出码 3 拒绝，软件版本和数据摘要不变；
+- 提交 `ca35117` 的 CI run `33770727108` 在 amd64/arm64 完成健康失败注入恢复；
+  Kylin V11 amd64 从 `0.1.7-4` 尝试安装签名 `0.1.7-1` 后注入失败，helper 以退出码
+  5 恢复 `0.1.7-4`；配置、数据库完整性、核心逻辑计数和服务状态保持，临时目录无残留；
 - Embedding/Vector runtime 均为 `portable`、`contest_ready=false`，因此只计安装兼容
   回归，不计 H-02/H-03 或最终性能验收。
