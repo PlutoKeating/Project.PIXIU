@@ -25,7 +25,11 @@
 - `submission-plan.json`：唯一的机器可读交付清单、来源和就绪门；
 - `build_submission.py`：校验官方原件、release commit、Git 洁净度和全部文件，生成
   `SHA256SUMS` 与最终 ZIP；
+- `build_source_archive.py`：在官方原件、Git/submodule 和 Agent 供应链门全部通过后，
+  生成包含四个 submodule 实体内容、供应链证据及逐文件摘要清单的 D-03 源码包；
 - `final/`：最终文件生成位置，构建产物不进入 Git，避免源码包递归包含自身；
+- `build/release/evidence/`：候选供应链实物的受忽略工作目录；内容不入 Git，但由
+  D-03 归档器复制进源码交付包并纳入逐文件摘要；
 - `human-input/`：说明必须由团队负责人提供的 PPT、视频和盖章报名表。
 
 当前 `release_ready=false` 是有意的。只有 H-01～H-03、Agent 可重建离线供应链与
@@ -34,6 +38,9 @@
 commit、把各门设置为 `passed`，并运行：
 
 ```bash
+python3 submission/build_source_archive.py \
+  --root . --evidence-dir AGENT_EVIDENCE \
+  --output "submission/final/华南理工大学－OSAgent记忆优化及高效应用研究－PIXIU/03-源代码及规范/Project.PIXIU-source.tar.gz"
 python3 submission/build_submission.py --check
 python3 submission/build_submission.py --package
 ```
@@ -41,5 +48,8 @@ python3 submission/build_submission.py --package
 `--package` 在任何门未通过、文件缺失、命名/格式错误、官方原件哈希改变或工作区不
 洁净时都会失败。D-07 的 `three-device-final-suite.json` 还必须满足最终三设备契约，
 并与 `release_commit` 和最终 `.deb` SHA-256 一致；仅将任意 JSON 放入目录无法通过。
+D-03 也不接受普通 `git archive` 或任意同名压缩包：最终打包器会读取内嵌
+`SOURCE_MANIFEST.json`，逐项复算源码和 Agent 供应链证据摘要，并要求后端、前端、
+Module E、发布工具、交付文档及四个固定 submodule 的实体文件全部存在。
 视频和 PPT 只校验，不由自动化生成；其他文档及源码包必须在最终
 候选完成后由仓库维护源生成并经人工审核，禁止以当前工作稿占位提交。

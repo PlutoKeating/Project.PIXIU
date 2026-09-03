@@ -6,9 +6,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import posixpath
 import re
 import subprocess
 import sys
+import tarfile
 import zipfile
 from pathlib import Path
 
@@ -22,6 +24,26 @@ SHA1 = re.compile(r"[0-9a-f]{40}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 VIDEO_SUFFIXES = {".avi", ".mp4", ".wmv"}
 FINAL_DEVICE_EVIDENCE = Path("07-效果与测试证据/three-device-final-suite.json")
+SOURCE_ARCHIVE = Path("03-源代码及规范/Project.PIXIU-source.tar.gz")
+REQUIRED_SOURCE_PATHS = {
+    "README.md",
+    "VERSION",
+    "backend/",
+    "frontend/",
+    "integrations/kylin_agent/",
+    "build/release/",
+    "docs/delivery/",
+    "third_party/kylin-agent/",
+    "third_party/kylin-agent-runtime/",
+    "third_party/kylin-coreai-embedding/",
+    "third_party/libkysdk-vector-engine-client/",
+}
+REQUIRED_SUBMODULES = {
+    "third_party/kylin-agent",
+    "third_party/kylin-agent-runtime",
+    "third_party/kylin-coreai-embedding",
+    "third_party/libkysdk-vector-engine-client",
+}
 EXPECTED_DEVICE_SCENARIOS = {
     "concurrent-update-and-conflict-resolution",
     "offline-write-and-reconnect",
@@ -51,6 +73,143 @@ def git(*args: str) -> str:
     return subprocess.check_output(
         ["git", "-C", str(ROOT), *args], text=True, stderr=subprocess.STDOUT
     ).strip()
+
+
+def validate_source_archive(path: Path, *, release_commit: str) -> list[str]:
+    errors: list[str] = []
+    prefix = "Project.PIXIU-source/"
+    try:
+        with tarfile.open(path, "r:gz") as archive:
+            members = archive.getmembers()
+            names = [member.name for member in members]
+            if len(names) != len(set(names)):
+                return ["source archive contains duplicate paths"]
+            if any(
+                not name.startswith(prefix)
+                or name.startswith("/")
+                or ".." in Path(name).parts
+                for name in names
+            ):
+                return ["source archive contains an unsafe or unexpected path"]
+            manifest_member = archive.getmember(prefix + "SOURCE_MANIFEST.json")
+            stream = archive.extractfile(manifest_member)
+            if stream is None:
+                return ["source archive manifest is not a regular file"]
+            manifest = json.load(stream)
+            if not isinstance(manifest, dict):
+                return ["source archive manifest must be a JSON object"]
+            tracked = manifest.get("tracked_files")
+            evidence = manifest.get("agent_supply_chain_evidence")
+            submodules = manifest.get("submodules")
+            if not (
+                manifest.get("schema_version") == 1
+                and manifest.get("archive_prefix") == "Project.PIXIU-source"
+                and manifest.get("release_commit") == release_commit
+                and isinstance(tracked, list)
+                and bool(tracked)
+                and isinstance(evidence, list)
+                and bool(evidence)
+                and isinstance(submodules, dict)
+                and REQUIRED_SUBMODULES.issubset(submodules)
+                and all(isinstance(value, str) and SHA1.fullmatch(value) for value in submodules.values())
+            ):
+                return ["source archive manifest contract is incomplete"]
+            expected_submodules = {
+                name: git("rev-parse", f"{release_commit}:{name}")
+                for name in REQUIRED_SUBMODULES
+            }
+            if any(submodules.get(name) != commit for name, commit in expected_submodules.items()):
+                errors.append("source archive submodule commits do not match release commit")
+            tracked_paths = {
+                item.get("path")
+                for item in tracked
+                if isinstance(item, dict) and isinstance(item.get("path"), str)
+            }
+            if not all(
+                required in tracked_paths
+                if not required.endswith("/")
+                else any(value.startswith(required) for value in tracked_paths)
+                for required in REQUIRED_SOURCE_PATHS
+            ):
+                errors.append("source archive omits a required project or submodule tree")
+            expected_names = {prefix + "SOURCE_MANIFEST.json"}
+            expected_names.update(
+                prefix + item["path"]
+                for item in tracked
+                if isinstance(item, dict) and isinstance(item.get("path"), str)
+            )
+            expected_names.update(
+                prefix + "release-evidence/agent-supply-chain/" + item["path"]
+                for item in evidence
+                if isinstance(item, dict) and isinstance(item.get("path"), str)
+            )
+            if set(names) != expected_names:
+                errors.append("source archive members do not exactly match its manifest")
+            for item in tracked:
+                if not isinstance(item, dict):
+                    errors.append("source archive tracked file entry is invalid")
+                    break
+                relative = item.get("path")
+                digest = item.get("sha256")
+                kind = item.get("type")
+                if (
+                    not isinstance(relative, str)
+                    or not isinstance(digest, str)
+                    or not SHA256.fullmatch(digest)
+                    or kind not in {"file", "symlink"}
+                ):
+                    errors.append("source archive tracked file metadata is invalid")
+                    break
+                member = archive.getmember(prefix + relative)
+                if kind == "symlink":
+                    resolved_link = posixpath.normpath(
+                        posixpath.join(posixpath.dirname(member.name), member.linkname)
+                    )
+                    if (
+                        not member.issym()
+                        or member.linkname.startswith("/")
+                        or not resolved_link.startswith(prefix)
+                    ):
+                        errors.append("source archive contains an unsafe symlink")
+                        break
+                    actual = hashlib.sha256(member.linkname.encode("utf-8")).hexdigest()
+                else:
+                    if not member.isfile():
+                        errors.append("source archive tracked member type is invalid")
+                        break
+                    stream = archive.extractfile(member)
+                    if stream is None:
+                        errors.append("source archive tracked member is not readable")
+                        break
+                    digest_builder = hashlib.sha256()
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                        digest_builder.update(chunk)
+                    actual = digest_builder.hexdigest()
+                if actual != digest:
+                    errors.append(f"source archive member hash mismatch: {relative}")
+                    break
+            for item in evidence:
+                if not isinstance(item, dict):
+                    errors.append("source archive evidence entry is invalid")
+                    break
+                relative, digest = item.get("path"), item.get("sha256")
+                if not isinstance(relative, str) or not isinstance(digest, str) or not SHA256.fullmatch(digest):
+                    errors.append("source archive evidence metadata is invalid")
+                    break
+                member = archive.getmember(prefix + "release-evidence/agent-supply-chain/" + relative)
+                stream = archive.extractfile(member)
+                if stream is None:
+                    errors.append("source archive evidence member is not readable")
+                    break
+                digest_builder = hashlib.sha256()
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    digest_builder.update(chunk)
+                if digest_builder.hexdigest() != digest:
+                    errors.append(f"source archive evidence hash mismatch: {relative}")
+                    break
+    except (KeyError, OSError, tarfile.TarError, json.JSONDecodeError):
+        return ["source archive is unreadable or malformed"]
+    return errors
 
 
 def load_plan() -> dict:
@@ -171,6 +330,14 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
                     evidence_path,
                     release_commit=commit if isinstance(commit, str) else "",
                     candidate_package=package_paths[0],
+                )
+            )
+        source_archive = FINAL_ROOT / name / SOURCE_ARCHIVE
+        if source_archive.is_file():
+            errors.extend(
+                validate_source_archive(
+                    source_archive,
+                    release_commit=commit if isinstance(commit, str) else "",
                 )
             )
     return errors
