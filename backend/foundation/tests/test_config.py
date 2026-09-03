@@ -31,8 +31,6 @@ def test_default_vector_store_is_auto():
     with mock.patch.dict(os.environ, {}, clear=True):
         settings = Settings()
         assert settings.vector_store == "auto"
-        assert settings.vector_host == "127.0.0.1"
-        assert settings.vector_port == 19530
         assert settings.vector_app_id == "pixiu"
         assert settings.vector_collection == "pixiu_memory"
 

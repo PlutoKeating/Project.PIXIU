@@ -66,7 +66,8 @@
 进度：C-A4 的公共 `VectorStore` seam 与 `SqliteVectorStore` portable 适配器已实现，
 生产 DI 的知识写入和 ANN 查询已注入并通过禁用旧扫描的端到端组合根测试；Kylin
 Kylin 适配与 strict/auto/portable 选择已完成；生产遗忘已注入 seam 并在确认后
-删除向量；`GET /capabilities` 已报告实际适配器。V11 真服务端到端证据仍未完成。
+删除向量；组合根已改用官方 `ConnectParam(appId)` 本地传输，不再传递测试专用
+host/port；`GET /capabilities` 已报告实际适配器。V11 真服务端到端证据仍未完成。
 - C-A5：与 Module E 做 HTTP/WS 契约测试，禁止 E 直接导入本模块。
 
 > Module A 三通道联调与 WS `/events` 注册已在 2026-08-29 前完成，已从当前 P0

@@ -108,11 +108,7 @@ async def get_vector_store(
     if settings.vector_store == "portable":
         return SqliteVectorStore(db)
     try:
-        client = VectorEngineClient(
-            app_id=settings.vector_app_id,
-            host=settings.vector_host,
-            port=settings.vector_port,
-        )
+        client = VectorEngineClient(app_id=settings.vector_app_id)
     except Exception:
         if settings.vector_store == "kylin":
             raise

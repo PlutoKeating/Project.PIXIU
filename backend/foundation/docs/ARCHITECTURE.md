@@ -233,6 +233,8 @@ portable 适配器在内部执行 INT8 量化/扫描；组合根测试会主动�
 并验证端到端检索。Kylin 适配器已可由
 `PIXIU_VECTOR_STORE=auto|kylin|portable` 选择：`kylin` 对 SDK/连接错误 fail
 closed，`auto` 明确告警后才降级。V11 真 SDK 证据完成前 H-02 仍为不通过。
+组合根只向客户端传递安全的 `PIXIU_VECTOR_APP_ID`，生产连接使用 SDK 官方
+`ConnectParam(appId)` 本地传输；不再把仅供 SDK 测试的 host/port 重载当成产品配置。
 `GET /capabilities` 从实际实例化的 embedding/vector store 读取 runtime，并只输出
 验收相关的 OS 家族/主版本；配置意图与运行事实分栏，且不暴露主机、网络或路径信息。
 平台解析同时接受发行版常见的 `11` 与 `V11`/`v11` 版本格式并统一输出 `11`。

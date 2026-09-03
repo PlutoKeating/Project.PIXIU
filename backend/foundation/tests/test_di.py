@@ -45,8 +45,6 @@ class _FakeSettings:
         self.db_path = db_path
         self.embedding = "portable"
         self.vector_store = "portable"
-        self.vector_host = "127.0.0.1"
-        self.vector_port = 19530
         self.vector_app_id = "pixiu-test"
         self.vector_collection = "pixiu_test"
         self.sync_device_name = "test-device"
@@ -109,6 +107,26 @@ async def test_strict_kylin_vector_store_fails_closed(fresh_di, monkeypatch):
     try:
         with pytest.raises(RuntimeError, match="vector engine unavailable"):
             await get_vector_store(db)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_kylin_vector_store_uses_official_local_connection(
+    fresh_di, monkeypatch
+):
+    db = await get_db()
+    di_module.settings.vector_store = "kylin"
+    received = {}
+
+    class _Client:
+        def __init__(self, **kwargs):
+            received.update(kwargs)
+
+    monkeypatch.setattr(di_module, "VectorEngineClient", _Client)
+    try:
+        await get_vector_store(db)
+        assert received == {"app_id": "pixiu-test"}
     finally:
         await db.close()
 

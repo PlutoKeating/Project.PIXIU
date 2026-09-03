@@ -116,8 +116,6 @@ class Settings:
         self._vector_store = _env_choice(
             "PIXIU_VECTOR_STORE", "auto", _VALID_VECTOR_STORE
         )
-        self._vector_host = _env_lan_host("PIXIU_VECTOR_HOST", "127.0.0.1")
-        self._vector_port = _env_port("PIXIU_VECTOR_PORT", 19530)
         self._vector_app_id = _env_identifier("PIXIU_VECTOR_APP_ID", "pixiu")
         self._vector_collection = _env_identifier(
             "PIXIU_VECTOR_COLLECTION", "pixiu_memory"
@@ -176,14 +174,6 @@ class Settings:
     @property
     def vector_store(self) -> str:
         return self._vector_store
-
-    @property
-    def vector_host(self) -> str:
-        return self._vector_host
-
-    @property
-    def vector_port(self) -> int:
-        return self._vector_port
 
     @property
     def vector_app_id(self) -> str:
