@@ -6,3 +6,11 @@
 	path = third_party/libkysdk-vector-engine-client
 	url = https://gitee.com/openkylin/libkysdk-vector-engine-client.git
 	branch = openkylin/nile-sp2
+[submodule "third_party/kylin-agent"]
+	path = third_party/kylin-agent
+	url = https://gitee.com/openkylin/kylin-agent.git
+	branch = master
+[submodule "third_party/kylin-agent-runtime"]
+	path = third_party/kylin-agent-runtime
+	url = https://gitee.com/openkylin/agent-runtime.git
+	branch = master
