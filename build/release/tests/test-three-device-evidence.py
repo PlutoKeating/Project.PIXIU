@@ -218,6 +218,46 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                 ),
             )
 
+    def _privacy_checkpoint(
+        self,
+        topology_path: Path,
+        node_path: Path,
+        *,
+        checkpoint: str,
+        role: str,
+        total_ops_synced: int,
+        at: int,
+    ):
+        items = []
+        if checkpoint == "post-write" and role == "writer":
+            items = [
+                {
+                    "knowledge_id": "knw_" + "P" * 26,
+                    "version": 1,
+                    "title": "private-only-value",
+                    "scope": "user:evidence",
+                    "evidence_ids": ["evd_" + "P" * 26],
+                }
+            ]
+        context = {"context": "private-only-value" if items else "", "items": items}
+        status = _status() | {"total_ops_synced": total_ops_synced}
+        with patch.object(MODULE, "request_json", side_effect=[context, status]):
+            return MODULE.capture_privacy_checkpoint(
+                topology_path=topology_path,
+                node_path=node_path,
+                base_url="http://127.0.0.1:8765",
+                checkpoint=checkpoint,
+                role=role,
+                query="private visibility scenario marker",
+                scope="user:evidence",
+                captured_at=(
+                    MODULE.datetime.fromtimestamp(at, MODULE.timezone.utc).strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    ),
+                    at,
+                ),
+            )
+
     def test_capture_is_strict_and_does_not_leak_identity_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = self._capture(Path(directory), 0)
@@ -518,6 +558,91 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                     observations.append(path)
             with self.assertRaisesRegex(MODULE.EvidenceError, "online propagation"):
                 MODULE.validate_offline_scenario(
+                    topology_path=topology_path,
+                    checkpoint_paths=observations,
+                )
+
+    def test_privacy_checkpoint_proves_writer_only_visibility_without_sync(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            topology_path, node_paths = self._topology(root)
+            observations = []
+            totals = [11, 22, 33]
+            for phase_index, checkpoint in enumerate(("baseline", "post-write")):
+                for node_index, node_path in enumerate(node_paths):
+                    role = "baseline"
+                    if checkpoint == "post-write":
+                        role = "writer" if node_index == 0 else "observer"
+                    observation = self._privacy_checkpoint(
+                        topology_path,
+                        node_path,
+                        checkpoint=checkpoint,
+                        role=role,
+                        total_ops_synced=totals[node_index],
+                        at=2_000_005_000 + phase_index * 100 + node_index,
+                    )
+                    encoded = json.dumps(observation, sort_keys=True)
+                    self.assertNotIn("private visibility scenario marker", encoded)
+                    self.assertNotIn("private-only-value", encoded)
+                    self.assertNotIn("user:evidence", encoded)
+                    path = root / f"privacy-{checkpoint}-{node_index}.json"
+                    path.write_text(json.dumps(observation), encoding="utf-8")
+                    observations.append(path)
+
+            report = MODULE.validate_privacy_scenario(
+                topology_path=topology_path,
+                checkpoint_paths=observations,
+            )
+
+        self.assertEqual(report["status"], "pass")
+        self.assertTrue(report["real_device_evidence"])
+        self.assertFalse(report["final_device_evidence"])
+        self.assertEqual(report["scenario"], "private-scope-non-propagation")
+        self.assertNotIn(
+            "private-scope-non-propagation", report["remaining_required_scenarios"]
+        )
+
+    def test_privacy_validator_rejects_remote_visibility_and_sync_growth(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            topology_path, node_paths = self._topology(root)
+            observations = []
+            for phase_index, checkpoint in enumerate(("baseline", "post-write")):
+                for node_index, node_path in enumerate(node_paths):
+                    role = "baseline"
+                    if checkpoint == "post-write":
+                        role = "writer" if node_index == 0 else "observer"
+                    observation = self._privacy_checkpoint(
+                        topology_path,
+                        node_path,
+                        checkpoint=checkpoint,
+                        role=role,
+                        total_ops_synced=10 + node_index,
+                        at=2_000_006_000 + phase_index * 100 + node_index,
+                    )
+                    path = root / f"bad-privacy-{checkpoint}-{node_index}.json"
+                    path.write_text(json.dumps(observation), encoding="utf-8")
+                    observations.append(path)
+
+            remote = json.loads(observations[4].read_text(encoding="utf-8"))
+            original_view = remote["local_view_digest"]
+            remote["local_result_count"] = 1
+            remote["local_view_digest"] = "f" * 64
+            observations[4].write_text(json.dumps(remote), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.EvidenceError, "escaped"):
+                MODULE.validate_privacy_scenario(
+                    topology_path=topology_path,
+                    checkpoint_paths=observations,
+                )
+
+            remote["local_result_count"] = 0
+            remote["local_view_digest"] = original_view
+            observations[4].write_text(json.dumps(remote), encoding="utf-8")
+            writer = json.loads(observations[3].read_text(encoding="utf-8"))
+            writer["sync"]["total_ops_synced"] += 1
+            observations[3].write_text(json.dumps(writer), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.EvidenceError, "acknowledgements"):
+                MODULE.validate_privacy_scenario(
                     topology_path=topology_path,
                     checkpoint_paths=observations,
                 )

@@ -3,9 +3,9 @@
 
 Each node runs ``capture`` locally against the loopback API after the strict
 native SDK smoke test.  ``validate`` combines exactly three node manifests.
-The topology report proves release identity and full-mesh readiness.  The
-concurrency and offline/reconnect commands each prove one real-device scenario
-through nine checkpoints.  Every report deliberately remains
+The topology report proves release identity and full-mesh readiness.  Scenario
+commands cover concurrent updates, offline reconnect, and private-scope
+non-propagation through privacy-preserving checkpoints.  Every report remains
 ``final_device_evidence=false`` until all required scenarios are implemented and
 collected.
 """
@@ -32,6 +32,8 @@ CONCURRENCY_EVIDENCE_CLASS = "kylin-v11-concurrent-update-checkpoint"
 CONCURRENCY_REPORT_CLASS = "kylin-v11-concurrent-update-scenario"
 OFFLINE_EVIDENCE_CLASS = "kylin-v11-offline-reconnect-checkpoint"
 OFFLINE_REPORT_CLASS = "kylin-v11-offline-reconnect-scenario"
+PRIVACY_EVIDENCE_CLASS = "kylin-v11-private-scope-checkpoint"
+PRIVACY_REPORT_CLASS = "kylin-v11-private-scope-scenario"
 RUN_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,63}")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 COMMIT_PATTERN = re.compile(r"[0-9a-f]{40}")
@@ -1113,6 +1115,291 @@ def validate_offline_scenario(
     }
 
 
+def capture_privacy_checkpoint(
+    *,
+    topology_path: Path,
+    node_path: Path,
+    base_url: str,
+    checkpoint: str,
+    role: str,
+    query: str,
+    scope: str,
+    captured_at: tuple[str, int] | None = None,
+) -> dict[str, Any]:
+    """Capture one private-scope non-propagation checkpoint."""
+    allowed_roles = {
+        "baseline": {"baseline"},
+        "post-write": {"writer", "observer"},
+    }
+    if checkpoint not in allowed_roles or role not in allowed_roles[checkpoint]:
+        raise EvidenceError("privacy checkpoint role is invalid")
+    query = query.strip()
+    if not query or len(query) > 512:
+        raise EvidenceError("scenario query must contain 1-512 characters")
+    if not re.fullmatch(r"user:[A-Za-z0-9._-]+", scope):
+        raise EvidenceError("privacy scenario requires a private user scope")
+
+    topology = _require_topology(_read_json(topology_path))
+    node_manifest = _read_json(node_path)
+    _validate_node_manifest(node_manifest)
+    identity = node_manifest["node"]["identity_digest"]
+    if not (
+        node_manifest["run_id"] == topology["run_id"]
+        and node_manifest["release"] == topology["release"]
+        and identity in topology["topology"]["member_identity_digests"]
+    ):
+        raise EvidenceError("node checkpoint does not belong to the topology report")
+
+    base_url = validate_base_url(base_url)
+    context = request_json(
+        f"{base_url}/agent/context",
+        method="POST",
+        payload={
+            "query": query,
+            "scope": scope,
+            "session_id": f"evidence-{topology['run_id']}",
+            "turn_id": f"private-scope-{checkpoint}",
+            "top_k": 1,
+            "max_chars": 4096,
+        },
+    )
+    status = request_json(f"{base_url}/sync/status")
+    items = context.get("items")
+    expected_count = 1 if checkpoint == "post-write" and role == "writer" else 0
+    if not isinstance(items, list) or len(items) != expected_count:
+        raise EvidenceError("privacy checkpoint has an unexpected local result count")
+    normalized_items: list[dict[str, Any]] = []
+    for item in items:
+        if not (
+            isinstance(item, dict)
+            and isinstance(item.get("knowledge_id"), str)
+            and re.fullmatch(r"knw_[A-Za-z0-9_-]{8,128}", item["knowledge_id"])
+            and isinstance(item.get("version"), int)
+            and not isinstance(item.get("version"), bool)
+            and item["version"] >= 1
+            and item.get("scope") == scope
+            and isinstance(item.get("title"), str)
+            and isinstance(item.get("evidence_ids"), list)
+            and all(
+                isinstance(evidence_id, str)
+                and re.fullmatch(r"evd_[A-Za-z0-9_-]{8,128}", evidence_id)
+                for evidence_id in item["evidence_ids"]
+            )
+        ):
+            raise EvidenceError("privacy checkpoint knowledge metadata is invalid")
+        normalized_items.append(
+            {
+                "knowledge_id": item["knowledge_id"],
+                "version": item["version"],
+                "title": item["title"],
+                "scope": item["scope"],
+                "evidence_ids": sorted(item["evidence_ids"]),
+            }
+        )
+    if not (
+        status.get("enabled") is True
+        and status.get("paused") is False
+        and status.get("peers_online") == 3
+        and status.get("pending_outgoing_ops") == 0
+        and isinstance(status.get("total_ops_synced"), int)
+        and not isinstance(status.get("total_ops_synced"), bool)
+        and status["total_ops_synced"] >= 0
+    ):
+        raise EvidenceError("privacy checkpoint sync status is not online and quiescent")
+    generated_at_utc, generated_at_epoch = captured_at or _utc_now()
+    _validate_timestamp(generated_at_utc, generated_at_epoch)
+    run_id = topology["run_id"]
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": PRIVACY_EVIDENCE_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": False,
+        "run_id": run_id,
+        "captured_at_utc": generated_at_utc,
+        "captured_at_epoch": generated_at_epoch,
+        "release": topology["release"],
+        "topology_evidence_sha256": _sha256_file(topology_path),
+        "node_manifest_sha256": _sha256_file(node_path),
+        "node_identity_digest": identity,
+        "scenario": "private-scope-non-propagation",
+        "checkpoint": checkpoint,
+        "role": role,
+        "query_digest": _digest(run_id, "private-scope-query", query),
+        "scope_digest": _digest(run_id, "private-scope", scope),
+        "local_result_count": len(normalized_items),
+        "local_view_digest": _digest(
+            run_id,
+            "private-scope-view",
+            json.dumps(normalized_items, ensure_ascii=False, sort_keys=True),
+        ),
+        "sync": {
+            "enabled": True,
+            "paused": False,
+            "peers_online": 3,
+            "pending_outgoing_ops": 0,
+            "total_ops_synced": status["total_ops_synced"],
+        },
+    }
+
+
+def _validate_privacy_checkpoint(value: dict[str, Any]) -> None:
+    sync = value.get("sync")
+    checkpoint = value.get("checkpoint")
+    role = value.get("role")
+    allowed_roles = {
+        "baseline": {"baseline"},
+        "post-write": {"writer", "observer"},
+    }
+    if not (
+        value.get("evidence_schema") == SCHEMA_VERSION
+        and value.get("evidence_class") == PRIVACY_EVIDENCE_CLASS
+        and value.get("real_device_evidence") is True
+        and value.get("final_device_evidence") is False
+        and value.get("scenario") == "private-scope-non-propagation"
+        and checkpoint in allowed_roles
+        and role in allowed_roles[checkpoint]
+        and isinstance(value.get("release"), dict)
+        and isinstance(value.get("run_id"), str)
+        and RUN_ID_PATTERN.fullmatch(value["run_id"])
+        and isinstance(value.get("captured_at_epoch"), int)
+        and not isinstance(value.get("captured_at_epoch"), bool)
+        and isinstance(value.get("local_result_count"), int)
+        and not isinstance(value.get("local_result_count"), bool)
+        and value["local_result_count"] in {0, 1}
+        and all(
+            isinstance(value.get(field), str) and SHA256_PATTERN.fullmatch(value[field])
+            for field in (
+                "topology_evidence_sha256",
+                "node_manifest_sha256",
+                "node_identity_digest",
+                "query_digest",
+                "scope_digest",
+                "local_view_digest",
+            )
+        )
+        and isinstance(sync, dict)
+        and sync.get("enabled") is True
+        and sync.get("paused") is False
+        and sync.get("peers_online") == 3
+        and sync.get("pending_outgoing_ops") == 0
+        and isinstance(sync.get("total_ops_synced"), int)
+        and not isinstance(sync.get("total_ops_synced"), bool)
+        and sync["total_ops_synced"] >= 0
+    ):
+        raise EvidenceError("privacy checkpoint manifest is invalid")
+    _validate_timestamp(value.get("captured_at_utc"), value["captured_at_epoch"])
+
+
+def validate_privacy_scenario(
+    *, topology_path: Path, checkpoint_paths: list[Path]
+) -> dict[str, Any]:
+    """Validate private local visibility and zero synchronization activity."""
+    topology = _require_topology(_read_json(topology_path))
+    if len(checkpoint_paths) != 6 or len({path.resolve() for path in checkpoint_paths}) != 6:
+        raise EvidenceError("exactly six distinct privacy checkpoints are required")
+    values = [_read_json(path) for path in checkpoint_paths]
+    for value in values:
+        _validate_privacy_checkpoint(value)
+    topology_hash = _sha256_file(topology_path)
+    identities = set(topology["topology"]["member_identity_digests"])
+    if any(
+        value["run_id"] != topology["run_id"]
+        or value["release"] != topology["release"]
+        or value["topology_evidence_sha256"] != topology_hash
+        for value in values
+    ):
+        raise EvidenceError("privacy checkpoints do not bind the topology release")
+    if {value["node_identity_digest"] for value in values} != identities:
+        raise EvidenceError("privacy checkpoints do not cover the topology devices")
+    if {
+        value["node_manifest_sha256"] for value in values
+    } != set(topology["source_node_manifest_sha256"]):
+        raise EvidenceError("privacy checkpoints do not bind the topology nodes")
+    if len({value["query_digest"] for value in values}) != 1 or len(
+        {value["scope_digest"] for value in values}
+    ) != 1:
+        raise EvidenceError("privacy checkpoints do not share one query and scope")
+
+    grouped = {
+        phase: [value for value in values if value["checkpoint"] == phase]
+        for phase in ("baseline", "post-write")
+    }
+    if any(
+        len(group) != 3
+        or {value["node_identity_digest"] for value in group} != identities
+        or max(value["captured_at_epoch"] for value in group)
+        - min(value["captured_at_epoch"] for value in group)
+        > MAX_CAPTURE_SKEW_SECONDS
+        for group in grouped.values()
+    ):
+        raise EvidenceError(
+            "each privacy checkpoint must cover all three devices within the time window"
+        )
+    baseline = grouped["baseline"]
+    post_write = grouped["post-write"]
+    if any(value["local_result_count"] != 0 for value in baseline) or len(
+        {value["local_view_digest"] for value in baseline}
+    ) != 1:
+        raise EvidenceError("privacy baseline already contains the scenario memory")
+    empty_view_digest = baseline[0]["local_view_digest"]
+    roles = [value["role"] for value in post_write]
+    if roles.count("writer") != 1 or roles.count("observer") != 2:
+        raise EvidenceError("privacy post-write roles are incomplete")
+    writer = next(value for value in post_write if value["role"] == "writer")
+    observers = [value for value in post_write if value["role"] == "observer"]
+    if writer["local_result_count"] != 1 or any(
+        value["local_result_count"] != 0 for value in observers
+    ) or writer["local_view_digest"] == empty_view_digest or any(
+        value["local_view_digest"] != empty_view_digest for value in observers
+    ):
+        raise EvidenceError("private memory visibility escaped the writer device")
+    by_identity = {
+        identity: sorted(
+            (value for value in values if value["node_identity_digest"] == identity),
+            key=lambda value: 0 if value["checkpoint"] == "baseline" else 1,
+        )
+        for identity in identities
+    }
+    for series in by_identity.values():
+        if len(series) != 2 or series[0]["captured_at_epoch"] > series[1]["captured_at_epoch"]:
+            raise EvidenceError("privacy checkpoint times are out of order")
+        if series[0]["node_manifest_sha256"] != series[1]["node_manifest_sha256"]:
+            raise EvidenceError("one device used inconsistent node manifests")
+        if series[0]["sync"]["total_ops_synced"] != series[1]["sync"]["total_ops_synced"]:
+            raise EvidenceError("private write changed synchronization acknowledgements")
+
+    generated_at_utc, generated_at_epoch = _utc_now()
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": PRIVACY_REPORT_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": False,
+        "status": "pass",
+        "run_id": topology["run_id"],
+        "generated_at_utc": generated_at_utc,
+        "generated_at_epoch": generated_at_epoch,
+        "release": topology["release"],
+        "topology_evidence_sha256": topology_hash,
+        "source_checkpoint_sha256": sorted(
+            _sha256_file(path) for path in checkpoint_paths
+        ),
+        "scenario": "private-scope-non-propagation",
+        "checks": {
+            "clean_three_device_baseline": "passed",
+            "private_memory_visible_on_writer_only": "passed",
+            "private_memory_absent_on_two_observers": "passed",
+            "zero_pending_sync_operations": "passed",
+            "unchanged_sync_acknowledgements": "passed",
+        },
+        "remaining_required_scenarios": [
+            "offline-write-and-reconnect",
+            "concurrent-update-and-conflict-resolution",
+            "tombstone-propagation-and-no-resurrection",
+            "final-logical-view-convergence",
+        ],
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1170,6 +1457,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     offline_scenario.add_argument("--output", required=True, type=Path)
     offline_scenario.add_argument("--overwrite", action="store_true")
+    privacy_checkpoint = subparsers.add_parser("capture-privacy")
+    privacy_checkpoint.add_argument("--topology", required=True, type=Path)
+    privacy_checkpoint.add_argument("--node", required=True, type=Path)
+    privacy_checkpoint.add_argument("--base-url", default="http://127.0.0.1:8765")
+    privacy_checkpoint.add_argument("--scope", required=True)
+    privacy_checkpoint.add_argument(
+        "--checkpoint", required=True, choices=("baseline", "post-write")
+    )
+    privacy_checkpoint.add_argument(
+        "--role", required=True, choices=("baseline", "writer", "observer")
+    )
+    privacy_checkpoint.add_argument("--query-file", required=True, type=Path)
+    privacy_checkpoint.add_argument("--output", required=True, type=Path)
+    privacy_checkpoint.add_argument("--overwrite", action="store_true")
+    privacy_scenario = subparsers.add_parser("validate-privacy")
+    privacy_scenario.add_argument("--topology", required=True, type=Path)
+    privacy_scenario.add_argument(
+        "--checkpoint", required=True, action="append", type=Path
+    )
+    privacy_scenario.add_argument("--output", required=True, type=Path)
+    privacy_scenario.add_argument("--overwrite", action="store_true")
     return parser
 
 
@@ -1235,12 +1543,39 @@ def main() -> int:
                 query=query,
                 scope=args.scope,
             )
-        else:
+        elif args.command == "validate-offline":
             output = args.output.resolve()
             inputs = {args.topology.resolve(), *(path.resolve() for path in args.checkpoint)}
             if output in inputs:
                 raise EvidenceError("scenario output must not overwrite an input")
             report = validate_offline_scenario(
+                topology_path=args.topology.resolve(),
+                checkpoint_paths=args.checkpoint,
+            )
+        elif args.command == "capture-privacy":
+            output = args.output.resolve()
+            inputs = {args.topology.resolve(), args.node.resolve(), args.query_file.resolve()}
+            if output in inputs:
+                raise EvidenceError("checkpoint output must not overwrite an input")
+            try:
+                query = args.query_file.read_text(encoding="utf-8")
+            except OSError as exc:
+                raise EvidenceError("scenario query file is not readable") from exc
+            report = capture_privacy_checkpoint(
+                topology_path=args.topology.resolve(),
+                node_path=args.node.resolve(),
+                base_url=args.base_url,
+                checkpoint=args.checkpoint,
+                role=args.role,
+                query=query,
+                scope=args.scope,
+            )
+        else:
+            output = args.output.resolve()
+            inputs = {args.topology.resolve(), *(path.resolve() for path in args.checkpoint)}
+            if output in inputs:
+                raise EvidenceError("scenario output must not overwrite an input")
+            report = validate_privacy_scenario(
                 topology_path=args.topology.resolve(),
                 checkpoint_paths=args.checkpoint,
             )

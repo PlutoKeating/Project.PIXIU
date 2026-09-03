@@ -200,6 +200,41 @@ python3 build/release/scripts/three-device-evidence.py validate-offline \
 形成相同的 v+1 新视图；恢复后 A 必须精确追平，三端重新在线且队列归零。报告不含
 查询、正文、共享域或设备信息。它为 N-02/N-03/N-05 建立证据契约，但没有真实三机
 检查点输入、且其余场景未汇总前，仍固定为非最终证据。
+
+### 私有作用域不传播场景取证
+
+准备唯一查询标记，但使用 `user:*` 私有作用域。写入前在三端采集
+`baseline/baseline`，确认均为零命中；仅在设备 A 写入私有记忆，再由 A 以
+`post-write/writer`、B/C 以 `post-write/observer` 采集：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py capture-privacy \
+  --topology three-device-topology.json \
+  --node sync-node-evidence.json \
+  --scope user:team-demo \
+  --checkpoint post-write --role writer \
+  --query-file private-scenario-query.txt \
+  --output privacy-node-a-post-write.json
+```
+
+把两阶段各三份检查点汇总校验：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py validate-privacy \
+  --topology three-device-topology.json \
+  --checkpoint node-a-baseline.json \
+  --checkpoint node-b-baseline.json \
+  --checkpoint node-c-baseline.json \
+  --checkpoint node-a-post-write.json \
+  --checkpoint node-b-post-write.json \
+  --checkpoint node-c-post-write.json \
+  --output private-scope-scenario.json
+```
+
+通过条件是写入端恰有一条本地命中、两观察端继续零命中，所有待发队列为零，并且
+每台设备前后的同步确认计数完全不变。输出仅保留条目数、计数和加盐摘要，不包含
+查询、正文、私域原文或设备身份。该报告建立 N-06 的真实设备证据契约，但仍固定
+`final_device_evidence=false`，直至真实三机输入和其余场景汇总完成。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取
