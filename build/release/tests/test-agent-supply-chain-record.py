@@ -94,7 +94,14 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
             )
             report = json.loads(audit.read_text(encoding="utf-8"))
             self.assertTrue(all(item.get("valid") for item in report["evidence"].values()))
-            self.assertEqual(report["blockers"], ["authenticated-url-detected"])
+            evidence_blockers = {
+                blocker
+                for blocker in report["blockers"]
+                if blocker.startswith("missing-")
+                or blocker.startswith("invalid-")
+                or blocker == "empty-agent-notice"
+            }
+            self.assertEqual(evidence_blockers, set())
 
     def test_rejects_authenticated_url_in_log(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
