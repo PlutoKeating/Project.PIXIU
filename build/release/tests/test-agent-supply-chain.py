@@ -108,6 +108,9 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
             report = AUDIT.audit(root, policy_path, root / "evidence")
 
         self.assertFalse(report["ready"])
+        self.assertEqual(report["evidence_schema"], 1)
+        self.assertEqual(report["evidence_class"], "agent-supply-chain-audit")
+        self.assertEqual(report["status"], "fail")
         self.assertIn("runtime-version-facts-unavailable", report["blockers"])
         self.assertIn("component-not-pinned:kylin_agent", report["blockers"])
 
@@ -120,6 +123,8 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
             )
 
         self.assertFalse(report["ready"])
+        self.assertEqual(report["status"], "fail")
+        self.assertRegex(report["release_commit"], r"^[0-9a-f]{40}$")
         self.assertIn("missing-host-build-evidence", report["blockers"])
         self.assertTrue(report["sensitive_scan"]["matched_values_redacted"])
         serialized = json.dumps(report)

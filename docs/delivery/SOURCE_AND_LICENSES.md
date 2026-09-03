@@ -44,6 +44,8 @@ Runtime 全量 wheel、锁文件、离线安装日志；每个实物均须有 SH
 和许可证边界；任意包列表或非空占位文本不再算有效证据。敏感扫描报告只保存规则与
 相对文件名，不保存匹配文本；
 当前报告不通过是已知供应链阻塞，不得将“脚本执行成功”误写为“供应链通过”。
+审计 JSON 还带 `agent-supply-chain-audit` 类型、release commit 和 pass/fail，最终
+D-07 只能收录 `ready=true` 且 `status=pass` 的同版报告。
 真实候选的四项文件应由 `record-agent-supply-chain.py` 从宿主产物/源码/构建日志和
 wheel `METADATA` 自动记录并生成，避免手填包名、版本或摘要。记录器拒绝不同内容的
 同名覆盖及日志/锁文件中的认证式 URL；`--network-isolated` 必须与本次隔离执行日志

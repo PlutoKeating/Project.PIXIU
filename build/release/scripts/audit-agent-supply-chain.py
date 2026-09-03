@@ -387,8 +387,18 @@ def audit(root: Path, policy_path: Path, evidence_dir: Path) -> dict[str, Any]:
     evidence = load_evidence(evidence_dir, policy["evidence"])
     blockers.extend(validate_evidence(evidence_dir, evidence, policy))
     blockers = sorted(set(blockers))
+    try:
+        release_commit = git(root, "rev-parse", "HEAD")
+    except (OSError, subprocess.CalledProcessError):
+        release_commit = None
+        blockers.append("release-commit-unavailable")
+        blockers = sorted(set(blockers))
     return {
         "schema_version": 1,
+        "evidence_schema": 1,
+        "evidence_class": "agent-supply-chain-audit",
+        "release_commit": release_commit,
+        "status": "pass" if not blockers else "fail",
         "ready": not blockers,
         "policy": policy_path.relative_to(root).as_posix(),
         "components": components,

@@ -115,6 +115,8 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 脚本与发行证据尚未满足这些条件，因此预期 `ready=false`；不得删掉门禁或伪造证据
 来取得绿色结果。未初始化 submodule 时，普通模式会把组件固定与 Runtime 版本事实
 记为不可用而不是崩溃；强制模式仍必然失败。
+报告同时固定输出 `agent-supply-chain-audit` 证据类型、仓库 commit 和明确 pass/fail，
+供 D-07 原始证据归档做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
 
 ## 三台设备拓扑取证
 
