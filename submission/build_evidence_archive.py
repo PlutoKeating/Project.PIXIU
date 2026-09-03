@@ -32,6 +32,7 @@ DEEP_VALIDATORS = {
     "agent_lifecycle": ("build/release/scripts/agent-lifecycle-evidence.py", "validate_final"),
     "performance": ("build/release/scripts/final-performance-evidence.py", "validate_final"),
     "dataset": ("build/release/scripts/final-dataset-manifest.py", "validate_manifest"),
+    "install_update": ("build/release/scripts/install-update-evidence.py", "validate_final"),
 }
 
 
@@ -204,6 +205,43 @@ def validate_embedded_sources(
     return []
 
 
+def validate_install_sources(
+    documents: dict[str, dict[str, Any]], attachment_paths: list[Path]
+) -> list[str]:
+    try:
+        install = documents["install_update"]
+        sources = install["source_sha256"]
+        by_digest = {sha256_file(path): path for path in attachment_paths}
+        relative_path, _ = DEEP_VALIDATORS["install_update"]
+        spec = importlib.util.spec_from_file_location(
+            "pixiu_embedded_install_validator", ROOT / relative_path
+        )
+        if spec is None or spec.loader is None:
+            raise RuntimeError("install/update validator cannot be loaded")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        package_sha = nested(install, ["release", "candidate_package_sha256"])
+        for operation in sorted(module.OPERATIONS):
+            operation_path = by_digest[sources[operation]]
+            operation_document = read_json(operation_path)
+            module.validate_operation(operation_document, package_sha)
+            if operation_document.get("operation") != operation:
+                raise ValueError("install operation source kind mismatch")
+            operation_sources = operation_document.get("source_sha256")
+            if not isinstance(operation_sources, dict):
+                raise ValueError("install operation source map is missing")
+            for source_name in ("before", "after", "proof"):
+                source_path = by_digest[operation_sources[source_name]]
+                if source_name != "proof":
+                    snapshot = read_json(source_path)
+                    module.validate_snapshot(snapshot)
+                    if snapshot != operation_document[source_name]:
+                        raise ValueError("install operation snapshot does not match attachment")
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError, RuntimeError) as exc:
+        return [f"embedded install/update validation failed: {exc}"]
+    return []
+
+
 def recompute_primary_metrics(
     dataset: dict[str, Any], report: dict[str, Any]
 ) -> dict[str, float]:
@@ -293,7 +331,7 @@ def validate_cross_references(
     record_paths: dict[str, Path],
     attachment_paths: list[Path],
 ) -> list[str]:
-    required = {"native_sdk", "agent_lifecycle", "performance", "dataset"}
+    required = {"native_sdk", "agent_lifecycle", "performance", "dataset", "install_update"}
     if not required.issubset(documents) or not required.issubset(record_paths):
         return ["cross-reference validation is missing primary evidence records"]
     errors: list[str] = []
@@ -324,8 +362,20 @@ def validate_cross_references(
     dataset_artifact = nested(documents["dataset"], ["dataset", "artifact_sha256"])
     if dataset_artifact not in attachment_digests:
         errors.append("dataset: frozen dataset artifact is not archived")
+    install_sources = documents["install_update"].get("source_sha256")
+    if not isinstance(install_sources, dict):
+        errors.append("install_update: source digest map is incomplete")
+    else:
+        if install_sources.get("native") != record_digests["native_sdk"]:
+            errors.append("install_update: native evidence digest mismatch")
+        for operation in (
+            "fresh_install", "reinstall", "upgrade", "rollback", "uninstall", "gui_update"
+        ):
+            if install_sources.get(operation) not in attachment_digests:
+                errors.append(f"install_update: {operation} record is not archived")
     if not errors:
         errors.extend(validate_embedded_sources(documents, attachment_paths))
+        errors.extend(validate_install_sources(documents, attachment_paths))
     return errors
 
 

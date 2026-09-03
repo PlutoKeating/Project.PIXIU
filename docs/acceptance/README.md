@@ -77,3 +77,7 @@ Agent 生命周期证据、冻结数据集 manifest、逐样本评测 JSON 与�
 不是赛方或第三方标准集，而是团队根据附录 A 编写的确定性合成 acceptance corpus；
 manifest 固定 50 个 fixture、90 个纯测试用例、20 次检索重复以及规范化/文件/划分
 摘要。当前仓库只保存生成器和历史 portable 报告，不预先伪造最终候选 manifest。
+
+最终安装/升级结果由 `build/release/scripts/install-update-evidence.py` 采集和汇总。它要求
+六种真实操作的前后 V11 状态、独立 proof、同一 strict 候选包及数据保留指纹；工具
+契约 6/6 通过，但最终 V11 候选的矩阵尚未运行，不能在本报告中预填通过结论。

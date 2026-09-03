@@ -42,6 +42,8 @@ bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-final-dataset-manifest.py"
 "${PIXIU_PYTHON:-python3}" \
+    "${PIXIU_ROOT}/build/release/tests/test-install-update-evidence.py"
+"${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-three-device-evidence.py"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-agent-supply-chain.py"

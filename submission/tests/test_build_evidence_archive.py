@@ -188,6 +188,83 @@ class EvidenceArchiveTest(unittest.TestCase):
             "task_set_sha256": task_set_sha,
         }
         records["performance"].write_text(json.dumps(performance), encoding="utf-8")
+
+        install_spec = importlib.util.spec_from_file_location(
+            "test_install_update_validator",
+            MODULE.ROOT / "build/release/scripts/install-update-evidence.py",
+        )
+        assert install_spec and install_spec.loader
+        install_module = importlib.util.module_from_spec(install_spec)
+        install_spec.loader.exec_module(install_module)
+
+        def snapshot(installed: bool, version: str | None, stamp: str) -> dict:
+            return {
+                "evidence_schema": 1,
+                "evidence_class": install_module.SNAPSHOT_CLASS,
+                "real_device_evidence": True,
+                "captured_at_utc": stamp,
+                "platform": {
+                    "family": "kylin", "version_major": "11", "architecture": "amd64",
+                },
+                "candidate_package": {
+                    "filename": package.name, "sha256": package_sha, "size": package.stat().st_size,
+                    "debian_version": "0.4.0-1", "architecture": "amd64", "name": "pixiu",
+                },
+                "installed": {
+                    "present": installed, "debian_version": version,
+                    "service_active": installed, "binary_present": installed,
+                    "release_manifest_present": installed,
+                },
+                "runtime": {
+                    "version": {"product_version": str(version).split("-")[0]} if installed else None,
+                    "health": {"status": "ready", "database": "ok"} if installed else None,
+                    "capabilities": {"contest_ready": True} if installed else None,
+                },
+                "preserved_state": {
+                    "config_present": True, "config_sha256": "c" * 64,
+                    "database": {
+                        "present": True, "integrity": "ok",
+                        "logical_counts": {"evidence": 7, "knowledge_items": 5, "preferences": 2, "sync_peers": 2},
+                        "device_identity_digest": "d" * 64,
+                    },
+                },
+            }
+
+        operation_specs = {
+            "fresh_install": (snapshot(False, None, "2026-09-05T00:00:00Z"), snapshot(True, "0.4.0-1", "2026-09-05T00:01:00Z"), 0, "installed"),
+            "reinstall": (snapshot(True, "0.4.0-1", "2026-09-05T00:02:00Z"), snapshot(True, "0.4.0-1", "2026-09-05T00:03:00Z"), 0, "installed"),
+            "upgrade": (snapshot(True, "0.3.0-1", "2026-09-05T00:04:00Z"), snapshot(True, "0.4.0-1", "2026-09-05T00:05:00Z"), 0, "installed"),
+            "rollback": (snapshot(True, "0.3.0-1", "2026-09-05T00:06:00Z"), snapshot(True, "0.3.0-1", "2026-09-05T00:07:00Z"), 5, "recovered"),
+            "uninstall": (snapshot(True, "0.4.0-1", "2026-09-05T00:08:00Z"), snapshot(False, None, "2026-09-05T00:09:00Z"), 0, "removed"),
+            "gui_update": (snapshot(True, "0.3.0-1", "2026-09-05T00:10:00Z"), snapshot(True, "0.4.0-1", "2026-09-05T00:11:00Z"), 0, "installed"),
+        }
+        install_sources = {"native": MODULE.sha256_file(records["native_sdk"])}
+        for operation, (before, after, exit_code, outcome) in operation_specs.items():
+            before_path = root / f"{operation}-before.json"
+            after_path = root / f"{operation}-after.json"
+            proof_path = root / f"{operation}-proof.log"
+            before_path.write_text(json.dumps(before, sort_keys=True), encoding="utf-8")
+            after_path.write_text(json.dumps(after, sort_keys=True), encoding="utf-8")
+            proof_path.write_text(f"operation proof {operation}\n", encoding="utf-8")
+            operation_document = install_module.make_operation(
+                operation, before_path, after_path, proof_path, exit_code, outcome
+            )
+            operation_path = root / f"{operation}-operation.json"
+            operation_path.write_text(json.dumps(operation_document, sort_keys=True), encoding="utf-8")
+            attachments.extend((before_path, after_path, proof_path, operation_path))
+            install_sources[operation] = MODULE.sha256_file(operation_path)
+        install = json.loads(records["install_update"].read_text())
+        install["release"].update({
+            "product_version": "0.4.0", "debian_version": "0.4.0-1",
+            "architecture": "amd64", "profile": "kylin-v11-native-x86_64",
+            "native_evidence_sha256": MODULE.sha256_file(records["native_sdk"]),
+        })
+        install["source_sha256"] = install_sources
+        install["observations"] = {
+            "operation_count": 6, "payloads_retained": False,
+            "uninstall_policy": "remove-preserves-user-data; purge-deletes-user-data",
+        }
+        records["install_update"].write_text(json.dumps(install), encoding="utf-8")
         return policy, package, records, attachments
 
     def test_complete_archive_round_trips_and_binds_package(self) -> None:
@@ -247,7 +324,10 @@ class EvidenceArchiveTest(unittest.TestCase):
             root = Path(temporary)
             _, _, records, attachments = self.fixtures(root)
             documents = {name: MODULE.read_json(path) for name, path in records.items()}
-            errors = MODULE.validate_cross_references(documents, records, attachments[:-1])
+            errors = MODULE.validate_cross_references(
+                documents, records,
+                [path for path in attachments if path.name != "memory-ablation.json"],
+            )
             self.assertTrue(any("comparison input is not archived" in error for error in errors))
 
     def test_embedded_source_validation_rejects_non_dataset_attachment(self) -> None:
@@ -271,6 +351,20 @@ class EvidenceArchiveTest(unittest.TestCase):
             documents["performance"]["source_sha256"]["report"] = MODULE.sha256_file(report_path)
             errors = MODULE.validate_embedded_sources(documents, attachments)
             self.assertTrue(any("raw outcomes" in error for error in errors))
+
+    def test_install_source_validation_rejects_tampered_snapshot(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _, _, records, attachments = self.fixtures(root)
+            snapshot_path = next(
+                path for path in attachments if path.name == "upgrade-after.json"
+            )
+            snapshot = MODULE.read_json(snapshot_path)
+            snapshot["preserved_state"]["config_sha256"] = "e" * 64
+            snapshot_path.write_text(json.dumps(snapshot), encoding="utf-8")
+            documents = {name: MODULE.read_json(path) for name, path in records.items()}
+            errors = MODULE.validate_install_sources(documents, attachments)
+            self.assertTrue(any("install/update" in error for error in errors))
 
 
 if __name__ == "__main__":

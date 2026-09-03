@@ -190,10 +190,53 @@ python3 build/release/scripts/final-dataset-manifest.py validate \
 无 train/validation 集。数据集 JSON 和 manifest 都进入 D-07，且不得覆盖已有输出。
 
 D-07 归档不是对这些输出的简单打包：`build_evidence_archive.py` 会直接加载 native、
-Agent、性能和数据集的深度验证函数，并核对 Agent→native、performance→三主记录及
+Agent、性能、数据集和安装/升级矩阵的深度验证函数，并核对 Agent→native、performance→三主记录及
 两个原始附件、dataset manifest→冻结 JSON 的摘要关系。冻结 JSON 会再次规范化并
 检查 50/15/25 样本构成；逐样本报告与消融矩阵会重新评分且必须与性能摘要一致。
 同样检查会在 ZIP 解包复验时重跑。
+
+## 安装、升级、回滚与卸载矩阵取证
+
+`install-update-evidence.py` 不替操作者执行安装或卸载。每个真实动作之前和之后，使用
+同一候选 `.deb` 采集状态；已安装快照必须能访问 loopback 后端，并要求服务、数据库和
+strict contest capability 就绪：
+
+```bash
+sudo python3 build/release/scripts/install-update-evidence.py snapshot \
+  --package FINAL_DEB --expect-installed yes --output OPERATION-before.json
+# 通过该场景规定的系统安装器、特权 helper 或 GUI 执行真实动作，并保存去敏日志/测试记录。
+sudo python3 build/release/scripts/install-update-evidence.py snapshot \
+  --package FINAL_DEB --expect-installed yes --output OPERATION-after.json
+python3 build/release/scripts/install-update-evidence.py operation \
+  --kind OPERATION --before OPERATION-before.json --after OPERATION-after.json \
+  --proof OPERATION-proof.log --exit-code 0 --outcome installed \
+  --output OPERATION-operation.json
+```
+
+`OPERATION` 必须分别为 `fresh_install`、`reinstall`、`upgrade`、`rollback`、
+`uninstall`、`gui_update`。首装的 before 和卸载的 after 使用
+`--expect-installed no`；故障注入回滚必须记录 helper 的真实退出码 5 与
+`--outcome recovered`；卸载使用 `--outcome removed`。GUI 记录必须来自真实
+`UpgradeController → pkexec → /usr/lib/pixiu/install-update` 操作，不接受直接运行后端
+API。每次动作使用独立的前后快照和 proof 文件，不得重复摘要或包含记忆正文、密钥、
+个人路径。
+
+六条 operation JSON 完成后生成主记录：
+
+```bash
+python3 build/release/scripts/install-update-evidence.py finalize \
+  --native-evidence NATIVE_SDK_JSON \
+  --operation fresh-install-operation.json \
+  --operation reinstall-operation.json --operation upgrade-operation.json \
+  --operation rollback-operation.json --operation uninstall-operation.json \
+  --operation gui-update-operation.json --output install-update-matrix.json
+python3 build/release/scripts/install-update-evidence.py validate \
+  --input install-update-matrix.json
+```
+
+主记录、六条 operation、十二份快照和六份 proof 都必须作为 D-07 附件。归档器会按摘要
+重新打开快照，核验状态转换和数据保留，再核对主记录引用的 strict 原生证据。当前工具
+测试通过不等于最终真机矩阵通过。
 
 ## 三台设备拓扑取证
 
