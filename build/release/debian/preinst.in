@@ -1,0 +1,61 @@
+#!/bin/sh
+# Fail-fast platform gate rendered from the selected release profile.
+set -eu
+
+STRICT_NATIVE=@STRICT_NATIVE@
+EXPECTED_ARCH=@ARCH@
+ROOT_PREFIX=${PIXIU_PREFLIGHT_ROOT:-}
+CHECK_PATH=${PIXIU_PREFLIGHT_PATH:-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin}
+DPKG=${PIXIU_PREFLIGHT_DPKG:-dpkg}
+DPKG_QUERY=${PIXIU_PREFLIGHT_DPKG_QUERY:-dpkg-query}
+
+fail() {
+    echo "pixiu-preinst: $1" >&2
+    exit 1
+}
+
+if [ "${STRICT_NATIVE}" != "1" ]; then
+    echo "pixiu-preinst: generic compatibility profile; Kylin SDK capabilities are optional"
+    exit 0
+fi
+
+OS_RELEASE="${ROOT_PREFIX}/etc/os-release"
+[ -r "${OS_RELEASE}" ] || fail "cannot read /etc/os-release; Kylin V11 is required"
+ID=
+NAME=
+VERSION_ID=
+# shellcheck source=/dev/null
+. "${OS_RELEASE}"
+OS_ID="${ID:-} ${NAME:-}"
+printf '%s\n' "${OS_ID}" | grep -qi 'kylin' \
+    || fail "this native package requires Kylin OS V11"
+OS_MAJOR=${VERSION_ID%%.*}
+OS_MAJOR=${OS_MAJOR#[vV]}
+[ "${OS_MAJOR}" = "11" ] || fail "Kylin OS major version 11 is required"
+
+ACTUAL_ARCH="$(${DPKG} --print-architecture 2>/dev/null)" \
+    || fail "cannot determine Debian architecture"
+[ "${ACTUAL_ARCH}" = "${EXPECTED_ARCH}" ] \
+    || fail "package architecture ${EXPECTED_ARCH} does not match ${ACTUAL_ARCH}"
+
+PATH="${CHECK_PATH}" command -v kylin-agent >/dev/null 2>&1 \
+    || fail "kylin-agent desktop host is not installed"
+RUNTIME="$(PATH="${CHECK_PATH}" command -v kylin-agent-runtime 2>/dev/null || true)"
+if [ -z "${RUNTIME}" ]; then
+    RUNTIME="$(PATH="${CHECK_PATH}" command -v hermes 2>/dev/null || true)"
+fi
+if [ -z "${RUNTIME}" ]; then
+    fail "kylin-agent-runtime 0.9.x is not installed"
+fi
+RUNTIME_VERSION="$(${RUNTIME} --version 2>/dev/null || true)"
+printf '%s\n' "${RUNTIME_VERSION}" | grep -Eq '(^|[^0-9])0\.9\.[0-9]+' \
+    || fail "kylin-agent-runtime must be in the verified 0.9.x range"
+
+for package in libkylin-coreai-embedding libkysdk-vector-engine-client; do
+    status="$(${DPKG_QUERY} -W -f='${db:Status-Status}' "${package}" 2>/dev/null || true)"
+    [ "${status}" = "installed" ] \
+        || fail "required Kylin SDK package is not installed: ${package}"
+done
+
+echo "pixiu-preinst: Kylin V11 native prerequisites verified"
+exit 0

@@ -36,6 +36,11 @@
 | 图形安装器双击安装 | 尚无最终版本取证 | 阻断 |
 | 离线/全新机安装 | 现有 wheels 路径可用，需最终包重验 | 待重验 |
 
+严格画像的 `preinst` 已实现安装前 V11、架构、桌面 Agent、0.9.x runtime 与双 SDK
+包状态检查，任一不满足即在解包前失败；generic/portable 画像明确为非严格并保留
+Debian 降级路径。包内组件清单记录 `install_strict`，最终仍须在目标 V11 用真实
+严格包验证成功路径和每类拒绝路径。
+
 ## 2. 版本管理唯一真相源
 
 采用 SemVer `MAJOR.MINOR.PATCH`，Debian 包版本为 `MAJOR.MINOR.PATCH-REVISION`。

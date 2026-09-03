@@ -104,6 +104,11 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 | `kylin-v11-native-x86_64` | 麒麟 V11 x86_64 严格验收 | `KYSDK=ON`；前端 KylinSDK 与后端 Embedding/Vector pybind 扩展缺一即构建失败；双 SDK 为 Depends |
 | `generic-ubuntu` | Ubuntu CI/开发机 | python3-venv 可用；Qt5 非 t64 包名；wheels 按 cp312 |
 
+严格原生画像还会把 `preinst` 渲染为 fail-closed 探测：要求 Kylin V11、包/系统架构
+一致、`kylin-agent` 可执行、Agent runtime 可报告 0.9.x，以及两个 SDK 包均处于
+installed 状态；失败发生在 PIXIU 文件解包前。generic 与 portable Kylin 画像渲染
+为非严格模式，缺少专有能力时仍可安装核心记忆服务，其结果不得作为原生验收。
+
 新增平台时：拷贝一份画像并修改事实字段即可，流水线其余部分无需改动。
 构建时用 `PIXIU_PROFILE` 选择画像（显式环境变量优先级高于画像）。
 

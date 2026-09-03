@@ -40,6 +40,7 @@ PIXIU_PYTHON_VERSION="${PIXIU_PYTHON_VERSION:-310}"
 PIXIU_SKIP_TESTS="${PIXIU_SKIP_TESTS:-0}"
 PIXIU_DEBIAN_DEPENDS="${PIXIU_DEBIAN_DEPENDS:-}"
 PIXIU_INCLUDE_TESTS="${PIXIU_INCLUDE_TESTS:-0}"
+PIXIU_INSTALL_STRICT="${PIXIU_INSTALL_STRICT:-0}"
 PIXIU_FRONTEND_BUILD_DIR="${PIXIU_FRONTEND_BUILD_DIR:-$(frontend_build_dir)}"
 
 resolve_version
@@ -252,6 +253,7 @@ PIXIU_REVISION="${PIXIU_REVISION}" \
 PIXIU_ARCH="${PIXIU_ARCH}" \
 PIXIU_PROFILE="${PIXIU_PROFILE}" \
 PIXIU_KYSDK="${PIXIU_KYSDK}" \
+PIXIU_INSTALL_STRICT="${PIXIU_INSTALL_STRICT}" \
 PIXIU_PYTHON_VERSION="${PIXIU_PYTHON_VERSION}" \
     "${PIXIU_PYTHON}" \
     "${PIXIU_RELEASE_DIR}/scripts/generate-release-manifest.py" \
@@ -273,6 +275,10 @@ else
     sed -i "/@SUGGESTS@/d" "${STAGE}/DEBIAN/control"
 fi
 install -m 0755 "${DEB_SRC}/postinst" "${STAGE}/DEBIAN/postinst"
+sed -e "s/@STRICT_NATIVE@/${PIXIU_INSTALL_STRICT}/g" \
+    -e "s/@ARCH@/${PIXIU_ARCH}/g" \
+    "${DEB_SRC}/preinst.in" > "${STAGE}/DEBIAN/preinst"
+chmod 0755 "${STAGE}/DEBIAN/preinst"
 install -m 0755 "${DEB_SRC}/prerm"    "${STAGE}/DEBIAN/prerm"
 install -m 0755 "${DEB_SRC}/postrm"   "${STAGE}/DEBIAN/postrm"
 install -m 0644 "${DEB_SRC}/pixiu.env" \

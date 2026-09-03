@@ -81,6 +81,7 @@ def build_manifest(root: Path) -> dict[str, object]:
     architecture = required_env("PIXIU_ARCH")
     profile = required_env("PIXIU_PROFILE")
     kysdk = required_env("PIXIU_KYSDK")
+    install_strict = required_env("PIXIU_INSTALL_STRICT")
     python_abi = required_env("PIXIU_PYTHON_VERSION")
     if not SEMVER.fullmatch(version):
         raise SystemExit("pixiu-manifest: PIXIU_VERSION must be MAJOR.MINOR.PATCH")
@@ -88,6 +89,8 @@ def build_manifest(root: Path) -> dict[str, object]:
         raise SystemExit("pixiu-manifest: invalid PIXIU_REVISION")
     if kysdk not in {"ON", "OFF"}:
         raise SystemExit("pixiu-manifest: PIXIU_KYSDK must be ON or OFF")
+    if install_strict not in {"0", "1"}:
+        raise SystemExit("pixiu-manifest: PIXIU_INSTALL_STRICT must be 0 or 1")
 
     canonical_version = (root / "VERSION").read_text(encoding="utf-8").strip()
     cmake_source = (root / "frontend/CMakeLists.txt").read_text(encoding="utf-8")
@@ -159,6 +162,7 @@ def build_manifest(root: Path) -> dict[str, object]:
             "architecture": architecture,
             "profile": profile,
             "kysdk": kysdk,
+            "install_strict": install_strict == "1",
             "python_abi": python_abi,
         },
         "interfaces": {

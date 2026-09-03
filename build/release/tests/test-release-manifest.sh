@@ -21,6 +21,7 @@ PIXIU_REVISION=9 \
 PIXIU_ARCH=amd64 \
 PIXIU_PROFILE=manifest-test \
 PIXIU_KYSDK=OFF \
+PIXIU_INSTALL_STRICT=0 \
 PIXIU_PYTHON_VERSION=312 \
 SOURCE_DATE_EPOCH=0 \
     python3 "${GENERATOR}" --root "${ROOT}" --output "${MANIFEST}"
@@ -45,6 +46,7 @@ assert manifest["product"] == {
 assert manifest["build"]["architecture"] == "amd64"
 assert manifest["build"]["profile"] == "manifest-test"
 assert manifest["build"]["kysdk"] == "OFF"
+assert manifest["build"]["install_strict"] is False
 assert manifest["build"]["python_abi"] == "312"
 assert manifest["build"]["built_at_utc"] == "1970-01-01T00:00:00Z"
 assert manifest["build"]["git_commit"] == subprocess.check_output(
@@ -92,6 +94,7 @@ if PIXIU_VERSION="${MISMATCH_VERSION}" \
         PIXIU_ARCH=amd64 \
         PIXIU_PROFILE=manifest-test \
         PIXIU_KYSDK=OFF \
+        PIXIU_INSTALL_STRICT=0 \
         PIXIU_PYTHON_VERSION=312 \
         python3 "${GENERATOR}" --root "${ROOT}" \
             --output "${TMP}/mismatched.json" >/dev/null 2>&1; then
@@ -106,6 +109,7 @@ if PIXIU_VERSION="${PRODUCT_VERSION}" \
         PIXIU_ARCH=amd64 \
         PIXIU_PROFILE=manifest-test \
         PIXIU_KYSDK=OFF \
+        PIXIU_INSTALL_STRICT=0 \
         PIXIU_PYTHON_VERSION=312 \
         python3 "${GENERATOR}" --root "${ROOT}" \
             --output "${TMP}/dirty-submodule.json" >/dev/null 2>&1; then

@@ -139,6 +139,7 @@ jobs:
           assert manifest["build"]["git_commit"] == sys.argv[2]
           assert manifest["product"]["debian_version"] == sys.argv[3]
           assert manifest["build"]["architecture"] == sys.argv[4]
+          assert manifest["build"]["install_strict"] is False
           assert manifest["build"]["source_tree_clean"] is True
           assert manifest["provider"]["version"] == manifest["product"]["version"]
           PY

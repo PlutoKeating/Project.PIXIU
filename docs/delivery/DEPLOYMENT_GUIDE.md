@@ -51,6 +51,9 @@ Debian 版本、Git commit、构建画像、API/schema/provider 和四个上游�
 V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 `PIXIU_KYSDK=ON` 同时约束桌面 KylinSDK 和后端 Embedding/Vector 原生扩展；构建、
 安装及真实写入/检索由独立 `pixiu-kylin-v11-native` 工作流执行并输出脱敏证据。
+其 `preinst` 会在文件解包前检查 V11、架构、`kylin-agent`、0.9.x runtime 和双 SDK
+包；错误信息给出缺失项并终止安装。generic/portable 包不会冒充该严格检查结果，
+可从 `/usr/share/pixiu/release-manifest.json` 的 `build.install_strict` 判别。
 
 ## 升级、卸载与恢复
 

@@ -8,6 +8,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
     # shellcheck source=/dev/null
     . "${ROOT}/build/release/profiles/kylin-v11-x86_64.env"
     test "${PIXIU_KYSDK}" = "OFF"
+    test "${PIXIU_INSTALL_STRICT}" = "0"
     case "${APT_BUILD_DEPS}" in
         *cmake*ninja-build*g++*qtbase5-dev*libqt5websockets5-dev*) ;;
         *) echo "portable Kylin build dependencies missing" >&2; exit 1 ;;
@@ -18,6 +19,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 . "${ROOT}/build/release/profiles/kylin-v11-native-x86_64.env"
 
 test "${PIXIU_KYSDK}" = "ON"
+test "${PIXIU_INSTALL_STRICT}" = "1"
 case "${PIXIU_DEBIAN_DEPENDS}" in
     *libkylin-coreai-embedding*libkysdk-vector-engine-client*) ;;
     *) echo "native runtime dependencies missing" >&2; exit 1 ;;

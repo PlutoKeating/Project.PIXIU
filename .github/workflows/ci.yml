@@ -98,6 +98,7 @@ jobs:
           assert manifest["build"]["architecture"] == "amd64"
           assert manifest["build"]["profile"] == "generic-ubuntu"
           assert manifest["build"]["kysdk"] == "OFF"
+          assert manifest["build"]["install_strict"] is False
           assert manifest["build"]["source_tree_clean"] is True
           assert manifest["provider"]["version"] == manifest["product"]["version"]
           assert manifest["sdk_sources"]["embedding"]["required_in_profile"] is False
