@@ -58,6 +58,7 @@ submodule。
 python3 -m pytest -q integrations/kylin_agent/tests
 ```
 
-19 项测试覆盖上游 ABC/插件发现、宿主/API/组件/健康握手、HTTP API 0.3 兼容门禁、真实后端错误码透传、严格能力拒绝、非阻塞
+19 项测试覆盖上游 ABC/插件发现、宿主/API/组件/健康握手、HTTP API 0.3/0.4
+兼容门禁、真实后端错误码透传、严格能力拒绝、非阻塞
 召回、对话 provenance、六类生命周期映射、重试/背压诊断、五个工具、版本化更新、两阶段遗忘
 和错误脱敏。测试无需启动真实后端。

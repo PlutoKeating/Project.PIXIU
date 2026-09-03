@@ -101,6 +101,10 @@ def test_initialize_rejects_incompatible_memory_api():
 
 
 def test_initialize_rejects_incompatible_http_api():
+    compatible = provider(FakeClient(api_version="0.4.0"))
+    compatible.initialize("session 1", platform="cli")
+    compatible.shutdown()
+
     item = provider(FakeClient(api_version="0.2.9"))
     with pytest.raises(RuntimeError, match="PIXIU_API_INCOMPATIBLE"):
         item.initialize("session 1", platform="cli")
