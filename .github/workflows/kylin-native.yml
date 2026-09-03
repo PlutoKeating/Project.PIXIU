@@ -46,7 +46,7 @@ jobs:
           PIXIU_VECTOR_STORE: portable
         run: >-
           "${RUNNER_TEMP}/pixiu-native-venv/bin/python" -m pytest
-          backend/foundation/tests backend/engine/tests -q
+          backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
 
       - name: Build strict native package
         env:

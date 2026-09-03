@@ -15,6 +15,7 @@ governance:
 	bash $(ROOT)/build/release/tests/test-governance.sh
 	bash $(ROOT)/build/release/tests/test-native-profile.sh
 	bash $(ROOT)/build/release/tests/test-config-upgrade-policy.sh
+	bash $(ROOT)/build/release/tests/test-agent-integration.sh
 
 test:
 	$(SCRIPTS)/test.sh

@@ -9,10 +9,9 @@
 > （`feature/frontend`）开发分支合并到 `main` 后，即可运行流水线出包。
 
 > [!CAUTION]
-> 上述“整个 PIXIU 软件”只描述当前记忆服务 + 记忆控制台打包范围。团队已批准
-> openKylin Agent 宿主 + Module E 适配路线，但当前 `.deb` 尚未包含或声明该集成，
-> 因而不能作为完整 OS Agent 交付包。目标发布方案应优先依赖目标机已安装的
-> `kylin-agent`/`agent-runtime`，单独打包 PIXIU 原创适配器，并保留版本/许可证清单。
+> 当前 `.deb` 已包含 PIXIU 原创 Module E，并由桌面用户启动器安装/升级到当前
+> openKylin Agent profile；它仍不打包或冒充未修改的上游 Agent。真实宿主多轮闭环、
+> 支持版本矩阵和最终 V11 双 SDK 证据尚未完成，因此不能据包结构宣称完整验收通过。
 
 ## 交付治理预检
 
@@ -51,8 +50,9 @@ build/release/
     ├── pixiu-backend.service # systemd：后端常驻服务（API 8765 + sync runtime）
     ├── pixiu.env             # 后端默认模板（装到 /usr/share；postinst 首装时创建 /etc 配置）
     └── usr/bin/
-        ├── pixiu             # 一键启动器：确保后端服务在线后打开桌面客户端
-        └── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
+        ├── pixiu             # 一键启动器：后端 + 当前用户 Agent Provider + 控制台
+        ├── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
+        └── pixiu-agent-integrate # Provider 幂等安装/激活；不覆盖非受管同名插件
 ```
 
 打包时还会将 `frontend/scripts/install-update` 安装到
@@ -141,7 +141,8 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 - 独立数字签名、安装前状态备份、失败回滚、安装后服务与 provider 健康检查；
 - GUI 中显示版本、通道、发行说明、进度、授权、失败恢复和受控重启状态；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
-- 最终 `.deb` 包含 Module E，但不直接打包未修改的上游 Agent 源码。
+- `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
+  `pixiu` 启动时更新当前用户 Agent profile，但不打包未修改的上游 Agent 源码。
 
 这些是团队发布门；逐项状态与赛事 D-01～D-10 文档台账见
 `docs/DELIVERY_PLAN.md`。未完成前，现有 `0.1.7` 只能称为功能基线，不能称为最终
@@ -170,9 +171,9 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 
 ## 当前已知边界（脚手架按现状落地，后续随开发自动受益）
 
-- **Agent 宿主与适配**：当前包不含 Module E，也未验证 openKylin Agent 的
-  MemoryProvider 生命周期。完成后需把适配器、依赖探测、服务启动顺序、卸载边界和
-  固定上游版本纳入 profile/包元数据；不得直接把两个上游 submodule 当团队产物打包。
+- **Agent 宿主与适配**：当前包已含 Module E 和幂等激活工具，但尚未完成 openKylin
+  Agent 真实多轮/工具/生命周期及支持版本矩阵验证。仍需补服务启动顺序、卸载边界
+  和健康检查；不得直接把两个上游 submodule 当团队产物打包。
 
 - **引擎麒麟 SDK 绑定**：通用 `KYSDK=OFF` 包只携带 Python 源码；严格
   `kylin-v11-native-x86_64` 画像会在构建中生成两个 pybind11 扩展并装入

@@ -1,0 +1,97 @@
+#!/bin/sh
+# Install/upgrade the packaged PIXIU MemoryProvider in the current user's
+# openKylin Agent profile. Never overwrites an unmanaged same-name plugin.
+set -eu
+
+SOURCE="${PIXIU_AGENT_PLUGIN_SOURCE:-/usr/lib/pixiu/integrations/kylin_agent/pixiu}"
+AGENT_HOME="${HERMES_HOME:-${HOME:-}/.kylin-agent-runtime}"
+PLUGIN_ROOT="${AGENT_HOME}/plugins"
+DEST="${PLUGIN_ROOT}/pixiu"
+MARKER="${DEST}/.pixiu-managed"
+QUIET=0
+
+if [ "${1:-}" = "--quiet" ]; then
+    QUIET=1
+elif [ -n "${1:-}" ]; then
+    echo "usage: pixiu-agent-integrate [--quiet]" >&2
+    exit 2
+fi
+
+say() {
+    [ "${QUIET}" = "1" ] || printf '%s\n' "$1"
+}
+
+fail() {
+    printf 'pixiu-agent-integrate: %s\n' "$1" >&2
+    exit "${2:-1}"
+}
+
+[ -n "${HOME:-}" ] || fail "HOME is not set" 2
+case "${AGENT_HOME}" in
+    /*) ;;
+    *) fail "Agent profile path must be absolute" 2 ;;
+esac
+[ "${AGENT_HOME}" != "/" ] || fail "refusing root as Agent profile" 2
+[ -f "${SOURCE}/__init__.py" ] || fail "packaged provider is missing" 2
+[ -f "${SOURCE}/plugin.yaml" ] || fail "provider manifest is missing" 2
+
+mkdir -p "${PLUGIN_ROOT}"
+if [ -e "${DEST}" ] && [ ! -f "${MARKER}" ]; then
+    fail "refusing to overwrite unmanaged plugin: ${DEST}" 3
+fi
+
+TMP="${PLUGIN_ROOT}/.pixiu.install.$$"
+BACKUP="${PLUGIN_ROOT}/.pixiu.backup.$$"
+cleanup() {
+    if [ -d "${TMP}" ]; then
+        rm -rf -- "${TMP}"
+    fi
+}
+trap cleanup EXIT HUP INT TERM
+
+mkdir "${TMP}"
+cp -R "${SOURCE}/." "${TMP}/"
+find "${TMP}" -type d -exec chmod 0755 {} \;
+find "${TMP}" -type f -exec chmod 0644 {} \;
+VERSION="$(sed -n 's/^version:[[:space:]]*//p' "${SOURCE}/plugin.yaml" | head -n 1)"
+printf '%s\n' "${VERSION:-unknown}" > "${TMP}/.pixiu-managed"
+
+if [ -d "${DEST}" ]; then
+    mv "${DEST}" "${BACKUP}"
+fi
+if ! mv "${TMP}" "${DEST}"; then
+    if [ -d "${BACKUP}" ]; then
+        mv "${BACKUP}" "${DEST}"
+    fi
+    fail "provider activation failed" 1
+fi
+if [ -d "${BACKUP}" ]; then
+    rm -rf -- "${BACKUP}"
+fi
+
+# Provider settings belong to the desktop user's Agent process, not the
+# root-owned backend service environment. Preserve any explicit user values.
+ENV_FILE="${AGENT_HOME}/.env"
+touch "${ENV_FILE}"
+chmod 0600 "${ENV_FILE}"
+grep -q '^PIXIU_AGENT_ENDPOINT=' "${ENV_FILE}" \
+    || printf '%s\n' 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' >> "${ENV_FILE}"
+grep -q '^PIXIU_AGENT_SCOPE=' "${ENV_FILE}" \
+    || printf '%s\n' 'PIXIU_AGENT_SCOPE=user:default' >> "${ENV_FILE}"
+grep -q '^PIXIU_AGENT_STRICT=' "${ENV_FILE}" \
+    || printf '%s\n' 'PIXIU_AGENT_STRICT=0' >> "${ENV_FILE}"
+
+RUNTIME="${PIXIU_AGENT_RUNTIME_BIN:-}"
+if [ -z "${RUNTIME}" ]; then
+    if command -v kylin-agent-runtime >/dev/null 2>&1; then
+        RUNTIME="$(command -v kylin-agent-runtime)"
+    elif command -v hermes >/dev/null 2>&1; then
+        RUNTIME="$(command -v hermes)"
+    else
+        fail "openKylin Agent runtime not found; provider installed but not activated" 4
+    fi
+fi
+
+HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set memory.provider pixiu >/dev/null \
+    || fail "Agent runtime rejected memory.provider=pixiu" 5
+say "PIXIU Agent memory provider is installed and active."

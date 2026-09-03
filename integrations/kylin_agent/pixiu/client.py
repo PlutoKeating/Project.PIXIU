@@ -30,7 +30,9 @@ class PixiuApiClient:
         payload: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         body = None
-        headers = {"Accept": "application/json", "User-Agent": "PIXIU-Agent/0.1.7"}
+        # Product version lives in the package manifest and is checked against
+        # the release version; avoid introducing another hidden version source.
+        headers = {"Accept": "application/json", "User-Agent": "PIXIU-Agent"}
         if payload is not None:
             body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             headers["Content-Type"] = "application/json"

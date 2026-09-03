@@ -7,4 +7,9 @@ if command -v systemctl >/dev/null 2>&1; then
         || systemctl start pixiu-backend.service 2>/dev/null || true
 fi
 
+# This runs as the desktop user, so the packaged provider is installed into the
+# correct Agent profile. Missing runtime/collision is reported but does not
+# prevent opening the standalone PIXIU memory console.
+/usr/bin/pixiu-agent-integrate --quiet || true
+
 exec /usr/bin/pixiu-frontend "$@"

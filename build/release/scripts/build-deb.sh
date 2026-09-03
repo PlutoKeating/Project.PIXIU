@@ -45,18 +45,18 @@ PIXIU_FRONTEND_BUILD_DIR="${PIXIU_FRONTEND_BUILD_DIR:-$(frontend_build_dir)}"
 resolve_version
 log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSDK} wheels=${PIXIU_BUNDLE_WHEELS} py=${PIXIU_PYTHON_VERSION}"
 
-# ── 0/5 版本一致性预检（S2.1：四处版本源同步，不一致即中止发布）────────
+# ── 0/5 版本一致性预检（含 Module E manifest，不一致即中止发布）────────
 # 用户宗旨①的可执行化：frontend/CMakeLists.txt（project VERSION 及其派生的
 # PIXIU_VERSION 宏）、frontend/src/main.cpp（消费宏、不得硬编码）、
 # frontend/src/services/HttpBackendTransport.cpp（User-Agent 消费宏、不得
 # 硬编码，S4 曾因硬编码 0.1.0 漏检）、build/release/scripts/functions.sh
-# （resolve_version 默认值）四处必须一致。
+# （resolve_version 默认值）及 Module E plugin.yaml 必须一致。
 check_version_consistency() {
     local frontend_cmake="${PIXIU_ROOT}/frontend/CMakeLists.txt"
     local frontend_main="${PIXIU_ROOT}/frontend/src/main.cpp"
     local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
     local funcs_file="${PIXIU_ROOT}/build/release/scripts/functions.sh"
-    local cmake_ver pixiu_ver funcs_ver
+    local cmake_ver pixiu_ver funcs_ver provider_ver
 
     # 1) CMakeLists project VERSION（单一事实源）
     cmake_ver="$(sed -nE 's/.*project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
@@ -74,6 +74,8 @@ check_version_consistency() {
     # 3) functions.sh resolve_version 默认版本
     funcs_ver="$(sed -nE 's/.*PIXIU_VERSION:-([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
         "${funcs_file}" | head -n1)"
+    provider_ver="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
+        "${PIXIU_ROOT}/integrations/kylin_agent/pixiu/plugin.yaml" | head -n1)"
     # 4) main.cpp 必须消费宏、不得残留硬编码版本
     if ! grep -qF 'QStringLiteral(PIXIU_VERSION)' "${frontend_main}"; then
         die "frontend/src/main.cpp 未使用 PIXIU_VERSION 宏（setApplicationVersion 应改为 QStringLiteral(PIXIU_VERSION)）"
@@ -92,18 +94,20 @@ check_version_consistency() {
             "（应改用 PIXIU_VERSION 宏，杜绝第 4 处版本源漂移）"
     fi
 
-    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?} HttpTransport=macro-ok"
+    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?} provider=${provider_ver:-?} HttpTransport=macro-ok"
     if [ -z "${cmake_ver}" ] || [ -z "${pixiu_ver}" ] || [ -z "${funcs_ver}" ] \
-       || [ "${cmake_ver}" != "${pixiu_ver}" ] || [ "${pixiu_ver}" != "${funcs_ver}" ]; then
-        die "版本不一致（用户宗旨①：四处同步不得遗漏）：" \
+       || [ -z "${provider_ver}" ] || [ "${cmake_ver}" != "${pixiu_ver}" ] \
+       || [ "${pixiu_ver}" != "${funcs_ver}" ] \
+       || [ "${funcs_ver}" != "${provider_ver}" ]; then
+        die "版本不一致（发布版本与 Module E 均不得遗漏）：" \
             "frontend/CMakeLists.txt=${cmake_ver:-<未提取>}，" \
             "PIXIU_VERSION 宏=${pixiu_ver:-<未提取>}，" \
-            "functions.sh=${funcs_ver:-<未提取>}"
+            "functions.sh=${funcs_ver:-<未提取>}，provider=${provider_ver:-<未提取>}"
     fi
-    # 6) 显式 PIXIU_VERSION 覆盖（CI tag/手动输入）若与四处文件版本不一致，
+    # 6) 显式 PIXIU_VERSION 覆盖（CI tag/手动输入）若与文件版本不一致，
     #    .deb 包版本将与 App 内版本不符——同样中止发布。
     if [ -n "${PIXIU_VERSION:-}" ] && [ "${PIXIU_VERSION}" != "${funcs_ver}" ]; then
-        die "环境变量 PIXIU_VERSION=${PIXIU_VERSION} 与四处版本 ${funcs_ver} 不一致：" \
+        die "环境变量 PIXIU_VERSION=${PIXIU_VERSION} 与源码版本 ${funcs_ver} 不一致：" \
             "deb 包版本将与 App 版本不符，请先同步四处版本再发布"
     fi
     log "version consistency OK: ${funcs_ver}"
@@ -149,6 +153,17 @@ if [ "${PIXIU_INCLUDE_TESTS}" != "1" ]; then
 fi
 find "${BK}" -name '__pycache__' -type d -prune -exec rm -rf {} +
 find "${BK}" -name '*.pyc' -delete
+
+# Module E is an independent user-installed MemoryProvider. The package keeps
+# the canonical read-only payload under /usr/lib; the per-user launcher installs
+# it into the active Agent profile without modifying either upstream submodule.
+INTEGRATION_ROOT="${STAGE}/usr/lib/pixiu/integrations/kylin_agent"
+mkdir -p "${INTEGRATION_ROOT}"
+cp -a "${PIXIU_ROOT}/integrations/kylin_agent/pixiu" "${INTEGRATION_ROOT}/"
+find "${INTEGRATION_ROOT}" -name '__pycache__' -type d -prune -exec rm -rf {} +
+find "${INTEGRATION_ROOT}" -name '*.pyc' -delete
+find "${INTEGRATION_ROOT}" -type d -exec chmod 0755 {} +
+find "${INTEGRATION_ROOT}" -type f -exec chmod 0644 {} +
 
 if [ "${PIXIU_KYSDK}" = "ON" ]; then
     log "[2.5/5] backend Kylin SDK native bindings"
@@ -233,6 +248,8 @@ install -m 0644 "${DEB_SRC}/pixiu-backend.service" \
     "${STAGE}/lib/systemd/system/pixiu-backend.service"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
+install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
+    "${STAGE}/usr/bin/pixiu-agent-integrate"
 install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
     "${STAGE}/usr/lib/pixiu/install-update"
 

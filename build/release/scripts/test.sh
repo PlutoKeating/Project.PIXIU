@@ -20,8 +20,10 @@ log "frontend ctest (offscreen)"
 
 if [ "${PIXIU_BACKEND_TESTS}" = "1" ]; then
     log "backend pytest"
-    (cd "${PIXIU_ROOT}" && "${PIXIU_PYTHON:-python3}" -m pytest backend/foundation/tests backend/engine/tests -q)
+    (cd "${PIXIU_ROOT}" && "${PIXIU_PYTHON:-python3}" -m pytest \
+        backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q)
 else
     warn "backend pytest skipped（PIXIU_BACKEND_TESTS=1 启用，需已安装 backend/requirements.txt）"
 fi
+bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
 log "tests OK"

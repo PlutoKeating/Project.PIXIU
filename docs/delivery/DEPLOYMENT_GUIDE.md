@@ -1,7 +1,7 @@
 # D-04 银河麒麟 V11 部署指南工作稿
 
 - 适用版本：0.1.7 功能基线；最终候选号待定
-- 状态：当前记忆包路径可用；Module E 与双 SDK 最终安装尚未闭环
+- 状态：记忆包与 Module E 安装结构可用；真实宿主和双 SDK 最终安装尚未闭环
 
 ## 安装目标
 
@@ -18,7 +18,10 @@ sudo apt-get install -y ./build/release/out/pixiu_0.1.7-1_amd64.deb
 systemctl status pixiu-backend.service
 ```
 
-当前命令不代表完整最终交付：Module E 尚未随包，且 `KYSDK=OFF`/portable 不能
+包内已含 Module E 的只读 Provider 副本；首次以桌面用户启动 `pixiu` 时，启动器把
+它幂等安装/升级到当前 Agent profile、保留显式配置，并设置
+`memory.provider=pixiu`。若同名目录不是 PIXIU 管理的插件则拒绝覆盖；若宿主 runtime
+不存在则控制台仍可启动，但 Agent 集成必须判为未就绪。`KYSDK=OFF`/portable 仍不能
 替代 V11 双 SDK 严格画像。最终安装必须记录系统版本、架构、包版本、宿主/runtime、
 双 SDK capability、服务状态和首次完整 Agent 操作。
 

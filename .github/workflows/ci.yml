@@ -52,7 +52,7 @@ jobs:
         env:
           PIXIU_EMBEDDING: portable
           PIXIU_VECTOR_STORE: portable
-        run: python -m pytest backend/foundation/tests backend/engine/tests -q
+        run: python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
 
   build-deb:
     runs-on: ubuntu-22.04

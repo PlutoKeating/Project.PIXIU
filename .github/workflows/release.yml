@@ -28,6 +28,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
       - uses: actions/setup-python@v7
         with:
@@ -63,7 +65,7 @@ jobs:
         env:
           PIXIU_EMBEDDING: portable
           PIXIU_VECTOR_STORE: portable
-        run: python -m pytest backend/foundation/tests backend/engine/tests -q
+        run: python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
 
       - name: Build release package
         env:
@@ -92,6 +94,8 @@ jobs:
             grep '^./conffiles$' || true)"
           test "$(stat -c '%a' /etc/pixiu/pixiu.env)" = "640"
           test -x /usr/lib/pixiu/install-update
+          test -x /usr/bin/pixiu-agent-integrate
+          test -f /usr/lib/pixiu/integrations/kylin_agent/pixiu/plugin.yaml
           value="$(sudo awk -F= \
             '/^PIXIU_SYNC_KEY_PASSPHRASE=/{print substr($0,index($0,"=")+1);exit}' \
             /etc/pixiu/pixiu.env)"
