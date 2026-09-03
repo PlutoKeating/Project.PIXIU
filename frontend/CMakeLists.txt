@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(pixiu-frontend VERSION 0.1.7 LANGUAGES CXX)
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PIXIU_PRODUCT_VERSION
+    LIMIT_COUNT 1)
+if(NOT PIXIU_PRODUCT_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+    message(FATAL_ERROR "Invalid or missing product VERSION: ${PIXIU_PRODUCT_VERSION}")
+endif()
+project(pixiu-frontend VERSION "${PIXIU_PRODUCT_VERSION}" LANGUAGES CXX)
 
 # PIXIU_VERSION 编译宏：由 project VERSION（${PROJECT_VERSION}）派生，与
 # main.cpp setApplicationVersion / HttpBackendTransport.cpp User-Agent
@@ -170,6 +175,11 @@ endif()
 include(CTest)
 
 if(BUILD_TESTING)
+    add_test(
+        NAME version_source
+        COMMAND bash "${CMAKE_CURRENT_SOURCE_DIR}/tests/test-version-source.sh"
+            "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+
     add_executable(t_websocket_client
         tests/t_websocket_client.cpp
         src/services/BackendTypes.h

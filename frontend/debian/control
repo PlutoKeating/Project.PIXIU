@@ -1,5 +1,5 @@
 Package: pixiu-frontend
-Version: 0.1.7-1
+Version: @VERSION@-@REVISION@
 Section: utils
 Priority: optional
 Architecture: amd64

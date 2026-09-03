@@ -15,28 +15,25 @@ BUILD_DIR="${BUILD_DIR:-${ROOT}/build/deb}"
 DIST_DIR="${ROOT}/build/dist"
 KYSDK="${PIXIU_HAVE_KYSDK:-ON}"
 
-control="${ROOT}/debian/control"
+control_template="${ROOT}/debian/control"
 postinst="${ROOT}/debian/postinst"
 
-if [[ ! -f "${control}" ]]; then
-    echo "error: ${control} not found" >&2
+if [[ ! -f "${control_template}" ]]; then
+    echo "error: ${control_template} not found" >&2
     exit 1
 fi
 
-version="$(sed -n 's/^Version: //p' "${control}")"
+product_version="$(tr -d '\r\n' < "${ROOT}/../VERSION")"
+revision="${PIXIU_REVISION:-1}"
+if [[ ! "${product_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] \
+   || [[ ! "${revision}" =~ ^[0-9A-Za-z.+~]+$ ]]; then
+    echo "error: invalid VERSION or PIXIU_REVISION" >&2
+    exit 1
+fi
+version="${product_version}-${revision}"
 
 # ── 版本一致性预检（镜像 build/release/scripts/build-deb.sh 的
-#    check_version_consistency 思路）：debian/control 的 Version 上游部分
-#    必须与 frontend/CMakeLists.txt 的 project VERSION（单一事实源）一致，
-#    防止 dpkg -l 显示版本与应用内版本漂移（V-3 曾实测 0.1.0-1 vs 0.1.1）。
-cmake_ver="$(sed -nE 's/.*project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
-    "${ROOT}/CMakeLists.txt" | head -n1)"
-upstream_ver="${version%-*}"   # 剥离 Debian 修订号（如 0.1.1-1 → 0.1.1）
-if [ -z "${cmake_ver}" ] || [ "${upstream_ver}" != "${cmake_ver}" ]; then
-    echo "error: 版本不一致：debian/control Version=${version:-<未提取>} 上游 ${upstream_ver:-<未提取>}，" \
-         "frontend/CMakeLists.txt project VERSION=${cmake_ver:-<未提取>}（应同步为同一版本）" >&2
-    exit 1
-fi
+# CMake 与 control 均从仓库根 VERSION 派生，避免应用内版本和 dpkg 版本漂移。
 
 arch="$(dpkg --print-architecture)"
 deb_name="pixiu-frontend_${version}_${arch}.deb"
@@ -57,7 +54,9 @@ echo "==> staging install tree"
 cmake --install "${BUILD_DIR}" --prefix "${stage}/usr" >/dev/null
 
 mkdir -p "${stage}/DEBIAN"
-cp "${control}" "${stage}/DEBIAN/control"
+sed -e "s/@VERSION@/${product_version}/g" \
+    -e "s/@REVISION@/${revision}/g" \
+    "${control_template}" > "${stage}/DEBIAN/control"
 install -m 0755 "${postinst}" "${stage}/DEBIAN/postinst"
 mkdir -p "${stage}/usr/lib/pixiu"
 install -m 0755 "${ROOT}/scripts/install-update" \

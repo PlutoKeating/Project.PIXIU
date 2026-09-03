@@ -470,6 +470,9 @@ signals:
 
 ## 12. 构建与适配（CMake 片段）
 
+产品版本的唯一输入是仓库根 `VERSION`；CMake 的 `project(VERSION ...)`、应用内
+版本宏和前端独立 Debian control 均在配置/打包时派生，禁止在本模块重复硬编码。
+
 ```cmake
 cmake_minimum_required(VERSION 3.5)
 find_package(Qt5 COMPONENTS Widgets Network WebSockets DBus REQUIRED)
