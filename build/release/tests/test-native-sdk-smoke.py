@@ -52,8 +52,8 @@ class NativeSdkSmokeTest(unittest.TestCase):
             "contest_ready": True,
         }
         responses = [
-            {"product_version": "0.1.7", "component": "pixiu-backend", "api_version": "v1", "agent_memory_api": 1, "schema_version": 12},
-            {"status": "ready", "product_version": "0.1.7", "component": "pixiu-backend", "database": "ok", "schema_version": 12},
+            {"product_version": "0.1.7", "component": "pixiu-memory-backend", "api_version": "v1", "agent_memory_api": 1, "schema_version": 12},
+            {"status": "ready", "product_version": "0.1.7", "component": "pixiu-memory-backend", "database": "ok", "schema_version": 12},
             {"evidence_id": "evd_native", "status": "accepted"},
             {"source_knowledge": "knw_native"},
             {"targets": [{"id": "knw_native"}], "irreversible": True},
@@ -216,6 +216,16 @@ class NativeSdkSmokeTest(unittest.TestCase):
     def test_rejects_non_loopback_service_url(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "loopback"):
             MODULE.validate_base_url("https://example.com:8765")
+
+    def test_installed_package_path_precedes_checkout(self) -> None:
+        original = list(sys.path)
+        try:
+            sys.path[:] = ["", "/usr/lib/pixiu", "/checkout", "/usr/lib/pixiu"]
+            MODULE.prioritize_installed_root()
+            self.assertEqual(sys.path[0], "/usr/lib/pixiu")
+            self.assertEqual(sys.path.count("/usr/lib/pixiu"), 1)
+        finally:
+            sys.path[:] = original
 
     def test_memory_failure_triggers_best_effort_cleanup(self) -> None:
         calls: list[tuple[str, dict | None]] = []

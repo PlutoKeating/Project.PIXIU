@@ -1,8 +1,8 @@
 # D-04 银河麒麟 V11 部署指南工作稿
 
 - 适用版本：0.1.7 功能基线；最终候选号待定
-- 状态：Kylin V11 portable 包构建/跨 revision 安装/健康检查已通过；真实宿主和
-  双 SDK 最终安装尚未闭环
+- 状态：Kylin V11 portable 包构建/跨 revision 安装/健康检查已通过；strict 原生包
+  已构建安装，但用户会话 AI runtime 边界和双 SDK 最终运行尚未闭环
 
 ## 安装目标
 
@@ -56,6 +56,13 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 检查 `kylin-agent` 与 runtime，要求 `--version` 成功且唯一匹配 0.9.x；严格包激活
 失败即停止启动，generic/portable 才允许独立控制台降级。模式可从
 `/usr/share/pixiu/release-manifest.json` 的 `build.install_strict` 判别。
+
+严格画像还要求系统已通过“设置 → AI 模块管理”安装并启用官方 AI 子系统。不要把
+整套 AI 子系统作为 PIXIU 包的整体依赖：它包含大量无关模型；最终 control 只保留
+经同版实测确认的最小 SDK/runtime 包。当前官方 runtime 的 Unix socket 按 UID 隔离，
+而系统级 `pixiu-backend.service` 使用专用账户，尚不能直接访问桌面用户会话 socket。
+在用户会话 SDK 边界实现并通过安全评审前，strict 启动失败属于预期阻断，不得改为
+portable 静默降级或据此声明 H-02/H-03 通过。
 
 ## 升级、卸载与恢复
 

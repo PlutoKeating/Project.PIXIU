@@ -106,11 +106,14 @@ W0 基线与计划
 | W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 流水线已拆分；提交 `ea92b28` 的 V11 strict 双扩展构建及前端 38/38 已通过，自动安装/真实写查仍待 Agent/runtime 与服务 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
 | W2.5 | 在双 SDK 路径运行质量、延迟、资源和冷热压测 | P-01～P-04、F4-04/F4-05 原始报告生成 |
+| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | ADR 批准；strict 服务与直接 SDK 在同一用户会话成功，系统账户不越权访问 socket |
 
 当前 V11 x86_64 软件源已确认并安装双 SDK、桌面 KylinSDK 及开发包；提交 `ea92b28`
 已生成 `KYSDK=ON`/strict amd64 包，包内包含两个 cp312 原生扩展，前端 ctest 38/38。
-当前仍缺 Agent 宿主/runtime 与 Vector Engine/Embedding 真服务全链路证据，故
-W1.6/W2.4/W2.5 和 H-02/H-03 继续保持未通过/未完成。
+首次 strict 安装运行确认官方 AI runtime socket 按 UID 隔离，而当前 systemd 后端的
+专用系统账户无法访问桌面用户会话 runtime；服务按设计失败关闭，portable 恢复后健康。
+因此 W2.6 成为 W1.6/W2.4 的前置项。当前仍缺 Agent 宿主/runtime 与 Vector Engine/
+Embedding 真服务全链路证据，W1.6/W2.4/W2.5/W2.6 和 H-02/H-03 保持未完成/不通过。
 
 ### W3：面向完整 Agent 的 vNext 公共 API 与数据模型（P0）
 

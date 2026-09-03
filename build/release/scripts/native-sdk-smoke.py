@@ -214,7 +214,7 @@ def validate_runtime_reports(
     interfaces = manifest.get("interfaces", {})
     expected_version = {
         "product_version": product.get("version"),
-        "component": "pixiu-backend",
+        "component": "pixiu-memory-backend",
         "api_version": interfaces.get("http_api"),
         "agent_memory_api": interfaces.get("agent_memory_api"),
         "schema_version": interfaces.get("database_schema"),
@@ -225,19 +225,24 @@ def validate_runtime_reports(
         health.get("status") == "ready"
         and health.get("database") == "ok"
         and health.get("product_version") == product.get("version")
-        and health.get("component") == "pixiu-backend"
+        and health.get("component") == "pixiu-memory-backend"
         and health.get("schema_version") == interfaces.get("database_schema")
     ):
         raise RuntimeError("health endpoint does not match release manifest")
+
+
+def prioritize_installed_root(installed_root: Path = Path("/usr/lib/pixiu")) -> None:
+    installed_path = str(installed_root)
+    while installed_path in sys.path:
+        sys.path.remove(installed_path)
+    sys.path.insert(0, installed_path)
 
 
 def run_direct_sdk_lifecycle(
     *, embedder_factory=None, client_factory=None
 ) -> dict[str, str]:
     if embedder_factory is None or client_factory is None:
-        installed_root = Path("/usr/lib/pixiu")
-        if str(installed_root) not in sys.path:
-            sys.path.insert(0, str(installed_root))
+        prioritize_installed_root()
         from backend.engine.kylin.embedding import KylinTextEmbedding
         from backend.engine.kylin.vector import VectorEngineClient
 

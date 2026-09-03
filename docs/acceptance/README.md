@@ -4,6 +4,9 @@
 必须在银河麒麟 V11 上同时使用指定 Embedding 与 Vector Engine SDK，并单独归档。
 最终证据还必须覆盖已批准的 openKylin Agent + Module E 生命周期闭环，以及
 `AcceptanceTestSpecification.md` 的 A-01～A-14；启动上游 Agent 或记忆 API 不算闭环。
+当前 strict 原生编译已通过，但首次安装运行发现系统服务 UID 与桌面用户 AI runtime
+socket 隔离；该失败只计 fail-closed 证据。用户会话 SDK 边界、直接 SDK 生命周期和
+同一候选的产品 API 生命周期全部通过前，H-02/H-03 必须保持不通过。
 
 ## 复现方式
 

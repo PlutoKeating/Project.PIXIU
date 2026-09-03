@@ -123,8 +123,8 @@ PPT 将 OS Agent 定义为系统级智能助手：能够理解复杂指令、规
 | Agent 主体 | `frontend/` 有悬浮球、聊天窗和记忆面板 | 是记忆控制台，不是完整 Agent |
 | 会话 | PIXIU 已保存 session/run/turn provenance；会话主体由上游宿主管理 | 待真实宿主多轮、切换和重启恢复取证 |
 | 自主规划/工具 | Module E 已注册四个记忆工具；规划、审批、Shell、联网搜索来自上游 | 待证明模型自主选择及工具结果回写，不计为团队原创 |
-| Embedding | 有 SDK submodule、pybind 源码和适配层 | 需补最终版本的 V11 真实调用证据 |
-| 向量数据库 | strict 生产适配已注入写入/检索/遗忘链并在 V11 编译成包；portable 才使用 SQLite INT8 | H-02 仍未通过：缺真服务建库/写查删和进程证据 |
+| Embedding | 有 SDK submodule、pybind 源码和适配层；V11 原生编译已通过 | AI runtime socket 按 UID 隔离，当前系统服务无法复用桌面会话；需先建立用户会话 SDK 边界再补真实调用证据 |
+| 向量数据库 | strict 生产适配已注入写入/检索/遗忘链并在 V11 编译成包；portable 才使用 SQLite INT8 | H-02 仍未通过：同一会话边界阻断真服务建库/写查删和进程证据 |
 | 记忆引擎 | 多源接入、偏好、知识、冲突、安全、遗忘及 Module E 调用已有实现 | 契约测试已触发，仍需真实 Agent 生命周期实证 |
 | 记忆流转 | 六类事件已由 Module E 映射到短/中期 API | 长期化策略及真实 session/压缩/结束证据待补 |
 | 分布式同步 | CRDT、Gossip、反熵、配对、签名、mTLS、墓碑 | 是主要创新项，需做多机收敛实证 |

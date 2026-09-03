@@ -28,10 +28,18 @@ KYSDK/strict 错配拒绝，以及用户态 Agent/runtime 缺失、版本命令�
 包内与已装 manifest、dpkg 的 PIXIU/双 SDK 版本、Agent runtime 和三个端点；隔离集合
 直接执行 create/load/upsert/search/delete/drop，产品 API 另走写入/召回/遗忘且失败
 时清理。该测试只证明取证器逻辑，不能替代目标 V11 的真实输出。
+取证器随后修正运行端点组件标识为实际的 `pixiu-memory-backend`，并强制把已安装的
+`/usr/lib/pixiu` 放到导入路径首位，避免工作副本源码遮蔽候选包；对应 7 项单测通过。
 提交 `ea92b28` 已在 V11 amd64/Python 3.12 按 strict profile 完成 `KYSDK=ON` 构建：
 前端 ctest 38/38，Embedding 与 Vector Engine 两个 cp312 扩展均链接并进入 `.deb`，
 包内 manifest 为同一 commit、amd64、strict=true。该构建关闭 wheels 且未安装运行，
 只计原生编译/链接切片，不计 H-02/H-03 或最终安装通过。
+
+首次 strict 安装运行得到预期失败证据：官方 AI runtime socket 以桌面用户 UID 隔离，
+专用系统服务账户没有对应 runtime，后端严格预检拒绝就绪并进入重启；恢复 portable
+配置后健康检查重新通过。AI 子系统升级到 runtime `1.2.0.4` 不改变该安全边界。
+因此当前缺口不是“再装一个 SDK 包”，而是 W2.6 用户会话 SDK 边界；解决前不得把
+失败关闭或直接桌面用户调用冒充产品 H-02/H-03 闭环。
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine

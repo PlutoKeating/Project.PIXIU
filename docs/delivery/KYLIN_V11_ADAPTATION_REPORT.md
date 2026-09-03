@@ -11,8 +11,10 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 
 脱敏平台探测确认 x86_64 目标使用 `VERSION_ID=V11` 格式；能力端点和原生 CI 已兼容
 `11`、`V11`、`v11`。2026-09-04 软件源已提供并安装双 SDK、桌面 KylinSDK 及开发包；
-提交 `ea92b28` 完成 strict 原生编译。但 Agent 宿主/runtime 与双 SDK 真服务调用仍未
-完成，因此不得宣称 H-02/H-03 或完整 Agent 验收通过。
+提交 `ea92b28` 完成 strict 原生编译。首次 strict 安装运行进一步确认 AI runtime
+socket 按 UID 隔离，当前专用系统服务账户无法复用桌面用户会话 runtime，后端因此
+按 strict 规则拒绝就绪；恢复 portable 配置后服务重新健康。该结果只证明失败关闭，
+Agent 宿主/runtime 与双 SDK 真服务调用仍未完成，不得宣称 H-02/H-03 通过。
 
 ## 最终适配矩阵
 
@@ -49,6 +51,16 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
   Vector Engine 两个 cp312 原生扩展；
 - 本切片关闭离线 wheels 且未安装候选包，未运行 SDK 服务生命周期或完整 Agent，
   因而只证明可编译/链接，不计 H-02/H-03 或最终交付通过。
+
+### 2026-09-04 strict 首次运行切片（失败证据）
+
+- strict 包完成安装，Embedding/Vector 原生扩展随包部署；
+- 官方 AI runtime 以桌面用户 UID 创建 Unix socket，`pixiu-backend.service` 的专用
+  系统账户没有对应 runtime，严格启动预检失败并触发服务重启；
+- portable 配置恢复后 `/health` 返回 ready，组件标识为 `pixiu-memory-backend`；
+- AI 子系统随后升级到 runtime `1.2.0.4`，但升级本身不解决跨 UID 边界；
+- 该结果登记为 W2.6 的发布阻断证据。完成用户会话 SDK 边界并在同一候选上重跑
+  direct SDK 与产品 API 生命周期之前，H-02/H-03 均保持不通过。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 
