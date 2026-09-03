@@ -5,7 +5,8 @@ Each node runs ``capture`` locally against the loopback API after the strict
 native SDK smoke test.  ``validate`` combines exactly three node manifests.
 The topology report proves release identity and full-mesh readiness.  Scenario
 commands cover concurrent updates, offline reconnect, and private-scope
-non-propagation through privacy-preserving checkpoints.  Every report remains
+non-propagation plus tombstone no-resurrection through privacy-preserving
+checkpoints.  Every report remains
 ``final_device_evidence=false`` until all required scenarios are implemented and
 collected.
 """
@@ -34,6 +35,8 @@ OFFLINE_EVIDENCE_CLASS = "kylin-v11-offline-reconnect-checkpoint"
 OFFLINE_REPORT_CLASS = "kylin-v11-offline-reconnect-scenario"
 PRIVACY_EVIDENCE_CLASS = "kylin-v11-private-scope-checkpoint"
 PRIVACY_REPORT_CLASS = "kylin-v11-private-scope-scenario"
+TOMBSTONE_EVIDENCE_CLASS = "kylin-v11-tombstone-checkpoint"
+TOMBSTONE_REPORT_CLASS = "kylin-v11-tombstone-no-resurrection-scenario"
 RUN_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,63}")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 COMMIT_PATTERN = re.compile(r"[0-9a-f]{40}")
@@ -1400,6 +1403,352 @@ def validate_privacy_scenario(
     }
 
 
+def capture_tombstone_checkpoint(
+    *,
+    topology_path: Path,
+    node_path: Path,
+    base_url: str,
+    checkpoint: str,
+    role: str,
+    query: str,
+    scope: str,
+    knowledge_id: str,
+    captured_at: tuple[str, int] | None = None,
+) -> dict[str, Any]:
+    """Capture visible knowledge and payload-free CRDT deletion state."""
+    allowed_roles = {
+        "baseline": {"baseline"},
+        "deleted": {"deleter", "online-observer", "isolated"},
+        "reconnected": {"converged"},
+        "stable": {"stable"},
+    }
+    if checkpoint not in allowed_roles or role not in allowed_roles[checkpoint]:
+        raise EvidenceError("tombstone checkpoint role is invalid")
+    query = query.strip()
+    if not query or len(query) > 512:
+        raise EvidenceError("scenario query must contain 1-512 characters")
+    if not re.fullmatch(r"shared:[A-Za-z0-9._-]+", scope):
+        raise EvidenceError("tombstone scenario requires a shared scope")
+    if not re.fullmatch(r"knw_[A-Za-z0-9_-]{8,128}", knowledge_id):
+        raise EvidenceError("tombstone scenario knowledge id is invalid")
+
+    topology = _require_topology(_read_json(topology_path))
+    node_manifest = _read_json(node_path)
+    _validate_node_manifest(node_manifest)
+    identity = node_manifest["node"]["identity_digest"]
+    if not (
+        node_manifest["run_id"] == topology["run_id"]
+        and node_manifest["release"] == topology["release"]
+        and identity in topology["topology"]["member_identity_digests"]
+    ):
+        raise EvidenceError("node checkpoint does not belong to the topology report")
+
+    base_url = validate_base_url(base_url)
+    context = request_json(
+        f"{base_url}/agent/context",
+        method="POST",
+        payload={
+            "query": query,
+            "scope": scope,
+            "session_id": f"evidence-{topology['run_id']}",
+            "turn_id": f"tombstone-{checkpoint}",
+            "top_k": 1,
+            "max_chars": 4096,
+        },
+    )
+    state = request_json(f"{base_url}/sync/state/knowledge/{knowledge_id}")
+    status = request_json(f"{base_url}/sync/status")
+    items = context.get("items")
+    should_be_visible = checkpoint == "baseline" or (
+        checkpoint == "deleted" and role == "isolated"
+    )
+    if not isinstance(items, list) or len(items) != int(should_be_visible):
+        raise EvidenceError("tombstone checkpoint visibility does not match its role")
+    if items:
+        item = items[0]
+        if not (
+            isinstance(item, dict)
+            and item.get("knowledge_id") == knowledge_id
+            and item.get("scope") == scope
+        ):
+            raise EvidenceError("tombstone checkpoint resolved the wrong knowledge")
+    operation_digest = state.get("operation_digest")
+    if not (
+        state.get("present") is True
+        and isinstance(state.get("tombstone"), bool)
+        and isinstance(state.get("clock_entries"), int)
+        and not isinstance(state.get("clock_entries"), bool)
+        and state["clock_entries"] >= 1
+        and isinstance(state.get("clock_total"), int)
+        and not isinstance(state.get("clock_total"), bool)
+        and state["clock_total"] >= 1
+        and isinstance(operation_digest, str)
+        and SHA256_PATTERN.fullmatch(operation_digest)
+        and isinstance(state.get("updated_at"), int)
+        and not isinstance(state.get("updated_at"), bool)
+        and state["updated_at"] >= 0
+    ):
+        raise EvidenceError("tombstone checkpoint CRDT state is invalid")
+    expected_tombstone = not should_be_visible
+    if state["tombstone"] is not expected_tombstone:
+        raise EvidenceError("tombstone checkpoint state disagrees with visibility")
+    if not (
+        status.get("enabled") is True
+        and isinstance(status.get("paused"), bool)
+        and isinstance(status.get("peers_online"), int)
+        and not isinstance(status.get("peers_online"), bool)
+        and 0 <= status["peers_online"] <= 3
+        and status.get("pending_outgoing_ops") == 0
+    ):
+        raise EvidenceError("tombstone checkpoint sync status is invalid")
+    stable = checkpoint in {"baseline", "reconnected", "stable"}
+    if stable and not (status["paused"] is False and status["peers_online"] == 3):
+        raise EvidenceError("stable tombstone checkpoint is not fully online")
+    if checkpoint == "deleted":
+        if role == "isolated" and not (
+            status["paused"] is True and status["peers_online"] <= 2
+        ):
+            raise EvidenceError("isolated tombstone node is not isolated")
+        if role != "isolated" and not (
+            status["paused"] is False and status["peers_online"] == 2
+        ):
+            raise EvidenceError("online tombstone nodes do not form a two-node view")
+
+    generated_at_utc, generated_at_epoch = captured_at or _utc_now()
+    _validate_timestamp(generated_at_utc, generated_at_epoch)
+    run_id = topology["run_id"]
+    state_summary = {
+        "tombstone": state["tombstone"],
+        "clock_entries": state["clock_entries"],
+        "clock_total": state["clock_total"],
+        "operation_digest": operation_digest,
+    }
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": TOMBSTONE_EVIDENCE_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": False,
+        "run_id": run_id,
+        "captured_at_utc": generated_at_utc,
+        "captured_at_epoch": generated_at_epoch,
+        "release": topology["release"],
+        "topology_evidence_sha256": _sha256_file(topology_path),
+        "node_manifest_sha256": _sha256_file(node_path),
+        "node_identity_digest": identity,
+        "scenario": "tombstone-propagation-and-no-resurrection",
+        "checkpoint": checkpoint,
+        "role": role,
+        "query_digest": _digest(run_id, "tombstone-query", query),
+        "scope_digest": _digest(run_id, "tombstone-scope", scope),
+        "knowledge_digest": _digest(run_id, "knowledge", knowledge_id),
+        "visible": should_be_visible,
+        "tombstone": state["tombstone"],
+        "clock_entries": state["clock_entries"],
+        "clock_total": state["clock_total"],
+        "state_digest": _digest(
+            run_id,
+            "tombstone-state",
+            json.dumps(state_summary, sort_keys=True),
+        ),
+        "sync": {
+            "enabled": True,
+            "paused": status["paused"],
+            "peers_online": status["peers_online"],
+            "pending_outgoing_ops": 0,
+        },
+    }
+
+
+def _validate_tombstone_checkpoint(value: dict[str, Any]) -> None:
+    sync = value.get("sync")
+    checkpoint = value.get("checkpoint")
+    role = value.get("role")
+    allowed_roles = {
+        "baseline": {"baseline"},
+        "deleted": {"deleter", "online-observer", "isolated"},
+        "reconnected": {"converged"},
+        "stable": {"stable"},
+    }
+    if not (
+        value.get("evidence_schema") == SCHEMA_VERSION
+        and value.get("evidence_class") == TOMBSTONE_EVIDENCE_CLASS
+        and value.get("real_device_evidence") is True
+        and value.get("final_device_evidence") is False
+        and value.get("scenario") == "tombstone-propagation-and-no-resurrection"
+        and checkpoint in allowed_roles
+        and role in allowed_roles[checkpoint]
+        and isinstance(value.get("release"), dict)
+        and isinstance(value.get("run_id"), str)
+        and RUN_ID_PATTERN.fullmatch(value["run_id"])
+        and isinstance(value.get("captured_at_epoch"), int)
+        and not isinstance(value.get("captured_at_epoch"), bool)
+        and isinstance(value.get("visible"), bool)
+        and isinstance(value.get("tombstone"), bool)
+        and value["visible"] is not value["tombstone"]
+        and isinstance(value.get("clock_entries"), int)
+        and value["clock_entries"] >= 1
+        and isinstance(value.get("clock_total"), int)
+        and value["clock_total"] >= 1
+        and all(
+            isinstance(value.get(field), str) and SHA256_PATTERN.fullmatch(value[field])
+            for field in (
+                "topology_evidence_sha256",
+                "node_manifest_sha256",
+                "node_identity_digest",
+                "query_digest",
+                "scope_digest",
+                "knowledge_digest",
+                "state_digest",
+            )
+        )
+        and isinstance(sync, dict)
+        and sync.get("enabled") is True
+        and isinstance(sync.get("paused"), bool)
+        and isinstance(sync.get("peers_online"), int)
+        and not isinstance(sync.get("peers_online"), bool)
+        and 0 <= sync["peers_online"] <= 3
+        and sync.get("pending_outgoing_ops") == 0
+    ):
+        raise EvidenceError("tombstone checkpoint manifest is invalid")
+    _validate_timestamp(value.get("captured_at_utc"), value["captured_at_epoch"])
+
+
+def validate_tombstone_scenario(
+    *, topology_path: Path, checkpoint_paths: list[Path]
+) -> dict[str, Any]:
+    """Validate tombstone spread, old-copy reconnect, and stable non-resurrection."""
+    topology = _require_topology(_read_json(topology_path))
+    if len(checkpoint_paths) != 12 or len({path.resolve() for path in checkpoint_paths}) != 12:
+        raise EvidenceError("exactly twelve distinct tombstone checkpoints are required")
+    values = [_read_json(path) for path in checkpoint_paths]
+    for value in values:
+        _validate_tombstone_checkpoint(value)
+    topology_hash = _sha256_file(topology_path)
+    identities = set(topology["topology"]["member_identity_digests"])
+    if any(
+        value["run_id"] != topology["run_id"]
+        or value["release"] != topology["release"]
+        or value["topology_evidence_sha256"] != topology_hash
+        for value in values
+    ):
+        raise EvidenceError("tombstone checkpoints do not bind the topology release")
+    if {value["node_identity_digest"] for value in values} != identities:
+        raise EvidenceError("tombstone checkpoints do not cover the topology devices")
+    if {
+        value["node_manifest_sha256"] for value in values
+    } != set(topology["source_node_manifest_sha256"]):
+        raise EvidenceError("tombstone checkpoints do not bind the topology nodes")
+    for field in ("query_digest", "scope_digest", "knowledge_digest"):
+        if len({value[field] for value in values}) != 1:
+            raise EvidenceError("tombstone checkpoints do not track one shared memory")
+
+    phases = ("baseline", "deleted", "reconnected", "stable")
+    grouped = {
+        phase: [value for value in values if value["checkpoint"] == phase]
+        for phase in phases
+    }
+    if any(
+        len(group) != 3
+        or {value["node_identity_digest"] for value in group} != identities
+        or max(value["captured_at_epoch"] for value in group)
+        - min(value["captured_at_epoch"] for value in group)
+        > MAX_CAPTURE_SKEW_SECONDS
+        for group in grouped.values()
+    ):
+        raise EvidenceError(
+            "each tombstone checkpoint must cover all devices within the time window"
+        )
+    baseline = grouped["baseline"]
+    deleted = grouped["deleted"]
+    reconnected = grouped["reconnected"]
+    stable = grouped["stable"]
+    if not (
+        all(value["visible"] and not value["tombstone"] for value in baseline)
+        and len({value["state_digest"] for value in baseline}) == 1
+        and len({value["clock_total"] for value in baseline}) == 1
+    ):
+        raise EvidenceError("tombstone baseline is not a shared visible state")
+    baseline_digest = baseline[0]["state_digest"]
+    baseline_clock = baseline[0]["clock_total"]
+    roles = {value["role"]: value for value in deleted}
+    if set(roles) != {"deleter", "online-observer", "isolated"}:
+        raise EvidenceError("tombstone deletion roles are incomplete")
+    isolated = roles["isolated"]
+    online = [roles["deleter"], roles["online-observer"]]
+    if not (
+        isolated["visible"]
+        and not isolated["tombstone"]
+        and isolated["state_digest"] == baseline_digest
+        and isolated["clock_total"] == baseline_clock
+        and isolated["sync"]["paused"] is True
+        and isolated["sync"]["peers_online"] <= 2
+        and all(not value["visible"] and value["tombstone"] for value in online)
+        and len({value["state_digest"] for value in online}) == 1
+        and {value["clock_total"] for value in online} == {baseline_clock + 1}
+        and all(
+            value["sync"]["paused"] is False
+            and value["sync"]["peers_online"] == 2
+            for value in online
+        )
+    ):
+        raise EvidenceError("tombstone did not propagate while one old copy was isolated")
+    deleted_digest = online[0]["state_digest"]
+    for phase, group in (("reconnected", reconnected), ("stable", stable)):
+        if not (
+            all(not value["visible"] and value["tombstone"] for value in group)
+            and {value["state_digest"] for value in group} == {deleted_digest}
+            and {value["clock_total"] for value in group} == {baseline_clock + 1}
+            and all(
+                value["sync"]["paused"] is False
+                and value["sync"]["peers_online"] == 3
+                for value in group
+            )
+        ):
+            raise EvidenceError(f"tombstone {phase} state is not stable and converged")
+    phase_order = {phase: index for index, phase in enumerate(phases)}
+    for identity in identities:
+        series = sorted(
+            (value for value in values if value["node_identity_digest"] == identity),
+            key=lambda value: phase_order[value["checkpoint"]],
+        )
+        if len({value["node_manifest_sha256"] for value in series}) != 1 or [
+            value["captured_at_epoch"] for value in series
+        ] != sorted(value["captured_at_epoch"] for value in series):
+            raise EvidenceError("tombstone node manifests or times are inconsistent")
+
+    generated_at_utc, generated_at_epoch = _utc_now()
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": TOMBSTONE_REPORT_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": False,
+        "status": "pass",
+        "run_id": topology["run_id"],
+        "generated_at_utc": generated_at_utc,
+        "generated_at_epoch": generated_at_epoch,
+        "release": topology["release"],
+        "topology_evidence_sha256": topology_hash,
+        "source_checkpoint_sha256": sorted(
+            _sha256_file(path) for path in checkpoint_paths
+        ),
+        "scenario": "tombstone-propagation-and-no-resurrection",
+        "checks": {
+            "shared_visible_baseline": "passed",
+            "two_node_tombstone_propagation": "passed",
+            "isolated_old_copy_preserved_before_reconnect": "passed",
+            "old_copy_reconnect_did_not_resurrect": "passed",
+            "second_reconciliation_remained_deleted": "passed",
+            "online_quiescent_final_state": "passed",
+        },
+        "remaining_required_scenarios": [
+            "offline-write-and-reconnect",
+            "concurrent-update-and-conflict-resolution",
+            "private-scope-non-propagation",
+            "final-logical-view-convergence",
+        ],
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1478,6 +1827,39 @@ def build_parser() -> argparse.ArgumentParser:
     )
     privacy_scenario.add_argument("--output", required=True, type=Path)
     privacy_scenario.add_argument("--overwrite", action="store_true")
+    tombstone_checkpoint = subparsers.add_parser("capture-tombstone")
+    tombstone_checkpoint.add_argument("--topology", required=True, type=Path)
+    tombstone_checkpoint.add_argument("--node", required=True, type=Path)
+    tombstone_checkpoint.add_argument("--base-url", default="http://127.0.0.1:8765")
+    tombstone_checkpoint.add_argument("--scope", required=True)
+    tombstone_checkpoint.add_argument(
+        "--checkpoint",
+        required=True,
+        choices=("baseline", "deleted", "reconnected", "stable"),
+    )
+    tombstone_checkpoint.add_argument(
+        "--role",
+        required=True,
+        choices=(
+            "baseline",
+            "deleter",
+            "online-observer",
+            "isolated",
+            "converged",
+            "stable",
+        ),
+    )
+    tombstone_checkpoint.add_argument("--query-file", required=True, type=Path)
+    tombstone_checkpoint.add_argument("--knowledge-id-file", required=True, type=Path)
+    tombstone_checkpoint.add_argument("--output", required=True, type=Path)
+    tombstone_checkpoint.add_argument("--overwrite", action="store_true")
+    tombstone_scenario = subparsers.add_parser("validate-tombstone")
+    tombstone_scenario.add_argument("--topology", required=True, type=Path)
+    tombstone_scenario.add_argument(
+        "--checkpoint", required=True, action="append", type=Path
+    )
+    tombstone_scenario.add_argument("--output", required=True, type=Path)
+    tombstone_scenario.add_argument("--overwrite", action="store_true")
     return parser
 
 
@@ -1570,12 +1952,46 @@ def main() -> int:
                 query=query,
                 scope=args.scope,
             )
-        else:
+        elif args.command == "validate-privacy":
             output = args.output.resolve()
             inputs = {args.topology.resolve(), *(path.resolve() for path in args.checkpoint)}
             if output in inputs:
                 raise EvidenceError("scenario output must not overwrite an input")
             report = validate_privacy_scenario(
+                topology_path=args.topology.resolve(),
+                checkpoint_paths=args.checkpoint,
+            )
+        elif args.command == "capture-tombstone":
+            output = args.output.resolve()
+            inputs = {
+                args.topology.resolve(),
+                args.node.resolve(),
+                args.query_file.resolve(),
+                args.knowledge_id_file.resolve(),
+            }
+            if output in inputs:
+                raise EvidenceError("checkpoint output must not overwrite an input")
+            try:
+                query = args.query_file.read_text(encoding="utf-8")
+                knowledge_id = args.knowledge_id_file.read_text(encoding="utf-8").strip()
+            except OSError as exc:
+                raise EvidenceError("scenario input file is not readable") from exc
+            report = capture_tombstone_checkpoint(
+                topology_path=args.topology.resolve(),
+                node_path=args.node.resolve(),
+                base_url=args.base_url,
+                checkpoint=args.checkpoint,
+                role=args.role,
+                query=query,
+                scope=args.scope,
+                knowledge_id=knowledge_id,
+            )
+        else:
+            output = args.output.resolve()
+            inputs = {args.topology.resolve(), *(path.resolve() for path in args.checkpoint)}
+            if output in inputs:
+                raise EvidenceError("scenario output must not overwrite an input")
+            report = validate_tombstone_scenario(
                 topology_path=args.topology.resolve(),
                 checkpoint_paths=args.checkpoint,
             )

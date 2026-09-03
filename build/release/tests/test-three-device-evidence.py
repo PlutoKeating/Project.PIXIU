@@ -258,6 +258,58 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                 ),
             )
 
+    def _tombstone_checkpoint(
+        self,
+        topology_path: Path,
+        node_path: Path,
+        *,
+        checkpoint: str,
+        role: str,
+        deleted: bool,
+        paused: bool,
+        peers_online: int,
+        at: int,
+    ):
+        knowledge_id = "knw_" + "T" * 26
+        items = [] if deleted else [
+            {
+                "knowledge_id": knowledge_id,
+                "version": 1,
+                "title": "private tombstone marker",
+                "scope": "shared:evidence",
+                "evidence_ids": ["evd_" + "T" * 26],
+            }
+        ]
+        context = {"context": "private tombstone marker" if items else "", "items": items}
+        state = {
+            "present": True,
+            "tombstone": deleted,
+            "clock_entries": 1,
+            "clock_total": 2 if deleted else 1,
+            "operation_digest": ("b" if deleted else "a") * 64,
+            "updated_at": 200 if deleted else 100,
+        }
+        status = _status() | {"paused": paused, "peers_online": peers_online}
+        with patch.object(
+            MODULE, "request_json", side_effect=[context, state, status]
+        ):
+            return MODULE.capture_tombstone_checkpoint(
+                topology_path=topology_path,
+                node_path=node_path,
+                base_url="http://127.0.0.1:8765",
+                checkpoint=checkpoint,
+                role=role,
+                query="private tombstone scenario query",
+                scope="shared:evidence",
+                knowledge_id=knowledge_id,
+                captured_at=(
+                    MODULE.datetime.fromtimestamp(at, MODULE.timezone.utc).strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    ),
+                    at,
+                ),
+            )
+
     def test_capture_is_strict_and_does_not_leak_identity_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = self._capture(Path(directory), 0)
@@ -634,7 +686,6 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                     topology_path=topology_path,
                     checkpoint_paths=observations,
                 )
-
             remote["local_result_count"] = 0
             remote["local_view_digest"] = original_view
             observations[4].write_text(json.dumps(remote), encoding="utf-8")
@@ -646,6 +697,99 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                     topology_path=topology_path,
                     checkpoint_paths=observations,
                 )
+
+    def test_tombstone_scenario_proves_reconnect_and_stable_deletion(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            topology_path, node_paths = self._topology(root)
+            observations = []
+            phases = [
+                ("baseline", ["baseline"] * 3, [False] * 3, [False] * 3, [3] * 3),
+                (
+                    "deleted",
+                    ["isolated", "deleter", "online-observer"],
+                    [False, True, True],
+                    [True, False, False],
+                    [1, 2, 2],
+                ),
+                ("reconnected", ["converged"] * 3, [True] * 3, [False] * 3, [3] * 3),
+                ("stable", ["stable"] * 3, [True] * 3, [False] * 3, [3] * 3),
+            ]
+            for phase_index, phase_data in enumerate(phases):
+                phase, roles, deleted, pauses, peers = phase_data
+                for node_index, node_path in enumerate(node_paths):
+                    observation = self._tombstone_checkpoint(
+                        topology_path,
+                        node_path,
+                        checkpoint=phase,
+                        role=roles[node_index],
+                        deleted=deleted[node_index],
+                        paused=pauses[node_index],
+                        peers_online=peers[node_index],
+                        at=2_000_007_000 + phase_index * 100 + node_index,
+                    )
+                    encoded = json.dumps(observation, sort_keys=True)
+                    self.assertNotIn("private tombstone", encoded)
+                    self.assertNotIn("shared:evidence", encoded)
+                    self.assertNotIn("knw_" + "T" * 26, encoded)
+                    path = root / f"tombstone-{phase}-{node_index}.json"
+                    path.write_text(json.dumps(observation), encoding="utf-8")
+                    observations.append(path)
+
+            report = MODULE.validate_tombstone_scenario(
+                topology_path=topology_path,
+                checkpoint_paths=observations,
+            )
+
+        self.assertEqual(report["status"], "pass")
+        self.assertTrue(report["real_device_evidence"])
+        self.assertFalse(report["final_device_evidence"])
+        self.assertEqual(
+            report["scenario"], "tombstone-propagation-and-no-resurrection"
+        )
+
+    def test_tombstone_validator_rejects_unstable_final_state(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            topology_path, node_paths = self._topology(root)
+            observations = []
+            phases = [
+                ("baseline", ["baseline"] * 3, [False] * 3, [False] * 3, [3] * 3),
+                (
+                    "deleted",
+                    ["isolated", "deleter", "online-observer"],
+                    [False, True, True],
+                    [True, False, False],
+                    [1, 2, 2],
+                ),
+                ("reconnected", ["converged"] * 3, [True] * 3, [False] * 3, [3] * 3),
+                ("stable", ["stable"] * 3, [True] * 3, [False] * 3, [3] * 3),
+            ]
+            for phase_index, phase_data in enumerate(phases):
+                phase, roles, deleted, pauses, peers = phase_data
+                for node_index, node_path in enumerate(node_paths):
+                    observation = self._tombstone_checkpoint(
+                        topology_path,
+                        node_path,
+                        checkpoint=phase,
+                        role=roles[node_index],
+                        deleted=deleted[node_index],
+                        paused=pauses[node_index],
+                        peers_online=peers[node_index],
+                        at=2_000_008_000 + phase_index * 100 + node_index,
+                    )
+                    path = root / f"bad-tombstone-{phase}-{node_index}.json"
+                    path.write_text(json.dumps(observation), encoding="utf-8")
+                    observations.append(path)
+            tampered = json.loads(observations[-1].read_text(encoding="utf-8"))
+            tampered["state_digest"] = "f" * 64
+            observations[-1].write_text(json.dumps(tampered), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.EvidenceError, "stable"):
+                MODULE.validate_tombstone_scenario(
+                    topology_path=topology_path,
+                    checkpoint_paths=observations,
+                )
+
 
 
 if __name__ == "__main__":

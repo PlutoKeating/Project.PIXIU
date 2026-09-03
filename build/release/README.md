@@ -235,6 +235,47 @@ python3 build/release/scripts/three-device-evidence.py validate-privacy \
 每台设备前后的同步确认计数完全不变。输出仅保留条目数、计数和加盐摘要，不包含
 查询、正文、私域原文或设备身份。该报告建立 N-06 的真实设备证据契约，但仍固定
 `final_device_evidence=false`，直至真实三机输入和其余场景汇总完成。
+
+### 墓碑传播与防复活场景取证
+
+创建一条唯一 shared 记忆，把其 `knowledge_id` 单独写入 UTF-8 文件。三端先采集
+`baseline/baseline`。隔离 A，在 B 完成两阶段遗忘并等待 B/C 队列归零后，A 采集
+`deleted/isolated`，B、C 分别采集 `deleted/deleter` 与
+`deleted/online-observer`。恢复 A 并等待三端收敛后采集 `reconnected/converged`；
+再等待至少一个反熵周期并采集 `stable/stable`。每次在对应节点执行：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py capture-tombstone \
+  --topology three-device-topology.json \
+  --node sync-node-evidence.json \
+  --scope shared:team-demo \
+  --checkpoint deleted --role isolated \
+  --query-file tombstone-query.txt \
+  --knowledge-id-file tombstone-knowledge-id.txt \
+  --output tombstone-node-a-deleted.json
+```
+
+汇总四阶段各三份、共十二份检查点：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py validate-tombstone \
+  --topology three-device-topology.json \
+  --checkpoint node-a-baseline.json --checkpoint node-b-baseline.json \
+  --checkpoint node-c-baseline.json \
+  --checkpoint node-a-deleted.json --checkpoint node-b-deleted.json \
+  --checkpoint node-c-deleted.json \
+  --checkpoint node-a-reconnected.json --checkpoint node-b-reconnected.json \
+  --checkpoint node-c-reconnected.json \
+  --checkpoint node-a-stable.json --checkpoint node-b-stable.json \
+  --checkpoint node-c-stable.json \
+  --output tombstone-no-resurrection-scenario.json
+```
+
+采集器同时查询 Agent 可见性和 `/sync/state/knowledge/{knowledge_id}` 的去载荷 CRDT
+状态。校验要求：初始三端可见且为同一非墓碑状态；隔离期间 A 保持旧状态，B/C 不可见
+且共享同一 clock+1 墓碑；重连和额外反熵后，三端仍是同一墓碑、均不可见且队列归零。
+必须在墓碑 GC 保留窗口内完成四阶段采集；GC 后的“状态不存在”不会被接受为墓碑证据。
+报告不含知识 ID、查询、正文、scope、操作 ID 或设备身份原文，并继续固定为非最终证据。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取
