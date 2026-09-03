@@ -442,6 +442,9 @@ def main() -> int:
 
     evidence = {
         "evidence_schema": 1,
+        "evidence_class": "kylin-v11-native-sdk-product-lifecycle",
+        "real_device_evidence": True,
+        "status": "pass",
         "generated_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "release": release,
         "candidate_package": candidate,

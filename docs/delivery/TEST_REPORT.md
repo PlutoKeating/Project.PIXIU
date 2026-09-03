@@ -25,6 +25,7 @@ KYSDK/strict 错配拒绝，以及用户态 Agent/runtime 缺失、版本命令�
 确认 `STRICT_NATIVE=0`。双 SDK 包依赖和后端 strict 预检已有独立测试；最终严格包仍须
 在目标 V11 保存完整真实结果。
 原生取证器单测另验证：非严格 manifest 必须拒绝；成功证据绑定候选包摘要/commit、
+并固定声明 `kylin-v11-native-sdk-product-lifecycle` 类型、真实设备属性和通过状态，
 包内与已装 manifest、dpkg 的 PIXIU/双 SDK 版本、Agent runtime 和三个端点；隔离集合
 直接执行 LoadDBFile/create/load/upsert/search/delete/drop/disconnect，产品 API 另走
 写入/召回/遗忘且失败时清理数据库与集合。该测试只证明取证器逻辑，不能替代目标

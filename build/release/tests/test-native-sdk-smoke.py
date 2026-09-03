@@ -119,6 +119,12 @@ class NativeSdkSmokeTest(unittest.TestCase):
 
             evidence = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(evidence["evidence_schema"], 1)
+            self.assertEqual(
+                evidence["evidence_class"],
+                "kylin-v11-native-sdk-product-lifecycle",
+            )
+            self.assertTrue(evidence["real_device_evidence"])
+            self.assertEqual(evidence["status"], "pass")
             self.assertEqual(evidence["release"]["git_commit"], "a" * 40)
             self.assertTrue(evidence["release"]["install_strict"])
             self.assertEqual(evidence["installed"]["packages"]["pixiu"], "0.1.7-1")

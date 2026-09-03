@@ -118,6 +118,11 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 
 ## 三台设备拓扑取证
 
+严格原生取证成功文件固定标识 `evidence_schema=1`、
+`evidence_class=kylin-v11-native-sdk-product-lifecycle`、
+`real_device_evidence=true` 与 `status=pass`。这些字段用于 D-07 汇总器做类型判断；
+脚本未成功完成全部 SDK/产品生命周期时不会输出这组成功声明。
+
 严格原生 SDK 取证通过且三台设备已完成双向配对、全部在线并等待同步队列归零后，
 在每台设备本地使用同一个不含设备信息的 `run-id` 采集节点清单：
 
