@@ -18,6 +18,13 @@ from typing import Any
 from agent.memory_provider import MemoryProvider
 
 from .client import PixiuApiClient, PixiuApiError
+from .compat import (
+    EXPECTED_AGENT_MEMORY_API,
+    EXPECTED_BACKEND_COMPONENT,
+    detected_runtime_version,
+    provider_version,
+    runtime_version_supported,
+)
 from .schemas import ALL as TOOL_SCHEMAS
 
 logger = logging.getLogger(__name__)
@@ -50,6 +57,7 @@ class PixiuMemoryProvider(MemoryProvider):
         retry_delay: float = 0.1,
         max_chars: int = 4000,
         content_limit: int = 8000,
+        runtime_version: str | None = None,
     ) -> None:
         self._endpoint = endpoint or os.environ.get(
             "PIXIU_AGENT_ENDPOINT", "http://127.0.0.1:8765"
@@ -82,6 +90,9 @@ class PixiuMemoryProvider(MemoryProvider):
         self._completed_jobs = 0
         self._last_error = ""
         self._capabilities: dict[str, Any] = {}
+        self._provider_version = provider_version()
+        self._runtime_version = runtime_version or detected_runtime_version()
+        self._backend_version = ""
 
     @property
     def name(self) -> str:
@@ -121,11 +132,33 @@ class PixiuMemoryProvider(MemoryProvider):
             self.shutdown()
         if not self.is_available():
             raise RuntimeError("PIXIU_INVALID_CONFIGURATION")
+        if not runtime_version_supported(self._runtime_version):
+            raise RuntimeError("PIXIU_AGENT_RUNTIME_INCOMPATIBLE")
+        versions = self._client.request("GET", "/version")
+        if (
+            versions.get("component") != EXPECTED_BACKEND_COMPONENT
+            or versions.get("agent_memory_api") != EXPECTED_AGENT_MEMORY_API
+        ):
+            raise RuntimeError("PIXIU_API_INCOMPATIBLE")
+        backend_version = str(versions.get("product_version") or "")
+        if backend_version == "development":
+            if self._strict:
+                raise RuntimeError("PIXIU_COMPONENT_VERSION_REQUIRED")
+        elif backend_version != self._provider_version:
+            raise RuntimeError("PIXIU_COMPONENT_VERSION_MISMATCH")
+        health = self._client.request("GET", "/health")
+        if (
+            health.get("status") != "ready"
+            or health.get("component") != EXPECTED_BACKEND_COMPONENT
+            or str(health.get("product_version") or "") != backend_version
+        ):
+            raise RuntimeError("PIXIU_BACKEND_NOT_READY")
         capabilities = self._client.request("GET", "/capabilities")
         if self._strict and not capabilities.get("contest_ready"):
             raise RuntimeError("PIXIU_CONTEST_CAPABILITY_REQUIRED")
         with self._lock:
             self._capabilities = capabilities
+            self._backend_version = backend_version
             self._session_id = self._safe_id(session_id, "session")
             self._run_id = f"run-{uuid.uuid4().hex}"
             self._turn_number = 0
@@ -303,6 +336,9 @@ class PixiuMemoryProvider(MemoryProvider):
                 "failed_jobs": self._failed_jobs,
                 "dropped_jobs": self._dropped_jobs,
                 "last_error": self._last_error,
+                "provider_version": self._provider_version,
+                "backend_version": self._backend_version,
+                "runtime_version": self._runtime_version,
             }
 
     def wait_for_idle(self, timeout: float) -> bool:

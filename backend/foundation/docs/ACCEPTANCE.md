@@ -51,7 +51,7 @@
 
 ## 四、测试统计
 
-- 最新后端全量回归记录：pytest 754 passed（Engine 145 + Foundation 609）；
+- 最新后端全量回归记录：pytest 757 passed（Engine 145 + Foundation 612）；
   Foundation 有 10 条依赖弃用告警，无失败。
 - 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`

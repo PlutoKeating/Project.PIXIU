@@ -56,6 +56,8 @@ check_version_consistency() {
     local frontend_main="${PIXIU_ROOT}/frontend/src/main.cpp"
     local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
     local funcs_file="${PIXIU_ROOT}/build/release/scripts/functions.sh"
+    local backend_version="${PIXIU_ROOT}/backend/foundation/api/version.py"
+    local backend_service="${PIXIU_ROOT}/build/release/debian/pixiu-backend.service"
     local cmake_ver pixiu_ver funcs_ver provider_ver
 
     # 1) CMakeLists project VERSION（单一事实源）
@@ -93,8 +95,12 @@ check_version_consistency() {
         die "frontend/src/services/HttpBackendTransport.cpp 存在硬编码 User-Agent 版本" \
             "（应改用 PIXIU_VERSION 宏，杜绝第 4 处版本源漂移）"
     fi
+    if ! grep -qF 'PIXIU_PRODUCT_VERSION' "${backend_version}" \
+       || ! grep -qF 'PIXIU_PRODUCT_VERSION=@PRODUCT_VERSION@' "${backend_service}"; then
+        die "后端产品版本未由发布包注入（version API 与 systemd 模板必须同时接线）"
+    fi
 
-    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?} provider=${provider_ver:-?} HttpTransport=macro-ok"
+    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?} provider=${provider_ver:-?} HttpTransport=macro-ok backend=runtime-injected"
     if [ -z "${cmake_ver}" ] || [ -z "${pixiu_ver}" ] || [ -z "${funcs_ver}" ] \
        || [ -z "${provider_ver}" ] || [ "${cmake_ver}" != "${pixiu_ver}" ] \
        || [ "${pixiu_ver}" != "${funcs_ver}" ] \
@@ -244,8 +250,10 @@ install -m 0755 "${DEB_SRC}/prerm"    "${STAGE}/DEBIAN/prerm"
 install -m 0755 "${DEB_SRC}/postrm"   "${STAGE}/DEBIAN/postrm"
 install -m 0644 "${DEB_SRC}/pixiu.env" \
     "${STAGE}/usr/share/pixiu/pixiu.env.default"
-install -m 0644 "${DEB_SRC}/pixiu-backend.service" \
-    "${STAGE}/lib/systemd/system/pixiu-backend.service"
+sed "s/@PRODUCT_VERSION@/${PIXIU_VERSION}/g" \
+    "${DEB_SRC}/pixiu-backend.service" \
+    > "${STAGE}/lib/systemd/system/pixiu-backend.service"
+printf '%s\n' "${PIXIU_VERSION}" > "${STAGE}/usr/share/pixiu/VERSION"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \

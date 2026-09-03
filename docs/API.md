@@ -19,7 +19,7 @@
 
 | MemoryProvider 行为 | 当前映射 | 必须补齐的契约 |
 |---------------------|----------|----------------|
-| `initialize` | `GET /capabilities`（已实现） | Module E 已消费并支持 strict fail-closed；真实宿主/V11 证据待补 |
+| `initialize` | `GET /version` + `/health` + `/capabilities`（已实现） | Module E 校验 API/产品/组件/宿主范围并支持 strict fail-closed；真实宿主/V11 证据待补 |
 | `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 已后台预取并只同步读取缓存；真实时序/命中取证待补 |
 | `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | Module E 已有有界异步队列、重试/背压；失败 receipt 可人工核验后授权一次重试 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 显式 remember 已接入；任意 Shell/搜索结果的自动价值判断仍待 W5 |
@@ -48,6 +48,8 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 
 | 方法 | 路径 | 说明 | 实现状态 |
 |------|------|------|----------|
+| GET | `/version` | 产品、组件、API 兼容级别和 schema 版本 | ✅ 已实现 |
+| GET | `/health` | 数据库迁移及后端组件就绪状态 | ✅ 已实现（不探测双 SDK 合规性） |
 | GET | `/capabilities` | 平台与双 SDK 的配置/实际运行能力 | ✅ 已实现（不含主机、网络、路径信息） |
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
@@ -89,6 +91,41 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 ---
 
 ## 3. 端点详情
+
+### 3.0a GET /version 与 GET /health
+
+`/version` 用于组件握手，区分产品版本、HTTP API 文档版本、Agent Memory API 兼容
+级别和数据库 schema，禁止把 FastAPI 的 `api_version` 当作产品版本：
+
+```json
+{
+  "product_version": "0.1.7",
+  "component": "pixiu-memory-backend",
+  "api_version": "0.2.0",
+  "agent_memory_api": 1,
+  "schema_version": 12
+}
+```
+
+发布包通过 systemd 注入 `product_version`；直接从源码运行且未注入时明确返回
+`development`，不会猜测或伪报发行版。`/health` 只证明当前后端组件和数据库迁移已
+就绪：
+
+```json
+{
+  "status": "ready",
+  "product_version": "0.1.7",
+  "component": "pixiu-memory-backend",
+  "database": "ok",
+  "schema_version": 12
+}
+```
+
+数据库未迁移到代码要求版本时返回 `503 SCHEMA_NOT_READY`。此端点不证明指定双 SDK
+或 V11 合规；最终赛题能力必须再检查 `/capabilities.contest_ready`。Module E 当前
+接受经固定上游验证的 Agent runtime 0.9.x，要求 `agent_memory_api=1`，并在发布态要求
+Provider 与后端 `product_version` 相同；0.10+、不可解析宿主、错误组件、API 漂移、
+混装版本或未就绪数据库均在初始化前 fail closed。
 
 ### 3.0 GET /capabilities
 
@@ -1051,6 +1088,7 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 | `INVALID_RECOVERY_REQUEST` | 400 | 完整原请求与所选操作的 Schema 不匹配 |
 | `SENSITIVE_SHARED_SCOPE` | 422 | 敏感内容禁止写入共享域 |
 | `SENSITIVITY_CHECK_FAILED` | 503 | 敏感检测不可用，写入已 fail closed |
+| `SCHEMA_NOT_READY` | 503 | 数据库迁移版本与当前后端不一致 |
 | `NOT_FOUND` | 404 | 资源不存在 |
 | `CONFLICT_TIMEOUT` | 408 | 遗忘确认超时 |
 | `PAIRING_FAILED` | 422 | 设备配对失败 |

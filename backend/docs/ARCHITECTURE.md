@@ -8,7 +8,7 @@
 > capture_event / pair_request）真实实现；WS `/events` 注册已于 2026-08-20 修复；
 > 麒麟 SDK 绑定（embedding/OCR）本机构建成功；同步网络（默认开启）与被动监控四批次
 > （掌控层/目录监视/行为偏好/递送层）已全部落地。最近全量测试：后端 pytest
-> 754 passed（Engine 145 + Foundation 609）、Module E 9 passed、前端 ctest 37/37。
+> 757 passed（Engine 145 + Foundation 612）、Module E 16 passed、前端 ctest 37/37。
 > Agent 公共契约已含 provenance、schema v12 幂等/失败恢复与预算化安全上下文；
 > 六类生命周期事件已有幂等短/中期 context 入口，Module E 适配已实现。真实宿主
 > 触发与长期化策略仍待完成。

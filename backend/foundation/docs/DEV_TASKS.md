@@ -34,7 +34,7 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 最新后端全量回归记录：pytest 754 passed（Foundation 609 + Engine 145；
+- 最新后端全量回归记录：pytest 757 passed（Foundation 612 + Engine 145；
   Foundation 10 条依赖弃用/测试退出资源告警，无失败）；Foundation 356 + Engine 21
   = 377 仅保留为 2026-08-11 阶段快照
 
@@ -50,7 +50,8 @@
 
 - C-A1：提供可判定 V11、Embedding、Vector Engine 实际 runtime 的 capability 契约。
   `GET /capabilities` 已实现配置/实际分栏与脱敏平台判定，严格双 SDK 启动预检已接入；
-  Agent runtime 待 Module E 宿主适配后纳入。
+  `/version` 与 `/health` 已提供产品/API/schema/数据库就绪握手，Module E 已校验
+  runtime 0.9.x、组件身份和同包版本。
 - C-A2：🟡 session_id/run_id/turn_id/tool_call_id/审批/时间已贯通到 evidence、写入
   API 和 schema v10；schema v12 已实现完成态幂等、冲突拒绝与审计式失败恢复。日志、
   按关联 ID 查询仍待完成；`POST /agent/context` 已提供 session/turn 回显、

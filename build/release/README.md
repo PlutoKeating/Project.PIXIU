@@ -159,6 +159,9 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 
 - 后端以 `pixiu-backend.service` 常驻，监听 `127.0.0.1:8765`（HTTP + WS），
   SQLite 数据库自动创建于 `/var/lib/pixiu/pixiu.db`（首次启动自动迁移）；
+- 包版本写入 `/usr/share/pixiu/VERSION`，并由服务单元注入
+  `PIXIU_PRODUCT_VERSION`；`GET /version`、`GET /health` 与 `GET /capabilities`
+  分别用于组件版本、数据库就绪和赛题双 SDK 能力判定；
 - 桌面菜单出现 PIXIU 客户端；或在终端执行 `pixiu`（自动拉起后端后打开前端）；
 - 配置在 `/etc/pixiu/pixiu.env`（API 端口、DB 路径、sync 开关等）；
 - 包只在 `/usr/share/pixiu/pixiu.env.default` 携带公开默认模板；`postinst` 仅在
@@ -171,9 +174,10 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 
 ## 当前已知边界（脚手架按现状落地，后续随开发自动受益）
 
-- **Agent 宿主与适配**：当前包已含 Module E 和幂等激活工具，但尚未完成 openKylin
-  Agent 真实多轮/工具/生命周期及支持版本矩阵验证。仍需补服务启动顺序、卸载边界
-  和健康检查；不得直接把两个上游 submodule 当团队产物打包。
+- **Agent 宿主与适配**：当前包已含 Module E 和幂等激活工具；Provider 已对经固定
+  上游验证的 runtime 0.9.x、API/组件/产品版本及后端健康执行启动拒绝。仍须完成
+  openKylin Agent 真实多轮/工具/生命周期验证，并补安装器健康联动、服务启动顺序和
+  卸载边界；不得直接把两个上游 submodule 当团队产物打包。
 
 - **引擎麒麟 SDK 绑定**：通用 `KYSDK=OFF` 包只携带 Python 源码；严格
   `kylin-v11-native-x86_64` 画像会在构建中生成两个 pybind11 扩展并装入

@@ -59,5 +59,10 @@ grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
 grep -q 'provider_ver=' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'PIXIU_PRODUCT_VERSION=@PRODUCT_VERSION@' \
+    "${ROOT}/build/release/debian/pixiu-backend.service"
+grep -q 'usr/share/pixiu/VERSION' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 's/@PRODUCT_VERSION@/' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'backend=runtime-injected' "${ROOT}/build/release/scripts/build-deb.sh"
 
 echo "agent integration packaging tests: OK"

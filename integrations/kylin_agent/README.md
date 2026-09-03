@@ -6,8 +6,9 @@ HTTP 契约连接记忆服务。它不包含、不复制 Agent 的会话、模�
 
 ## 已实现边界
 
-- 启动时读取 `/capabilities`；`PIXIU_AGENT_STRICT=1` 时，非麒麟 V11 或任一指定
-  SDK 未实际启用都会拒绝初始化。
+- 启动时读取 `/version`、`/health`、`/capabilities`；校验 Agent Memory API v1、
+  后端组件身份、Provider/后端同包版本与已验证 runtime 0.9.x。严格模式还要求明确
+  的发行版本，以及麒麟 V11 与两个指定 SDK 均实际启用。
 - turn 写入、生命周期事件和召回进入有界后台队列；写入携带 session/run/turn
   provenance 与幂等键，队列满时不阻塞 Agent，并通过 `diagnostics()` 暴露丢弃数。
 - `prefetch` 只读取缓存；召回结果中的 `memory-context` 边界文本先被中和，再由
@@ -17,9 +18,9 @@ HTTP 契约连接记忆服务。它不包含、不复制 Agent 的会话、模�
   `pixiu_sync_status` 四个稳定 JSON 工具。遗忘必须先预览，再使用 120 秒内的一次性
   token 执行；工具说明要求第二步前取得用户明确确认。
 
-当前未完成：随 `.deb` 自动部署到当前桌面 Agent profile、真实宿主多轮端到端取证、
-失败 receipt 管理、生命周期长期化策略。因此本目录通过契约测试不等于完整 Agent
-验收通过。
+`.deb` 已携带只读 Provider，并由 PIXIU 桌面启动器幂等部署/升级到当前用户 Agent
+profile；服务端失败 receipt 管理亦已实现。当前未完成：真实宿主多轮端到端取证和
+生命周期长期化策略。因此本目录通过契约测试不等于完整 Agent 验收通过。
 
 ## 宿主兼容基线
 
@@ -29,6 +30,10 @@ HTTP 契约连接记忆服务。它不包含、不复制 Agent 的会话、模�
   `92c57beb0d6ff1ec5df6bf9a1919a73b1a244012`
 - `third_party/kylin-agent` commit
   `1334c8ee9765a2e1649276b3bca21188598ff445`
+
+上述固定版本的可执行包/模块存在 0.9.8/0.9.4 元数据差异，故运行时兼容窗口按经测试
+的 0.9.x 定义，而非锁死单个补丁号；0.10+ 与不可解析版本明确拒绝。扩大范围前必须
+更新 submodule、复跑发现/生命周期/工具契约并提交审查证据。
 
 运行时按上游规则从 `$HERMES_HOME/plugins/pixiu/` 发现本插件，并在 `config.yaml`
 把 `memory.provider` 设为 `pixiu`。正式安装必须由发布包完成这些操作；不要手工修改
@@ -48,5 +53,6 @@ submodule。
 python3 -m pytest -q integrations/kylin_agent/tests
 ```
 
-测试覆盖上游 ABC/插件发现、严格能力拒绝、非阻塞召回、对话 provenance、六类生命
-周期映射、重试/背压诊断、四个工具、两阶段遗忘和错误脱敏。测试无需启动真实后端。
+16 项测试覆盖上游 ABC/插件发现、宿主/API/组件/健康握手、真实后端错误码透传、严格能力拒绝、非阻塞
+召回、对话 provenance、六类生命周期映射、重试/背压诊断、四个工具、两阶段遗忘
+和错误脱敏。测试无需启动真实后端。

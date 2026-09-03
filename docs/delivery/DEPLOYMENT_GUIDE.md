@@ -25,6 +25,12 @@ systemctl status pixiu-backend.service
 替代 V11 双 SDK 严格画像。最终安装必须记录系统版本、架构、包版本、宿主/runtime、
 双 SDK capability、服务状态和首次完整 Agent 操作。
 
+包构建会把同一个 `PIXIU_VERSION` 写入 `/usr/share/pixiu/VERSION`，并经 systemd 的
+`PIXIU_PRODUCT_VERSION` 注入后端。安装后先检查 `GET /version` 的产品/API/schema，
+再检查 `GET /health` 的数据库就绪状态，最后以 `/capabilities` 判定 V11 双 SDK；
+三者用途不可互相替代。Provider 初始化会拒绝混装版本、API 漂移、未就绪后端或超出
+已验证 0.9.x 范围的宿主。
+
 V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 `PIXIU_KYSDK=ON` 同时约束桌面 KylinSDK 和后端 Embedding/Vector 原生扩展；构建、
 安装及真实写入/检索由独立 `pixiu-kylin-v11-native` 工作流执行并输出脱敏证据。
@@ -32,7 +38,8 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 ## 升级、卸载与恢复
 
 设置页可检查并一键下载安装现有 PIXIU 包；最终版还需独立签名、兼容矩阵、备份/
-回滚、安装后健康检查和受控重启。升级必须保留记忆数据库、配置和同步身份。
+回滚、安装后健康检查的安装器联动和受控重启。健康/版本 API 已具备，但尚未接入
+升级成功判定。升级必须保留记忆数据库、配置和同步身份。
 默认配置以 `/usr/share/pixiu/pixiu.env.default` 模板随包，`postinst` 仅在首次安装
 创建 `/etc/pixiu/pixiu.env`；后者不属于 dpkg conffile，升级保留并幂等迁移，避免
 每机随机口令导致非交互安装弹出配置冲突。

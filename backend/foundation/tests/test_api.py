@@ -28,7 +28,7 @@ from backend.foundation.storage.repository import (
     SqliteEntityRepo,
     SqliteKnowledgeRepo,
 )
-from backend.foundation.storage.schema import init_db_on_connection
+from backend.foundation.storage.schema import SCHEMA_VERSION, init_db_on_connection
 from backend.foundation.sync import PairingMethod, SqliteSyncStore, SyncService
 
 
@@ -90,6 +90,46 @@ def test_capabilities_exposes_actual_noncompliant_portable_runtime(client):
     assert data["vector_store"]["runtime"] == "portable"
     assert data["vector_store"]["compliant"] is False
     assert data["contest_ready"] is False
+
+
+def test_version_distinguishes_product_api_and_schema_versions(client, monkeypatch):
+    monkeypatch.setenv("PIXIU_PRODUCT_VERSION", "0.1.7")
+
+    response = client.get("/version")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "product_version": "0.1.7",
+        "component": "pixiu-memory-backend",
+        "api_version": "0.2.0",
+        "agent_memory_api": 1,
+        "schema_version": SCHEMA_VERSION,
+    }
+
+
+def test_health_proves_database_migration_and_component_identity(client, monkeypatch):
+    monkeypatch.setenv("PIXIU_PRODUCT_VERSION", "0.1.7")
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "ready",
+        "product_version": "0.1.7",
+        "component": "pixiu-memory-backend",
+        "database": "ok",
+        "schema_version": SCHEMA_VERSION,
+    }
+
+
+def test_health_fails_closed_when_database_schema_is_stale(client):
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        conn.execute("DELETE FROM _schema_version WHERE version = ?", (SCHEMA_VERSION,))
+
+    response = client.get("/health")
+
+    assert response.status_code == 503
+    assert response.json()["error"] == "SCHEMA_NOT_READY"
 
 
 def test_platform_capability_only_reports_acceptance_identity():

@@ -42,6 +42,7 @@ from .di import (
     get_agent_ingest_receipt_store,
     get_conflict_repo,
     get_conflict_service,
+    get_db,
     get_evidence_repo,
     get_flow_service,
     get_ingestion_service,
@@ -78,6 +79,7 @@ from .monitor_log import (
     broadcast_capture_event,
 )
 from .ws_manager import ws_manager
+from .version import API_VERSION, COMPONENT_NAME, version_report
 
 _log = get_logger(__name__)
 
@@ -99,7 +101,7 @@ async def _lifespan(_: FastAPI):
 app = FastAPI(
     title="PIXIU Memory API",
     description="面向银河麒麟 OS Agent 的去中心化分布式记忆系统 — API 网关",
-    version="0.2.0",
+    version=API_VERSION,
     lifespan=_lifespan,
 )
 
@@ -162,6 +164,28 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 # ─── 请求模型 ────────────────────────────────────────────
+
+
+@app.get("/version", tags=["System"], summary="组件与契约版本")
+async def version():
+    return version_report()
+
+
+@app.get("/health", tags=["System"], summary="后端就绪状态")
+async def health(db=Depends(get_db)):
+    cursor = await db.execute("SELECT COALESCE(MAX(version), 0) FROM _schema_version")
+    row = await cursor.fetchone()
+    schema_version = int(row[0]) if row else 0
+    if schema_version != version_report()["schema_version"]:
+        raise HTTPException(status_code=503, detail="SCHEMA_NOT_READY")
+    report = version_report()
+    return {
+        "status": "ready",
+        "product_version": report["product_version"],
+        "component": COMPONENT_NAME,
+        "database": "ok",
+        "schema_version": schema_version,
+    }
 
 
 @app.get("/capabilities")

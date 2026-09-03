@@ -63,7 +63,8 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 内容可本地标记隔离，敏感内容不得写入 `shared:*` 或同步；检测异常时 fail closed。
 Module E 已实现独立 `pixiu`
 MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、四个显式
-记忆工具、背压诊断及两阶段遗忘均有契约测试；`.deb` 已携带 Provider，并在用户
+记忆工具、背压诊断及两阶段遗忘均有契约测试；初始化还会校验 `/version`、`/health`、
+同包组件版本和已验证的 Agent runtime 0.9.x 范围。`.deb` 已携带 Provider，并在用户
 启动 PIXIU 时幂等安装/升级到当前 Agent profile。失败 receipt 已支持提交完整原请求、
 显式确认重复副作用风险并记录原因后授权一次重试。尚未完成的是真实宿主多轮取证
 和长期化策略，因此这仍不是完整 Agent 闭环。

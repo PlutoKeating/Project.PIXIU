@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+_SAFE_ERROR_CODE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 
 
 class PixiuApiError(RuntimeError):
@@ -45,8 +48,9 @@ class PixiuApiClient:
         except HTTPError as exc:
             code = f"HTTP_{exc.code}"
             try:
-                detail = json.loads(exc.read().decode("utf-8")).get("detail")
-                if isinstance(detail, str) and detail:
+                payload = json.loads(exc.read().decode("utf-8"))
+                detail = payload.get("error") or payload.get("detail")
+                if isinstance(detail, str) and _SAFE_ERROR_CODE.fullmatch(detail):
                     code = detail
             except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
                 pass

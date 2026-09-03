@@ -16,15 +16,40 @@ from integrations.kylin_agent.pixiu.client import PixiuApiError  # noqa: E402
 
 
 class FakeClient:
-    def __init__(self, *, contest_ready: bool = True, delay: float = 0):
+    def __init__(
+        self,
+        *,
+        contest_ready: bool = True,
+        delay: float = 0,
+        product_version: str = "0.1.7",
+        agent_memory_api: int = 1,
+    ):
         self.contest_ready = contest_ready
         self.delay = delay
+        self.product_version = product_version
+        self.agent_memory_api = agent_memory_api
         self.calls = []
 
     def request(self, method, path, payload=None):
         if self.delay:
             time.sleep(self.delay)
         self.calls.append((method, path, payload))
+        if path == "/version":
+            return {
+                "product_version": self.product_version,
+                "component": "pixiu-memory-backend",
+                "api_version": "0.2.0",
+                "agent_memory_api": self.agent_memory_api,
+                "schema_version": 12,
+            }
+        if path == "/health":
+            return {
+                "status": "ready",
+                "product_version": self.product_version,
+                "component": "pixiu-memory-backend",
+                "database": "ok",
+                "schema_version": 12,
+            }
         if path == "/capabilities":
             return {
                 "platform": {"v11": self.contest_ready},
@@ -55,6 +80,62 @@ def provider(client=None, **kwargs):
 def test_initialize_strict_rejects_noncompliant_capabilities():
     item = provider(FakeClient(contest_ready=False), strict=True)
     with pytest.raises(RuntimeError, match="PIXIU_CONTEST_CAPABILITY_REQUIRED"):
+        item.initialize("session 1", platform="cli")
+
+
+def test_initialize_rejects_incompatible_memory_api():
+    item = provider(FakeClient(agent_memory_api=2))
+    with pytest.raises(RuntimeError, match="PIXIU_API_INCOMPATIBLE"):
+        item.initialize("session 1", platform="cli")
+
+
+def test_initialize_rejects_mixed_product_release():
+    item = provider(FakeClient(product_version="0.1.6"))
+    with pytest.raises(RuntimeError, match="PIXIU_COMPONENT_VERSION_MISMATCH"):
+        item.initialize("session 1", platform="cli")
+
+
+def test_initialize_rejects_unsupported_host_runtime():
+    item = provider(runtime_version="0.10.0")
+    with pytest.raises(RuntimeError, match="PIXIU_AGENT_RUNTIME_INCOMPATIBLE"):
+        item.initialize("session 1", platform="cli")
+
+
+def test_verified_host_range_and_development_backend_are_explicit():
+    item = provider(
+        FakeClient(product_version="development"),
+        runtime_version="0.9.8",
+    )
+    item.initialize("session 1", platform="cli")
+
+    diagnostics = item.diagnostics()
+
+    assert diagnostics["runtime_version"] == "0.9.8"
+    assert diagnostics["provider_version"] == "0.1.7"
+    assert diagnostics["backend_version"] == "development"
+    item.shutdown()
+
+
+def test_strict_mode_rejects_unversioned_development_backend():
+    item = provider(
+        FakeClient(product_version="development"),
+        strict=True,
+        runtime_version="0.9.8",
+    )
+    with pytest.raises(RuntimeError, match="PIXIU_COMPONENT_VERSION_REQUIRED"):
+        item.initialize("session 1", platform="cli")
+
+
+def test_initialize_rejects_health_identity_mismatch():
+    class WrongHealthClient(FakeClient):
+        def request(self, method, path, payload=None):
+            response = super().request(method, path, payload)
+            if path == "/health":
+                response["product_version"] = "0.1.6"
+            return response
+
+    item = provider(WrongHealthClient())
+    with pytest.raises(RuntimeError, match="PIXIU_BACKEND_NOT_READY"):
         item.initialize("session 1", platform="cli")
 
 
@@ -147,7 +228,7 @@ def test_queue_backpressure_is_nonblocking_and_observable():
 def test_tool_errors_do_not_leak_endpoint_or_exception_details():
     class FailingClient(FakeClient):
         def request(self, method, path, payload=None):
-            if path == "/capabilities":
+            if path in {"/version", "/health", "/capabilities"}:
                 return super().request(method, path, payload)
             raise PixiuApiError("BACKEND_UNAVAILABLE", retryable=True)
 

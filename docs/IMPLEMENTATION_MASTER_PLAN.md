@@ -120,7 +120,7 @@ W0 基线与计划
 | W3.3 | ✅ 已完成：`POST /agent/context` 提供字符预算、来源引用、scope、freshness、冲突状态与敏感 evidence fail-closed | 多候选/隔离/裁剪/敏感排除及 Module E 消费契约测试通过 |
 | W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件、独立命名空间失败恢复及 Module E 触发测试完成；长期化和真实宿主证据待补 |
 | W3.5 | 显式记忆工具：search/store/update/forget/status | 权限、确认、审计与错误码稳定 |
-| W3.6 | capabilities/health/version API | Module E 可在启动前 fail closed |
+| W3.6 | ✅ `/capabilities`、`/health`、`/version` 已实现 | Module E 可按 schema/API/组件/产品/双 SDK 状态在启动前 fail closed |
 
 所有新增端点先写入 `docs/API.md` 并版本化；不得让 Module E 导入后端私有模块。
 
@@ -134,7 +134,7 @@ W0 基线与计划
 | W4.4 | 🟡 六类生命周期已映射 | 契约通过；F6-05 真实宿主证据与长期化待 W5 |
 | W4.5 | ✅ 四个显式记忆工具及稳定 JSON 错误 | 模型自主调用行为待 W5 实证 |
 | W4.6 | 🟡 hard scope、召回围栏中和、超时/错误脱敏、两阶段遗忘 | 契约通过；完整 F5 与宿主审批证据待补 |
-| W4.7 | 🟡 固定上游 commit，用户插件发现测试通过 | 支持版本范围及不兼容宿主拒绝待补 |
+| W4.7 | ✅ 固定上游 commit、0.9.x 支持范围、用户插件发现及不兼容宿主/组件拒绝 | 0.10+、不可解析宿主、API 漂移、混装版本和后端未就绪均有拒绝测试 |
 
 ### W5：完整 OS Agent 产品闭环（P0）
 
@@ -165,7 +165,7 @@ W0 基线与计划
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W7.1 | 🟡 发布预检已把 Module E manifest 纳入产品版本一致性检查 | 后端/API/schema/宿主完整 manifest 与真正单一生成源待补 |
+| W7.1 | 🟡 发布预检已把 Module E manifest 纳入一致性检查；包版本注入后端并提供 `/version`（含 API/schema/宿主契约） | Git/build time/架构/双 SDK 的完整发布 manifest 与真正单一生成源待补 |
 | W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、桌面入口及安全激活工具 | 包结构/幂等升级已测；全新 V11 图形安装与真实宿主待验 |
 | W7.3 | 安装前探测 V11、架构、宿主 Agent 与双 SDK | 不兼容时给出可操作错误，不半安装 |
 | W7.4 | 独立签名的更新 manifest/资产验证与密钥轮换策略 | 摘要和签名任一失败均拒绝安装 |

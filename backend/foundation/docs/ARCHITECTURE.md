@@ -10,6 +10,8 @@
 > `/memory/write` 已先检测敏感度再占用 receipt，敏感内容不可进入 `shared:*`，检测
 > 故障 fail closed；`/agent/lifecycle` 已幂等写入六类短/中期 context；日志贯通、Module E
 > 真实触发及长期化策略仍待完成。
+> `/version` 分离产品/API/Agent Memory/schema 版本，`/health` 校验实际数据库迁移；
+> 两者与 `/capabilities` 共同构成 Module E 的启动前握手。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；

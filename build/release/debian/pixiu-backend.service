@@ -7,6 +7,7 @@ Type=simple
 User=pixiu
 Group=pixiu
 EnvironmentFile=/etc/pixiu/pixiu.env
+Environment=PIXIU_PRODUCT_VERSION=@PRODUCT_VERSION@
 ExecStart=/usr/bin/pixiu-backend
 Restart=on-failure
 RestartSec=3
