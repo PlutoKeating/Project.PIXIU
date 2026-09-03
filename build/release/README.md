@@ -301,7 +301,8 @@ python3 build/release/scripts/three-device-evidence.py validate-final \
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取
 根 `VERSION`；只有故意构造漂移或旧版兼容的夹具保留异版本值，正常升版无需同步
-修改测试期望。`source_tree_clean` 会如实标记构建是否来自洁净工作树；CI 从完成的
+修改测试期望。组件清单测试同样从后端 `API_VERSION` 权威源读取 HTTP API，不复制
+易漂移的期望值。`source_tree_clean` 会如实标记构建是否来自洁净工作树；CI 从完成的
 `.deb` 反向提取该文件，并要求 commit、包版本、架构和画像一致。
 
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、

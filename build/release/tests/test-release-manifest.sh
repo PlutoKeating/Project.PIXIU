@@ -35,6 +35,12 @@ from pathlib import Path
 root = Path(sys.argv[1])
 manifest = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
 product_version = sys.argv[3]
+version_source = (root / "backend/foundation/api/version.py").read_text(encoding="utf-8")
+http_api = next(
+    line.split('"')[1]
+    for line in version_source.splitlines()
+    if line.startswith("API_VERSION = ")
+)
 
 assert manifest["manifest_schema"] == 1
 assert manifest["product"] == {
@@ -54,7 +60,7 @@ assert manifest["build"]["git_commit"] == subprocess.check_output(
 ).strip()
 
 assert manifest["interfaces"] == {
-    "http_api": "0.3.0",
+    "http_api": http_api,
     "agent_memory_api": 1,
     "database_schema": 12,
 }
