@@ -18,6 +18,7 @@ from backend.foundation.core.models import (
     SourceType,
 )
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.vector_store import VectorMatch, VectorStore
 
 
 class _FakeKnowledgeRepo(KnowledgeRepository):
@@ -83,6 +84,24 @@ class _FakeEntityRepo(EntityRepository):
 
     async def list_relations(self) -> list[Relation]:
         return list(self.relations)
+
+
+class _RecordingVectorStore(VectorStore):
+    def __init__(self) -> None:
+        self.deleted: list[str] = []
+
+    @property
+    def runtime(self) -> str:
+        return "recording"
+
+    async def upsert(self, knowledge_id: str, vector: list[float]) -> None:
+        raise AssertionError("not used by forget")
+
+    async def search(self, vector: list[float], limit: int) -> list[VectorMatch]:
+        raise AssertionError("not used by forget")
+
+    async def delete(self, knowledge_id: str) -> None:
+        self.deleted.append(knowledge_id)
 
 
 def _knowledge_item(
@@ -191,6 +210,23 @@ async def test_forget_respects_scope_isolation() -> None:
     ids = {t["id"] for t in pending.targets}
     assert alice_item.id in ids
     assert bob_item.id not in ids
+
+
+@pytest.mark.asyncio
+async def test_confirmed_forget_deletes_vector_but_preview_does_not() -> None:
+    item = _knowledge_item(title="四月份电费账单", scope="user:alice")
+    vectors = _RecordingVectorStore()
+    service = SecurityService(
+        knw_repo=_FakeKnowledgeRepo([item]),
+        entity_repo=_FakeEntityRepo(),
+        vector_store=vectors,
+    )
+
+    await service.forget("忘记四月份电费", confirm=False, scope="user:alice")
+    assert vectors.deleted == []
+
+    await service.forget("忘记四月份电费", confirm=True, scope="user:alice")
+    assert vectors.deleted == [item.id]
 
 
 @pytest.mark.asyncio

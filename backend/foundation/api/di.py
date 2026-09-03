@@ -154,6 +154,7 @@ async def get_security_service(
     return SecurityService(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
+        vector_store=SqliteVectorStore(db),
     )
 
 

@@ -9,6 +9,7 @@ from typing import Any
 
 from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.vector_store import VectorStore
 
 from backend.engine.security.models import ForgetResult
 
@@ -72,6 +73,7 @@ class ForgetEngine:
         confirm: bool,
         knw_repo: KnowledgeRepository,
         entity_repo: EntityRepository,
+        vector_store: VectorStore | None = None,
     ) -> ForgetResult:
         normalized_scope = scope.strip() if scope is not None else None
         if scope is not None and not normalized_scope:
@@ -117,6 +119,8 @@ class ForgetEngine:
         forgotten_ids: list[str] = []
         for entry in scored:
             await knw_repo.update_status(entry.item.id, KnowledgeStatus.FORGOTTEN)
+            if vector_store is not None:
+                await vector_store.delete(entry.item.id)
             forgotten_ids.append(entry.item.id)
 
         return ForgetResult(

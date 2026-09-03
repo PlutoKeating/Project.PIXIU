@@ -145,7 +145,7 @@ patterns = {
 forget("忘记那张4月支出清单")
   → 解析意图 + 构造匹配条件（title~"4月" AND source_type=OCR）
   → 定位目标 knowledge + evidence + entities/relations
-  → 级联清理（标记 FORGOTTEN + 物理清理）
+  → 级联清理（标记 FORGOTTEN + VectorStore 删除；其余物理清理由基础设施处理）
   → 生成 tombstone → Sync CRDT 传播（由 Module C 执行）
 ```
 
@@ -205,7 +205,8 @@ class ConflictService:
     async def arbitrate(self, new_item: KnowledgeItem) -> Optional[ConflictRecord]: ...
 
 class SecurityService:
-    def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository): ...
+    def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository,
+                 vector_store: VectorStore): ...
     async def detect_sensitivity(self, raw: dict) -> int: ...
     async def forget(self, command: str, confirm: bool) -> ForgetResult: ...
 ```

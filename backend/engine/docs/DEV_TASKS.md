@@ -124,7 +124,7 @@ git submodule update --init --recursive
 |------|--------|------|
 | `security/__init__.py` | ★★ | 导出 `SecurityService` |
 | `security/detector.py` | ★★ | 敏感信息识别（正则：身份证/银行卡/手机号）+ sensitivity 评分 |
-| `security/forget.py` | ★★ | 自然语言遗忘（解析指令→匹配定位→级联清理→tombstone） |
+| `security/forget.py` | ★★ | 自然语言遗忘（确认后状态失效 + VectorStore 删除；同步墓碑由 C 处理） |
 
 ---
 
