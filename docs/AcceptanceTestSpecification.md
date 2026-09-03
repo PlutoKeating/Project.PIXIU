@@ -62,6 +62,11 @@ runtime 均报告 compliant，产品 `/memory/write`、`/memory/query`、两阶�
 `kylin-agent` 和 `agent-runtime`，按 A-11/A-12 门禁提前拒绝。故本节仍保持“不通过”，
 但应把“SDK/产品记忆链已实证”与“完整 Agent/可交付依赖未完成”分开记录。
 
+提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净 strict amd64 重建和安装再次
+确认：portable 配置可健康运行，strict 系统服务会因桌面用户级 AI runtime 不可达而
+失败关闭，恢复配置后数据库与配置摘要保持。该结果只加强 W2.6 边界证据，不改变
+H-01～H-03 的未通过状态。
+
 当前公共 API 0.4.0（0.3.0 起）已补 `POST /memory/update`：目标知识 ID 保持不变，存储层以原子
 compare-and-swap 校验 `expected_version`，更新产生独立 evidence、重建图/向量索引，
 并让 shared 更新进入同一 CRDT 实体。双连接并发回归证明同一基线版本只有一个本地

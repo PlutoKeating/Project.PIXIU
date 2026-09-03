@@ -129,6 +129,13 @@ storage not found。当前源码已加入独立数据库路径、启动装载、
 并以当前 809 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
 遗忘与隐藏检查；正式取证器因目标系统缺少 Agent 宿主/runtime 可执行文件而拒绝出证。
 
+提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 又从洁净检出和四个固定 submodule
+成功构建 `kylin-v11-native-x86_64` strict amd64 包，两个原生扩展均进入包且前端
+ctest 38/38。候选包安装后，保留的 portable 配置可健康启动；切换到 strict 双 SDK
+再次稳定复现系统服务账户无法访问桌面用户 AI runtime 的失败关闭，恢复配置后服务
+重新健康且配置、数据库摘要不变。该切片强化了 W2.6 的根因结论，但未经过批准后的
+user service，也缺完整 Agent，不能计作 H-01～H-03 或最终候选证据。
+
 W2.6 的推荐设计已写入
 [`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：系统级 `.deb`
 安装 root-owned 程序，后端作为桌面用户服务与 Agent/双 SDK 同 UID 运行，用户数据迁入

@@ -250,6 +250,10 @@ Embedding 的 err=3/err=10 已定位为系统组件组合问题：官方 embeddi
 revision 8 已在 V11 同用户会话通过写入、向量检索、遗忘和删除后隐藏。正式取证器
 随后正确拒绝继续：目标系统没有 `kylin-agent`/`agent-runtime` 可执行文件。因此该
 结果仍是 SDK/产品记忆链强实证，不是完整 Agent 或最终交付通过。
+提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 又从洁净固定源码完成 strict amd64
+重建、38/38 前端测试与安装；portable 配置可健康运行，strict 系统服务则再次因用户级
+AI runtime 边界失败关闭，恢复后配置和数据库摘要保持。该复验排除了构建漂移，但未
+实现待批准的 user service，也没有完整 Agent，故不改变验收状态。
 随后无模型 Agent 探针完成了另一条关键验证：官方 0.9.6 宿主二进制可在 V11 启动，
 固定 Runtime 的 Gateway 健康与会话 API 可用，且 Module E 被发现并配置为
 `memory.provider=pixiu`。但公开宿主源码标签无法重建该二进制，官方 0.9.7 包又与

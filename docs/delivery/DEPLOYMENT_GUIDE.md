@@ -63,6 +63,10 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 而系统级 `pixiu-backend.service` 使用专用账户，尚不能直接访问桌面用户会话 socket。
 在用户会话 SDK 边界实现并通过安全评审前，strict 启动失败属于预期阻断，不得改为
 portable 静默降级或据此声明 H-02/H-03 通过。
+提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净 strict amd64 包已再次完成构建、
+安装和失败关闭复验：保留 portable 配置时服务健康，切换 strict 后稳定暴露上述用户
+会话边界，恢复配置后服务、配置和数据库摘要保持。该切片不代表已交付 user service，
+也不是最终安装矩阵证据。
 Vector Engine 无需配置 TCP host/port：生产使用系统 SDK 的 `ConnectParam(appId)`
 本地连接。旧配置中可能残留的 `PIXIU_VECTOR_HOST`/`PIXIU_VECTOR_PORT` 已被忽略；
 新装模板不再生成它们，`PIXIU_VECTOR_APP_ID` 仍用于隔离应用数据库。

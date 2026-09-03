@@ -156,6 +156,12 @@ runtime 均 compliant。正式取证器在检查到目标系统缺少 `kylin-age
 `agent-runtime` 可执行文件时按门禁拒绝生成最终证据，因此该记录不计完整 Agent 或
 release-ready。
 
+提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 又从洁净固定源码构建并安装 strict
+amd64 候选，两个 cp312 原生扩展入包且前端 ctest 38/38。保留 portable 配置时服务
+健康；切换 strict 后，系统服务账户访问不到桌面用户会话 AI runtime，严格预检按设计
+失败，恢复配置后服务、数据库和配置摘要保持。该复验进一步排除构建漂移，但没有
+形成 user service、完整 Agent 或 D-07 受控证据，验收状态不变。
+
 无模型 Agent 集成探针随后通过：官方 0.9.6 宿主在 V11 启动，固定 Runtime Gateway
 返回健康，空会话 API 返回列表，Module E 被发现并配置为 `memory.provider=pixiu`。
 该探针同时发现官方 0.9.7 ABI 不兼容、公开标签不可重建宿主、Runtime `web` extra

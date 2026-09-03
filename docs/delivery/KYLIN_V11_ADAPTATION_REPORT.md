@@ -108,6 +108,19 @@ Gateway，`/health` 与 `/api/sessions` 可用，Runtime 发现并选中 PIXIU P
 `aiohttp`，同一提交还有 0.9.4/0.9.8/0.9.9 三项版本事实。以上均纳入 ADR-0003，
 不把临时拼接环境计为安装验收。
 
+### 当前主线 strict 重建与安装复验（非最终证据）
+
+- 从提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净检出及四个固定 submodule
+  构建 `kylin-v11-native-x86_64` amd64 包成功，两个 cp312 原生扩展均入包，前端
+  ctest 38/38；
+- 生成包为 `pixiu_0.1.7-1_amd64.deb`，SHA-256 为
+  `47232334dba2f1fc02688792799366856e8ccb82d85f8d61eba4661fb23abe44`；
+- 安装候选时原有数据库与配置摘要保持，保留 portable 配置的服务健康；
+- 切换 strict 双 SDK 后，系统服务账户再次因无法访问桌面用户会话 AI runtime 而
+  失败关闭；恢复配置后服务重新健康，数据库与配置摘要仍保持；
+- 本次包不是最终 release commit，未完成 Agent 宿主/Runtime 供应链和 user service，
+  且原始证据尚未进入 D-07 受控归档，因此不得用于宣称 H-01～H-03 通过。
+
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 
 - 提交 `30e0d64` 在 Kylin V11 amd64 目标环境完成本地构建，前端 ctest 37/37；
