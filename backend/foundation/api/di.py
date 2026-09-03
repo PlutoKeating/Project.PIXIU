@@ -326,6 +326,7 @@ async def get_sync_service(
             preference_repo=SqlitePreferenceRepo(db),
             conflict_service=conflict_service,
             knowledge_service=knowledge_service,
+            sync_store=store,
         ),
         mainline=Mainline(store, conflict_service),
         # SN-4：KV 未写时 enabled 回 env 默认（di 注入 settings 值，

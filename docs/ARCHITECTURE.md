@@ -240,6 +240,8 @@ query + context_hint
 > mDNS 信任过滤、TLS 1.3 mTLS、CRDT 胜者物化；`/sync/*` 端点已真实接入。
 > 物化不直接绕过业务索引层：快进和自动仲裁结果均复用 `KnowledgeService`，重新生成
 > 图关系及 embedding/VectorStore 数据；墓碑同时隐藏知识并删除生产向量。
+> knowledge 早于 evidence 到达时以 `sync_meta` 持久登记待补引用，后续 evidence
+> 物化会补链并清理记录，避免跨批次乱序造成永久无来源知识。
 > SN-4（2026-08-29）起**网络运行时默认开启**（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），
 > 缺 advertise/TLS 证书自动降级不阻塞 API；显式 `false` 或运行时 `enabled=false`
 > 停止广播与监听（安全边界见 `backend/foundation/docs/ARCHITECTURE.md` §1.6）。

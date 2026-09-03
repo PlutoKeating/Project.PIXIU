@@ -311,6 +311,20 @@ class SqliteSyncStore:
         )).fetchone()
         return row["value"] if row else None
 
+    async def list_meta_keys(self, prefix: str) -> list[str]:
+        escaped = prefix.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        rows = await (
+            await self._db.execute(
+                "SELECT key FROM sync_meta WHERE key LIKE ? ESCAPE '\\' ORDER BY key",
+                (f"{escaped}%",),
+            )
+        ).fetchall()
+        return [row["key"] for row in rows]
+
+    async def delete_meta(self, key: str) -> None:
+        await self._db.execute("DELETE FROM sync_meta WHERE key = ?", (key,))
+        await self._db.commit()
+
     async def total_acknowledgements(self) -> int:
         row = await (await self._db.execute(
             "SELECT COUNT(*) AS count FROM sync_peer_acks"

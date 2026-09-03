@@ -80,6 +80,7 @@ async def _node(
             preference_repo=SqlitePreferenceRepo(db),
             conflict_service=conflict_service,
             knowledge_service=knowledge_service,
+            sync_store=store,
         )
     service = SyncService(
         store,
@@ -89,6 +90,73 @@ async def _node(
         materializer=materializer,
     )
     return service, store, db
+
+
+@pytest.mark.asyncio
+async def test_late_evidence_repairs_knowledge_citation_across_batches(tmp_path: Path):
+    receiver, receiver_store, receiver_db = await _node(
+        tmp_path, "late-receiver.db", "device-receiver", materialize=True
+    )
+    sender, _, sender_db = await _node(
+        tmp_path, "late-sender.db", "device-sender", materialize=False
+    )
+    try:
+        await receiver.pair(
+            PairingMethod.QR,
+            await sender.create_pairing_token(PairingMethod.QR, now=NOW),
+            now=NOW,
+        )
+        await sender.pair(
+            PairingMethod.QR,
+            await receiver.create_pairing_token(PairingMethod.QR, now=NOW),
+            now=NOW,
+        )
+        evidence = Evidence(
+            id="evd_LLLLLLLLLLLLLLLLLLLLLLLLLL",
+            source_type=SourceType.TOOL_RESULT,
+            raw={"title": "late citation"},
+            quality_score=1.0,
+            sensitivity=0,
+            scope="shared:home",
+            created_at=NOW,
+        )
+        knowledge = KnowledgeItem(
+            id="knw_LLLLLLLLLLLLLLLLLLLLLLLLLL",
+            kind=KnowledgeKind.FACT,
+            title="late citation target",
+            body={"value": "shared"},
+            evidence_ids=[evidence.id],
+            scope="shared:home",
+            created_at=NOW,
+            updated_at=NOW,
+        )
+        evidence_op = await sender.record_local(
+            f"evidence:{evidence.id}",
+            evidence.model_dump(mode="json"),
+            evidence.scope,
+            now=NOW,
+        )
+        knowledge_op = await sender.record_local(
+            f"knowledge:{knowledge.id}",
+            knowledge.model_dump(mode="json"),
+            knowledge.scope,
+            now=NOW,
+        )
+
+        assert await receiver.receive_ops([knowledge_op]) == 1
+        stored = await SqliteKnowledgeRepo(receiver_db).get(knowledge.id)
+        assert stored is not None and stored.evidence_ids == []
+        assert len(
+            await receiver_store.list_meta_keys("sync_pending_evidence:")
+        ) == 1
+
+        assert await receiver.receive_ops([evidence_op]) == 1
+        repaired = await SqliteKnowledgeRepo(receiver_db).get(knowledge.id)
+        assert repaired is not None and repaired.evidence_ids == [evidence.id]
+        assert await receiver_store.list_meta_keys("sync_pending_evidence:") == []
+    finally:
+        await receiver_db.close()
+        await sender_db.close()
 
 
 @pytest.mark.asyncio

@@ -81,6 +81,12 @@ class KnowledgeRepository(ABC):
             "compare-and-swap is not implemented by this repository"
         )
 
+    async def link_evidence(self, knowledge_id: str, evidence_id: str) -> None:
+        """Attach late-arriving evidence to an existing knowledge item."""
+        raise NotImplementedError(
+            "late evidence linking is not implemented by this repository"
+        )
+
     @abstractmethod
     async def get(self, id: str) -> Optional[KnowledgeItem]:
         """按 id 获取知识条目。"""

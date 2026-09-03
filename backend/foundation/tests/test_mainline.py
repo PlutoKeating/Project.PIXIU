@@ -488,6 +488,7 @@ async def _receiving_node(root: Path, filename: str, name: str):
         knowledge_repo=knowledge_repo,
         preference_repo=SqlitePreferenceRepo(db),
         knowledge_service=knowledge_service,
+        sync_store=store,
     )
     svc = SyncService(
         store,

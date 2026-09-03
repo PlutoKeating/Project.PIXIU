@@ -32,13 +32,14 @@
   mDNS 信任过滤、TLS 1.3 mTLS、Gossip 重传、远端物化及默认开启的运行时（SN-4）；
   远端首次物化的知识也进入 `source=sync` 语义仲裁，稳定全序保证反向收包结果一致；
   快进/更新/自动仲裁产物复用 KnowledgeService 重建图与向量，墓碑同步删除向量；
+  knowledge 先到时持久登记待补 evidence，跨批次后到后自动补链并清理；
   三份独立数据库的三节点回归已覆盖离线节点补墓碑、旧操作重放防复活和全活跃
   节点 ACK 后安全回收，最终真机矩阵仍待取证
 - `eval/`：评测引擎（Recall@1/3/5、P50/P95/P99、scope 隔离、聚合/追溯/冲突/偏好指标）、
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 2026-09-04 最新组合回归：pytest 806 passed（Foundation 633 + Engine 154 +
+- 2026-09-04 最新组合回归：pytest 807 passed（Foundation 634 + Engine 154 +
   Module E 19；完整组合回归 10 条既有依赖弃用告警，无失败）；Foundation 356 + Engine 21
   = 377 仅保留为 2026-08-11 阶段快照
 
