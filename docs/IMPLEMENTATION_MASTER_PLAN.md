@@ -87,7 +87,7 @@ W0 基线与计划
 
 | 切片 | 代码范围 | 具体工作 | 测试与完成标准 |
 |------|----------|----------|----------------|
-| W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：集合装载、upsert、delete、search；统一错误和运行时标识 | fake/native wrapper 单测；官方头文件编译检查 |
+| W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：集合装载、upsert、delete、search；统一错误和运行时标识 | 实现与 fake-native 契约测试完成；V11 链接/真服务待验 |
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | 契约测试、类型/导入边界检查 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 SDK 主键映射；处理稳定 ID、碰撞、幂等、删除 | CRUD、迁移、碰撞、重启恢复测试 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 端到端写入→查询→删除；无双写残留 |

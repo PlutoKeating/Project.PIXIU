@@ -1,7 +1,8 @@
 // 麒麟向量数据库客户端（libkysdk-vector-engine-client）—— pybind11 绑定
 //
 // 封装 C++ API（Milvus 式）：Database::Create / Connect / HasCollection /
-// CreateCollection / DropCollection / Insert / Search。
+// CreateCollection / DropCollection / LoadCollection / Insert / Upsert /
+// Delete / Search。
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -64,6 +65,13 @@ public:
         }
     }
 
+    void LoadCollection(const std::string &name) {
+        Status st = client_->LoadCollection(name);
+        if (!st.IsOk()) {
+            ThrowStatus("LoadCollection", st);
+        }
+    }
+
     int Insert(const std::string &name,
                const std::vector<std::vector<float>> &vectors,
                const std::vector<int64_t> &ids) {
@@ -79,6 +87,43 @@ public:
         Status st = client_->Insert(name, fields, results);
         if (!st.IsOk()) {
             ThrowStatus("Insert", st);
+        }
+        return static_cast<int>(results.IdArray().IntIDArray().size());
+    }
+
+    int Upsert(const std::string &name,
+               const std::vector<std::vector<float>> &vectors,
+               const std::vector<int64_t> &ids) {
+        std::vector<FieldDataPtr> fields{
+            std::make_shared<Int64FieldData>(DEFAULT_ID_FIELD_NAME, ids),
+            std::make_shared<FloatVecFieldData>(DEFAULT_VECTOR_FIELD_NAME,
+                                                vectors),
+        };
+        DmlResults results;
+        Status st = client_->Upsert(name, fields, results);
+        if (!st.IsOk()) {
+            ThrowStatus("Upsert", st);
+        }
+        return static_cast<int>(results.IdArray().IntIDArray().size());
+    }
+
+    int Delete(const std::string &name, const std::vector<int64_t> &ids) {
+        if (ids.empty()) {
+            return 0;
+        }
+        std::string expression = DEFAULT_ID_FIELD_NAME + std::string(" in [");
+        for (size_t i = 0; i < ids.size(); ++i) {
+            if (i > 0) {
+                expression += ",";
+            }
+            expression += std::to_string(ids[i]);
+        }
+        expression += "]";
+
+        DmlResults results;
+        Status st = client_->Delete(name, expression, results);
+        if (!st.IsOk()) {
+            ThrowStatus("Delete", st);
         }
         return static_cast<int>(results.IdArray().IntIDArray().size());
     }
@@ -134,6 +179,9 @@ PYBIND11_MODULE(_kylin_vector_client, m) {
         .def("has_collection", &VectorEngineClient::HasCollection)
         .def("create_collection", &VectorEngineClient::CreateCollection)
         .def("drop_collection", &VectorEngineClient::DropCollection)
+        .def("load_collection", &VectorEngineClient::LoadCollection)
         .def("insert", &VectorEngineClient::Insert)
+        .def("upsert", &VectorEngineClient::Upsert)
+        .def("delete", &VectorEngineClient::Delete)
         .def("search", &VectorEngineClient::Search);
 }

@@ -12,6 +12,10 @@
 | `_kylin_text_embedding` | `libkysdk-coreai-embedding` | 文本向量化（C API），仓库内 submodule：`third_party/kylin-coreai-embedding` |
 | `_kylin_vector_client` | `libkysdk-vector-engine-client` | 向量数据库客户端（Milvus 式 gRPC） |
 
+`_kylin_vector_client` 当前封装集合存在/创建/装载/删除与向量
+insert/upsert/delete/search。Python 删除接口只接受 `int64` 主键列表，由绑定内部
+构造 SDK 表达式；业务层不得传入任意过滤字符串。
+
 ## 环境要求（银河麒麟系统）
 
 ```bash

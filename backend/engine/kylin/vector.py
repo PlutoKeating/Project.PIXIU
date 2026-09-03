@@ -29,8 +29,8 @@ def _load_native():
 class VectorEngineClient:
     """麒麟向量数据库客户端（Milvus 式）。
 
-    提供 has_collection / create_collection / drop_collection / insert /
-    search 操作。向量引擎服务未运行或 SDK 缺失时抛错，无任何降级。
+    提供集合与向量生命周期操作。向量引擎服务未运行或 SDK 缺失时抛错，
+    无任何降级。
     """
 
     def __init__(
@@ -53,11 +53,31 @@ class VectorEngineClient:
     def drop_collection(self, name: str) -> None:
         self._impl.drop_collection(name)
 
+    def load_collection(self, name: str) -> None:
+        """将集合装载到查询节点。"""
+        self._impl.load_collection(name)
+
     def insert(
         self, name: str, vectors: list[list[float]], ids: list[int] | None = None
     ) -> int:
         """插入向量，返回写入行数。id 自增时可不传 ids。"""
         return int(self._impl.insert(name, vectors, ids or []))
+
+    def upsert(
+        self, name: str, vectors: list[list[float]], ids: list[int]
+    ) -> int:
+        """按显式整数主键插入或替换向量，返回受影响行数。"""
+        if len(vectors) != len(ids):
+            raise ValueError("vector and id counts must match")
+        if not ids:
+            return 0
+        return int(self._impl.upsert(name, vectors, ids))
+
+    def delete(self, name: str, ids: list[int]) -> int:
+        """按整数主键删除向量，不向调用方暴露 SDK 过滤表达式。"""
+        if not ids:
+            return 0
+        return int(self._impl.delete(name, ids))
 
     def search(
         self, name: str, query: list[float], top_k: int = 10

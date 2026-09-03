@@ -174,7 +174,10 @@ SDK，SDK/运行时不可用时切换到 `PortableTextEmbedding`；后者是确�
 
 向量数据库使用 `libkysdk-vector-engine-client`（Milvus 式 gRPC 客户端，
 submodule 位于 `third_party/libkysdk-vector-engine-client`），
-由 `kylin/vector.py` 封装，供检索阶段 ANN 通道使用。
+由 `kylin/vector.py` 封装。适配器已提供集合存在/创建/装载/删除，以及向量
+insert/upsert/delete/search 生命周期；删除接口只接受整数主键列表，不向业务调用方
+暴露可注入的 SDK 过滤表达式。该适配器仍需由 Module C 的 `VectorStore` 接线到
+生产写入、检索和遗忘链，不能仅凭 wrapper 测试判定 H-02 通过。
 
 ---
 
