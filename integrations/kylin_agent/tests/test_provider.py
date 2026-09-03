@@ -260,6 +260,12 @@ def test_availability_is_configuration_only_and_provider_matches_upstream_abc():
 def test_pinned_upstream_discovers_user_plugin(tmp_path, monkeypatch):
     plugin_dir = tmp_path / "plugins" / "pixiu"
     shutil.copytree(ROOT / "integrations" / "kylin_agent" / "pixiu", plugin_dir)
+    template = plugin_dir / "plugin.yaml.in"
+    (plugin_dir / "plugin.yaml").write_text(
+        template.read_text(encoding="utf-8").replace("@VERSION@", PRODUCT_VERSION),
+        encoding="utf-8",
+    )
+    template.unlink()
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
 
     from plugins.memory import find_provider_dir, load_memory_provider
