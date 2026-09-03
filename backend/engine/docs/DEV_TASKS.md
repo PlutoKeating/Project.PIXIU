@@ -33,8 +33,8 @@
   （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）。
 - 🔴 **向量数据库硬门槛未通过**：当前检索由 foundation/retrieval 的 SQLite INT8
   扫描承担；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
-  生命周期封装和契约测试，但尚未注入生产链。必须让系统 Vector Engine 实际承担
-  生产建库、写入、删除和查询，并在 V11 严格画像中验证。
+  生命周期封装和 `KylinVectorStore` 契约测试，但尚未由生产配置选择。必须让系统
+  Vector Engine 实际承担生产建库、写入、删除和查询，并在 V11 严格画像中验证。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
 - 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；
@@ -139,6 +139,7 @@ git submodule update --init --recursive
 | `tests/test_security.py` | 敏感识别+遗忘精确性+级联清理测试 |
 | `tests/test_sqlite_integration.py` | 引擎 × SQLite 全链路集成测试 |
 | `tests/test_vector_client.py` | Vector Engine Python 适配器公共生命周期契约测试 |
+| `tests/test_kylin_vector_store.py` | Kylin VectorStore 集合/映射/写入/查询/删除契约测试 |
 
 默认生产配置优先调用真实麒麟 SDK，SDK 缺失时使用可移植软件向量器；严格
 `kylin` 模式会抛出 `KylinSDKUnavailableError`。测试桩仅用于隔离单元测试。

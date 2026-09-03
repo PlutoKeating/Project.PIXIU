@@ -18,6 +18,7 @@ from backend.engine.kylin.embedding import (
 )
 from backend.engine.kylin.ocr import KylinOcr, StructuredTextOcr, get_ocr
 from backend.engine.kylin.vector import VectorEngineClient
+from backend.engine.kylin.vector_store import KylinVectorStore
 
 __all__ = [
     "KylinOcr",
@@ -27,6 +28,7 @@ __all__ = [
     "StructuredTextOcr",
     "TextEmbedder",
     "VectorEngineClient",
+    "KylinVectorStore",
     "get_embedder",
     "get_ocr",
 ]
