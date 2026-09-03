@@ -47,6 +47,12 @@ host/port 构造，因而错误连接未监听的 `127.0.0.1:19530`；现已改�
 runtime 1.3.0，但系统模型元数据缺少 runtime 所需的 `model_catalog`，导致
 `getModelList` err=3。两者均未产生成功生命周期证据，H-02/H-03 状态不变。
 
+随后提交 `4011d0d` 的 strict revision 7 修正本地连接并补齐数据库生命周期：前端
+ctest 38/38、双原生扩展链接及包安装通过；Vector Engine direct SDK 使用独立临时
+数据库和固定 4 维测试向量完成 LoadDBFile/create/load/upsert/search/delete/
+deleted-hidden/drop/disconnect，全部返回 passed。该成功记录没有调用 Embedding 或
+产品 API，因此只计 W1.1 底层 SDK 实证，H-02/H-03 仍保持不通过。
+
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine
 145 项、Foundation 619 项、Module E 16 项（合计 pytest 780 passed），前端 ctest

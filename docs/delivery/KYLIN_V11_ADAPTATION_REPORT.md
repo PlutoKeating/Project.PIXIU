@@ -23,7 +23,7 @@ Agent 宿主/runtime 与双 SDK 真服务调用仍未完成，不得宣称 H-02/
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
 | openKylin Agent + Module E | 未完成 | 未完成 | 版本、provider 加载、完整 run |
 | Embedding SDK | cp312 扩展已原生链接；真调用待验 | 待真机 | runtime、调用日志、严格失败 |
-| Vector Engine SDK | cp312 扩展已原生链接；H-02 未通过 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
+| Vector Engine SDK | revision 7 direct SDK 独立数据库全生命周期通过；产品链未通过 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
 | UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |
@@ -69,6 +69,17 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
   `getModelList` 返回 err=3；这是当前软件源组件组合的独立外部阻断，仍待确认；
 - 该结果登记为 W2.6 的发布阻断证据。完成用户会话 SDK 边界并在同一候选上重跑
   direct SDK 与产品 API 生命周期之前，H-02/H-03 均保持不通过。
+
+### 2026-09-04 Vector Engine direct SDK 成功切片（非 H-02 最终通过）
+
+- 提交 `4011d0d` 构建 strict amd64 revision 7，两个 cp312 扩展链接成功，前端
+  ctest 38/38；包升级安装后 portable 服务恢复 ready；
+- 修正生产连接为 `ConnectParam(appId)`，并按官方 demo 补齐 `LoadDBFile` 与
+  `Disconnect`；
+- 桌面用户会话中以固定 4 维测试向量、独立临时数据库和唯一集合依次通过数据库装载、
+  create/load/upsert/search/delete、删除后不可检索、drop、disconnect，退出码 0；
+- 临时集合和数据库均由取证器清理；该切片没有调用 Embedding，也没有经过产品
+  `/memory/write`/`query`/`forget`，故只关闭 W1.1，不把 H-02 标为通过。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 
