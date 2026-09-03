@@ -206,6 +206,13 @@ D-07 原始证据另由 `submission/evidence-policy.json` 定义七类必需主�
 生成逐文件 manifest 并扫描认证 URL、私钥、常见令牌与个人路径。最终总打包会再次
 执行该策略，普通空 ZIP 或只含部分日志的 ZIP 不得通过。
 
+其中 Agent 主记录不能手工填写：必须用
+`build/release/scripts/agent-lifecycle-evidence.py` 先执行 `before-restart`，实际重启
+Kylin Agent 桌面宿主及 Runtime 后再执行 `after-restart`。工具仅接受 loopback Gateway，
+绑定已通过的 strict 原生证据，并要求真实 SSE 工具/审批事件、持久消息摘要及跨会话
+随机标记召回；最终 JSON 不保存对话、工具输出、网址、PID 或会话标识原文。`validate`
+可离线复核结构。没有同版实测输出时，原始证据 ZIP 和最终提交包必须继续失败关闭。
+
 最终外层目录和 ZIP 名固定为
 `华南理工大学－OSAgent记忆优化及高效应用研究－PIXIU`；自动打包前还必须放入团队
 负责人提供的 PPT、≤7 分钟视频及经报名系统审核通过的盖章报名表。视频/PPT 不由

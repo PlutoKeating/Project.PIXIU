@@ -118,6 +118,37 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 报告同时固定输出 `agent-supply-chain-audit` 证据类型、仓库 commit 和明确 pass/fail，
 供 D-07 原始证据归档做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
 
+## 完整 Agent 生命周期取证
+
+先准备通过的 strict 原生 SDK 证据并启动同包 PIXIU、Kylin Agent 桌面宿主和固定
+Runtime。受控场景不出现具体工具名；采集器会生成一次性随机标记和仅本用户可读的
+临时文件，要求真实 Agent 自主完成 Shell 读取、联网搜索、记忆写入及现场审批：
+
+```bash
+python3 build/release/scripts/agent-lifecycle-evidence.py before-restart \
+  --native-evidence NATIVE_SDK_JSON \
+  --scenario build/release/agent-lifecycle-scenario.json \
+  --state AGENT_CAPTURE_STATE_JSON
+```
+
+第一阶段成功后，完整退出并重新启动桌面宿主和 Runtime，再运行：
+
+```bash
+python3 build/release/scripts/agent-lifecycle-evidence.py after-restart \
+  --scenario build/release/agent-lifecycle-scenario.json \
+  --state AGENT_CAPTURE_STATE_JSON \
+  --output agent-lifecycle.json
+python3 build/release/scripts/agent-lifecycle-evidence.py validate \
+  --output agent-lifecycle.json
+```
+
+大写路径是发布人员选择的实物路径，不是默认值。Gateway 只允许 loopback；若启用
+Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定的环境变量传入，
+不得把密钥放到命令行或证据。审批必须在核对实际动作后手工输入与 run 绑定的确认语句，
+不支持自动批准。中间 state 含继续运行所需的随机标记和会话标识，必须按敏感临时文件
+保护且不得放入 D-07；最终 JSON 只保留哈希、计数、工具名和通过项。工具的通过只说明
+采集程序契约已验证，最终状态仍取决于同一候选包在 V11 上的真实输出。
+
 ## 三台设备拓扑取证
 
 严格原生取证成功文件固定标识 `evidence_schema=1`、

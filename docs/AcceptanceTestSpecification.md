@@ -106,6 +106,15 @@ v12 另覆盖失败 receipt 原载荷校验、一次性恢复授权、独立命�
 A-10 的局部证据，但不等于 Agent run 恢复。A-01～A-10 的真实宿主行为、A-11 分发
 审查和 A-14 端到端展示仍不得标为通过。
 
+真实宿主证据由 `build/release/scripts/agent-lifecycle-evidence.py` 两阶段采集：第一阶段
+只经 Agent Gateway 完成同会话 3 个 run，并要求 SSE 成功事件实际出现 `terminal`、
+`web_search`、`pixiu_memory_remember`；审批必须由操作者输入与当前 run 绑定的确认语句，
+脚本不提供自动批准。随机标记由采集器写入仅本用户可读的临时文件，必须先经 Shell
+读取、再由 Agent 判断沉淀。宿主和 Runtime 均重启后，第二阶段要求旧消息摘要完整、
+原会话继续运行，并由不同新会话通过 `pixiu_memory_search` 返回该标记。成功报告固定为
+`kylin-v11-agent-lifecycle`，仅含摘要、计数和工具名；当前仅有采集器契约测试，尚无
+最终候选实测报告，故 A-01～A-10 不升级为通过。
+
 宿主/组件预检证据：Module E 初始化契约固定验证 runtime 0.9.x、Provider/后端产品
 版本一致、Agent Memory API v1、后端组件身份及 `/health` 数据库就绪；0.10+、API
 漂移、混装组件和健康身份不一致均拒绝。该结果属于兼容性自动化证据，不替代目标
