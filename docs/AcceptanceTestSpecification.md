@@ -280,8 +280,13 @@ PPT 建议参考 MultiWOZ、ToolBench、PersonaChat、BPMN、DailyDialog、TREC�
 检索 50、冲突 25 和延迟 1000 的最低样本数；四项基础指标会按本节阈值重新判定。
 F7-03 还必须提供相同 `task_set_sha256` 下的 `no_memory`、
 `single_device_memory`、`distributed_memory` 三个变体，每组至少 30 例并报告任务成功率
-和平均轮数。汇总器同时绑定 strict V11 原生证据、Agent 生命周期证据、冻结数据集、
-候选包和全部输入文件摘要；当前仅完成 4 项工具契约测试，最终性能仍未实测。
+和平均轮数。不得只修改报告标签：无记忆组须显式关闭 Runtime 内置 memory、用户
+profile、外部 provider 与 PIXIU 同步，并禁止持久化 context plugin；单机组须使用
+strict PIXIU provider 且关闭同步；
+分布式组须在同一三设备全连接 run 的两个不同节点间完成教学与新会话召回。三组使用
+固定的 30 项合成任务集，保留完整成功/失败布尔结果和工具轨迹摘要并由工具复算，禁止
+删掉不利样本。汇总器同时绑定 strict V11 原生证据、Agent 生命周期证据、冻结数据集、
+候选包和全部输入文件摘要；当前采集与汇总契约已实现，最终性能仍未实测。
 
 逐样本输入必须由安装包内 `backend/scripts/capture_final_eval.py` 在同一桌面用户会话中
 生成。报告的 `execution` 必须声明并由门禁核对：V11 amd64、已安装 venv/组件路径、

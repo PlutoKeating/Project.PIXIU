@@ -163,6 +163,42 @@ Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定
 Vector Engine，以及隔离的评测状态；不得用 `sudo`、portable 报告或手填 execution
 字段替代。原始逐样本报告和三变体对比完成后，用同一候选的五项输入生成性能主记录：
 
+三变体不得手填汇总。固定任务集为
+`build/release/agent-memory-ablation-tasks.json`（30 个互异的合成跨会话事实）。先在每个
+参与端对已经启动的 Runtime 采配置快照；无记忆画像必须显式关闭内置 memory、用户
+profile、外部 provider 和同步并只用非持久化 compressor context，单机画像必须启用 strict PIXIU provider 并关闭同步，
+分布式画像必须绑定同一三设备 run 中两个不同节点的 manifest，且三节点全在线、队列
+归零。配置变更后必须重启 Runtime，再采快照；采集时快照中的进程摘要必须仍与 Gateway
+一致。
+
+```bash
+python3 build/release/scripts/agent-memory-ablation.py snapshot \
+  --variant VARIANT --native-evidence NATIVE_SDK_JSON \
+  --runtime-config RUNTIME_CONFIG_YAML --runtime-env RUNTIME_ENV_FILE \
+  --node-manifest DISTRIBUTED_NODE_MANIFEST_IF_REQUIRED \
+  --output VARIANT_NODE_SNAPSHOT_JSON
+
+python3 build/release/scripts/agent-memory-ablation.py capture \
+  --variant VARIANT --native-evidence NATIVE_SDK_JSON \
+  --task-set build/release/agent-memory-ablation-tasks.json \
+  --teach-snapshot TEACH_NODE_SNAPSHOT_JSON \
+  --recall-snapshot RECALL_NODE_SNAPSHOT_JSON \
+  --teach-url TEACH_LOOPBACK_GATEWAY --recall-url RECALL_LOOPBACK_GATEWAY \
+  --output VARIANT_REPORT_JSON
+
+python3 build/release/scripts/agent-memory-ablation.py build \
+  --variant-report NO_MEMORY_REPORT --variant-report SINGLE_DEVICE_REPORT \
+  --variant-report DISTRIBUTED_REPORT \
+  --dataset-manifest FINAL_DATASET_MANIFEST_JSON \
+  --output MEMORY_ABLATION_JSON
+```
+
+每个任务由一个教学会话和一个全新召回会话组成；分布式组的教学与召回必须落在两个
+不同的已证明节点。报告不保存提示词、模型正文、会话 ID 或明文业务载荷，只保存任务
+ID、成功布尔值、轮数、工具名和运行摘要。工具会从 30 条逐任务结果复算成功率，三组
+任务 ID、任务集摘要、release 与 dataset 必须完全一致；不要求结果单调，失败样本也
+不得删除。`snapshot` 依赖 PyYAML，使用 PIXIU 已安装 venv 或具备项目依赖的解释器。
+
 ```bash
 python3 build/release/scripts/final-performance-evidence.py build \
   --native-evidence NATIVE_SDK_JSON \
@@ -182,7 +218,8 @@ python3 build/release/scripts/final-performance-evidence.py validate \
 恰好包含 `no_memory`、`single_device_memory`、`distributed_memory`；每组
 `sample_count>=30`，`metrics` 恰好包含 0～1 的 `task_success_rate` 和正数
 `mean_turns`。汇总不要求结果必须单调变好，但不得删掉不利数据。五个输入及逐样本
-原始结果仍须作为 D-07 去敏附件保存；汇总 JSON 不能替代它们。
+原始结果、固定任务集、配置快照和节点 manifest 仍须作为 D-07 去敏附件保存；汇总 JSON
+不能替代它们。当前仅完成采集/复算工具及契约测试，最终 V11 三组运行尚未执行。
 
 最终候选洁净且 strict 原生证据通过后，冻结 acceptance 数据集：
 

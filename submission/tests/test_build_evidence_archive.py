@@ -155,10 +155,18 @@ class EvidenceArchiveTest(unittest.TestCase):
         comparison.write_text(
             json.dumps({
                 "schema_version": 1,
+                "evidence_class": "kylin-v11-agent-memory-ablation",
+                "real_device_evidence": True,
                 "status": "pass",
                 "release": {"git_commit": commit, "candidate_package_sha256": package_sha},
                 "dataset_sha256": canonical_dataset_sha,
                 "task_set_sha256": task_set_sha,
+                "dataset_manifest_sha256": "0" * 64,
+                "source_variant_sha256": {
+                    "no_memory": "1" * 64,
+                    "single_device_memory": "2" * 64,
+                    "distributed_memory": "3" * 64,
+                },
                 "variants": variants,
             }),
             encoding="utf-8",
@@ -186,6 +194,9 @@ class EvidenceArchiveTest(unittest.TestCase):
             "retrieval_repetitions": 20,
         }
         records["dataset"].write_text(json.dumps(dataset), encoding="utf-8")
+        comparison_document = json.loads(comparison.read_text(encoding="utf-8"))
+        comparison_document["dataset_manifest_sha256"] = MODULE.sha256_file(records["dataset"])
+        comparison.write_text(json.dumps(comparison_document), encoding="utf-8")
         performance = json.loads(records["performance"].read_text())
         performance["source_sha256"] = {
             "native": MODULE.sha256_file(records["native_sdk"]),

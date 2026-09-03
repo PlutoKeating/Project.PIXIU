@@ -88,10 +88,18 @@ def report() -> dict:
 def comparison() -> dict:
     return {
         "schema_version": 1,
+        "evidence_class": "kylin-v11-agent-memory-ablation",
+        "real_device_evidence": True,
         "status": "pass",
         "release": dict(IDENTITY),
         "dataset_sha256": DATASET_SHA,
         "task_set_sha256": "d" * 64,
+        "dataset_manifest_sha256": "f" * 64,
+        "source_variant_sha256": {
+            "no_memory": "1" * 64,
+            "single_device_memory": "2" * 64,
+            "distributed_memory": "3" * 64,
+        },
         "variants": [
             {"name": name, "sample_count": 30, "metrics": {"task_success_rate": 0.8, "mean_turns": 2.0}}
             for name in sorted(MODULE.VARIANTS)
@@ -107,6 +115,8 @@ class FinalPerformanceEvidenceTest(unittest.TestCase):
                 value["execution"]["native_evidence_sha256"] = MODULE.file_sha256(
                     paths["native"]
                 )
+            if name == "comparison" and "dataset" in paths:
+                value["dataset_manifest_sha256"] = MODULE.file_sha256(paths["dataset"])
             path = root / f"{name}.json"
             path.write_text(json.dumps(value), encoding="utf-8")
             paths[name] = path

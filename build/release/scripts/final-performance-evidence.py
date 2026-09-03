@@ -199,7 +199,10 @@ def validate_eval_report(
     return selected
 
 
-def validate_comparison(value: dict[str, Any], identity: dict[str, str], dataset_sha: str) -> list[dict[str, Any]]:
+def validate_comparison(
+    value: dict[str, Any], identity: dict[str, str], dataset_sha: str,
+    dataset_manifest_sha: str | None = None,
+) -> list[dict[str, Any]]:
     release = value.get("release")
     if not isinstance(release, dict):
         raise EvidenceError("comparison release identity is missing")
@@ -211,11 +214,25 @@ def validate_comparison(value: dict[str, Any], identity: dict[str, str], dataset
     variants = value.get("variants")
     if not (
         value.get("schema_version") == 1
+        and value.get("evidence_class") == "kylin-v11-agent-memory-ablation"
+        and value.get("real_device_evidence") is True
         and value.get("status") == "pass"
         and comparison_identity == identity
         and value.get("dataset_sha256") == dataset_sha
         and isinstance(value.get("task_set_sha256"), str)
         and SHA256.fullmatch(value["task_set_sha256"])
+        and isinstance(value.get("dataset_manifest_sha256"), str)
+        and SHA256.fullmatch(value["dataset_manifest_sha256"])
+        and (
+            dataset_manifest_sha is None
+            or value["dataset_manifest_sha256"] == dataset_manifest_sha
+        )
+        and isinstance(value.get("source_variant_sha256"), dict)
+        and set(value["source_variant_sha256"]) == VARIANTS
+        and all(
+            isinstance(digest, str) and SHA256.fullmatch(digest)
+            for digest in value["source_variant_sha256"].values()
+        )
         and isinstance(variants, list)
         and {item.get("name") for item in variants if isinstance(item, dict)} == VARIANTS
         and len(variants) == 3
@@ -263,7 +280,9 @@ def build_evidence(paths: dict[str, Path]) -> dict[str, Any]:
     metrics = validate_eval_report(
         report, dataset, identity, file_sha256(paths["native"])
     )
-    variants = validate_comparison(comparison, identity, dataset["sha256"])
+    variants = validate_comparison(
+        comparison, identity, dataset["sha256"], file_sha256(paths["dataset"])
+    )
     return {
         "evidence_schema": 1,
         "evidence_class": EVIDENCE_CLASS,

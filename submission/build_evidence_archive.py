@@ -204,7 +204,8 @@ def validate_embedded_sources(
             ),
         }
         selected_variants = module.validate_comparison(
-            read_json(comparison_path), identity, dataset_manifest["dataset"]["sha256"]
+            read_json(comparison_path), identity, dataset_manifest["dataset"]["sha256"],
+            sources["dataset"],
         )
         if performance.get("metrics") != selected_metrics:
             raise ValueError("performance summary does not match the archived evaluation report")
