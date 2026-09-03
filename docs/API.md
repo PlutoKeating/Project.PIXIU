@@ -234,6 +234,8 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 新增一条可追溯 evidence。`expected_version` 由存储层单条条件更新原子校验：两个离线节点可从同一版本
 各自产生下一版本，再由同步 CRDT/确定性仲裁收敛；已先收到远端新版的节点会以
 `409 VERSION_CONFLICT` 拒绝陈旧更新。
+接收节点物化 CRDT 胜者时复用 `KnowledgeService`，因此会重新调用当前画像的
+embedding/VectorStore 并重建图索引；远端墓碑同时移除向量，不只修改 SQLite 状态。
 
 ```jsonc
 {

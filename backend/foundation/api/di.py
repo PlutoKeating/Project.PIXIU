@@ -231,9 +231,11 @@ async def get_knowledge_repo(
 async def get_conflict_service(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> ConflictService:
+    knowledge = await get_knowledge_service(db)
     return ConflictService(
         knw_repo=SqliteKnowledgeRepo(db),
         conflict_repo=SqliteConflictRepo(db),
+        knowledge_writer=knowledge.materialize,
     )
 
 
@@ -307,7 +309,12 @@ async def get_sync_service(
     store = SqliteSyncStore(db)
     # SN-3 mainline：注入 ConflictService（arbitrate 在调用时才解析，
     # 无循环依赖）。同步分叉且判 MANUAL 的 op 转人工仲裁（source="sync"）。
-    conflict_service = await get_conflict_service(db)
+    knowledge_service = await get_knowledge_service(db)
+    conflict_service = ConflictService(
+        knw_repo=SqliteKnowledgeRepo(db),
+        conflict_repo=SqliteConflictRepo(db),
+        knowledge_writer=knowledge_service.materialize,
+    )
     return SyncService(
         store,
         device_name=settings.sync_device_name,
@@ -318,6 +325,7 @@ async def get_sync_service(
             knowledge_repo=SqliteKnowledgeRepo(db),
             preference_repo=SqlitePreferenceRepo(db),
             conflict_service=conflict_service,
+            knowledge_service=knowledge_service,
         ),
         mainline=Mainline(store, conflict_service),
         # SN-4：KV 未写时 enabled 回 env 默认（di 注入 settings 值，

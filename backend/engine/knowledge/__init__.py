@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from backend.foundation.core.models import Evidence, KnowledgeItem
+from backend.foundation.core.models import Evidence, KnowledgeItem, KnowledgeStatus
 from backend.foundation.core.repository import (
     EntityRepository,
     KnowledgeRepository,
@@ -55,6 +55,16 @@ class KnowledgeService:
         if await self._knw_repo.get(item.id) is None:
             raise KeyError(item.id)
         return await self._persist(item, expected_version=expected_version)
+
+    async def materialize(self, item: KnowledgeItem) -> KnowledgeItem:
+        """Index and upsert a trusted structured item received from synchronization."""
+        return await self._persist(item)
+
+    async def forget(self, knowledge_id: str) -> None:
+        """Hide a synchronized tombstone and remove its production vector."""
+        await self._knw_repo.update_status(knowledge_id, KnowledgeStatus.FORGOTTEN)
+        if self._vector_store is not None:
+            await self._vector_store.delete(knowledge_id)
 
     async def _persist(
         self,

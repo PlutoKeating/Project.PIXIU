@@ -22,11 +22,13 @@ class FoundationMaterializer:
         knowledge_repo,
         preference_repo,
         conflict_service=None,
+        knowledge_service=None,
     ) -> None:
         self._evidence_repo = evidence_repo
         self._knowledge_repo = knowledge_repo
         self._preference_repo = preference_repo
         self._conflict_service = conflict_service
+        self._knowledge_service = knowledge_service
 
     async def __call__(self, record: SyncRecord) -> None:
         kind, separator, entity_id = record.entity.partition(":")
@@ -34,9 +36,12 @@ class FoundationMaterializer:
             return
         if record.tombstone:
             if kind == "knowledge":
-                await self._knowledge_repo.update_status(
-                    entity_id, KnowledgeStatus.FORGOTTEN
-                )
+                if self._knowledge_service is None:
+                    await self._knowledge_repo.update_status(
+                        entity_id, KnowledgeStatus.FORGOTTEN
+                    )
+                else:
+                    await self._knowledge_service.forget(entity_id)
             return
         if kind == "evidence":
             evidence = Evidence.model_validate(record.payload)
@@ -57,7 +62,10 @@ class FoundationMaterializer:
             ]
             item = item.model_copy(update={"evidence_ids": available_evidence})
             if self._conflict_service is None:
-                await self._knowledge_repo.save(item)
+                if self._knowledge_service is None:
+                    await self._knowledge_repo.save(item)
+                else:
+                    await self._knowledge_service.materialize(item)
             else:
                 # A first-seen remote entity is a CRDT fast-forward, but it may
                 # still contradict another local knowledge ID semantically.

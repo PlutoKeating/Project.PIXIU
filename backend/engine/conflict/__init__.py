@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import copy
 import time
+from collections.abc import Awaitable, Callable
 from typing import Optional
 
 from backend.foundation.core.models import ConflictRecord, ConflictResolution, KnowledgeItem
@@ -42,6 +43,9 @@ class ConflictService:
         entity_repo: Optional[EntityRepository] = None,
         entity_matcher: Optional[EntityMatcher] = None,
         text_detector: Optional[TextConflictDetector] = None,
+        knowledge_writer: Callable[
+            [KnowledgeItem], Awaitable[KnowledgeItem]
+        ] | None = None,
     ) -> None:
         self._knw_repo = knw_repo
         self._conflict_repo = conflict_repo
@@ -49,6 +53,13 @@ class ConflictService:
         detector = text_detector or RuleBasedTextConflictDetector()
         self._arbiter = arbiter or Arbiter(text_detector=detector)
         self._entity_matcher = entity_matcher or EntityMatcher(entity_repo=entity_repo)
+        self._knowledge_writer = knowledge_writer
+
+    async def _save(self, item: KnowledgeItem) -> None:
+        if self._knowledge_writer is None:
+            await self._knw_repo.save(item)
+        else:
+            await self._knowledge_writer(item)
 
     async def arbitrate(
         self,
@@ -86,7 +97,7 @@ class ConflictService:
             )
             return record
 
-        await self._knw_repo.save(new_item)
+        await self._save(new_item)
         return None
 
     async def _is_candidate(
@@ -132,11 +143,11 @@ class ConflictService:
     ) -> None:
         existing.status = "SUPERSEDED"
         existing.updated_at = resolved_at
-        await self._knw_repo.save(existing)
+        await self._save(existing)
 
         new_item.version = max(existing.version + 1, new_item.version)
         new_item.updated_at = resolved_at
-        await self._knw_repo.save(new_item)
+        await self._save(new_item)
 
         await self._conflict_repo.save(record)
 
@@ -149,10 +160,10 @@ class ConflictService:
         resolved_at: int,
     ) -> None:
         # 保留两条知识 ACTIVE，让人工后续裁决。
-        await self._knw_repo.save(existing)
+        await self._save(existing)
         new_item.version = max(existing.version + 1, new_item.version)
         new_item.updated_at = resolved_at
-        await self._knw_repo.save(new_item)
+        await self._save(new_item)
         await self._conflict_repo.save(record)
 
     async def _apply_merge(
@@ -174,8 +185,8 @@ class ConflictService:
 
         existing.status = "SUPERSEDED"
         existing.updated_at = resolved_at
-        await self._knw_repo.save(existing)
-        await self._knw_repo.save(merged)
+        await self._save(existing)
+        await self._save(merged)
         await self._conflict_repo.save(record)
 
 

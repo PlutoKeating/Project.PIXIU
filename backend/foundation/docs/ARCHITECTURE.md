@@ -341,6 +341,9 @@ sync/
 `ConflictService.arbitrate(..., source="sync")`，避免绕过不同 ID 知识的语义冲突。
 同步来源先按 `updated_at`、`created_at`、`id` 的全序选定胜负，因此两端以相反顺序
 收到同一对矛盾知识时，最终 ACTIVE/SUPERSEDED、version、时间与正文一致。
+生产 DI 同时向物化器和冲突服务注入 `KnowledgeService`：远端快进与自动仲裁结果都会
+重建实体关联及 embedding/VectorStore 索引，更新替换旧向量；知识墓碑通过同一服务
+隐藏条目并删除向量。不得再用直接 repository save 作为生产物化成功口径。
 
 
 **安全与运行边界**：

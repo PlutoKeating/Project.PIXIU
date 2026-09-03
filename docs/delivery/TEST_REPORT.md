@@ -98,6 +98,9 @@ loopback 同步状态，并只输出按 run 加盐的身份/域摘要；`validat
 并发更新取证现新增 3×3 检查点契约，绑定拓扑/节点清单并验证共同基线、两个暂停
 节点的不同 v+1 分支、观察节点未变化及恢复后的三端一致。尚无真实三机输入，输出
 仍固定非最终证据，不能将 N-04 改为通过。
+同步物化回归另核验远端共享知识首次到达即生成向量、同 ID 更新后向量发生变化、墓碑
+到达后向量删除；快进与自动语义仲裁均由生产 DI 注入 `KnowledgeService`，不再只更新
+SQLite/FTS。该项仍需在最终 V11 系统 Vector Engine 上复验，不能由 portable 测试替代。
 
 同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
 可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已

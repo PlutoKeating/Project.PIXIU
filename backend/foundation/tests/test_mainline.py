@@ -29,11 +29,13 @@ from backend.foundation.core.models import (
 )
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
+    SqliteEntityRepo,
     SqliteEvidenceRepo,
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
 from backend.foundation.storage.schema import init_db_on_connection
+from backend.foundation.storage.vector_store import SqliteVectorStore
 from backend.foundation.sync import (
     InvalidSyncOperation,
     Mainline,
@@ -45,6 +47,8 @@ from backend.foundation.sync.crdt import increment_clock, merge_clocks
 from backend.foundation.sync.mainline import blocked_key, default_knowledge_from_op
 from backend.foundation.sync.materializer import FoundationMaterializer
 from backend.engine.conflict import ConflictService
+from backend.engine.knowledge import KnowledgeService
+from backend.engine.tests.fakes import StubTextEmbedder
 
 NOW = 2_000_000_000
 DOMAIN = "shared:home"
@@ -467,14 +471,23 @@ async def _receiving_node(root: Path, filename: str, name: str):
     """
     db = await _connect(root, filename)
     store = SqliteSyncStore(db)
+    knowledge_repo = SqliteKnowledgeRepo(db)
+    knowledge_service = KnowledgeService(
+        knw_repo=knowledge_repo,
+        entity_repo=SqliteEntityRepo(db),
+        embedder=StubTextEmbedder(dim=8),
+        vector_store=SqliteVectorStore(db),
+    )
     conflict_service = ConflictService(
-        knw_repo=SqliteKnowledgeRepo(db),
+        knw_repo=knowledge_repo,
         conflict_repo=SqliteConflictRepo(db),
+        knowledge_writer=knowledge_service.materialize,
     )
     materializer = FoundationMaterializer(
         evidence_repo=SqliteEvidenceRepo(db),
-        knowledge_repo=SqliteKnowledgeRepo(db),
+        knowledge_repo=knowledge_repo,
         preference_repo=SqlitePreferenceRepo(db),
+        knowledge_service=knowledge_service,
     )
     svc = SyncService(
         store,
@@ -542,6 +555,10 @@ async def test_receive_ops_merge_fork_keeps_merged_body_in_knowledge_repo(
             r.resolution == ConflictResolution.MERGE and r.source == "sync"
             for r in records
         )
+        assert existing_id in {
+            knowledge_id
+            for knowledge_id, _dimension, _vector in await knw_repo_b.list_vectors()
+        }
     finally:
         await db_a.close()
         await db_b.close()
@@ -595,6 +612,10 @@ async def test_receive_ops_new_wins_keeps_version_bump_in_knowledge_repo(
             r.resolution == ConflictResolution.NEW_WINS and r.source == "sync"
             for r in records
         )
+        assert existing_id in {
+            knowledge_id
+            for knowledge_id, _dimension, _vector in await knw_repo_b.list_vectors()
+        }
     finally:
         await db_a.close()
         await db_b.close()

@@ -12,7 +12,8 @@ Phase 3 完成 Module C 的去中心化共享记忆基础设施：
 - mDNS 局域网发现、已配对 peer 信任过滤。
 - TLS 1.3 双向证书传输、1 MiB 帧上限、每批 256 个操作。
 - Gossip 有界 fanout、失败离线标记与指数退避调度。
-- CRDT 胜者向 evidence、knowledge、preference 仓储物化。
+- CRDT 胜者向 evidence、knowledge、preference 仓储物化；knowledge 生产路径复用
+  `KnowledgeService` 重建图/embedding/VectorStore，墓碑删除向量。
 - /sync/pair、/sync/peers、/sync/status、/sync/peers/{id}/revoke。
 - shared:* 写入自动追加签名 SyncOp，共享遗忘追加 knowledge tombstone。
 

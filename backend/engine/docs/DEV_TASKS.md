@@ -54,7 +54,8 @@
 - 测试：2026-09-04 当前 Engine 154 项、Foundation 633 项、Module E 19 项通过
   （组合回归 806 passed，10 条既有依赖弃用告警，无失败）；新增反向到达测试证明
   同一对远端矛盾知识按稳定全序选择相同胜者并沿用其时间戳，MERGE 在较新项为字段
-  子集时仍保留扩展；
+  子集时仍保留扩展；`KnowledgeService.materialize/forget` 现作为生产同步物化接缝，
+  远端快进、更新和自动仲裁重建图/向量，远端墓碑删除 VectorStore 条目；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
   打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，

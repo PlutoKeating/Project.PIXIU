@@ -9,6 +9,8 @@ import aiosqlite
 import pytest
 
 from backend.engine.conflict import ConflictService
+from backend.engine.knowledge import KnowledgeService
+from backend.engine.tests.fakes import StubTextEmbedder
 from backend.foundation.core.models import (
     ConflictResolution,
     Evidence,
@@ -19,11 +21,13 @@ from backend.foundation.core.models import (
 )
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
+    SqliteEntityRepo,
     SqliteEvidenceRepo,
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
 from backend.foundation.storage.schema import init_db_on_connection
+from backend.foundation.storage.vector_store import SqliteVectorStore
 from backend.foundation.sync import (
     InvalidSyncOperation,
     PairingMethod,
@@ -54,19 +58,28 @@ async def _node(
     store = SqliteSyncStore(db)
     materializer = None
     if materialize:
+        knowledge_repo = SqliteKnowledgeRepo(db)
+        knowledge_service = KnowledgeService(
+            knw_repo=knowledge_repo,
+            entity_repo=SqliteEntityRepo(db),
+            embedder=StubTextEmbedder(dim=8),
+            vector_store=SqliteVectorStore(db),
+        )
         conflict_service = (
             ConflictService(
-                knw_repo=SqliteKnowledgeRepo(db),
+                knw_repo=knowledge_repo,
                 conflict_repo=SqliteConflictRepo(db),
+                knowledge_writer=knowledge_service.materialize,
             )
             if semantic_conflicts
             else None
         )
         materializer = FoundationMaterializer(
             evidence_repo=SqliteEvidenceRepo(db),
-            knowledge_repo=SqliteKnowledgeRepo(db),
+            knowledge_repo=knowledge_repo,
             preference_repo=SqlitePreferenceRepo(db),
             conflict_service=conflict_service,
+            knowledge_service=knowledge_service,
         )
     service = SyncService(
         store,
@@ -133,18 +146,50 @@ async def test_remote_shared_memory_is_materialized_and_tombstoned(tmp_path: Pat
         assert stored_evidence == evidence
         assert stored_knowledge.body == {"amount": 434.5}
         assert stored_knowledge.evidence_ids == [evidence.id]
+        vectors_before = {
+            knowledge_id: vector
+            for knowledge_id, _dimension, vector in await SqliteKnowledgeRepo(
+                db_a
+            ).list_vectors()
+        }
+        assert knowledge.id in vectors_before
+
+        updated = knowledge.model_copy(
+            update={
+                "title": "updated shared expense",
+                "body": {"amount": 455.0},
+                "version": 2,
+                "updated_at": NOW + 1,
+            }
+        )
+        update_op = await b.record_local(
+            f"knowledge:{knowledge.id}",
+            updated.model_dump(mode="json"),
+            updated.scope,
+            now=NOW + 1,
+        )
+        assert await a.receive_ops([update_op]) == 1
+        vectors_after = {
+            knowledge_id: vector
+            for knowledge_id, _dimension, vector in await SqliteKnowledgeRepo(
+                db_a
+            ).list_vectors()
+        }
+        assert vectors_after[knowledge.id] != vectors_before[knowledge.id]
+        assert (await SqliteKnowledgeRepo(db_a).get(knowledge.id)).version == 2
 
         tombstone = await b.record_local(
             f"knowledge:{knowledge.id}",
             {},
             knowledge.scope,
             deleted=True,
-            now=NOW + 1,
+            now=NOW + 2,
         )
         assert await a.receive_ops([tombstone]) == 1
         assert (
             await SqliteKnowledgeRepo(db_a).get(knowledge.id)
         ).status == KnowledgeStatus.FORGOTTEN
+        assert await SqliteKnowledgeRepo(db_a).list_vectors() == []
     finally:
         await db_a.close()
         await db_b.close()

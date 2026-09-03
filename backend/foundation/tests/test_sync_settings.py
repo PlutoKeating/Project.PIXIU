@@ -315,6 +315,8 @@ def test_auto_lan_addresses_loopback_only_falls_back_with_warning(
 
 class _DegradedSettings:
     db_path = None
+    embedding = "portable"
+    vector_store = "portable"
     sync_device_name = "degraded-host"
     sync_domain = "shared:test"
     sync_key_passphrase = PASSPHRASE
@@ -331,6 +333,7 @@ class _DegradedSettings:
 
 async def _close_di_db(di_module) -> None:
     """关闭 di 单例 db 连接（防 aiosqlite worker 线程在事件循环关闭后告警）。"""
+    await di_module.stop_vector_store()
     if di_module._db is not None:
         await di_module._db.close()
     di_module._db = None
