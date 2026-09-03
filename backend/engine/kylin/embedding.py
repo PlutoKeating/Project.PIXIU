@@ -58,7 +58,13 @@ class KylinTextEmbedding:
             ) from exc
 
     def embed(self, text: str) -> list[float]:
-        return list(self._impl.embed(text))
+        vector = list(self._impl.embed(text))
+        if len(vector) != self.dim:
+            raise RuntimeError(
+                f"Kylin embedding dimension mismatch: expected {self.dim}, "
+                f"got {len(vector)}"
+            )
+        return vector
 
     @property
     def runtime(self) -> str:

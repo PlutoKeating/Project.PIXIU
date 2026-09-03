@@ -1,8 +1,8 @@
 # 麒麟 SDK Python 绑定构建
 
 > [!CAUTION]
-> 绑定可编译不等于赛题双 SDK 通过。当前 Vector Engine 尚未接管生产 Repository/
-> retrieval，H-02 仍不通过；最终必须在 V11 严格画像验证实际建库、写入、删除和查询。
+> 绑定可编译不等于赛题双 SDK 通过。Vector Engine 已接入生产 Repository/retrieval
+> 的严格选择路径，但 H-02 仍须在 V11 严格画像验证实际建库、写入、删除和查询。
 > 软件包名还须以目标机 profile 与官方 SDK 源为准，不以本文示例替代环境取证。
 
 本目录包含两个 pybind11 绑定模块，分别封装麒麟官方 SDK：
@@ -53,6 +53,10 @@ cmake --install build
 - 文本向量化：麒麟 AI 运行时服务（coreai）必须在线，`text_embedding_init_session`
   通过 D-Bus 连接服务并加载端侧模型。
 - 向量数据库：向量引擎服务需已启动（默认 `127.0.0.1:19530`），客户端通过 gRPC 连接。
+
+文本 wrapper 在构造任一步失败时销毁 SDK session，拒绝未知或漂移的向量维度；同一
+session 的同步调用由互斥锁保护，并在阻塞调用期间释放 Python GIL。该设计允许多个
+Python 工作线程安全排队，但是否创建多个 session 以提升吞吐须以 V11 压测结果决定。
 
 ## 能力选择说明
 

@@ -171,14 +171,18 @@ class KylinTextEmbedding:
 SDK，SDK/运行时不可用时切换到 `PortableTextEmbedding`；后者是确定性的字符
 特征哈希软件实现，不是 SDK mock。麒麟验收使用 `get_embedder("kylin")`，缺少
 原生能力时明确抛出 `KylinSDKUnavailableError`，避免降级结果混入验收数据。
+原生 wrapper 对 session 采用异常安全销毁，模型维度必须来自 SDK 模型列表且每次
+结果长度必须一致；共享 session 的同步调用由互斥锁串行化，阻塞 SDK 调用期间释放
+Python GIL。上述是代码/编译级保证，最终服务线程行为仍须在 V11 实测取证。
 
 向量数据库使用 `libkysdk-vector-engine-client`（Milvus 式 gRPC 客户端，
 submodule 位于 `third_party/libkysdk-vector-engine-client`），
 由 `kylin/vector.py` 封装。适配器已提供集合存在/创建/装载/删除，以及向量
 insert/upsert/delete/search 生命周期；删除接口只接受整数主键列表，不向业务调用方
 暴露可注入的 SDK 过滤表达式。`KylinVectorStore` 进一步封装集合惰性创建/装载、
-维度约束、字符串 ID 映射和受影响行数校验。Module C 的后端选择尚未接线，不能
-仅凭适配器测试判定 H-02 通过。
+维度约束、字符串 ID 映射和受影响行数校验。Module C 已提供
+`auto|kylin|portable` 后端选择并注入生产写入、检索和遗忘链；仍不能仅凭适配器
+测试判定 H-02 通过，最终须有 V11 真服务证据。
 
 ---
 

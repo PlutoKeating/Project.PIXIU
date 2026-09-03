@@ -26,18 +26,21 @@
 - ✅ **已完成**：`kylin/` 真实麒麟 SDK 适配——`embedding.py`（coreai/embedding）、
   `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本；另有
   Debian 可移植特征哈希向量器作为明确的软件降级路径。
+- ✅ **已完成**：Embedding wrapper 生命周期/维度/并发加固——构造失败回收 session、
+  SDK 结果维度漂移 fail closed、共享 session 互斥、阻塞调用释放 Python GIL；V11
+  真运行时并发证据仍按 H-03 待验。
 - 🟡 **麒麟 SDK 绑定已本机构建成功**（2026-08-24，`backend/engine/kylin/cpp/` pybind11
   编译导入通过）；麒麟环境 AI 运行时 / 向量引擎在线后的真实端到端调用仍待验证。
 - 🟡 **OCR（kysdk-ocr / libkyocr）已接入**（2026-08-24）：pybind11 绑定
   `_kylin_ocr` + `engine/kylin/ocr.py` 适配层 + REST `POST /memory/ocr`
   （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）。
-- 🔴 **向量数据库硬门槛未通过**：当前检索由 foundation/retrieval 的 SQLite INT8
-  扫描承担；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
-  生命周期封装和 `KylinVectorStore` 契约测试，但尚未由生产配置选择。必须让系统
-  Vector Engine 实际承担生产建库、写入、删除和查询，并在 V11 严格画像中验证。
+- 🔴 **向量数据库硬门槛未通过**：生产 DI 已可严格选择系统 Vector Engine，并完成
+  写入/检索/遗忘接线；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
+  生命周期封装和 `KylinVectorStore` 契约测试。仍必须证明系统 Vector Engine 在
+  V11 严格画像中实际承担生产建库、写入、删除和查询。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；
+- 测试：2026-09-03 当前 Engine 全量 144 项通过；Foundation 结果单独记录；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：整包 .deb 以源码随包安装引擎（`/usr/lib/pixiu/backend/engine`），
   麒麟 SDK 绑定在目标机构建后提供正式语义能力；无绑定时核心链路保持降级可用。

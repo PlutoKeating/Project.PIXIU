@@ -101,7 +101,7 @@ W0 基线与计划
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W2.1 | 复核 Embedding 绑定生命周期、错误传播、维度和线程安全 | wrapper/strict/failure 单测通过 |
+| W2.1 | 复核 Embedding 绑定生命周期、错误传播、维度和线程安全 | 已完成：构造异常回收 session、维度 fail closed、互斥调用、释放 GIL；wrapper/strict/failure 单测与官方头文件语法编译通过 |
 | W2.2 | 建立统一能力端点与启动预检，分别报告 OS、Agent、Embedding、Vector Engine | OS/双 SDK 能力与严格启动预检完成；Agent runtime 待 W4 宿主适配后纳入 |
 | W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 两套报告分栏且可追溯 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
