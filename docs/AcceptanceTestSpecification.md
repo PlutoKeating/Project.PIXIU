@@ -41,6 +41,8 @@ strict 模式错配，组件清单记录 `install_strict=true`。这些门禁只
 `pixiu-backend.service` 的专用系统账户不能复用桌面用户会话中的 runtime。该失败
 按 strict 规则导致服务拒绝就绪，证明了 fail-closed，但不构成 SDK 成功证据。验收前
 必须完成用户会话 SDK 边界、验证最小系统运行依赖，并在同一候选包上重跑本节用例。
+Vector Engine 的生产连接还必须使用官方 demo 的 `ConnectParam(appId)` 本地传输；
+host/port 重载在官方头文件中标为测试用途，不得再以 `127.0.0.1:19530` 作为验收假设。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

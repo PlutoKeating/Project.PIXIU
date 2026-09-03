@@ -255,7 +255,7 @@ def run_direct_sdk_lifecycle(
     vector = list(embedder_factory().embed(marker))
     if not vector:
         raise RuntimeError("Kylin Embedding SDK returned an empty vector")
-    client = client_factory(app_id="pixiu", host="127.0.0.1", port=19530)
+    client = client_factory(app_id="pixiu")
     create_attempted = False
     failure: Exception | None = None
     cleanup_failure: Exception | None = None

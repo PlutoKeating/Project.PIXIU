@@ -74,10 +74,6 @@ if [ -f "${CONF}" ]; then
         || echo 'PIXIU_SYNC_NETWORK_ENABLED=true' >> "${CONF}"
     grep -q '^PIXIU_VECTOR_STORE=' "${CONF}" \
         || echo 'PIXIU_VECTOR_STORE=auto' >> "${CONF}"
-    grep -q '^PIXIU_VECTOR_HOST=' "${CONF}" \
-        || echo 'PIXIU_VECTOR_HOST=127.0.0.1' >> "${CONF}"
-    grep -q '^PIXIU_VECTOR_PORT=' "${CONF}" \
-        || echo 'PIXIU_VECTOR_PORT=19530' >> "${CONF}"
     grep -q '^PIXIU_VECTOR_APP_ID=' "${CONF}" \
         || echo 'PIXIU_VECTOR_APP_ID=pixiu' >> "${CONF}"
     grep -q '^PIXIU_VECTOR_COLLECTION=' "${CONF}" \

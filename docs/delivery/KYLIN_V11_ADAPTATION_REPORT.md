@@ -59,6 +59,12 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
   系统账户没有对应 runtime，严格启动预检失败并触发服务重启；
 - portable 配置恢复后 `/health` 返回 ready，组件标识为 `pixiu-memory-backend`；
 - AI 子系统随后升级到 runtime `1.2.0.4`，但升级本身不解决跨 UID 边界；
+- 子系统升级后需同步升级 `kytensor-client/python/server` 到同源候选版本，否则 runtime
+  因 Triton ABI 符号不匹配无法启动；最小升级后 runtime 可正常初始化并重建 socket；
+- Vector Engine user unit 升级后经 daemon reload/restart 正常启动；首次 direct SDK
+  仍失败是 PIXIU 误用了官方测试专用 TCP 构造，已改为 `ConnectParam(appId)` 待重编；
+- Embedding 已连接 runtime 1.3.0，但系统端模型元数据缺少 `model_catalog`，SDK
+  `getModelList` 返回 err=3；这是当前软件源组件组合的独立外部阻断，仍待确认；
 - 该结果登记为 W2.6 的发布阻断证据。完成用户会话 SDK 边界并在同一候选上重跑
   direct SDK 与产品 API 生命周期之前，H-02/H-03 均保持不通过。
 

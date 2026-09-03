@@ -143,6 +143,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
     def test_direct_sdk_lifecycle_uses_and_removes_isolated_collection(self) -> None:
         calls: list[str] = []
         behavior = {"delete_count": 1}
+        connection: dict[str, object] = {}
 
         class Embedder:
             def embed(self, text: str) -> list[float]:
@@ -182,10 +183,15 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 calls.append("drop")
                 self.created = False
 
+        def client_factory(**kwargs):
+            connection.update(kwargs)
+            return Client()
+
         result = MODULE.run_direct_sdk_lifecycle(
             embedder_factory=Embedder,
-            client_factory=lambda **kwargs: Client(),
+            client_factory=client_factory,
         )
+        self.assertEqual(connection, {"app_id": "pixiu"})
         self.assertEqual(
             calls,
             [
@@ -209,7 +215,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "did not affect one row"):
             MODULE.run_direct_sdk_lifecycle(
                 embedder_factory=Embedder,
-                client_factory=lambda **kwargs: Client(),
+                client_factory=client_factory,
             )
         self.assertEqual(calls[-3:], ["has", "drop", "has"])
 

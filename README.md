@@ -139,6 +139,8 @@ search/delete/drop，再验证产品 API 写入/召回/遗忘。首次目标 V11
 runtime；strict 后端因此按设计失败关闭。下一步必须实现并评审用户会话 SDK 边界，
 再以同一候选包重跑直接 SDK 与产品 API 生命周期。完整 AI 子系统属于系统级前置
 能力，不作为 PIXIU 安装包的整套强依赖；最终仅声明经实测确认的最小运行依赖。
+同次检查还发现 Vector 客户端误用了官方标注“for test”的 host/port 构造；生产路径
+已改回 demo 使用的 `ConnectParam(appId)` 本地传输，等待新原生包重编后验证。
 最终 V11 双 SDK 与全新机/图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见

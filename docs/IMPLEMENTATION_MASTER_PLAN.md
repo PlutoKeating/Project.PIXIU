@@ -87,7 +87,7 @@ W0 基线与计划
 
 | 切片 | 代码范围 | 具体工作 | 测试与完成标准 |
 |------|----------|----------|----------------|
-| W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：集合装载、upsert、delete、search；统一错误和运行时标识 | 实现/fake-native 契约与 V11 链接完成；真服务待验 |
+| W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：集合装载、upsert、delete、search；统一错误和运行时标识 | 生命周期及 fake-native 契约完成；真机纠正测试专用 TCP 构造，默认改用官方本地传输，待重编实测 |
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam、结果类型及生产依赖注入已完成 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 双适配器、配置选择及生产链完成；V11 真服务待 W1.6 |
@@ -114,6 +114,9 @@ W0 基线与计划
 专用系统账户无法访问桌面用户会话 runtime；服务按设计失败关闭，portable 恢复后健康。
 因此 W2.6 成为 W1.6/W2.4 的前置项。当前仍缺 Agent 宿主/runtime 与 Vector Engine/
 Embedding 真服务全链路证据，W1.6/W2.4/W2.5/W2.6 和 H-02/H-03 保持未完成/不通过。
+Vector Engine 的独立诊断同时确认新版 user service 正常启动，但 PIXIU 当时强制连接
+不存在的 `127.0.0.1:19530`；官方 demo 与头文件证明生产应使用
+`ConnectParam(appId)`，相关 Module B/C/发布配置已分层修正，等待 V11 原生重编验证。
 
 ### W3：面向完整 Agent 的 vNext 公共 API 与数据模型（P0）
 
