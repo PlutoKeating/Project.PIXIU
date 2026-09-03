@@ -189,6 +189,12 @@ python3 build/release/scripts/final-dataset-manifest.py validate \
 标注为附录 A 派生的团队合成语料，而非官方/第三方数据集；全部 90 例为冻结 test split，
 无 train/validation 集。数据集 JSON 和 manifest 都进入 D-07，且不得覆盖已有输出。
 
+D-07 归档不是对这些输出的简单打包：`build_evidence_archive.py` 会直接加载 native、
+Agent、性能和数据集的深度验证函数，并核对 Agent→native、performance→三主记录及
+两个原始附件、dataset manifest→冻结 JSON 的摘要关系。冻结 JSON 会再次规范化并
+检查 50/15/25 样本构成；逐样本报告与消融矩阵会重新评分且必须与性能摘要一致。
+同样检查会在 ZIP 解包复验时重跑。
+
 ## 三台设备拓扑取证
 
 严格原生取证成功文件固定标识 `evidence_schema=1`、

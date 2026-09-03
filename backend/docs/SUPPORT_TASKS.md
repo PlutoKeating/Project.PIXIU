@@ -30,6 +30,8 @@
   和 strict/Agent/数据集/候选包同版；现有 portable 报告按设计不能通过该门。
   数据集冻结器及 4 项测试已补齐：固定 50 fixture/90 test case、附录 A 派生的团队
   合成来源、规范化/实物/划分摘要和敏感扫描；最终 clean release 输出仍待生成。
+  D-07 归档器现执行 native/Agent/性能/数据集深验和跨附件摘要复算，专项测试 6/6；
+  逐样本报告、三变体矩阵或冻结 JSON 缺失/被替换时，生成与解包复验均失败。
 
 - 🟡 **历史测试基线（2026-08-11）**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
   pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见

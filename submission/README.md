@@ -84,6 +84,10 @@ SHA-256 一致；供应链报告另须 `ready=true`。生成和复验都会拒�
 生成；二者都应归档，且性能报告的 dataset 摘要必须与 manifest 一致。manifest 会明确
 其为附录 A 派生的团队合成 test-only corpus，不得在交付文案中改称官方数据集。
 
+归档器会深度复核 native/Agent/性能/数据集四类主记录，并要求 Agent 引用归档内 native、
+性能引用三类主记录及实际逐样本/消融附件、dataset manifest 引用实际冻结 JSON。
+它会重新规范化数据集并重新评分两个性能附件；外层字段正确但内容或摘要不符仍会失败。
+
 `--package` 在任何门未通过、文件缺失、命名/格式错误、官方原件哈希改变或工作区不
 洁净时都会失败。D-07 的 `three-device-final-suite.json` 还必须满足最终三设备契约，
 并与 `release_commit` 和最终 `.deb` SHA-256 一致；仅将任意 JSON 放入目录无法通过。

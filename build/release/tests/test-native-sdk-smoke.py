@@ -84,18 +84,27 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 patch.object(
                     MODULE,
                     "verify_candidate_package",
-                    return_value={"sha256": "b" * 64},
+                    return_value={
+                        "sha256": "b" * 64,
+                        "size": 1234,
+                        "filename": "pixiu_0.1.7-1_amd64.deb",
+                        "checksum_filename": "pixiu_0.1.7-1_amd64.deb.sha256",
+                    },
                 ),
                 patch.object(
                     MODULE,
                     "run_direct_sdk_lifecycle",
                     return_value={
+                        "embedding": "passed",
+                        "database_load": "passed",
                         "collection_create": "passed",
                         "collection_load": "passed",
                         "vector_upsert": "passed",
                         "vector_search": "passed",
                         "vector_delete": "passed",
+                        "deleted_vector_hidden": "passed",
                         "collection_drop": "passed",
+                        "disconnect": "passed",
                     },
                 ),
                 patch.object(
@@ -306,6 +315,14 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 )
             self.assertEqual(result["sha256"], digest)
             self.assertEqual(result["filename"], deb.name)
+
+    def test_deep_validator_rejects_missing_direct_sdk_operations(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "strict public contract"):
+            MODULE.validate_evidence({
+                "release": {}, "candidate_package": {}, "installed": {},
+                "agent_host": {}, "agent_runtime": {}, "version": {}, "health": {},
+                "capabilities": {}, "direct_sdk": {}, "checks": {}, "operation_ids": {},
+            })
 
 
 if __name__ == "__main__":

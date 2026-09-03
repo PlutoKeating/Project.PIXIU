@@ -404,6 +404,83 @@ def run_memory_lifecycle(base_url: str) -> tuple[dict, dict]:
     return written, queried
 
 
+def validate_evidence(evidence: dict) -> None:
+    release = evidence.get("release")
+    candidate = evidence.get("candidate_package")
+    installed = evidence.get("installed")
+    agent_host = evidence.get("agent_host")
+    agent_runtime = evidence.get("agent_runtime")
+    version = evidence.get("version")
+    health = evidence.get("health")
+    capabilities = evidence.get("capabilities")
+    direct_sdk = evidence.get("direct_sdk")
+    checks = evidence.get("checks")
+    operation_ids = evidence.get("operation_ids")
+    sections = (
+        release, candidate, installed, agent_host, agent_runtime, version,
+        health, capabilities, direct_sdk, checks, operation_ids,
+    )
+    if not all(isinstance(section, dict) for section in sections):
+        raise RuntimeError("native evidence is missing required sections")
+    platform = capabilities.get("platform")
+    embedding = capabilities.get("embedding")
+    vector_store = capabilities.get("vector_store")
+    packages = installed.get("packages")
+    required_direct = {
+        "embedding", "database_load", "collection_create", "collection_load",
+        "vector_upsert", "vector_search", "vector_delete",
+        "deleted_vector_hidden", "collection_drop", "disconnect",
+    }
+    required_checks = {
+        "contest_ready", "memory_write", "vector_search", "vector_delete",
+        "deleted_memory_hidden",
+    }
+    if not (
+        evidence.get("evidence_schema") == 1
+        and evidence.get("evidence_class") == "kylin-v11-native-sdk-product-lifecycle"
+        and evidence.get("real_device_evidence") is True
+        and evidence.get("status") == "pass"
+        and re.fullmatch(r"[0-9a-f]{40}", str(release.get("git_commit", "")))
+        and release.get("profile") == "kylin-v11-native-x86_64"
+        and release.get("architecture") == "amd64"
+        and release.get("kysdk") == "ON"
+        and release.get("install_strict") is True
+        and re.fullmatch(r"[0-9a-f]{64}", str(candidate.get("sha256", "")))
+        and isinstance(candidate.get("size"), int) and candidate["size"] > 0
+        and isinstance(candidate.get("filename"), str) and candidate["filename"].endswith("_amd64.deb")
+        and installed.get("architecture") == "amd64"
+        and isinstance(packages, dict)
+        and packages.get("pixiu") == release.get("debian_version")
+        and all(isinstance(packages.get(name), str) and packages[name] for name in (
+            "libkylin-coreai-embedding", "libkysdk-vector-engine-client"
+        ))
+        and agent_host.get("available") is True
+        and re.fullmatch(r"0\.9\.[0-9]+", str(agent_runtime.get("version", "")))
+        and version.get("product_version") == release.get("product_version")
+        and health.get("status") == "ready"
+        and health.get("database") == "ok"
+        and isinstance(platform, dict)
+        and platform.get("family") == "kylin"
+        and platform.get("version_major") == "11"
+        and platform.get("v11") is True
+        and capabilities.get("contest_ready") is True
+        and all(
+            isinstance(runtime, dict)
+            and runtime.get("configured") == "kylin"
+            and runtime.get("runtime") == "kylin"
+            and runtime.get("compliant") is True
+            for runtime in (embedding, vector_store)
+        )
+        and set(direct_sdk) == required_direct
+        and all(direct_sdk[name] == "passed" for name in required_direct)
+        and set(checks) == required_checks
+        and all(checks[name] == "passed" for name in required_checks)
+        and re.fullmatch(r"evd_[A-Za-z0-9_-]+", str(operation_ids.get("evidence_id", "")))
+        and re.fullmatch(r"knw_[A-Za-z0-9_-]+", str(operation_ids.get("knowledge_id", "")))
+    ):
+        raise RuntimeError("native evidence does not pass the strict public contract")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default="http://127.0.0.1:8765")
@@ -470,6 +547,7 @@ def main() -> int:
             "knowledge_id": queried["source_knowledge"],
         },
     }
+    validate_evidence(evidence)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
         "w", encoding="utf-8", dir=output.parent, delete=False
