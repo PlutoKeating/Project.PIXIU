@@ -250,8 +250,11 @@ GitHub 通用 Release 使用 amd64 与 arm64 托管 runner、`generic-ubuntu`、
 `KYSDK=OFF`，产物只证明 Debian 通用降级画像可构建安装，不宣称麒麟原生验收。
 独立的 `pixiu-kylin-v11-native` 工作流仅在带 `kylin-v11` 标签的 x64 自托管 runner
 手动执行：校验 V11、递归固定官方 submodule、按 strict profile 构建并安装，强制
-`PIXIU_EMBEDDING=kylin` 和 `PIXIU_VECTOR_STORE=kylin`，最后通过
-`/capabilities` 及真实记忆写入/检索生成脱敏证据。两类产物和报告始终分栏。
+`PIXIU_EMBEDDING=kylin`/`PIXIU_VECTOR_STORE=kylin`，激活用户态 Provider，再由取证
+脚本绑定本次 `.deb`/checksum、包内与已装 manifest、PIXIU/双 SDK 包版本、Agent
+runtime 及三个健康/能力端点；随后用唯一临时集合直接执行 SDK 的 create/load/upsert/
+search/delete/drop，并验证产品 API 写入/召回/遗忘。Agent profile 使用临时隔离目录，
+证据不包含主机、地址、路径或环境拓扑；generic 与 native 产物和报告始终分栏。
 
 ## V11 验收信息边界
 

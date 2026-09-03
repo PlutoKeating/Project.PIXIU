@@ -29,6 +29,10 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 
 最终报告必须列出目标镜像/内核/桌面、系统包和 SDK 版本、profile 差异、已知问题、
 降级行为及解决记录。任何 `KYSDK=OFF`/portable 结论单独成表，不标为原生验收。
+原生工作流已接入脱敏取证器：在隔离 Agent profile 中激活 Provider，绑定严格候选包
+摘要/commit、已装 manifest、dpkg 架构与 PIXIU/双 SDK 版本、Agent runtime 和三个
+运行端点，再以唯一临时集合直测 SDK 全生命周期并清理。当前仅完成脚本及隔离测试，
+尚无最终候选的目标 V11 输出。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 

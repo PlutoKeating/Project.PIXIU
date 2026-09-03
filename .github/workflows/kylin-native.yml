@@ -67,11 +67,20 @@ jobs:
             /etc/pixiu/pixiu.env
           sudo systemctl restart pixiu-backend.service
 
-      - name: Verify true SDK write and retrieval
-        run: >-
-          "${RUNNER_TEMP}/pixiu-native-venv/bin/python"
-          build/release/scripts/native-sdk-smoke.py
-          --output build/release/out/kylin-native-evidence.json
+      - name: Activate PIXIU in the desktop Agent profile
+        env:
+          HERMES_HOME: ${{ runner.temp }}/pixiu-agent-profile
+        run: pixiu-agent-integrate --quiet
+
+      - name: Verify native identity and true SDK lifecycle
+        shell: bash
+        run: |
+          deb="$(realpath build/release/out/pixiu_*.deb)"
+          "${RUNNER_TEMP}/pixiu-native-venv/bin/python" \
+            build/release/scripts/native-sdk-smoke.py \
+            --deb "${deb}" \
+            --expected-commit "${GITHUB_SHA}" \
+            --output build/release/out/kylin-native-evidence.json
 
       - name: Upload native package and sanitized evidence
         uses: actions/upload-artifact@v7

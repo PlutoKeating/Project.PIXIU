@@ -33,4 +33,6 @@ bash "${PIXIU_ROOT}/build/release/tests/test-version-source.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-artifact-manifest.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-install-preflight.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
+"${PIXIU_PYTHON:-python3}" \
+    "${PIXIU_ROOT}/build/release/tests/test-native-sdk-smoke.py"
 log "tests OK"

@@ -129,8 +129,11 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 权威版本输入；Module E 源码也只保留模板，打包时生成合法 manifest。发布流程现为
 每个架构生成包外 `.assets.json`，记录 `.deb`、摘要与签名的大小/SHA-256/通道/commit，
 其中 commit/版本/架构须与包内组件清单和 dpkg 元数据自洽，并记录规范化生成命令；
-随后对清单自身再做 Ed25519 签名。目标 V11 双 SDK 实际运行时版本与 `/capabilities`
-一致性证据仍待收敛。
+随后对清单自身再做 Ed25519 签名。原生取证脚本现会把包内 commit/版本/架构/strict
+画像、本次 `.deb` SHA-256 与已装 PIXIU、双 SDK 包版本、Agent runtime、`/version`、
+`/health`、`/capabilities` 绑定；另以隔离集合直接执行 SDK 的 create/load/upsert/
+search/delete/drop，再验证产品 API 写入/召回/遗忘。首次目标 V11 严格候选证据仍待
+生成，未生成前不得将 H-02/H-03 标为通过。
 最终 V11 双 SDK 与全新机/图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见

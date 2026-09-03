@@ -72,7 +72,9 @@
 commit/版本/架构从包内组件清单与 dpkg control 交叉核对，且 JSON 记录规范化生成
 命令。最终候选仍须归档并复验这六件套；
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
-探测结果及 `/capabilities` 一致性，源码 gitlink 不能代替该项实装证据。
+探测结果及 `/capabilities` 一致性。原生取证器已自动化绑定候选包摘要/commit、已装
+manifest、dpkg 版本、Agent runtime 和三个端点，并以隔离集合直接执行 SDK 完整
+生命周期；首次真实输出仍待生成，源码 gitlink 不能代替该项实装证据。
 
 ## 3. 图形界面一键升级
 

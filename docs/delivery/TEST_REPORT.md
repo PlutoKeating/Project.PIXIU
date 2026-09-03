@@ -24,6 +24,10 @@ KYSDK/strict 错配拒绝，以及用户态 Agent/runtime 缺失、版本命令�
 歧义版本输出拒绝；失败发生在 Provider 目录写入前。实际 generic `.deb` 控制归档已
 确认 `STRICT_NATIVE=0`。双 SDK 包依赖和后端 strict 预检已有独立测试；最终严格包仍须
 在目标 V11 保存完整真实结果。
+原生取证器单测另验证：非严格 manifest 必须拒绝；成功证据绑定候选包摘要/commit、
+包内与已装 manifest、dpkg 的 PIXIU/双 SDK 版本、Agent runtime 和三个端点；隔离集合
+直接执行 create/load/upsert/search/delete/drop，产品 API 另走写入/召回/遗忘且失败
+时清理。该测试只证明取证器逻辑，不能替代目标 V11 的真实输出。
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine

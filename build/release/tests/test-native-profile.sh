@@ -34,6 +34,11 @@ grep -q 'runs-on: \[self-hosted, linux, x64, kylin-v11\]' \
     "${ROOT}/.github/workflows/kylin-native.yml"
 grep -q 'PIXIU_VECTOR_STORE=kylin' \
     "${ROOT}/.github/workflows/kylin-native.yml"
+grep -q 'pixiu-agent-integrate --quiet' \
+    "${ROOT}/.github/workflows/kylin-native.yml"
+grep -q 'HERMES_HOME:.*runner.temp.*pixiu-agent-profile' \
+    "${ROOT}/.github/workflows/kylin-native.yml"
+grep -q 'native-sdk-smoke.py' "${ROOT}/.github/workflows/kylin-native.yml"
 
 if PIXIU_PROFILE=kylin-v11-native-x86_64 PIXIU_KYSDK=ON \
         PIXIU_INSTALL_STRICT=0 PIXIU_SKIP_TESTS=1 \
