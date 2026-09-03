@@ -64,6 +64,9 @@ V11 与架构；双 SDK 由包依赖解析，并由后端严格启动预检验�
 网络”验收仍须在三台 V11 设备上以同一候选版本复验，不能用该模拟结果替代。
 协议回归可通过 `python -m backend.foundation.eval.sync_evidence` 生成绑定 commit/版本
 的 JSON；报告固定标记 `final_device_evidence=false`，只进入开发证据层。
+真实三机拓扑另由 `build/release/scripts/three-device-evidence.py` 在各节点本地采集：
+它绑定 strict V11 原生证据与同一候选包，去敏校验三个不同身份构成完全图、全在线且
+队列归零。拓扑报告仍固定为非最终证据，五项跨设备业务场景完成前不得宣称通过。
 
 多设备同步是团队的差异化创新，但不是替代赛题硬门槛的理由；优先级始终是 V11、指定双 SDK、完整 OS Agent 接入和可复现量化评测。
 

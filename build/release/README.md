@@ -36,6 +36,7 @@ build/release/
 │   ├── functions.sh          # 公共函数（版本/架构/路径解析）
 │   ├── build-deb.sh          # 主流水线：构建前端 + 打包后端 + 可选 wheels + dpkg
 │   ├── audit-agent-supply-chain.py # Agent 固定版本/敏感地址/发行证据门禁
+│   ├── three-device-evidence.py # 三台 V11 节点清单采集与全连接校验
 │   ├── generate-release-manifest.py # 从源码/构建输入生成包内组件清单
 │   ├── test.sh               # 独立测试入口（前端 ctest + 可选后端 pytest）
 │   ├── provision-target.sh   # 目标机预置：幂等安装 .deb 所需系统依赖（全新机器可用）
@@ -87,6 +88,34 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 脚本与发行证据尚未满足这些条件，因此预期 `ready=false`；不得删掉门禁或伪造证据
 来取得绿色结果。未初始化 submodule 时，普通模式会把组件固定与 Runtime 版本事实
 记为不可用而不是崩溃；强制模式仍必然失败。
+
+## 三台设备拓扑取证
+
+严格原生 SDK 取证通过且三台设备已完成双向配对、全部在线并等待同步队列归零后，
+在每台设备本地使用同一个不含设备信息的 `run-id` 采集节点清单：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py capture \
+  --run-id run-YYYYMMDD-sequence \
+  --native-evidence native-sdk-evidence.json \
+  --output sync-node-evidence.json
+```
+
+采集器只允许访问 loopback 后端，并要求输入是通过状态的 V11 strict 原生证据；输出
+不包含设备 ID、设备名、共享域原文、地址或记忆正文，只保存按本次 run 加盐的摘要、
+版本/候选包摘要和同步计数。将三台设备的清单汇总到隔离目录后执行：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py validate \
+  --node node-a.json --node node-b.json --node node-c.json \
+  --output three-device-topology.json
+```
+
+校验器要求三份清单来自同一 run、同一候选包/commit/版本/架构/Agent Runtime、同一
+共享域，恰有三个不同身份，并且每台都看到相同三成员、全部 ONLINE、队列归零，采集
+时间差不超过 300 秒。该报告只证明真实 V11 三节点全连接拓扑就绪，固定输出
+`final_device_evidence=false`，并列出离线重连、并发冲突、墓碑防复活、私域不传播和
+最终逻辑视图收敛五项待测场景；不得把它单独当作最终多设备验收结果。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取

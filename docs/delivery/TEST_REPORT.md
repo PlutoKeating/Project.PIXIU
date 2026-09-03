@@ -89,6 +89,13 @@ Python 3.12 CI 现自动生成该报告，复核 commit、三节点逻辑视图�
 `final_device_evidence=false` 后，以 `pixiu-sync-protocol-evidence-<commit>` 上传；
 该自动资产减少手工转录，但不会改变其“协议模拟”证据等级。
 
+真实设备拓扑另有两阶段机器证据契约：每台 V11 节点通过
+`build/release/scripts/three-device-evidence.py capture` 绑定本机 strict SDK 证据和
+loopback 同步状态，并只输出按 run 加盐的身份/域摘要；`validate` 要求三份清单同
+候选包、commit、版本、架构与 Agent Runtime，三个身份互异且相互完整可见、全在线、
+队列归零、采集窗口不超过 300 秒。当前工具测试 4/4 通过，尚未输入三台真实设备数据；
+合并结果固定 `final_device_evidence=false`，必须继续补五项跨设备场景后才进入最终栏。
+
 同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
 可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已
 加入 `PIXIU_VECTOR_DB_PATH`、strict 启动实际装载、进程级 store 复用和退出断开；

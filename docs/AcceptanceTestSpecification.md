@@ -178,6 +178,15 @@ A-10 的局部证据，但不等于 Agent run 恢复。A-01～A-10 的真实宿�
 私有 scope 拒绝写为绑定 commit/版本的 JSON，并强制标记
 `final_device_evidence=false`；最终证据不能修改该字段来冒充真机。
 
+真实设备的 W6.2 拓扑证据由 `build/release/scripts/three-device-evidence.py` 两阶段
+生成：三台设备分别在 loopback 上读取 `/sync/peers`、`/sync/status`，并绑定各自已经
+通过的 strict 原生 SDK 证据；汇总校验要求同一 run/候选包/commit/产品与 Debian
+版本/架构/Agent Runtime/共享域，三个不同设备身份构成完全图、全部在线、待发送为零，
+且采集时间差不超过 300 秒。输出只保留加盐摘要和计数，不包含设备名、地址、共享域
+原文或记忆正文。该拓扑报告同样固定 `final_device_evidence=false`；只有继续完成离线
+重连、并发冲突、墓碑防复活、私域不传播及最终逻辑视图收敛，才能形成 F5-05 的最终
+三设备验收证据。
+
 ### 3.6 短/中/长期记忆流转 `[M]`
 
 | 编号 | 验收内容 | 通过标准 |
