@@ -57,6 +57,6 @@ fi
 ulimit -f unlimited
 DEBIAN_FRONTEND=noninteractive
 export DEBIAN_FRONTEND
-# postinst provisions a per-device passphrase in the conffile.  Preserve that
-# installed configuration without an interactive dpkg prompt during upgrades.
+# Current packages keep runtime configuration outside dpkg conffiles.  Retain
+# these flags so upgrades from legacy packages also preserve their old config.
 /usr/bin/dpkg --force-confdef --force-confold -i "${ROOT_PACKAGE}"

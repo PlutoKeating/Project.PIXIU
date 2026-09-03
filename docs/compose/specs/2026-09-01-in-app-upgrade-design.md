@@ -33,9 +33,10 @@
 - `QProcess::start("/usr/bin/pkexec", {"/usr/lib/pixiu/install-update",
   debPath, expectedSha256})`——pkexec 触发 polkit 认证框；特权 helper 先把用户
   下载复制到 root-only 临时文件并重新校验 SHA-256，再以非交互、
-  保留现有 conffile 的参数交给 `/usr/bin/dpkg`，
+  以非交互参数交给 `/usr/bin/dpkg`；运行配置由 postinst 管理而非 dpkg conffile，
   消除授权等待期间替换原文件的 TOCTOU 竞态，并保留退出状态与错误摘要。
-- **postinst 兼容**：T24 已修复 venv 复用 + conffile 幂等追加，dpkg -i 增量升级保留记忆/配置/venv。
+- **postinst 兼容**：venv 复用；默认模板只放 `/usr/share`，首次安装创建 `/etc`
+  运行配置，升级保留并幂等补字段，从而保留记忆/配置/venv 且不触发交互提示。
 - 安装过程状态：对话框显示「正在升级（需要授权）… pkexec 认证框正确弹出时用户输入密码」；退出码 0 → 「升级成功，将重启应用」→ 关闭当前应用，提示用户重启（或自动重启——自动重启需谨慎，倾向提示手动重启，说明理由）。
 - **失败路径**：pkexec 被取消（退出码 126/127）→ 「已取消，升级未执行」；dpkg 报错 → 显示错误摘要不崩溃。
 - **取消边界**：下载/校验可取消并清理唯一临时文件；进入安装后禁用取消与关闭，

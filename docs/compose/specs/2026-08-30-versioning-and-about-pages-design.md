@@ -9,7 +9,7 @@
 
 ## [S1] 背景与目标
 
-- 用户核心宗旨：每次新发布必须**版本增量更新**（frontend/src/main.cpp 的 `setApplicationVersion`、frontend/CMakeLists.txt 的 `project VERSION`、build/release/scripts/functions.sh 的 `resolve_version` 三处同步，不得遗漏）；发布产物**摘要校验一致**（build-deb.sh 生成 `.deb.sha256` 随包携带；这不是独立数字签名）；任何旧版本/内测安装用户都能用新 `.deb` 直接**增量升级**（postinst 兼容升级路径——venv 复用 + conffile 幂等追加，T24 已建先例）。
+- 用户核心宗旨：每次新发布必须**版本增量更新**（frontend/src/main.cpp 的 `setApplicationVersion`、frontend/CMakeLists.txt 的 `project VERSION`、build/release/scripts/functions.sh 的 `resolve_version` 三处同步，不得遗漏）；发布产物**摘要校验一致**（build-deb.sh 生成 `.deb.sha256` 随包携带；这不是独立数字签名）；任何旧版本/内测安装用户都能用新 `.deb` 直接**增量升级**（当前机制为 venv 复用 + postinst 管理非 conffile 运行配置）。
 - 实施前缺口（已关闭）：当时版本源不一致且 SettingsDialog 无更新/About/T&C/
   Privacy 入口；当前代码与发布默认值已统一到 0.1.7，并已提供对应页面。
 - 产品定位：**参赛作品**（麒麟 OS Agent 记忆优化赛题），非商业上线产品——文案须符合赛题语境（麒麟适配、偏好/知识记忆优化、隐私承诺：敏感信息识别过滤、端侧处理、数据本地），少量即可。
@@ -24,7 +24,8 @@
 
 ### [S2.2] 摘要校验一致
 - 现状：build-deb.sh 已生成 `.deb.sha256`；publish.sh 随包拷贝。**保持**，文档注明校验方法（`sha256sum -c pixiu_*.deb.sha256`）。
-- 增量升级兼容：postinst venv 复用 + conffile 幂等追加（T24 已落地并实测）——保持，文档注明「支持旧版/内测直接 dpkg -i 升级」。
+- 增量升级兼容：postinst 复用 venv；运行配置由 `/usr/share` 默认模板首装创建，升级
+  保留并幂等补字段，不再作为 dpkg conffile（2026-09-03 修复非交互升级冲突）。
 
 ## [S3] 应用内页面（SettingsDialog 扩展）
 

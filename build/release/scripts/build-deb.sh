@@ -206,9 +206,9 @@ fi
 # ── 4/5 deb 元数据与运行文件 ────────────────────────────────────
 log "[4/5] deb metadata staging"
 mkdir -p "${STAGE}/DEBIAN" \
-         "${STAGE}/etc/pixiu" \
          "${STAGE}/lib/systemd/system" \
-         "${STAGE}/usr/bin"
+         "${STAGE}/usr/bin" \
+         "${STAGE}/usr/share/pixiu"
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
     PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, pkexec, \
@@ -227,8 +227,8 @@ fi
 install -m 0755 "${DEB_SRC}/postinst" "${STAGE}/DEBIAN/postinst"
 install -m 0755 "${DEB_SRC}/prerm"    "${STAGE}/DEBIAN/prerm"
 install -m 0755 "${DEB_SRC}/postrm"   "${STAGE}/DEBIAN/postrm"
-install -m 0644 "${DEB_SRC}/conffiles" "${STAGE}/DEBIAN/conffiles"
-install -m 0640 "${DEB_SRC}/pixiu.env" "${STAGE}/etc/pixiu/pixiu.env"
+install -m 0644 "${DEB_SRC}/pixiu.env" \
+    "${STAGE}/usr/share/pixiu/pixiu.env.default"
 install -m 0644 "${DEB_SRC}/pixiu-backend.service" \
     "${STAGE}/lib/systemd/system/pixiu-backend.service"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"

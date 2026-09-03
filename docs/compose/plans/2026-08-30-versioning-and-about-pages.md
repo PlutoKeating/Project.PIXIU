@@ -14,7 +14,7 @@
 ## Global Constraints
 
 - **模块边界**：Plan-F 只改 `frontend/`；发布脚本预检改 `build/release/scripts/build-deb.sh`（版本一致性校验，属发布基础设施）。
-- **版本管理宗旨（用户核心规则）**：①三处版本源（main.cpp/CMakeLists/functions.sh）同步增量；②发布产物 .deb + .sha256 一致；③旧版/内测用户可 dpkg -i 直接增量升级（postinst venv 复用 + conffile 幂等追加，T24 已落地——本批次不重复，文档注明）。
+- **版本管理宗旨（用户核心规则）**：①三处版本源（main.cpp/CMakeLists/functions.sh）同步增量；②发布产物 .deb + .sha256 一致；③旧版/内测用户可 dpkg -i 直接增量升级（当前实现为 postinst 复用 venv + 管理非 conffile 运行配置；2026-09-03 已替代会触发交互冲突的旧机制）。
 - **不做**：真实在线更新（OTA）、GPG 签名、后端改动、新第三方依赖。
 - **文案语境**：参赛作品（麒麟 OS Agent 记忆优化赛题），参照 docs/OriginProblemDescription.md；少量（每页 3-6 句）；全部 tr() 中文源文本。
 - 提交前缀 `feat(frontend)/fix(frontend)/chore(frontend)/test(frontend)`；禁止 push；offscreen 测试。

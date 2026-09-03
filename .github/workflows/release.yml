@@ -87,6 +87,9 @@ jobs:
           test "$(dpkg-deb --field "${deb}" Architecture)" = \
             "${{ matrix.architecture }}"
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${deb}"
+          test -f /usr/share/pixiu/pixiu.env.default
+          test -z "$(dpkg-deb --ctrl-tarfile "${deb}" | tar -tf - | \
+            grep '^./conffiles$' || true)"
           test "$(stat -c '%a' /etc/pixiu/pixiu.env)" = "640"
           test -x /usr/lib/pixiu/install-update
           value="$(sudo awk -F= \
@@ -95,6 +98,10 @@ jobs:
           test "${#value}" -ge 16
           test "${value}" != "change-me-before-production"
           test "${value}" != "pixiu-local-sync-change-me-2026"
+          config_before="$(sudo sha256sum /etc/pixiu/pixiu.env | awk '{print $1}')"
+          sudo dpkg --force-confdef --force-confold -i "${deb}" </dev/null
+          config_after="$(sudo sha256sum /etc/pixiu/pixiu.env | awk '{print $1}')"
+          test "${config_before}" = "${config_after}"
           sudo -u pixiu env PYTHONPATH=/usr/lib/pixiu \
             /usr/lib/pixiu/venv/bin/python -c \
             'from backend.foundation.api.http_app import app; assert app'

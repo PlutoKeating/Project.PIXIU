@@ -58,9 +58,15 @@ else
     echo "pixiu: python3-venv unavailable — using system Python ${PY}"
 fi
 
-# 3.5) conffile 迁移（幂等追加）：升级时 dpkg 保留用户改过的旧 /etc/pixiu/pixiu.env，
-#      新模板变量不落地 → 这里补入缺失的默认变量；全新安装由 dpkg 落包内模板，跳过。
+# 3.5) 运行配置由 postinst 管理，不作为 dpkg conffile 随包覆盖。配置含每机随机
+#      密钥，若作为 conffile 则升级必然触发交互冲突并破坏一键升级。
 CONF="/etc/pixiu/pixiu.env"
+CONF_TEMPLATE="/usr/share/pixiu/pixiu.env.default"
+mkdir -p /etc/pixiu
+if [ ! -e "${CONF}" ]; then
+    install -m 0640 -o root -g "${PIXIU_USER}" "${CONF_TEMPLATE}" "${CONF}"
+fi
+# 升级保留现有配置，并幂等补入新版本必需的默认变量。
 if [ -f "${CONF}" ]; then
     grep -q '^PIXIU_MONITOR_ENABLED=' "${CONF}" \
         || echo 'PIXIU_MONITOR_ENABLED=1' >> "${CONF}"

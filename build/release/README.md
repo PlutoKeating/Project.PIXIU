@@ -49,7 +49,7 @@ build/release/
     ├── prerm                 # 卸载前：停止并禁用服务
     ├── postrm                # 卸载后：purge 时清理数据
     ├── pixiu-backend.service # systemd：后端常驻服务（API 8765 + sync runtime）
-    ├── pixiu.env             # 后端环境变量模板（安装到 /etc/pixiu/pixiu.env）
+    ├── pixiu.env             # 后端默认模板（装到 /usr/share；postinst 首装时创建 /etc 配置）
     └── usr/bin/
         ├── pixiu             # 一键启动器：确保后端服务在线后打开桌面客户端
         └── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
@@ -160,6 +160,9 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
   SQLite 数据库自动创建于 `/var/lib/pixiu/pixiu.db`（首次启动自动迁移）；
 - 桌面菜单出现 PIXIU 客户端；或在终端执行 `pixiu`（自动拉起后端后打开前端）；
 - 配置在 `/etc/pixiu/pixiu.env`（API 端口、DB 路径、sync 开关等）；
+- 包只在 `/usr/share/pixiu/pixiu.env.default` 携带公开默认模板；`postinst` 仅在
+  `/etc/pixiu/pixiu.env` 不存在时创建，升级保留现有配置并幂等补字段。运行配置不再
+  注册为 dpkg conffile，避免随机口令使非交互升级触发冲突提示；
 - 安装脚本会生成每机唯一同步私钥口令，并将配置设为 `root:pixiu 0640`；
   从历史公开默认口令升级时会先重加密 Ed25519 私钥，设备 ID 与配对关系不变；
 - P2P 同步网络当前默认开启（`PIXIU_SYNC_NETWORK_ENABLED=true`）；未完成可信配对/

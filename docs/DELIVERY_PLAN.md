@@ -19,6 +19,8 @@
 
 - 安装前探测 V11、架构、openKylin Agent 宿主、Embedding 与 Vector Engine；
 - 安装/升级/卸载脚本幂等，保留用户记忆、配置、设备身份和数据库迁移状态；
+- 运行配置由 `postinst` 从只读默认模板首装创建、升级保留并补字段，不作为 dpkg
+  conffile；非交互升级不得因每机随机口令产生配置冲突提示；
 - 注册服务、桌面入口、图标、日志轮转、权限和故障诊断；
 - 依赖可由系统包解析或随包离线提供，安装后可直接启动；
 - 上游 Agent 作为已安装宿主依赖，不把未修改的 submodule 冒充 PIXIU 产物；
@@ -78,13 +80,13 @@
 | D-01 | 项目报告 PPT | `delivery/PRESENTATION_AND_VIDEO.md` | `.pptx` | 内容骨架完成，最终证据待补 |
 | D-02 | 技术方案 | `delivery/TECHNICAL_SOLUTION.md` | `.docx` + `.pdf` + Markdown | 工作稿完成，最终数据待补 |
 | D-03 | 源代码 | `delivery/SOURCE_AND_LICENSES.md` | 源码包/仓库快照 | 边界完成，SBOM/最终 commit 待补 |
-| D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | 工作稿完成，最终包待重验 |
+| D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | portable 非交互升级/配置保留已重验；图形、原生最终包待验 |
 | D-05 | 演示视频 | `delivery/PRESENTATION_AND_VIDEO.md` | `.mp4` 优先，≤7 分钟 | 脚本完成，录制待完成 |
 | D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，Agent UI 待补 |
 | D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV | portable 已有，最终 V11 待补 |
 | D-08 | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Agent 实证待补 |
 | D-09 | 实际应用案例 | `delivery/APPLICATION_CASES.md` | `.pdf`/报告章节 | 流程完成，最终取证待补 |
-| D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | 历史基线已有，最终双 SDK 待补 |
+| D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | V11 portable 升级基线已刷新，最终双 SDK 待补 |
 
 “部分完成”不等于可提交。每份最终文档必须包含版本、日期、作者/审核人、适用提交、
 环境、证据链接和已知限制；数据和截图必须能追溯到同一个 release commit。
