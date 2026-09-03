@@ -62,9 +62,14 @@ check_version_consistency() {
 
     source_ver="$(tr -d '\r\n' < "${version_file}")"
 
-    # 1) CMakeLists project VERSION（单一事实源）
-    cmake_ver="$(sed -nE 's/.*project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
-        "${frontend_cmake}" | head -n1)"
+    # 1) CMake project VERSION 必须直接从根 VERSION 派生。
+    if grep -qF 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${frontend_cmake}" \
+       && grep -qF 'project(pixiu-frontend VERSION "${PIXIU_PRODUCT_VERSION}"' \
+            "${frontend_cmake}"; then
+        cmake_ver="${source_ver}"
+    else
+        cmake_ver=""
+    fi
     # 2) PIXIU_VERSION 宏定义：由 ${PROJECT_VERSION} 派生视为与 project VERSION
     #    构造一致；若退化为字面量（回归防线），必须等于 project VERSION。
     if grep -qF 'PIXIU_VERSION_STR' "${frontend_cmake}" \

@@ -57,8 +57,8 @@
 构建时间、架构/profile/KYSDK/Python ABI、API/schema/provider、Agent 上游及双 SDK
 源码钉住版本与许可证；CI 会从成包反向提取并核对。上游 runtime 的 `version` 文件
 与包元数据当前分别为 0.9.9/0.9.8，清单保留两项事实而不擅自归一。仓库根
-`VERSION` 已成为发布脚本的权威输入，环境变量只能作一致性断言；后续仍须让前端
-CMake 与 Module E manifest 直接派生于该输入，并生成含资产大小、摘要、签名和通道
+`VERSION` 已成为发布脚本和前端 CMake/独立 control 的权威输入，环境变量只能作
+一致性断言；后续仍须让 Module E manifest 直接派生于该输入，并生成含资产大小、摘要、签名和通道
 的包外最终清单；
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
 探测结果及 `/capabilities` 一致性，源码 gitlink 不能代替该项实装证据。

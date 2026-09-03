@@ -89,12 +89,14 @@ def build_manifest(root: Path) -> dict[str, object]:
     if kysdk not in {"ON", "OFF"}:
         raise SystemExit("pixiu-manifest: PIXIU_KYSDK must be ON or OFF")
 
-    cmake_version = read_match(
-        root / "frontend/CMakeLists.txt",
-        r"project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+)",
-        "frontend version",
-    )
     canonical_version = (root / "VERSION").read_text(encoding="utf-8").strip()
+    cmake_source = (root / "frontend/CMakeLists.txt").read_text(encoding="utf-8")
+    if (
+        "CMAKE_CURRENT_SOURCE_DIR}/../VERSION" not in cmake_source
+        or 'project(pixiu-frontend VERSION "${PIXIU_PRODUCT_VERSION}"' not in cmake_source
+    ):
+        raise SystemExit("pixiu-manifest: frontend must derive from canonical VERSION")
+    cmake_version = canonical_version
     provider_version = read_match(
         root / "integrations/kylin_agent/pixiu/plugin.yaml",
         r"^version:\s*([^\s]+)\s*$",

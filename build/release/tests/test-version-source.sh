@@ -18,6 +18,7 @@ if (PIXIU_VERSION=9.9.9 resolve_version) >/dev/null 2>&1; then
 fi
 
 grep -q 'PIXIU_ROOT}/VERSION' "${ROOT}/build/release/scripts/functions.sh"
+grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${ROOT}/frontend/CMakeLists.txt"
 if grep -q 'PIXIU_VERSION:-0\.1\.7' \
         "${ROOT}/build/release/scripts/functions.sh"; then
     echo "functions.sh must not contain a duplicate product version" >&2
