@@ -22,8 +22,8 @@ Agent 宿主/runtime 与双 SDK 真服务调用仍未完成，不得宣称 H-02/
 |------|--------|-------|----------|
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
 | openKylin Agent + Module E | 未完成 | 未完成 | 版本、provider 加载、完整 run |
-| Embedding SDK | 官方修复组合下 PIXIU binding 已返回 768 维真实向量；最终依赖/产品链待验 | 待真机 | runtime、调用日志、严格失败 |
-| Vector Engine SDK | revision 7 direct SDK 通过；生产 `LoadDBFile` 漏接已在当前源码修复，待新包产品链 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
+| Embedding SDK | revision 8 产品链已使用真实 gte-base 768 维向量；最终依赖/Agent 待验 | 待真机 | runtime、调用日志、严格失败 |
+| Vector Engine SDK | revision 8 产品写入/检索/遗忘/隐藏通过；最终 user service 待实现 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
 | UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |
@@ -94,6 +94,11 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
 - 当前源码已增加 `PIXIU_VECTOR_DB_PATH`，strict 预检实际装载应用数据库，store 在
   进程内复用且退出时 `Disconnect`；790 项组合回归通过；
 - 只有重建候选完成写入、查询、遗忘与删除后隐藏，才能升级为 H-02 产品证据。
+
+提交 `6f6002e` 的 strict revision 8 已完成上述产品复验：能力端点确认 V11 与双 SDK
+runtime，写入、召回、遗忘、删除后隐藏均通过。正式取证器进一步检查时发现目标系统
+没有 `kylin-agent`/`agent-runtime` 可执行文件并拒绝出证；因此宿主供应链、ADR-0002
+user service 与最终组件依赖仍是发布阻断。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 

@@ -92,7 +92,7 @@ W0 基线与计划
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；790 项组合回归通过，V11 新包待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
-| W1.6 | V11 | 🟡 revision 7 direct Vector SDK 以独立数据库完成建库/装载/写查删/清理；Embedding 与产品服务链仍待 W2.6 | H-02、F4-03 通过 |
+| W1.6 | V11 | 🟡 revision 8 已以同用户 strict 服务完成产品写入/检索/遗忘/隐藏；最终 user service、可交付组件依赖和 Agent 宿主仍待 W2.6/W5 | H-02、F4-03 通过 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite
 映射、FTS/关系/缓存；SDK int64 主键与知识 ULID 的映射必须持久化并检测碰撞。
@@ -124,7 +124,8 @@ API 和 Embedding 闭环。
 2026-09-04 的同用户产品探针还揭示：旧组合根只创建 Vector 客户端，未执行官方要求
 的 `LoadDBFile`，所以 `/capabilities` 可误报 ready，而 `/memory/write` 返回 local
 storage not found。当前源码已加入独立数据库路径、启动装载、单例复用与关机断开，
-并以 790 项测试回归；必须重建严格候选后复跑写入、查询、遗忘与隐藏检查。
+并以 790 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
+遗忘与隐藏检查；正式取证器因目标系统缺少 Agent 宿主/runtime 可执行文件而拒绝出证。
 
 W2.6 的推荐设计已写入
 [`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：系统级 `.deb`

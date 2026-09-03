@@ -74,7 +74,11 @@ discovery/TLS server。永久阻塞轮次的有界停止测试通过；当前 Fo
 同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
 可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已
 加入 `PIXIU_VECTOR_DB_PATH`、strict 启动实际装载、进程级 store 复用和退出断开；
-上述 790 项回归通过，V11 新候选产品生命周期尚待重跑。
+上述 790 项回归通过。提交 `6f6002e` 的 strict revision 8 随后完成 V11 同用户
+`/memory/write`、向量召回、两阶段遗忘和删除后隐藏；能力端点报告 V11 与双 SDK
+runtime 均 compliant。正式取证器在检查到目标系统缺少 `kylin-agent` 与
+`agent-runtime` 可执行文件时按门禁拒绝生成最终证据，因此该记录不计完整 Agent 或
+release-ready。
 
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和
