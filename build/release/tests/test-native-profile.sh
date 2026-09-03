@@ -28,7 +28,8 @@ case "${APT_BUILD_DEPS}" in
     *libkylin-coreai-embedding-dev*libkysdk-vector-engine-client-dev*) ;;
     *) echo "native build dependencies missing" >&2; exit 1 ;;
 esac
-for package in libkysdk-shortcut-dev libkysdk-notification-dev libkysdk-qtwidgets-dev; do
+for package in libgsettings-qt-dev libkysdk-shortcut-dev \
+        libkysdk-notification-dev libkysdk-qtwidgets-dev; do
     case " ${APT_BUILD_DEPS} " in
         *" ${package} "*) ;;
         *) echo "native desktop SDK build dependency missing: ${package}" >&2; exit 1 ;;
