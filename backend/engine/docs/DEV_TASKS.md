@@ -51,8 +51,8 @@
   仍须按 H-02 重验。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-04 当前 Engine 150 项、Foundation 623 项、Module E 17 项通过
-  （组合回归 790 passed，10 条既有依赖弃用告警，无失败）；
+- 测试：2026-09-04 当前 Engine 150 项、Foundation 626 项、Module E 17 项通过
+  （组合回归 793 passed，10 条既有依赖弃用告警，无失败）；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
   打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，

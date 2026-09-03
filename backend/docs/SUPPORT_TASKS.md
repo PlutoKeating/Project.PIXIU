@@ -12,9 +12,14 @@
 
 ---
 
-## 实现状态（2026-08-11）
+## 实现状态（2026-09-04）
 
-- 🟡 **测试与工具侧**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
+- 🟡 **当前总览**：组合回归 793 passed、前端 ctest 38/38；版本化 `.deb`、签名
+  升级/回滚、submission fail-closed 打包器、Agent 供应链门禁和三逻辑节点协议 JSON
+  证据已接线。portable 数据集与性能报告已有，但最终 V11 双 SDK、完整 Agent、三台
+  设备、图形安装升级和 D-01～D-10 同版成品仍未完成。
+
+- 🟡 **历史测试基线（2026-08-11）**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
   pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见
   `backend/foundation/docs/QUICK_START.md`）；前端回归脚本
   `frontend/scripts/regression.sh` 已固化。

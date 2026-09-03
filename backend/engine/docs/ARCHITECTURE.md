@@ -14,10 +14,11 @@
 > `kylin-coreai-embedding`，且系统 Vector Engine 必须实际承担向量存储与检索；
 > 当前 SQLite/INT8 检索不能作为向量数据库 SDK 验收证据。
 
-> **状态（2026-08-11）**：全部子包已实现并通过 SQLite 全链路集成测试（麒麟 V11
-> 真机全量 pytest 364 passed）；kylin 为真实麒麟 SDK 适配，pybind11 绑定源码
-> 就绪，待麒麟环境构建验证。默认 `auto` 模式优先使用该 SDK；缺少原生能力的
-> Debian 系统切换到可移植特征哈希向量器，保持核心写入和检索可用。
+> **状态（2026-09-04）**：全部业务子包已实现，Engine 150 项测试通过。严格画像已
+> 同时构建 Embedding 与 Vector Engine pybind11 绑定；提交 `6f6002e` 的 revision 8
+> 已取得 V11 同用户产品写入、检索、遗忘与隐藏阶段性实证。最终 user service、安装
+> 依赖、完整 Agent 和同版性能报告仍未闭环。默认 `auto` 模式优先使用系统 SDK；缺少
+> 原生能力的 Debian 系统切换到可移植特征哈希向量器，但不得据此申报硬门槛通过。
 
 ---
 
