@@ -202,6 +202,25 @@ def _add_agent_provenance(conn: sqlite3.Connection) -> None:
         )
 
 
+def _add_agent_ingest_receipts(conn: sqlite3.Connection) -> None:
+    """Migration #11: durable idempotency state for Agent memory writes."""
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS agent_ingest_receipts (
+            idempotency_key TEXT PRIMARY KEY,
+            request_hash    TEXT NOT NULL,
+            state           TEXT NOT NULL
+                            CHECK (state IN ('IN_PROGRESS', 'COMPLETED', 'FAILED')),
+            response        TEXT NOT NULL DEFAULT '{}',
+            created_at      INTEGER NOT NULL,
+            updated_at      INTEGER NOT NULL
+        )"""
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_agent_ingest_state "
+        "ON agent_ingest_receipts(state, updated_at)"
+    )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -213,6 +232,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (8, "conflict_severity", _add_conflict_severity),
     (9, "vector_id_map", _add_vector_id_map),
     (10, "agent_provenance", _add_agent_provenance),
+    (11, "agent_ingest_receipts", _add_agent_ingest_receipts),
 ]
 
 

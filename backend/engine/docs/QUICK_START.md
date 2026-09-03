@@ -1,8 +1,8 @@
 # 模块 B · 记忆业务引擎 —— 快速启动
 
 > 当前命令验证五类 Connector，包括 `CONVERSATION` 与增强 `TOOL_RESULT`
-> provenance 基础契约；幂等、生命周期和 Module E 尚未完成，测试通过不等于完整
-> Agent 闭环通过。
+> provenance 基础契约；Foundation 的完成态持久化幂等已实现，失败恢复、生命周期
+> 和 Module E 尚未完成，测试通过不等于完整 Agent 闭环通过。
 
 ---
 

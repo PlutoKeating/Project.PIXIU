@@ -4,8 +4,8 @@
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 > **与模块 E 的边界**：Foundation 只提供 `docs/API.md` 中的公共 HTTP/WS 契约；
 > E 不得导入 Service、Repository 或数据库实现。真实 capability/runtime 端点已实现；
-> Agent 关联 ID 已进入 evidence 模型/API/schema v10，日志、查询上下文以及短中期
-> context 写入能力仍待完成。
+> Agent 关联 ID 已进入 evidence 模型/API，schema v11 已提供持久化幂等 receipt；
+> 日志、查询上下文、失败恢复以及短中期 context 写入能力仍待完成。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
@@ -139,11 +139,13 @@ async def get_security_service(db=Depends(get_db)) -> SecurityService:
 
 **Schema**（由 `storage/migrations.py` 版本化迁移创建，`storage/schema.py` 定义）：
 
-基础表 16 张：原有记忆/流转表加 `sync_identity`、`sync_peers`、`sync_state`、
+基础表 20 张：原有记忆/流转表加 `sync_identity`、`sync_peers`、`sync_state`、
 `sync_peer_acks`、`sync_meta`；`sync_oplog` 保存签名操作，私钥仅以加密 PKCS#8 保存。
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
 `vector_id_map` 持久化 PIXIU 字符串知识 ID 与系统 Vector Engine `int64` 主键的
 唯一双向映射；候选冲突时加盐重试，进程/数据库重启后保持稳定。
+`agent_ingest_receipts` 以请求哈希和状态机保存 Agent 写入的幂等所有权与完成响应；
+完成态可安全重放，进行中/失败态保持 fail-closed。
 WAL + foreign_keys + busy_timeout 已启用。
 
 **Schema 概要**：
@@ -154,6 +156,10 @@ CREATE TABLE evidence (
   id TEXT PRIMARY KEY, source_type TEXT, raw JSON,
   quality_score REAL, sensitivity INTEGER, provenance JSON,
   scope TEXT, created_at INTEGER);
+
+CREATE TABLE agent_ingest_receipts (
+  idempotency_key TEXT PRIMARY KEY, request_hash TEXT, state TEXT,
+  response JSON, created_at INTEGER, updated_at INTEGER);
 
 -- 知识条目
 CREATE TABLE knowledge_items (

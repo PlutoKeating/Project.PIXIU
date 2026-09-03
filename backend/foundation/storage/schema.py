@@ -1,6 +1,6 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 19 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+创建全部 20 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
 知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
 SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 10
+SCHEMA_VERSION = 11
 
 # monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
 # 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
@@ -81,6 +81,20 @@ DDL_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS idx_evidence_scope ON evidence(scope)",
     "CREATE INDEX IF NOT EXISTS idx_evidence_source ON evidence(source_type)",
+
+    # ─── Agent ingestion idempotency receipts ───────────
+    """
+    CREATE TABLE IF NOT EXISTS agent_ingest_receipts (
+        idempotency_key TEXT PRIMARY KEY,
+        request_hash    TEXT NOT NULL,
+        state           TEXT NOT NULL CHECK (state IN ('IN_PROGRESS', 'COMPLETED', 'FAILED')),
+        response        TEXT NOT NULL DEFAULT '{}',
+        created_at      INTEGER NOT NULL,
+        updated_at      INTEGER NOT NULL
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_agent_ingest_state "
+    "ON agent_ingest_receipts(state, updated_at)",
 
     # ─── knowledge_items (结构化知识) ────────────────────
     """

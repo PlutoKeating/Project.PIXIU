@@ -11,8 +11,8 @@
 > 已实现，不表示 H-02/H-03 通过。系统 Vector Engine 生产接线是 P0 未完成项；
 > Embedding 需用最终版本在 V11 重新形成真实调用证据。
 > 团队批准的 Agent 路线同时重新打开 ingest 契约。`CONVERSATION` Connector 与
-> `TOOL_RESULT`/对话 provenance 基础契约已经实现；幂等、专用抽取策略、Module E
-> 生命周期和端到端验收仍未完成。
+> `TOOL_RESULT`/对话 provenance 基础契约已经实现；Foundation 已提供完成态持久化
+> 幂等，失败恢复、专用抽取策略、Module E 生命周期和端到端验收仍未完成。
 
 ### 已批准的 Agent 接入任务
 
@@ -45,7 +45,7 @@
   V11 严格画像中实际承担生产建库、写入、删除和查询。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-03 当前 Engine 全量 145 项通过；Foundation 577 项通过（11 条
+- 测试：2026-09-03 当前 Engine 全量 145 项通过；Foundation 586 项通过（12 条
   依赖弃用/测试退出资源告警，无失败）；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在

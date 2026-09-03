@@ -35,6 +35,7 @@ from ..monitor.behavior import BehaviorCollector
 from ..monitor.config_store import MonitorConfigStore
 from ..monitor.watcher import DirectoryWatcher
 from ..retrieval import RetrievalService
+from ..storage.idempotency import AgentIngestReceiptStore
 from ..storage.migrations import apply_pending
 from ..storage.repository import (
     SqliteConflictRepo,
@@ -129,6 +130,12 @@ async def get_evidence_repo(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> SqliteEvidenceRepo:
     return SqliteEvidenceRepo(db)
+
+
+async def get_agent_ingest_receipt_store(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> AgentIngestReceiptStore:
+    return AgentIngestReceiptStore(db)
 
 
 async def get_ocr_service():

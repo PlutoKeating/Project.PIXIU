@@ -147,6 +147,7 @@ def test_memory_write_accepts_conversation_with_agent_provenance(client):
             "source_type": "CONVERSATION",
             "raw": {"user": "我喜欢简洁回答", "assistant": "我会记住"},
             "scope": "user:alice",
+            "idempotency_key": "turn-session-1-1",
             "provenance": {
                 "session_id": "session-1",
                 "run_id": "run-1",
@@ -170,6 +171,7 @@ def test_memory_write_rejects_conversation_without_turn_provenance(client):
             "source_type": "CONVERSATION",
             "raw": {"user": "hello", "assistant": "hi"},
             "scope": "user:alice",
+            "idempotency_key": "turn-session-1-2",
         },
     )
 
@@ -184,6 +186,7 @@ def test_agent_tool_result_requires_complete_audit_provenance(client):
             "source_type": "TOOL_RESULT",
             "raw": {"tool_name": "shell", "body": {"result": "done"}},
             "scope": "user:alice",
+            "idempotency_key": "tool-call-incomplete-1",
             "provenance": {
                 "session_id": "session-1",
                 "run_id": "run-1",
@@ -205,6 +208,7 @@ def test_agent_tool_result_persists_complete_audit_provenance(client):
             "source_type": "TOOL_RESULT",
             "raw": {"tool_name": "shell", "body": {"result": "done"}},
             "scope": "user:alice",
+            "idempotency_key": "tool-call-1",
             "provenance": {
                 "session_id": "session-1",
                 "run_id": "run-1",
@@ -223,6 +227,74 @@ def test_agent_tool_result_persists_complete_audit_provenance(client):
     ).json()
     assert evidence["provenance"]["tool_call_id"] == "call-1"
     assert evidence["provenance"]["approved"] is True
+
+
+def test_agent_memory_write_requires_idempotency_key(client):
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "CONVERSATION",
+            "raw": {"user": "hello", "assistant": "hi"},
+            "scope": "user:alice",
+            "provenance": {
+                "session_id": "session-1",
+                "run_id": "run-1",
+                "turn_id": "turn-2",
+                "occurred_at": 1700000001,
+            },
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+
+
+def test_agent_memory_write_replay_returns_original_without_duplicates(client):
+    payload = {
+        "source_type": "CONVERSATION",
+        "raw": {"user": "remember this", "assistant": "stored"},
+        "scope": "user:alice",
+        "idempotency_key": "turn-session-2-1",
+        "provenance": {
+            "session_id": "session-2",
+            "run_id": "run-2",
+            "turn_id": "turn-1",
+            "occurred_at": 1700000002,
+        },
+    }
+
+    first = client.post("/memory/write", json=payload)
+    replay = client.post("/memory/write", json=payload)
+
+    assert first.status_code == 200
+    assert replay.status_code == 200
+    assert replay.json() == first.json()
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM evidence").fetchone()[0] == 1
+        assert conn.execute("SELECT COUNT(*) FROM knowledge_items").fetchone()[0] == 1
+
+
+def test_agent_memory_write_rejects_key_reuse_with_different_payload(client):
+    payload = {
+        "source_type": "CONVERSATION",
+        "raw": {"user": "first", "assistant": "stored"},
+        "scope": "user:alice",
+        "idempotency_key": "turn-session-3-1",
+        "provenance": {
+            "session_id": "session-3",
+            "run_id": "run-3",
+            "turn_id": "turn-1",
+            "occurred_at": 1700000003,
+        },
+    }
+    first = client.post("/memory/write", json=payload)
+    payload["raw"]["user"] = "different"
+
+    conflict = client.post("/memory/write", json=payload)
+
+    assert first.status_code == 200
+    assert conflict.status_code == 409
+    assert conflict.json()["error"] == "IDEMPOTENCY_CONFLICT"
 
 
 def test_evidence_detail_404(client):

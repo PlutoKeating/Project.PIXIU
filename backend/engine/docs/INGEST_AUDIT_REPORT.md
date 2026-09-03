@@ -6,8 +6,9 @@
 > **对照**：`docs/ARCHITECTURE.md`、`docs/API.md`、`docs/AcceptanceTestSpecification.md`（F1-01~07、SC-07）、`backend/engine/docs/ARCHITECTURE.md`、`ENGINE_AUDIT_REPORT.md`、`foundation/core/models.py`、`foundation/core/repository.py`
 >
 > **后续状态说明（2026-09-03）**：本文是 2026-08-19 代码快照。麒麟 OCR、
-> `CONVERSATION` Connector 和 evidence provenance 已在后续实现；幂等、专用语义/
-> 敏感策略及 Module E 生命周期仍待完成。下文历史状态只作审计快照，不是当前结论。
+> `CONVERSATION` Connector、evidence provenance 与 Foundation 完成态持久化幂等已在
+> 后续实现；失败恢复、专用语义/敏感策略及 Module E 生命周期仍待完成。下文历史
+> 状态只作审计快照，不是当前结论。
 
 ---
 

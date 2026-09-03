@@ -8,6 +8,8 @@ from __future__ import annotations
 import asyncio
 import base64
 import contextlib
+import hashlib
+import json
 import os
 import tempfile
 from contextlib import asynccontextmanager
@@ -25,8 +27,15 @@ from ..core.logger import get_logger
 from ..core.models import AgentProvenance, SourceType
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from ..monitor.config_store import InvalidMonitorConfig
+from ..storage.idempotency import (
+    ClaimStatus,
+    IdempotencyConflict,
+    IdempotencyFailed,
+    IdempotencyInProgress,
+)
 from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound
 from .di import (
+    get_agent_ingest_receipt_store,
     get_conflict_repo,
     get_conflict_service,
     get_evidence_repo,
@@ -171,6 +180,12 @@ class MemoryWriteRequest(BaseModel):
     scope: str
     context: dict[str, Any] = Field(default_factory=dict)
     provenance: AgentProvenance | None = None
+    idempotency_key: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
 
     @model_validator(mode="after")
     def _validate_agent_evidence(self) -> "MemoryWriteRequest":
@@ -191,6 +206,8 @@ class MemoryWriteRequest(BaseModel):
                 self.raw.get("assistant") or ""
             ).strip():
                 raise ValueError("CONVERSATION requires user and assistant text")
+            if not self.idempotency_key:
+                raise ValueError("CONVERSATION requires idempotency_key")
         if self.source_type == SourceType.TOOL_RESULT and provenance is not None:
             if not (
                 turn_fields
@@ -202,6 +219,8 @@ class MemoryWriteRequest(BaseModel):
                     "agent TOOL_RESULT requires session/run/turn/time/"
                     "tool_call/tool_name/approved"
                 )
+            if not self.idempotency_key:
+                raise ValueError("agent TOOL_RESULT requires idempotency_key")
         return self
 
 
@@ -273,69 +292,97 @@ async def memory_write(
     preference=Depends(get_preference_service),
     conflict=Depends(get_conflict_service),
     sync=Depends(get_optional_sync_service),
+    idempotency=Depends(get_agent_ingest_receipt_store),
 ):
     """同步落 evidence，随后执行结构化/偏好提取/冲突仲裁，并推送 memory_ready 事件。"""
     started = time.monotonic()
-    evidence = await ingestion.ingest(
-        body.source_type.value,
-        body.raw,
-        body.scope,
-        provenance=body.provenance,
-    )
-    item = await knowledge.structure(evidence)
-    prefs = await preference.extract(evidence)
-    record = await conflict.arbitrate(item)
-    if body.scope.startswith("shared:") and sync is not None:
-        await sync.record_local(
-            f"evidence:{evidence.id}",
-            evidence.model_dump(mode="json"),
-            evidence.scope,
+    request_hash = hashlib.sha256(
+        json.dumps(
+            body.model_dump(mode="json"),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    if body.idempotency_key:
+        try:
+            claim = await idempotency.claim(body.idempotency_key, request_hash)
+        except IdempotencyConflict as exc:
+            raise HTTPException(status_code=409, detail="IDEMPOTENCY_CONFLICT") from exc
+        except IdempotencyInProgress as exc:
+            raise HTTPException(status_code=409, detail="IDEMPOTENCY_IN_PROGRESS") from exc
+        except IdempotencyFailed as exc:
+            raise HTTPException(status_code=409, detail="IDEMPOTENCY_FAILED") from exc
+        if claim.status == ClaimStatus.REPLAY:
+            return claim.response
+
+    try:
+        evidence = await ingestion.ingest(
+            body.source_type.value,
+            body.raw,
+            body.scope,
+            provenance=body.provenance,
         )
-        await sync.record_local(
-            f"knowledge:{item.id}",
-            item.model_dump(mode="json"),
-            item.scope,
-        )
-        for extracted in prefs:
+        item = await knowledge.structure(evidence)
+        prefs = await preference.extract(evidence)
+        record = await conflict.arbitrate(item)
+        if body.scope.startswith("shared:") and sync is not None:
             await sync.record_local(
-                f"preference:{extracted.id}",
-                extracted.model_dump(mode="json"),
-                extracted.scope,
+                f"evidence:{evidence.id}",
+                evidence.model_dump(mode="json"),
+                evidence.scope,
             )
+            await sync.record_local(
+                f"knowledge:{item.id}",
+                item.model_dump(mode="json"),
+                item.scope,
+            )
+            for extracted in prefs:
+                await sync.record_local(
+                    f"preference:{extracted.id}",
+                    extracted.model_dump(mode="json"),
+                    extracted.scope,
+                )
 
-
-    await ws_manager.broadcast(
-        "memory_ready",
-        {
-            "evidence_id": evidence.id,
-            "knowledge_id": item.id,
-            "title": item.title,
-            "scope": evidence.scope,
-        },
-    )
-
-    if record is not None:
         await ws_manager.broadcast(
-            "conflict_detected",
+            "memory_ready",
             {
-                "conflict_id": record.id,
-                "knowledge_title": item.title,
-                "field": record.field,
-                "old_value": record.old_value,
-                "new_value": record.new_value,
-                "severity": record.severity,
+                "evidence_id": evidence.id,
+                "knowledge_id": item.id,
+                "title": item.title,
+                "scope": evidence.scope,
             },
         )
 
-    return {
-        "evidence_id": evidence.id,
-        "status": "accepted",
-        "quality_score": evidence.quality_score,
-        "sensitivity": evidence.sensitivity,
-        "preference_count": len(prefs),
-        "conflict_detected": record is not None,
-        "latency_ms": _latency_ms(started),
-    }
+        if record is not None:
+            await ws_manager.broadcast(
+                "conflict_detected",
+                {
+                    "conflict_id": record.id,
+                    "knowledge_title": item.title,
+                    "field": record.field,
+                    "old_value": record.old_value,
+                    "new_value": record.new_value,
+                    "severity": record.severity,
+                },
+            )
+
+        response = {
+            "evidence_id": evidence.id,
+            "status": "accepted",
+            "quality_score": evidence.quality_score,
+            "sensitivity": evidence.sensitivity,
+            "preference_count": len(prefs),
+            "conflict_detected": record is not None,
+            "latency_ms": _latency_ms(started),
+        }
+        if body.idempotency_key:
+            await idempotency.complete(body.idempotency_key, request_hash, response)
+        return response
+    except Exception:
+        if body.idempotency_key:
+            await idempotency.fail(body.idempotency_key, request_hash)
+        raise
 
 
 # ─── 证据详情 ────────────────────────────────────────────

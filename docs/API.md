@@ -21,15 +21,16 @@
 |---------------------|----------|----------------|
 | `initialize` | `GET /capabilities`（已实现） | 消费 V11、Embedding、Vector Engine 的真实 capability/runtime；Module E 尚需实现严格画像拒绝 |
 | `prefetch(query, session_id)` | `POST /memory/query` | `context_hint` 增加 `session_id`/`turn_id`，响应保留 evidence 来源 |
-| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（已实现基础写入） | 幂等键、异步重试与 Module E 调用仍待实现 |
-| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance 已实现） | 幂等键、输入摘要策略与 Module E 调用仍待实现 |
+| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | 异步重试、失败 receipt 恢复与 Module E 调用仍待实现 |
+| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 输入摘要策略、失败 receipt 恢复与 Module E 调用仍待实现 |
 | 显式记忆工具 | query/write/forget/sync 现有端点 | Module E 做 schema 和错误映射，不新增 Agent 私有直连 |
 | `on_pre_compress`/会话结束或切换 | `/memory/flow/promote` 仅处理已有 context | 增加可创建/更新短中期 context 的公共端点，再触发 promote/demote/清理 |
 | 运行审计 | evidence 已持久化 session_id/run_id/turn_id/tool_call_id | 日志、查询上下文与 memory_id 链路仍待贯通 |
 
 `CONVERSATION` 与 evidence provenance 已同步更新 `foundation/core` 模型、Module B
-Connector、Module C 路由/存储及契约测试。后续幂等、上下文、生命周期和 Module E
-客户端仍须按同一方式贯通；不得用 `TOOL_RESULT` 伪装普通对话来源，也不得把基础写入
+Connector、Module C 路由/存储及契约测试；schema v11 的持久化 receipt 保证完成态
+请求跨重启重放不重复产生 evidence/knowledge。后续失败恢复、上下文、生命周期和
+Module E 客户端仍须贯通；不得用 `TOOL_RESULT` 伪装普通对话来源，也不得把基础写入
 契约解释成完整多轮 Agent 已接入。
 
 ---
@@ -141,6 +142,7 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
   "source_type": "CONVERSATION",
   "raw": {"user": "请保持回答简洁", "assistant": "好的，我会记住。"},
   "scope": "user:alice",
+  "idempotency_key": "session-01:turn-03",
   "provenance": {
     "session_id": "session-01",
     "run_id": "run-01",
@@ -153,11 +155,18 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 校验规则：
 
 - `CONVERSATION` 必须同时提供非空 `raw.user`、`raw.assistant` 以及
-  `session_id`、`run_id`、`turn_id`、`occurred_at`。
+  `session_id`、`run_id`、`turn_id`、`occurred_at`、`idempotency_key`。
 - Agent 产生的 `TOOL_RESULT` 一旦携带 `provenance`，还必须提供 `tool_call_id`、
-  `tool_name` 与布尔值 `approved`；旧版非 Agent 工具采集允许不携带 provenance。
+  `tool_name`、布尔值 `approved` 与 `idempotency_key`；旧版非 Agent 工具采集允许
+  不携带 provenance 和幂等键。
+- `idempotency_key` 为 1～128 位安全标识符，字符集为字母、数字、`.`、`_`、`:`、
+  `-`。同键同载荷的完成态请求返回首次保存的完整响应且不重复执行副作用；同键异
+  载荷返回 `409 IDEMPOTENCY_CONFLICT`。
+- 首次执行仍在进行中或已失败时，重试分别返回 `IDEMPOTENCY_IN_PROGRESS` 或
+  `IDEMPOTENCY_FAILED`，不自动重放可能已发生的外部向量/同步副作用。失败恢复管理
+  端点尚待实现。
 - provenance 单独持久化并由 `GET /evidence/{id}` 原样返回；当前尚未提供基于这些
-  标识的查询索引、幂等写入或生命周期端点。
+  标识的查询索引或生命周期端点。
 
 **响应体（200）：**
 
@@ -892,6 +901,9 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 | 错误码 | HTTP 状态码 | 说明 |
 |--------|-------------|------|
 | `INVALID_REQUEST` | 400 | 请求体不符合 Schema |
+| `IDEMPOTENCY_CONFLICT` | 409 | 幂等键已绑定到不同请求载荷 |
+| `IDEMPOTENCY_IN_PROGRESS` | 409 | 同键首次请求尚未完成，安全拒绝重复执行 |
+| `IDEMPOTENCY_FAILED` | 409 | 同键首次请求失败，需恢复处理后再决定是否重放 |
 | `NOT_FOUND` | 404 | 资源不存在 |
 | `CONFLICT_TIMEOUT` | 408 | 遗忘确认超时 |
 | `PAIRING_FAILED` | 422 | 设备配对失败 |

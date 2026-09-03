@@ -9,8 +9,8 @@
 > 当前 Foundation 是记忆基础设施而非完整 Agent；SQLite/INT8 语义扫描只可作为
 > 降级/对照，尚未满足系统 Vector Engine 硬门槛。
 > 团队已批准 Module E 通过公共 API 接入；Foundation 不承载 Agent 循环。
-> capability/runtime 与 evidence Agent provenance 已完成，短中期 context 写入、
-> 生命周期、幂等和 Module E 仍待补齐。
+> capability/runtime、evidence Agent provenance 与完成态持久化幂等已完成；短中期
+> context 写入、生命周期、失败 receipt 恢复和 Module E 仍待补齐。
 
 > **当前状态（2026-08-11）**：Phase 0~5 全部完成——retrieval、flow、sync（CRDT）、
 > eval（评测框架+基准）、D-Bus 服务均已落地，当前 25 个 REST 端点真实实现。
@@ -28,7 +28,7 @@ Foundation 是 PIXIU 的"骨架与血管"——它提供 API 网关让外部问�
 | Foundation 做的事 | Foundation 不做的事 |
 |------------------|-------------------|
 | HTTP/WS/D-Bus API 路由 | 数据清洗和标准化 |
-| SQLite 仓储实现（19 张基础表 + FTS5/向量索引，schema v10） | 偏好提取和版本化 |
+| SQLite 仓储实现（20 张基础表 + FTS5/向量索引，schema v11） | 偏好提取和版本化 |
 | 混合检索（BM25/ANN/Graph→融合→重排→组装） | 知识冲突仲裁 |
 | 共享数据模型和 Repository 接口定义 | 敏感信息检测 |
 | CRDT 分布式同步 + Gossip 发现 + TLS | 忘记得执行逻辑 |
@@ -41,7 +41,7 @@ Foundation 是 PIXIU 的"骨架与血管"——它提供 API 网关让外部问�
 |------|------|--------|
 | `core/` | 共享契约：数据模型、Repository ABC、配置、日志 | `Evidence`, `KnowledgeItem`, `Preference`, `*Repository` |
 | `api/` | API 网关：HTTP/WS/D-Bus 路由 + 依赖注入 | `HttpApp`, `WsHandler`, `DbusService`, `DI` |
-| `storage/` | SQLite 仓储实现（19 张基础表 + WAL + FTS5/向量索引，schema v10） | `SqliteEvidenceRepo`, `SqliteKnowledgeRepo`, `SqliteFlowStore`, ... |
+| `storage/` | SQLite 仓储实现（20 张基础表 + WAL + FTS5/向量索引，schema v11） | `SqliteEvidenceRepo`, `SqliteKnowledgeRepo`, `SqliteFlowStore`, ... |
 | `retrieval/` | 混合检索管线（路由→3通道→融合→重排→组装） | `RetrievalService`, `Router`, `BM25`, `ANN`, `GraphSearch`, `Fuser`, `Reranker`, `Assembler` |
 | `flow/` | 记忆流转（promote/demote + TTL） | `FlowService`, `Promoter`, `TTLManager` |
 | `sync/` | P2P CRDT 同步 | `SyncService`, `CRDT`, `Gossip`, `Discovery`, `Transport` |

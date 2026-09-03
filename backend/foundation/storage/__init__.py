@@ -3,6 +3,7 @@
 导出 SQLite Repository 实现类、Schema 初始化和迁移工具。
 """
 
+from .idempotency import AgentIngestReceiptStore
 from .migrations import apply_pending, latest_version
 from .repository import (
     SqliteConflictRepo,
@@ -30,6 +31,7 @@ __all__ = [
     "SqliteConflictRepo",
     "SqliteVectorStore",
     "SqliteVectorIdMap",
+    "AgentIngestReceiptStore",
     # schema
     "create_connection",
     "ensure_knowledge_fts",
