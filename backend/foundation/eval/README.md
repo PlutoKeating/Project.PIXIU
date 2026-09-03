@@ -27,7 +27,7 @@ Official thresholds can be made stricter in a dataset but cannot be weakened.
 - 25 conflict cases covering `NEW_WINS`, `MERGE`, and `MANUAL`.
 - 20 repetitions per retrieval case, yielding exactly 1000 P95 samples.
 
-The corpus is synthetic and reproducible. It validates the framework and scenario contract; final Kylin performance claims still require execution against the real SDK and target device.
+The corpus is synthetic and reproducible. It validates the framework and scenario contract; final Kylin performance claims still require execution against the real SDK and target device. `backend/scripts/capture_eval_predictions.py` defaults to `portable` and can never be cited as final evidence by itself. Its explicit `--runtime kylin` mode is a strict component test; the final report must be emitted by the installed `capture_final_eval.py` entry point so runtime and native-evidence provenance are recorded.
 
 The final contest report must additionally bind these metrics to the approved openKylin Agent +
 Module E flow and to a three-device synchronization run. A standalone retrieval runner or portable
@@ -135,6 +135,20 @@ python -m backend.foundation.eval \
 ```
 
 The command writes `eval-report.json` and `eval-report.md`. Existing reports are not overwritten unless `--overwrite` is explicitly supplied. Reports contain the dataset profile and canonical SHA-256 hash. Missing cases, insufficient/excess latency samples, unavailable metric families, or runner failures cannot produce a complete PASS.
+
+For the final V11 candidate, run as the same desktop user that owns the Kylin AI runtime session:
+
+```bash
+/usr/lib/pixiu/venv/bin/python \
+  /usr/lib/pixiu/backend/scripts/capture_final_eval.py \
+  --native-evidence NATIVE_SDK_JSON \
+  --output FULL_EVAL_REPORT_JSON
+```
+
+Do not use `sudo`, a repository interpreter, portable predictions, or a hand-added `execution`
+object. The command uses isolated evaluation databases, requires both SDK constructors to succeed,
+refuses to overwrite output, and binds the report to the native evidence SHA-256, release commit and
+candidate package. The final performance binder rejects reports without this provenance.
 
 ## Three-node protocol evidence
 

@@ -28,6 +28,9 @@
   因此按设计不能生成最终 ZIP。
   最终性能汇总器及 4 项契约测试也已落地，强制四项指标原始样本、三组各 30 例消融
   和 strict/Agent/数据集/候选包同版；现有 portable 报告按设计不能通过该门。
+  最终逐样本采集器另有 installed-component/strict-native provenance 门：仅允许已安装
+  PIXIU venv 与组件、真实 Kylin Embedding/Vector Store、隔离评测状态；专项测试通过，
+  portable 90 例/1000 样本兼容回归通过，但最终 V11 输出仍待生成。
   数据集冻结器及 4 项测试已补齐：固定 50 fixture/90 test case、附录 A 派生的团队
   合成来源、规范化/实物/划分摘要和敏感扫描；最终 clean release 输出仍待生成。
   D-07 归档器现执行七类主记录深验和跨附件摘要复算；三设备递归到拓扑/场景/节点/

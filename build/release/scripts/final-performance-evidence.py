@@ -130,9 +130,15 @@ def validate_dataset(value: dict[str, Any]) -> tuple[dict[str, str], dict[str, A
     return identity, dataset
 
 
-def validate_eval_report(value: dict[str, Any], dataset: dict[str, Any]) -> dict[str, dict[str, Any]]:
+def validate_eval_report(
+    value: dict[str, Any],
+    dataset: dict[str, Any],
+    identity: dict[str, str] | None = None,
+    native_evidence_sha256: str | None = None,
+) -> dict[str, dict[str, Any]]:
     outcomes = value.get("outcomes")
     metrics = value.get("metrics")
+    execution = value.get("execution")
     if not (
         value.get("schema_version") == "1.0"
         and value.get("overall_status") == "PASS"
@@ -142,8 +148,32 @@ def validate_eval_report(value: dict[str, Any], dataset: dict[str, Any]) -> dict
         and isinstance(outcomes, list)
         and len(outcomes) >= 90
         and isinstance(metrics, list)
+        and isinstance(execution, dict)
+        and execution.get("evidence_class") == "kylin-v11-final-eval-capture"
+        and execution.get("real_device_evidence") is True
+        and execution.get("platform") == "kylin-v11-amd64"
+        and execution.get("execution_mode") == "installed-components-isolated-evaluation-state"
+        and execution.get("python_origin") == "/usr/lib/pixiu/venv/bin/python"
+        and execution.get("component_origin") == "/usr/lib/pixiu"
+        and execution.get("embedding_runtime") == "kylin"
+        and execution.get("vector_store_runtime") == "kylin"
+        and execution.get("isolated_sqlite") is True
+        and execution.get("isolated_vector_database") is True
+        and COMMIT.fullmatch(str(execution.get("git_commit", "")))
+        and SHA256.fullmatch(str(execution.get("candidate_package_sha256", "")))
+        and SHA256.fullmatch(str(execution.get("native_evidence_sha256", "")))
     ):
         raise EvidenceError("evaluation report is not a complete passing acceptance run")
+    if identity is not None and any(
+        execution.get(name) != identity[name]
+        for name in ("git_commit", "candidate_package_sha256")
+    ):
+        raise EvidenceError("evaluation report identifies another release")
+    if (
+        native_evidence_sha256 is not None
+        and execution.get("native_evidence_sha256") != native_evidence_sha256
+    ):
+        raise EvidenceError("evaluation report identifies another native evidence record")
     by_name = {item.get("name"): item for item in metrics if isinstance(item, dict)}
     selected: dict[str, dict[str, Any]] = {}
     for name, (comparison, target, minimum_samples) in METRICS.items():
@@ -230,7 +260,9 @@ def build_evidence(paths: dict[str, Path]) -> dict[str, Any]:
     dataset_identity, dataset = validate_dataset(dataset_manifest)
     if dataset_identity != identity:
         raise EvidenceError("dataset and native SDK evidence identify different releases")
-    metrics = validate_eval_report(report, dataset)
+    metrics = validate_eval_report(
+        report, dataset, identity, file_sha256(paths["native"])
+    )
     variants = validate_comparison(comparison, identity, dataset["sha256"])
     return {
         "evidence_schema": 1,

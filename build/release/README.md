@@ -151,7 +151,17 @@ Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定
 
 ## 最终性能证据汇总
 
-原始逐样本报告和三变体对比完成后，用同一候选的五项输入生成性能主记录：
+先在最终 V11 候选的桌面用户会话中，用已安装组件生成逐样本报告：
+
+```bash
+/usr/lib/pixiu/venv/bin/python \
+  /usr/lib/pixiu/backend/scripts/capture_final_eval.py \
+  --native-evidence NATIVE_SDK_JSON --output FULL_EVAL_REPORT_JSON
+```
+
+该入口强制 installed venv/组件路径、strict native 同版绑定、真实 Kylin Embedding 与
+Vector Engine，以及隔离的评测状态；不得用 `sudo`、portable 报告或手填 execution
+字段替代。原始逐样本报告和三变体对比完成后，用同一候选的五项输入生成性能主记录：
 
 ```bash
 python3 build/release/scripts/final-performance-evidence.py build \
@@ -165,7 +175,8 @@ python3 build/release/scripts/final-performance-evidence.py validate \
   --output final-performance.json
 ```
 
-评测报告必须是完整 `acceptance` profile，至少含 90 个逐样本结果；汇总器重验 15 个
+评测报告必须是上述入口产生的完整 `acceptance` profile，至少含 90 个逐样本结果；
+汇总器先核对 installed 路径、双 runtime、native 摘要与 release identity，再重验 15 个
 偏好、50 个检索、25 个冲突和 1000 个 P95 样本及四项官方阈值。消融 JSON 使用
 `schema_version=1`、`status=pass`、release/dataset/task-set 摘要，并且 `variants`
 恰好包含 `no_memory`、`single_device_memory`、`distributed_memory`；每组

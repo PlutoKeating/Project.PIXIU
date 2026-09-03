@@ -1,4 +1,4 @@
-"""Capture live-system predictions for the acceptance reference corpus.
+"""Capture pipeline predictions for the acceptance reference corpus.
 
 Runs the pixiu-family-expense-v1 dataset through the real foundation/engine
 pipeline (same code paths as the installed backend service): ingestion,
@@ -7,6 +7,11 @@ arbitration. Emits a PredictionRecord JSON consumable by
 
     python -m backend.foundation.eval \
         --dataset reference-v1 --predictions <this output>
+
+The default ``portable`` runtime is development evidence only. ``--runtime
+kylin`` fails closed on both required SDKs, but final contest evidence must be
+produced by ``capture_final_eval.py`` so installed-component and native-evidence
+provenance are also bound into the report.
 """
 
 from __future__ import annotations
@@ -14,6 +19,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import sqlite3
 import sys
 import tempfile
@@ -22,10 +28,14 @@ from pathlib import Path
 
 import aiosqlite
 
+COMPONENT_ROOT = Path(__file__).resolve().parents[2]
+if str(COMPONENT_ROOT) not in sys.path:
+    sys.path.insert(0, str(COMPONENT_ROOT))
+
 from backend.engine.conflict import ConflictService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import get_embedder
+from backend.engine.kylin import KylinVectorStore, VectorEngineClient, get_embedder
 from backend.engine.preference import PreferenceService
 from backend.foundation.eval.reference import build_reference_dataset
 from backend.foundation.retrieval import RetrievalService
@@ -38,9 +48,17 @@ from backend.foundation.storage.repository import (
     SqlitePreferenceRepo,
 )
 from backend.foundation.storage.vector_store import SqliteVectorStore
+from backend.foundation.storage.vector_id_map import SqliteVectorIdMap
 
 
-async def _capture(db_path: str) -> list[dict]:
+async def _capture(
+    db_path: str,
+    *,
+    runtime: str = "portable",
+    vector_db_path: str | None = None,
+    vector_app_id: str = "pixiu",
+    vector_collection: str | None = None,
+) -> list[dict]:
     db = await aiosqlite.connect(db_path)
     db.row_factory = aiosqlite.Row
     await db.execute("PRAGMA foreign_keys=ON")
@@ -52,7 +70,22 @@ async def _capture(db_path: str) -> list[dict]:
     finally:
         sync_conn.close()
 
-    embedder = get_embedder("portable")
+    embedder = get_embedder(runtime)
+    vector_client = None
+    if runtime == "kylin":
+        if not vector_db_path:
+            raise ValueError("strict Kylin capture requires an isolated vector database path")
+        vector_client = VectorEngineClient(app_id=vector_app_id)
+        await asyncio.to_thread(vector_client.load_db_file, vector_db_path)
+        vector_store = KylinVectorStore(
+            vector_client,
+            SqliteVectorIdMap(db),
+            collection=vector_collection or f"pixiu_acceptance_{os.getpid()}",
+        )
+    elif runtime == "portable":
+        vector_store = SqliteVectorStore(db)
+    else:
+        raise ValueError("runtime must be portable or kylin")
     evidence_repo = SqliteEvidenceRepo(db)
     knowledge_repo = SqliteKnowledgeRepo(db)
     entity_repo = SqliteEntityRepo(db)
@@ -61,7 +94,7 @@ async def _capture(db_path: str) -> list[dict]:
         knw_repo=knowledge_repo,
         entity_repo=entity_repo,
         embedder=embedder,
-        vector_store=SqliteVectorStore(db),
+        vector_store=vector_store,
     )
     preference = PreferenceService(pref_repo=SqlitePreferenceRepo(db))
     retrieval = RetrievalService(
@@ -69,7 +102,7 @@ async def _capture(db_path: str) -> list[dict]:
         entity_repo=entity_repo,
         evidence_repo=evidence_repo,
         embedder=embedder,
-        vector_store=SqliteVectorStore(db),
+        vector_store=vector_store,
     )
 
     dataset = build_reference_dataset()
@@ -244,6 +277,8 @@ async def _capture(db_path: str) -> list[dict]:
                 }
             )
 
+    if isinstance(vector_store, KylinVectorStore):
+        await vector_store.close()
     await db.close()
     return predictions
 
@@ -251,10 +286,20 @@ async def _capture(db_path: str) -> list[dict]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, help="predictions JSON 输出路径")
+    parser.add_argument("--runtime", choices=("portable", "kylin"), default="portable")
+    parser.add_argument("--vector-app-id", default="pixiu")
     args = parser.parse_args()
 
     with tempfile.TemporaryDirectory(prefix="pixiu-eval-") as tmp:
-        predictions = asyncio.run(_capture(str(Path(tmp) / "pixiu.db")))
+        predictions = asyncio.run(
+            _capture(
+                str(Path(tmp) / "pixiu.db"),
+                runtime=args.runtime,
+                vector_db_path=str(Path(tmp) / "vector-engine.db"),
+                vector_app_id=args.vector_app_id,
+                vector_collection=f"pixiu_acceptance_{os.getpid()}_{time.time_ns()}",
+            )
+        )
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

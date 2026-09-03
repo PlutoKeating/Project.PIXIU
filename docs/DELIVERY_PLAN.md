@@ -219,6 +219,11 @@ strict 原生、Agent 生命周期、冻结数据集、完整逐样本评测报�
 `kylin-v11-final-performance`。五个原始输入须作为 D-07 受控附件保存；portable 报告、
 缺 outcome 的百分比表或不足 30 例的对比均不能过门。
 
+其中逐样本报告必须先由安装包内 `capture_final_eval.py` 产生：同一桌面用户使用
+`/usr/lib/pixiu/venv/bin/python` 和 `/usr/lib/pixiu` 组件，在隔离数据库中调用真实双 SDK，
+并把 native 文件摘要、commit 与候选包写入 `execution`。汇总器与 D-07 都会复验；
+repository/portable 采集结果只能作开发对照。
+
 数据集主记录由 `final-dataset-manifest.py build` 同时输出冻结 JSON 和 manifest；工具
 拒绝脏工作树、非候选 commit、非 strict 原生证据和官方原文摘要漂移。冻结 JSON 与
 manifest 都进入 D-07，后者只能如实标注团队合成及附录 A 派生来源，禁止改称赛方提供

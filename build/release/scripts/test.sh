@@ -40,6 +40,8 @@ bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-final-performance-evidence.py"
 "${PIXIU_PYTHON:-python3}" \
+    "${PIXIU_ROOT}/build/release/tests/test-final-eval-capture.py"
+"${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-final-dataset-manifest.py"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-install-update-evidence.py"

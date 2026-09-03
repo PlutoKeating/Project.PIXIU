@@ -283,6 +283,11 @@ F7-03 还必须提供相同 `task_set_sha256` 下的 `no_memory`、
 和平均轮数。汇总器同时绑定 strict V11 原生证据、Agent 生命周期证据、冻结数据集、
 候选包和全部输入文件摘要；当前仅完成 4 项工具契约测试，最终性能仍未实测。
 
+逐样本输入必须由安装包内 `backend/scripts/capture_final_eval.py` 在同一桌面用户会话中
+生成。报告的 `execution` 必须声明并由门禁核对：V11 amd64、已安装 venv/组件路径、
+Embedding/Vector Store 均为 `kylin`、隔离评测状态、同一 commit/候选包及 native 证据
+摘要。仓库解释器、portable 采集或手工补字段均不构成最终性能证据。
+
 F7-02 的冻结产物由 `final-dataset-manifest.py` 从确定性参考生成器导出。manifest 必须
 明确数据为团队合成、仅派生自官方附录 A 场景而非官方或第三方数据集；固定 50 个
 fixture、50/15/25 三类共 90 个 test case、无训练/验证集、20 次检索重复，并同时记录

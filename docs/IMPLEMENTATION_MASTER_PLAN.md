@@ -196,6 +196,10 @@ W6.6 的最终汇总门已由 `final-performance-evidence.py` 实现：强制三
 候选包。当前 4 项契约测试通过，但实际变体运行、冻结数据集 manifest 和 V11 双 SDK
 原始结果仍待生成，故 W6.6 仍为进行中。
 
+W6.7 已补最终逐样本产生端：安装包内 `capture_final_eval.py` 强制 installed venv/组件、
+strict native 同版绑定和真实 Kylin 双 SDK 隔离评测；汇总/D-07 拒绝 portable 或缺执行
+来源的报告。工具测试已过，最终 V11 候选报告仍待生成。
+
 F7-02 冻结链已补 `final-dataset-manifest.py`：从 release commit 的确定性生成器输出
 可复算 JSON，绑定 strict 候选与官方原文摘要，记录团队合成来源、0/0/90 固定划分、
 三类样本数和敏感扫描。4 项工具测试已通过；最终 manifest 必须在候选 commit 洁净时

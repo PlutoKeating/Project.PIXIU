@@ -73,6 +73,10 @@ Agent 生命周期证据、冻结数据集 manifest、逐样本评测 JSON 与�
 三变体矩阵；汇总器会重验四项阈值和最低样本数。当前工具契约已通过，真实输入尚缺，
 所以 `kylin-v11-final-performance` 尚未生成。
 
+逐样本报告还必须由最终安装包内 `capture_final_eval.py` 运行，记录已安装组件路径、真实
+Kylin 双 SDK runtime、隔离评测状态和同版 native 摘要。当前 portable 报告缺少这类
+执行来源，按设计会被最终汇总器拒绝。
+
 冻结数据集使用 `final-dataset-manifest.py build` 在最终 clean commit 上导出。该数据集
 不是赛方或第三方标准集，而是团队根据附录 A 编写的确定性合成 acceptance corpus；
 manifest 固定 50 个 fixture、90 个纯测试用例、20 次检索重复以及规范化/文件/划分

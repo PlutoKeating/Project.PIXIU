@@ -86,6 +86,12 @@ URL、进程号或会话 ID。工具已具备 7 项自动化契约测试，但�
 摘要必须完全一致。当前只有 4 项汇总器契约测试，因最终数据集和 V11 原始报告未生成，
 不能据此填写最终性能成绩。
 
+最终逐样本报告的产生端也已失败关闭：`capture_final_eval.py` 必须由已安装 PIXIU venv
+和 `/usr/lib/pixiu` 组件运行，绑定同版 strict native 证据，并以隔离状态真实调用
+Kylin Embedding 与 Vector Engine；报告写入不可伪装为 portable 的执行来源。性能汇总
+及 D-07 解包复验都会核对该来源、candidate/commit 和 native 文件摘要。当前只有工具
+契约与 portable 兼容回归通过，尚未在最终 V11 候选上生成报告。
+
 最终 acceptance 数据集也已有独立冻结器：从当前 release commit 的确定性参考生成器
 导出 50 份附录 A 家庭支出 fixture 与 90 个测试用例，规范化摘要保持与评测报告算法
 一致；manifest 如实标记为“团队编写的合成语料、派生自赛题附录 A、非第三方数据集”，

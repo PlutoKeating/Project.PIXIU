@@ -79,6 +79,8 @@ SHA-256 一致；供应链报告另须 `ready=true`。生成和复验都会拒�
 `performance` 主记录必须由 `final-performance-evidence.py` 生成并通过离线复核；其五个
 输入（原生、Agent、数据集、逐样本报告、三变体消融矩阵）应作为去敏附件一并保留，
 否则即使汇总百分比达标，也不满足 D-07 原始结果要求。
+其中逐样本报告必须来自安装包内 `capture_final_eval.py`，携带真实双 SDK runtime、安装
+路径、native 证据摘要和同版 release identity；归档器会再次核对，portable 报告无效。
 
 `install_update` 主记录必须由 `install-update-evidence.py finalize` 汇总。六种操作的
 operation JSON、动作前后快照和 proof 均须作为 `--attachment` 加入；归档器会按摘要

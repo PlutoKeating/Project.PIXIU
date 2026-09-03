@@ -179,7 +179,15 @@ def validate_embedded_sources(
         spec.loader.exec_module(module)
         report_document = read_json(report_path)
         selected_metrics = module.validate_eval_report(
-            report_document, dataset_manifest["dataset"]
+            report_document,
+            dataset_manifest["dataset"],
+            identity={
+                "git_commit": nested(performance, ["release", "git_commit"]),
+                "candidate_package_sha256": nested(
+                    performance, ["release", "candidate_package_sha256"]
+                ),
+            },
+            native_evidence_sha256=sources["native"],
         )
         recomputed_metrics = recompute_primary_metrics(
             dataset_document, report_document

@@ -125,6 +125,21 @@ class EvidenceArchiveTest(unittest.TestCase):
                 "dataset_sha256": canonical_dataset_sha,
                 "metrics": metrics,
                 "outcomes": outcomes,
+                "execution": {
+                    "evidence_class": "kylin-v11-final-eval-capture",
+                    "real_device_evidence": True,
+                    "platform": "kylin-v11-amd64",
+                    "execution_mode": "installed-components-isolated-evaluation-state",
+                    "python_origin": "/usr/lib/pixiu/venv/bin/python",
+                    "component_origin": "/usr/lib/pixiu",
+                    "embedding_runtime": "kylin",
+                    "vector_store_runtime": "kylin",
+                    "isolated_sqlite": True,
+                    "isolated_vector_database": True,
+                    "git_commit": commit,
+                    "candidate_package_sha256": package_sha,
+                    "native_evidence_sha256": "0" * 64,
+                },
             }),
             encoding="utf-8",
         )
@@ -153,6 +168,11 @@ class EvidenceArchiveTest(unittest.TestCase):
         agent = json.loads(records["agent_lifecycle"].read_text())
         agent["release"]["native_evidence_sha256"] = MODULE.sha256_file(records["native_sdk"])
         records["agent_lifecycle"].write_text(json.dumps(agent), encoding="utf-8")
+        eval_document = json.loads(eval_report.read_text(encoding="utf-8"))
+        eval_document["execution"]["native_evidence_sha256"] = MODULE.sha256_file(
+            records["native_sdk"]
+        )
+        eval_report.write_text(json.dumps(eval_document), encoding="utf-8")
         dataset = json.loads(records["dataset"].read_text())
         dataset["dataset"] = {
             "name": "pixiu-final-v1",

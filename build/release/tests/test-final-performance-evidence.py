@@ -67,6 +67,21 @@ def report() -> dict:
         "dataset_sha256": DATASET_SHA,
         "metrics": metrics,
         "outcomes": [{"case_id": str(index)} for index in range(90)],
+        "execution": {
+            "evidence_class": "kylin-v11-final-eval-capture",
+            "real_device_evidence": True,
+            "platform": "kylin-v11-amd64",
+            "execution_mode": "installed-components-isolated-evaluation-state",
+            "python_origin": "/usr/lib/pixiu/venv/bin/python",
+            "component_origin": "/usr/lib/pixiu",
+            "embedding_runtime": "kylin",
+            "vector_store_runtime": "kylin",
+            "isolated_sqlite": True,
+            "isolated_vector_database": True,
+            "git_commit": IDENTITY["git_commit"],
+            "candidate_package_sha256": IDENTITY["candidate_package_sha256"],
+            "native_evidence_sha256": "e" * 64,
+        },
     }
 
 
@@ -88,6 +103,10 @@ class FinalPerformanceEvidenceTest(unittest.TestCase):
     def _files(self, root: Path, values: dict[str, dict]) -> dict[str, Path]:
         paths = {}
         for name, value in values.items():
+            if name == "report" and "native" in paths:
+                value["execution"]["native_evidence_sha256"] = MODULE.file_sha256(
+                    paths["native"]
+                )
             path = root / f"{name}.json"
             path.write_text(json.dumps(value), encoding="utf-8")
             paths[name] = path
