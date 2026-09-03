@@ -14,6 +14,19 @@
 > 因而不能作为完整 OS Agent 交付包。目标发布方案应优先依赖目标机已安装的
 > `kylin-agent`/`agent-runtime`，单独打包 PIXIU 原创适配器，并保留版本/许可证清单。
 
+## 交付治理预检
+
+在开始构建或整理赛事材料前执行：
+
+```bash
+make -C build/release governance
+```
+
+该命令依据 `docs/OFFICIAL_SOURCES.sha256` 校验两份禁止修改的赛事原件，并拒绝
+包含未提交修改或未跟踪文件的工作区；CI 也执行同一检查。开发中仅需单独核验原件
+时可运行 `build/release/scripts/verify-governance.sh --allow-dirty`，但该选项不得用于
+候选发布审计。版本一致性继续由 `build-deb.sh` 在任何打包前强制检查。
+
 ## 目录结构
 
 ```text

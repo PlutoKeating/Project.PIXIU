@@ -13,6 +13,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  governance:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+
+      - name: Verify immutable sources and repository state
+        run: make -C build/release governance
+
   backend-tests:
     runs-on: ubuntu-22.04
     strategy:
