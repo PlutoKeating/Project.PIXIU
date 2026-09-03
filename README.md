@@ -11,7 +11,7 @@
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Memory%20Console-Qt5%20%2F%20UKUI-41CD52?style=flat-square)](frontend/docs/ARCHITECTURE.md)
 
-[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [已批准架构决策](docs/decisions/0001-use-openkylin-agent-host.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
+[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [已批准架构决策](docs/decisions/0001-use-openkylin-agent-host.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
 
 </div>
 
@@ -101,6 +101,10 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 存在，但 Module E、独立签名/回滚、最终 V11 双 SDK 与全新机/升级取证尚未闭环，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
 [最终交付与版本管理计划](docs/DELIVERY_PLAN.md)。
+
+从当前差距到最终候选版本的关键路径、阶段门、逐工作包完成定义和预期提交序列见
+[完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md)。该计划是执行台账；两份
+官方赛事原件仍是不可修改的权威要求来源。
 
 ## 仓库结构
 

@@ -80,8 +80,8 @@ git submodule update --init --recursive
 ### 3. 文档补全
 
 - 配合其他开发者更新 `docs/` 下的项目级文档
-- 编写效果演示报告（D-01）
-- 编写用户手册（D-03）
+- 编写效果/测试报告（D-07）
+- 编写用户手册（D-06）
 
 ## 参考文档
 
@@ -90,3 +90,4 @@ git submodule update --init --recursive
 | 验收规范 | `docs/AcceptanceTestSpecification.md` |
 | 赛题原文 | `docs/OriginProblemDescription.md` |
 | 开发计划 | `docs/DEVELOPMENT_PLAN.md` |
+| 完整交付主实施计划 | `docs/IMPLEMENTATION_MASTER_PLAN.md` |

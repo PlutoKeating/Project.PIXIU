@@ -5,6 +5,9 @@
 > 本文把赛事 D-01～D-10 与团队新增的软件可安装/可升级要求统一为可审查的发布门。
 > 官方要求仍以 `OriginProblemDescription.md` 和 `完整赛题要求.pptx` 为准；本文不
 > 修改原文，也不把团队新增门槛伪装为官方条款。
+>
+> 实施顺序、依赖和逐切片完成定义见
+> [`IMPLEMENTATION_MASTER_PLAN.md`](IMPLEMENTATION_MASTER_PLAN.md)。
 
 ## 1. 单一安装产物
 

@@ -21,6 +21,7 @@
 
 - `docs/OriginProblemDescription.md` —— 赛题原文与附录 A 场景
 - `docs/AcceptanceTestSpecification.md` —— 功能/性能/交付验收条目
+- `docs/IMPLEMENTATION_MASTER_PLAN.md` —— 完整交付关键路径、阶段门与实施台账
 - `docs/DELIVERY_PLAN.md` —— 单一安装包、版本/升级与 D-01～D-10 文档门禁
 - `docs/完整赛题要求.pptx` —— 2026.05 赛方完整宣讲材料与硬门槛（必须实际读取，不得仅依赖摘要）
 - `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` —— 完整 Agent 接入决策、代码事实与赛题差距
@@ -35,7 +36,7 @@
 
 ### 1.2 必读模块文档
 
-本项目按架构维度拆分为三个独立开发模块 + 一个支持岗位：
+本项目按架构维度拆分为四个独立开发模块 + 一个支持岗位：
 
 | 模块 | 目录 | 文档路径 |
 |------|------|----------|
