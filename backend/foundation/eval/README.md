@@ -135,3 +135,20 @@ python -m backend.foundation.eval \
 ```
 
 The command writes `eval-report.json` and `eval-report.md`. Existing reports are not overwritten unless `--overwrite` is explicitly supplied. Reports contain the dataset profile and canonical SHA-256 hash. Missing cases, insufficient/excess latency samples, unavailable metric families, or runner failures cannot produce a complete PASS.
+
+## Three-node protocol evidence
+
+The deterministic W6 protocol runner produces a machine-readable report bound to the current
+commit and product version:
+
+```bash
+python -m backend.foundation.eval.sync_evidence \
+  --root . \
+  --output build/release/out/sync-protocol-evidence.json
+```
+
+It uses one process and three isolated SQLite databases to exercise full-mesh pairing, concurrent
+convergence, offline anti-entropy, tombstone no-resurrection, and private-scope rejection. The
+report always sets `final_device_evidence=false` and names its limitations. It is CI/protocol
+evidence only; it cannot replace the final three-device Kylin V11 network run or satisfy N-01
+through N-08 by itself. Existing output is refused unless `--overwrite` is explicit.

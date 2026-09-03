@@ -36,8 +36,8 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 2026-09-04 最新组合回归：pytest 791 passed（Foundation 624 + Engine 150 +
-  Module E 17；10 条既有依赖弃用告警，无失败）；Foundation 356 + Engine 21
+- 2026-09-04 最新组合回归：pytest 792 passed（Foundation 625 + Engine 150 +
+  Module E 17；既有依赖弃用告警，无失败）；Foundation 356 + Engine 21
   = 377 仅保留为 2026-08-11 阶段快照
 
 ### 🔴 赛题 P0 待完成
