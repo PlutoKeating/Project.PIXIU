@@ -8,8 +8,9 @@
 
 > [!IMPORTANT]
 > 2026-09-03 赛题复核后，Module A 已完成状态仅指 PIXIU 记忆控制台范围，
-> 不代表完整 OS Agent 已实现。多轮会话、规划、工具/Shell/联网搜索和审批复用
-> 官方 `kylin-agent` + `agent-runtime`；本模块后续只承担记忆管理 UI 与必要集成，
+> 不代表完整 OS Agent 已实现。项目选择复用 openKylin `kylin-agent` +
+> `agent-runtime` 承担多轮会话、规划、工具/Shell/联网搜索和审批；这不是赛方
+> 指定技术路线。本模块后续只承担记忆管理 UI 与必要集成，
 > 不在 `frontend/` 内另造 Agent 循环。
 
 ---

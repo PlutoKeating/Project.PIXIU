@@ -7,7 +7,7 @@
 > [!CAUTION]
 > 2026-09-03 赛题复核：当前实现是记忆子系统和记忆控制台，不是完整 OS Agent；
 > 生产向量检索仍由 SQLite/INT8 扫描承担，也尚未满足 PPT 指定的系统向量数据库
-> SDK 硬门槛。目标架构新增官方 `kylin-agent`/`agent-runtime` 基座与
+> SDK 硬门槛。项目目标架构选择新增 openKylin `kylin-agent`/`agent-runtime` 基座与
 > MemoryProvider 适配层。完整差距和验收状态见
 > `OS_AGENT_INTEGRATION_ASSESSMENT.md` 与 `AcceptanceTestSpecification.md`。
 
@@ -30,7 +30,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  官方 Agent 基座（third_party 参考，待适配）               │
+│  项目选定的 openKylin Agent 基座（待适配）                 │
 │  kylin-agent + agent-runtime：会话/规划/工具/审批/搜索      │
 └────────────────────────┬─────────────────────────────────┘
                          │ MemoryProvider / HTTP adapter
@@ -73,7 +73,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 - **端侧轻量化**：x86/ARM 麒麟机型，内存占用低，离线可用
 - **检索在线零 LLM**：仅用 embedding + 结构化字段 + 图遍历，保证 P95 ≤ 500ms
 - **国产化硬门槛**：embedding 必须经麒麟 `coreai/embedding` C 接口；生产向量存储/检索必须经系统 Vector Engine SDK；最终软件必须在银河麒麟桌面操作系统 V11 验证
-- **Agent 完整性**：多轮会话、规划、工具、Shell/联网搜索和审批由官方 Agent 基座提供；PIXIU 通过记忆适配层接入，不重复实现通用 Agent
+- **Agent 完整性**：项目工程上选择由 openKylin Agent 基座提供多轮会话、规划、工具、Shell/联网搜索和审批，PIXIU 通过原创记忆适配层接入；赛方材料未指定必须使用该基座，也未要求从零重写 Agent
 
 ---
 

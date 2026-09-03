@@ -24,6 +24,13 @@
 - `docs/完整赛题要求.pptx` —— 2026.05 赛方完整宣讲材料与硬门槛（必须实际读取，不得仅依赖摘要）
 - `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` —— 完整 Agent 接入决策、代码事实与赛题差距
 
+`docs/OriginProblemDescription.md` 与 `docs/完整赛题要求.pptx` 两份赛事官方
+材料是只读权威原件，**禁止编辑、增删、重排或在文件内部追加
+解释**。任何合并解读、差异说明和工程映射只能写入派生文档。当前归档校验值：
+
+- `docs/OriginProblemDescription.md`：SHA-256 `e8f35ef4d537d2f85c338111d8f88e64fe9538eb8073681d78c36479c3a147bf`
+- `docs/完整赛题要求.pptx`：SHA-256 `d4f1e5de1afe7b759e52d62fe74d6183d3cfc25368af69073318350ff2c39ce0`
+
 ### 1.2 必读模块文档
 
 本项目按架构维度拆分为三个独立开发模块 + 一个支持岗位：

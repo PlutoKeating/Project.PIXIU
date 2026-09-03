@@ -42,7 +42,7 @@
   90 查询、1000 压测），验证召回≥85%、P95≤500ms，产出 runtime="kylin" 报告
 - `engine/kylin/cpp/` 原生绑定构建（`_kylin_text_embedding` pybind11）
 - vector-engine-client 生产对接（submodule 已就位；当前 H-02 不通过）
-- 与官方 agent-runtime 的 MemoryProvider 适配和完整多轮/工具结果闭环
+- 与项目选定的 openKylin agent-runtime 完成 MemoryProvider 适配和多轮/工具结果闭环
 - Module A（前端）HTTP/WS/D-Bus 三通道联调
 - `api/`：WS `/events` 路由注册修复（`http_app.py` 未导入 `ws.py`、
   `ws.py` 未导入 `fastapi.WebSocket`，见 `frontend/docs/BACKEND_ISSUES.md`）

@@ -13,7 +13,8 @@
 > [!CAUTION]
 > 本客户端普通输入直接调用 `/memory/query`，没有多轮 Agent 会话、模型规划、
 > 工具自主选择、Shell/联网搜索与审批循环，因此不得表述为完整 OS Agent。
-> 最终作品复用官方 `kylin-agent`/`agent-runtime`；本客户端保留为记忆诊断、
+> 项目工程方案复用 openKylin `kylin-agent`/`agent-runtime`；这不是赛方指定路线。
+> 本客户端保留为记忆诊断、
 > 设备同步管理和独立演示控制台。见 `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md`。
 
 ---

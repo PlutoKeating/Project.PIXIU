@@ -4,8 +4,9 @@
 > **严禁跨目录引用代码**，模块间仅通过 `foundation/core/` 中的抽象接口通信。
 
 > 赛题复核状态：这是 PIXIU **记忆后端**，不是完整 OS Agent。当前 SQLite/INT8
-> 向量扫描不满足系统 Vector Engine 硬门槛；完整 Agent 由官方
-> `kylin-agent`/`agent-runtime` 提供并通过适配器调用本后端。
+> 向量扫描不满足系统 Vector Engine 硬门槛；项目决定由 openKylin
+> `kylin-agent`/`agent-runtime` 提供完整 Agent 能力并通过适配器调用本后端，
+> 该具体基座不是赛方指定。
 
 ---
 
