@@ -26,6 +26,7 @@ class EmbedWriter:
         # 内存向量缓冲（按知识 id 索引）：embedding_ref 写入 KnowledgeItem，
         # bytes 由 KnowledgeService 调用 knw_repo.save_vector 持久化。
         self._vectors: dict[str, list[int]] = {}
+        self._raw_vectors: dict[str, list[float]] = {}
         self._dims: dict[str, int] = {}
 
     def write(self, item: KnowledgeItem) -> KnowledgeItem:
@@ -35,6 +36,7 @@ class EmbedWriter:
         ref = f"vec_{item.id}"
         item.embedding_ref = ref
         self._vectors[item.id] = q
+        self._raw_vectors[item.id] = list(vec)
         self._dims[item.id] = len(q)
         return item
 
@@ -48,6 +50,11 @@ class EmbedWriter:
         if not q:
             return None
         return struct.pack(f"{len(q)}b", *q)
+
+    def vector(self, item: KnowledgeItem) -> Optional[list[float]]:
+        """返回未量化 embedding，供 VectorStore 适配器选择原生存储格式。"""
+        vector = self._raw_vectors.get(item.id)
+        return list(vector) if vector else None
 
     @staticmethod
     def _to_text(item: KnowledgeItem) -> str:

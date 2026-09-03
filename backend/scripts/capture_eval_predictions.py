@@ -37,6 +37,7 @@ from backend.foundation.storage.repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
+from backend.foundation.storage.vector_store import SqliteVectorStore
 
 
 async def _capture(db_path: str) -> list[dict]:
@@ -57,7 +58,10 @@ async def _capture(db_path: str) -> list[dict]:
     entity_repo = SqliteEntityRepo(db)
     ingestion = IngestionService(evidence_repo=evidence_repo)
     knowledge = KnowledgeService(
-        knw_repo=knowledge_repo, entity_repo=entity_repo, embedder=embedder
+        knw_repo=knowledge_repo,
+        entity_repo=entity_repo,
+        embedder=embedder,
+        vector_store=SqliteVectorStore(db),
     )
     preference = PreferenceService(pref_repo=SqlitePreferenceRepo(db))
     retrieval = RetrievalService(

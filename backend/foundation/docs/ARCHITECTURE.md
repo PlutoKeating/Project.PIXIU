@@ -210,8 +210,10 @@ scope/time_range 硬过滤；RRF 融合；词法重排；查询类别聚合与�
 
 已新增 `core.VectorStore` seam，接口仅暴露 `upsert/search/delete` 与真实 runtime；
 `storage.SqliteVectorStore` 是首个适配器，封装 INT8 量化、持久化、相似度和删除。
-现有 `KnowledgeService`/`ANNChannel` 尚未切换到该 seam，Kylin 适配器和生产 DI 接线
-完成前 H-02 仍为不通过。
+生产 DI 的 `KnowledgeService` 已通过该 seam 写入原始 float embedding，portable
+适配器在内部执行 INT8 量化；`ANNChannel` 尚未切换，Kylin 适配器和后端选择完成前
+H-02 仍为不通过。未显式注入 seam 的旧测试/自定义构造暂保留 Repository 兼容路径，
+不得用于生产或验收。
 
 开发基线（50 条记录、1000 次查询、测试 stub embedding）为 P50=11.4ms、P95=13.3ms。
 该数据仅用于回归，不代表真实麒麟 SDK 和正式验收数据下的最终性能。

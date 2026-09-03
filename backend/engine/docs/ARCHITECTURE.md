@@ -103,7 +103,7 @@ class Evidence(BaseModel):
 ```
 evidence → structurer（结构化）
   → graph（抽取实体+关系→写 entities/relations 表）
-  → embed_writer（调 KylinEmbedding 生成向量→INT8 量化→写 knowledge_vec）
+  → embed_writer（调 KylinEmbedding 生成原始 float 向量→VectorStore.upsert）
   → 同步写 knowledge_fts（FTS5 全文索引）
 ```
 
@@ -196,7 +196,8 @@ class PreferenceService:
     async def get_history(self, pref_id: str) -> list[PreferenceSnapshot]: ...
 
 class KnowledgeService:
-    def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository, embedder): ...
+    def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository,
+                 embedder, vector_store: VectorStore): ...
     async def structure(self, evidence: Evidence) -> KnowledgeItem: ...
 
 class ConflictService:

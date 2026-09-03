@@ -10,6 +10,7 @@ from typing import Optional
 
 from backend.foundation.core.models import Evidence, KnowledgeItem
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.vector_store import VectorStore
 
 from backend.engine.knowledge.embed_writer import EmbedWriter
 from backend.engine.knowledge.graph import GraphBuilder
@@ -29,6 +30,7 @@ class KnowledgeService:
         structurer: Optional[Structurer] = None,
         graph: Optional[GraphBuilder] = None,
         embed_writer: Optional[EmbedWriter] = None,
+        vector_store: Optional[VectorStore] = None,
     ) -> None:
         self._knw_repo = knw_repo
         self._entity_repo = entity_repo
@@ -36,6 +38,7 @@ class KnowledgeService:
         self._structurer = structurer or Structurer()
         self._graph = graph or GraphBuilder()
         self._embed_writer = embed_writer or EmbedWriter(resolved_embedder)
+        self._vector_store = vector_store
 
     async def structure(self, evidence: Evidence) -> KnowledgeItem:
         item = self._structurer.structure(evidence)
@@ -48,9 +51,18 @@ class KnowledgeService:
             # 先落知识条目（knowledge_vec 外键依赖 knowledge_items.id），再写向量
             await self._knw_repo.save(item)
             step = "vector_save"
-            vec = self._embed_writer.vector_bytes(item)
-            if vec is not None:
-                await self._knw_repo.save_vector(item.id, self._embed_writer.dim(item), vec)
+            if self._vector_store is not None:
+                vector = self._embed_writer.vector(item)
+                if vector is not None:
+                    await self._vector_store.upsert(item.id, vector)
+            else:
+                # Transitional compatibility for non-production test/custom callers.
+                # The application DI always injects an explicit VectorStore.
+                vec = self._embed_writer.vector_bytes(item)
+                if vec is not None:
+                    await self._knw_repo.save_vector(
+                        item.id, self._embed_writer.dim(item), vec
+                    )
         except Exception:
             logger.warning(
                 "knowledge.structure failed at step=%s knowledge_id=%s evidence_id=%s",

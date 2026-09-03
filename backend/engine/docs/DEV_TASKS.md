@@ -87,7 +87,7 @@ git submodule update --init --recursive
 | `knowledge/__init__.py` | ★★★ | 导出 `KnowledgeService` |
 | `knowledge/structurer.py` | ★★★ | 按 kind（FACT/WORKFLOW/CASE/TEMPLATE）结构化 KnowledgeItem |
 | `knowledge/graph.py` | ★★★ | 实体抽取 + BELONG_TO 等关系构建 |
-| `knowledge/embed_writer.py` | ★★★ | 调 KylinEmbedding → INT8 量化 → 写入向量索引 |
+| `knowledge/embed_writer.py` | ★★★ | 调 KylinEmbedding，向 VectorStore 提供原始 float 向量 |
 
 ### kylin/ —— KylinSDK 适配
 

@@ -37,6 +37,7 @@ from ..storage.repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
+from ..storage.vector_store import SqliteVectorStore
 from ..sync import Mainline, SqliteSyncStore, SyncService
 from ..sync.discovery import MdnsDiscovery
 from ..sync.runtime import SyncRuntime, create_sync_runtime
@@ -121,6 +122,7 @@ async def get_knowledge_service(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
         embedder=get_embedder(settings.embedding),
+        vector_store=SqliteVectorStore(db),
     )
 
 

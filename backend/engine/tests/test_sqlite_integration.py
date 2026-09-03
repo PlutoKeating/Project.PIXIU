@@ -26,6 +26,7 @@ from backend.foundation.storage.repository import (
     SqliteKnowledgeRepo,
     SqlitePreferenceRepo,
 )
+from backend.foundation.storage.vector_store import SqliteVectorStore
 from backend.foundation.storage.schema import init_db_on_connection
 
 
@@ -57,6 +58,7 @@ async def stack(tmp_path: Path):
             knw_repo=repos["knowledge"],
             entity_repo=repos["entity"],
             embedder=StubTextEmbedder(dim=32),
+            vector_store=SqliteVectorStore(db),
         ),
         "preference": PreferenceService(pref_repo=repos["preference"]),
         "conflict": ConflictService(

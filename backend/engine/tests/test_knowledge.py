@@ -21,6 +21,7 @@ from backend.foundation.core.models import (
     Relation,
 )
 from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.vector_store import VectorMatch, VectorStore
 from backend.foundation.storage.repository import (
     SqliteEntityRepo,
     SqliteEvidenceRepo,
@@ -93,6 +94,24 @@ class _FakeEntityRepo(EntityRepository):
 
     async def list_relations(self) -> list[Relation]:
         return list(self.relations)
+
+
+class _FakeVectorStore(VectorStore):
+    def __init__(self) -> None:
+        self.vectors: dict[str, list[float]] = {}
+
+    @property
+    def runtime(self) -> str:
+        return "fake"
+
+    async def upsert(self, knowledge_id: str, vector: list[float]) -> None:
+        self.vectors[knowledge_id] = list(vector)
+
+    async def search(self, vector: list[float], limit: int) -> list[VectorMatch]:
+        return []
+
+    async def delete(self, knowledge_id: str) -> None:
+        self.vectors.pop(knowledge_id, None)
 
 
 def _evidence(
@@ -219,6 +238,22 @@ def test_stub_embedder_deterministic() -> None:
     assert a == b
     assert a != c
     assert len(a) == 8
+
+
+@pytest.mark.asyncio
+async def test_structure_writes_original_embedding_through_vector_store() -> None:
+    vector_store = _FakeVectorStore()
+    service = KnowledgeService(
+        knw_repo=_FakeKnowledgeRepo(),
+        entity_repo=_FakeEntityRepo(),
+        vector_store=vector_store,
+        embedder=StubTextEmbedder(dim=8),
+    )
+
+    item = await service.structure(_evidence(raw={"title": "向量原文"}))
+
+    assert len(vector_store.vectors[item.id]) == 8
+    assert any(not float(value).is_integer() for value in vector_store.vectors[item.id])
 
 
 def test_explicit_kind_overrides_heuristics() -> None:
