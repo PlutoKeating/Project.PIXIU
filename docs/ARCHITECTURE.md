@@ -259,7 +259,7 @@ query + context_hint
 | 能力 | SDK | 用途 | 调用者 | 状态 |
 |------|-----|------|--------|------|
 | 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 本机构建成功（麒麟运行时验收待真机） |
-| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin 适配 + foundation/retrieval | 🔴 **硬门槛未通过**：客户端封装存在，但生产检索仍由 SQLite INT8 扫描承担 |
+| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin 适配 + foundation `VectorStore` seam | 🔴 **硬门槛未通过**：SDK 生命周期封装及 portable 适配已完成，但生产写入/检索尚未注入 SDK |
 | OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ✅ 已接入（2026-08-24，`POST /memory/ocr`） |
 | 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference | ⬜ 待接入 |
 | 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为系统托盘通知 |

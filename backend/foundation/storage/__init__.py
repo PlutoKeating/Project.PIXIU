@@ -18,6 +18,7 @@ from .schema import (
     init_db,
     init_db_on_connection,
 )
+from .vector_store import SqliteVectorStore
 
 __all__ = [
     # repos
@@ -26,6 +27,7 @@ __all__ = [
     "SqlitePreferenceRepo",
     "SqliteEntityRepo",
     "SqliteConflictRepo",
+    "SqliteVectorStore",
     # schema
     "create_connection",
     "ensure_knowledge_fts",

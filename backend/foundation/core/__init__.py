@@ -39,6 +39,7 @@ from .idgen import (
     gen_sync_op_id,
 )
 from .logger import get_logger
+from .vector_store import VectorMatch, VectorStore
 
 __all__ = [
     # config
@@ -75,4 +76,7 @@ __all__ = [
     "gen_request_id",
     # logger
     "get_logger",
+    # vector storage seam
+    "VectorMatch",
+    "VectorStore",
 ]

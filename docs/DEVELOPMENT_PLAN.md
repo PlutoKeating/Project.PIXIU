@@ -36,7 +36,8 @@
 此前“各模块全部完成/全项达标”只描述既定记忆子系统范围，不能外推为赛题完成。
 当前必须优先完成：
 
-1. 系统 Vector Engine 接管生产向量建库、写入、删除和查询；SQLite INT8 扫描只保留降级/对照。
+1. 系统 Vector Engine 接管生产向量建库、写入、删除和查询；公共 `VectorStore`
+   seam 与 portable 适配已完成，Kylin 适配和生产注入仍是当前 P0；SQLite INT8 扫描只保留降级/对照。
 2. 最终版本在 V11 严格画像同时真实调用指定 Embedding 与 Vector Engine，并生成可复现证据。
 3. 工程上复用 `third_party/kylin-agent` 与 `third_party/kylin-agent-runtime`，实现
    原创 MemoryProvider 适配；这不是赛方指定技术路线。不得把上游开源软件原样作为作品提交。

@@ -208,6 +208,11 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 持久化 knowledge↔entity 与 `BELONG_TO` 一跳图召回；三通道 `asyncio.gather` 并发；
 scope/time_range 硬过滤；RRF 融合；词法重排；查询类别聚合与证据组装。
 
+已新增 `core.VectorStore` seam，接口仅暴露 `upsert/search/delete` 与真实 runtime；
+`storage.SqliteVectorStore` 是首个适配器，封装 INT8 量化、持久化、相似度和删除。
+现有 `KnowledgeService`/`ANNChannel` 尚未切换到该 seam，Kylin 适配器和生产 DI 接线
+完成前 H-02 仍为不通过。
+
 开发基线（50 条记录、1000 次查询、测试 stub embedding）为 P50=11.4ms、P95=13.3ms。
 该数据仅用于回归，不代表真实麒麟 SDK 和正式验收数据下的最终性能。
 
