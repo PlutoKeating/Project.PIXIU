@@ -23,7 +23,7 @@
 | `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 已后台预取并只同步读取缓存；真实时序/命中取证待补 |
 | `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | Module E 已有有界异步队列、重试/背压；失败 receipt 可人工核验后授权一次重试 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 显式 remember 已接入；任意 Shell/搜索结果的自动价值判断仍待 W5 |
-| 显式记忆工具 | query/write/forget/sync 现有端点 | 四个 schema/稳定 JSON 映射已实现；forget 另加一次性确认 token |
+| 显式记忆工具 | query/write/update/forget/sync 现有端点 | 五个 schema/稳定 JSON 映射已实现；update 消费召回版本，forget 另加一次性确认 token |
 | `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 已触发六类事件；长期化策略与端到端证据待补 |
 | 运行审计 | evidence provenance + `/agent/context` 回显 session/turn | 日志与 memory_id 跨端点链路仍待贯通 |
 
@@ -124,7 +124,8 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 
 数据库未迁移到代码要求版本时返回 `503 SCHEMA_NOT_READY`。此端点不证明指定双 SDK
 或 V11 合规；最终赛题能力必须再检查 `/capabilities.contest_ready`。Module E 当前
-接受经固定上游验证的 Agent runtime 0.9.x，要求 `agent_memory_api=1`，并在发布态要求
+接受经固定上游验证的 Agent runtime 0.9.x，要求 HTTP API 0.3.x 与
+`agent_memory_api=1`，并在发布态要求
 Provider 与后端 `product_version` 相同；0.10+、不可解析宿主、错误组件、API 漂移、
 混装版本或未就绪数据库均在初始化前 fail closed。
 
@@ -330,6 +331,7 @@ tool_call_id、tool_name、`approved=true` 和 occurred_at；手工 UI 更新可
   "items": [
     {
       "knowledge_id": "knw_...",
+      "version": 1,
       "title": "用户偏好简洁回答",
       "scope": "user:alice",
       "evidence_ids": ["evd_..."],
@@ -344,7 +346,8 @@ tool_call_id、tool_name、`approved=true` 和 occurred_at；手工 UI 更新可
 }
 ```
 
-`context` 保证不超过 `max_chars`；`truncated=true` 表示最后一项或后续候选因预算
+`version` 可直接作为 `pixiu_memory_update.expected_version`；`context` 保证不超过
+`max_chars`；`truncated=true` 表示最后一项或后续候选因预算
 被截断。每个返回项必须至少解析到一条真实 evidence，缺失来源的候选 fail-closed。
 返回内容仍属于不可信外部记忆，Module E 必须继续使用上游 MemoryProvider 的上下文
 隔离/转义机制，不能把其中的文本当系统指令执行。

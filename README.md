@@ -83,7 +83,7 @@ ACTIVE/SUPERSEDED、version、时间与正文一致。该自动化结果仍属�
 `POST /memory/update` 已提供同一知识 ID 的原子版本 compare-and-swap、更新 evidence、
 图/向量重建索引和 shared 同步操作，为多设备离线并发修改进入 CRDT 仲裁提供正式入口。
 Module E 已实现独立 `pixiu`
-MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、四个显式
+MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、五个显式
 记忆工具、背压诊断及两阶段遗忘均有契约测试；初始化还会校验 `/version`、`/health`、
 同包组件版本和已验证的 Agent runtime 0.9.x 范围。`.deb` 已携带 Provider，并在用户
 启动 PIXIU 时幂等安装/升级到当前 Agent profile。失败 receipt 已支持提交完整原请求、

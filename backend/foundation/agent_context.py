@@ -72,6 +72,7 @@ class AgentContextService:
             items.append(
                 {
                     "knowledge_id": item.id,
+                    "version": item.version,
                     "title": item.title,
                     "scope": item.scope,
                     "evidence_ids": [entry.id for entry in evidence],

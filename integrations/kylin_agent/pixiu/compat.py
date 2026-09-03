@@ -8,6 +8,7 @@ from pathlib import Path
 
 EXPECTED_AGENT_MEMORY_API = 1
 EXPECTED_BACKEND_COMPONENT = "pixiu-memory-backend"
+EXPECTED_HTTP_API = (0, 3)
 
 _SEMVER = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)(?:[-+][0-9A-Za-z.-]+)?$")
 _MANIFEST_VERSION = re.compile(r"^version:\s*([^\s]+)\s*$", re.MULTILINE)
@@ -52,3 +53,11 @@ def runtime_version_supported(version: str) -> bool:
         return False
     major, minor, _patch = (int(part) for part in match.groups())
     return (major, minor) == (0, 9)
+
+
+def http_api_supported(version: str) -> bool:
+    match = _SEMVER.fullmatch(version)
+    if not match:
+        return False
+    major, minor, _patch = (int(part) for part in match.groups())
+    return (major, minor) == EXPECTED_HTTP_API

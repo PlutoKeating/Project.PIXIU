@@ -26,6 +26,27 @@ REMEMBER = {
     },
 }
 
+UPDATE = {
+    "name": "pixiu_memory_update",
+    "description": (
+        "Update a recalled PIXIU memory when the user supplies corrected information. "
+        "Use the knowledge_id and version returned by pixiu_memory_search."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "knowledge_id": {
+                "type": "string",
+                "pattern": "^knw_[A-Za-z0-9_-]{8,128}$",
+            },
+            "expected_version": {"type": "integer", "minimum": 1},
+            "content": {"type": "string"},
+            "title": {"type": "string"},
+        },
+        "required": ["knowledge_id", "expected_version", "content"],
+    },
+}
+
 FORGET = {
     "name": "pixiu_memory_forget",
     "description": (
@@ -48,4 +69,4 @@ SYNC_STATUS = {
     "parameters": {"type": "object", "properties": {}},
 }
 
-ALL = [SEARCH, REMEMBER, FORGET, SYNC_STATUS]
+ALL = [SEARCH, REMEMBER, UPDATE, FORGET, SYNC_STATUS]

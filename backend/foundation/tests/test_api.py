@@ -511,6 +511,7 @@ def test_agent_context_returns_budgeted_cited_memory(client):
     assert data["turn_id"] == "turn-2"
     assert "我偏好简洁回答" in data["context"]
     assert data["items"][0]["evidence_ids"] == [write.json()["evidence_id"]]
+    assert data["items"][0]["version"] == 1
     assert data["items"][0]["scope"] == "user:alice"
     assert data["items"][0]["freshness"] == "stale"
     assert data["items"][0]["conflict_status"] == "manual"

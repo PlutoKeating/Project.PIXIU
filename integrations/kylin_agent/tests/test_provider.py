@@ -32,11 +32,13 @@ class FakeClient:
         delay: float = 0,
         product_version: str = PRODUCT_VERSION,
         agent_memory_api: int = 1,
+        api_version: str = "0.3.0",
     ):
         self.contest_ready = contest_ready
         self.delay = delay
         self.product_version = product_version
         self.agent_memory_api = agent_memory_api
+        self.api_version = api_version
         self.calls = []
 
     def request(self, method, path, payload=None):
@@ -47,7 +49,7 @@ class FakeClient:
             return {
                 "product_version": self.product_version,
                 "component": "pixiu-memory-backend",
-                "api_version": "0.2.0",
+                "api_version": self.api_version,
                 "agent_memory_api": self.agent_memory_api,
                 "schema_version": 12,
             }
@@ -94,6 +96,12 @@ def test_initialize_strict_rejects_noncompliant_capabilities():
 
 def test_initialize_rejects_incompatible_memory_api():
     item = provider(FakeClient(agent_memory_api=2))
+    with pytest.raises(RuntimeError, match="PIXIU_API_INCOMPATIBLE"):
+        item.initialize("session 1", platform="cli")
+
+
+def test_initialize_rejects_incompatible_http_api():
+    item = provider(FakeClient(api_version="0.2.9"))
     with pytest.raises(RuntimeError, match="PIXIU_API_INCOMPATIBLE"):
         item.initialize("session 1", platform="cli")
 
@@ -205,7 +213,7 @@ def test_tools_return_stable_json_and_forget_requires_preview_token():
     names = {schema["name"] for schema in item.get_tool_schemas()}
     assert names == {
         "pixiu_memory_search", "pixiu_memory_remember",
-        "pixiu_memory_forget", "pixiu_sync_status",
+        "pixiu_memory_update", "pixiu_memory_forget", "pixiu_sync_status",
     }
     preview = json.loads(item.handle_tool_call("pixiu_memory_forget", {"command": "forget x"}))
     assert preview["status"] == "confirmation_required"
@@ -219,6 +227,40 @@ def test_tools_return_stable_json_and_forget_requires_preview_token():
     ))
     assert done["status"] == "forgotten"
     assert json.loads(item.handle_tool_call("pixiu_sync_status", {}))["peer_count"] == 2
+    item.shutdown()
+
+
+def test_update_tool_uses_recalled_version_and_auditable_provenance():
+    client = FakeClient()
+    item = provider(client)
+    item.initialize("session", platform="cli")
+    knowledge_id = "knw_12345678"
+
+    result = json.loads(
+        item.handle_tool_call(
+            "pixiu_memory_update",
+            {
+                "knowledge_id": knowledge_id,
+                "expected_version": 3,
+                "title": "Corrected title",
+                "content": "corrected value",
+            },
+        )
+    )
+
+    assert result["status"] == "accepted"
+    call = [call for call in client.calls if call[1] == "/memory/update"][-1]
+    assert call[:2] == ("POST", "/memory/update")
+    payload = call[2]
+    assert payload["knowledge_id"] == knowledge_id
+    assert payload["expected_version"] == 3
+    assert payload["scope"] == "user:alice"
+    assert payload["title"] == "Corrected title"
+    assert payload["body"] == {"content": "corrected value"}
+    assert payload["provenance"]["tool_name"] == "pixiu_memory_update"
+    assert payload["provenance"]["approved"] is True
+    assert payload["provenance"]["session_id"] == "session"
+    assert payload["idempotency_key"].startswith("pixiu:")
     item.shutdown()
 
 
