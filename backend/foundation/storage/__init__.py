@@ -19,6 +19,7 @@ from .schema import (
     init_db_on_connection,
 )
 from .vector_store import SqliteVectorStore
+from .vector_id_map import SqliteVectorIdMap
 
 __all__ = [
     # repos
@@ -28,6 +29,7 @@ __all__ = [
     "SqliteEntityRepo",
     "SqliteConflictRepo",
     "SqliteVectorStore",
+    "SqliteVectorIdMap",
     # schema
     "create_connection",
     "ensure_knowledge_fts",

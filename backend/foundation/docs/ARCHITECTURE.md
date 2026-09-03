@@ -139,6 +139,8 @@ async def get_security_service(db=Depends(get_db)) -> SecurityService:
 基础表 16 张：原有记忆/流转表加 `sync_identity`、`sync_peers`、`sync_state`、
 `sync_peer_acks`、`sync_meta`；`sync_oplog` 保存签名操作，私钥仅以加密 PKCS#8 保存。
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
+`vector_id_map` 持久化 PIXIU 字符串知识 ID 与系统 Vector Engine `int64` 主键的
+唯一双向映射；候选冲突时加盐重试，进程/数据库重启后保持稳定。
 WAL + foreign_keys + busy_timeout 已启用。
 
 **Schema 概要**：

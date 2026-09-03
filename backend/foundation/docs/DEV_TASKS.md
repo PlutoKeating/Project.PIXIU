@@ -18,7 +18,7 @@
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
   `config.py`（`auto`/`kylin`/`portable` 能力选择）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
-- `storage/`：`schema.py`（16 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v4 版本化迁移）、
+- `storage/`：`schema.py`（19 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v9 版本化迁移）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
 - `api/`：全部 REST 契约端点真实接入（含 `/sync/*`），request_id 中间件 + API.md §5
   统一错误契约（`{error, message, request_id}`），D-Bus 服务（`com.kylin.pixiu.Memory`：
@@ -111,6 +111,7 @@ git submodule update --init --recursive
 | `storage/schema.py` | ★★★ | DDL 建表语句 + 索引创建 |
 | `storage/migrations.py` | ★ | 数据库迁移 |
 | `storage/vector_store.py` | ★★★ | portable INT8 `VectorStore` 适配器（写入/检索/删除） |
+| `storage/vector_id_map.py` | ★★★ | Kylin int64 主键与知识 ULID 的持久化唯一映射 |
 
 ---
 

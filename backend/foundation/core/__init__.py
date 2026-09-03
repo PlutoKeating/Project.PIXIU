@@ -40,6 +40,7 @@ from .idgen import (
 )
 from .logger import get_logger
 from .vector_store import VectorMatch, VectorStore
+from .vector_id_map import VectorIdMap
 
 __all__ = [
     # config
@@ -79,4 +80,5 @@ __all__ = [
     # vector storage seam
     "VectorMatch",
     "VectorStore",
+    "VectorIdMap",
 ]

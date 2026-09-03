@@ -172,6 +172,16 @@ def _add_conflict_severity(conn: sqlite3.Connection) -> None:
         )
 
 
+def _add_vector_id_map(conn: sqlite3.Connection) -> None:
+    """迁移 #9：持久化 Vector Engine int64 与知识字符串 ID 的双向映射。"""
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS vector_id_map (
+            knowledge_id TEXT PRIMARY KEY,
+            vector_id    INTEGER NOT NULL UNIQUE
+        )"""
+    )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -181,6 +191,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (6, "monitor_log", _add_monitor_log),
     (7, "conflict_source", _add_conflict_source),
     (8, "conflict_severity", _add_conflict_severity),
+    (9, "vector_id_map", _add_vector_id_map),
 ]
 
 

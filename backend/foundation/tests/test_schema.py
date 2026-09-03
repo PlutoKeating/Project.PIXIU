@@ -38,6 +38,7 @@ EXPECTED_TABLES = {
     "sync_meta",
     "monitor_config",
     "monitor_log",
+    "vector_id_map",
 }
 
 
@@ -288,14 +289,15 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 7
+    assert apply_pending(conn) == 8
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
     assert "sync_identity" in _table_names(conn)
     assert "monitor_config" in _table_names(conn)
     assert "monitor_log" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 8
+    assert "vector_id_map" in _table_names(conn)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 9
     conn.close()
 
 
@@ -325,7 +327,7 @@ def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
     conn.execute("INSERT INTO _schema_version VALUES (6, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 2  # 迁移 #7 + #8
+    assert apply_pending(conn) == 3  # 迁移 #7 + #8 + #9
     conn.commit()
 
     columns = {
@@ -389,7 +391,7 @@ def test_pending_migrations_add_conflict_severity_to_v7_database(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (7, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 1  # 仅迁移 #8
+    assert apply_pending(conn) == 2  # 迁移 #8 + #9
     conn.commit()
 
     columns = {

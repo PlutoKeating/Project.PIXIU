@@ -1,6 +1,6 @@
 """PIXIU Foundation — SQLite 数据库 Schema DDL
 
-创建全部 18 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
+创建全部 19 张基础表及索引，启用 WAL + foreign_keys + busy_timeout。
 知识向量表（knowledge_vec）留待 retrieval 阶段；knowledge_fts 由
 SqliteKnowledgeRepo 惰性创建（见 ensure_knowledge_fts）。
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 8
+SCHEMA_VERSION = 9
 
 # monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
 # 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
@@ -97,6 +97,14 @@ DDL_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS idx_knw_status ON knowledge_items(status)",
     "CREATE INDEX IF NOT EXISTS idx_knw_scope ON knowledge_items(scope)",
+
+    # ─── Vector Engine int64 ↔ canonical knowledge ID ───
+    """
+    CREATE TABLE IF NOT EXISTS vector_id_map (
+        knowledge_id TEXT PRIMARY KEY,
+        vector_id    INTEGER NOT NULL UNIQUE
+    )
+    """,
 
     # ─── knowledge_evidence (知识-证据关联) ───────────────
     """
