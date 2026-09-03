@@ -77,4 +77,5 @@
 - pkexec 需 polkit 规则允许 pixiu 调 `dpkg -i`——麒麟默认 polkit 是否放行？若被拒（认证框报「未授权」），需提供 .policy 规则或降级提示（记录：真机验证，失败则提示用户手动 `sudo dpkg -i` 并给出命令——兜底不阻塞）。
 - 下载取消/断网中途——清理唯一临时文件，状态回「已取消/失败」，可重试；
   GitHub 每次 30x 重定向目标均重新执行 HTTPS + 精确 host 白名单检查。
-- 版本号权威：GitHub tag（v0.1.6）与包内 applicationVersion（0.1.6）必须一致——V-1 发布预检已保证 tag 与三处版本源同步，升级后 applicationVersion 随新安装更新。
+- 版本号权威：仓库根 `VERSION` 是唯一输入；GitHub tag 与包内 applicationVersion
+  必须由 V-1 发布门禁核对/派生，升级后 applicationVersion 随新安装更新。

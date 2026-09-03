@@ -4,23 +4,28 @@
 > 定位：落实用户定义的版本管理核心宗旨（严格版本增量 + 摘要校验一致 + 旧版可增量升级），并为应用补充更新入口与 About Us / Terms & Conditions / Privacy 页面。
 >
 > 本文保留最初设计过程。当前版本已统一为 0.1.7，关于/条款/隐私和在线升级均已
-> 实现；在线流程以 `2026-09-01-in-app-upgrade-design.md` 为准，最终签名、回滚和
-> 兼容门禁以 `docs/DELIVERY_PLAN.md` 为准。
+> 实现；原“三处静态版本同步”已被根 `VERSION` 唯一输入和派生生成取代。在线流程
+> 以 `2026-09-01-in-app-upgrade-design.md` 为准，最终签名、回滚和兼容门禁以
+> `docs/DELIVERY_PLAN.md` 为准。
 
 ## [S1] 背景与目标
 
-- 用户核心宗旨：每次新发布必须**版本增量更新**（frontend/src/main.cpp 的 `setApplicationVersion`、frontend/CMakeLists.txt 的 `project VERSION`、build/release/scripts/functions.sh 的 `resolve_version` 三处同步，不得遗漏）；发布产物**摘要校验一致**（build-deb.sh 生成 `.deb.sha256` 随包携带；这不是独立数字签名）；任何旧版本/内测安装用户都能用新 `.deb` 直接**增量升级**（当前机制为 venv 复用 + postinst 管理非 conffile 运行配置）。
+- 用户核心宗旨：每次新发布必须**版本增量更新**；当前只修改根 `VERSION`，应用、
+  Debian 包、后端注入和 Provider manifest 全部派生。发布产物须**摘要校验一致**
+  （`.deb.sha256` 不是独立数字签名）；任何旧版本/内测安装用户都能用新 `.deb`
+  直接**增量升级**（当前机制为 venv 复用 + postinst 管理非 conffile 运行配置）。
 - 实施前缺口（已关闭）：当时版本源不一致且 SettingsDialog 无更新/About/T&C/
   Privacy 入口；当前代码与发布默认值已统一到 0.1.7，并已提供对应页面。
 - 产品定位：**参赛作品**（麒麟 OS Agent 记忆优化赛题），非商业上线产品——文案须符合赛题语境（麒麟适配、偏好/知识记忆优化、隐私承诺：敏感信息识别过滤、端侧处理、数据本地），少量即可。
 
 ## [S2] 版本管理一致性落地
 
-### [S2.1] 三处版本源同步
-- `frontend/src/main.cpp:24`：`setApplicationVersion` 硬编码 → 与 CMakeLists 一致的当前发布版本（本次 0.1.1）。
-- `frontend/CMakeLists.txt:3`：`project(pixiu-frontend VERSION 0.1.1 ...)`。
-- `build/release/scripts/functions.sh`：resolve_version 默认已 0.1.1（T24 bump）——核对一致。
-- **机制**：在 build/release/scripts/build-deb.sh 增加**版本一致性预检**（发布时校验 main.cpp/CMakeLists/functions.sh 三处版本号一致，不一致即报错退出）——防止未来发布遗漏（用户宗旨①的可执行化）。
+### [S2.1] 单一版本源（已取代最初三处同步方案）
+
+- 根 `VERSION` 是唯一产品版本输入。
+- 前端 CMake/编译宏、前端独立 control、全量 Debian 包、后端运行时注入和 Module E
+  `plugin.yaml` 均从该文件派生。
+- 发布预检拒绝环境断言、tag 或派生关系不一致，防止未来发布遗漏。
 
 ### [S2.2] 摘要校验一致
 - 现状：build-deb.sh 已生成 `.deb.sha256`；publish.sh 随包拷贝。**保持**，文档注明校验方法（`sha256sum -c pixiu_*.deb.sha256`）。
@@ -62,7 +67,7 @@
   - 更新对话框显示当前版本；
   - PixiuApp 接线（t_app_navigation：点按钮 → 对应对话框可见）；
 - 全量回归：前端 OFF/ON ctest + regression.sh；后端零改动（纯前端）。
-- 版本一致性：build-deb.sh 预检脚本单测（三处一致通过 / 一处不一致报错退出——shell 测试或在发布脚本内以 echo 断言）。
+- 版本一致性：`test-version-source.sh` 验证唯一输入及全部派生关系；显式版本漂移必须失败。
 
 ## [S6] 范围边界（不做）
 - 原“不做真实在线更新”已由 2026-09-01 方案取代。
@@ -71,6 +76,6 @@
 - 不引入新第三方依赖。
 
 ## [S7] 风险与开放点
-- 版本号三处同步是人工风险——预检脚本是主要防线（S2.1）；main.cpp 硬编码 vs CMake 传参（可用 CMake 宏定义注入避免漂移——评估：CMake `target_compile_definitions` 传 `PIXIU_VERSION` 替代硬编码，改动小且根治漂移；倾向做）；
+- 版本号人工同步风险已由根 `VERSION` 唯一输入关闭；发布预检仍作为回归防线（S2.1）。
 - InfoDialog 文案语言（中文源 + 英文译文）——保持与既有 i18n 一致；
 - 更新对话框文案避免承诺不存在的在线更新能力（参赛语境如实）。

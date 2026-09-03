@@ -17,7 +17,8 @@
 
 - **升级源**：公开 GitHub repo `PlutoKeating/Project.PIXIU`（匿名可达 `GET .../releases/latest`）。**前提：repo 转公开前完成安全审计**（已做——无真实机密；`pixiu.env` 示例口令将改占位符）。
 - **安全铁律**：HTTPS + sha256 双校验（`QCryptographicHash`，防篡改）；安装经 `pkexec`（polkit 认证框，不绕过授权）；不存/不上传凭证；下载失败/校验失败中止并清理。
-- **版本权威**：GitHub tag `vX.Y.Z` ↔ 包内 applicationVersion `X.Y.Z`（V-1 预检保证 tag 与三处版本源同步）。
+- **版本权威**：仓库根 `VERSION` 是唯一输入；GitHub tag `vX.Y.Z` 与包内
+  applicationVersion `X.Y.Z` 均须由发布门禁核对/派生。
 - 文案 tr() 中文源文本；offscreen 测试；禁 push；单一逻辑一个提交；不引入新第三方依赖。
 
 ---

@@ -5,16 +5,24 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 落实版本管理核心宗旨（三处版本源一致 + 发布预检 + sha256 校验一致 + 旧版可增量升级），并为设置界面补齐「检查更新」「关于 PIXIU」「服务条款」「隐私政策」四入口与对应页面。
+**Goal:** 落实版本管理核心宗旨（本文最初采用三处版本一致性预检；当前已迁移为
+根 `VERSION` 唯一输入 + 发布预检 + sha256 校验一致 + 旧版可增量升级），并为设置
+界面补齐「检查更新」「关于 PIXIU」「服务条款」「隐私政策」四入口与对应页面。
 
-**Architecture:** 版本号由 CMake 注入（`PIXIU_VERSION` 编译宏）替代 main.cpp 硬编码根治漂移；build-deb.sh 发布预检三处版本一致；新建通用 InfoDialog（About/T&C/Privacy 三页复用）+ CheckUpdateDialog（当前版本 + 升级指引，不做在线检查）；SettingsDialog 四按钮 → 四信号 → PixiuApp 懒创建接线。
+**Architecture:** 当前版本号由根 `VERSION` 唯一输入，经 CMake 宏、Debian control
+与 Module E 模板生成；build-deb.sh 校验全部派生链。本文其余内容保留最初页面实现
+计划，新建通用 InfoDialog（About/T&C/Privacy 三页复用）+ CheckUpdateDialog；
+SettingsDialog 四按钮 → 四信号 → PixiuApp 懒创建接线。
 
 **Tech Stack:** C++17 · Qt5 Widgets · CMake | shell（发布脚本预检）
 
 ## Global Constraints
 
 - **模块边界**：Plan-F 只改 `frontend/`；发布脚本预检改 `build/release/scripts/build-deb.sh`（版本一致性校验，属发布基础设施）。
-- **版本管理宗旨（用户核心规则）**：①三处版本源（main.cpp/CMakeLists/functions.sh）同步增量；②发布产物 .deb + .sha256 一致；③旧版/内测用户可 dpkg -i 直接增量升级（当前实现为 postinst 复用 venv + 管理非 conffile 运行配置；2026-09-03 已替代会触发交互冲突的旧机制）。
+- **版本管理宗旨（用户核心规则）**：①当前由根 `VERSION` 唯一输入派生应用、包和
+  Provider 版本（本文原“三处同步”方案已淘汰）；②发布产物 .deb + .sha256 一致；
+  ③旧版/内测用户可 dpkg -i 直接增量升级（当前实现为 postinst 复用 venv + 管理非
+  conffile 运行配置；2026-09-03 已替代会触发交互冲突的旧机制）。
 - **不做**：真实在线更新（OTA）、GPG 签名、后端改动、新第三方依赖。
 - **文案语境**：参赛作品（麒麟 OS Agent 记忆优化赛题），参照 docs/OriginProblemDescription.md；少量（每页 3-6 句）；全部 tr() 中文源文本。
 - 提交前缀 `feat(frontend)/fix(frontend)/chore(frontend)/test(frontend)`；禁止 push；offscreen 测试。
@@ -28,7 +36,8 @@
 **Files:**
 - Modify: `frontend/CMakeLists.txt`（project VERSION 0.1.1；target_compile_definitions 注入 `PIXIU_VERSION="0.1.1"`）
 - Modify: `frontend/src/main.cpp:24`（`setApplicationVersion` 改用宏 `QStringLiteral(PIXIU_VERSION)`，删除硬编码）
-- Modify: `build/release/scripts/build-deb.sh`（发布前预检：grep main.cpp/CMakeLists/functions.sh 三处版本号一致，不一致 exit 1 报错）
+- Modify: `build/release/scripts/build-deb.sh`（历史方案为三处静态值预检；当前已替换为
+  根 `VERSION` 与各派生链校验，不一致 exit 1）
 - Verify: `build/release/scripts/functions.sh` 确认 0.1.1（T24 已 bump）
 
 - [x] **Step 1: 写失败测试**（版本注入生效）

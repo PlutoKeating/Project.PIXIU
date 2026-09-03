@@ -165,7 +165,7 @@ W0 基线与计划
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W7.1 | 🟡 根 `VERSION` 已成为发布脚本及前端 CMake/独立打包的权威输入，环境覆盖仅作断言；包版本注入后端并提供 `/version`；包内组件 manifest 已记录 Git/build/profile/API/schema/provider/宿主/双 SDK 源码钉住事实并由 CI 验包 | Module E manifest 直接派生、包含大小/摘要/签名/通道的包外资产 manifest，以及目标 V11 双 SDK 实际运行时版本与 `/capabilities` 一致性证据待补 |
+| W7.1 | 🟡 根 `VERSION` 已成为发布脚本、前端 CMake/独立打包及 Module E 模板渲染的唯一产品版本输入，环境覆盖仅作断言；包版本注入后端并提供 `/version`；包内组件 manifest 已记录 Git/build/profile/API/schema/provider/宿主/双 SDK 源码钉住事实并由 CI 验包 | 包含大小/摘要/签名/通道的包外资产 manifest，以及目标 V11 双 SDK 实际运行时版本与 `/capabilities` 一致性证据待补 |
 | W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、桌面入口及安全激活工具 | 包结构/幂等升级已测；全新 V11 图形安装与真实宿主待验 |
 | W7.3 | 安装前探测 V11、架构、宿主 Agent 与双 SDK | 不兼容时给出可操作错误，不半安装 |
 | W7.4 | ✅ Ed25519 发布 Secret、双架构签名资产、固定公钥及 dpkg 前验签已验证；两个临时 `.deb` 已完成旧钥签过渡包、部署新公钥、新钥签下一包及旧钥拒绝演练 | 摘要和签名任一失败均拒绝安装；生产私钥不入库 |

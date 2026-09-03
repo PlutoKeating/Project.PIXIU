@@ -97,11 +97,12 @@ def build_manifest(root: Path) -> dict[str, object]:
     ):
         raise SystemExit("pixiu-manifest: frontend must derive from canonical VERSION")
     cmake_version = canonical_version
-    provider_version = read_match(
-        root / "integrations/kylin_agent/pixiu/plugin.yaml",
-        r"^version:\s*([^\s]+)\s*$",
-        "provider version",
-    )
+    provider_template = (
+        root / "integrations/kylin_agent/pixiu/plugin.yaml.in"
+    ).read_text(encoding="utf-8")
+    if not re.search(r"^version:\s*@VERSION@\s*$", provider_template, re.MULTILINE):
+        raise SystemExit("pixiu-manifest: provider must derive from canonical VERSION")
+    provider_version = canonical_version
     versions = {version, canonical_version, cmake_version, provider_version}
     if len(versions) != 1:
         raise SystemExit(

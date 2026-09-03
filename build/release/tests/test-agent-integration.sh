@@ -21,6 +21,8 @@ PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 DEST="${TMP}/home/.kylin-agent-runtime/plugins/pixiu"
 test -f "${DEST}/.pixiu-managed"
 test -f "${DEST}/provider.py"
+test ! -f "${DEST}/plugin.yaml.in"
+grep -qx 'version: 0.1.7' "${DEST}/plugin.yaml"
 grep -qx 'config set memory.provider pixiu' \
     "${TMP}/home/.kylin-agent-runtime/runtime-call"
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \
@@ -58,7 +60,7 @@ grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
-grep -q 'provider_ver=' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'plugin.yaml.in' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'PIXIU_PRODUCT_VERSION=@PRODUCT_VERSION@' \
     "${ROOT}/build/release/debian/pixiu-backend.service"
 grep -q 'usr/share/pixiu/VERSION' "${ROOT}/build/release/scripts/build-deb.sh"

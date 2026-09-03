@@ -80,9 +80,13 @@ check_version_consistency() {
             | sed -nE 's/.*PIXIU_VERSION=[^0-9]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
             | head -n1 || true)"
     fi
-    # 3) Module E 当前源码 manifest（后续由 VERSION 生成）
-    provider_ver="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
-        "${PIXIU_ROOT}/integrations/kylin_agent/pixiu/plugin.yaml" | head -n1)"
+    # 3) Module E manifest 必须是由根 VERSION 渲染的模板。
+    if grep -qx 'version: @VERSION@' \
+            "${PIXIU_ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in"; then
+        provider_ver="${source_ver}"
+    else
+        provider_ver=""
+    fi
     # 4) main.cpp 必须消费宏、不得残留硬编码版本
     if ! grep -qF 'QStringLiteral(PIXIU_VERSION)' "${frontend_main}"; then
         die "frontend/src/main.cpp 未使用 PIXIU_VERSION 宏（setApplicationVersion 应改为 QStringLiteral(PIXIU_VERSION)）"
@@ -172,6 +176,10 @@ find "${BK}" -name '*.pyc' -delete
 INTEGRATION_ROOT="${STAGE}/usr/lib/pixiu/integrations/kylin_agent"
 mkdir -p "${INTEGRATION_ROOT}"
 cp -a "${PIXIU_ROOT}/integrations/kylin_agent/pixiu" "${INTEGRATION_ROOT}/"
+sed "s/@VERSION@/${PIXIU_VERSION}/g" \
+    "${INTEGRATION_ROOT}/pixiu/plugin.yaml.in" \
+    > "${INTEGRATION_ROOT}/pixiu/plugin.yaml"
+rm -f "${INTEGRATION_ROOT}/pixiu/plugin.yaml.in"
 find "${INTEGRATION_ROOT}" -name '__pycache__' -type d -prune -exec rm -rf {} +
 find "${INTEGRATION_ROOT}" -name '*.pyc' -delete
 find "${INTEGRATION_ROOT}" -type d -exec chmod 0755 {} +
