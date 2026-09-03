@@ -122,6 +122,10 @@ jobs:
           sudo -u pixiu env PYTHONPATH=/usr/lib/pixiu \
             /usr/lib/pixiu/venv/bin/python -c \
             'from backend.foundation.api.http_app import app; assert app'
+          digest="$(awk '{print tolower($1)}' "${checksum}")"
+          signature="$(base64 -w0 "${checksum}.sig")"
+          sudo /usr/lib/pixiu/install-update \
+            "${deb}" "${digest}" "${signature}"
           set +e
           sudo /usr/lib/pixiu/install-update "${deb}" \
             0000000000000000000000000000000000000000000000000000000000000000 \
