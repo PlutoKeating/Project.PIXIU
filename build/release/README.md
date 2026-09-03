@@ -64,6 +64,8 @@ build/release/
 构建时间、架构、profile、KYSDK/Python ABI、HTTP API、Agent Memory API、schema、
 Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际运行时 SDK 版本仍
 以目标系统包管理器和 `/capabilities` 取证为准，源码钉住版本不得冒充运行时版本。
+生成器要求各 submodule 的 gitlink、实际 HEAD 一致且工作树洁净；未确认精确 SPDX
+后缀的许可证只记录许可证族和待审状态，不固化为授权结论。
 `source_tree_clean` 会如实标记构建是否来自洁净工作树；CI 从完成的 `.deb` 反向提取
 该文件，并要求 commit、包版本、架构和画像一致。
 

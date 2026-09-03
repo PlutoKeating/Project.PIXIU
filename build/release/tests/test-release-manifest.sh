@@ -4,7 +4,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 GENERATOR="${ROOT}/build/release/scripts/generate-release-manifest.py"
 TMP="$(mktemp -d)"
-trap 'rm -rf -- "${TMP}"' EXIT
+cleanup() {
+    rm -f -- "${DIRTY_MARKER:-}"
+    rm -rf -- "${TMP}"
+}
+trap cleanup EXIT
 MANIFEST="${TMP}/release-manifest.json"
 
 PIXIU_VERSION=0.1.7 \
@@ -53,6 +57,14 @@ assert manifest["host_compatibility"]["agent_runtime"]["declared_versions"] == {
     "version_file": "0.9.9",
 }
 assert manifest["host_compatibility"]["kylin_agent"]["declared_version"] == "0.9.6"
+assert manifest["host_compatibility"]["kylin_agent"]["license"] == {
+    "family": "GNU Affero General Public License v3",
+    "spdx_expression": None,
+    "review_status": "pending-only-or-later-review",
+}
+assert manifest["sdk_sources"]["embedding"]["license"]["spdx_expression"] == (
+    "GPL-3.0-or-later"
+)
 
 for name, path in {
     "kylin_agent": "third_party/kylin-agent",
@@ -65,6 +77,8 @@ for name, path in {
         ["git", "-C", str(root), "rev-parse", f"HEAD:{path}"], text=True
     ).strip()
     assert manifest[group][name]["source_commit"] == expected
+    assert manifest[group][name]["gitlink_commit"] == expected
+    assert manifest[group][name]["source_tree_clean"] is True
 PY
 
 if PIXIU_VERSION=9.9.9 \
@@ -78,6 +92,22 @@ if PIXIU_VERSION=9.9.9 \
     echo "release manifest must reject product-version drift" >&2
     exit 1
 fi
+
+DIRTY_MARKER="${ROOT}/third_party/kylin-agent/.pixiu-manifest-dirty-test"
+touch "${DIRTY_MARKER}"
+if PIXIU_VERSION=0.1.7 \
+        PIXIU_REVISION=1 \
+        PIXIU_ARCH=amd64 \
+        PIXIU_PROFILE=manifest-test \
+        PIXIU_KYSDK=OFF \
+        PIXIU_PYTHON_VERSION=312 \
+        python3 "${GENERATOR}" --root "${ROOT}" \
+            --output "${TMP}/dirty-submodule.json" >/dev/null 2>&1; then
+    rm -f -- "${DIRTY_MARKER}"
+    echo "release manifest must reject dirty submodule checkouts" >&2
+    exit 1
+fi
+rm -f -- "${DIRTY_MARKER}"
 
 grep -q 'release-manifest.json' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'Verify package component manifest' "${ROOT}/.github/workflows/ci.yml"

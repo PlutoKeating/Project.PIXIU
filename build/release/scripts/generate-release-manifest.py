@@ -29,12 +29,32 @@ def git(root: Path, *args: str) -> str:
     ).strip()
 
 
-def source_pin(root: Path, relative_path: str, license_spdx: str) -> dict[str, object]:
+def source_pin(
+    root: Path,
+    relative_path: str,
+    license_family: str,
+    license_spdx: str | None,
+    license_review_status: str = "confirmed",
+) -> dict[str, object]:
     path = root / relative_path
+    gitlink_commit = git(root, "rev-parse", f"HEAD:{relative_path}")
+    checkout_commit = git(path, "rev-parse", "HEAD")
+    checkout_dirty = bool(git(path, "status", "--porcelain"))
+    if gitlink_commit != checkout_commit or checkout_dirty:
+        raise SystemExit(
+            "pixiu-manifest: submodule checkout does not match clean gitlink: "
+            f"{relative_path}"
+        )
     return {
-        "source_commit": git(root, "rev-parse", f"HEAD:{relative_path}"),
+        "source_commit": checkout_commit,
+        "gitlink_commit": gitlink_commit,
         "source_ref": git(path, "describe", "--tags", "--always"),
-        "license": license_spdx,
+        "source_tree_clean": True,
+        "license": {
+            "family": license_family,
+            "spdx_expression": license_spdx,
+            "review_status": license_review_status,
+        },
     }
 
 
@@ -95,7 +115,7 @@ def build_manifest(root: Path) -> dict[str, object]:
     api_file = root / "backend/foundation/api/version.py"
     schema_file = root / "backend/foundation/storage/schema.py"
     agent_runtime = source_pin(
-        root, "third_party/kylin-agent-runtime", "MIT"
+        root, "third_party/kylin-agent-runtime", "MIT License", "MIT"
     )
     agent_runtime.update(
         {
@@ -112,7 +132,13 @@ def build_manifest(root: Path) -> dict[str, object]:
             },
         }
     )
-    kylin_agent = source_pin(root, "third_party/kylin-agent", "AGPL-3.0")
+    kylin_agent = source_pin(
+        root,
+        "third_party/kylin-agent",
+        "GNU Affero General Public License v3",
+        None,
+        "pending-only-or-later-review",
+    )
     kylin_agent["declared_version"] = read_match(
         root / "third_party/kylin-agent/CMakeLists.txt",
         r"project\(KylinAgent VERSION ([^ )]+)",
@@ -165,6 +191,7 @@ def build_manifest(root: Path) -> dict[str, object]:
                 **source_pin(
                     root,
                     "third_party/kylin-coreai-embedding",
+                    "GNU General Public License v3 or later",
                     "GPL-3.0-or-later",
                 ),
                 "runtime_package": "libkylin-coreai-embedding",
@@ -174,6 +201,7 @@ def build_manifest(root: Path) -> dict[str, object]:
                 **source_pin(
                     root,
                     "third_party/libkysdk-vector-engine-client",
+                    "Apache License 2.0",
                     "Apache-2.0",
                 ),
                 "runtime_package": "libkysdk-vector-engine-client",
