@@ -2,6 +2,11 @@
 
 > **角色**：常驻记忆服务中的业务逻辑层，处理所有"记忆写入→结构化→应用"的流程。
 > **与模块 C 的边界**：引擎**消费** `foundation/core/` 中的 Repository 接口（ABC）和数据模型，**不依赖** `foundation/` 中的任何实现代码。
+>
+> **已批准 vNext 边界**：Module E 通过 Module C 公共 API 提交 Agent 生命周期
+> 数据；Module B 增加 `CONVERSATION` Connector，并为 `TOOL_RESULT` 保留
+> session/run/turn/tool-call 与审批来源。下述当前 `Literal` 仍是已实现事实，扩展前
+> 不得把对话伪装成现有来源。
 
 > [!CAUTION]
 > “SDK 适配/封装存在”不等于赛题硬门槛已通过。最终 V11 生产路径必须真实调用

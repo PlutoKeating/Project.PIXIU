@@ -5,6 +5,7 @@
 > 刷新于 2026-08-29：Module A 已联调完成（前端 ctest 32/32 + regression.sh 双路径），
 > portable 基线见 `docs/acceptance/`（达到数值阈值，但不等于赛题最终验收）。
 > 2026-09-03 复核确认：系统 Vector Engine 生产接线未完成，H-02 当前不通过。
+> 同日团队批准 ADR-0001；新增 Module E 与 A-11～A-14 原创/上游边界检查尚未通过。
 
 ## 一、验收追踪重点映射
 
@@ -48,10 +49,10 @@
 | 偏好准确率 | ≥85% | 门槛内置 | ✅ |
 | CRDT 收敛率 | 100% | SyncBenchmark 实测 1.0 | ✅ |
 
-## 四、测试统计（377 全绿）
+## 四、测试统计
 
-- Foundation：356 项（config/idgen/logger/models/contracts/schema/仓储/retrieval/flow/sync/eval/api/dbus/e2e/hardening）
-- Engine：21 项
+- 最新后端全量回归记录：pytest 673 passed。
+- 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`
 
 ## 五、赛题 P0 遗留（允许并要求实现）
@@ -59,5 +60,6 @@
 1. 麒麟环境：真实 embedding 绑定构建（本机已构建成功，真机 AI 运行时端到端验收）+ reference-v1 数据集验收（产出 runtime="kylin" 报告）
 2. **H-02 阻塞项**：vector-engine-client 生产对接（检索当前由 SQLite INT8 扫描承担）
 3. agent-runtime MemoryProvider 适配与多轮/工具结果端到端闭环
-4. ~~Module A 三通道联调~~ ✅ 已完成（2026-08-29，前端全量回归绿）
-5. 根文档/API 实现状态由 Module D/Human 更新（2026-08-29 已随文档巡检刷新）
+4. capability、Agent 关联 ID、`CONVERSATION`、context 生命周期公共契约
+5. ~~Module A 三通道联调~~ ✅ 已完成（2026-08-29，前端全量回归绿）
+6. 根文档/API 实现状态由 Module D/Human 更新（2026-09-03 已随决策巡检刷新）

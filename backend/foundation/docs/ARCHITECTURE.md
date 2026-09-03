@@ -2,6 +2,9 @@
 
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
+> **与模块 E 的边界**：Foundation 只提供 `docs/API.md` 中的公共 HTTP/WS 契约；
+> E 不得导入 Service、Repository 或数据库实现。已批准 vNext 将增加 Agent 关联
+> ID、真实 capability/runtime 和短中期 context 写入能力，尚未实现。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；

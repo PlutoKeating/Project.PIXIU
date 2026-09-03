@@ -1,11 +1,16 @@
 # 应用内一键升级 Design Spec
 
-> 日期：2026-09-01 · 状态：待规划
+> 日期：2026-09-01 · 状态：功能基线已实现；最终发布加固未完成（2026-09-03 复核）
 > 定位：把「检查更新」对话框从「仅提示」升级为**真正的一键升级**——检测远程最新版本 → 下载 .deb + sha256 → 校验 → pkexec 特权安装 → 重启应用。依托**转公开的 GitHub repo**（匿名可达 Releases）。
+>
+> 当前代码已落地 `UpgradeController`/`UpgradeUtils`/`CheckUpdateDialog`、架构资产选择、
+> 流式校验和特权安装。本文 §S1 的“现状”是 2026-09-01 实施前历史；最终交付
+> 还须按 `docs/DELIVERY_PLAN.md` 补独立签名、组件兼容、回滚、健康检查和受控重启。
 
 ## [S1] 背景与目标
 
-- 现状：CheckUpdateDialog 仅显示「当前版本 %1。请从官方渠道获取最新版本…」+ 知道了——无下载/安装能力（用户截图 `2026-09-01_10-33-57.png` 确认）。
+- 实施前现状（历史）：CheckUpdateDialog 曾仅显示「当前版本 %1。请从官方渠道获取
+  最新版本…」且无下载/安装能力；该缺口现已修复，不再作为当前状态。
 - 决策（用户已拍板）：①升级源 = **公开 GitHub repo**（前端直接 HTTPS 拉 GitHub Releases latest）；②特权安装 = **pkexec**（systemd 策略代理，弹系统 polkit 认证框，麒麟 UKUI 支持——本机已探明 pkexec v124 + KylinOfflineUpgradeUmount/KylinSystemUpdater 等 polkit 策略存在）。
 - 目标：设置→「检查更新」→ 对比远程版本与本地（applicationVersion）→ 新版可用时提示 → 点「一键升级」→ 下载+校验+安装。
 - **安全铁律**：下载必须校验 sha256（与 release 的 .sha256 比对，防篡改/中间人——走 HTTPS + sha256 双重）；升级用 pkexec 弹认证框，不绕过授权；不保存/不上传任何凭证。转公开 repo 的代码需确认无敏感信息（.env/secrets 应已在 gitignore——发布前检查）。

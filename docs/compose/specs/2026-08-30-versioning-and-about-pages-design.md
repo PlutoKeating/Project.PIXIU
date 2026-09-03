@@ -1,12 +1,17 @@
 # 版本管理宗旨落地 + 关于/更新/条款/隐私页面 Design Spec
 
-> 日期：2026-08-30 · 状态：待规划
-> 定位：落实用户定义的版本管理核心宗旨（严格版本增量 + 签名一致 + 旧版可增量升级），并为应用补充更新入口与 About Us / Terms & Conditions / Privacy 页面。
+> 日期：2026-08-30 · 状态：已实现并被在线一键升级方案扩展（2026-09-03 复核）
+> 定位：落实用户定义的版本管理核心宗旨（严格版本增量 + 摘要校验一致 + 旧版可增量升级），并为应用补充更新入口与 About Us / Terms & Conditions / Privacy 页面。
+>
+> 本文保留最初设计过程。当前版本已统一为 0.1.7，关于/条款/隐私和在线升级均已
+> 实现；在线流程以 `2026-09-01-in-app-upgrade-design.md` 为准，最终签名、回滚和
+> 兼容门禁以 `docs/DELIVERY_PLAN.md` 为准。
 
 ## [S1] 背景与目标
 
-- 用户核心宗旨：每次新发布必须**版本增量更新**（frontend/src/main.cpp 的 `setApplicationVersion`、frontend/CMakeLists.txt 的 `project VERSION`、build/release/scripts/functions.sh 的 `resolve_version` 三处同步，不得遗漏）；发布产物**签名/校验一致**（build-deb.sh 生成 `.deb.sha256` 随包携带）；任何旧版本/内测安装用户都能用新 `.deb` 直接**增量升级**（postinst 兼容升级路径——venv 复用 + conffile 幂等追加，T24 已建先例）。
-- 现状缺口：①main.cpp:24 硬编码 `"0.1.0"`、CMakeLists.txt:3 `VERSION 0.1.0`，而 functions.sh 已 bump `0.1.1`——**三处不一致**；②SettingsDialog 只有版本标签（显示 applicationVersion）+ 监控中心按钮，**无更新入口、无 About Us / T&C / Privacy 页面**。
+- 用户核心宗旨：每次新发布必须**版本增量更新**（frontend/src/main.cpp 的 `setApplicationVersion`、frontend/CMakeLists.txt 的 `project VERSION`、build/release/scripts/functions.sh 的 `resolve_version` 三处同步，不得遗漏）；发布产物**摘要校验一致**（build-deb.sh 生成 `.deb.sha256` 随包携带；这不是独立数字签名）；任何旧版本/内测安装用户都能用新 `.deb` 直接**增量升级**（postinst 兼容升级路径——venv 复用 + conffile 幂等追加，T24 已建先例）。
+- 实施前缺口（已关闭）：当时版本源不一致且 SettingsDialog 无更新/About/T&C/
+  Privacy 入口；当前代码与发布默认值已统一到 0.1.7，并已提供对应页面。
 - 产品定位：**参赛作品**（麒麟 OS Agent 记忆优化赛题），非商业上线产品——文案须符合赛题语境（麒麟适配、偏好/知识记忆优化、隐私承诺：敏感信息识别过滤、端侧处理、数据本地），少量即可。
 
 ## [S2] 版本管理一致性落地
@@ -17,7 +22,7 @@
 - `build/release/scripts/functions.sh`：resolve_version 默认已 0.1.1（T24 bump）——核对一致。
 - **机制**：在 build/release/scripts/build-deb.sh 增加**版本一致性预检**（发布时校验 main.cpp/CMakeLists/functions.sh 三处版本号一致，不一致即报错退出）——防止未来发布遗漏（用户宗旨①的可执行化）。
 
-### [S2.2] 签名/校验一致
+### [S2.2] 摘要校验一致
 - 现状：build-deb.sh 已生成 `.deb.sha256`；publish.sh 随包拷贝。**保持**，文档注明校验方法（`sha256sum -c pixiu_*.deb.sha256`）。
 - 增量升级兼容：postinst venv 复用 + conffile 幂等追加（T24 已落地并实测）——保持，文档注明「支持旧版/内测直接 dpkg -i 升级」。
 
@@ -39,10 +44,10 @@
   - **Privacy**（隐私政策）：数据隐私承诺（敏感信息识别过滤、端侧处理不上传、监控可随时关闭、记忆可遗忘）。
 - 文案**参照 docs/OriginProblemDescription.md 语境**编写，**少量即可**（每页 3-6 句），全部 tr() 中文源文本 + 英文译文（i18n 收编）。
 
-### [S3.3] 更新对话框（CheckUpdateDialog，新建或复用 InfoDialog）
+### [S3.3] 更新对话框（历史最小范围，已被在线升级实现取代）
 - 简单实现（不引入 OTA 服务——参赛语境）：显示**当前版本**（applicationVersion）与**提示文案**「请从官方渠道获取最新版本，通过安装包直接升级；升级将保留您的记忆与配置。」；
 - objectName=`checkUpdateDialog`；按钮「知道了」关闭；
-- 真实在线检查（HTTP 拉取最新版本号）标注为未来扩展（spec S5 边界：不做网络请求，避免引入新依赖与离线环境不可用）。
+- 后续已经实现在线检查、下载、校验和授权安装；本条“不做网络请求”的旧边界失效。
 
 ## [S4] 契约与接线
 - SettingsDialog 新增信号：`checkUpdateRequested()` / `aboutUsRequested()` / `termsRequested()` / `privacyRequested()`（四个按钮各自信号）；
@@ -59,8 +64,8 @@
 - 版本一致性：build-deb.sh 预检脚本单测（三处一致通过 / 一处不一致报错退出——shell 测试或在发布脚本内以 echo 断言）。
 
 ## [S6] 范围边界（不做）
-- 不做真实在线更新（OTA/HTTP 拉取）——仅「检查更新」对话框展示当前版本与升级指引；
-- 不做签名（GPG 等）——保持 sha256 校验（现有一致机制），文档注明；
+- 原“不做真实在线更新”已由 2026-09-01 方案取代。
+- 原“不做独立签名”不再适用于最终交付；SHA-256 已实现，独立签名仍是发布阻断项。
 - 不改后端（纯前端 + 发布脚本预检）；
 - 不引入新第三方依赖。
 

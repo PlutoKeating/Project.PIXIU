@@ -2,6 +2,8 @@
 
 本目录存放评测证据。现有报告是 portable 开发回归，不是赛题最终验收报告；最终报告
 必须在银河麒麟 V11 上同时使用指定 Embedding 与 Vector Engine SDK，并单独归档。
+最终证据还必须覆盖已批准的 openKylin Agent + Module E 生命周期闭环，以及
+`AcceptanceTestSpecification.md` 的 A-01～A-14；启动上游 Agent 或记忆 API 不算闭环。
 
 ## 复现方式
 

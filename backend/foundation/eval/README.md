@@ -29,6 +29,11 @@ Official thresholds can be made stricter in a dataset but cannot be weakened.
 
 The corpus is synthetic and reproducible. It validates the framework and scenario contract; final Kylin performance claims still require execution against the real SDK and target device.
 
+The final contest report must additionally bind these metrics to the approved openKylin Agent +
+Module E flow and to a three-device synchronization run. A standalone retrieval runner or portable
+dataset cannot satisfy H-01 through H-03, A-01 through A-14, or the release gates in
+`docs/DELIVERY_PLAN.md`.
+
 ## Dataset schema
 
 ```json

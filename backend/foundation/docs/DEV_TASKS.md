@@ -34,7 +34,8 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 测试：Foundation 356 项 + Engine 21 项，共 377 项全绿
+- 最新后端全量回归记录：pytest 673 passed；Foundation 356 + Engine 21 = 377
+  仅保留为 2026-08-11 阶段快照
 
 ### 🔴 赛题 P0 待完成
 
@@ -43,9 +44,17 @@
 - `engine/kylin/cpp/` 原生绑定构建（`_kylin_text_embedding` pybind11）
 - vector-engine-client 生产对接（submodule 已就位；当前 H-02 不通过）
 - 与项目选定的 openKylin agent-runtime 完成 MemoryProvider 适配和多轮/工具结果闭环
-- Module A（前端）HTTP/WS/D-Bus 三通道联调
-- `api/`：WS `/events` 路由注册修复（`http_app.py` 未导入 `ws.py`、
-  `ws.py` 未导入 `fastapi.WebSocket`，见 `frontend/docs/BACKEND_ISSUES.md`）
+
+其中 Agent 接入的 Module C 责任已由团队批准并冻结为：
+
+- C-A1：提供可判定 V11、Embedding、Vector Engine 实际 runtime 的 capability 契约。
+- C-A2：贯通 session_id/run_id/turn_id/tool_call_id 到 evidence、日志与查询上下文。
+- C-A3：提供短/中期 context 创建、更新、promote/demote 与清理的公共 API。
+- C-A4：Vector Engine 成为严格画像的生产向量 Repository；SQLite/INT8 仅为降级。
+- C-A5：与 Module E 做 HTTP/WS 契约测试，禁止 E 直接导入本模块。
+
+> Module A 三通道联调与 WS `/events` 注册已在 2026-08-29 前完成，已从当前 P0
+> 清单删除；历史段落仅作过程记录，不再视为阻塞项。
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
 

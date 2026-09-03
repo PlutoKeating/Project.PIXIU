@@ -6,6 +6,11 @@
 > 配套清单：人工复测清单见 `UKUI_ADAPTATION_REPORT.md` 第 4 节；
 > 后端问题交接见 `BACKEND_ISSUES.md`。
 
+> [!CAUTION]
+> 本文是“记忆控制台子演示”，不是最终完整 Agent 演示。正式赛题演示必须另行在
+> openKylin Agent + Module E 中证明多轮规划、工具/Shell/搜索、记忆生命周期与
+> 后续会话复用，并与本控制台的设备管理/可观测演示组合取证。
+
 ---
 
 ## 1. 演示前置条件

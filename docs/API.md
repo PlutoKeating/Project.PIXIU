@@ -10,6 +10,27 @@
 > 提供 Agent 能力，通过 MemoryProvider/适配器调用本 API。接口映射和缺口见
 > `OS_AGENT_INTEGRATION_ASSESSMENT.md`。
 
+> [!IMPORTANT]
+> 团队已批准 [ADR-0001](decisions/0001-use-openkylin-agent-host.md)：Module E
+> 将通过本 API 接入 openKylin Agent。下节“vNext Agent 接入契约”在标记为已实现
+> 前只是冻结的开发目标；当前可用端点仍以 §2 的状态列为准。
+
+## 0. vNext Agent 接入契约（已批准，尚未实现）
+
+| MemoryProvider 行为 | 当前映射 | 必须补齐的契约 |
+|---------------------|----------|----------------|
+| `initialize` | 后端健康检查 | 返回 V11、Embedding、Vector Engine 的真实 capability/runtime；严格画像缺失即失败 |
+| `prefetch(query, session_id)` | `POST /memory/query` | `context_hint` 增加 `session_id`/`turn_id`，响应保留 evidence 来源 |
+| `sync_turn(user, assistant, session_id)` | 暂无合法对话来源 | `POST /memory/write` 新增 `CONVERSATION`，携带 user/assistant、session/turn 与时间 |
+| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT` | 携带 tool name/call id/run id、输入摘要、结果、来源和审批状态 |
+| 显式记忆工具 | query/write/forget/sync 现有端点 | Module E 做 schema 和错误映射，不新增 Agent 私有直连 |
+| `on_pre_compress`/会话结束或切换 | `/memory/flow/promote` 仅处理已有 context | 增加可创建/更新短中期 context 的公共端点，再触发 promote/demote/清理 |
+| 运行审计 | request_id 和部分 evidence | 贯通 session_id/run_id/turn_id/tool_call_id/memory_id |
+
+vNext 变更必须同步更新 `foundation/core` 模型、Module B Connector、Module C
+路由/存储、Module E 客户端及测试。不得在实现前把 `CONVERSATION` 或 capability
+端点加入下方“已实现”清单，也不得用 `TOOL_RESULT` 伪装普通对话来源。
+
 ---
 
 ## 1. 通信协议
@@ -48,7 +69,7 @@
 | GET | `/monitor/log` | 监控活动日志（分页，最新在前） | ✅ 已实现（2026-08-26） |
 | GET | `/delivery/insights` | 洞察流（欢迎页动态建议，最近高质量记忆） | ✅ 已实现（2026-08-29） |
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
-| WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部五类事件） |
+| WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 
 > 状态说明（2026-08-29）：24 个 REST 端点已全部按本文档契约真实实现；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /

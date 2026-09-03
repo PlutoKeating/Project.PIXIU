@@ -8,6 +8,12 @@
 > 分支约定：本脚手架在 `main` 分支维护；后端（`feat/foundation`）与前端
 > （`feature/frontend`）开发分支合并到 `main` 后，即可运行流水线出包。
 
+> [!CAUTION]
+> 上述“整个 PIXIU 软件”只描述当前记忆服务 + 记忆控制台打包范围。团队已批准
+> openKylin Agent 宿主 + Module E 适配路线，但当前 `.deb` 尚未包含或声明该集成，
+> 因而不能作为完整 OS Agent 交付包。目标发布方案应优先依赖目标机已安装的
+> `kylin-agent`/`agent-runtime`，单独打包 PIXIU 原创适配器，并保留版本/许可证清单。
+
 ## 目录结构
 
 ```text
@@ -113,6 +119,22 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 | `PIXIU_DEBIAN_DEPENDS` | 见 control.in | 覆盖 Depends 行（不同发行版包名不同） |
 | `PIXIU_PUBLISH_URI` | 空 | 设置后 `publish.sh` 用 rsync 同步到远端 |
 
+## 最终版本与一键升级门禁
+
+当前应用内升级已具备 latest 查询、架构匹配、流式 SHA-256、HTTPS/重定向白名单、
+`pkexec` 授权、root-only 副本二次校验和 `dpkg` 安装。最终候选版还必须补齐并验证：
+
+- 一个发布输入派生 tag、CMake、Debian control、Release 资产和 manifest，CI 检查不一致；
+- manifest 记录 Git/API/schema/provider/宿主/双 SDK 版本和兼容范围；
+- 独立数字签名、安装前状态备份、失败回滚、安装后服务与 provider 健康检查；
+- GUI 中显示版本、通道、发行说明、进度、授权、失败恢复和受控重启状态；
+- 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
+- 最终 `.deb` 包含 Module E，但不直接打包未修改的上游 Agent 源码。
+
+这些是团队发布门；逐项状态与赛事 D-01～D-10 文档台账见
+`docs/DELIVERY_PLAN.md`。未完成前，现有 `0.1.7` 只能称为功能基线，不能称为最终
+一键安装/升级交付。
+
 ## 安装产物（全新麒麟机）
 
 ```bash
@@ -128,10 +150,14 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 - 配置在 `/etc/pixiu/pixiu.env`（API 端口、DB 路径、sync 开关等）；
 - 安装脚本会生成每机唯一同步私钥口令，并将配置设为 `root:pixiu 0640`；
   从历史公开默认口令升级时会先重加密 Ed25519 私钥，设备 ID 与配对关系不变；
-- P2P 同步网络默认关闭；需要时在 `/etc/pixiu/pixiu.env` 开启
-  `PIXIU_SYNC_NETWORK_ENABLED=true` 并配置证书后重启服务。
+- P2P 同步网络当前默认开启（`PIXIU_SYNC_NETWORK_ENABLED=true`）；未完成可信配对/
+  证书配置或不需要同步时，可在 `/etc/pixiu/pixiu.env` 显式关闭后重启服务。
 
 ## 当前已知边界（脚手架按现状落地，后续随开发自动受益）
+
+- **Agent 宿主与适配**：当前包不含 Module E，也未验证 openKylin Agent 的
+  MemoryProvider 生命周期。完成后需把适配器、依赖探测、服务启动顺序、卸载边界和
+  固定上游版本纳入 profile/包元数据；不得直接把两个上游 submodule 当团队产物打包。
 
 - **引擎麒麟 SDK 绑定**：`backend/engine/kylin/cpp` 的 pybind11 扩展需在目标
   麒麟环境构建，本流水线暂以源码随包安装（`/usr/lib/pixiu/backend/engine/kylin`）；
@@ -141,9 +167,9 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
   `PIXIU_EMBEDDING=kylin`，让缺失绑定或 AI 运行时成为显式失败。
 - **后端 Python 依赖**：优先随包携带离线 wheels（`PIXIU_BUNDLE_WHEELS=1`）；
   打包机无法下载时退化为安装时在线 `pip install`（需要目标机联网）。
-- **WS 事件完整度**：`/events` 已完成真实入口注册并通过麒麟 VM 握手；当前仍需
-  补齐 `conflict_detected` / `forget_confirmation` 两类业务广播。
-- **OCR / 文本生成**：引擎侧待接入，不影响安装结构。
+- **WS 事件完整度**：`/events` 入口与六类业务事件均已完成；最终候选包仍须按
+  同一 release commit 重跑真实前后端联调，不沿用历史 403 记录。
+- **OCR / 文本生成**：OCR 已接入；离线文本生成仍待目标 SDK 环境，不影响安装结构。
 
 ## 在测试机上克隆仓库（如需在目标机编译）
 

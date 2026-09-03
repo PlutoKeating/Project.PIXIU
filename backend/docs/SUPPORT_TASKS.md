@@ -7,6 +7,8 @@
 > [!CAUTION]
 > mock/stub/portable 只用于开发回归。赛题最终报告必须在银河麒麟桌面操作系统
 > V11 上真实调用指定 Embedding 与 Vector Engine，并覆盖完整 Agent 和多设备闭环。
+> 团队已批准 ADR-0001；Module D 还必须验证 Module E 生命周期以及 A-11～A-14
+> 上游版本、许可证、原创边界和实质性集成，不得只验证上游 Agent 能启动。
 
 ---
 

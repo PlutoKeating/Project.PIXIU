@@ -1,5 +1,8 @@
 # 版本管理一致性 + 关于/更新/条款/隐私页面 Implementation Plan
 
+> 状态更新（2026-09-03）：V-1～V-3 均已实现；版本已推进到 0.1.7，在线升级由
+> 后续计划继续扩展。下列版本 0.1.1 与失败步骤是历史执行上下文，不是当前状态。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 落实版本管理核心宗旨（三处版本源一致 + 发布预检 + sha256 校验一致 + 旧版可增量升级），并为设置界面补齐「检查更新」「关于 PIXIU」「服务条款」「隐私政策」四入口与对应页面。
@@ -28,12 +31,12 @@
 - Modify: `build/release/scripts/build-deb.sh`（发布前预检：grep main.cpp/CMakeLists/functions.sh 三处版本号一致，不一致 exit 1 报错）
 - Verify: `build/release/scripts/functions.sh` 确认 0.1.1（T24 已 bump）
 
-- [ ] **Step 1: 写失败测试**（版本注入生效）
+- [x] **Step 1: 写失败测试**（版本注入生效）
   构建后 `pixiu-frontend --version` 或现有 t_app 断言 `QCoreApplication::applicationVersion() == "0.1.1"`（grep 现有测试是否有版本断言；无则加 t_app_settings 或用 CMake configure 期断言）。
-- [ ] **Step 2: 运行验证失败**（当前 main.cpp 硬编码 0.1.0 ≠ 0.1.1）
-- [ ] **Step 3: 实现**（CMakeLists project VERSION + compile definition；main.cpp 用宏；build-deb.sh 预检函数）
-- [ ] **Step 4: 运行验证通过**（构建 + ctest；预检脚本测三处一致通过/不一致报错——shell 单测或手动）
-- [ ] **Step 5: 提交** `git commit -m "fix(frontend): inject version from cmake and guard release consistency"`
+- [x] **Step 2: 运行验证失败**（当前 main.cpp 硬编码 0.1.0 ≠ 0.1.1）
+- [x] **Step 3: 实现**（CMakeLists project VERSION + compile definition；main.cpp 用宏；build-deb.sh 预检函数）
+- [x] **Step 4: 运行验证通过**（构建 + ctest；预检脚本测三处一致通过/不一致报错——shell 单测或手动）
+- [x] **Step 5: 提交** `git commit -m "fix(frontend): inject version from cmake and guard release consistency"`
 
 ---
 
@@ -53,11 +56,11 @@
 - Consumes: `QCoreApplication::applicationVersion()`、`ui::UiTokens`、既有 PixiuApp openSettings 懒创建接线模式
 - Produces: `InfoDialog(title, body, parent)`（showAndFocus 或 show）；`CheckUpdateDialog(parent)`；SettingsDialog 四信号；PixiuApp `showAboutUs()/showTerms()/showPrivacy()/showCheckUpdate()`（懒创建各自实例或统一 InfoDialog 复用——实现时选一说明）
 
-- [ ] **Step 1: 写失败测试**（四按钮存在且 emit 对应信号；InfoDialog 渲染标题与正文关键词；更新对话框显示版本；t_app_navigation 点按钮 → 对话框可见）
-- [ ] **Step 2: 运行验证失败**（ctest 红）
-- [ ] **Step 3: 实现**（InfoDialog/CheckUpdateDialog + SettingsDialog 四按钮四信号 + PixiuApp 接线 + CMake 三目标同步）
-- [ ] **Step 4: 运行验证通过**（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 32+ 绿）
-- [ ] **Step 5: 提交** `git commit -m "feat(frontend): add about, terms, privacy and update entries"`
+- [x] **Step 1: 写失败测试**（四按钮存在且 emit 对应信号；InfoDialog 渲染标题与正文关键词；更新对话框显示版本；t_app_navigation 点按钮 → 对话框可见）
+- [x] **Step 2: 运行验证失败**（ctest 红）
+- [x] **Step 3: 实现**（InfoDialog/CheckUpdateDialog + SettingsDialog 四按钮四信号 + PixiuApp 接线 + CMake 三目标同步）
+- [x] **Step 4: 运行验证通过**（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 32+ 绿）
+- [x] **Step 5: 提交** `git commit -m "feat(frontend): add about, terms, privacy and update entries"`
 
 ---
 
@@ -69,9 +72,9 @@
 - Modify: `frontend/resources/i18n/pixiu_en_US.ts/.qm`（lupdate/lrelease：四按钮 + 三页文案 + 更新对话框文案）
 - Test: 回归
 
-- [ ] **Step 1: lupdate/lrelease**（cd frontend/resources/i18n && lupdate ../../src ../../tests -no-obsolete -locations none -ts pixiu_en_US.ts；补英文译文至 0 unfinished；lrelease）
-- [ ] **Step 2: 全量双路径回归**：`bash frontend/scripts/regression.sh`（OFF/ON + deb 校验——注意本机低内存 ON 构建若 OOM 用增量目录 -j1）
-- [ ] **Step 3: 提交** `git commit -m "chore(frontend): regenerate i18n resources for about and update pages"`
+- [x] **Step 1: lupdate/lrelease**（cd frontend/resources/i18n && lupdate ../../src ../../tests -no-obsolete -locations none -ts pixiu_en_US.ts；补英文译文至 0 unfinished；lrelease）
+- [x] **Step 2: 全量双路径回归**：`bash frontend/scripts/regression.sh`（OFF/ON + deb 校验——注意本机低内存 ON 构建若 OOM 用增量目录 -j1）
+- [x] **Step 3: 提交** `git commit -m "chore(frontend): regenerate i18n resources for about and update pages"`
 
 ---
 

@@ -8,7 +8,7 @@
 
 > [!IMPORTANT]
 > 2026-09-03 赛题复核后，Module A 已完成状态仅指 PIXIU 记忆控制台范围，
-> 不代表完整 OS Agent 已实现。项目选择复用 openKylin `kylin-agent` +
+> 不代表完整 OS Agent 已实现。团队已批准复用 openKylin `kylin-agent` +
 > `agent-runtime` 承担多轮会话、规划、工具/Shell/联网搜索和审批；这不是赛方
 > 指定技术路线。本模块后续只承担记忆管理 UI 与必要集成，
 > 不在 `frontend/` 内另造 Agent 循环。
@@ -19,6 +19,9 @@
 
 - ✅ 版本源统一到 0.1.7（CMake / frontend debian / 发布默认值）。
 - ✅ 真实 GitHub live 升级用例不再写死远端 `0.1.6`，只要求 latest 高于 `0.1.5`。
+- 🟡 一键升级功能基线已实现，但最终发布门尚缺独立签名、Module E/宿主兼容矩阵、
+  失败回滚、安装后健康检查/受控重启与最终 V11 图形升级证据；详见
+  `docs/DELIVERY_PLAN.md`，不得将现状表述为完整版本管理验收通过。
 
 ## 实现状态（2026-09-02 · v0.1.6 本机验收）
 

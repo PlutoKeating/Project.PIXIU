@@ -4,6 +4,8 @@
 > 分支：`feature/frontend`
 > 技术栈：C++17、Qt5 Widgets、KylinSDK
 > 计划周期：2026-08-07 至 2026-09-15
+> 已批准边界（2026-09-03）：本计划只覆盖记忆控制台；不得在 `frontend/` 新增
+> Agent 循环或 MemoryProvider。完整 Agent 由 openKylin 宿主提供，适配归属 Module E。
 > 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
 > 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
 > Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
@@ -417,7 +419,11 @@ WebSocket 客户端必须：
 `BackendTransport` 接口已预留第二实现位置，后续可按需补 D-Bus transport
 （参考 `backend/foundation/tests/test_dbus_service.py` 契约）。
 
-### 3.4 当前接口阻塞与待确认项
+### 3.4 2026-08-09 历史接口阻塞（已关闭/被后续契约取代）
+
+> 本清单保留用于追溯，不再代表当前状态。WS 注册、六类事件、证据详情、偏好列表、
+> 确认式配对和 portable 降级均已在后续批次落地；当前赛题阻塞改为 H-02、最终
+> V11 双 SDK、Module E 与 Agent 生命周期，见根 `docs/DEVELOPMENT_PLAN.md`。
 
 1. WS `/events` 路由注册/导入修复（`http_app.py` 未导入 `ws.py`、`ws.py` 未导入
    `fastapi.WebSocket`），修复后前端事件链路自动生效。
@@ -835,11 +841,9 @@ t_import_dialog           新增 5 例：OK 按钮门控、确认载荷与清空
                           判定需全新登录会话/合成器重启后人工复测
 ```
 
-WebSocketClient 的 configure/build 已通过；启动与真实 WS 连接验收仍受 Module C
-两项后端问题阻塞（`/events` 注册、`ws.py` WebSocket 导入），详见
-`frontend/docs/BACKEND_ISSUES.md`。`memory_ready` 事件映射与角标联动已通过本地
-测试与冒烟验证，端到端真实事件仍待 Module C 修复后复测；Module A 侧已用
-测试专用 WS 桩完成 UI 链路冒烟（见上文记录）。
+以下段落是 2026-08-09 历史记录：当时 WebSocketClient 的 configure/build 已通过，
+真实 WS 曾受 `/events` 注册与类型导入问题阻塞。两项已于 2026-08-20 修复并完成
+真实连接复测；当前不得继续把它们列为阻塞项。测试专用 WS 桩仅保留作 UI 回归。
 
 2026-08-09 追加（同步管理 UI + WS 业务事件路由，OFF 路径本机验证）：
 

@@ -29,6 +29,10 @@
 
 ### 1.2 2026-09-03 赛题复核后的 P0 纠偏
 
+> **决策状态：已批准。** 华南理工大学 PIXIU 团队负责人已批准
+> [ADR-0001](decisions/0001-use-openkylin-agent-host.md)。下列 Agent 宿主和
+> Module E 适配路线是后续开发基线，不再是待选建议；它仍不是赛方指定技术路线。
+
 此前“各模块全部完成/全项达标”只描述既定记忆子系统范围，不能外推为赛题完成。
 当前必须优先完成：
 
@@ -40,6 +44,27 @@
 5. 用至少三台设备证明分布式记忆的离线、并发、重连、冲突、遗忘和最终收敛。
 
 在上述 P0 完成前，历史 portable 指标仅标记“开发回归通过”，不得写“最终验收达标”。
+
+### 1.3 已批准路线的交付顺序
+
+| 顺序 | 工作包 | 主责 | 完成定义 |
+|------|--------|------|----------|
+| 1 | H-02 Vector Engine 生产接线 | B + C | 建库、写入、删除、查询均走指定 SDK；严格模式缺失即失败 |
+| 2 | H-03 Embedding 与 V11 严格画像 | B + D | 最终包在 V11 真实调用，日志/链接/失败测试可复现 |
+| 3 | Module E MemoryProvider 适配 | E | 生命周期映射、显式记忆工具、能力探测与审计通过契约测试 |
+| 4 | 完整 Agent 闭环 | E + D | 多轮→自主召回→工具/Shell/搜索→结果回写→新会话复用 |
+| 5 | 分布式创新实证 | C + D | 至少三设备完成离线/并发/重连/冲突/遗忘/收敛矩阵 |
+| 6 | 单一安装包与版本/升级闭环 | A + C + E + D | V11 图形安装；GUI 签名升级、健康检查、恢复和数据保留通过 |
+| 7 | 最终文档与答辩 | D + Human | D-01～D-10、源码、PPT、视频、许可证和原创边界证据同版且审核完成 |
+
+不得用“适配器已创建”替代第 4 步端到端结果，也不得在第 1～2 步失败时宣称赛题
+验收通过。各工作包的证据编号以 `AcceptanceTestSpecification.md` 为准。
+
+### 1.4 交付治理入口
+
+单一 `.deb`、GUI 一键升级、版本/兼容矩阵、恢复策略和 D-01～D-10 文档状态统一
+维护在 `DELIVERY_PLAN.md` 与 `delivery/`。所有最终材料必须绑定同一候选 commit；
+工作稿结构完成不等于最终证据已审核。
 
 ### 1.5 当前进度总览（2026-08-07 · 历史基线）
 
@@ -149,7 +174,7 @@
 
 ## 2. 模块划分
 
-整个系统按**架构维度**拆分为 **3 个开发模块 + 1 个支持岗位**，模块间零代码交叉。
+整个系统按**架构维度**拆分为 **4 个开发模块 + 1 个支持岗位**，模块间零代码交叉。
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -173,6 +198,12 @@
 │  模块 C: 后台基础设施 (backend/foundation/)                │  Python 3.10 + SQL + C++
 │  负责：API网关·存储层·混合检索·记忆流转·P2P同步·评测框架    │
 │  与模块 B 契约：提供 core/ 接口；在 api/ 中注入引擎 Service  │
+└──────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────┐
+│  模块 E: Agent 集成适配 (integrations/kylin_agent/)        │  Python · MemoryProvider
+│  负责：生命周期映射 · 记忆工具 · 能力探测 · 运行审计        │
+│  与 A/B/C 契约：仅消费 docs/API.md，不跨目录导入私有实现    │
 └──────────────────────────────────────────────────────────┘
 
   支持岗 D (scripts/ + tests/):
@@ -262,6 +293,22 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 **状态（2026-08-29 portable 范围）**：开发回归支持工作完成——自建测试数据集 `pixiu-family-expense-v1`
 （50 检索 + 15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告
 `docs/acceptance/`（portable 路径达到数值阈值，不代表赛题最终验收）；后端 pytest 673 passed；见 §1.6。
+
+### 2.5 模块 E — Agent 集成适配
+
+**目录**：`integrations/kylin_agent/`（待创建实现；本文档与 ADR 先冻结边界）
+
+| 子领域 | 内容 |
+|--------|------|
+| `provider` | 实现 `agent-runtime` MemoryProvider 生命周期 |
+| `client` | 封装 PIXIU HTTP/WS 公共契约、超时、重试与错误映射 |
+| `tools` | 查询、记住、遗忘、同步状态等显式记忆工具 |
+| `capabilities` | 探测后端、V11、Embedding、Vector Engine 严格状态 |
+| `audit` | 记录召回、写入、工具调用、生命周期与来源关联 |
+
+不得把 Agent 循环复制进本模块；不得导入 `frontend/` 或 `backend/` 私有代码；
+不得直接修改 `third_party/` 工作树；不得把上游通用 Agent 功能计为团队原创。
+进入编码前必须先在 `docs/API.md` 冻结 vNext Agent 记忆契约。
 
 ---
 
@@ -367,6 +414,8 @@ Project.PIXIU/
 │   ├── OriginProblemDescription.md # 赛题原文
 │   ├── AcceptanceTestSpecification.md  # 验收规范
 │   ├── OS_AGENT_INTEGRATION_ASSESSMENT.md # Agent 选型与赛题差距
+│   ├── DELIVERY_PLAN.md           # 安装、版本、升级和赛事交付文档台账
+│   ├── delivery/                  # D-01～D-10 可审查工作源
 │   ├── 完整赛题要求.pptx            # 2026.05 权威宣讲材料
 │   └── kylin_sdk_docs/             # KylinSDK 参考（不动）
 │
@@ -421,6 +470,9 @@ Project.PIXIU/
 │   ├── CMakeLists.txt
 │   └── .env.example
 
+├── integrations/
+│   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配（待实现）
+
 ├── third_party/                    # openKylin 官方源码/SDK submodule
 │   ├── kylin-agent/                # 官方桌面 Agent 参考/目标宿主
 │   ├── kylin-agent-runtime/        # 官方 Agent 运行时与 MemoryProvider 接口
@@ -450,6 +502,10 @@ git submodule update --init --recursive
 | 模块 B | `backend/engine/` + `backend/foundation/core/`（仅接口） | `backend/foundation/api/storage/retrieval/flow/sync/eval/` |
 | 模块 C | `backend/foundation/`（除 engine 子包） | `backend/engine/` 下任何文件 |
 | 支持 D | `backend/scripts/`, `backend/tests/`, `docs/`（补全） | `frontend/src/` |
+| 模块 E | `integrations/kylin_agent/` 下所有文件 | `frontend/`、`backend/`、`third_party/` 下任何文件 |
+
+Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契约需求，A/C 更新
+`docs/API.md` 并实现；不得以赶进度为由直接 import 后端 Service 或 Repository。
 
 ### 5.2 接口变更流程
 
@@ -505,6 +561,17 @@ git submodule update --init --recursive
 |------|------|------|
 | 验收规范 | `docs/AcceptanceTestSpecification.md` | 全部验收条目 |
 | 赛题原文 | `docs/OriginProblemDescription.md` | 比赛要求与附录 A 场景 |
+| 最终交付计划 | `docs/DELIVERY_PLAN.md` | 单一安装包、版本/升级与 D-01～D-10 台账 |
+
+### 模块 E 开发者必读
+
+| 文档/源码 | 路径 | 说明 |
+|-----------|------|------|
+| 已批准决策 | `docs/decisions/0001-use-openkylin-agent-host.md` | 宿主、原创与修改边界 |
+| 接入评估 | `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` | 代码事实、生命周期与差距 |
+| API 契约 | `docs/API.md` | 当前端点与尚未实现的 vNext 目标 |
+| Agent runtime | `third_party/kylin-agent-runtime/` | 固定版本 MemoryProvider/生命周期源码 |
+| Agent desktop | `third_party/kylin-agent/` | 固定版本 run/SSE/设置集成源码 |
 
 ---
 

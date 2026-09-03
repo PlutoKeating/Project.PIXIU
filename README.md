@@ -11,7 +11,7 @@
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Memory%20Console-Qt5%20%2F%20UKUI-41CD52?style=flat-square)](frontend/docs/ARCHITECTURE.md)
 
-[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
+[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [已批准架构决策](docs/decisions/0001-use-openkylin-agent-host.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
 
 </div>
 
@@ -22,13 +22,28 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 > [!CAUTION]
 > **当前仓库尚不能宣称完整赛题验收通过。** 现有代码主体是记忆业务引擎、基础设施和专用记忆控制台；它没有实现完整的多轮 Agent 会话、模型规划循环、工具自主选择、Shell/联网搜索调用与审批闭环。当前向量检索也主要由 SQLite 中的 INT8 扫描承担，尚未把赛方指定的系统向量数据库 SDK 接入生产读写/检索链路。
 
-经过对两份赛事官方材料、本地代码和 openKylin 官方源码的核对，项目采用以下路线：
+> [!IMPORTANT]
+> **团队决策已批准。** 2026-09-03，华南理工大学 PIXIU 团队负责人批准
+> [ADR-0001](docs/decisions/0001-use-openkylin-agent-host.md)：不从零重造完整 OS Agent，
+> 以 openKylin `kylin-agent`/`agent-runtime` 为宿主，通过团队原创适配层接入 PIXIU。
+> 这是团队工程决策，不得表述成赛方点名指定或书面授权。
+
+经过对两份赛事官方材料、本地代码和 openKylin 官方源码的核对，项目正式采用以下路线：
 
 1. **不从零重造完整 OS Agent。** 这是项目工程选型，不是赛方明示指定。正式材料既没有要求参赛队从零实现标准 Agent，也没有点名授权某个 Agent；PPT 同时警示不得“直接用开源软件作为作品提交”。因此选用 openKylin `kylin-agent` 与 `agent-runtime` 作基座，必须由 PIXIU 原创记忆模块、适配代码、系统 SDK 接线和实测证据形成实质性作品，而非原样转交上游项目。
 2. **PIXIU 聚焦记忆创新。** 完成长短期/中期/长期记忆流转、工具结果沉淀、主动召回、偏好与知识记忆，以及多设备同步。
 3. **两个官方材料共同执行。** 平台发布的文字方案提供完整赛题、评分和精确提交规则；技术/赛事团队 PPT 补充 V11、双 SDK、交付格式、OS Agent 特征和评审注意事项。二者均为只读权威原件。
 
 完整证据、差距矩阵和接入方案见 [OS Agent 接入与赛题差距评估](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md)。
+
+### 作品与上游边界
+
+| 类别 | 内容 | 对外交付口径 |
+|------|------|--------------|
+| PIXIU 原创作品 | 记忆引擎、存储/检索/流转、分布式同步、Module E Agent 适配、双 SDK 接线与评测 | 作为团队实现和核心亮点提交证据 |
+| openKylin 上游依赖 | `kylin-agent`、`agent-runtime` | 披露固定版本与许可证，不宣称为团队原创，不原样作为作品主体提交 |
+| 官方 SDK | Embedding、Vector Engine 客户端 | 作为指定系统能力调用，保存生产调用和严格失败证据 |
+| 独立记忆控制台 | `frontend/` | 用于诊断、管理和演示，不称为完整 OS Agent |
 
 ## 关键亮点
 
@@ -80,11 +95,19 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 
 PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化后的比例，并非新的原始分值；完整评分表仍按 30/30/25/10/5 计 100 分。
 
+团队追加的发布硬门是：最终提供一个可在银河麒麟 V11 图形安装器打开的一体化
+`.deb`，内含 PIXIU 记忆服务、控制台和 Module E；软件内可检查版本并一键完成
+下载、签名/摘要校验、授权安装、健康检查和恢复。当前 `.deb` 与 GUI 更新基线已经
+存在，但 Module E、独立签名/回滚、最终 V11 双 SDK 与全新机/升级取证尚未闭环，
+因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
+[最终交付与版本管理计划](docs/DELIVERY_PLAN.md)。
+
 ## 仓库结构
 
 ```text
 Project.PIXIU/
 ├── frontend/                         # PIXIU 记忆控制台（Qt5/UKUI）
+├── integrations/kylin_agent/         # Module E：待实现的原创 Agent/MemoryProvider 适配
 ├── backend/engine/                   # 记忆业务引擎
 ├── backend/foundation/               # API、存储、检索、流转、同步、评测
 ├── backend/tests/                    # 自动化测试

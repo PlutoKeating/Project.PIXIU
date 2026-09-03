@@ -4,6 +4,10 @@
 > **日期**：2026-08-19  
 > **约束**：未修改 ingest / foundation / schema / 测试代码；本文件仅为审计产出  
 > **对照**：`docs/ARCHITECTURE.md`、`docs/API.md`、`docs/AcceptanceTestSpecification.md`（F1-01~07、SC-07）、`backend/engine/docs/ARCHITECTURE.md`、`ENGINE_AUDIT_REPORT.md`、`foundation/core/models.py`、`foundation/core/repository.py`
+>
+> **后续状态说明（2026-09-03）**：本文是 2026-08-19 代码快照。麒麟 OCR 已在
+> 后续实现；团队批准的 vNext 新缺口是 `CONVERSATION` Connector 和增强
+> `TOOL_RESULT` 关联 ID。下文“未实现 OCR”只作历史记录，不是当前结论。
 
 ---
 

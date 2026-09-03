@@ -1,5 +1,9 @@
 # 应用内一键升级 Implementation Plan
 
+> 状态更新（2026-09-03）：U-1～U-4 与 U-5 已勾选项均已由当前代码/测试实现；
+> 原计划未及时勾选的方框不是当前缺口。最终发布仍缺 U-5 真机门禁，以及
+> `docs/DELIVERY_PLAN.md` 新增的签名、兼容矩阵、回滚、健康检查和受控重启。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 「检查更新」对话框升级为真正的一键升级：检测公开 GitHub repo 最新版本 → 下载 deb + sha256 校验 → pkexec 特权安装 → 重启提示。
@@ -30,11 +34,11 @@
 
 **Covers:** [S2.1, S2.2]
 
-- [ ] Step 1 失败测试：compareVersions（等/大/小/前缀/不等长）、normalizeVersion、verifySha256（真/假/文件不存在）、parseRelease（合法 JSON/缺字段/未知 asset）
-- [ ] Step 2 运行失败
-- [ ] Step 3 实现（纯函数，Qt + std，无网络）
-- [ ] Step 4 绿
-- [ ] Step 5 提交 `feat(frontend): version and sha256 upgrade utils`
+- [x] Step 1 失败测试：compareVersions（等/大/小/前缀/不等长）、normalizeVersion、verifySha256（真/假/文件不存在）、parseRelease（合法 JSON/缺字段/未知 asset）
+- [x] Step 2 运行失败
+- [x] Step 3 实现（纯函数，Qt + std，无网络）
+- [x] Step 4 绿
+- [x] Step 5 提交 `feat(frontend): version and sha256 upgrade utils`
 
 ---
 
@@ -57,11 +61,11 @@
 
 **Covers:** [S2.1, S2.2, S2.3]
 
-- [ ] Step 1 失败测试（FakeNetwork 注入或用真实 QNetworkAccessManager 打本地假 server——仓库有 TCP 桩先例 t_contract_fixtures；UpgradeController 可注入 QNetworkAccessManager 供测试 mock；State 转移/版本比较/校验失败/安装成功/取消路径）
-- [ ] Step 2 运行失败
-- [ ] Step 3 实现
-- [ ] Step 4 绿
-- [ ] Step 5 提交 `feat(frontend): upgrade controller with check download verify install`
+- [x] Step 1 失败测试（FakeNetwork 注入或用真实 QNetworkAccessManager 打本地假 server——仓库有 TCP 桩先例 t_contract_fixtures；UpgradeController 可注入 QNetworkAccessManager 供测试 mock；State 转移/版本比较/校验失败/安装成功/取消路径）
+- [x] Step 2 运行失败
+- [x] Step 3 实现
+- [x] Step 4 绿
+- [x] Step 5 提交 `feat(frontend): upgrade controller with check download verify install`
 
 ---
 
@@ -77,11 +81,11 @@
 
 **Covers:** [S2.4, S4]
 
-- [ ] Step 1 失败测试（对话框显示当前版本/远程版本对比/一键升级按钮 enabled 变化/状态流转文案/进度条）
-- [ ] Step 2 运行失败
-- [ ] Step 3 实现（PixiuApp 接线 + dialog 状态机映射 + 进度）
-- [ ] Step 4 绿（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 33+ 全绿）
-- [ ] Step 5 提交 `feat(frontend): one-click upgrade in check update dialog`
+- [x] Step 1 失败测试（对话框显示当前版本/远程版本对比/一键升级按钮 enabled 变化/状态流转文案/进度条）
+- [x] Step 2 运行失败
+- [x] Step 3 实现（PixiuApp 接线 + dialog 状态机映射 + 进度）
+- [x] Step 4 绿（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 33+ 全绿）
+- [x] Step 5 提交 `feat(frontend): one-click upgrade in check update dialog`
 
 ---
 
@@ -89,11 +93,11 @@
 
 **Files:** Modify `frontend/resources/i18n/pixiu_en_US.ts/.qm`；Modify `build/release/debian/pixiu.env`（示例口令改占位符）；Test 回归
 
-- [ ] Step 1 i18n：lupdate/lrelease 收编新增文案（「检测到新版本 %1」「正在下载…%2%」「校验下载包…」「正在申请安装权限…」「升级成功，请手动重启应用」「校验失败，已中止」「无法连接更新服务器」「已取消」「检测更新已完成，当前已是最新版本」等），0 unfinished
-- [ ] Step 2 pixiu.env 安全加固：`PIXIU_SYNC_KEY_PASSPHRASE` 改 `change-me-before-production` 占位符（保留注释）
-- [ ] Step 3 双路径回归：`bash frontend/scripts/regression.sh`（OFF/ON + deb 校验；ON 低内存可能 OOM 用增量目录 -j1）
-- [ ] Step 4 提交（i18n `chore` + pixiu.env `chore` 分开）
-- [ ] Step 5 （主代理）转 public repo + 打 tag 发布
+- [x] Step 1 i18n：lupdate/lrelease 收编新增文案（「检测到新版本 %1」「正在下载…%2%」「校验下载包…」「正在申请安装权限…」「升级成功，请手动重启应用」「校验失败，已中止」「无法连接更新服务器」「已取消」「检测更新已完成，当前已是最新版本」等），0 unfinished
+- [x] Step 2 pixiu.env 安全加固：`PIXIU_SYNC_KEY_PASSPHRASE` 改 `change-me-before-production` 占位符（保留注释）
+- [x] Step 3 双路径回归：`bash frontend/scripts/regression.sh`（OFF/ON + deb 校验；ON 低内存可能 OOM 用增量目录 -j1）
+- [x] Step 4 提交（i18n `chore` + pixiu.env `chore` 分开）
+- [x] Step 5 （主代理）转 public repo + 打 tag 发布
 
 ---
 

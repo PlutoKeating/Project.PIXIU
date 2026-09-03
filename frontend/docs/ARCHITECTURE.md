@@ -259,6 +259,10 @@ PIXIU 前端
 
 ### 6.6 应用内安全升级
 
+> 当前实现提供一键下载安装基线；最终交付还必须按 `docs/DELIVERY_PLAN.md` 增加
+> 独立签名、组件兼容矩阵、失败回滚、安装后健康检查与受控重启。SHA-256 与资产
+> 同源发布时只能作为完整性校验，不单独承担发布者身份认证。
+
 ```
 设置 → 检查更新
   → UpgradeController 请求公开 GitHub Release latest API

@@ -7,8 +7,9 @@
 > [!CAUTION]
 > 2026-09-03 赛题复核：当前实现是记忆子系统和记忆控制台，不是完整 OS Agent；
 > 生产向量检索仍由 SQLite/INT8 扫描承担，也尚未满足 PPT 指定的系统向量数据库
-> SDK 硬门槛。项目目标架构选择新增 openKylin `kylin-agent`/`agent-runtime` 基座与
-> MemoryProvider 适配层。完整差距和验收状态见
+> SDK 硬门槛。团队已批准新增 openKylin `kylin-agent`/`agent-runtime` 宿主与
+> Module E MemoryProvider 适配层；这是一项团队工程决策，并非赛方指定技术栈。
+> 完整差距、决策和验收状态见
 > `OS_AGENT_INTEGRATION_ASSESSMENT.md` 与 `AcceptanceTestSpecification.md`。
 
 ---
@@ -29,17 +30,19 @@
 PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `backend/` 下的不同目录树，通过 `foundation/core/` 中的抽象接口（ABC）解耦：
 
 ```
+┌──────────────────────────────┐
+│ openKylin Agent 宿主          │
+│ 会话/规划/工具/审批/搜索       │
+└──────────────┬───────────────┘
+               │ MemoryProvider
+┌──────────────▼───────────────┐   ┌──────────────────────────────┐
+│ Module E: Agent 集成适配层    │   │ Module A: PIXIU 记忆控制台   │
+│ 生命周期/记忆工具/探测/审计   │   │ 查询/管理/配对/诊断           │
+└──────────────┬───────────────┘   └──────────────┬───────────────┘
+               │ HTTP REST · WS                   │ HTTP/WS/D-Bus
+               └──────────────────┬────────────────┘
+                                  ▼
 ┌──────────────────────────────────────────────────────────┐
-│  项目选定的 openKylin Agent 基座（待适配）                 │
-│  kylin-agent + agent-runtime：会话/规划/工具/审批/搜索      │
-└────────────────────────┬─────────────────────────────────┘
-                         │ MemoryProvider / HTTP adapter
-┌────────────────────────▼─────────────────────────────────┐
-│  Module A: PIXIU 记忆控制台 (frontend/)                    │  C++17 + Qt5 + Kysdk
-│  悬浮球 · 记忆查询/管理 · 设备配对；当前不承担 Agent 循环   │
-└────────────────────────┬─────────────────────────────────┘
-                         │ HTTP REST · WS · D-Bus
-┌────────────────────────┴─────────────────────────────────┐
 │  后端 (backend/)                                           │
 │                                                           │
 │  Module B: 记忆业务引擎 (engine/)                          │  Python 3.10 + C++
@@ -67,6 +70,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (5) | 敏感信息识别过滤、自然语言精准遗忘 | B engine/security | F5-01~F5-05 |
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
+| Agent 集成 | 多会话/多轮、规划与工具、记忆生命周期闭环 | E integrations/kylin_agent + openKylin 宿主 | A-01~A-10、F1-01、F1-02、F6-05 |
 
 ### 1.3 关键约束
 
@@ -74,13 +78,14 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 - **检索在线零 LLM**：仅用 embedding + 结构化字段 + 图遍历，保证 P95 ≤ 500ms
 - **国产化硬门槛**：embedding 必须经麒麟 `coreai/embedding` C 接口；生产向量存储/检索必须经系统 Vector Engine SDK；最终软件必须在银河麒麟桌面操作系统 V11 验证
 - **Agent 完整性**：项目工程上选择由 openKylin Agent 基座提供多轮会话、规划、工具、Shell/联网搜索和审批，PIXIU 通过原创记忆适配层接入；赛方材料未指定必须使用该基座，也未要求从零重写 Agent
+- **集成隔离**：Module E 只能消费 `docs/API.md` 的公共契约；上游 submodule 默认只读，最小补丁须独立记录来源、理由、许可证和维护方式
 
 ---
 
 ## 2. 核心数据模型
 
 ```jsonc
-// evidence：原始证据（可追溯源）
+// evidence：原始证据（可追溯源）；下列为当前枚举，vNext 增加 CONVERSATION
 { "id": "evd_...", "source_type": "OCR|TOOL_RESULT|USER_BEHAVIOR|MANUAL_CONFIG",
   "raw": {}, "quality_score": 0.94, "sensitivity": 0, "scope": "user:alice", "created_at": "..." }
 
@@ -309,6 +314,8 @@ Project.PIXIU/
 │   └── docs/                  # 后端文档
 ├── frontend/                  # Module A: PIXIU 记忆控制台
 │   └── docs/                  # 前端文档
+├── integrations/
+│   └── kylin_agent/           # Module E: Agent/MemoryProvider 适配（待实现）
 └── third_party/
     ├── kylin-agent/           # 官方桌面 Agent
     ├── kylin-agent-runtime/   # 官方 Agent 运行时/记忆扩展点
@@ -316,4 +323,5 @@ Project.PIXIU/
     └── libkysdk-vector-engine-client/
 ```
 
-详细架构见 `backend/engine/docs/ARCHITECTURE.md`、`backend/foundation/docs/ARCHITECTURE.md`、`frontend/docs/ARCHITECTURE.md`。
+详细架构见 `backend/engine/docs/ARCHITECTURE.md`、`backend/foundation/docs/ARCHITECTURE.md`、
+`frontend/docs/ARCHITECTURE.md` 和 `decisions/0001-use-openkylin-agent-host.md`。

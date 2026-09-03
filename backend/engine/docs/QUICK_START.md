@@ -1,5 +1,8 @@
 # 模块 B · 记忆业务引擎 —— 快速启动
 
+> 当前命令只验证现有四类 Connector。已批准的 `CONVERSATION` 与增强
+> `TOOL_RESULT` vNext 契约尚未实现，测试通过不等于 Agent 生命周期闭环通过。
+
 ---
 
 ## 环境

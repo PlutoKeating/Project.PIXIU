@@ -8,6 +8,8 @@
 > [!CAUTION]
 > 当前 Foundation 是记忆基础设施而非完整 Agent；SQLite/INT8 语义扫描只可作为
 > 降级/对照，尚未满足系统 Vector Engine 硬门槛。
+> 团队已批准 Module E 通过公共 API 接入；Foundation 不承载 Agent 循环。vNext
+> 需要补 capability/runtime、Agent 关联 ID 和短中期 context 写入契约。
 
 > **当前状态（2026-08-11）**：Phase 0~5 全部完成——retrieval、flow、sync（CRDT）、
 > eval（评测框架+基准）、D-Bus 服务均已落地，当前 24 个 REST 端点真实实现。

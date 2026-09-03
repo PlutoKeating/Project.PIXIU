@@ -10,6 +10,15 @@
 > **赛题状态纠偏（2026-09-03）**：下列“已完成”仅表示适配代码和记忆引擎模块
 > 已实现，不表示 H-02/H-03 通过。系统 Vector Engine 生产接线是 P0 未完成项；
 > Embedding 需用最终版本在 V11 重新形成真实调用证据。
+> 团队批准的 Agent 路线同时重新打开 ingest 契约：增加 `CONVERSATION` Connector，
+> 扩展 `TOOL_RESULT` 运行来源，并对接 Module E 生命周期。该工作未实现前保持 🔴。
+
+### 🔴 已批准的 Agent 接入任务
+
+- B-A1：定义 `CONVERSATION` raw schema（user/assistant、session_id、turn_id、时间和 scope）。
+- B-A2：扩展 `TOOL_RESULT` schema（run_id、tool_call_id、工具名、审批状态和来源）。
+- B-A3：清洗、质量、敏感检测、偏好/知识抽取支持上述来源并保留 evidence 追溯。
+- B-A4：与 C/E 完成契约测试；禁止用现有 `TOOL_RESULT` 类型伪装普通对话。
 
 - ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
   全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /

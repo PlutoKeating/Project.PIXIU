@@ -4,6 +4,11 @@
 > 整个软件"的快速路径。各模块详细启动文档见各自 `docs/QUICK_START.md`；
 > 打包/CICD 细节见 `build/release/README.md`。
 
+> [!IMPORTANT]
+> 本指南当前启动的是 PIXIU 记忆服务与记忆控制台，不是完整 OS Agent。团队已批准
+> 由待实现的 Module E 接入 openKylin `kylin-agent`/`agent-runtime`；在该适配和
+> V11 双 SDK 严格验证完成前，下列命令只能用于开发回归。
+
 ---
 
 ## 环境要求
@@ -21,6 +26,7 @@
 | 模块 A（前端） | `cmake -S frontend -B build/frontend -DPIXIU_HAVE_KYSDK=OFF && cmake --build build/frontend` | `frontend/docs/QUICK_START.md` |
 | 模块 B（引擎） | `pip install -r backend/requirements.txt && python -m pytest backend/engine/tests -q` | `backend/engine/docs/QUICK_START.md` |
 | 模块 C（基础设施） | `python -m backend.foundation.api.http_app`（默认 127.0.0.1:8765） | `backend/foundation/docs/QUICK_START.md` |
+| 模块 E（Agent 适配） | 尚未实现，不提供虚假启动命令 | `docs/decisions/0001-use-openkylin-agent-host.md` |
 
 ## 开发模式运行
 
@@ -49,6 +55,9 @@ PIXIU_BACKEND_URL=http://127.0.0.1:8765 ./build/frontend/pixiu-frontend
 ```
 
 ## 打包并安装整个软件（生产路径）
+
+> 当前命令生成记忆服务 + 控制台基线包，不含尚未实现的 Module E；完整最终包的
+> 图形安装、一键升级和版本门禁以 `DELIVERY_PLAN.md` 为准。
 
 ```bash
 # 一键构建整包 .deb（前端+后端+本地 SQLite 记忆/同步库 + systemd 服务）

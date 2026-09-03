@@ -9,6 +9,9 @@
 > 麒麟 SDK 绑定（embedding/OCR）本机构建成功；同步网络（默认开启）与被动监控四批次
 > （掌控层/目录监视/行为偏好/递送层）已全部落地。全量测试：后端 pytest 673 passed、
 > 前端 ctest 32/32、`regression.sh` 双路径绿。
+>
+> 团队已批准由外部 Module E (`integrations/kylin_agent/`) 通过公共 HTTP/WS 契约
+> 接入 openKylin Agent。本后端仍只负责记忆能力，不承载会话、规划或工具循环。
 
 ---
 
@@ -39,7 +42,7 @@
 ### 2.1 写入路径（引擎主导）
 
 ```
-来源(Tool/Behavior/Config/OCR)
+来源(Tool/Behavior/Config/OCR；vNext 增加 Conversation)
   → engine/security:detector 敏感预检
   → engine/ingest: Cleaner → Normalizer → Quality
   → 落 evidence（通过 Repository 接口）<50ms → ACK

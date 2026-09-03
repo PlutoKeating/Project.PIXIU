@@ -1,5 +1,10 @@
 # 麒麟 SDK Python 绑定构建
 
+> [!CAUTION]
+> 绑定可编译不等于赛题双 SDK 通过。当前 Vector Engine 尚未接管生产 Repository/
+> retrieval，H-02 仍不通过；最终必须在 V11 严格画像验证实际建库、写入、删除和查询。
+> 软件包名还须以目标机 profile 与官方 SDK 源为准，不以本文示例替代环境取证。
+
 本目录包含两个 pybind11 绑定模块，分别封装麒麟官方 SDK：
 
 | 模块 | SDK | 说明 |

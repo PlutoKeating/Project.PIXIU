@@ -21,8 +21,10 @@
 
 - `docs/OriginProblemDescription.md` —— 赛题原文与附录 A 场景
 - `docs/AcceptanceTestSpecification.md` —— 功能/性能/交付验收条目
+- `docs/DELIVERY_PLAN.md` —— 单一安装包、版本/升级与 D-01～D-10 文档门禁
 - `docs/完整赛题要求.pptx` —— 2026.05 赛方完整宣讲材料与硬门槛（必须实际读取，不得仅依赖摘要）
 - `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` —— 完整 Agent 接入决策、代码事实与赛题差距
+- `docs/decisions/0001-use-openkylin-agent-host.md` —— 已批准的 Agent 宿主与适配边界
 
 `docs/OriginProblemDescription.md` 与 `docs/完整赛题要求.pptx` 两份赛事官方
 材料是只读权威原件，**禁止编辑、增删、重排或在文件内部追加
@@ -41,6 +43,7 @@
 | **Module B** — 记忆业务引擎 | `backend/engine/` | `backend/engine/docs/ARCHITECTURE.md`、`backend/engine/docs/DEV_TASKS.md` |
 | **Module C** — 后台基础设施 | `backend/foundation/` | `backend/foundation/docs/ARCHITECTURE.md`、`backend/foundation/docs/DEV_TASKS.md` |
 | **Module D** — 测试与工具 | `backend/scripts/`、`backend/tests/` | `backend/docs/SUPPORT_TASKS.md` |
+| **Module E** — Agent 集成适配 | `integrations/kylin_agent/` | `docs/decisions/0001-use-openkylin-agent-host.md`、`docs/API.md` |
 
 如果任务涉及某个模块，Agent 必须阅读该模块的全部文档。
 
@@ -55,6 +58,10 @@ Agent 须严格遵守 [DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md) 第 5.1 �
 | Module A | `frontend/` 全部 | `backend/` 任何文件 |
 | Module B | `backend/engine/` + `backend/foundation/core/`（仅接口） | `backend/foundation/api/storage/retrieval/flow/sync/eval/` |
 | Module C | `backend/foundation/`（engine 除外） | `backend/engine/` 任何文件 |
+| Module E | `integrations/kylin_agent/` 全部 | `frontend/`、`backend/`、`third_party/` 任何文件 |
+
+Module E 只能通过 `docs/API.md` 的公共契约访问 PIXIU；不得直接导入后端私有实现。
+`third_party/kylin-agent*` 默认只读，确需最小上游补丁时必须先形成新的已批准 ADR。
 
 ### 1.4 阅读后的执行要求
 
