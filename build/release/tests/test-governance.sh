@@ -4,7 +4,25 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 CHECKER="${ROOT}/build/release/scripts/verify-governance.sh"
 TMP="$(mktemp -d)"
-trap 'rm -rf "${TMP}"' EXIT
+
+cleanup() {
+    local test_status="$?"
+    local attempt
+
+    # A detached Git maintenance process can briefly recreate fixture object
+    # directories while the runner removes them.  Cleanup must not turn an
+    # otherwise passing governance gate into a false failure.
+    for attempt in 1 2 3; do
+        if rm -rf -- "${TMP}" 2>/dev/null; then
+            return "${test_status}"
+        fi
+        sleep 0.1
+    done
+    printf 'warning: could not completely remove test fixture: %s\n' "${TMP}" >&2
+    return "${test_status}"
+}
+
+trap cleanup EXIT
 
 make_fixture() {
     local fixture="$1"

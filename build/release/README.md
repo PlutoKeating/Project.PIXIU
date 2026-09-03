@@ -25,6 +25,8 @@ make -C build/release governance
 包含未提交修改或未跟踪文件的工作区；CI 也执行同一检查。开发中仅需单独核验原件
 时可运行 `build/release/scripts/verify-governance.sh --allow-dirty`，但该选项不得用于
 候选发布审计。版本一致性继续由 `build-deb.sh` 在任何打包前强制检查。
+治理测试的临时 Git fixture 采用有界重试清理，并始终保留实际测试退出码，避免后台
+Git 维护造成的瞬时目录竞争把已通过门禁误报为失败；真实校验失败仍原样返回非零。
 
 ## 目录结构
 
