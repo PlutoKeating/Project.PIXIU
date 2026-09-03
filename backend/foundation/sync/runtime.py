@@ -202,13 +202,24 @@ class SyncRuntime:
 
     async def stop(self) -> None:
         self._scheduler.stop()
-        if self._task is not None:
-            await self._task
-            self._task = None
-        await self._discovery.close()
-        if self._server is not None:
-            await self._server.close()
-            self._server = None
+        task = self._task
+        self._task = None
+        try:
+            if task is not None:
+                # A round can be inside mDNS discovery or a bounded peer request.
+                # Merely setting the scheduler event only affects the sleep between
+                # rounds and can therefore exceed the service stop deadline.
+                if not task.done():
+                    task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+        finally:
+            await self._discovery.close()
+            if self._server is not None:
+                await self._server.close()
+                self._server = None
 
 
 async def create_sync_runtime(

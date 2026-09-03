@@ -174,7 +174,7 @@ git submodule update --init --recursive
 | `sync/protocol.py` | ★★ | 已配对 sender + 签名 SyncOp 协议 |
 | `sync/gossip.py` | ★★ | 有界 fanout、ACK 与持久化重传 |
 | `sync/materializer.py` | ★★ | CRDT 胜者物化到本地仓储 |
-| `sync/runtime.py` | ★ | 默认开启的 mDNS/mTLS 生命周期（缺配置自动降级） |
+| `sync/runtime.py` | ★ | 默认开启的 mDNS/mTLS 生命周期（缺配置自动降级）；停机取消当前轮次并完成资源清理 |
 | `sync/scheduler.py` | ★ | 同步轮次调度 + 退避 |
 
 ### eval/ —— 评测框架

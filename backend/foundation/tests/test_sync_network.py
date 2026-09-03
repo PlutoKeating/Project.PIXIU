@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import sqlite3
 from dataclasses import replace
 from pathlib import Path
@@ -278,5 +279,61 @@ async def test_runtime_lifecycle_uses_in_memory_adapters(nodes):
     assert runtime.running is True
     assert discovery.registered is not None
     await runtime.stop()
+    assert discovery.closed is True
+    assert server.closed is True
+
+
+@pytest.mark.asyncio
+async def test_runtime_stop_cancels_an_in_flight_round(nodes):
+    (_, store_a, _), _, identity_a, _ = nodes
+    round_started = asyncio.Event()
+
+    class BlockingDiscovery:
+        def __init__(self):
+            self.closed = False
+
+        async def register(self, _info):
+            return None
+
+        async def discover(self, _timeout_seconds):
+            round_started.set()
+            await asyncio.Event().wait()
+
+        async def close(self):
+            self.closed = True
+
+    class MemoryServer:
+        def __init__(self):
+            self.closed = False
+
+        async def close(self):
+            self.closed = True
+
+    class UnusedGossip:
+        async def run_once(self):
+            raise AssertionError("gossip must not run while discovery is blocked")
+
+    discovery = BlockingDiscovery()
+    server = MemoryServer()
+
+    async def start_server():
+        return server
+
+    runtime = SyncRuntime(
+        identity=identity_a,
+        store=store_a,
+        discovery=discovery,
+        directory=TrustedPeerDirectory(store_a, "shared:home"),
+        gossip=UnusedGossip(),
+        service_info=object(),
+        server_starter=start_server,
+        interval_seconds=60,
+    )
+    await runtime.start()
+    await asyncio.wait_for(round_started.wait(), timeout=0.5)
+
+    await asyncio.wait_for(runtime.stop(), timeout=0.5)
+
+    assert runtime.running is False
     assert discovery.closed is True
     assert server.closed is True
