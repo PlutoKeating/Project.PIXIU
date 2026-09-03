@@ -43,6 +43,21 @@ PIXIU_INCLUDE_TESTS="${PIXIU_INCLUDE_TESTS:-0}"
 PIXIU_INSTALL_STRICT="${PIXIU_INSTALL_STRICT:-0}"
 PIXIU_FRONTEND_BUILD_DIR="${PIXIU_FRONTEND_BUILD_DIR:-$(frontend_build_dir)}"
 
+case "${PIXIU_INSTALL_STRICT}" in
+    0|1) ;;
+    *) die "PIXIU_INSTALL_STRICT must be 0 or 1" ;;
+esac
+if [ "${PIXIU_KYSDK}" = "ON" ] && [ "${PIXIU_INSTALL_STRICT}" != "1" ]; then
+    die "KYSDK=ON packages must use strict install and activation checks"
+fi
+if [ "${PIXIU_INSTALL_STRICT}" = "1" ] && [ "${PIXIU_KYSDK}" != "ON" ]; then
+    die "strict install checks require KYSDK=ON"
+fi
+if [ "${PIXIU_PROFILE}" = "kylin-v11-native-x86_64" ] \
+   && { [ "${PIXIU_KYSDK}" != "ON" ] || [ "${PIXIU_INSTALL_STRICT}" != "1" ]; }; then
+    die "native Kylin V11 profile requires KYSDK=ON and PIXIU_INSTALL_STRICT=1"
+fi
+
 resolve_version
 log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSDK} wheels=${PIXIU_BUNDLE_WHEELS} py=${PIXIU_PYTHON_VERSION}"
 
@@ -287,6 +302,8 @@ sed "s/@PRODUCT_VERSION@/${PIXIU_VERSION}/g" \
     "${DEB_SRC}/pixiu-backend.service" \
     > "${STAGE}/lib/systemd/system/pixiu-backend.service"
 printf '%s\n' "${PIXIU_VERSION}" > "${STAGE}/usr/share/pixiu/VERSION"
+printf '%s\n' "${PIXIU_INSTALL_STRICT}" \
+    > "${STAGE}/usr/share/pixiu/install-strict"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \

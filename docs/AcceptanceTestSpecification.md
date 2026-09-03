@@ -31,10 +31,11 @@
 
 H-02 允许 SQLite 保存结构化元数据、关系和审计，但向量的生产存储/检索必须经过指定系统向量数据库。BGE-M3 等模型只能作为对比实验，不能替代 H-03。
 
-严格原生包现有 `preinst` 在解包前验证 Kylin V11、目标架构、桌面 Agent、已验证
-0.9.x runtime 与双 SDK 包状态，组件清单记录 `install_strict=true`；隔离测试覆盖
-成功、非 V11、runtime 缺失/不兼容和 SDK 缺失。该门禁只能证明拒绝语义，不能替代
-H-02/H-03 的真实 SDK 调用证据。
+严格原生包采用三段验证：`preinst` 在解包前验证 Kylin V11/目标架构；Debian 解析
+双 SDK 依赖后，后端 strict 启动预检验证实际运行能力；桌面用户激活 Provider 时检查
+Agent 宿主，并要求 runtime `--version` 成功且唯一匹配 0.9.x。构建器拒绝 KYSDK 与
+strict 模式错配，组件清单记录 `install_strict=true`。这些门禁只能证明拒绝语义，
+不能替代 H-02/H-03 的真实 SDK 调用证据。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

@@ -9,6 +9,7 @@ PLUGIN_ROOT="${AGENT_HOME}/plugins"
 DEST="${PLUGIN_ROOT}/pixiu"
 MARKER="${DEST}/.pixiu-managed"
 QUIET=0
+STRICT_FILE="${PIXIU_AGENT_DEFAULT_STRICT_FILE:-/usr/share/pixiu/install-strict}"
 
 if [ "${1:-}" = "--quiet" ]; then
     QUIET=1
@@ -35,6 +36,46 @@ esac
 [ -f "${SOURCE}/__init__.py" ] || fail "packaged provider is missing" 2
 [ -f "${SOURCE}/plugin.yaml" ] || [ -f "${SOURCE}/plugin.yaml.in" ] \
     || fail "provider manifest is missing" 2
+
+DEFAULT_STRICT=0
+if [ -f "${STRICT_FILE}" ]; then
+    DEFAULT_STRICT="$(tr -d '\r\n' < "${STRICT_FILE}")"
+fi
+case "${DEFAULT_STRICT}" in
+    0|1) ;;
+    *) fail "packaged strict-mode marker is invalid" 2 ;;
+esac
+
+# The Agent runtime is owned by the desktop user and may legitimately live in
+# ~/.local/bin. Validate it in this user-context activation step, before any
+# profile mutation, rather than in root's Debian preinst environment.
+HOST="${PIXIU_AGENT_HOST_BIN:-}"
+if [ -z "${HOST}" ]; then
+    HOST="$(command -v kylin-agent 2>/dev/null || true)"
+fi
+[ -n "${HOST}" ] && [ -x "${HOST}" ] \
+    || fail "openKylin Agent desktop host is not available" 4
+
+RUNTIME="${PIXIU_AGENT_RUNTIME_BIN:-}"
+if [ -z "${RUNTIME}" ]; then
+    if command -v kylin-agent-runtime >/dev/null 2>&1; then
+        RUNTIME="$(command -v kylin-agent-runtime)"
+    elif command -v hermes >/dev/null 2>&1; then
+        RUNTIME="$(command -v hermes)"
+    else
+        fail "openKylin Agent runtime not found" 4
+    fi
+fi
+[ -x "${RUNTIME}" ] || fail "openKylin Agent runtime is not executable" 4
+if ! RUNTIME_VERSION_OUTPUT="$("${RUNTIME}" --version 2>&1)"; then
+    fail "openKylin Agent runtime version command failed" 4
+fi
+RUNTIME_VERSION="$(printf '%s\n' "${RUNTIME_VERSION_OUTPUT}" \
+    | grep -Eo '0\.9\.[0-9]+' || true)"
+VERSION_COUNT="$(printf '%s\n' "${RUNTIME_VERSION}" | grep -c . || true)"
+[ "${VERSION_COUNT}" = "1" ] \
+    && printf '%s\n' "${RUNTIME_VERSION}" | grep -Eq '^0\.9\.[0-9]+$' \
+    || fail "openKylin Agent runtime must report exactly one verified 0.9.x version" 4
 
 mkdir -p "${PLUGIN_ROOT}"
 if [ -e "${DEST}" ] && [ ! -f "${MARKER}" ]; then
@@ -93,18 +134,15 @@ grep -q '^PIXIU_AGENT_ENDPOINT=' "${ENV_FILE}" \
     || printf '%s\n' 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' >> "${ENV_FILE}"
 grep -q '^PIXIU_AGENT_SCOPE=' "${ENV_FILE}" \
     || printf '%s\n' 'PIXIU_AGENT_SCOPE=user:default' >> "${ENV_FILE}"
-grep -q '^PIXIU_AGENT_STRICT=' "${ENV_FILE}" \
-    || printf '%s\n' 'PIXIU_AGENT_STRICT=0' >> "${ENV_FILE}"
-
-RUNTIME="${PIXIU_AGENT_RUNTIME_BIN:-}"
-if [ -z "${RUNTIME}" ]; then
-    if command -v kylin-agent-runtime >/dev/null 2>&1; then
-        RUNTIME="$(command -v kylin-agent-runtime)"
-    elif command -v hermes >/dev/null 2>&1; then
-        RUNTIME="$(command -v hermes)"
+if [ "${DEFAULT_STRICT}" = "1" ]; then
+    if grep -q '^PIXIU_AGENT_STRICT=' "${ENV_FILE}"; then
+        sed -i 's/^PIXIU_AGENT_STRICT=.*/PIXIU_AGENT_STRICT=1/' "${ENV_FILE}"
     else
-        fail "openKylin Agent runtime not found; provider installed but not activated" 4
+        printf '%s\n' 'PIXIU_AGENT_STRICT=1' >> "${ENV_FILE}"
     fi
+else
+    grep -q '^PIXIU_AGENT_STRICT=' "${ENV_FILE}" \
+        || printf '%s\n' 'PIXIU_AGENT_STRICT=0' >> "${ENV_FILE}"
 fi
 
 HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set memory.provider pixiu >/dev/null \

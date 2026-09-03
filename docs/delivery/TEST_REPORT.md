@@ -19,9 +19,11 @@ Module E 模板和成包 manifest 的派生关系，并拒绝显式版本漂移�
 接线还会校验包内 commit/版本/架构、拒绝输出覆盖输入、记录规范化生成命令，并为
 清单本身生成 checksum 和 Ed25519 签名。最终报告仍须用最终候选六件套
 复验并归档原始输出。
-安装前门禁的隔离测试覆盖 generic 降级放行，以及 strict 模式的 Kylin V11 成功、
-非 V11、Agent runtime 缺失、runtime 非 0.9.x 和 SDK 包缺失拒绝；实际 generic
-`.deb` 控制归档已确认 `STRICT_NATIVE=0`。最终严格包仍须在目标 V11 保存真实结果。
+分阶段门禁测试覆盖 generic 放行、strict 的 Kylin V11/架构成功与拒绝、构建期
+KYSDK/strict 错配拒绝，以及用户态 Agent/runtime 缺失、版本命令失败、非 0.9.x、
+歧义版本输出拒绝；失败发生在 Provider 目录写入前。实际 generic `.deb` 控制归档已
+确认 `STRICT_NATIVE=0`。双 SDK 包依赖和后端 strict 预检已有独立测试；最终严格包仍须
+在目标 V11 保存完整真实结果。
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine

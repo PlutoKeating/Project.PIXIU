@@ -104,13 +104,16 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 | `kylin-v11-native-x86_64` | 麒麟 V11 x86_64 严格验收 | `KYSDK=ON`；前端 KylinSDK 与后端 Embedding/Vector pybind 扩展缺一即构建失败；双 SDK 为 Depends |
 | `generic-ubuntu` | Ubuntu CI/开发机 | python3-venv 可用；Qt5 非 t64 包名；wheels 按 cp312 |
 
-严格原生画像还会把 `preinst` 渲染为 fail-closed 探测：要求 Kylin V11、包/系统架构
-一致、`kylin-agent` 可执行、Agent runtime 可报告 0.9.x，以及两个 SDK 包均处于
-installed 状态；失败发生在 PIXIU 文件解包前。generic 与 portable Kylin 画像渲染
-为非严格模式，缺少专有能力时仍可安装核心记忆服务，其结果不得作为原生验收。
+严格原生画像会把 `preinst` 渲染为 fail-closed 平台探测，在 PIXIU 文件解包前要求
+Kylin V11 且包/系统架构一致。双 SDK 由 Debian `Depends` 解析并由后端严格启动预检
+验证；Agent/runtime 因允许用户态安装，改在桌面用户激活 Provider 时检查，要求宿主
+可执行且 runtime 版本命令成功、只报告一个 0.9.x 版本。严格启动器在该步失败时不会
+继续打开控制台。generic 与 portable Kylin 画像保留非严格模式，其结果不得作为原生
+验收。构建器同时强制 `KYSDK=ON` 与 `install_strict=1` 成对，禁止环境覆盖降级。
 
 新增平台时：拷贝一份画像并修改事实字段即可，流水线其余部分无需改动。
-构建时用 `PIXIU_PROFILE` 选择画像（显式环境变量优先级高于画像）。
+构建时用 `PIXIU_PROFILE` 选择画像（显式环境变量优先级高于画像，但不得破坏
+`KYSDK=ON`/`install_strict=1` 不变量）。
 
 ## 快速使用
 

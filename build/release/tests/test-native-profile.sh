@@ -35,4 +35,17 @@ grep -q 'runs-on: \[self-hosted, linux, x64, kylin-v11\]' \
 grep -q 'PIXIU_VECTOR_STORE=kylin' \
     "${ROOT}/.github/workflows/kylin-native.yml"
 
+if PIXIU_PROFILE=kylin-v11-native-x86_64 PIXIU_KYSDK=ON \
+        PIXIU_INSTALL_STRICT=0 PIXIU_SKIP_TESTS=1 \
+        "${ROOT}/build/release/scripts/build-deb.sh" >/dev/null 2>&1; then
+    echo "native KYSDK builds must not disable strict install checks" >&2
+    exit 1
+fi
+if PIXIU_PROFILE=generic-ubuntu PIXIU_KYSDK=OFF PIXIU_INSTALL_STRICT=1 \
+        PIXIU_SKIP_TESTS=1 \
+        "${ROOT}/build/release/scripts/build-deb.sh" >/dev/null 2>&1; then
+    echo "strict install checks must not be paired with KYSDK=OFF" >&2
+    exit 1
+fi
+
 echo "native profile tests: OK"

@@ -22,9 +22,10 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 > [!CAUTION]
 > **当前仓库尚不能宣称完整赛题验收通过。** 现有代码主体是记忆业务引擎、基础设施和专用记忆控制台；它没有实现完整的多轮 Agent 会话、模型规划循环、工具自主选择、Shell/联网搜索调用与审批闭环。当前向量检索也主要由 SQLite 中的 INT8 扫描承担，尚未把赛方指定的系统向量数据库 SDK 接入生产读写/检索链路。
 
-严格原生画像现带安装前 fail-closed 门禁：在 dpkg 写入文件前核对麒麟 V11、架构、
-`kylin-agent`、0.9.x `kylin-agent-runtime` 以及双 SDK 安装包。通用 Debian 画像明确
-保持非严格降级，两类包的 `install_strict` 会写入组件清单，不能混报。
+严格原生画像现带分阶段 fail-closed 门禁：`preinst` 在 dpkg 写入文件前核对麒麟
+V11 与架构；双 SDK 由包依赖解析，并由后端严格启动预检验证实际可用性；桌面用户
+激活 Provider 时再检查 `kylin-agent` 与唯一、成功返回的 0.9.x runtime。通用 Debian
+画像保持非严格降级，两类包的 `install_strict` 会写入组件清单，不能混报。
 
 > [!IMPORTANT]
 > **团队决策已批准。** 2026-09-03，华南理工大学 PIXIU 团队负责人批准

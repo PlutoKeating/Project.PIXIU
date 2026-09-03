@@ -7,9 +7,18 @@ if command -v systemctl >/dev/null 2>&1; then
         || systemctl start pixiu-backend.service 2>/dev/null || true
 fi
 
-# This runs as the desktop user, so the packaged provider is installed into the
-# correct Agent profile. Missing runtime/collision is reported but does not
-# prevent opening the standalone PIXIU memory console.
-/usr/bin/pixiu-agent-integrate --quiet || true
+# This runs as the desktop user, so user-local Agent runtimes are discoverable.
+# A strict native build must not open while its complete Agent integration is
+# unavailable; generic builds retain the standalone memory-console fallback.
+STRICT_FILE=/usr/share/pixiu/install-strict
+STRICT=0
+if [ -f "${STRICT_FILE}" ]; then
+    STRICT="$(tr -d '\r\n' < "${STRICT_FILE}")"
+fi
+if [ "${STRICT}" = "1" ]; then
+    /usr/bin/pixiu-agent-integrate --quiet
+else
+    /usr/bin/pixiu-agent-integrate --quiet || true
+fi
 
 exec /usr/bin/pixiu-frontend "$@"
