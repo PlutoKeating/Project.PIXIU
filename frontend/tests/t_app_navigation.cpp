@@ -484,14 +484,13 @@ void TestAppNavigation::initTestCase()
     QVERIFY(m_app->start());
 
     // 注入假升级控制器（本地假 server）：避免设置对话框点「检查更新」触发
-    // 真实 GitHub 网络。远端必须严格大于 PIXIU_VERSION，否则与产品版本
-    // 持平会走 UpToDate，升级按钮保持禁用。
+    // 真实 GitHub 网络。远端用固定的 9.9.9（x.y.z，且永远高于产品版本），
+    // 保证检查更新进入 Updatable。parseRelease 只接受三段版本号。
     m_upgradeServer = new FakeServer(this);
     QVERIFY(m_upgradeServer->start());
     m_upgradeServer->addJson("/releases/latest",
                              upgradeReleaseJson(m_upgradeServer->baseUrl(),
-                                                QStringLiteral(PIXIU_VERSION)
-                                                    + QStringLiteral(".1")));
+                                                QStringLiteral("9.9.9")));
     m_upgradeNetwork = new QNetworkAccessManager(this);
     m_upgradeController = new UpgradeController(
         m_upgradeNetwork,
