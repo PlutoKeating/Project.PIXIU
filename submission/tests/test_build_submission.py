@@ -4,6 +4,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -16,6 +17,38 @@ SPEC.loader.exec_module(MODULE)
 
 
 class SubmissionBuilderTest(unittest.TestCase):
+    def test_office_pdf_and_video_formats_are_not_extension_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pdf = root / "report.pdf"
+            pdf.write_bytes(b"%PDF-1.7\nbody\n%%EOF\n")
+            docx = root / "report.docx"
+            with zipfile.ZipFile(docx, "w") as archive:
+                archive.writestr("[Content_Types].xml", "<Types/>")
+                archive.writestr("word/document.xml", "<document/>")
+            mp4 = root / "demo.mp4"
+            mp4.write_bytes(b"\x00\x00\x00\x18ftypisom")
+            self.assertEqual(MODULE.validate_deliverable_format(pdf), [])
+            self.assertEqual(MODULE.validate_deliverable_format(docx), [])
+            self.assertEqual(MODULE.validate_deliverable_format(mp4), [])
+            fake = root / "fake.pdf"
+            fake.write_text("not a PDF", encoding="utf-8")
+            self.assertTrue(MODULE.validate_deliverable_format(fake))
+
+    def test_release_checksum_binds_artifact_name_and_content(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / "pixiu.deb"
+            package.write_bytes(b"!<arch>\nfixture")
+            checksum = root / "pixiu.deb.sha256"
+            checksum.write_text(
+                f"{MODULE.sha256(package)}  {package.name}\n", encoding="ascii"
+            )
+            self.assertEqual(MODULE.validate_deliverable_format(package), [])
+            self.assertEqual(MODULE.validate_deliverable_format(checksum), [])
+            checksum.write_text(f"{'0' * 64}  {package.name}\n", encoding="ascii")
+            self.assertTrue(MODULE.validate_deliverable_format(checksum))
+
     def test_repository_plan_is_structurally_valid(self) -> None:
         self.assertEqual(MODULE.validate_plan(MODULE.load_plan(), require_ready=False), [])
 

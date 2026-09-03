@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 import tarfile
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -217,6 +218,94 @@ def load_plan() -> dict:
         return json.load(stream)
 
 
+def validate_deliverable_format(path: Path) -> list[str]:
+    suffix = path.suffix.lower()
+    try:
+        def prefix(size: int) -> bytes:
+            with path.open("rb") as stream:
+                return stream.read(size)
+
+        if suffix == ".pdf":
+            with path.open("rb") as stream:
+                header = stream.read(8)
+                stream.seek(max(0, path.stat().st_size - 2048))
+                trailer = stream.read()
+            return [] if header.startswith(b"%PDF-") and b"%%EOF" in trailer else [f"invalid PDF structure: {path.name}"]
+        if suffix in {".docx", ".pptx"}:
+            required = (
+                {"[Content_Types].xml", "word/document.xml"}
+                if suffix == ".docx"
+                else {"[Content_Types].xml", "ppt/presentation.xml"}
+            )
+            with zipfile.ZipFile(path) as archive:
+                names = archive.namelist()
+                if (
+                    len(names) != len(set(names))
+                    or any(name.startswith("/") or ".." in Path(name).parts for name in names)
+                    or not required.issubset(names)
+                    or archive.testzip() is not None
+                ):
+                    return [f"invalid {suffix[1:].upper()} structure: {path.name}"]
+            return []
+        if suffix == ".mp4":
+            header = prefix(32)
+            return [] if len(header) >= 12 and header[4:8] == b"ftyp" else [f"invalid MP4 structure: {path.name}"]
+        if suffix == ".avi":
+            header = prefix(12)
+            return [] if header[:4] == b"RIFF" and header[8:12] == b"AVI " else [f"invalid AVI structure: {path.name}"]
+        if suffix == ".wmv":
+            asf = bytes.fromhex("3026b2758e66cf11a6d900aa0062ce6c")
+            return [] if prefix(16) == asf else [f"invalid WMV structure: {path.name}"]
+        if suffix == ".deb":
+            return [] if prefix(8) == b"!<arch>\n" else [f"invalid Debian package structure: {path.name}"]
+        if suffix == ".zip":
+            with zipfile.ZipFile(path) as archive:
+                names = archive.namelist()
+                if (
+                    not names
+                    or len(names) != len(set(names))
+                    or any(name.startswith("/") or ".." in Path(name).parts for name in names)
+                    or archive.testzip() is not None
+                ):
+                    return [f"invalid ZIP structure: {path.name}"]
+            return []
+        if suffix == ".sha256":
+            match = re.fullmatch(r"([0-9a-f]{64})  ([^\r\n]+)\r?\n?", path.read_text(encoding="ascii"))
+            artifact = path.with_suffix("")
+            if (
+                match is None
+                or match.group(2) != artifact.name
+                or not artifact.is_file()
+                or match.group(1) != sha256(artifact)
+            ):
+                return [f"invalid or mismatched SHA-256 file: {path.name}"]
+            return []
+        if suffix == ".sig":
+            checksum = path.with_suffix("")
+            checksum_errors = validate_deliverable_format(checksum)
+            if checksum_errors:
+                return checksum_errors
+            digest = checksum.read_text(encoding="ascii").split()[0]
+            with tempfile.NamedTemporaryFile("w", encoding="ascii") as stream:
+                stream.write(digest + "\n")
+                stream.flush()
+                result = subprocess.run(
+                    [
+                        "openssl", "pkeyutl", "-verify", "-pubin", "-rawin",
+                        "-in", stream.name,
+                        "-inkey", str(ROOT / "build/release/keys/pixiu-release-ed25519.pub"),
+                        "-sigfile", str(path),
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                )
+            return [] if result.returncode == 0 else [f"invalid release signature: {path.name}"]
+    except (OSError, UnicodeError, subprocess.SubprocessError, zipfile.BadZipFile):
+        return [f"unreadable deliverable format: {path.name}"]
+    return []
+
+
 def validate_final_device_evidence(
     evidence_path: Path, *, release_commit: str, candidate_package: Path
 ) -> list[str]:
@@ -312,12 +401,18 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
         if git("status", "--porcelain"):
             errors.append("Git worktree is not clean")
         for relative in paths:
-            if not (FINAL_ROOT / name / relative).is_file():
+            final_path = FINAL_ROOT / name / relative
+            if not final_path.is_file():
                 errors.append(f"missing final deliverable: {relative}")
+            else:
+                errors.extend(validate_deliverable_format(final_path))
         for item in plan.get("external_materials", []):
             relative = item.get("path", "")
-            if not relative or not (FINAL_ROOT / name / relative).is_file():
+            external_path = FINAL_ROOT / name / relative
+            if not relative or not external_path.is_file():
                 errors.append(f"missing external material: {relative}")
+            else:
+                errors.extend(validate_deliverable_format(external_path))
         evidence_path = FINAL_ROOT / name / FINAL_DEVICE_EVIDENCE
         package_paths = [
             FINAL_ROOT / name / relative

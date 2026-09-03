@@ -196,6 +196,11 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 
 `build_submission.py --package` 会额外解析 D-07 三设备总报告，核对四场景、关键检查、
 严格 V11 画像、Agent Runtime、release commit 和最终 `.deb` 摘要，而非只做存在性检查。
+仓库现以 `submission/render_documents.py` 将 D-02/D-03/D-04/D-06～D-10 的 Markdown
+权威源统一生成 A4 DOCX/PDF：草稿强制标明不得提交；最终模式要求除文档人工审核外
+所有门已通过、源码状态行不存在待办并绑定洁净 `release_commit`。最终打包器进一步
+解析 PDF/DOCX/PPTX/ZIP/视频的文件签名或容器结构，校验 `.deb` ar 头、摘要文件中的
+文件名与实物 SHA-256，并使用固定 Ed25519 公钥验证签名，不能只靠扩展名过门。
 
 最终外层目录和 ZIP 名固定为
 `华南理工大学－OSAgent记忆优化及高效应用研究－PIXIU`；自动打包前还必须放入团队
