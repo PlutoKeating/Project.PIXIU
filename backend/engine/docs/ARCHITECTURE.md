@@ -124,7 +124,7 @@ evidence → structurer（结构化）
     → 文本：语义相似度判断反义
   → 裁决：默认 NEW_WINS（旧版 SUPERSEDED）
     → `source=sync` 时先按 updated_at、created_at、id 的全序确定胜负，
-      相反到达顺序仍得到相同 ACTIVE/SUPERSEDED、version 与正文
+      并沿用胜者时间戳；相反到达顺序仍得到相同状态、version、时间与正文
     → MERGE 的扩展判定对输入方向对称，合并 evidence ID 稳定排序
   → 生成 ConflictRecord{old, new, resolution}
 ```

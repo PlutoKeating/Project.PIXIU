@@ -53,7 +53,8 @@
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
 - 测试：2026-09-04 当前 Engine 152 项、Foundation 626 项、Module E 17 项通过
   （组合回归 795 passed，10 条既有依赖弃用告警，无失败）；新增反向到达测试证明
-  同一对远端矛盾知识按稳定全序选择相同胜者，MERGE 在较新项为字段子集时仍保留扩展；
+  同一对远端矛盾知识按稳定全序选择相同胜者并沿用其时间戳，MERGE 在较新项为字段
+  子集时仍保留扩展；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
   打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，

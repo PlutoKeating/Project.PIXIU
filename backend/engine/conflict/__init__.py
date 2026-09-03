@@ -77,7 +77,13 @@ class ConflictService:
                 continue
             if source != "write":
                 record.source = source
-            await self._apply_resolution(loser, winner, record)
+                record.created_at = winner.updated_at
+            resolved_at = (
+                winner.updated_at if source == "sync" else int(time.time())
+            )
+            await self._apply_resolution(
+                loser, winner, record, resolved_at=resolved_at
+            )
             return record
 
         await self._knw_repo.save(new_item)
@@ -99,27 +105,37 @@ class ConflictService:
         existing: KnowledgeItem,
         new_item: KnowledgeItem,
         record: ConflictRecord,
+        *,
+        resolved_at: int,
     ) -> None:
         resolution = record.resolution
         if resolution == ConflictResolution.MERGE:
-            await self._apply_merge(existing, new_item, record)
+            await self._apply_merge(
+                existing, new_item, record, resolved_at=resolved_at
+            )
         elif resolution == ConflictResolution.MANUAL:
-            await self._apply_manual(existing, new_item, record)
+            await self._apply_manual(
+                existing, new_item, record, resolved_at=resolved_at
+            )
         else:
-            await self._apply_new_wins(existing, new_item, record)
+            await self._apply_new_wins(
+                existing, new_item, record, resolved_at=resolved_at
+            )
 
     async def _apply_new_wins(
         self,
         existing: KnowledgeItem,
         new_item: KnowledgeItem,
         record: ConflictRecord,
+        *,
+        resolved_at: int,
     ) -> None:
         existing.status = "SUPERSEDED"
-        existing.updated_at = int(time.time())
+        existing.updated_at = resolved_at
         await self._knw_repo.save(existing)
 
         new_item.version = max(existing.version + 1, new_item.version)
-        new_item.updated_at = int(time.time())
+        new_item.updated_at = resolved_at
         await self._knw_repo.save(new_item)
 
         await self._conflict_repo.save(record)
@@ -129,11 +145,13 @@ class ConflictService:
         existing: KnowledgeItem,
         new_item: KnowledgeItem,
         record: ConflictRecord,
+        *,
+        resolved_at: int,
     ) -> None:
         # 保留两条知识 ACTIVE，让人工后续裁决。
         await self._knw_repo.save(existing)
         new_item.version = max(existing.version + 1, new_item.version)
-        new_item.updated_at = int(time.time())
+        new_item.updated_at = resolved_at
         await self._knw_repo.save(new_item)
         await self._conflict_repo.save(record)
 
@@ -142,18 +160,20 @@ class ConflictService:
         existing: KnowledgeItem,
         new_item: KnowledgeItem,
         record: ConflictRecord,
+        *,
+        resolved_at: int,
     ) -> None:
         merged = copy.deepcopy(existing)
         merged.id = new_item.id  # 复用新知识的 id，避免额外 id 空间
         merged.body = _merge_bodies(existing.body, new_item.body)
         merged.version = max(existing.version + 1, new_item.version)
-        merged.updated_at = int(time.time())
+        merged.updated_at = resolved_at
         merged.evidence_ids = list(
             sorted(set(merged.evidence_ids or []) | set(new_item.evidence_ids or []))
         )
 
         existing.status = "SUPERSEDED"
-        existing.updated_at = int(time.time())
+        existing.updated_at = resolved_at
         await self._knw_repo.save(existing)
         await self._knw_repo.save(merged)
         await self._conflict_repo.save(record)

@@ -140,10 +140,13 @@ async def test_sync_conflict_converges_independent_of_arrival_direction() -> Non
         assert knowledge.items[newer.id].status == "ACTIVE"
         assert knowledge.items[newer.id].version == 2
         assert knowledge.items[newer.id].body["amount"] == 230
+        assert knowledge.items[older.id].updated_at == newer.updated_at
+        assert knowledge.items[newer.id].updated_at == newer.updated_at
     assert record_a is not None and record_b is not None
     assert record_a.target_knowledge == record_b.target_knowledge == older.id
     assert record_a.old_value == record_b.old_value == 210
     assert record_a.new_value == record_b.new_value == 230
+    assert record_a.created_at == record_b.created_at == newer.updated_at
     assert conflicts_a.records[0].source == conflicts_b.records[0].source == "sync"
 
 
