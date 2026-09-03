@@ -19,7 +19,7 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 
 | 项目 | x86_64 | arm64 | 必须证据 |
 |------|--------|-------|----------|
-| V11 图形安装/卸载 | 命令行 portable 升级已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
+| V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
 | openKylin Agent + Module E | 未完成 | 未完成 | 版本、provider 加载、完整 run |
 | Embedding SDK | 待最终证据 | 待真机 | runtime、调用日志、严格失败 |
 | Vector Engine SDK | H-02 未通过 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
@@ -32,8 +32,11 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 
-- amd64 `.deb` 携带 cp312 离线 wheels，非交互跨 revision 升级成功；
+- 提交 `30e0d64` 在 Kylin V11 amd64 目标环境完成本地构建，前端 ctest 37/37；
+- `.deb` 携带完整 cp312 离线 wheels，`0.1.7-3` 到测试 revision `0.1.7-4` 的
+  非交互跨 revision 升级成功，包内 helper 同版重装及安装健康检查通过；
 - `/etc/pixiu/pixiu.env` 升级前后 SHA-256 一致，配置与随机同步口令未被覆盖；
-- `pixiu-backend.service` 恢复为 active，`GET /capabilities` 正确识别 Kylin V11；
+- 核心数据逻辑计数摘要保持一致，后端报告产品 `0.1.7`、schema 12、数据库 ready；
+- `pixiu-backend.service` 为 active，`GET /capabilities` 正确识别 Kylin V11；
 - Embedding/Vector runtime 均为 `portable`、`contest_ready=false`，因此只计安装兼容
   回归，不计 H-02/H-03 或最终性能验收。

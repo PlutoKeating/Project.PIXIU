@@ -86,7 +86,7 @@ manifest，并改为由单一发布输入生成，而不是长期依赖多处手
 | D-01 | 项目报告 PPT | `delivery/PRESENTATION_AND_VIDEO.md` | `.pptx` | 内容骨架完成，最终证据待补 |
 | D-02 | 技术方案 | `delivery/TECHNICAL_SOLUTION.md` | `.docx` + `.pdf` + Markdown | 工作稿完成，最终数据待补 |
 | D-03 | 源代码 | `delivery/SOURCE_AND_LICENSES.md` | 源码包/仓库快照 | 边界完成，SBOM/最终 commit 待补 |
-| D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | portable 非交互升级/配置保留已重验；图形、原生最终包待验 |
+| D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | V11 portable 跨 revision、离线依赖、健康/配置保留已重验；图形、原生最终包待验 |
 | D-05 | 演示视频 | `delivery/PRESENTATION_AND_VIDEO.md` | `.mp4` 优先，≤7 分钟 | 脚本完成，录制待完成 |
 | D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，Agent UI 待补 |
 | D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV | portable 已有，最终 V11 待补 |

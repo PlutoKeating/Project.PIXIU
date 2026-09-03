@@ -1,7 +1,8 @@
 # D-04 银河麒麟 V11 部署指南工作稿
 
 - 适用版本：0.1.7 功能基线；最终候选号待定
-- 状态：记忆包与 Module E 安装结构可用；真实宿主和双 SDK 最终安装尚未闭环
+- 状态：Kylin V11 portable 包构建/跨 revision 安装/健康检查已通过；真实宿主和
+  双 SDK 最终安装尚未闭环
 
 ## 安装目标
 
@@ -53,6 +54,12 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 创建 `/etc/pixiu/pixiu.env`；后者不属于 dpkg conffile，升级保留并幂等迁移，避免
 每机随机口令导致非交互安装弹出配置冲突。
 卸载与 purge 的数据语义须在最终版明确区分，并在全新机、重装、升级失败上取证。
+
+2026-09-03 以提交 `30e0d64` 在 Kylin V11 amd64 目标环境执行兼容画像：前端
+ctest 37/37，通过并打入完整 cp312 离线 wheels；`0.1.7-3` 升级到测试 revision
+`0.1.7-4` 后服务 active，配置摘要与核心数据逻辑计数保持一致。再由包内特权 helper
+完成同版重装，安装健康返回产品 `0.1.7`、schema 12、数据库 ready。能力端点同时
+如实返回两个 SDK runtime 为 portable、`contest_ready=false`；该记录不替代原生验收。
 
 故障排查入口、日志位置、严格/降级差异和最终依赖包名以
 `../DELIVERY_PLAN.md`、`../../build/release/README.md` 及目标 profile 为准。

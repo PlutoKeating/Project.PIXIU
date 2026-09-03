@@ -26,6 +26,15 @@ portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、
 schema、数据库就绪状态和包内 Provider 版本；健康失败不会被 GUI 误报为成功。该
 开发证据尚不包含独立签名、旧包自动回滚、受控前端重启或最终 V11 图形操作。
 
+提交 `30e0d64` 的 Kylin V11 amd64 目标回归进一步验证：兼容画像本地构建和前端
+ctest 37/37 通过，cp312 wheels 完整随包且安装时采用离线路径；测试包
+`pixiu_0.1.7-4_amd64.deb` 的 SHA-256 为
+`f849efacfa83154b287fa081844051aaf78893fe5ececb2099002e1abb210f59`。
+从 `0.1.7-3` 跨 revision 升级后服务 active，配置摘要和 evidence/knowledge/
+preference/同步身份与 peer 的逻辑计数摘要不变；再经特权 helper 同版重装，安装健康
+返回 `0.1.7`、schema 12、数据库 ready。`/capabilities` 同时返回 Kylin V11、两个
+runtime 均为 portable、`contest_ready=false`，因此只计 D-04/R-05 兼容切片。
+
 ## 最终必须补齐
 
 - V11 中 Embedding 与 Vector Engine 实际建库/写入/查询/删除及严格失败证据；
