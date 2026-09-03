@@ -23,6 +23,7 @@ from backend.foundation.sync import (
     SyncService,
 )
 from backend.foundation.sync.anti_entropy import AntiEntropy
+from backend.foundation.sync.gc import TombstoneGC
 
 NOW = 2_000_000_000
 PASSPHRASE = "phase4-convergence-test-passphrase"
@@ -228,3 +229,62 @@ async def test_out_of_order_delivery_converges(three_nodes):
     assert (await _state_of(a, "knw:order")).payload == {"v": 2}
     assert (await _state_of(b, "knw:order")).payload == {"v": 2}
     assert (await _state_of(c, "knw:order")).payload == {"v": 2}
+
+
+# ═══════════════════════════════════════════════════════
+# 离线遗忘防复活：C 离线错过墓碑，重连补齐后旧写重放仍不可复活
+# ═══════════════════════════════════════════════════════
+
+@pytest.mark.asyncio
+async def test_three_node_offline_forget_reconciles_without_resurrection(three_nodes):
+    (a, store_a, _), (b, _, _), (c, _, _) = three_nodes
+    await _pair(a, b)
+    await _pair(b, c)
+    await _pair(a, c)
+
+    created = await a.record_local(
+        "knw:forgotten-offline", {"title": "旧共享事实"}, DOMAIN, now=NOW
+    )
+    assert await b.receive_ops([created]) == 1
+    assert await c.receive_ops([created]) == 1
+
+    # C 此时离线。B 已见过创建操作，因此删除的向量时钟因果上晚于旧值。
+    tombstone = await b.record_local(
+        "knw:forgotten-offline", {}, DOMAIN, deleted=True, now=NOW + 1
+    )
+    assert await a.receive_ops([tombstone]) == 1
+    assert (await _state_of(a, "knw:forgotten-offline")).tombstone is True
+    assert (await _state_of(c, "knw:forgotten-offline")).tombstone is False
+
+    # C 重连后按 oplog 摘要只补缺失墓碑，三节点最终收敛到删除状态。
+    c_summary = await AntiEntropy(c._store, None).summary()
+    delta = await AntiEntropy(a._store, None).delta_for(set(c_summary["op_ids"]))
+    assert [operation.op_id for operation in delta] == [tombstone.op_id]
+    assert await c.receive_ops(delta) == 1
+    converged = [
+        await _state_of(service, "knw:forgotten-offline")
+        for service in (a, b, c)
+    ]
+    assert all(state.tombstone is True for state in converged)
+
+    # 旧创建操作发生重复/乱序重放时，不得覆盖已见墓碑。
+    assert await a.receive_ops([created]) == 0
+    assert await b.receive_ops([created]) == 0
+    assert await c.receive_ops([created]) == 0
+    after_replay = [
+        await _state_of(service, "knw:forgotten-offline")
+        for service in (a, b, c)
+    ]
+    assert all(state.tombstone is True for state in after_replay)
+
+    # 只有所有未撤销节点确认墓碑后才允许回收；回收后重放相同旧 op 仍被 oplog 去重。
+    identity_b = await b.initialize()
+    identity_c = await c.initialize()
+    gc = TombstoneGC(store_a, retention_seconds=0)
+    await a.acknowledge(identity_b.id, [tombstone.op_id], now=NOW + 2)
+    assert await gc.collect(now=NOW + 2) == []
+    await a.acknowledge(identity_c.id, [tombstone.op_id], now=NOW + 2)
+    assert await gc.collect(now=NOW + 2) == ["knw:forgotten-offline"]
+    assert await _state_of(a, "knw:forgotten-offline") is None
+    assert await a.receive_ops([created]) == 0
+    assert await _state_of(a, "knw:forgotten-offline") is None

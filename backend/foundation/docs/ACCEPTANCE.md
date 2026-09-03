@@ -53,7 +53,7 @@
 
 ## 四、测试统计
 
-- 2026-09-04 最新组合回归：pytest 790 passed（Foundation 623 + Engine 150 +
+- 2026-09-04 最新组合回归：pytest 791 passed（Foundation 624 + Engine 150 +
   Module E 17），10 条既有依赖弃用告警，无失败。
 - 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`

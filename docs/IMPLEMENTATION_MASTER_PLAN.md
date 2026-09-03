@@ -92,7 +92,7 @@ W0 基线与计划
 | W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：数据库装载/断开、集合装载、upsert、delete、search；统一错误和运行时标识 | ✅ fake-native 契约及提交 `4011d0d` V11 revision 7 direct SDK 全生命周期通过 |
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam、结果类型及生产依赖注入已完成 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
-| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；790 项组合回归通过，V11 新包待 W1.6 |
+| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；791 项组合回归通过，V11 新包待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
 | W1.6 | V11 | 🟡 revision 8 已以同用户 strict 服务完成产品写入/检索/遗忘/隐藏；最终 user service、可交付组件依赖和 Agent 宿主仍待 W2.6/W5 | H-02、F4-03 通过 |
 
@@ -126,7 +126,7 @@ API 和 Embedding 闭环。
 2026-09-04 的同用户产品探针还揭示：旧组合根只创建 Vector 客户端，未执行官方要求
 的 `LoadDBFile`，所以 `/capabilities` 可误报 ready，而 `/memory/write` 返回 local
 storage not found。当前源码已加入独立数据库路径、启动装载、单例复用与关机断开，
-并以 790 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
+并以当前 791 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
 遗忘与隐藏检查；正式取证器因目标系统缺少 Agent 宿主/runtime 可执行文件而拒绝出证。
 
 W2.6 的推荐设计已写入
@@ -180,9 +180,9 @@ system service 或移动数据。
 |------|----------|----------|
 | W6.1 | 协议/CRDT/Gossip/反熵/身份/签名安全复核与故障注入 | 单元、性质和协议兼容测试 |
 | W6.2 | 三设备自动化编排与环境 manifest | 每台设备版本、时钟、网络和身份可追溯 |
-| W6.3 | A 离线写、B/C 并发更新、乱序/重复/断线、重连反熵 | 全部节点最终状态与摘要收敛 |
+| W6.3 | 🟡 三份独立数据库的三节点回归已覆盖并发更新、乱序/重复/丢包、离线积累与重连反熵 | 协议模拟通过；三台 V11 的全部节点最终状态与摘要收敛仍待取证 |
 | W6.4 | shared/user scope 隔离、敏感信息禁止外传 | 私有记忆不进入同步日志或远端库 |
-| W6.5 | 墓碑传播、离线重连、防复活与安全回收 | F5-05 通过，无幽灵数据 |
+| W6.5 | 🟡 新增三节点离线遗忘回归：C 错过墓碑后反熵补齐，旧 op 回收前后重放均不复活，且回收等待 A 的两个活跃 peer ACK | 单进程协议证据通过；三台 V11 真机复验后才可将 F5-05 标为通过 |
 | W6.6 | 单机/无记忆/分布式对比与消融 | F7-03、创新性材料具备量化依据 |
 
 ### W7：单包安装、版本管理与 GUI 一键升级（P0）
