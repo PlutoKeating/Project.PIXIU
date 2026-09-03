@@ -36,11 +36,16 @@ class VectorEngineClient:
     def __init__(
         self,
         app_id: str = "pixiu",
-        host: str = "127.0.0.1",
-        port: int = 19530,
+        host: str | None = None,
+        port: int | None = None,
     ) -> None:
         native = _load_native()
-        self._impl = native.VectorEngineClient(app_id, host, port)
+        if (host is None) != (port is None):
+            raise ValueError("host and port must be configured together")
+        if host is None:
+            self._impl = native.VectorEngineClient(app_id)
+        else:
+            self._impl = native.VectorEngineClient(app_id, host, port)
 
     def has_collection(self, name: str) -> bool:
         return bool(self._impl.has_collection(name))

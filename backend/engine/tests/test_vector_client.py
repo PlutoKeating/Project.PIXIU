@@ -13,8 +13,8 @@ from backend.engine.kylin.vector import VectorEngineClient
 class _FakeNativeClient:
     calls: list[tuple[object, ...]] = []
 
-    def __init__(self, app_id: str, host: str, port: int) -> None:
-        type(self).calls = [("connect", app_id, host, port)]
+    def __init__(self, *args: object) -> None:
+        type(self).calls = [("connect", *args)]
 
     def load_collection(self, name: str) -> None:
         type(self).calls.append(("load_collection", name))
@@ -49,6 +49,21 @@ def test_load_collection_delegates_to_system_client(monkeypatch) -> None:
         ("connect", "test", "vector.local", 19531),
         ("load_collection", "pixiu_memory"),
     ]
+
+
+def test_default_connection_uses_official_local_transport(monkeypatch) -> None:
+    _install_fake_native(monkeypatch)
+
+    VectorEngineClient()
+
+    assert _FakeNativeClient.calls == [("connect", "pixiu")]
+
+
+def test_explicit_connection_requires_host_and_port(monkeypatch) -> None:
+    _install_fake_native(monkeypatch)
+
+    with pytest.raises(ValueError, match="host and port must be configured together"):
+        VectorEngineClient(host="vector.local")
 
 
 def test_upsert_replaces_vectors_by_explicit_id(monkeypatch) -> None:
@@ -90,4 +105,4 @@ def test_empty_mutations_are_noops(monkeypatch) -> None:
 
     assert client.upsert("pixiu_memory", [], []) == 0
     assert client.delete("pixiu_memory", []) == 0
-    assert _FakeNativeClient.calls == [("connect", "pixiu", "127.0.0.1", 19530)]
+    assert _FakeNativeClient.calls == [("connect", "pixiu")]

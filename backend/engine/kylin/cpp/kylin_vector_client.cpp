@@ -29,17 +29,28 @@ namespace {
 
 class VectorEngineClient {
 public:
+    explicit VectorEngineClient(const std::string &app_id) {
+        Connect(ConnectParam(app_id));
+    }
+
     VectorEngineClient(const std::string &app_id, const std::string &host,
                        uint16_t port) {
+        Connect(ConnectParam(app_id, host, port));
+    }
+
+private:
+    void Connect(const ConnectParam &params) {
         client_ = Database::Create();
         if (!client_) {
             throw std::runtime_error("VectorDB::Database::Create failed");
         }
-        Status st = client_->Connect(ConnectParam(app_id, host, port));
+        Status st = client_->Connect(params);
         if (!st.IsOk()) {
             ThrowStatus("Connect", st);
         }
     }
+
+public:
 
     bool HasCollection(const std::string &name) {
         bool has = false;
@@ -175,6 +186,7 @@ private:
 PYBIND11_MODULE(_kylin_vector_client, m) {
     m.doc() = "麒麟向量数据库客户端绑定（libkysdk-vector-engine-client）";
     py::class_<VectorEngineClient>(m, "VectorEngineClient")
+        .def(py::init<const std::string &>())
         .def(py::init<const std::string &, const std::string &, uint16_t>())
         .def("has_collection", &VectorEngineClient::HasCollection)
         .def("create_collection", &VectorEngineClient::CreateCollection)
