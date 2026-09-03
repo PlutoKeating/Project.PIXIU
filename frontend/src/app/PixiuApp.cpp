@@ -1103,6 +1103,9 @@ void PixiuApp::showCheckUpdate()
     if (!m_checkUpdateDialog) {
         m_checkUpdateDialog = new CheckUpdateDialog(m_upgradeController);
     }
+    connect(m_upgradeController, &UpgradeController::restartScheduled,
+            QCoreApplication::instance(), &QCoreApplication::quit,
+            Qt::UniqueConnection);
     m_checkUpdateDialog->showAndCheck();
 }
 

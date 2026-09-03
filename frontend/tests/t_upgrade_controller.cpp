@@ -275,6 +275,7 @@ private slots:
     void installProcessStartFailureIsReported();
     void oversizedDownloadIsRejected();
     void oversizedChecksumIsRejected();
+    void restartOnlyAfterSuccessfulInstall();
 
 private:
     // 部署一个「本地有新版 0.1.6 可升级」的假 server，返回该 server 供路由。
@@ -480,7 +481,7 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
     QCOMPARE(finishedSpy.count(), 1);
     QCOMPARE(finishedSpy.at(0).at(0).toBool(), true);
     QCOMPARE(finishedSpy.at(0).at(1).toString(),
-             QStringLiteral("升级成功，请手动重启应用以生效"));
+             QStringLiteral("升级成功，请重启应用以使用新版本"));
     QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
              UpgradeController::FailedReason::None);
 
@@ -536,7 +537,7 @@ void TestUpgradeController::installHandlesExitCodes()
         const char *message;
     };
     const Case cases[] = {
-        {0, UpgradeController::State::Success, "升级成功，请手动重启应用以生效"},
+        {0, UpgradeController::State::Success, "升级成功，请重启应用以使用新版本"},
         {126, UpgradeController::State::Cancelled, "已取消，升级未执行"},
         {127, UpgradeController::State::Cancelled, "已取消，升级未执行"},
         {4, UpgradeController::State::Failed, "升级后健康检查失败，已停止继续操作"},
@@ -584,6 +585,62 @@ void TestUpgradeController::installHandlesExitCodes()
 
         delete server;
     }
+}
+
+void TestUpgradeController::restartOnlyAfterSuccessfulInstall()
+{
+    UpgradeController idleController;
+    int idleCalls = 0;
+    idleController.setRestartRunnerForTest(
+        [&idleCalls](const QString &, const QStringList &) {
+            ++idleCalls;
+            return true;
+        });
+    idleController.restartApplication();
+    QCOMPARE(idleCalls, 0);
+
+    const QByteArray deb = QByteArrayLiteral("restart-deb-payload");
+    FakeServer *server = seedUpdatable(deb);
+    QNetworkAccessManager net;
+    UpgradeController controller(
+        &net, QUrl(server->baseUrl() + "/releases/latest"));
+    controller.setSourceValidator(acceptLocalSource);
+    controller.setInstallRunner(
+        [](const QString &, const QStringList &,
+           std::function<void(int)> onFinished) { onFinished(0); });
+
+    QSignalSpy scheduledSpy(&controller,
+                            &UpgradeController::restartScheduled);
+    QSignalSpy failedSpy(&controller, &UpgradeController::restartFailed);
+    controller.setRestartRunnerForTest(
+        [](const QString &, const QStringList &) { return false; });
+
+    controller.checkForUpdate();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Updatable);
+    controller.downloadAndInstall();
+    QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
+    controller.restartApplication();
+    QCOMPARE(scheduledSpy.count(), 0);
+    QCOMPARE(failedSpy.count(), 1);
+    QCOMPARE(failedSpy.at(0).at(0).toString(),
+             QStringLiteral("无法重启应用，请手动重新打开 PIXIU"));
+
+    QString restartProgram;
+    QStringList restartArgs;
+    controller.setRestartRunnerForTest(
+        [&](const QString &program, const QStringList &args) {
+            restartProgram = program;
+            restartArgs = args;
+            return true;
+        });
+    controller.restartApplication();
+
+    QCOMPARE(scheduledSpy.count(), 1);
+    QCOMPARE(restartProgram,
+             QStringLiteral("/usr/lib/pixiu/restart-client"));
+    QCOMPARE(restartArgs.size(), 1);
+    QCOMPARE(restartArgs.at(0),
+             QString::number(QCoreApplication::applicationPid()));
 }
 
 void TestUpgradeController::cancelDuringDownload()

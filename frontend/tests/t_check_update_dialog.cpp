@@ -223,7 +223,7 @@ private slots:
     void upToDateDisablesUpgradeAndShowsLatest();
     void networkFailureShowsCannotConnect();
     void progressUpdatesBarDuringDownload();
-    void upgradeFinishedSuccessShowsManualRestart();
+    void upgradeFinishedSuccessOffersControlledRestart();
     void invalidSourceRejectedShowsInvalidSource();
     void cancelVisibleDuringDownloadAndCancels();
     // U-3-1：陈旧缓存残留——先前 Updatable 后重查 UpToDate 不得回填旧版本；
@@ -412,7 +412,7 @@ void TestCheckUpdateDialog::progressUpdatesBarDuringDownload()
     QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
 }
 
-void TestCheckUpdateDialog::upgradeFinishedSuccessShowsManualRestart()
+void TestCheckUpdateDialog::upgradeFinishedSuccessOffersControlledRestart()
 {
     const QByteArray deb = QByteArrayLiteral("fake-deb-payload-0123456789");
     FakeServer *server = seedUpdatable(deb);
@@ -425,6 +425,13 @@ void TestCheckUpdateDialog::upgradeFinishedSuccessShowsManualRestart()
         [](const QString &, const QStringList &, std::function<void(int)> onFinished) {
             onFinished(0);   // 安装退出码 0 → Success
         });
+    int restartCalls = 0;
+    controller.setRestartRunnerForTest(
+        [&restartCalls](const QString &, const QStringList &) {
+            ++restartCalls;
+            return true;
+        });
+    QSignalSpy restartSpy(&controller, &UpgradeController::restartScheduled);
     CheckUpdateDialog dialog(&controller);
 
     dialog.showAndCheck();
@@ -438,8 +445,15 @@ void TestCheckUpdateDialog::upgradeFinishedSuccessShowsManualRestart()
         QStringLiteral("updateStatusLabel"));
     QVERIFY(status != nullptr);
     QTRY_COMPARE(status->text(),
-                 QStringLiteral("升级成功，请手动重启应用以生效"));
+                 QStringLiteral("升级成功，请重启应用以使用新版本"));
     QVERIFY(!upgrade->isEnabled());
+    QPushButton *close = dialog.findChild<QPushButton *>(
+        QStringLiteral("closeButton"));
+    QVERIFY(close != nullptr);
+    QCOMPARE(close->text(), QStringLiteral("立即重启"));
+    close->click();
+    QCOMPARE(restartCalls, 1);
+    QCOMPARE(restartSpy.count(), 1);
     QVERIFY(tempDebFiles().isEmpty());   // 安装后清理临时 deb
 }
 

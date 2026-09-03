@@ -48,13 +48,16 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 安装后核对实际 dpkg 版本，并轮询 `/version`、`/health` 和包内 Provider manifest；
 产品/API/schema/数据库/Provider 任一不一致都返回健康失败，GUI 不报告成功。最终版
 发布流水线现生成 Ed25519 `.sha256.sig`，helper 以包内固定公钥在 dpkg 前验签；
-双架构 CI 资产及 Kylin V11 有效/篡改签名已验证，轮换演练仍待取证。另需完整兼容矩阵和
-受控前端重启。helper 会在安装前用 `dpkg-repack` 重建当前包、停服并以 SQLite backup
+双架构 CI 资产及 Kylin V11 有效/篡改签名已验证，轮换演练仍待取证。另需完整兼容矩阵。
+helper 会在安装前用 `dpkg-repack` 重建当前包、停服并以 SQLite backup
 API 保存一致数据库和配置；安装或健康失败时恢复旧包、数据和服务。恢复成功/失败会
 显示不同提示。提交 `ca35117` 的 CI run `33770727108` 已在 amd64/arm64 验证注入恢复；
 Kylin V11 amd64 又完成 `0.1.7-4` → 签名 `0.1.7-1` → 注入失败 → `0.1.7-4`
 的跨 revision 恢复，退出码为 5，配置、核心数据逻辑摘要和服务保持。升级必须保留记忆
 数据库、配置和同步身份；最终候选仍须随完整安装矩阵重验。
+安装健康成功后，GUI 的“立即重启”调用无特权 `restart-client`；它验证旧进程 PID，
+等待客户端释放单实例资源后启动 `/usr/bin/pixiu`。只有升级 Success 状态可进入该路径，
+调度失败时保留窗口并提示手动重新打开。最终 V11 图形重启后仍须复核版本和全链路。
 默认配置以 `/usr/share/pixiu/pixiu.env.default` 模板随包，`postinst` 仅在首次安装
 创建 `/etc/pixiu/pixiu.env`；后者不属于 dpkg conffile，升级保留并幂等迁移，避免
 每机随机口令导致非交互安装弹出配置冲突。

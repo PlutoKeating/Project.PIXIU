@@ -18,10 +18,8 @@ class QPushButton;
 //   stateChanged          → updateStatusLabel + 按钮 enabled/visible
 //   remoteVersionFound    → remoteVersionLabel（远程最新版本）
 //   progressChanged       → updateProgressBar（0-100，下载中显示）
-//   upgradeFinished       → updateStatusLabel（成功提示手动重启；
+//   upgradeFinished       → updateStatusLabel（成功后提供受控重启；
 //                           失败按 reason 分发，网络失败时远程行显示错误文案）
-//
-// UI 不自动重启：升级成功后仅提示「请手动重启应用以生效」，由用户自行重启。
 class CheckUpdateDialog : public QDialog
 {
     Q_OBJECT
@@ -53,6 +51,7 @@ private:
     void onProgressChanged(int percent);
     void onUpgradeFinished(bool success, const QString &message,
                            UpgradeController::FailedReason reason);
+    void onRestartFailed(const QString &message);
 
     UpgradeController *m_controller = nullptr;
     QLabel *m_currentVersionLabel = nullptr;

@@ -2,7 +2,8 @@
 
 > 状态更新（2026-09-03）：U-1～U-4 与 U-5 已勾选项均已由当前代码/测试实现；
 > 原计划未及时勾选的方框不是当前缺口。最终发布仍缺 U-5 真机门禁，以及
-> `docs/DELIVERY_PLAN.md` 新增的签名、兼容矩阵、回滚、健康检查和受控重启。
+> `docs/DELIVERY_PLAN.md` 新增的签名、兼容矩阵、回滚和健康检查。受控重启已于
+> 2026-09-04 实现，最终 V11 图形实证仍属于发布门。
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -52,10 +53,12 @@
 - 下载：流式写入唯一 `pixiu-update-XXXXXX.deb`，下载和每次重定向均验证
   来源；再获取 `.sha256` 并流式校验
 - 安装：`QProcess::start("/usr/bin/pkexec", {"/usr/lib/pixiu/install-update",
-  debPath, expectedSha256})`；helper 复制为 root-only 临时文件并二次校验后才调用
-  非交互执行 `dpkg --force-confdef --force-confold -i`；退出 0 → Success；
+  debPath, expectedSha256, signatureBase64})`；helper 复制为 root-only 临时文件，
+  二次校验摘要和固定 Ed25519 公钥签名后才调用非交互 `dpkg`，并执行版本/服务/
+  schema/Provider 健康检查；失败时恢复旧包、数据库与配置。退出 0 → Success；
   126/127 → Cancelled；启动失败/其他退出 → Failed
-- **不自动重启**：Success 后发 `upgradeFinished(true, tr("升级成功，请手动重启应用以生效"))`
+- **受控重启**：Success 后开放“立即重启”；无特权 helper 等待当前客户端退出，再
+  启动已安装版本。安装中与失败态禁止触发，调度失败提供明确手动恢复提示。
 - 仅下载/校验可 cancel；安装开始后禁止强制取消，避免中断 dpkg
 - 依赖：仅 Qt（QNetworkAccessManager/QNetworkReply/QProcess/QStandardPaths/QCryptographicHash）
 
@@ -93,7 +96,7 @@
 
 **Files:** Modify `frontend/resources/i18n/pixiu_en_US.ts/.qm`；Modify `build/release/debian/pixiu.env`（示例口令改占位符）；Test 回归
 
-- [x] Step 1 i18n：lupdate/lrelease 收编新增文案（「检测到新版本 %1」「正在下载…%2%」「校验下载包…」「正在申请安装权限…」「升级成功，请手动重启应用」「校验失败，已中止」「无法连接更新服务器」「已取消」「检测更新已完成，当前已是最新版本」等），0 unfinished
+- [x] Step 1 i18n：lupdate/lrelease 收编升级与受控重启文案，0 unfinished
 - [x] Step 2 pixiu.env 安全加固：`PIXIU_SYNC_KEY_PASSPHRASE` 改 `change-me-before-production` 占位符（保留注释）
 - [x] Step 3 双路径回归：`bash frontend/scripts/regression.sh`（OFF/ON + deb 校验；ON 低内存可能 OOM 用增量目录 -j1）
 - [x] Step 4 提交（i18n `chore` + pixiu.env `chore` 分开）

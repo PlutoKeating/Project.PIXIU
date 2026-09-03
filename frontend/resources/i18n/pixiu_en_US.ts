@@ -136,7 +136,7 @@
     </message>
     <message>
         <source>升级成功，请手动重启应用以生效</source>
-        <translation>Upgrade successful. Please restart the app manually for it to take effect.</translation>
+        <translation type="vanished">Upgrade successful. Please restart the app manually for it to take effect.</translation>
     </message>
     <message>
         <source>已取消</source>
@@ -145,6 +145,18 @@
     <message>
         <source>更新失败</source>
         <translation>Update failed</translation>
+    </message>
+    <message>
+        <source>正在重启…</source>
+        <translation>Restarting…</translation>
+    </message>
+    <message>
+        <source>升级成功，请重启应用以使用新版本</source>
+        <translation>Upgrade successful. Restart the app to use the new version.</translation>
+    </message>
+    <message>
+        <source>立即重启</source>
+        <translation>Restart now</translation>
     </message>
 </context>
 <context>
@@ -1332,11 +1344,11 @@ You can forget any memory with natural-language instructions — your data stays
     <name>TestSettingsDialog</name>
     <message>
         <source>服务条款</source>
-        <translation>Terms of Service</translation>
+        <translation type="vanished">Terms of Service</translation>
     </message>
     <message>
         <source>关于 PIXIU</source>
-        <translation>About PIXIU</translation>
+        <translation type="vanished">About PIXIU</translation>
     </message>
 </context>
 <context>
@@ -1382,7 +1394,7 @@ You can forget any memory with natural-language instructions — your data stays
     </message>
     <message>
         <source>升级成功，请手动重启应用以生效</source>
-        <translation>Upgrade successful. Please restart the app manually for it to take effect.</translation>
+        <translation type="vanished">Upgrade successful. Please restart the app manually for it to take effect.</translation>
     </message>
     <message>
         <source>已取消，升级未执行</source>
@@ -1415,6 +1427,14 @@ You can forget any memory with natural-language instructions — your data stays
     <message>
         <source>已取消</source>
         <translation>Cancelled</translation>
+    </message>
+    <message>
+        <source>升级成功，请重启应用以使用新版本</source>
+        <translation>Upgrade successful. Restart the app to use the new version.</translation>
+    </message>
+    <message>
+        <source>无法重启应用，请手动重新打开 PIXIU</source>
+        <translation>Unable to restart. Please reopen PIXIU manually.</translation>
     </message>
 </context>
 </TS>

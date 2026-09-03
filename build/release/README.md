@@ -57,7 +57,8 @@ build/release/
 
 打包时还会将 `frontend/scripts/install-update` 安装到
 `/usr/lib/pixiu/install-update`，作为 root-only 副本二次校验后调用 `dpkg`
-的 `pkexec` 特权边界。
+的 `pkexec` 特权边界；`frontend/scripts/restart-client` 安装到同目录，以当前桌面
+用户等待旧客户端退出后启动 `/usr/bin/pixiu`，不持有安装权限。
 
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
 前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
@@ -151,7 +152,8 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 - `dpkg-repack` 旧包、SQLite/配置快照和健康失败自动回滚已通过提交 `ca35117` 的
   amd64/arm64 CI；Kylin V11 amd64 跨 revision 注入也以退出码 5 恢复旧版本、数据、
   配置和服务，最终候选仍须随完整安装矩阵重验；
-- GUI 中显示版本、通道、发行说明、进度、授权、失败恢复和受控重启状态；
+- GUI 中显示版本、通道、发行说明、进度、授权和失败恢复；受控重启源码与包结构已
+  实现/测试，最终候选仍须完成 V11 图形实证；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
 - `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
   `pixiu` 启动时更新当前用户 Agent profile，但不打包未修改的上游 Agent 源码。

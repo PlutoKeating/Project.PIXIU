@@ -260,9 +260,9 @@ PIXIU 前端
 ### 6.6 应用内安全升级
 
 > 当前实现提供一键下载安装、Ed25519 独立签名校验和安装后健康判定；最终交付还必须按
-> `docs/DELIVERY_PLAN.md` 增加完整组件兼容矩阵和受控前端重启。可信备份/失败回滚
-> 已通过双架构 CI 与 Kylin V11 amd64 跨 revision 故障注入；最终候选仍须随安装矩阵
-> 重验。SHA-256 与资产
+> `docs/DELIVERY_PLAN.md` 增加完整组件兼容矩阵。可信备份/失败回滚已通过双架构 CI
+> 与 Kylin V11 amd64 跨 revision 故障注入；成功后的受控客户端重启也已实现并经
+> 自动化测试，最终候选仍须随图形安装矩阵重验。SHA-256 与资产
 > 同源发布时只能作为完整性校验，不单独承担发布者身份认证。
 
 ```
@@ -274,7 +274,8 @@ PIXIU 前端
   → 特权 helper 复制到 root-only 文件并再次校验
   → 固定 Ed25519 公钥验签 → 校验 Package/Version/Architecture → 非交互 dpkg
   → 核对 dpkg 已装版本及后端 /version、/health、schema、包内 Provider 版本
-  → 全部就绪才提示成功；失败则恢复 SQLite/配置和 dpkg-repack 重建的旧包
+  → 全部就绪才开放“立即重启”；失败则恢复 SQLite/配置和 dpkg-repack 重建的旧包
+  → 无特权 restart-client 等待当前进程退出，再启动已安装的新客户端
 ```
 
 - 下载及每次重定向均限制为 HTTPS 和 GitHub 精确域名白名单。
@@ -283,6 +284,8 @@ PIXIU 前端
 - 下载/校验可取消；`dpkg` 启动后禁用关闭与强制取消，避免产生半配置包。
 - 安装进程启动失败、授权取消、`dpkg` 错误和安装后健康失败分别呈现；错误输出限制长度。
 - 备份准备失败时不执行 dpkg；自动恢复成功与恢复失败使用不同退出码和 GUI 文案。
+- 只有 Success 状态可请求重启；调度成功后应用先释放单实例锁、快捷键与 WebSocket，
+  helper 最多等待 30 秒再启动 `/usr/bin/pixiu`；调度失败保留窗口并提示手动打开。
 - 安装包 `postinst` 保留 SQLite 记忆与配置，并在轮换历史公开同步口令时原地
   重加密 Ed25519 私钥，保留设备 ID、peer 与配对关系。
 - 运行配置不作为 dpkg conffile；包携带只读默认模板，`postinst` 只在首装创建

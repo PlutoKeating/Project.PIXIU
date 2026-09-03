@@ -499,6 +499,12 @@ if(BUILD_TESTING)
     target_include_directories(t_upgrade_live PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(t_upgrade_live PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
     add_test(NAME upgrade_live COMMAND t_upgrade_live)
+    # 三个升级测试都会枚举/清理系统临时目录中的 pixiu-update-*.deb。并行运行
+    # 会互相删除对方文件，形成与产品无关的随机失败；只串行化该共享资源。
+    set_tests_properties(
+        upgrade_controller check_update_dialog upgrade_live
+        PROPERTIES RESOURCE_LOCK pixiu_update_temp_files
+    )
 
     add_executable(t_chat_window
         tests/t_chat_window.cpp

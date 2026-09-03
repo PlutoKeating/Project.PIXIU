@@ -567,7 +567,7 @@ void UpgradeController::handleInstallFinished(int exitCode)
     }
     if (exitCode == 0) {
         setState(State::Success);
-        emit upgradeFinished(true, tr("升级成功，请手动重启应用以生效"),
+        emit upgradeFinished(true, tr("升级成功，请重启应用以使用新版本"),
                              FailedReason::None);
     } else if (exitCode == 126 || exitCode == 127) {
         setState(State::Cancelled);
@@ -591,6 +591,24 @@ void UpgradeController::handleInstallFinished(int exitCode)
             detail.isEmpty() ? tr("升级失败，请检查系统日志")
                              : tr("升级失败：%1").arg(detail));
     }
+}
+
+void UpgradeController::restartApplication()
+{
+    if (m_state != State::Success) {
+        return;
+    }
+    const QStringList args{
+        QString::number(QCoreApplication::applicationPid()),
+    };
+    const bool started = m_restartRunner
+        ? m_restartRunner(m_restartProgram, args)
+        : QProcess::startDetached(m_restartProgram, args);
+    if (!started) {
+        emit restartFailed(tr("无法重启应用，请手动重新打开 PIXIU"));
+        return;
+    }
+    emit restartScheduled();
 }
 
 void UpgradeController::cancel()

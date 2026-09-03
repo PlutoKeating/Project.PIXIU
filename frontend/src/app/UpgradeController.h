@@ -23,8 +23,8 @@ class QSaveFile;
 //       仅 Updatable 可 downloadAndInstall → Downloading → Verifying →
 //       Installing → Success | Failed | Cancelled。
 // 安全铁律：HTTPS + sha256 完整性校验；安装经 pkexec 调用 root-only helper，
-//       再以固定 Ed25519 公钥验证独立签名，不绕过授权；失败/取消清理临时 deb，
-//       不自动重启（手动提示）。
+//       再以固定 Ed25519 公钥验证独立签名，不绕过授权；失败/取消清理临时 deb。
+//       安装与健康检查成功后，用户可通过受控 helper 等待旧进程退出再启动新版本。
 //
 // 测试 seam：
 //   - 网络：默认用内部 QNetworkAccessManager 直连 GitHub；测试可通过注入
@@ -74,6 +74,8 @@ public:
     using InstallRunner = std::function<void(
         const QString &program, const QStringList &args,
         const std::function<void(int)> &onFinished)>;
+    using RestartRunner =
+        std::function<bool(const QString &program, const QStringList &args)>;
 
     // 下载源可信判定：默认要求 https + GitHub host allowlist（防篡改的 release
     // 元数据把 deb/sha URL 指向任意 http:// host 造成 MITM）。测试注入宽松判定
@@ -105,8 +107,16 @@ public:
     // 强制取消，避免中断 dpkg 后留下半配置的软件包。
     void cancel();
 
+    // 仅 Success 状态允许调度重启。helper 先等待当前 PID 退出，再执行固定的
+    // /usr/bin/pixiu；成功调度后发 restartScheduled，由应用完成有序退出。
+    void restartApplication();
+
     // 测试 seam：注入安装执行器（替换默认 QProcess pkexec 路径）。
     void setInstallRunner(InstallRunner runner);
+    void setRestartRunnerForTest(RestartRunner runner)
+    {
+        m_restartRunner = std::move(runner);
+    }
     void setInstallProgramForTest(const QString &program)
     {
         m_installProgram = program;
@@ -129,6 +139,8 @@ signals:
     // 分发——message 经 tr() 本地化，跨上下文/语言做字符串比较不可靠。
     void upgradeFinished(bool success, const QString &message,
                          FailedReason reason);
+    void restartScheduled();
+    void restartFailed(const QString &message);
 
 private:
     void setState(State state);
@@ -166,8 +178,10 @@ private:
     QProcess *m_installProcess = nullptr;
     QString m_installErrorOutput;
     InstallRunner m_installRunner;
+    RestartRunner m_restartRunner;
     SourceValidator m_sourceValidator;
     QString m_installProgram = QStringLiteral("/usr/bin/pkexec");
+    QString m_restartProgram = QStringLiteral("/usr/lib/pixiu/restart-client");
 };
 
 // 使 State / FailedReason 可用于 QVariant（QSignalSpy 记录 / 信号跨线程排队依赖）。

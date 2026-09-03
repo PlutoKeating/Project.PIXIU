@@ -93,7 +93,14 @@ CheckUpdateDialog::CheckUpdateDialog(UpgradeController *controller,
     m_closeButton->setAccessibleName(tr("知道了"));
     m_closeButton->setCursor(Qt::PointingHandCursor);
     m_closeButton->setDefault(true);
-    connect(m_closeButton, &QPushButton::clicked, this, &QDialog::hide);
+    connect(m_closeButton, &QPushButton::clicked, this, [this]() {
+        if (m_controller
+            && m_controller->state() == UpgradeController::State::Success) {
+            m_controller->restartApplication();
+            return;
+        }
+        hide();
+    });
 
     QHBoxLayout *buttonRow = new QHBoxLayout();
     buttonRow->addWidget(m_checkAgainButton);
@@ -128,6 +135,13 @@ void CheckUpdateDialog::connectController()
             &CheckUpdateDialog::onProgressChanged);
     connect(m_controller, &UpgradeController::upgradeFinished, this,
             &CheckUpdateDialog::onUpgradeFinished);
+    connect(m_controller, &UpgradeController::restartScheduled, this,
+            [this]() {
+                m_updateStatusLabel->setText(tr("正在重启…"));
+                m_closeButton->setEnabled(false);
+            });
+    connect(m_controller, &UpgradeController::restartFailed, this,
+            &CheckUpdateDialog::onRestartFailed);
 }
 
 void CheckUpdateDialog::showAndFocus()
@@ -171,6 +185,8 @@ void CheckUpdateDialog::onStateChanged(UpgradeController::State state)
         || state == UpgradeController::State::Installing;
     m_checkAgainButton->setEnabled(!active);
     m_closeButton->setEnabled(!active);
+    m_closeButton->setText(tr("知道了"));
+    m_closeButton->setAccessibleName(tr("知道了"));
 
     switch (state) {
     case UpgradeController::State::Idle:
@@ -235,10 +251,12 @@ void CheckUpdateDialog::onStateChanged(UpgradeController::State state)
         m_cancelButton->hide();
         break;
     case UpgradeController::State::Success:
-        m_updateStatusLabel->setText(tr("升级成功，请手动重启应用以生效"));
+        m_updateStatusLabel->setText(tr("升级成功，请重启应用以使用新版本"));
         m_updateProgressBar->hide();
         m_upgradeButton->setEnabled(false);
         m_cancelButton->hide();
+        m_closeButton->setText(tr("立即重启"));
+        m_closeButton->setAccessibleName(tr("立即重启"));
         break;
     case UpgradeController::State::Cancelled:
         m_updateStatusLabel->setText(tr("已取消"));
@@ -253,6 +271,14 @@ void CheckUpdateDialog::onStateChanged(UpgradeController::State state)
         m_cancelButton->hide();
         break;
     }
+}
+
+void CheckUpdateDialog::onRestartFailed(const QString &message)
+{
+    m_updateStatusLabel->setText(message);
+    m_closeButton->setEnabled(true);
+    m_closeButton->setText(tr("立即重启"));
+    m_closeButton->setAccessibleName(tr("立即重启"));
 }
 
 void CheckUpdateDialog::onRemoteVersionFound(const QString &version)
