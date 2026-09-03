@@ -24,9 +24,13 @@ esac
 }
 
 SIGNATURE="${CHECKSUM}.sig"
-printf '%s\n' "${DIGEST}" | openssl pkeyutl -sign -rawin \
+DIGEST_FILE="$(mktemp)"
+trap 'rm -f "${DIGEST_FILE}"' EXIT
+chmod 600 "${DIGEST_FILE}"
+printf '%s\n' "${DIGEST}" >"${DIGEST_FILE}"
+openssl pkeyutl -sign -rawin -in "${DIGEST_FILE}" \
     -inkey "${KEY}" -out "${SIGNATURE}"
-printf '%s\n' "${DIGEST}" | openssl pkeyutl -verify -pubin -rawin \
+openssl pkeyutl -verify -pubin -rawin -in "${DIGEST_FILE}" \
     -inkey "${ROOT}/build/release/keys/pixiu-release-ed25519.pub" \
     -sigfile "${SIGNATURE}" >/dev/null
 echo "pixiu-sign: wrote ${SIGNATURE}"
