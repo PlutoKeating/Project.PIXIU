@@ -52,6 +52,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 | GET | `/health` | 数据库迁移及后端组件就绪状态 | ✅ 已实现（不探测双 SDK 合规性） |
 | GET | `/capabilities` | 平台与双 SDK 的配置/实际运行能力 | ✅ 已实现（不含主机、网络、路径信息） |
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
+| POST | `/memory/update` | 原子乐观锁更新既有记忆并重建图/向量 | ✅ 已实现（HTTP API 0.3.0） |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | POST | `/agent/context` | Agent 轮次的预算化、可追溯安全上下文 | ✅ 已实现（scope/敏感过滤/freshness/冲突状态） |
 | POST | `/agent/lifecycle` | 持久化 Agent 生命周期短/中期上下文 | ✅ 基础事件接入（六类事件、幂等、服务端选层） |
@@ -101,7 +102,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 {
   "product_version": "0.1.7",
   "component": "pixiu-memory-backend",
-  "api_version": "0.2.0",
+  "api_version": "0.3.0",
   "agent_memory_api": 1,
   "schema_version": 12
 }
@@ -226,6 +227,46 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 }
 ```
 
+### 3.1a POST /memory/update
+
+保持同一 `knowledge_id` 更新既有 ACTIVE 记忆，同时重建实体关系与向量，并为更新
+新增一条可追溯 evidence。`expected_version` 由存储层单条条件更新原子校验：两个离线节点可从同一版本
+各自产生下一版本，再由同步 CRDT/确定性仲裁收敛；已先收到远端新版的节点会以
+`409 VERSION_CONFLICT` 拒绝陈旧更新。
+
+```jsonc
+{
+  "knowledge_id": "knw_02K...",
+  "expected_version": 1,
+  "scope": "shared:home",
+  "title": "可选的新标题",
+  "body": {"vendor": "国家电网", "amount": 230},
+  "provenance": null,
+  "idempotency_key": "update-session-01-turn-04"
+}
+```
+
+`title`/`body` 至少提供一个；`scope` 必须与目标条目完全一致，否则按 404 处理，避免
+泄露其他作用域是否存在。目标不存在返回 404，非 ACTIVE 返回
+`409 KNOWLEDGE_NOT_ACTIVE`。Agent 调用时 provenance 必须包含 session/run/turn、
+tool_call_id、tool_name、`approved=true` 和 occurred_at；手工 UI 更新可省略 provenance。
+敏感检测在 receipt 和任何写入之前执行，敏感 `shared:*` 更新以
+`422 SENSITIVE_SHARED_SCOPE` 零副作用拒绝。
+
+成功路径以 `update:<idempotency_key>` 独立命名空间持久化 receipt；同键同载荷完成态
+重放返回首次响应，不重复 evidence、向量或同步 op，同键异载荷/进行中/失败态沿用
+写入端点的 409 语义。失败后只能用 §3.2c 的 `MEMORY_UPDATE` 显式恢复。
+
+```jsonc
+{
+  "knowledge_id": "knw_02K...",
+  "evidence_id": "evd_03M...",
+  "version": 2,
+  "status": "updated",
+  "latency_ms": 31
+}
+```
+
 ### 3.2 POST /memory/query
 
 混合检索。
@@ -347,7 +388,7 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 
 ### 3.2c POST /agent/idempotency/recover
 
-只用于 `/memory/write` 或 `/agent/lifecycle` 已进入 `FAILED` 的收据。操作者必须先核验
+只用于 `/memory/write`、`/memory/update` 或 `/agent/lifecycle` 已进入 `FAILED` 的收据。操作者必须先核验
 evidence、knowledge、向量和同步日志等副作用，再提交**完整且未修改的原请求**、风险
 确认与审计原因。服务端按对应 Pydantic 模型重建规范请求并自行计算哈希，不接受客户
 端提供哈希。
@@ -372,7 +413,7 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 }
 ```
 
-`operation` 只能是 `MEMORY_WRITE` 或 `LIFECYCLE`。确认值必须为 `true`，reason 去除
+`operation` 只能是 `MEMORY_WRITE`、`MEMORY_UPDATE` 或 `LIFECYCLE`。确认值必须为 `true`，reason 去除
 首尾空白后为 3～256 字符。收据不存在、载荷已改变、仍在执行或已经完成时分别返回
 404/409，绝不覆盖原收据。授权本身不执行原请求；下一次提交完全相同的原端点请求会
 原子消费该授权，之后再次重试仍 fail closed。`recovery_count`、`recovery_reason` 与

@@ -31,6 +31,10 @@ from .models import (
 )
 
 
+class KnowledgeVersionConflict(RuntimeError):
+    """The persisted item no longer matches the caller's expected version."""
+
+
 class EvidenceRepository(ABC):
     """原始证据仓储。"""
 
@@ -68,6 +72,14 @@ class KnowledgeRepository(ABC):
     async def save(self, item: KnowledgeItem) -> str:
         """持久化一条知识，返回 id。"""
         ...
+
+    async def save_if_version(
+        self, item: KnowledgeItem, expected_version: int
+    ) -> bool:
+        """仅当当前版本匹配时原子更新；不支持 CAS 的实现必须显式失败。"""
+        raise NotImplementedError(
+            "compare-and-swap is not implemented by this repository"
+        )
 
     @abstractmethod
     async def get(self, id: str) -> Optional[KnowledgeItem]:

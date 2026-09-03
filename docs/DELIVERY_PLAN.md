@@ -50,7 +50,7 @@
 system service 不删除，H-02/H-03 状态不变。
 
 当前源码新增 `PIXIU_VECTOR_DB_PATH`，strict 启动必须实际装载应用数据库，store 按
-进程复用并在退出时断开。当前组合回归 797 项通过；提交 `6f6002e` 的 revision 8
+进程复用并在退出时断开。当前组合回归 804 项通过；提交 `6f6002e` 的 revision 8
 又完成 V11 同用户写入、召回、遗忘和隐藏检查。正式取证器因缺少 Agent 宿主/runtime
 而拒绝出证，且该同用户运行方式尚未落实为安装包 user service，因此状态仍为阻断。
 

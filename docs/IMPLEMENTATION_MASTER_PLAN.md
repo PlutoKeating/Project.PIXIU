@@ -92,7 +92,7 @@ W0 基线与计划
 | W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：数据库装载/断开、集合装载、upsert、delete、search；统一错误和运行时标识 | ✅ fake-native 契约及提交 `4011d0d` V11 revision 7 direct SDK 全生命周期通过 |
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam、结果类型及生产依赖注入已完成 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
-| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；797 项组合回归通过，V11 新包待 W1.6 |
+| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；804 项组合回归通过，V11 新包待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
 | W1.6 | V11 | 🟡 revision 8 已以同用户 strict 服务完成产品写入/检索/遗忘/隐藏；最终 user service、可交付组件依赖和 Agent 宿主仍待 W2.6/W5 | H-02、F4-03 通过 |
 
@@ -126,7 +126,7 @@ API 和 Embedding 闭环。
 2026-09-04 的同用户产品探针还揭示：旧组合根只创建 Vector 客户端，未执行官方要求
 的 `LoadDBFile`，所以 `/capabilities` 可误报 ready，而 `/memory/write` 返回 local
 storage not found。当前源码已加入独立数据库路径、启动装载、单例复用与关机断开，
-并以当前 797 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
+并以当前 804 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
 遗忘与隐藏检查；正式取证器因目标系统缺少 Agent 宿主/runtime 可执行文件而拒绝出证。
 
 W2.6 的推荐设计已写入
@@ -143,7 +143,7 @@ system service 或移动数据。
 | W3.2 | ✅ 已完成：会话/工具写入、provenance、schema v12 幂等 receipt、一次性失败恢复授权与写入前置敏感策略 | 同键重放/冲突、恢复审计、用户域标敏隔离、共享域拒绝和检测故障 fail-closed 已测 |
 | W3.3 | ✅ 已完成：`POST /agent/context` 提供字符预算、来源引用、scope、freshness、冲突状态与敏感 evidence fail-closed | 多候选/隔离/裁剪/敏感排除及 Module E 消费契约测试通过 |
 | W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件、独立命名空间失败恢复及 Module E 触发测试完成；长期化和真实宿主证据待补 |
-| W3.5 | 显式记忆工具：search/store/update/forget/status | 权限、确认、审计与错误码稳定 |
+| W3.5 | 🟡 search/store/forget/status 已有 Agent 工具；HTTP API 0.3.0 已新增 `/memory/update`，具备 scope、敏感检测、原子版本 CAS、更新 evidence、图/向量重建、幂等/恢复与 shared 同步 op | Module E update 工具接线和真实模型自主调用证据待补 |
 | W3.6 | ✅ `/capabilities`、`/health`、`/version` 已实现 | Module E 可按 schema/API/组件/产品/双 SDK 状态在启动前 fail closed |
 
 所有新增端点先写入 `docs/API.md` 并版本化；不得让 Module E 导入后端私有模块。

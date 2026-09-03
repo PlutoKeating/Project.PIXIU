@@ -25,7 +25,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from ..core.logger import get_logger
-from ..core.models import AgentProvenance, SourceType
+from ..core.models import AgentProvenance, KnowledgeStatus, SourceType
+from ..core.repository import KnowledgeVersionConflict
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from ..monitor.config_store import InvalidMonitorConfig
 from ..storage.idempotency import (
@@ -262,6 +263,39 @@ class PreferenceExtractRequest(BaseModel):
     evidence_ids: list[str] = Field(default_factory=list)
 
 
+class MemoryUpdateRequest(BaseModel):
+    knowledge_id: str = Field(pattern=r"^knw_[A-Za-z0-9_-]{8,128}$")
+    expected_version: int = Field(ge=1)
+    scope: str = Field(min_length=1, max_length=256)
+    title: str | None = Field(default=None, max_length=512)
+    body: dict[str, Any] | None = None
+    provenance: AgentProvenance | None = None
+    idempotency_key: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+
+    @model_validator(mode="after")
+    def _validate_update(self) -> "MemoryUpdateRequest":
+        if self.title is None and self.body is None:
+            raise ValueError("knowledge update requires title or body")
+        if self.title is not None and not self.title.strip():
+            raise ValueError("knowledge update title must not be blank")
+        provenance = self.provenance
+        if provenance is not None and not (
+            provenance.session_id
+            and provenance.run_id
+            and provenance.turn_id
+            and provenance.tool_call_id
+            and provenance.tool_name
+            and provenance.approved is True
+            and provenance.occurred_at is not None
+        ):
+            raise ValueError("agent knowledge update requires approved tool provenance")
+        return self
+
+
 class ForgetRequest(BaseModel):
     command: str
     confirm: bool = False
@@ -338,6 +372,7 @@ class AgentLifecycleRequest(BaseModel):
 
 class IdempotencyOperation(str, Enum):
     MEMORY_WRITE = "MEMORY_WRITE"
+    MEMORY_UPDATE = "MEMORY_UPDATE"
     LIFECYCLE = "LIFECYCLE"
 
 
@@ -520,6 +555,122 @@ async def memory_write(
         raise
 
 
+@app.post("/memory/update", tags=["Memory"], summary="更新既有记忆")
+async def memory_update(
+    body: MemoryUpdateRequest,
+    ingestion=Depends(get_ingestion_service),
+    knowledge=Depends(get_knowledge_service),
+    knowledge_repo=Depends(get_knowledge_repo),
+    security=Depends(get_security_service),
+    sync=Depends(get_optional_sync_service),
+    idempotency=Depends(get_agent_ingest_receipt_store),
+):
+    """Optimistically update one knowledge ID, reindex it, and emit a sync op."""
+    started = time.monotonic()
+    existing = await knowledge_repo.get(body.knowledge_id)
+    if existing is None or existing.scope != body.scope:
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    if existing.status != KnowledgeStatus.ACTIVE:
+        raise HTTPException(status_code=409, detail="KNOWLEDGE_NOT_ACTIVE")
+
+    title = body.title.strip() if body.title is not None else existing.title
+    updated_body = body.body if body.body is not None else existing.body
+    update_raw = {
+        "title": f"Update: {title}",
+        "body": {
+            "operation": "knowledge_update",
+            "target_knowledge": existing.id,
+            "new_title": title,
+            "value": updated_body,
+        },
+    }
+    try:
+        sensitivity = await security.detect_sensitivity(update_raw)
+    except Exception as exc:
+        _log.exception("sensitivity detector failed")
+        raise HTTPException(
+            status_code=503, detail="SENSITIVITY_CHECK_FAILED"
+        ) from exc
+    if sensitivity > 0 and existing.scope.startswith("shared:"):
+        raise HTTPException(status_code=422, detail="SENSITIVE_SHARED_SCOPE")
+
+    request_hash = _canonical_request_hash(body)
+    receipt_key = f"update:{body.idempotency_key}"
+    try:
+        claim = await idempotency.claim(receipt_key, request_hash)
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_CONFLICT") from exc
+    except IdempotencyInProgress as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_IN_PROGRESS") from exc
+    except IdempotencyFailed as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_FAILED") from exc
+    if claim.status == ClaimStatus.REPLAY:
+        return claim.response
+
+    try:
+        if existing.version != body.expected_version:
+            raise HTTPException(status_code=409, detail="VERSION_CONFLICT")
+        evidence = await ingestion.ingest(
+            (
+                SourceType.TOOL_RESULT.value
+                if body.provenance is not None
+                else SourceType.MANUAL_CONFIG.value
+            ),
+            update_raw,
+            existing.scope,
+            sensitivity=sensitivity,
+            provenance=body.provenance,
+        )
+        updated = existing.model_copy(
+            update={
+                "title": title,
+                "body": updated_body,
+                "version": existing.version + 1,
+                "updated_at": int(time.time()),
+                "evidence_ids": [*existing.evidence_ids, evidence.id],
+            }
+        )
+        try:
+            updated = await knowledge.update(
+                updated, expected_version=body.expected_version
+            )
+        except KnowledgeVersionConflict as exc:
+            raise HTTPException(status_code=409, detail="VERSION_CONFLICT") from exc
+        if existing.scope.startswith("shared:") and sync is not None:
+            await sync.record_local(
+                f"evidence:{evidence.id}",
+                evidence.model_dump(mode="json"),
+                evidence.scope,
+            )
+            await sync.record_local(
+                f"knowledge:{updated.id}",
+                updated.model_dump(mode="json"),
+                updated.scope,
+            )
+        response = {
+            "knowledge_id": updated.id,
+            "evidence_id": evidence.id,
+            "version": updated.version,
+            "status": "updated",
+            "latency_ms": _latency_ms(started),
+        }
+        await idempotency.complete(receipt_key, request_hash, response)
+        await ws_manager.broadcast(
+            "memory_ready",
+            {
+                "evidence_id": evidence.id,
+                "knowledge_id": updated.id,
+                "title": updated.title,
+                "scope": updated.scope,
+                "operation": "update",
+            },
+        )
+        return response
+    except Exception:
+        await idempotency.fail(receipt_key, request_hash)
+        raise
+
+
 # ─── 证据详情 ────────────────────────────────────────────
 
 @app.get("/evidence/{id}", tags=["Memory"], summary="证据详情")
@@ -683,6 +834,10 @@ async def agent_idempotency_recover(
                 )
             external_key = original.idempotency_key
             receipt_key = external_key
+        elif body.operation == IdempotencyOperation.MEMORY_UPDATE:
+            original = MemoryUpdateRequest.model_validate(body.original_request)
+            external_key = original.idempotency_key
+            receipt_key = f"update:{external_key}"
         else:
             original = AgentLifecycleRequest.model_validate(body.original_request)
             external_key = original.idempotency_key

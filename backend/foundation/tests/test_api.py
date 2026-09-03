@@ -101,7 +101,7 @@ def test_version_distinguishes_product_api_and_schema_versions(client, monkeypat
     assert response.json() == {
         "product_version": "0.1.7",
         "component": "pixiu-memory-backend",
-        "api_version": "0.2.0",
+        "api_version": "0.3.0",
         "agent_memory_api": 1,
         "schema_version": SCHEMA_VERSION,
     }
@@ -1241,6 +1241,159 @@ def test_shared_write_queues_only_signed_shared_operations(client):
     }
     assert all(payload["scope"] == "shared:home" for _, payload in rows)
     assert all(isinstance(payload.get("signature"), str) for _, payload in rows)
+
+
+def _write_knowledge_id(client, *, title: str, scope: str) -> str:
+    written = client.post(
+        "/memory/write",
+        json={
+            "source_type": "MANUAL_CONFIG",
+            "raw": {"title": title, "body": {"value": "before"}},
+            "scope": scope,
+        },
+    )
+    assert written.status_code == 200
+    queried = client.post(
+        "/memory/query", json={"text": title, "context_hint": {"top_k": 1}}
+    )
+    assert queried.status_code == 200
+    knowledge_id = queried.json()["source_knowledge"]
+    assert knowledge_id
+    return knowledge_id
+
+
+def test_memory_update_reindexes_and_replays_completed_request(client):
+    knowledge_id = _write_knowledge_id(
+        client, title="update target alpha", scope="user:alice"
+    )
+    request = {
+        "knowledge_id": knowledge_id,
+        "expected_version": 1,
+        "scope": "user:alice",
+        "title": "updated searchable beta",
+        "body": {"value": "after"},
+        "idempotency_key": "update-alpha-1",
+    }
+
+    first = client.post("/memory/update", json=request)
+    replay = client.post("/memory/update", json=request)
+
+    assert first.status_code == replay.status_code == 200
+    assert replay.json() == first.json()
+    assert first.json()["knowledge_id"] == knowledge_id
+    assert first.json()["version"] == 2
+    evidence = client.get(f"/evidence/{first.json()['evidence_id']}")
+    assert evidence.status_code == 200
+    assert evidence.json()["raw"]["body"]["operation"] == "knowledge_update"
+    queried = client.post(
+        "/memory/query",
+        json={"text": "updated searchable beta", "context_hint": {"top_k": 1}},
+    )
+    assert queried.json()["source_knowledge"] == knowledge_id
+
+
+def test_shared_memory_update_queues_same_entity_version(client):
+    knowledge_id = _write_knowledge_id(
+        client, title="shared update target", scope="shared:home"
+    )
+    response = client.post(
+        "/memory/update",
+        json={
+            "knowledge_id": knowledge_id,
+            "expected_version": 1,
+            "scope": "shared:home",
+            "body": {"value": "concurrent-ready"},
+            "idempotency_key": "shared-update-1",
+        },
+    )
+
+    assert response.status_code == 200
+    matching = [
+        payload
+        for entity, payload in _sync_rows()
+        if entity == f"knowledge:{knowledge_id}"
+    ]
+    assert len(matching) == 2
+    assert matching[-1]["value"]["id"] == knowledge_id
+    assert matching[-1]["value"]["version"] == 2
+    assert matching[-1]["signature"]
+
+
+def test_memory_update_rejects_version_scope_and_sensitive_shared_data(client):
+    knowledge_id = _write_knowledge_id(
+        client, title="guarded shared update", scope="shared:home"
+    )
+    base = {
+        "knowledge_id": knowledge_id,
+        "expected_version": 2,
+        "scope": "shared:home",
+        "title": "safe title",
+        "idempotency_key": "guard-update-version",
+    }
+    version = client.post("/memory/update", json=base)
+    assert version.status_code == 409
+    assert version.json()["error"] == "VERSION_CONFLICT"
+
+    wrong_scope = client.post(
+        "/memory/update",
+        json={**base, "scope": "user:alice", "idempotency_key": "guard-update-scope"},
+    )
+    assert wrong_scope.status_code == 404
+
+    before_rows = _sync_rows()
+    sensitive = client.post(
+        "/memory/update",
+        json={
+            **base,
+            "expected_version": 1,
+            "title": "call 13800138000",
+            "idempotency_key": "guard-update-sensitive",
+        },
+    )
+    assert sensitive.status_code == 422
+    assert sensitive.json()["error"] == "SENSITIVE_SHARED_SCOPE"
+    assert _sync_rows() == before_rows
+
+
+def test_failed_memory_update_requires_explicit_recovery(client):
+    knowledge_id = _write_knowledge_id(
+        client, title="recoverable update target", scope="user:alice"
+    )
+    payload = {
+        "knowledge_id": knowledge_id,
+        "expected_version": 1,
+        "scope": "user:alice",
+        "title": "recovered update",
+        "idempotency_key": "update-recovery-1",
+    }
+
+    class _FailingKnowledge:
+        async def update(self, item, *, expected_version=None):
+            raise HTTPException(status_code=503, detail="INJECTED_FAILURE")
+
+    working_knowledge = app.dependency_overrides[get_knowledge_service]
+    app.dependency_overrides[get_knowledge_service] = lambda: _FailingKnowledge()
+    try:
+        failed = client.post("/memory/update", json=payload)
+    finally:
+        app.dependency_overrides[get_knowledge_service] = working_knowledge
+
+    assert failed.status_code == 503
+    blocked = client.post("/memory/update", json=payload)
+    assert blocked.status_code == 409
+    assert blocked.json()["error"] == "IDEMPOTENCY_FAILED"
+    recovered = client.post(
+        "/agent/idempotency/recover",
+        json={
+            "operation": "MEMORY_UPDATE",
+            "original_request": payload,
+            "confirm_duplicate_risk": True,
+            "reason": "verified update did not complete",
+        },
+    )
+    assert recovered.status_code == 200
+    assert recovered.json()["operation"] == "MEMORY_UPDATE"
+    assert client.post("/memory/update", json=payload).status_code == 200
 
 
 def test_user_write_never_enters_sync_oplog(client):

@@ -54,7 +54,7 @@ assert manifest["build"]["git_commit"] == subprocess.check_output(
 ).strip()
 
 assert manifest["interfaces"] == {
-    "http_api": "0.2.0",
+    "http_api": "0.3.0",
     "agent_memory_api": 1,
     "database_schema": 12,
 }

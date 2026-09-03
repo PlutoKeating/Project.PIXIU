@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from pathlib import Path
 
@@ -112,6 +113,41 @@ async def test_get_returns_saved(repo):
 async def test_get_missing_returns_none(repo):
     kr, _, _ = repo
     assert (await kr.get(_id("missing"))) is None
+
+
+@pytest.mark.asyncio
+async def test_compare_and_swap_allows_only_one_concurrent_version(repo):
+    kr1, _, db_path = repo
+    original = _knw(version=1, title="before")
+    await kr1.save(original)
+
+    db2 = await aiosqlite.connect(db_path)
+    db2.row_factory = aiosqlite.Row
+    await db2.execute("PRAGMA foreign_keys=ON")
+    await db2.execute("PRAGMA busy_timeout=5000")
+    kr2 = SqliteKnowledgeRepo(db2)
+    try:
+        first = original.model_copy(
+            update={"title": "first", "version": 2, "updated_at": NOW + 1}
+        )
+        second = original.model_copy(
+            update={"title": "second", "version": 2, "updated_at": NOW + 1}
+        )
+
+        results = await asyncio.gather(
+            kr1.save_if_version(first, 1), kr2.save_if_version(second, 1)
+        )
+
+        assert sorted(results) == [False, True]
+        stored = await kr1.get(original.id)
+        assert stored is not None
+        assert stored.version == 2
+        assert stored.title in {"first", "second"}
+        assert [item.id for item in await kr1.search_fts(stored.title, 5)] == [
+            original.id
+        ]
+    finally:
+        await db2.close()
 
 
 # ═══════════════════════════════════════════════════════

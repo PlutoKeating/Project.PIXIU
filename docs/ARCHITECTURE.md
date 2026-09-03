@@ -136,6 +136,9 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 > 2026-09-03 补齐写入前置安全门：先检测、后占用幂等 receipt；`user:*` 敏感
 > evidence 本地标记并从 Agent 上下文隔离，敏感内容拒绝进入 `shared:*`；检测故障
 > fail closed，因而不会以 sensitivity=0 静默绕过或进入同步链路。
+> `POST /memory/update` 保持 `knowledge_id` 不变，以存储层原子 compare-and-swap
+> 校验版本，追加更新 evidence、重建图/向量并为 `shared:*` 生成同一实体的同步操作；
+> 两个离线节点由同一基线产生的并发版本继续交由 CRDT 与确定性冲突仲裁收敛。
 
 **三索引齐写**：一条知识同时进 FTS5（关键词）、向量表（语义）、图（实体关系），这是混合检索的前提。
 当前 FTS 写入、INT8 向量写入与图（`knowledge_entities`/`relations`）均已实现；

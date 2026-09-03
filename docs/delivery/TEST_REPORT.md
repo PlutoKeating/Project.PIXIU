@@ -61,21 +61,21 @@ deleted-hidden/drop/disconnect，全部返回 passed。该成功记录没有调�
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-04 最新组合回归为 Foundation
-628 项、Engine 152 项、Module E 17 项（合计 pytest 797 passed），最近前端 ctest
+633 项、Engine 154 项、Module E 17 项（合计 pytest 804 passed），最近前端 ctest
 38/38；Python 回归报告有 10 条既有依赖弃用告警但无失败。新增安装健康
 切片另由 7 项单元测试及发布 helper 脚本覆盖。提交最终稿前仍必须从
 同一候选 commit 重新运行并保存原始日志。
 
 同日还修复了升级停服风险：`SyncRuntime.stop()` 原先只设置调度停止事件，却会等待
 当前 mDNS/反熵/对端请求完整超时；现改为取消当前调度任务、等待协程清理并关闭
-discovery/TLS server。永久阻塞轮次的有界停止测试通过；当前 Foundation 628 项回归通过；
+discovery/TLS server。永久阻塞轮次的有界停止测试通过；当前 Foundation 633 项回归通过；
 目标 V11 安装包的实际 systemd 停止时长仍须随下一候选重验。
 
 同一轮 Python 3.14 全量回归曾捕获 aiosqlite 工作线程在事件循环关闭后回调的 teardown
 告警。根因是应用 lifespan 从未关闭全局异步数据库，且 strict 启动在进入原清理段前
 即可失败。当前生命周期已把全部启动纳入 `try/finally`，在其他 runtime 停止后幂等
 关闭数据库并失效 DB 绑定服务；将 `PytestUnhandledThreadExceptionWarning` 提升为错误
-的 Foundation 628 项回归通过；完整组合回归保留 10 条既有依赖弃用告警。
+的 Foundation 633 项回归通过；完整组合回归保留 10 条既有依赖弃用告警。
 
 三节点同步协议回归新增离线遗忘防复活场景：A/B/C 全互信并收到初始共享值后，C
 离线错过 B 的删除墓碑；重连时通过摘要差集补齐墓碑，三方收敛到删除状态。初始创建
@@ -99,7 +99,7 @@ loopback 同步状态，并只输出按 run 加盐的身份/域摘要；`validat
 同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
 可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已
 加入 `PIXIU_VECTOR_DB_PATH`、strict 启动实际装载、进程级 store 复用和退出断开；
-当前 797 项组合回归通过。提交 `6f6002e` 的 strict revision 8 随后完成 V11 同用户
+当前 804 项组合回归通过。提交 `6f6002e` 的 strict revision 8 随后完成 V11 同用户
 `/memory/write`、向量召回、两阶段遗忘和删除后隐藏；能力端点报告 V11 与双 SDK
 runtime 均 compliant。正式取证器在检查到目标系统缺少 `kylin-agent` 与
 `agent-runtime` 可执行文件时按门禁拒绝生成最终证据，因此该记录不计完整 Agent 或

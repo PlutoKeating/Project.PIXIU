@@ -20,7 +20,11 @@ from backend.foundation.core.models import (
     KnowledgeStatus,
     Relation,
 )
-from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.repository import (
+    EntityRepository,
+    KnowledgeRepository,
+    KnowledgeVersionConflict,
+)
 from backend.foundation.core.vector_store import VectorMatch, VectorStore
 from backend.foundation.storage.repository import (
     SqliteEntityRepo,
@@ -40,6 +44,15 @@ class _FakeKnowledgeRepo(KnowledgeRepository):
             raise RuntimeError("forced knowledge_save failure")
         self.items[item.id] = item
         return item.id
+
+    async def save_if_version(
+        self, item: KnowledgeItem, expected_version: int
+    ) -> bool:
+        existing = self.items.get(item.id)
+        if existing is None or existing.version != expected_version:
+            return False
+        self.items[item.id] = item
+        return True
 
     async def get(self, id: str) -> Optional[KnowledgeItem]:
         return self.items.get(id)
@@ -272,11 +285,16 @@ async def test_update_preserves_identity_and_reindexes_vector() -> None:
         update={"title": "new value", "version": 2, "updated_at": 2}
     )
 
-    result = await service.update(updated)
+    result = await service.update(updated, expected_version=1)
 
     assert result.id == original.id
     assert knowledge.items[original.id].title == "new value"
     assert vector_store.vectors[original.id] != old_vector
+    with pytest.raises(KnowledgeVersionConflict):
+        await service.update(
+            updated.model_copy(update={"title": "stale overwrite"}),
+            expected_version=1,
+        )
 
 
 @pytest.mark.asyncio

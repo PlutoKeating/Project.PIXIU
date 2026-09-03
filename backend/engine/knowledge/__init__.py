@@ -9,7 +9,11 @@ import logging
 from typing import Optional
 
 from backend.foundation.core.models import Evidence, KnowledgeItem
-from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.repository import (
+    EntityRepository,
+    KnowledgeRepository,
+    KnowledgeVersionConflict,
+)
 from backend.foundation.core.vector_store import VectorStore
 
 from backend.engine.knowledge.embed_writer import EmbedWriter
@@ -44,14 +48,20 @@ class KnowledgeService:
         item = self._structurer.structure(evidence)
         return await self._persist(item, evidence_id=evidence.id)
 
-    async def update(self, item: KnowledgeItem) -> KnowledgeItem:
+    async def update(
+        self, item: KnowledgeItem, *, expected_version: int | None = None
+    ) -> KnowledgeItem:
         """Replace and reindex an existing knowledge item without changing its ID."""
         if await self._knw_repo.get(item.id) is None:
             raise KeyError(item.id)
-        return await self._persist(item)
+        return await self._persist(item, expected_version=expected_version)
 
     async def _persist(
-        self, item: KnowledgeItem, *, evidence_id: str = ""
+        self,
+        item: KnowledgeItem,
+        *,
+        evidence_id: str = "",
+        expected_version: int | None = None,
     ) -> KnowledgeItem:
         step = "graph"
         try:
@@ -60,7 +70,10 @@ class KnowledgeService:
             item = self._embed_writer.write(item)
             step = "knowledge_save"
             # 先落知识条目（knowledge_vec 外键依赖 knowledge_items.id），再写向量
-            await self._knw_repo.save(item)
+            if expected_version is None:
+                await self._knw_repo.save(item)
+            elif not await self._knw_repo.save_if_version(item, expected_version):
+                raise KnowledgeVersionConflict(item.id)
             step = "vector_save"
             if self._vector_store is not None:
                 vector = self._embed_writer.vector(item)
@@ -85,4 +98,4 @@ class KnowledgeService:
         return item
 
 
-__all__ = ["KnowledgeService"]
+__all__ = ["KnowledgeService", "KnowledgeVersionConflict"]

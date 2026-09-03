@@ -80,6 +80,8 @@ ACTIVE/SUPERSEDED、version、时间与正文一致。该自动化结果仍属�
 请求具备跨重启幂等 receipt；`POST /agent/context` 已提供 scope/敏感度硬过滤、字符
 预算、freshness/冲突状态和 evidence 引用。写入入口现已先执行敏感检测：`user:*`
 内容可本地标记隔离，敏感内容不得写入 `shared:*` 或同步；检测异常时 fail closed。
+`POST /memory/update` 已提供同一知识 ID 的原子版本 compare-and-swap、更新 evidence、
+图/向量重建索引和 shared 同步操作，为多设备离线并发修改进入 CRDT 仲裁提供正式入口。
 Module E 已实现独立 `pixiu`
 MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、四个显式
 记忆工具、背压诊断及两阶段遗忘均有契约测试；初始化还会校验 `/version`、`/health`、

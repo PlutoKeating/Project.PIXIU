@@ -377,6 +377,78 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
             await self._db.rollback()
             raise
 
+    async def save_if_version(
+        self, item: KnowledgeItem, expected_version: int
+    ) -> bool:
+        """以单条条件 UPDATE 实现跨连接安全的乐观锁更新。"""
+        await self._ensure_fts()
+        try:
+            cursor = await self._db.execute(
+                """UPDATE knowledge_items
+                   SET kind = ?, title = ?, body = ?, status = ?, version = ?,
+                       scope = ?, updated_at = ?
+                   WHERE id = ? AND version = ?""",
+                (
+                    item.kind.value,
+                    item.title,
+                    json.dumps(item.body, ensure_ascii=False),
+                    item.status.value,
+                    item.version,
+                    item.scope,
+                    item.updated_at,
+                    item.id,
+                    expected_version,
+                ),
+            )
+            if cursor.rowcount != 1:
+                await self._db.rollback()
+                return False
+
+            if item.evidence_ids:
+                await self._db.executemany(
+                    "INSERT OR IGNORE INTO knowledge_evidence "
+                    "(knowledge_id, evidence_id) VALUES (?, ?)",
+                    [(item.id, evidence_id) for evidence_id in item.evidence_ids],
+                )
+
+            await self._db.execute(
+                "DELETE FROM knowledge_entities WHERE knowledge_id = ?", (item.id,)
+            )
+            entity_names = _knowledge_entity_names(item)
+            if entity_names:
+                placeholders = ",".join("?" * len(entity_names))
+                entity_cursor = await self._db.execute(
+                    f"""SELECT id FROM entities
+                        WHERE name COLLATE NOCASE IN ({placeholders})
+                           OR norm_name COLLATE NOCASE IN ({placeholders})""",
+                    [*entity_names, *entity_names],
+                )
+                entity_rows = await entity_cursor.fetchall()
+                await self._db.executemany(
+                    "INSERT OR IGNORE INTO knowledge_entities "
+                    "(knowledge_id, entity_id) VALUES (?, ?)",
+                    [(item.id, row["id"]) for row in entity_rows],
+                )
+
+            row_cursor = await self._db.execute(
+                "SELECT rowid FROM knowledge_items WHERE id = ?", (item.id,)
+            )
+            row = await row_cursor.fetchone()
+            if row is None:
+                raise RuntimeError(
+                    f"knowledge_items row not found after CAS update: {item.id}"
+                )
+            await self._db.execute(
+                "INSERT OR REPLACE INTO knowledge_fts(rowid, title, body_text) "
+                "VALUES (?, ?, ?)",
+                (row["rowid"], item.title, _knowledge_search_text(item)),
+            )
+            await self._db.commit()
+            return True
+        except Exception:
+            await self._db.rollback()
+            raise
+
     async def get(self, id: str) -> Optional[KnowledgeItem]:
         cursor = await self._db.execute("SELECT * FROM knowledge_items WHERE id = ?", (id,))
         row = await cursor.fetchone()

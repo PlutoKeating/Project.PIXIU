@@ -8,7 +8,8 @@
 > 一次性失败恢复授权和审计；
 > `/agent/context` 已提供 scope/敏感过滤、预算、freshness、冲突状态与 evidence 引用；
 > `/memory/write` 已先检测敏感度再占用 receipt，敏感内容不可进入 `shared:*`，检测
-> 故障 fail closed；`/agent/lifecycle` 已幂等写入六类短/中期 context；日志贯通、Module E
+> 故障 fail closed；`/memory/update` 以存储层原子 compare-and-swap 更新同一 ID，追加
+> evidence、重建图/向量并生成 shared 同步 op；`/agent/lifecycle` 已幂等写入六类短/中期 context；日志贯通、Module E
 > 真实触发及长期化策略仍待完成。
 > `/version` 分离产品/API/Agent Memory/schema 版本，`/health` 校验实际数据库迁移；
 > 两者与 `/capabilities` 共同构成 Module E 的启动前握手。
@@ -106,7 +107,7 @@ class ConflictRepository(ABC): ...
 **三协议支持**：
 
 ```
-http_app.py  → FastAPI app + 路由（/memory/write、/memory/query、/preference/*、/forget、
+http_app.py  → FastAPI app + 路由（/memory/write、/memory/update、/memory/query、/preference/*、/forget、
                /agent/context、/agent/lifecycle、/conflicts、/memory/flow/promote、/sync/* 已实现）
 ws.py + ws_manager.py → WebSocket /events（连接/心跳/广播，memory_ready 已接入写入链路）
 dbus_service.py → com.kylin.pixiu.Memory（桌面 D-Bus）

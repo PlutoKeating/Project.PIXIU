@@ -14,7 +14,7 @@
 > `kylin-coreai-embedding`，且系统 Vector Engine 必须实际承担向量存储与检索；
 > 当前 SQLite/INT8 检索不能作为向量数据库 SDK 验收证据。
 
-> **状态（2026-09-04）**：全部业务子包已实现，Engine 152 项测试通过。严格画像已
+> **状态（2026-09-04）**：全部业务子包已实现，Engine 154 项测试通过。严格画像已
 > 同时构建 Embedding 与 Vector Engine pybind11 绑定；提交 `6f6002e` 的 revision 8
 > 已取得 V11 同用户产品写入、检索、遗忘与隐藏阶段性实证。最终 user service、安装
 > 依赖、完整 Agent 和同版性能报告仍未闭环。默认 `auto` 模式优先使用系统 SDK；缺少
@@ -216,7 +216,7 @@ class KnowledgeService:
     def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository,
                  embedder, vector_store: VectorStore): ...
     async def structure(self, evidence: Evidence) -> KnowledgeItem: ...
-    async def update(self, item: KnowledgeItem) -> KnowledgeItem: ...  # 保持 ID 并重建图/向量
+    async def update(self, item: KnowledgeItem, *, expected_version: int | None = None) -> KnowledgeItem: ...  # 可选原子 CAS，保持 ID 并重建图/向量
 
 class ConflictService:
     def __init__(self, knw_repo: KnowledgeRepository, conflict_repo: ConflictRepository): ...
