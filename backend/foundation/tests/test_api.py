@@ -1467,3 +1467,43 @@ def test_shared_forget_queues_knowledge_tombstone(client):
     ]
     assert len(tombstones) == 1
     assert tombstones[0]["scope"] == "shared:home"
+
+
+def test_sync_knowledge_state_exposes_tombstone_without_payload(client):
+    missing = client.get("/sync/state/knowledge/knw_MMMMMMMMMMMMMMMMMMMMMMMMMM")
+    assert missing.status_code == 200
+    assert missing.json() == {
+        "present": False,
+        "tombstone": False,
+        "clock_entries": 0,
+        "clock_total": 0,
+        "operation_digest": None,
+        "updated_at": None,
+    }
+    assert client.get("/sync/state/knowledge/not-valid").status_code == 400
+
+    knowledge_id = _write_knowledge_id(
+        client, title="shared state marker", scope="shared:home"
+    )
+    active = client.get(f"/sync/state/knowledge/{knowledge_id}")
+    assert active.status_code == 200
+    assert active.json()["present"] is True
+    assert active.json()["tombstone"] is False
+    assert active.json()["clock_entries"] == 1
+    assert active.json()["clock_total"] == 1
+    assert len(active.json()["operation_digest"]) == 64
+    assert "payload" not in active.json()
+
+    forgotten = client.post(
+        "/forget", json={"command": "忘记shared state marker", "confirm": True}
+    )
+    assert forgotten.status_code == 200
+    deleted = client.get(f"/sync/state/knowledge/{knowledge_id}")
+    assert deleted.status_code == 200
+    assert deleted.json()["present"] is True
+    assert deleted.json()["tombstone"] is True
+    assert deleted.json()["clock_total"] == 2
+    assert deleted.json()["operation_digest"] != active.json()["operation_digest"]
+    encoded = json.dumps(deleted.json(), ensure_ascii=False)
+    assert "shared state marker" not in encoded
+    assert "shared:home" not in encoded

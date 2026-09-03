@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import time
 
@@ -337,6 +338,27 @@ class SyncService:
             enabled=runtime["enabled"],
             paused=runtime["paused"],
         )
+
+    async def entity_state(self, entity: str) -> dict:
+        """Return a payload-free CRDT state summary for local diagnostics."""
+        state = await self._store.get_state(entity)
+        if state is None:
+            return {
+                "present": False,
+                "tombstone": False,
+                "clock_entries": 0,
+                "clock_total": 0,
+                "operation_digest": None,
+                "updated_at": None,
+            }
+        return {
+            "present": True,
+            "tombstone": state.tombstone,
+            "clock_entries": len(state.vclock),
+            "clock_total": sum(state.vclock.values()),
+            "operation_digest": hashlib.sha256(state.op_id.encode("utf-8")).hexdigest(),
+            "updated_at": state.ts,
+        }
 
     async def revoke(self, peer_id: str) -> Peer:
         identity = await self.initialize()

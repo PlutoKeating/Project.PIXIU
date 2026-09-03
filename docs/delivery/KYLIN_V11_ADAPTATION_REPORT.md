@@ -93,7 +93,7 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
 - 同用户启动的旧 strict 包能力端点可报告双 SDK ready；
 - 第一次 `/memory/write` 因生产组合根未执行 `LoadDBFile` 返回 local storage not found；
 - 当前源码已增加 `PIXIU_VECTOR_DB_PATH`，strict 预检实际装载应用数据库，store 在
-  进程内复用且退出时 `Disconnect`；当前 808 项组合回归通过；
+  进程内复用且退出时 `Disconnect`；当前 809 项组合回归通过；
 - 只有重建候选完成写入、查询、遗忘与删除后隐藏，才能升级为 H-02 产品证据。
 
 提交 `6f6002e` 的 strict revision 8 已完成上述产品复验：能力端点确认 V11 与双 SDK

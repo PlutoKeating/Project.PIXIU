@@ -358,6 +358,8 @@ knowledge op；否则 MERGE 会把仲裁前的新输入广播出去，导致发�
   （log warning，不阻塞 API）；显式 `false` 或运行时 `enabled=false` 时停止广播与监听。
 - mDNS 结果必须与本地已配对、未撤销 peer 的设备 ID、`shared:*` 域和 Ed25519 公钥完全匹配。
 - `user:*` 不进入 oplog；嵌套 payload scope 必须与签名 envelope scope 一致。
+- `/sync/state/knowledge/{knowledge_id}` 只读暴露 present/tombstone、版本计数、时间和
+  原始操作 ID 的 SHA-256，不返回 payload、scope、签名或设备 ID，供墓碑验收取证。
 - 传输固定 TLS 1.3 双向认证；单帧和单批分别限制为 1 MiB、256 个操作。
 
 ### 1.7 eval/ —— 评测框架

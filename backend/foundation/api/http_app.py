@@ -18,7 +18,7 @@ from enum import Enum
 import time
 from typing import Any
 
-from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request
+from fastapi import Body, Depends, FastAPI, HTTPException, Path, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -1113,6 +1113,19 @@ async def sync_pair_confirm(
 async def sync_status(sync=Depends(get_sync_service)):
     status = await sync.status()
     return status.model_dump(mode="json")
+
+
+@app.get(
+    "/sync/state/knowledge/{knowledge_id}",
+    tags=["Sync"],
+    summary="查询知识的去载荷 CRDT 状态",
+)
+async def sync_knowledge_state(
+    knowledge_id: str = Path(pattern=r"^knw_[A-Za-z0-9_-]{8,128}$"),
+    sync=Depends(get_sync_service),
+):
+    """仅返回墓碑、版本计数和操作摘要，不暴露同步载荷或设备身份。"""
+    return await sync.entity_state(f"knowledge:{knowledge_id}")
 
 
 @app.put("/sync/settings", tags=["Sync"], summary="更新同步开关")

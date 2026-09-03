@@ -72,6 +72,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 | POST | `/sync/pair/request` | 发起确认式配对请求（含 6 位 PIN） | ✅ 已实现（2026-08-29） |
 | POST | `/sync/pair/confirm` | 确认/拒绝配对请求 | ✅ 已实现（2026-08-29） |
 | GET | `/sync/status` | 同步状态（含运行时开关 enabled/paused） | ✅ 已实现（2026-08-10） |
+| GET | `/sync/state/knowledge/{knowledge_id}` | 去载荷 CRDT/墓碑状态 | ✅ 已实现（仅本机诊断/取证） |
 | PUT | `/sync/settings` | 更新同步开关（enabled/paused，热生效） | ✅ 已实现（2026-08-29） |
 | POST | `/sync/peers/{id}/revoke` | 解绑设备 | ✅ 已实现（2026-08-10） |
 | GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
@@ -740,7 +741,27 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 `PIXIU_SYNC_NETWORK_ENABLED`，未写时回 env 默认——代码默认 true）；
 `paused` 为数据流暂停（KV `sync_runtime:paused`，默认 false）。
 
-### 3.15 POST /sync/peers/{id}/revoke
+### 3.15 GET /sync/state/knowledge/{knowledge_id}
+
+查询一条知识在本机 CRDT 中的去载荷状态。该端点用于同步诊断和 N-07 取证，不返回
+实体 ID、正文、scope、签名、版本向量中的设备 ID 或原始操作 ID。
+
+```jsonc
+{
+  "present": true,
+  "tombstone": true,
+  "clock_entries": 2,
+  "clock_total": 4,
+  "operation_digest": "64位SHA-256摘要",
+  "updated_at": 1714608100
+}
+```
+
+尚无 CRDT 状态时返回 `present=false`，其余计数为 0，摘要和时间为 `null`。路径参数
+必须是合法的 `knw_*` ID，否则按统一错误契约返回 400；该接口不接受任意实体名，
+避免借诊断端点枚举其他同步对象。
+
+### 3.16 POST /sync/peers/{id}/revoke
 
 解绑设备。
 
@@ -754,7 +775,7 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 }
 ```
 
-### 3.16 GET /sync/discover
+### 3.17 GET /sync/discover
 
 发现局域网内已广播的 PIXIU 设备（**含未配对**）。`paired` 标注本地信任关系，
 本机自身被过滤。
@@ -780,7 +801,7 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 旧版通告缺省 false）；`paired` 表示该设备是否已在本地信任列表
 （`sync.peers()`）；sync runtime 未启动时返回 `{"devices": []}`。
 
-### 3.17 GET /monitor/config
+### 3.18 GET /monitor/config
 
 读取当前监控配置（daemon 视角的全量状态）。
 
@@ -803,7 +824,7 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 四类数据源开关，键名固定 `directory | clipboard | behavior | screenshot`；
 `directories` 监视目录绝对路径清单（去重、非空）。
 
-### 3.18 PUT /monitor/config
+### 3.19 PUT /monitor/config
 
 写入监控配置，请求体结构与 GET 响应一致（**全量提交，不做局部 patch**）。
 服务端持久化配置并对运行中的 daemon **热生效**（开启/关闭采集器、增删
@@ -828,7 +849,7 @@ inotify 监视点），无需重启。每次成功写入追加一条 `state_chan
 **错误响应（400）：** 未知 source 名、字段类型错误、目录为相对路径等 →
 `{"error": "INVALID_REQUEST", "message": "...", "request_id": "req_..."}`。
 
-### 3.19 GET /monitor/log
+### 3.20 GET /monitor/log
 
 分页查询监控活动记录（按时间倒序，最新在前）。`limit` 缺省 100、上限 500；
 `offset` 缺省 0。空日志返回 `{"events": []}` 而非 404。
@@ -858,7 +879,7 @@ state_changed）；`evidence_id`/`knowledge_id` 事件未产生入库时允许�
 null。`summary` 由服务端生成用户可读文案，**不含敏感原文全文**（隔离类条目
 只给脱敏摘要）。
 
-### 3.20 POST /sync/pair/request
+### 3.21 POST /sync/pair/request
 
 发起确认式配对请求（「一键发现+确认配对」GUI 主路径）：本机生成 6 位 PIN
 并落库（`pair_request:{request_id}`，TTL 60s），随后向所有 WebSocket 客户端
@@ -887,7 +908,7 @@ null。`summary` 由服务端生成用户可读文案，**不含敏感原文全�
 **错误响应（400）：** 目标 ID 格式非法或自配对 →
 `{"error": "INVALID_REQUEST", "message": "...", "request_id": "req_..."}`。
 
-### 3.21 POST /sync/pair/confirm
+### 3.22 POST /sync/pair/confirm
 
 确认或拒绝一条配对请求（按 `request_id` 直查本机存储）。`accept=true` 返回
 `accepted`，实际签名入网由前端在确认成功后自动执行既有 `POST /sync/pair`
@@ -907,7 +928,7 @@ null。`summary` 由服务端生成用户可读文案，**不含敏感原文全�
 **错误响应（404）：** `request_id` 不存在 →
 `{"error": "REQUEST_NOT_FOUND", "message": "...", "request_id": "req_..."}`。
 
-### 3.22 PUT /sync/settings
+### 3.23 PUT /sync/settings
 
 更新同步运行时开关（SN-4）。两字段均可缺省，只更新显式传入的键；
 KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
@@ -934,7 +955,7 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 
 ---
 
-### 3.23 GET /delivery/insights
+### 3.24 GET /delivery/insights
 
 洞察流（批次④ B4-1）：返回最近 24h 入库的高质量记忆候选（按关联证据
 `quality_score` 降序、过滤 `sensitivity>0`），供聊天窗欢迎页渲染动态建议卡。
@@ -974,7 +995,7 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 
 ---
 
-### 3.24 GET /delivery/digest
+### 3.25 GET /delivery/digest
 
 定时简报（批次④ B4-2）：按日聚合当日 `monitor_log` 捕获事件，服务端规则化
 生成中文简报（无 LLM、离线可运行），供前端「今日简报」入口消费。
