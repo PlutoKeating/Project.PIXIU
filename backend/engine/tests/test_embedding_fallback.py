@@ -7,6 +7,7 @@ from types import ModuleType
 
 import pytest
 
+import backend.engine.kylin.embedding as embedding_module
 from backend.engine.kylin.embedding import (
     KylinSDKUnavailableError,
     KylinTextEmbedding,
@@ -39,11 +40,19 @@ def _install_fake_native(monkeypatch) -> None:
     )
 
 
-def test_auto_embedding_falls_back_without_kylin_sdk() -> None:
+def _sdk_unavailable():
+    raise KylinSDKUnavailableError("simulated missing SDK")
+
+
+def test_auto_embedding_falls_back_without_kylin_sdk(monkeypatch) -> None:
+    monkeypatch.setattr(embedding_module, "_load_native", _sdk_unavailable)
+
     assert isinstance(get_embedder("auto"), PortableTextEmbedding)
 
 
-def test_strict_kylin_embedding_fails_without_sdk() -> None:
+def test_strict_kylin_embedding_fails_without_sdk(monkeypatch) -> None:
+    monkeypatch.setattr(embedding_module, "_load_native", _sdk_unavailable)
+
     with pytest.raises(KylinSDKUnavailableError):
         get_embedder("kylin")
 
