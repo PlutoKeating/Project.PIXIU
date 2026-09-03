@@ -79,7 +79,7 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 
 | 画像 | 适用 | 关键事实 |
 |------|------|----------|
-| `kylin-v11-x86_64` | 麒麟 V11（openKylin）x86_64 | Python 3.12 无 pip/venv（postinst 自举）；Qt5 运行时包名 t64；apt 无 qtbase5-dev/kysdk-dev → KYSDK=OFF；wheels 按 cp312 |
+| `kylin-v11-x86_64` | 麒麟 V11（openKylin）x86_64 | Python 3.12；Qt5 运行时包名 t64；通用 Qt 构建依赖可由画像预置，双 SDK 开发包仍不可用 → KYSDK=OFF；wheels 按 cp312 |
 | `kylin-v11-native-x86_64` | 麒麟 V11 x86_64 严格验收 | `KYSDK=ON`；前端 KylinSDK 与后端 Embedding/Vector pybind 扩展缺一即构建失败；双 SDK 为 Depends |
 | `generic-ubuntu` | Ubuntu CI/开发机 | python3-venv 可用；Qt5 非 t64 包名；wheels 按 cp312 |
 
@@ -90,6 +90,8 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 
 ```bash
 # 一键：测试 + 构建 .deb（默认画像 kylin-v11-x86_64，KYSDK=OFF，离线 wheels）
+sudo bash build/release/scripts/provision-target.sh \
+  kylin-v11-x86_64 --with-build-deps
 PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
 
 # 麒麟 V11 严格原生版（先按画像安装公开构建依赖）

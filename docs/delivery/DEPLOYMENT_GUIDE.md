@@ -13,10 +13,16 @@
 
 ```bash
 git submodule update --init --recursive
+sudo bash build/release/scripts/provision-target.sh \
+  kylin-v11-x86_64 --with-build-deps
 PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
 sudo apt-get install -y ./build/release/out/pixiu_0.1.7-1_amd64.deb
 systemctl status pixiu-backend.service
 ```
+
+`kylin-v11-x86_64` 已明确声明 CMake/Ninja/Qt5 等通用构建依赖，预置脚本可幂等建立
+`KYSDK=OFF` 的目标系统打包环境；双 SDK 开发包只属于严格原生画像，缺失时不得把
+兼容画像结果记作原生验收。
 
 包内已含 Module E 的只读 Provider 副本；首次以桌面用户启动 `pixiu` 时，启动器把
 它幂等安装/升级到当前 Agent profile、保留显式配置，并设置
