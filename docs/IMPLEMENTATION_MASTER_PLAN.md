@@ -87,12 +87,12 @@ W0 基线与计划
 
 | 切片 | 代码范围 | 具体工作 | 测试与完成标准 |
 |------|----------|----------|----------------|
-| W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：集合装载、upsert、delete、search；统一错误和运行时标识 | 实现与 fake-native 契约测试完成；V11 链接/真服务待验 |
-| W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam 与结果类型实现完成；生产注入待 W1.4 |
-| W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 写入/排序/删除及持久化双向 ID 映射通过；Kylin 适配待实施 |
-| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 双适配器及 portable 生产链完成；Kylin 配置选择待 W1.5，V11 待 W1.6 |
+| W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：集合装载、upsert、delete、search；统一错误和运行时标识 | 实现/fake-native 契约与 V11 链接完成；真服务待验 |
+| W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam、结果类型及生产依赖注入已完成 |
+| W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
+| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 双适配器、配置选择及生产链完成；V11 真服务待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接配置、能力与健康报告 | 配置/DI strict 与 auto、`GET /capabilities`、严格启动预检完成 |
-| W1.6 | V11 | 真 SDK 建库、写入、删除、查询、进程/链接和日志取证 | H-02、F4-03 通过 |
+| W1.6 | V11 | 🟡 strict 包双扩展已在 V11 编译/链接；真 SDK 建库、写入、删除、查询、进程和日志取证待执行 | H-02、F4-03 通过 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite
 映射、FTS/关系/缓存；SDK int64 主键与知识 ULID 的映射必须持久化并检测碰撞。
@@ -102,14 +102,15 @@ W0 基线与计划
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
 | W2.1 | 复核 Embedding 绑定生命周期、错误传播、维度和线程安全 | 已完成：构造异常回收 session、维度 fail closed、互斥调用、释放 GIL；wrapper/strict/failure 单测与官方头文件语法编译通过 |
-| W2.2 | 建立统一能力端点与启动预检，分别报告 OS、Agent、Embedding、Vector Engine | OS/双 SDK 能力与严格启动预检完成；Agent runtime 待 W4 宿主适配后纳入 |
-| W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 流水线已拆分：托管 CI 固定 portable；V11 自托管 strict workflow 构建双扩展、安装并跑真实写查；首次原生运行证据待生成 |
+| W2.2 | 建立统一能力端点与启动预检，分别报告 OS、Agent、Embedding、Vector Engine | OS/双 SDK 能力与 strict 启动预检完成；Module E 初始化另校验 Agent runtime |
+| W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 流水线已拆分；提交 `ea92b28` 的 V11 strict 双扩展构建及前端 38/38 已通过，自动安装/真实写查仍待 Agent/runtime 与服务 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
 | W2.5 | 在双 SDK 路径运行质量、延迟、资源和冷热压测 | P-01～P-04、F4-04/F4-05 原始报告生成 |
 
-当前 V11 x86_64 脱敏探测已修复 `VERSION_ID=V11` 的平台误判，但其已配置软件源不提供
-双 SDK/桌面 KylinSDK 的运行与开发包，故 W1.6/W2.4/W2.5 仍未开始真实 SDK 验收。
-下一次执行须使用具备官方包与服务的 V11 环境并运行 strict workflow。
+当前 V11 x86_64 软件源已确认并安装双 SDK、桌面 KylinSDK 及开发包；提交 `ea92b28`
+已生成 `KYSDK=ON`/strict amd64 包，包内包含两个 cp312 原生扩展，前端 ctest 38/38。
+当前仍缺 Agent 宿主/runtime 与 Vector Engine/Embedding 真服务全链路证据，故
+W1.6/W2.4/W2.5 和 H-02/H-03 继续保持未通过/未完成。
 
 ### W3：面向完整 Agent 的 vNext 公共 API 与数据模型（P0）
 

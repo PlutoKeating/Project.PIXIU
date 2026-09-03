@@ -100,7 +100,7 @@ build/release/dist/<channel> # 发布目录（staging / production）——git �
 
 | 画像 | 适用 | 关键事实 |
 |------|------|----------|
-| `kylin-v11-x86_64` | 麒麟 V11（openKylin）x86_64 | Python 3.12；Qt5 运行时包名 t64；通用 Qt 构建依赖可由画像预置，双 SDK 开发包仍不可用 → KYSDK=OFF；wheels 按 cp312 |
+| `kylin-v11-x86_64` | 麒麟 V11（openKylin）x86_64 portable 对照 | Python 3.12；Qt5 运行时包名 t64；显式 `KYSDK=OFF` 以验证无专有 SDK 时的降级路径；wheels 按 cp312 |
 | `kylin-v11-native-x86_64` | 麒麟 V11 x86_64 严格验收 | `KYSDK=ON`；画像安装 gsettings-qt、shortcut/notification/qtwidgets 与 Embedding/Vector 的官方开发包，任一原生扩展缺失即构建失败；双 AI SDK 为 Depends |
 | `generic-ubuntu` | Ubuntu CI/开发机 | python3-venv 可用；Qt5 非 t64 包名；wheels 按 cp312 |
 

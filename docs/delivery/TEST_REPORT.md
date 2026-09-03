@@ -1,6 +1,6 @@
 # D-07 效果与测试报告工作稿
 
-- 更新日期：2026-09-03
+- 更新日期：2026-09-04
 - 状态：portable 开发基线已有；最终 V11 双 SDK/Agent/三设备报告未完成
 
 ## 测试口径
@@ -28,6 +28,10 @@ KYSDK/strict 错配拒绝，以及用户态 Agent/runtime 缺失、版本命令�
 包内与已装 manifest、dpkg 的 PIXIU/双 SDK 版本、Agent runtime 和三个端点；隔离集合
 直接执行 create/load/upsert/search/delete/drop，产品 API 另走写入/召回/遗忘且失败
 时清理。该测试只证明取证器逻辑，不能替代目标 V11 的真实输出。
+提交 `ea92b28` 已在 V11 amd64/Python 3.12 按 strict profile 完成 `KYSDK=ON` 构建：
+前端 ctest 38/38，Embedding 与 Vector Engine 两个 cp312 扩展均链接并进入 `.deb`，
+包内 manifest 为同一 commit、amd64、strict=true。该构建关闭 wheels 且未安装运行，
+只计原生编译/链接切片，不计 H-02/H-03 或最终安装通过。
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine

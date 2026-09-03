@@ -1,7 +1,7 @@
 # D-10 银河麒麟 V11 适配报告工作稿
 
-- 更新日期：2026-09-03
-- 状态：历史麒麟 V11/桌面基线存在；最终 Agent + 双 SDK + 安装升级取证未完成
+- 更新日期：2026-09-04
+- 状态：V11 strict 原生编译已通过；最终 Agent + 双 SDK 运行 + 安装升级取证未完成
 
 ## 已确认基线
 
@@ -9,11 +9,10 @@
 KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5.15.19；这些
 记录不能替代最终候选版本的重新验证。
 
-2026-09-03 的脱敏平台探测确认 x86_64 目标使用 `VERSION_ID=V11` 格式；能力端点和
-原生 CI 已兼容 `11`、`V11`、`v11` 三种写法。刷新当前配置的软件源后，双 SDK、
-桌面 KylinSDK 及其开发包均无安装候选，因此本轮只能确认平台识别，不能执行或宣称
-双 SDK 原生验收通过。后续须在提供这些官方包和 Vector Engine/AI runtime 的 V11
-环境重新运行 strict workflow；不得以源码语法编译或 portable 结果替代。
+脱敏平台探测确认 x86_64 目标使用 `VERSION_ID=V11` 格式；能力端点和原生 CI 已兼容
+`11`、`V11`、`v11`。2026-09-04 软件源已提供并安装双 SDK、桌面 KylinSDK 及开发包；
+提交 `ea92b28` 完成 strict 原生编译。但 Agent 宿主/runtime 与双 SDK 真服务调用仍未
+完成，因此不得宣称 H-02/H-03 或完整 Agent 验收通过。
 
 ## 最终适配矩阵
 
@@ -21,9 +20,9 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 |------|--------|-------|----------|
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
 | openKylin Agent + Module E | 未完成 | 未完成 | 版本、provider 加载、完整 run |
-| Embedding SDK | 待最终证据 | 待真机 | runtime、调用日志、严格失败 |
-| Vector Engine SDK | H-02 未通过 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
-| UKUI/KYSDK | 历史基线 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
+| Embedding SDK | cp312 扩展已原生链接；真调用待验 | 待真机 | runtime、调用日志、严格失败 |
+| Vector Engine SDK | cp312 扩展已原生链接；H-02 未通过 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
+| UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |
 
@@ -35,8 +34,21 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 尚无最终候选的目标 V11 输出。
 严格画像的目标构建发现桌面 KylinSDK 与 gsettings-qt 运行包不提供 `pkg-config` 开发
 元数据；画像已补入系统仓库确认存在的 gsettings-qt 及 shortcut/notification/
-qtwidgets 四个 `-dev` 包。该修正仍须以同一 commit 的原生重建结果确认，不据此提前
-更新 H-01～H-03 状态。
+qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足以通过前端配置和
+两项后端原生扩展链接，但不据此提前更新 H-01～H-03 状态。
+
+### 2026-09-04 strict 原生编译切片（非运行验收）
+
+- V11 amd64、Python 3.12 上按仓库 strict profile 构建成功；
+- Embedding SDK/开发包为 `1.2.0.0-0k0.4`，Vector Engine SDK/开发包为
+  `1.2.0.0-0k1.1`；
+- 前端同时发现 shortcut `3.0.1.0`、notification `3.0.1.0`、qtwidgets `2.3.1.0`
+  与 gsettings-qt `1.0.0`，`KYSDK=ON` ctest 38/38；
+- `.deb` manifest 绑定 commit `ea92b280e34b5f1377aa959d11a59696a4a07db9`、amd64、
+  `kylin-v11-native-x86_64`、`kysdk=ON`、`install_strict=true`，并包含 Embedding 与
+  Vector Engine 两个 cp312 原生扩展；
+- 本切片关闭离线 wheels 且未安装候选包，未运行 SDK 服务生命周期或完整 Agent，
+  因而只证明可编译/链接，不计 H-02/H-03 或最终交付通过。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 
