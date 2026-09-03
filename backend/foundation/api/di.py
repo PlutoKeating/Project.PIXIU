@@ -146,6 +146,15 @@ async def get_runtime_settings():
     return settings
 
 
+async def preflight_strict_capabilities() -> None:
+    """Fail application startup when a strict SDK runtime cannot initialize."""
+    if settings.embedding == "kylin":
+        await get_text_embedder()
+    if settings.vector_store == "kylin":
+        db = await get_db()
+        await get_vector_store(db)
+
+
 async def get_preference_service(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> PreferenceService:

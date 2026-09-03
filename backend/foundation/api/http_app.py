@@ -47,6 +47,7 @@ from .di import (
     get_sync_service,
     get_text_embedder,
     get_vector_store,
+    preflight_strict_capabilities,
     apply_sync_runtime_settings,
     start_behavior_collector,
     start_monitor_runtime,
@@ -69,6 +70,7 @@ _log = get_logger(__name__)
 
 @asynccontextmanager
 async def _lifespan(_: FastAPI):
+    await preflight_strict_capabilities()
     await start_sync_runtime()
     await start_monitor_runtime()
     await start_behavior_collector()

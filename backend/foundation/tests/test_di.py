@@ -24,6 +24,7 @@ from backend.foundation.api.di import (
     get_security_service,
     get_sync_service,
     get_vector_store,
+    preflight_strict_capabilities,
 )
 from backend.foundation.core.idgen import gen_evidence_id
 from backend.foundation.core.models import Evidence, SourceType
@@ -126,6 +127,41 @@ async def test_auto_vector_store_reports_portable_fallback(fresh_di, monkeypatch
         assert store.runtime == "portable"
     finally:
         await db.close()
+
+
+@pytest.mark.asyncio
+async def test_startup_preflight_fails_when_strict_embedding_is_unavailable(
+    fresh_di, monkeypatch
+):
+    di_module.settings.embedding = "kylin"
+
+    def _unavailable(_backend):
+        raise RuntimeError("embedding unavailable")
+
+    monkeypatch.setattr(di_module, "get_embedder", _unavailable)
+
+    with pytest.raises(RuntimeError, match="embedding unavailable"):
+        await preflight_strict_capabilities()
+
+
+@pytest.mark.asyncio
+async def test_startup_preflight_fails_when_strict_vector_store_is_unavailable(
+    fresh_di, monkeypatch
+):
+    di_module.settings.vector_store = "kylin"
+
+    async def _unavailable(_db):
+        raise RuntimeError("vector unavailable")
+
+    monkeypatch.setattr(di_module, "get_vector_store", _unavailable)
+
+    try:
+        with pytest.raises(RuntimeError, match="vector unavailable"):
+            await preflight_strict_capabilities()
+    finally:
+        if di_module._db is not None:
+            await di_module._db.close()
+            di_module._db = None
 
 
 @pytest.mark.asyncio

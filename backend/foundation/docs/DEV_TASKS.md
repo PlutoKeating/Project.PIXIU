@@ -48,7 +48,8 @@
 其中 Agent 接入的 Module C 责任已由团队批准并冻结为：
 
 - C-A1：提供可判定 V11、Embedding、Vector Engine 实际 runtime 的 capability 契约。
-  `GET /capabilities` 已实现配置/实际分栏与脱敏平台判定；Agent runtime 和启动预检待补。
+  `GET /capabilities` 已实现配置/实际分栏与脱敏平台判定，严格双 SDK 启动预检已接入；
+  Agent runtime 待 Module E 宿主适配后纳入。
 - C-A2：贯通 session_id/run_id/turn_id/tool_call_id 到 evidence、日志与查询上下文。
 - C-A3：提供短/中期 context 创建、更新、promote/demote 与清理的公共 API。
 - C-A4：Vector Engine 成为严格画像的生产向量 Repository；SQLite/INT8 仅为降级。

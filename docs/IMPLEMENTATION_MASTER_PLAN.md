@@ -91,7 +91,7 @@ W0 基线与计划
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam 与结果类型实现完成；生产注入待 W1.4 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 写入/排序/删除及持久化双向 ID 映射通过；Kylin 适配待实施 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 双适配器及 portable 生产链完成；Kylin 配置选择待 W1.5，V11 待 W1.6 |
-| W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接配置、能力与健康报告 | 配置/DI strict 与 auto、`GET /capabilities` 完成；启动预检待 W2.2 |
+| W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接配置、能力与健康报告 | 配置/DI strict 与 auto、`GET /capabilities`、严格启动预检完成 |
 | W1.6 | V11 | 真 SDK 建库、写入、删除、查询、进程/链接和日志取证 | H-02、F4-03 通过 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite
@@ -102,7 +102,7 @@ W0 基线与计划
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
 | W2.1 | 复核 Embedding 绑定生命周期、错误传播、维度和线程安全 | wrapper/strict/failure 单测通过 |
-| W2.2 | 建立统一能力端点与启动预检，分别报告 OS、Agent、Embedding、Vector Engine | 能力端点已完成且区分配置/实际 runtime；Agent 报告与启动预检待完成 |
+| W2.2 | 建立统一能力端点与启动预检，分别报告 OS、Agent、Embedding、Vector Engine | OS/双 SDK 能力与严格启动预检完成；Agent runtime 待 W4 宿主适配后纳入 |
 | W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 两套报告分栏且可追溯 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
 | W2.5 | 在双 SDK 路径运行质量、延迟、资源和冷热压测 | P-01～P-04、F4-04/F4-05 原始报告生成 |
