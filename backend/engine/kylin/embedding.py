@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 class TextEmbedder(Protocol):
     """文本向量化器协议（embed -> list[float]）。"""
 
+    @property
+    def runtime(self) -> str: ...
+
     def embed(self, text: str) -> list[float]: ...
 
 
@@ -56,6 +59,10 @@ class KylinTextEmbedding:
 
     def embed(self, text: str) -> list[float]:
         return list(self._impl.embed(text))
+
+    @property
+    def runtime(self) -> str:
+        return "kylin"
 
     @property
     def dim(self) -> int:
@@ -98,6 +105,10 @@ class PortableTextEmbedding:
 
         norm = math.sqrt(sum(value * value for value in vector))
         return [value / norm for value in vector] if norm else vector
+
+    @property
+    def runtime(self) -> str:
+        return "portable"
 
 
 def get_embedder(backend: str = "auto") -> TextEmbedder:

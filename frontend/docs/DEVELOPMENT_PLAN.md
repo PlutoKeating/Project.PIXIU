@@ -578,16 +578,16 @@ WebSocket 客户端必须：
      `HttpBackendTransport`；客户端状态机见 `SyncController`（2026-08-09）。
 2. [x] 节点列表：`feat(frontend): add peer list`
    - 同步 Tab 渲染节点（本机/在线/离线/上次同步/待同步），`not_implemented`
-     如实呈现；真实数据已闭环（2026-08-11 麒麟 VM 实测）。
+     如实呈现；真实数据已闭环（2026-08-11 麒麟 V11 实测）。
 3. [x] 同步状态：`feat(frontend): add sync status view`
    - 同步摘要行渲染共享域/在线数/待同步/对账时间/累计同步；真实数据已闭环。
 4. [x] PIN 配对：`feat(frontend): add device PIN pairing`
    - `PairDialog` 契约载荷与结果反馈已完成；真实闭环已通（PIN+令牌，
-     2026-08-11 麒麟 VM 实测）。
+     2026-08-11 麒麟 V11 实测）。
 5. 二维码展示：等待令牌生成契约后 `feat(frontend): add device QR pairing`
 6. [x] 解绑确认：`feat(frontend): add peer revoke flow`
    - `RevokeDialog` 二次确认 + `SyncController::revokePeer` 已就绪；真实闭环
-     已通（2026-08-11 麒麟 VM 实测）。
+     已通（2026-08-11 麒麟 V11 实测）。
 
 前端只管理配对和展示状态，不参与 CRDT 或传输实现。
 

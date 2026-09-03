@@ -136,6 +136,16 @@ async def get_ocr_service():
     return get_ocr(settings.ocr)
 
 
+async def get_text_embedder():
+    """Return the actual configured embedding runtime for services and evidence."""
+    return get_embedder(settings.embedding)
+
+
+async def get_runtime_settings():
+    """Expose the active settings object through the dependency seam."""
+    return settings
+
+
 async def get_preference_service(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> PreferenceService:

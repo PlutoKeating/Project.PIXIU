@@ -12,7 +12,7 @@
 > 需要补 capability/runtime、Agent 关联 ID 和短中期 context 写入契约。
 
 > **当前状态（2026-08-11）**：Phase 0~5 全部完成——retrieval、flow、sync（CRDT）、
-> eval（评测框架+基准）、D-Bus 服务均已落地，当前 24 个 REST 端点真实实现。
+> eval（评测框架+基准）、D-Bus 服务均已落地，当前 25 个 REST 端点真实实现。
 > Foundation + Engine 全量测试通过（麒麟 V11 真机 pytest 364 passed）。
 > 剩余：真实麒麟 SDK 性能验收、真实局域网互操作、WS `/events` 路由注册修复。
 

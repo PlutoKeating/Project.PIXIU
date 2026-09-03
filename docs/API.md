@@ -19,7 +19,7 @@
 
 | MemoryProvider 行为 | 当前映射 | 必须补齐的契约 |
 |---------------------|----------|----------------|
-| `initialize` | 后端健康检查 | 返回 V11、Embedding、Vector Engine 的真实 capability/runtime；严格画像缺失即失败 |
+| `initialize` | `GET /capabilities`（已实现） | 消费 V11、Embedding、Vector Engine 的真实 capability/runtime；Module E 尚需实现严格画像拒绝 |
 | `prefetch(query, session_id)` | `POST /memory/query` | `context_hint` 增加 `session_id`/`turn_id`，响应保留 evidence 来源 |
 | `sync_turn(user, assistant, session_id)` | 暂无合法对话来源 | `POST /memory/write` 新增 `CONVERSATION`，携带 user/assistant、session/turn 与时间 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT` | 携带 tool name/call id/run id、输入摘要、结果、来源和审批状态 |
@@ -28,8 +28,8 @@
 | 运行审计 | request_id 和部分 evidence | 贯通 session_id/run_id/turn_id/tool_call_id/memory_id |
 
 vNext 变更必须同步更新 `foundation/core` 模型、Module B Connector、Module C
-路由/存储、Module E 客户端及测试。不得在实现前把 `CONVERSATION` 或 capability
-端点加入下方“已实现”清单，也不得用 `TOOL_RESULT` 伪装普通对话来源。
+路由/存储、Module E 客户端及测试。不得在实现前把 `CONVERSATION` 加入下方“已实现”
+清单，也不得用 `TOOL_RESULT` 伪装普通对话来源。
 
 ---
 
@@ -45,6 +45,7 @@ vNext 变更必须同步更新 `foundation/core` 模型、Module B Connector、M
 
 | 方法 | 路径 | 说明 | 实现状态 |
 |------|------|------|----------|
+| GET | `/capabilities` | 平台与双 SDK 的配置/实际运行能力 | ✅ 已实现（不含主机、网络、路径信息） |
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | GET | `/evidence/{id}` | 证据详情（查看原文） | ✅ 已实现（2026-08-24） |
@@ -71,7 +72,7 @@ vNext 变更必须同步更新 `foundation/core` 模型、Module B Connector、M
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 
-> 状态说明（2026-08-29）：24 个 REST 端点已全部按本文档契约真实实现；
+> 状态说明（2026-09-03）：25 个 REST 端点已按本文档契约真实实现；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
@@ -82,6 +83,25 @@ vNext 变更必须同步更新 `foundation/core` 模型、Module B Connector、M
 ---
 
 ## 3. 端点详情
+
+### 3.0 GET /capabilities
+
+返回验收相关的脱敏能力事实。`configured` 表示配置意图，`runtime` 来自已实例化
+适配器；`auto` 降级时二者会不同，不得据配置值宣称 SDK 已启用。响应不包含主机名、
+IP、文件路径或测试环境拓扑。
+
+```json
+{
+  "platform": {"family": "kylin", "version_major": "11", "v11": true},
+  "embedding": {"configured": "kylin", "runtime": "kylin", "compliant": true},
+  "vector_store": {"configured": "kylin", "runtime": "kylin", "compliant": true},
+  "contest_ready": true
+}
+```
+
+`contest_ready` 仅在平台为麒麟 V11 且 Embedding、Vector Engine 的实际 runtime 均为
+`kylin` 时为 `true`。严格 `kylin` 配置无法实例化时请求失败，不静默降级；统一的启动
+预检仍列在 W2.2 后续切片。
 
 ### 3.1 POST /memory/write
 

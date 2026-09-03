@@ -41,9 +41,12 @@ from .di import (
     get_preference_repo,
     get_preference_service,
     get_retrieval_service,
+    get_runtime_settings,
     get_security_service,
     get_sync_discovery,
     get_sync_service,
+    get_text_embedder,
+    get_vector_store,
     apply_sync_runtime_settings,
     start_behavior_collector,
     start_monitor_runtime,
@@ -52,6 +55,9 @@ from .di import (
     stop_monitor_runtime,
     stop_sync_runtime,
 )
+from .capabilities import capability_report
+from backend.engine.kylin.embedding import TextEmbedder
+from ..core.vector_store import VectorStore
 from .monitor_log import (
     DEFAULT_PAGE_SIZE,
     MAX_PAGE_SIZE,
@@ -141,6 +147,21 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 # ─── 请求模型 ────────────────────────────────────────────
+
+
+@app.get("/capabilities")
+async def capabilities(
+    embedder: TextEmbedder = Depends(get_text_embedder),
+    vector_store: VectorStore = Depends(get_vector_store),
+    runtime_settings=Depends(get_runtime_settings),
+):
+    """Expose acceptance-relevant configured and effective runtimes."""
+    return capability_report(
+        embedding_configured=runtime_settings.embedding,
+        embedder=embedder,
+        vector_store_configured=runtime_settings.vector_store,
+        vector_store=vector_store,
+    )
 
 class MemoryWriteRequest(BaseModel):
     source_type: SourceType

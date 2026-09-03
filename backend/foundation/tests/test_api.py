@@ -17,6 +17,7 @@ from backend.foundation.api import app
 from backend.engine.knowledge import KnowledgeService
 from backend.engine.tests.fakes import StubTextEmbedder
 from backend.foundation.api.di import get_flow_service, get_knowledge_service
+from backend.foundation.api.capabilities import platform_capability
 from backend.foundation.flow import FlowContextNotFound, InvalidFlowTransition
 from backend.foundation.storage.repository import (
     SqliteEntityRepo,
@@ -70,6 +71,33 @@ OCR_RAW = {
         ]
     },
 }
+
+
+def test_capabilities_exposes_actual_noncompliant_portable_runtime(client):
+    response = client.get("/capabilities")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["embedding"]["configured"] == "portable"
+    assert data["embedding"]["runtime"] == "portable"
+    assert data["embedding"]["compliant"] is False
+    assert data["vector_store"]["configured"] == "portable"
+    assert data["vector_store"]["runtime"] == "portable"
+    assert data["vector_store"]["compliant"] is False
+    assert data["contest_ready"] is False
+
+
+def test_platform_capability_only_reports_acceptance_identity():
+    data = platform_capability(
+        {
+            "ID": "openkylin",
+            "NAME": "openKylin",
+            "VERSION_ID": "11.2",
+            "HOSTNAME": "must-not-leak",
+        }
+    )
+
+    assert data == {"family": "kylin", "version_major": "11", "v11": True}
 
 
 def test_memory_write_returns_accepted(client):

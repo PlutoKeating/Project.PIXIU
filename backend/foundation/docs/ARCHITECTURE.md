@@ -3,15 +3,15 @@
 > **角色**：基础服务设施 —— 存储、API、检索、同步、评测。
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 > **与模块 E 的边界**：Foundation 只提供 `docs/API.md` 中的公共 HTTP/WS 契约；
-> E 不得导入 Service、Repository 或数据库实现。已批准 vNext 将增加 Agent 关联
-> ID、真实 capability/runtime 和短中期 context 写入能力，尚未实现。
+> E 不得导入 Service、Repository 或数据库实现。真实 capability/runtime 端点已实现；
+> 已批准 vNext 仍需增加 Agent 关联 ID 和短中期 context 写入能力。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
 > request_id 统一错误契约；四故事端到端与硬化测试通过，377 项全绿；
 > 1000 次查询压测 P95=19.18ms。仅真实麒麟 SDK 性能 / 局域网互操作 / Module A 联调
 > 待银河麒麟环境验收（详见 docs/ACCEPTANCE.md）。WS `/events` 路由已于
-> 2026-08-20 完成真实入口注册与麒麟 VM 握手验证。
+> 2026-08-20 完成真实入口注册与麒麟 V11 握手验证。
 
 > [!CAUTION]
 > 上述“功能冻结/全绿”只覆盖旧的记忆子系统范围。PPT 要求生产向量数据库必须
@@ -217,6 +217,8 @@ portable 适配器在内部执行 INT8 量化/扫描；组合根测试会主动�
 并验证端到端检索。Kylin 适配器已可由
 `PIXIU_VECTOR_STORE=auto|kylin|portable` 选择：`kylin` 对 SDK/连接错误 fail
 closed，`auto` 明确告警后才降级。V11 真 SDK 证据完成前 H-02 仍为不通过。
+`GET /capabilities` 从实际实例化的 embedding/vector store 读取 runtime，并只输出
+验收相关的 OS 家族/主版本；配置意图与运行事实分栏，且不暴露主机、网络或路径信息。
 未显式注入 seam 的旧测试/自定义构造暂保留 Repository 兼容路径，不得用于生产
 或验收。
 

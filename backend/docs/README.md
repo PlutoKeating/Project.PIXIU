@@ -47,7 +47,7 @@ Python 3.10 + SQLite + hnswlib
 | `eval/` | 评测框架 |
 
 > **状态（2026-08-11）**：foundation Phase 0~7 全部完成（retrieval/flow/sync/eval/
-> D-Bus + request_id 统一错误契约），当前 24 个 REST 端点真实实现；引擎核心管线已
+> D-Bus + request_id 统一错误契约），当前 25 个 REST 端点真实实现；引擎核心管线已
 > 集成。历史测试通过不等于 H-01～H-03 或完整 Agent 验收通过。
 
 **文档**：
