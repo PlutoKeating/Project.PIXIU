@@ -47,6 +47,20 @@ class VectorEngineClient:
         else:
             self._impl = native.VectorEngineClient(app_id, host, port)
 
+    def load_db_file(
+        self, path: str, *, encrypt: bool = False, key: str = ""
+    ) -> None:
+        """装载应用独立数据库；必须在集合操作前调用。"""
+        if not path:
+            raise ValueError("vector database path must not be empty")
+        if encrypt and not key:
+            raise ValueError("encrypted vector database requires a key")
+        self._impl.load_db_file(path, encrypt, key)
+
+    def disconnect(self) -> None:
+        """显式断开 SDK 连接，以便释放验收数据库与进程资源。"""
+        self._impl.disconnect()
+
     def has_collection(self, name: str) -> bool:
         return bool(self._impl.has_collection(name))
 

@@ -19,6 +19,12 @@ class _FakeNativeClient:
     def load_collection(self, name: str) -> None:
         type(self).calls.append(("load_collection", name))
 
+    def load_db_file(self, path: str, encrypt: bool, key: str) -> None:
+        type(self).calls.append(("load_db_file", path, encrypt, key))
+
+    def disconnect(self) -> None:
+        type(self).calls.append(("disconnect",))
+
     def upsert(
         self, name: str, vectors: list[list[float]], ids: list[int]
     ) -> int:
@@ -64,6 +70,28 @@ def test_explicit_connection_requires_host_and_port(monkeypatch) -> None:
 
     with pytest.raises(ValueError, match="host and port must be configured together"):
         VectorEngineClient(host="vector.local")
+
+
+def test_database_lifecycle_delegates_to_system_client(monkeypatch) -> None:
+    _install_fake_native(monkeypatch)
+    client = VectorEngineClient(app_id="test")
+
+    client.load_db_file("/tmp/pixiu-vector.db")
+    client.disconnect()
+
+    assert _FakeNativeClient.calls == [
+        ("connect", "test"),
+        ("load_db_file", "/tmp/pixiu-vector.db", False, ""),
+        ("disconnect",),
+    ]
+
+
+def test_encrypted_database_requires_key(monkeypatch) -> None:
+    _install_fake_native(monkeypatch)
+    client = VectorEngineClient()
+
+    with pytest.raises(ValueError, match="requires a key"):
+        client.load_db_file("/tmp/pixiu-vector.db", encrypt=True)
 
 
 def test_upsert_replaces_vectors_by_explicit_id(monkeypatch) -> None:

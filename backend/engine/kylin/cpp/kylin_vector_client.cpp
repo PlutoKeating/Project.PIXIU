@@ -51,6 +51,20 @@ private:
     }
 
 public:
+    void LoadDBFile(const std::string &path, bool encrypt,
+                    const std::string &key) {
+        Status st = client_->LoadDBFile(path, encrypt, key);
+        if (!st.IsOk()) {
+            ThrowStatus("LoadDBFile", st);
+        }
+    }
+
+    void Disconnect() {
+        Status st = client_->Disconnect();
+        if (!st.IsOk()) {
+            ThrowStatus("Disconnect", st);
+        }
+    }
 
     bool HasCollection(const std::string &name) {
         bool has = false;
@@ -188,6 +202,10 @@ PYBIND11_MODULE(_kylin_vector_client, m) {
     py::class_<VectorEngineClient>(m, "VectorEngineClient")
         .def(py::init<const std::string &>())
         .def(py::init<const std::string &, const std::string &, uint16_t>())
+        .def("load_db_file", &VectorEngineClient::LoadDBFile,
+             py::arg("path"), py::arg("encrypt") = false,
+             py::arg("key") = "")
+        .def("disconnect", &VectorEngineClient::Disconnect)
         .def("has_collection", &VectorEngineClient::HasCollection)
         .def("create_collection", &VectorEngineClient::CreateCollection)
         .def("drop_collection", &VectorEngineClient::DropCollection)

@@ -44,6 +44,7 @@
   写入/检索/遗忘接线；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
   生命周期封装和 `KylinVectorStore` 契约测试。真机检查已纠正把 SDK 测试专用
   host/port 构造误用于生产的问题，默认改走官方 `ConnectParam(appId)` 本地连接。
+  绑定已补齐官方 demo 要求的 `LoadDBFile`/`Disconnect` 数据库生命周期。
   仍必须证明系统 Vector Engine 在
   V11 严格画像中实际承担生产建库、写入、删除和查询。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
