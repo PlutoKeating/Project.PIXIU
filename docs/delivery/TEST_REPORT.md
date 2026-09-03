@@ -93,8 +93,11 @@ Python 3.12 CI 现自动生成该报告，复核 commit、三节点逻辑视图�
 `build/release/scripts/three-device-evidence.py capture` 绑定本机 strict SDK 证据和
 loopback 同步状态，并只输出按 run 加盐的身份/域摘要；`validate` 要求三份清单同
 候选包、commit、版本、架构与 Agent Runtime，三个身份互异且相互完整可见、全在线、
-队列归零、采集窗口不超过 300 秒。当前工具测试 4/4 通过，尚未输入三台真实设备数据；
+队列归零、采集窗口不超过 300 秒。当前工具测试 6/6 通过，尚未输入三台真实设备数据；
 合并结果固定 `final_device_evidence=false`，必须继续补五项跨设备场景后才进入最终栏。
+并发更新取证现新增 3×3 检查点契约，绑定拓扑/节点清单并验证共同基线、两个暂停
+节点的不同 v+1 分支、观察节点未变化及恢复后的三端一致。尚无真实三机输入，输出
+仍固定非最终证据，不能将 N-04 改为通过。
 
 同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
 可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Capture and validate sanitized three-device PIXIU topology evidence.
+"""Capture and validate sanitized three-device PIXIU topology/scenario evidence.
 
 Each node runs ``capture`` locally against the loopback API after the strict
 native SDK smoke test.  ``validate`` combines exactly three node manifests.
-The combined report proves release identity and full-mesh readiness only; it
-deliberately remains ``final_device_evidence=false`` until scenario evidence is
-implemented and collected.
+The topology report proves release identity and full-mesh readiness.  The
+concurrency commands additionally prove one real-device scenario through nine
+checkpoints.  Every report deliberately remains ``final_device_evidence=false``
+until all required scenarios are implemented and collected.
 """
 
 from __future__ import annotations
@@ -26,6 +27,8 @@ from urllib.parse import urlsplit
 SCHEMA_VERSION = 1
 NODE_EVIDENCE_CLASS = "kylin-v11-sync-node"
 CLUSTER_EVIDENCE_CLASS = "kylin-v11-three-device-topology"
+CONCURRENCY_EVIDENCE_CLASS = "kylin-v11-concurrent-update-checkpoint"
+CONCURRENCY_REPORT_CLASS = "kylin-v11-concurrent-update-scenario"
 RUN_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,63}")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 COMMIT_PATTERN = re.compile(r"[0-9a-f]{40}")
@@ -117,14 +120,59 @@ def validate_base_url(base_url: str) -> str:
     return base_url.rstrip("/")
 
 
-def request_json(url: str) -> dict[str, Any]:
+def request_json(
+    url: str, *, method: str = "GET", payload: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    body = None
+    headers = {"Accept": "application/json"}
+    if payload is not None:
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    request = urllib.request.Request(url, data=body, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(url, timeout=30) as response:
+        with urllib.request.urlopen(request, timeout=30) as response:
             value = json.load(response)
     except Exception as exc:
         raise EvidenceError("node evidence endpoint request failed") from exc
     if not isinstance(value, dict):
         raise EvidenceError("node evidence endpoint returned a non-object")
+    return value
+
+
+def _require_topology(value: dict[str, Any]) -> dict[str, Any]:
+    topology = value.get("topology")
+    release = value.get("release")
+    if not (
+        value.get("evidence_schema") == SCHEMA_VERSION
+        and value.get("evidence_class") == CLUSTER_EVIDENCE_CLASS
+        and value.get("real_device_evidence") is True
+        and value.get("final_device_evidence") is False
+        and value.get("status") == "pass"
+        and isinstance(value.get("run_id"), str)
+        and RUN_ID_PATTERN.fullmatch(value["run_id"])
+        and isinstance(topology, dict)
+        and topology.get("node_count") == 3
+        and topology.get("trust_edges") == 3
+        and topology.get("full_mesh") is True
+        and topology.get("all_nodes_online") is True
+        and topology.get("all_nodes_quiescent") is True
+        and isinstance(topology.get("member_identity_digests"), list)
+        and len(topology["member_identity_digests"]) == 3
+        and all(
+            isinstance(identity, str) and SHA256_PATTERN.fullmatch(identity)
+            for identity in topology["member_identity_digests"]
+        )
+        and len(set(topology["member_identity_digests"])) == 3
+        and isinstance(value.get("source_node_manifest_sha256"), list)
+        and len(value["source_node_manifest_sha256"]) == 3
+        and all(
+            isinstance(digest, str) and SHA256_PATTERN.fullmatch(digest)
+            for digest in value["source_node_manifest_sha256"]
+        )
+        and len(set(value["source_node_manifest_sha256"])) == 3
+        and isinstance(release, dict)
+    ):
+        raise EvidenceError("topology evidence is not a passing three-device report")
     return value
 
 
@@ -459,6 +507,358 @@ def validate_cluster(node_paths: list[Path]) -> dict[str, Any]:
     }
 
 
+def capture_concurrency_checkpoint(
+    *,
+    topology_path: Path,
+    node_path: Path,
+    base_url: str,
+    checkpoint: str,
+    role: str,
+    query: str,
+    scope: str,
+    captured_at: tuple[str, int] | None = None,
+) -> dict[str, Any]:
+    """Capture one privacy-preserving checkpoint of the concurrent-update run."""
+    if checkpoint not in {"baseline", "diverged", "converged"}:
+        raise EvidenceError("concurrency checkpoint is invalid")
+    allowed_roles = {
+        "baseline": {"baseline"},
+        "diverged": {"branch-a", "branch-b", "observer"},
+        "converged": {"converged"},
+    }
+    if role not in allowed_roles[checkpoint]:
+        raise EvidenceError("concurrency checkpoint role is invalid")
+    query = query.strip()
+    if not query or len(query) > 512:
+        raise EvidenceError("scenario query must contain 1-512 characters")
+    if not re.fullmatch(r"shared:[A-Za-z0-9._-]+", scope):
+        raise EvidenceError("concurrency scenario requires a shared scope")
+
+    topology = _require_topology(_read_json(topology_path))
+    node_manifest = _read_json(node_path)
+    _validate_node_manifest(node_manifest)
+    identity = node_manifest["node"]["identity_digest"]
+    members = topology["topology"]["member_identity_digests"]
+    if not (
+        node_manifest["run_id"] == topology["run_id"]
+        and node_manifest["release"] == topology["release"]
+        and identity in members
+    ):
+        raise EvidenceError("node checkpoint does not belong to the topology report")
+
+    base_url = validate_base_url(base_url)
+    context = request_json(
+        f"{base_url}/agent/context",
+        method="POST",
+        payload={
+            "query": query,
+            "scope": scope,
+            "session_id": f"evidence-{topology['run_id']}",
+            "turn_id": f"concurrency-{checkpoint}",
+            "top_k": 1,
+            "max_chars": 4096,
+        },
+    )
+    status = request_json(f"{base_url}/sync/status")
+    conflicts_payload = request_json(f"{base_url}/conflicts")
+    items = context.get("items")
+    conflicts = conflicts_payload.get("conflicts")
+    if not isinstance(items, list) or len(items) != 1:
+        raise EvidenceError("concurrency checkpoint must resolve exactly one knowledge item")
+    if not isinstance(conflicts, list):
+        raise EvidenceError("conflict endpoint returned an invalid response")
+    item = items[0]
+    if not isinstance(item, dict):
+        raise EvidenceError("concurrency checkpoint item is invalid")
+    knowledge_id = item.get("knowledge_id")
+    version = item.get("version")
+    evidence_ids = item.get("evidence_ids")
+    if not (
+        isinstance(knowledge_id, str)
+        and re.fullmatch(r"knw_[A-Za-z0-9_-]{8,128}", knowledge_id)
+        and isinstance(version, int)
+        and not isinstance(version, bool)
+        and version >= 1
+        and item.get("scope") == scope
+        and isinstance(item.get("title"), str)
+        and isinstance(evidence_ids, list)
+        and all(
+            isinstance(evidence_id, str)
+            and re.fullmatch(r"evd_[A-Za-z0-9_-]{8,128}", evidence_id)
+            for evidence_id in evidence_ids
+        )
+        and item.get("conflict_status") in {"none", "resolved", "manual"}
+        and isinstance(context.get("context"), str)
+    ):
+        raise EvidenceError("concurrency checkpoint knowledge metadata is invalid")
+    if not (
+        status.get("enabled") is True
+        and isinstance(status.get("paused"), bool)
+        and isinstance(status.get("peers_online"), int)
+        and not isinstance(status.get("peers_online"), bool)
+        and status["peers_online"] == 3
+        and isinstance(status.get("pending_outgoing_ops"), int)
+        and not isinstance(status.get("pending_outgoing_ops"), bool)
+        and status["pending_outgoing_ops"] >= 0
+    ):
+        raise EvidenceError("concurrency checkpoint sync status is invalid")
+    if checkpoint in {"baseline", "converged"} and not (
+        status["paused"] is False
+        and status["peers_online"] == 3
+        and status["pending_outgoing_ops"] == 0
+    ):
+        raise EvidenceError("stable concurrency checkpoint is not online and quiescent")
+    if checkpoint == "diverged" and role.startswith("branch-") and not status["paused"]:
+        raise EvidenceError("divergent update branches must be captured while paused")
+    if checkpoint == "diverged" and role == "observer" and status["paused"]:
+        raise EvidenceError("divergent observer must remain unpaused")
+
+    normalized_item = {
+        "knowledge_id": knowledge_id,
+        "version": version,
+        "title": item.get("title"),
+        "scope": item.get("scope"),
+        "evidence_ids": sorted(evidence_ids),
+        "conflict_status": item.get("conflict_status"),
+        "context": context["context"],
+    }
+    matching_conflicts = [
+        record
+        for record in conflicts
+        if isinstance(record, dict) and record.get("target_knowledge") == knowledge_id
+    ]
+    generated_at_utc, generated_at_epoch = captured_at or _utc_now()
+    _validate_timestamp(generated_at_utc, generated_at_epoch)
+    run_id = topology["run_id"]
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": CONCURRENCY_EVIDENCE_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": False,
+        "run_id": run_id,
+        "captured_at_utc": generated_at_utc,
+        "captured_at_epoch": generated_at_epoch,
+        "release": topology["release"],
+        "topology_evidence_sha256": _sha256_file(topology_path),
+        "node_manifest_sha256": _sha256_file(node_path),
+        "node_identity_digest": identity,
+        "scenario": "concurrent-update-and-conflict-resolution",
+        "checkpoint": checkpoint,
+        "role": role,
+        "query_digest": _digest(run_id, "concurrency-query", query),
+        "scope_digest": _digest(run_id, "concurrency-scope", scope),
+        "knowledge_digest": _digest(run_id, "knowledge", knowledge_id),
+        "logical_view_digest": _digest(
+            run_id,
+            "concurrency-view",
+            json.dumps(normalized_item, ensure_ascii=False, sort_keys=True),
+        ),
+        "version": version,
+        "matching_conflict_count": len(matching_conflicts),
+        "sync": {
+            "enabled": status["enabled"],
+            "paused": status["paused"],
+            "peers_online": status["peers_online"],
+            "pending_outgoing_ops": status["pending_outgoing_ops"],
+        },
+    }
+
+
+def _validate_concurrency_checkpoint(value: dict[str, Any]) -> None:
+    sync = value.get("sync")
+    release = value.get("release")
+    checkpoint = value.get("checkpoint")
+    role = value.get("role")
+    allowed_roles = {
+        "baseline": {"baseline"},
+        "diverged": {"branch-a", "branch-b", "observer"},
+        "converged": {"converged"},
+    }
+    if not (
+        value.get("evidence_schema") == SCHEMA_VERSION
+        and value.get("evidence_class") == CONCURRENCY_EVIDENCE_CLASS
+        and value.get("real_device_evidence") is True
+        and value.get("final_device_evidence") is False
+        and value.get("scenario") == "concurrent-update-and-conflict-resolution"
+        and checkpoint in allowed_roles
+        and role in allowed_roles[checkpoint]
+        and isinstance(value.get("run_id"), str)
+        and RUN_ID_PATTERN.fullmatch(value["run_id"])
+        and isinstance(value.get("captured_at_epoch"), int)
+        and not isinstance(value.get("captured_at_epoch"), bool)
+        and isinstance(release, dict)
+        and isinstance(sync, dict)
+        and isinstance(value.get("version"), int)
+        and not isinstance(value.get("version"), bool)
+        and value["version"] >= 1
+        and isinstance(value.get("matching_conflict_count"), int)
+        and value["matching_conflict_count"] >= 0
+        and all(
+            isinstance(value.get(field), str) and SHA256_PATTERN.fullmatch(value[field])
+            for field in (
+                "topology_evidence_sha256",
+                "node_manifest_sha256",
+                "node_identity_digest",
+                "query_digest",
+                "scope_digest",
+                "knowledge_digest",
+                "logical_view_digest",
+            )
+        )
+        and sync.get("enabled") is True
+        and isinstance(sync.get("paused"), bool)
+        and isinstance(sync.get("peers_online"), int)
+        and not isinstance(sync.get("peers_online"), bool)
+        and sync["peers_online"] == 3
+        and isinstance(sync.get("pending_outgoing_ops"), int)
+        and not isinstance(sync.get("pending_outgoing_ops"), bool)
+        and sync["pending_outgoing_ops"] >= 0
+    ):
+        raise EvidenceError("concurrency checkpoint manifest is invalid")
+    _validate_timestamp(value.get("captured_at_utc"), value["captured_at_epoch"])
+
+
+def validate_concurrency_scenario(
+    *, topology_path: Path, checkpoint_paths: list[Path]
+) -> dict[str, Any]:
+    """Validate three real devices across baseline, divergence, and convergence."""
+    topology = _require_topology(_read_json(topology_path))
+    if len(checkpoint_paths) != 9 or len({path.resolve() for path in checkpoint_paths}) != 9:
+        raise EvidenceError("exactly nine distinct concurrency checkpoints are required")
+    values = [_read_json(path) for path in checkpoint_paths]
+    for value in values:
+        _validate_concurrency_checkpoint(value)
+    topology_hash = _sha256_file(topology_path)
+    identities = set(topology["topology"]["member_identity_digests"])
+    if any(
+        value["run_id"] != topology["run_id"]
+        or value["release"] != topology["release"]
+        or value["topology_evidence_sha256"] != topology_hash
+        for value in values
+    ):
+        raise EvidenceError("concurrency checkpoints do not bind the topology release")
+    if {value["node_identity_digest"] for value in values} != identities:
+        raise EvidenceError("concurrency checkpoints do not cover the topology devices")
+    if {
+        value["node_manifest_sha256"] for value in values
+    } != set(topology["source_node_manifest_sha256"]):
+        raise EvidenceError("concurrency checkpoints do not bind the topology nodes")
+    for identity in identities:
+        if len(
+            {
+                value["node_manifest_sha256"]
+                for value in values
+                if value["node_identity_digest"] == identity
+            }
+        ) != 1:
+            raise EvidenceError("one device used inconsistent node manifests")
+    if len({value["query_digest"] for value in values}) != 1:
+        raise EvidenceError("concurrency checkpoints did not use one scenario query")
+    if len({value["scope_digest"] for value in values}) != 1:
+        raise EvidenceError("concurrency checkpoints did not use one shared scope")
+    if len({value["knowledge_digest"] for value in values}) != 1:
+        raise EvidenceError("concurrency checkpoints do not track one knowledge entity")
+
+    grouped = {
+        phase: [value for value in values if value["checkpoint"] == phase]
+        for phase in ("baseline", "diverged", "converged")
+    }
+    if any(
+        len(group) != 3
+        or {value["node_identity_digest"] for value in group} != identities
+        or max(value["captured_at_epoch"] for value in group)
+        - min(value["captured_at_epoch"] for value in group)
+        > MAX_CAPTURE_SKEW_SECONDS
+        for group in grouped.values()
+    ):
+        raise EvidenceError(
+            "each concurrency checkpoint must cover all three devices within the time window"
+        )
+    baseline = grouped["baseline"]
+    diverged = grouped["diverged"]
+    converged = grouped["converged"]
+    if len({value["logical_view_digest"] for value in baseline}) != 1 or len(
+        {value["version"] for value in baseline}
+    ) != 1:
+        raise EvidenceError("baseline logical views are not converged")
+    baseline_digest = baseline[0]["logical_view_digest"]
+    baseline_version = baseline[0]["version"]
+    roles = {value["role"]: value for value in diverged}
+    if set(roles) != {"branch-a", "branch-b", "observer"}:
+        raise EvidenceError("divergent checkpoint roles are incomplete")
+    branches = [roles["branch-a"], roles["branch-b"]]
+    if not (
+        all(branch["sync"]["paused"] is True for branch in branches)
+        and roles["observer"]["sync"]["paused"] is False
+        and all(branch["version"] == baseline_version + 1 for branch in branches)
+        and roles["observer"]["version"] == baseline_version
+        and len({branch["logical_view_digest"] for branch in branches}) == 2
+        and all(branch["logical_view_digest"] != baseline_digest for branch in branches)
+        and roles["observer"]["logical_view_digest"] == baseline_digest
+    ):
+        raise EvidenceError("divergent checkpoint does not prove two offline branches")
+    if not (
+        len({value["logical_view_digest"] for value in converged}) == 1
+        and len({value["version"] for value in converged}) == 1
+        and converged[0]["version"] >= baseline_version + 1
+        and converged[0]["logical_view_digest"] != baseline_digest
+        and all(
+            value["sync"]["paused"] is False
+            and value["sync"]["peers_online"] == 3
+            and value["sync"]["pending_outgoing_ops"] == 0
+            for value in converged
+        )
+    ):
+        raise EvidenceError("final concurrent-update views are not converged")
+    by_identity = {
+        identity: sorted(
+            (value for value in values if value["node_identity_digest"] == identity),
+            key=lambda value: {"baseline": 0, "diverged": 1, "converged": 2}[
+                value["checkpoint"]
+            ],
+        )
+        for identity in identities
+    }
+    if any(
+        [value["captured_at_epoch"] for value in series]
+        != sorted(value["captured_at_epoch"] for value in series)
+        for series in by_identity.values()
+    ):
+        raise EvidenceError("concurrency checkpoint times are out of order")
+
+    generated_at_utc, generated_at_epoch = _utc_now()
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": CONCURRENCY_REPORT_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": False,
+        "status": "pass",
+        "run_id": topology["run_id"],
+        "generated_at_utc": generated_at_utc,
+        "generated_at_epoch": generated_at_epoch,
+        "release": topology["release"],
+        "topology_evidence_sha256": topology_hash,
+        "source_checkpoint_sha256": sorted(
+            _sha256_file(path) for path in checkpoint_paths
+        ),
+        "scenario": "concurrent-update-and-conflict-resolution",
+        "checks": {
+            "same_shared_knowledge_entity": "passed",
+            "baseline_three_device_convergence": "passed",
+            "two_distinct_paused_update_branches": "passed",
+            "uninvolved_observer_preserved_baseline": "passed",
+            "three_device_reconnect_convergence": "passed",
+            "online_quiescent_final_state": "passed",
+        },
+        "remaining_required_scenarios": [
+            "offline-write-and-reconnect",
+            "tombstone-propagation-and-no-resurrection",
+            "private-scope-non-propagation",
+            "final-logical-view-convergence",
+        ],
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -472,6 +872,27 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--node", required=True, action="append", type=Path)
     validate.add_argument("--output", required=True, type=Path)
     validate.add_argument("--overwrite", action="store_true")
+    checkpoint = subparsers.add_parser("capture-concurrency")
+    checkpoint.add_argument("--topology", required=True, type=Path)
+    checkpoint.add_argument("--node", required=True, type=Path)
+    checkpoint.add_argument("--base-url", default="http://127.0.0.1:8765")
+    checkpoint.add_argument("--scope", required=True)
+    checkpoint.add_argument(
+        "--checkpoint", required=True, choices=("baseline", "diverged", "converged")
+    )
+    checkpoint.add_argument(
+        "--role",
+        required=True,
+        choices=("baseline", "branch-a", "branch-b", "observer", "converged"),
+    )
+    checkpoint.add_argument("--query-file", required=True, type=Path)
+    checkpoint.add_argument("--output", required=True, type=Path)
+    checkpoint.add_argument("--overwrite", action="store_true")
+    scenario = subparsers.add_parser("validate-concurrency")
+    scenario.add_argument("--topology", required=True, type=Path)
+    scenario.add_argument("--checkpoint", required=True, action="append", type=Path)
+    scenario.add_argument("--output", required=True, type=Path)
+    scenario.add_argument("--overwrite", action="store_true")
     return parser
 
 
@@ -487,11 +908,38 @@ def main() -> int:
                 native_path=args.native_evidence.resolve(),
                 base_url=args.base_url,
             )
-        else:
+        elif args.command == "validate":
             output = args.output.resolve()
             if output in {path.resolve() for path in args.node}:
                 raise EvidenceError("cluster output must not overwrite node evidence")
             report = validate_cluster(args.node)
+        elif args.command == "capture-concurrency":
+            output = args.output.resolve()
+            inputs = {args.topology.resolve(), args.node.resolve(), args.query_file.resolve()}
+            if output in inputs:
+                raise EvidenceError("checkpoint output must not overwrite an input")
+            try:
+                query = args.query_file.read_text(encoding="utf-8")
+            except OSError as exc:
+                raise EvidenceError("scenario query file is not readable") from exc
+            report = capture_concurrency_checkpoint(
+                topology_path=args.topology.resolve(),
+                node_path=args.node.resolve(),
+                base_url=args.base_url,
+                checkpoint=args.checkpoint,
+                role=args.role,
+                query=query,
+                scope=args.scope,
+            )
+        else:
+            output = args.output.resolve()
+            inputs = {args.topology.resolve(), *(path.resolve() for path in args.checkpoint)}
+            if output in inputs:
+                raise EvidenceError("scenario output must not overwrite an input")
+            report = validate_concurrency_scenario(
+                topology_path=args.topology.resolve(),
+                checkpoint_paths=args.checkpoint,
+            )
         _write_json(output, report, overwrite=args.overwrite)
     except EvidenceError as exc:
         print(f"three-device evidence error: {exc}", file=sys.stderr)

@@ -36,7 +36,7 @@ build/release/
 │   ├── functions.sh          # 公共函数（版本/架构/路径解析）
 │   ├── build-deb.sh          # 主流水线：构建前端 + 打包后端 + 可选 wheels + dpkg
 │   ├── audit-agent-supply-chain.py # Agent 固定版本/敏感地址/发行证据门禁
-│   ├── three-device-evidence.py # 三台 V11 节点清单采集与全连接校验
+│   ├── three-device-evidence.py # 三台 V11 拓扑及并发更新检查点取证
 │   ├── generate-release-manifest.py # 从源码/构建输入生成包内组件清单
 │   ├── test.sh               # 独立测试入口（前端 ctest + 可选后端 pytest）
 │   ├── provision-target.sh   # 目标机预置：幂等安装 .deb 所需系统依赖（全新机器可用）
@@ -116,6 +116,48 @@ python3 build/release/scripts/three-device-evidence.py validate \
 时间差不超过 300 秒。该报告只证明真实 V11 三节点全连接拓扑就绪，固定输出
 `final_device_evidence=false`，并列出离线重连、并发冲突、墓碑防复活、私域不传播和
 最终逻辑视图收敛五项待测场景；不得把它单独当作最终多设备验收结果。
+
+### 并发更新场景取证
+
+拓扑报告生成后，为本轮共享测试记忆准备仅含唯一检索标记的一行 UTF-8 查询文件。
+先在三台设备均在线、队列归零时分别采集 `baseline/baseline`；随后暂停设备 A、B 的
+同步，使用 `pixiu_memory_update` 从相同 `knowledge_id`/`version` 写入两个不同修订，
+分别采集 `diverged/branch-a`、`diverged/branch-b`，未参与更新的设备 C 采集
+`diverged/observer`。恢复 A、B 同步并等待三端队列归零后，三台设备分别采集
+`converged/converged`。每次均在对应设备本地执行：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py capture-concurrency \
+  --topology three-device-topology.json \
+  --node sync-node-evidence.json \
+  --scope shared:team-demo \
+  --checkpoint baseline --role baseline \
+  --query-file scenario-query.txt \
+  --output concurrency-baseline.json
+```
+
+九份检查点汇总后执行（每份使用一个 `--checkpoint`）：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py validate-concurrency \
+  --topology three-device-topology.json \
+  --checkpoint node-a-baseline.json \
+  --checkpoint node-b-baseline.json \
+  --checkpoint node-c-baseline.json \
+  --checkpoint node-a-diverged.json \
+  --checkpoint node-b-diverged.json \
+  --checkpoint node-c-diverged.json \
+  --checkpoint node-a-converged.json \
+  --checkpoint node-b-converged.json \
+  --checkpoint node-c-converged.json \
+  --output concurrent-update-scenario.json
+```
+
+工具要求九份文件绑定同一拓扑、候选包、三个节点清单、共享域和检索标记，并验证
+共同基线、两条暂停同步的不同 v+1 分支、观察节点仍为基线，以及恢复后的三端相同
+逻辑视图/版本与在线静默状态。输出只含加盐摘要、版本和同步计数，不含查询、正文、
+域名或设备信息。单场景通过仍固定 `final_device_evidence=false`，并列出其余四项，
+不得提升为完整三设备验收。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取
