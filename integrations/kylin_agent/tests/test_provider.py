@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
+PRODUCT_VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 sys.path.insert(0, str(ROOT / "third_party" / "kylin-agent-runtime"))
 
 from integrations.kylin_agent.pixiu import PixiuMemoryProvider  # noqa: E402
@@ -29,7 +30,7 @@ class FakeClient:
         *,
         contest_ready: bool = True,
         delay: float = 0,
-        product_version: str = "0.1.7",
+        product_version: str = PRODUCT_VERSION,
         agent_memory_api: int = 1,
     ):
         self.contest_ready = contest_ready
@@ -119,7 +120,7 @@ def test_verified_host_range_and_development_backend_are_explicit():
     diagnostics = item.diagnostics()
 
     assert diagnostics["runtime_version"] == "0.9.8"
-    assert diagnostics["provider_version"] == "0.1.7"
+    assert diagnostics["provider_version"] == PRODUCT_VERSION
     assert diagnostics["backend_version"] == "development"
     item.shutdown()
 
