@@ -276,6 +276,27 @@ python3 build/release/scripts/three-device-evidence.py validate-tombstone \
 且共享同一 clock+1 墓碑；重连和额外反熵后，三端仍是同一墓碑、均不可见且队列归零。
 必须在墓碑 GC 保留窗口内完成四阶段采集；GC 后的“状态不存在”不会被接受为墓碑证据。
 报告不含知识 ID、查询、正文、scope、操作 ID 或设备身份原文，并继续固定为非最终证据。
+
+### 最终三设备证据门
+
+四类场景全部完成后，重新在三台设备执行 `capture` 并用 `validate` 生成一份全新的
+最终拓扑报告；不得复用初始三份节点清单。最后执行：
+
+```bash
+python3 build/release/scripts/three-device-evidence.py validate-final \
+  --initial-topology three-device-topology-initial.json \
+  --final-topology three-device-topology-final.json \
+  --scenario concurrent-update-scenario.json \
+  --scenario offline-write-reconnect-scenario.json \
+  --scenario private-scope-scenario.json \
+  --scenario tombstone-no-resurrection-scenario.json \
+  --output three-device-final-suite.json
+```
+
+总门要求两份拓扑同 run、同候选包/commit/版本/架构、同三个身份及同一共享域，最终
+拓扑使用三份全新节点清单；四个场景必须各出现一次、检查点数量正确、关键检查全部
+通过，且报告生成时间位于初始与最终拓扑之间。只有该命令的输出允许
+`final_device_evidence=true`；任一中间报告永远不能单独升级为最终证据。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取

@@ -37,6 +37,7 @@ PRIVACY_EVIDENCE_CLASS = "kylin-v11-private-scope-checkpoint"
 PRIVACY_REPORT_CLASS = "kylin-v11-private-scope-scenario"
 TOMBSTONE_EVIDENCE_CLASS = "kylin-v11-tombstone-checkpoint"
 TOMBSTONE_REPORT_CLASS = "kylin-v11-tombstone-no-resurrection-scenario"
+FINAL_REPORT_CLASS = "kylin-v11-three-device-final-suite"
 RUN_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{7,63}")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 COMMIT_PATTERN = re.compile(r"[0-9a-f]{40}")
@@ -1749,6 +1750,143 @@ def validate_tombstone_scenario(
     }
 
 
+def validate_final_scenario_suite(
+    *,
+    initial_topology_path: Path,
+    final_topology_path: Path,
+    scenario_paths: list[Path],
+) -> dict[str, Any]:
+    """Bind all real-device scenarios between fresh initial/final topologies."""
+    all_paths = [initial_topology_path, final_topology_path, *scenario_paths]
+    if len(scenario_paths) != 4 or len({path.resolve() for path in all_paths}) != 6:
+        raise EvidenceError("final suite requires two topologies and four distinct scenarios")
+    initial = _require_topology(_read_json(initial_topology_path))
+    final = _require_topology(_read_json(final_topology_path))
+    _validate_timestamp(initial.get("generated_at_utc"), initial.get("generated_at_epoch"))
+    _validate_timestamp(final.get("generated_at_utc"), final.get("generated_at_epoch"))
+    initial_hash = _sha256_file(initial_topology_path)
+    final_hash = _sha256_file(final_topology_path)
+    if not (
+        initial["run_id"] == final["run_id"]
+        and initial["release"] == final["release"]
+        and initial["topology"]["member_identity_digests"]
+        == final["topology"]["member_identity_digests"]
+        and initial["topology"]["domain_digest"] == final["topology"]["domain_digest"]
+        and initial_hash != final_hash
+        and set(initial["source_node_manifest_sha256"]).isdisjoint(
+            final["source_node_manifest_sha256"]
+        )
+        and final["generated_at_epoch"] >= initial["generated_at_epoch"]
+    ):
+        raise EvidenceError("final topology is not a fresh matching three-device capture")
+
+    required = {
+        "concurrent-update-and-conflict-resolution": (
+            CONCURRENCY_REPORT_CLASS,
+            9,
+            {
+                "baseline_three_device_convergence",
+                "two_distinct_paused_update_branches",
+                "three_device_reconnect_convergence",
+                "online_quiescent_final_state",
+            },
+        ),
+        "offline-write-and-reconnect": (
+            OFFLINE_REPORT_CLASS,
+            9,
+            {
+                "one_node_isolated_with_baseline_preserved",
+                "remaining_nodes_write_and_propagate",
+                "isolated_node_reconnect_catch_up",
+                "online_quiescent_final_state",
+            },
+        ),
+        "private-scope-non-propagation": (
+            PRIVACY_REPORT_CLASS,
+            6,
+            {
+                "private_memory_visible_on_writer_only",
+                "private_memory_absent_on_two_observers",
+                "zero_pending_sync_operations",
+                "unchanged_sync_acknowledgements",
+            },
+        ),
+        "tombstone-propagation-and-no-resurrection": (
+            TOMBSTONE_REPORT_CLASS,
+            12,
+            {
+                "two_node_tombstone_propagation",
+                "old_copy_reconnect_did_not_resurrect",
+                "second_reconciliation_remained_deleted",
+                "online_quiescent_final_state",
+            },
+        ),
+    }
+    reports = [_read_json(path) for path in scenario_paths]
+    if {report.get("scenario") for report in reports} != set(required):
+        raise EvidenceError("final suite does not contain each required scenario exactly once")
+    for report in reports:
+        scenario = report["scenario"]
+        evidence_class, checkpoint_count, required_checks = required[scenario]
+        checks = report.get("checks")
+        checkpoint_hashes = report.get("source_checkpoint_sha256")
+        if not (
+            report.get("evidence_schema") == SCHEMA_VERSION
+            and report.get("evidence_class") == evidence_class
+            and report.get("real_device_evidence") is True
+            and report.get("final_device_evidence") is False
+            and report.get("status") == "pass"
+            and report.get("run_id") == initial["run_id"]
+            and report.get("release") == initial["release"]
+            and report.get("topology_evidence_sha256") == initial_hash
+            and isinstance(report.get("generated_at_epoch"), int)
+            and not isinstance(report.get("generated_at_epoch"), bool)
+            and initial["generated_at_epoch"] <= report["generated_at_epoch"]
+            and report["generated_at_epoch"] <= final["generated_at_epoch"]
+            and isinstance(checks, dict)
+            and required_checks.issubset(checks)
+            and all(checks[name] == "passed" for name in required_checks)
+            and isinstance(checkpoint_hashes, list)
+            and len(checkpoint_hashes) == checkpoint_count
+            and len(set(checkpoint_hashes)) == checkpoint_count
+            and all(
+                isinstance(digest, str) and SHA256_PATTERN.fullmatch(digest)
+                for digest in checkpoint_hashes
+            )
+        ):
+            raise EvidenceError(f"final suite scenario is incomplete: {scenario}")
+        _validate_timestamp(report.get("generated_at_utc"), report["generated_at_epoch"])
+
+    generated_at_utc, generated_at_epoch = _utc_now()
+    return {
+        "evidence_schema": SCHEMA_VERSION,
+        "evidence_class": FINAL_REPORT_CLASS,
+        "real_device_evidence": True,
+        "final_device_evidence": True,
+        "status": "pass",
+        "run_id": initial["run_id"],
+        "generated_at_utc": generated_at_utc,
+        "generated_at_epoch": generated_at_epoch,
+        "release": initial["release"],
+        "initial_topology_evidence_sha256": initial_hash,
+        "final_topology_evidence_sha256": final_hash,
+        "source_scenario_sha256": sorted(
+            _sha256_file(path) for path in scenario_paths
+        ),
+        "scenarios": sorted(required),
+        "checks": {
+            "same_release_run_devices_and_domain": "passed",
+            "fresh_final_three_device_topology": "passed",
+            "all_required_scenarios_bound": "passed",
+            "all_scenario_checks_passed": "passed",
+            "all_scenarios_between_topology_captures": "passed",
+            "final_online_quiescent_full_mesh": "passed",
+            "final_logical_view_convergence": "passed",
+        },
+        "remaining_required_scenarios": [],
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1860,6 +1998,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     tombstone_scenario.add_argument("--output", required=True, type=Path)
     tombstone_scenario.add_argument("--overwrite", action="store_true")
+    final_suite = subparsers.add_parser("validate-final")
+    final_suite.add_argument("--initial-topology", required=True, type=Path)
+    final_suite.add_argument("--final-topology", required=True, type=Path)
+    final_suite.add_argument("--scenario", required=True, action="append", type=Path)
+    final_suite.add_argument("--output", required=True, type=Path)
+    final_suite.add_argument("--overwrite", action="store_true")
     return parser
 
 
@@ -1986,7 +2130,7 @@ def main() -> int:
                 scope=args.scope,
                 knowledge_id=knowledge_id,
             )
-        else:
+        elif args.command == "validate-tombstone":
             output = args.output.resolve()
             inputs = {args.topology.resolve(), *(path.resolve() for path in args.checkpoint)}
             if output in inputs:
@@ -1994,6 +2138,20 @@ def main() -> int:
             report = validate_tombstone_scenario(
                 topology_path=args.topology.resolve(),
                 checkpoint_paths=args.checkpoint,
+            )
+        else:
+            output = args.output.resolve()
+            inputs = {
+                args.initial_topology.resolve(),
+                args.final_topology.resolve(),
+                *(path.resolve() for path in args.scenario),
+            }
+            if output in inputs:
+                raise EvidenceError("final report must not overwrite an input")
+            report = validate_final_scenario_suite(
+                initial_topology_path=args.initial_topology.resolve(),
+                final_topology_path=args.final_topology.resolve(),
+                scenario_paths=args.scenario,
             )
         _write_json(output, report, overwrite=args.overwrite)
     except EvidenceError as exc:

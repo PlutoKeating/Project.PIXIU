@@ -310,6 +310,90 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                 ),
             )
 
+    def _final_suite_inputs(self, root: Path):
+        initial_path, _node_paths = self._topology(root)
+        initial = json.loads(initial_path.read_text(encoding="utf-8"))
+        final = json.loads(json.dumps(initial))
+        final["generated_at_epoch"] = initial["generated_at_epoch"] + 100
+        final["generated_at_utc"] = MODULE.datetime.fromtimestamp(
+            final["generated_at_epoch"], MODULE.timezone.utc
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        final["source_node_manifest_sha256"] = [
+            MODULE.hashlib.sha256(f"final-node-{index}".encode()).hexdigest()
+            for index in range(3)
+        ]
+        final_path = root / "final-topology.json"
+        final_path.write_text(json.dumps(final), encoding="utf-8")
+        topology_hash = MODULE._sha256_file(initial_path)
+        definitions = {
+            "concurrent-update-and-conflict-resolution": (
+                MODULE.CONCURRENCY_REPORT_CLASS,
+                9,
+                {
+                    "baseline_three_device_convergence",
+                    "two_distinct_paused_update_branches",
+                    "three_device_reconnect_convergence",
+                    "online_quiescent_final_state",
+                },
+            ),
+            "offline-write-and-reconnect": (
+                MODULE.OFFLINE_REPORT_CLASS,
+                9,
+                {
+                    "one_node_isolated_with_baseline_preserved",
+                    "remaining_nodes_write_and_propagate",
+                    "isolated_node_reconnect_catch_up",
+                    "online_quiescent_final_state",
+                },
+            ),
+            "private-scope-non-propagation": (
+                MODULE.PRIVACY_REPORT_CLASS,
+                6,
+                {
+                    "private_memory_visible_on_writer_only",
+                    "private_memory_absent_on_two_observers",
+                    "zero_pending_sync_operations",
+                    "unchanged_sync_acknowledgements",
+                },
+            ),
+            "tombstone-propagation-and-no-resurrection": (
+                MODULE.TOMBSTONE_REPORT_CLASS,
+                12,
+                {
+                    "two_node_tombstone_propagation",
+                    "old_copy_reconnect_did_not_resurrect",
+                    "second_reconciliation_remained_deleted",
+                    "online_quiescent_final_state",
+                },
+            ),
+        }
+        scenario_paths = []
+        for scenario, (evidence_class, count, checks) in definitions.items():
+            report = {
+                "evidence_schema": 1,
+                "evidence_class": evidence_class,
+                "real_device_evidence": True,
+                "final_device_evidence": False,
+                "status": "pass",
+                "run_id": initial["run_id"],
+                "generated_at_epoch": initial["generated_at_epoch"] + 50,
+                "generated_at_utc": MODULE.datetime.fromtimestamp(
+                    initial["generated_at_epoch"] + 50, MODULE.timezone.utc
+                ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "release": initial["release"],
+                "topology_evidence_sha256": topology_hash,
+                "source_checkpoint_sha256": [
+                    MODULE.hashlib.sha256(f"{scenario}-{index}".encode()).hexdigest()
+                    for index in range(count)
+                ],
+                "scenario": scenario,
+                "checks": {name: "passed" for name in checks},
+            }
+            path = root / f"scenario-{len(scenario_paths)}.json"
+            path.write_text(json.dumps(report), encoding="utf-8")
+            scenario_paths.append(path)
+        return initial_path, final_path, scenario_paths
+
     def test_capture_is_strict_and_does_not_leak_identity_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = self._capture(Path(directory), 0)
@@ -788,6 +872,50 @@ class ThreeDeviceEvidenceTest(unittest.TestCase):
                 MODULE.validate_tombstone_scenario(
                     topology_path=topology_path,
                     checkpoint_paths=observations,
+                )
+
+    def test_final_suite_is_the_only_report_marked_final(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            initial, final, scenarios = self._final_suite_inputs(root)
+            report = MODULE.validate_final_scenario_suite(
+                initial_topology_path=initial,
+                final_topology_path=final,
+                scenario_paths=scenarios,
+            )
+
+        self.assertEqual(report["status"], "pass")
+        self.assertTrue(report["real_device_evidence"])
+        self.assertTrue(report["final_device_evidence"])
+        self.assertEqual(report["remaining_required_scenarios"], [])
+        self.assertEqual(len(report["scenarios"]), 4)
+
+    def test_final_suite_rejects_reused_topology_and_missing_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            initial, final, scenarios = self._final_suite_inputs(root)
+            copied = json.loads(initial.read_text(encoding="utf-8"))
+            copied["generated_at_epoch"] += 100
+            copied["generated_at_utc"] = MODULE.datetime.fromtimestamp(
+                copied["generated_at_epoch"], MODULE.timezone.utc
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
+            final.write_text(json.dumps(copied), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.EvidenceError, "fresh matching"):
+                MODULE.validate_final_scenario_suite(
+                    initial_topology_path=initial,
+                    final_topology_path=final,
+                    scenario_paths=scenarios,
+                )
+
+            _initial, final, scenarios = self._final_suite_inputs(root)
+            broken = json.loads(scenarios[0].read_text(encoding="utf-8"))
+            broken["checks"].pop("online_quiescent_final_state")
+            scenarios[0].write_text(json.dumps(broken), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.EvidenceError, "incomplete"):
+                MODULE.validate_final_scenario_suite(
+                    initial_topology_path=initial,
+                    final_topology_path=final,
+                    scenario_paths=scenarios,
                 )
 
 
