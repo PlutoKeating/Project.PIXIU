@@ -80,6 +80,10 @@ SHA-256 一致；供应链报告另须 `ready=true`。生成和复验都会拒�
 输入（原生、Agent、数据集、逐样本报告、三变体消融矩阵）应作为去敏附件一并保留，
 否则即使汇总百分比达标，也不满足 D-07 原始结果要求。
 
+`dataset` 主记录及其冻结 JSON 必须由 `final-dataset-manifest.py` 在 clean release commit
+生成；二者都应归档，且性能报告的 dataset 摘要必须与 manifest 一致。manifest 会明确
+其为附录 A 派生的团队合成 test-only corpus，不得在交付文案中改称官方数据集。
+
 `--package` 在任何门未通过、文件缺失、命名/格式错误、官方原件哈希改变或工作区不
 洁净时都会失败。D-07 的 `three-device-final-suite.json` 还必须满足最终三设备契约，
 并与 `release_commit` 和最终 `.deb` SHA-256 一致；仅将任意 JSON 放入目录无法通过。

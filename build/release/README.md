@@ -173,6 +173,22 @@ python3 build/release/scripts/final-performance-evidence.py validate \
 `mean_turns`。汇总不要求结果必须单调变好，但不得删掉不利数据。五个输入及逐样本
 原始结果仍须作为 D-07 去敏附件保存；汇总 JSON 不能替代它们。
 
+最终候选洁净且 strict 原生证据通过后，冻结 acceptance 数据集：
+
+```bash
+python3 build/release/scripts/final-dataset-manifest.py build \
+  --native-evidence NATIVE_SDK_JSON \
+  --dataset-output final-dataset.json \
+  --manifest-output dataset-manifest.json
+python3 build/release/scripts/final-dataset-manifest.py validate \
+  --dataset-output final-dataset.json \
+  --manifest-output dataset-manifest.json
+```
+
+生成器拒绝非当前 HEAD、脏工作树、非 strict 候选和官方赛题原文摘要漂移。输出固定
+标注为附录 A 派生的团队合成语料，而非官方/第三方数据集；全部 90 例为冻结 test split，
+无 train/validation 集。数据集 JSON 和 manifest 都进入 D-07，且不得覆盖已有输出。
+
 ## 三台设备拓扑取证
 
 严格原生取证成功文件固定标识 `evidence_schema=1`、

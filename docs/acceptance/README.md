@@ -72,3 +72,8 @@ CI 的 Python 3.12 job 会执行第 3 步，校验三节点逻辑视图摘要一
 Agent 生命周期证据、冻结数据集 manifest、逐样本评测 JSON 与无记忆/单机/分布式
 三变体矩阵；汇总器会重验四项阈值和最低样本数。当前工具契约已通过，真实输入尚缺，
 所以 `kylin-v11-final-performance` 尚未生成。
+
+冻结数据集使用 `final-dataset-manifest.py build` 在最终 clean commit 上导出。该数据集
+不是赛方或第三方标准集，而是团队根据附录 A 编写的确定性合成 acceptance corpus；
+manifest 固定 50 个 fixture、90 个纯测试用例、20 次检索重复以及规范化/文件/划分
+摘要。当前仓库只保存生成器和历史 portable 报告，不预先伪造最终候选 manifest。

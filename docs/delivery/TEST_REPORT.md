@@ -22,6 +22,11 @@ Agent 生命周期、冻结 acceptance 数据集、至少 90 个逐样本结果�
 分布式记忆三组各不少于 30 例的消融矩阵同版时生成主记录。当前汇总器契约测试通过，
 上述真实输入尚未全部生成，本报告状态不升级。
 
+数据集冻结器 `final-dataset-manifest.py` 已实现，但最终产物只允许在 clean release
+commit 上绑定 strict 候选生成。来源必须写作“团队根据赛题附录 A 编写的合成语料”，
+划分为 0 train / 0 validation / 90 test；不得把历史 portable 报告中的内嵌数据或
+当前生成器测试当作最终冻结 manifest。
+
 单一版本源回归动态读取根 `VERSION`，核对前端 CMake、独立 control、发布脚本、
 Module E 模板和成包 manifest 的派生关系，并拒绝显式版本漂移；成功路径不再写死
 当前发布号，后续正常升版只需修改一个输入文件。

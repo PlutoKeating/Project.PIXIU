@@ -28,6 +28,8 @@
   因此按设计不能生成最终 ZIP。
   最终性能汇总器及 4 项契约测试也已落地，强制四项指标原始样本、三组各 30 例消融
   和 strict/Agent/数据集/候选包同版；现有 portable 报告按设计不能通过该门。
+  数据集冻结器及 4 项测试已补齐：固定 50 fixture/90 test case、附录 A 派生的团队
+  合成来源、规范化/实物/划分摘要和敏感扫描；最终 clean release 输出仍待生成。
 
 - 🟡 **历史测试基线（2026-08-11）**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
   pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见
