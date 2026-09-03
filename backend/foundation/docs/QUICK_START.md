@@ -1,8 +1,8 @@
 # 模块 C · 后台基础设施 —— 快速启动
 
-> 本指南启动的是当前记忆基础设施。capability 与 evidence Agent provenance 已实现；
-> 持久化完成态幂等已实现；context 写入、生命周期、失败 receipt 恢复和 Module E
-> 尚未完成，不得把 API 启动成功解释成 Agent 接入完成。
+> 本指南启动的是当前记忆基础设施。capability、evidence Agent provenance、完成态
+> 幂等、context 生命周期和审计式失败 receipt 恢复已实现；Module E 已有独立适配，
+> 但真实宿主与长期化尚未完成，不得把 API 启动成功解释成 Agent 接入完成。
 
 ---
 

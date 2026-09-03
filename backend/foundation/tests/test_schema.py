@@ -120,6 +120,10 @@ def test_agent_ingest_receipts_has_expected_columns(tmp_path: Path):
         "response",
         "created_at",
         "updated_at",
+        "retry_authorized",
+        "recovery_count",
+        "recovery_reason",
+        "recovered_at",
     }
 
 
@@ -317,7 +321,7 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 10
+    assert apply_pending(conn) == 11
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
@@ -325,7 +329,7 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     assert "monitor_config" in _table_names(conn)
     assert "monitor_log" in _table_names(conn)
     assert "vector_id_map" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 11
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 12
     conn.close()
 
 
@@ -355,7 +359,7 @@ def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
     conn.execute("INSERT INTO _schema_version VALUES (6, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 5  # 迁移 #7 + #8 + #9 + #10 + #11
+    assert apply_pending(conn) == 6  # 迁移 #7 + #8 + #9 + #10 + #11 + #12
     conn.commit()
 
     columns = {
@@ -419,7 +423,7 @@ def test_pending_migrations_add_conflict_severity_to_v7_database(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (7, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 4  # 迁移 #8 + #9 + #10 + #11
+    assert apply_pending(conn) == 5  # 迁移 #8 + #9 + #10 + #11 + #12
     conn.commit()
 
     columns = {
@@ -475,7 +479,7 @@ def test_pending_migration_adds_agent_provenance_to_v9_evidence(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (9, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 2
+    assert apply_pending(conn) == 3
     conn.commit()
     row = conn.execute(
         "SELECT provenance FROM evidence WHERE id = ?",
@@ -483,7 +487,41 @@ def test_pending_migration_adds_agent_provenance_to_v9_evidence(tmp_path):
     ).fetchone()
     assert row[0] == "{}"
     assert "agent_ingest_receipts" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 11
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 12
+    conn.close()
+
+
+def test_pending_migration_adds_retry_audit_to_v11_receipts(tmp_path):
+    conn = create_connection(str(tmp_path / "test.db"))
+    conn.execute(
+        """CREATE TABLE agent_ingest_receipts (
+            idempotency_key TEXT PRIMARY KEY,
+            request_hash TEXT NOT NULL,
+            state TEXT NOT NULL CHECK (state IN ('IN_PROGRESS', 'COMPLETED', 'FAILED')),
+            response TEXT NOT NULL DEFAULT '{}',
+            created_at INTEGER NOT NULL,
+            updated_at INTEGER NOT NULL
+        )"""
+    )
+    conn.execute(
+        """INSERT INTO agent_ingest_receipts
+           VALUES ('turn-1', 'hash-1', 'FAILED', '{}', 1, 2)"""
+    )
+    conn.execute(
+        "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)"
+    )
+    conn.execute("INSERT INTO _schema_version VALUES (11, 1)")
+    conn.commit()
+
+    assert apply_pending(conn) == 1
+    conn.commit()
+    row = conn.execute(
+        """SELECT state, retry_authorized, recovery_count,
+                  recovery_reason, recovered_at
+           FROM agent_ingest_receipts WHERE idempotency_key = 'turn-1'"""
+    ).fetchone()
+    assert row == ("FAILED", 0, 0, "", None)
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 12
     conn.close()
 
 

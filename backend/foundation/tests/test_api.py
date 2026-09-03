@@ -10,6 +10,7 @@ from pathlib import Path
 
 import aiosqlite
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 import backend.foundation.api.di as di_module
@@ -301,6 +302,122 @@ def test_agent_memory_write_rejects_key_reuse_with_different_payload(client):
     assert conflict.json()["error"] == "IDEMPOTENCY_CONFLICT"
 
 
+def test_failed_agent_memory_write_requires_explicit_audited_recovery(client):
+    payload = {
+        "source_type": "CONVERSATION",
+        "raw": {"user": "remember recovery", "assistant": "stored"},
+        "scope": "user:alice",
+        "idempotency_key": "turn-recovery-1",
+        "provenance": {
+            "session_id": "session-recovery",
+            "run_id": "run-recovery",
+            "turn_id": "turn-1",
+            "occurred_at": 1700000004,
+        },
+    }
+
+    class _FailingKnowledge:
+        async def structure(self, evidence):
+            raise HTTPException(status_code=503, detail="INJECTED_FAILURE")
+
+    working_knowledge = app.dependency_overrides[get_knowledge_service]
+    app.dependency_overrides[get_knowledge_service] = lambda: _FailingKnowledge()
+    try:
+        failed = client.post("/memory/write", json=payload)
+    finally:
+        app.dependency_overrides[get_knowledge_service] = working_knowledge
+
+    assert failed.status_code == 503
+    blocked = client.post("/memory/write", json=payload)
+    assert blocked.status_code == 409
+    assert blocked.json()["error"] == "IDEMPOTENCY_FAILED"
+
+    rejected = client.post(
+        "/agent/idempotency/recover",
+        json={
+            "operation": "MEMORY_WRITE",
+            "original_request": payload,
+            "confirm_duplicate_risk": False,
+            "reason": "verified no completed downstream write",
+        },
+    )
+    assert rejected.status_code == 400
+    assert rejected.json()["error"] == "INVALID_REQUEST"
+
+    recovered = client.post(
+        "/agent/idempotency/recover",
+        json={
+            "operation": "MEMORY_WRITE",
+            "original_request": payload,
+            "confirm_duplicate_risk": True,
+            "reason": "verified no completed downstream write",
+        },
+    )
+    assert recovered.status_code == 200
+    assert recovered.json() == {
+        "operation": "MEMORY_WRITE",
+        "idempotency_key": "turn-recovery-1",
+        "status": "RETRY_AUTHORIZED",
+        "recovery_count": 1,
+        "authorized_at": recovered.json()["authorized_at"],
+    }
+
+    retry = client.post("/memory/write", json=payload)
+    assert retry.status_code == 200
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        row = conn.execute(
+            """SELECT state, retry_authorized, recovery_count, recovery_reason
+               FROM agent_ingest_receipts WHERE idempotency_key = ?""",
+            (payload["idempotency_key"],),
+        ).fetchone()
+    assert row == (
+        "COMPLETED",
+        0,
+        1,
+        "verified no completed downstream write",
+    )
+
+
+def test_retry_recovery_rejects_changed_original_request(client):
+    payload = {
+        "source_type": "CONVERSATION",
+        "raw": {"user": "original", "assistant": "stored"},
+        "scope": "user:alice",
+        "idempotency_key": "turn-recovery-conflict",
+        "provenance": {
+            "session_id": "session-recovery",
+            "run_id": "run-recovery",
+            "turn_id": "turn-2",
+            "occurred_at": 1700000005,
+        },
+    }
+
+    class _FailingKnowledge:
+        async def structure(self, evidence):
+            raise HTTPException(status_code=503, detail="INJECTED_FAILURE")
+
+    working_knowledge = app.dependency_overrides[get_knowledge_service]
+    app.dependency_overrides[get_knowledge_service] = lambda: _FailingKnowledge()
+    try:
+        assert client.post("/memory/write", json=payload).status_code == 503
+    finally:
+        app.dependency_overrides[get_knowledge_service] = working_knowledge
+    payload["raw"]["user"] = "changed"
+
+    response = client.post(
+        "/agent/idempotency/recover",
+        json={
+            "operation": "MEMORY_WRITE",
+            "original_request": payload,
+            "confirm_duplicate_risk": True,
+            "reason": "attempt changed payload",
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.json()["error"] == "IDEMPOTENCY_CONFLICT"
+
+
 def test_agent_context_returns_budgeted_cited_memory(client):
     write = client.post(
         "/memory/write",
@@ -556,6 +673,49 @@ def test_agent_lifecycle_replay_does_not_duplicate_context(client):
     assert replay.json() == first.json()
     with sqlite3.connect(di_module.settings.db_path) as conn:
         assert conn.execute("SELECT COUNT(*) FROM memory_contexts").fetchone()[0] == 1
+
+
+def test_failed_lifecycle_request_uses_independent_recovery_namespace(client):
+    payload = {
+        "event": "PRE_COMPRESS",
+        "scope": "user:alice",
+        "session_id": "session-lifecycle-recovery",
+        "run_id": "run-lifecycle-recovery",
+        "turn_id": "turn-1",
+        "occurred_at": 1700000022,
+        "idempotency_key": "same-external-key",
+        "data": {"summary": "recover lifecycle"},
+    }
+
+    class _FailingFlow:
+        async def remember(self, *args, **kwargs):
+            raise HTTPException(status_code=503, detail="INJECTED_FAILURE")
+
+    app.dependency_overrides[get_flow_service] = lambda: _FailingFlow()
+    try:
+        assert client.post("/agent/lifecycle", json=payload).status_code == 503
+    finally:
+        app.dependency_overrides.pop(get_flow_service, None)
+
+    recovered = client.post(
+        "/agent/idempotency/recover",
+        json={
+            "operation": "LIFECYCLE",
+            "original_request": payload,
+            "confirm_duplicate_risk": True,
+            "reason": "verified lifecycle context was not completed",
+        },
+    )
+    assert recovered.status_code == 200
+    assert recovered.json()["idempotency_key"] == "same-external-key"
+    assert client.post("/agent/lifecycle", json=payload).status_code == 200
+
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        rows = conn.execute(
+            """SELECT idempotency_key, state, recovery_count
+               FROM agent_ingest_receipts ORDER BY idempotency_key"""
+        ).fetchall()
+    assert rows == [("lifecycle:same-external-key", "COMPLETED", 1)]
 
 
 def test_agent_lifecycle_turn_event_requires_turn_id(client):

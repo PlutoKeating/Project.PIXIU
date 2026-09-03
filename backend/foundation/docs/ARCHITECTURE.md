@@ -4,10 +4,11 @@
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 > **与模块 E 的边界**：Foundation 只提供 `docs/API.md` 中的公共 HTTP/WS 契约；
 > E 不得导入 Service、Repository 或数据库实现。真实 capability/runtime 端点已实现；
-> Agent 关联 ID 已进入 evidence 模型/API，schema v11 已提供持久化幂等 receipt；
+> Agent 关联 ID 已进入 evidence 模型/API，schema v12 已提供持久化幂等 receipt、
+> 一次性失败恢复授权和审计；
 > `/agent/context` 已提供 scope/敏感过滤、预算、freshness、冲突状态与 evidence 引用；
 > `/memory/write` 已先检测敏感度再占用 receipt，敏感内容不可进入 `shared:*`，检测
-> 故障 fail closed；`/agent/lifecycle` 已幂等写入六类短/中期 context；日志贯通、失败恢复、Module E
+> 故障 fail closed；`/agent/lifecycle` 已幂等写入六类短/中期 context；日志贯通、Module E
 > 真实触发及长期化策略仍待完成。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、

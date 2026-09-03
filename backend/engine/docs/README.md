@@ -7,8 +7,8 @@
 
 > Agent 记忆基础契约已增加合法的 `CONVERSATION` 接入，并以独立 provenance 保存
 > `TOOL_RESULT`/对话的 session/run/turn/tool-call/审批/时间信息。Module E 仍只可
-> 通过公共 API 提交；Foundation 已提供完成态持久化幂等，但失败恢复和生命周期未
-> 闭环前不得宣称完整多轮 Agent 已接入。
+> 通过公共 API 提交；Foundation 已提供完成态持久化幂等、六类生命周期和审计式
+> 失败恢复，但真实宿主与长期化未闭环前不得宣称完整多轮 Agent 已接入。
 
 ---
 

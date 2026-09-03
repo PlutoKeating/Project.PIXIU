@@ -101,8 +101,8 @@
 |------|--------|----------|--------|--------|
 | A · frontend | 团队负责人 | ✅ 全部完成（含四批次前端） | Qt5/CMake 桌面应用：悬浮球/聊天框/记忆面板/遗忘/设置/配对/同步 Tab；监控中心双 Tab 面板 + 三处暂停入口 + 徽标；确认式配对（发现+弹窗确认）+ 同步 Tab 全量管理（整网退出）；洞察卡/「今日简报」/相关主题提醒；i18n 279 条 0 未完成；ctest 32/32 + `regression.sh` 双路径绿 | 真实麒麟会话人工复测（全局快捷键真机按键、xprop 方言验证） |
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
-| C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约已供 E 消费 | core/storage/api、retrieval（`/memory/query` + `/agent/context`）、六类生命周期 context、flow、sync P2P CRDT、eval、monitor、D-Bus、27 个 REST 端点 + 六类 WS 事件 | 长期化策略/失败恢复/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
-| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 743 passed；Module E 契约 9 passed；前端 ctest 37/37；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
+| C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约已供 E 消费 | core/storage/api、retrieval（`/memory/query` + `/agent/context`）、六类生命周期 context、失败 receipt 一次性恢复授权、flow、sync P2P CRDT、eval、monitor、D-Bus | 长期化策略/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
+| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 754 passed；Module E 契约 9 passed；前端 ctest 37/37；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -260,8 +260,9 @@ ctest 32/32、i18n 279 条 0 未完成；见 §1.6。
 
 **Agent 记忆契约进展（2026-09-03）**：新增第 5 类 `CONVERSATION` Connector；
 对话与 Agent 工具结果可把 session/run/turn/tool-call/审批/时间作为独立 provenance
-写入 evidence；schema v11 receipt 已保证完成态重试不重复执行。Module E 已消费这些
-契约；失败 receipt 恢复、专用语义/敏感策略及真实宿主取证仍待完成。
+写入 evidence；schema v12 receipt 已保证完成态重试不重复执行，并提供失败请求的
+显式风险确认、原载荷校验、一次性授权及持久审计。Module E 已消费写入契约；专用
+语义策略及真实宿主取证仍待完成。
 
 ### 2.3 模块 C — 后台基础设施
 
@@ -286,8 +287,8 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 673 passed；见 §1.6。
 
 **Agent 记忆契约进展（2026-09-03）**：`/memory/write` 已校验并传递结构化 Agent
-provenance，SQLite schema v11 完成兼容迁移与持久化幂等 receipt；关联日志/查询、
-失败恢复和长期化仍待完成。六类 context 生命周期端点已实现；写入入口已接入
+provenance，SQLite schema v12 完成兼容迁移、持久化幂等 receipt 与审计式失败恢复；
+关联日志/查询和长期化仍待完成。六类 context 生命周期端点已实现；写入入口已接入
 Security detector，`user:*` 敏感 evidence 本地隔离，`shared:*` 敏感写入与检测故障
 均 fail closed。
 

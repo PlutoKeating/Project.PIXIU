@@ -22,7 +22,7 @@ from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from ..core.logger import get_logger
 from ..core.models import AgentProvenance, SourceType
@@ -31,8 +31,10 @@ from ..monitor.config_store import InvalidMonitorConfig
 from ..storage.idempotency import (
     ClaimStatus,
     IdempotencyConflict,
+    IdempotencyCompleted,
     IdempotencyFailed,
     IdempotencyInProgress,
+    IdempotencyNotFound,
 )
 from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound
 from .di import (
@@ -304,6 +306,26 @@ class AgentLifecycleRequest(BaseModel):
         return self
 
 
+class IdempotencyOperation(str, Enum):
+    MEMORY_WRITE = "MEMORY_WRITE"
+    LIFECYCLE = "LIFECYCLE"
+
+
+class AgentRetryRecoveryRequest(BaseModel):
+    operation: IdempotencyOperation
+    original_request: dict[str, Any]
+    confirm_duplicate_risk: bool
+    reason: str = Field(min_length=3, max_length=256)
+
+    @model_validator(mode="after")
+    def _require_explicit_confirmation(self) -> "AgentRetryRecoveryRequest":
+        if not self.confirm_duplicate_risk:
+            raise ValueError("duplicate side-effect risk must be explicitly confirmed")
+        if len(self.reason.strip()) < 3:
+            raise ValueError("recovery reason must contain at least 3 non-space characters")
+        return self
+
+
 class FlowPromoteRequest(BaseModel):
     source: MemoryTier
     context_ids: list[str] = Field(min_length=1)
@@ -348,6 +370,17 @@ def _latency_ms(started: float) -> int:
     return int((time.monotonic() - started) * 1000)
 
 
+def _canonical_request_hash(body: BaseModel) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            body.model_dump(mode="json"),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+
+
 # ─── 记忆写入 ────────────────────────────────────────────
 
 @app.post("/memory/write", tags=["Memory"], summary="写入一条记忆")
@@ -374,14 +407,7 @@ async def memory_write(
     if sensitivity > 0 and body.scope.startswith("shared:"):
         raise HTTPException(status_code=422, detail="SENSITIVE_SHARED_SCOPE")
 
-    request_hash = hashlib.sha256(
-        json.dumps(
-            body.model_dump(mode="json"),
-            ensure_ascii=False,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-    ).hexdigest()
+    request_hash = _canonical_request_hash(body)
     if body.idempotency_key:
         try:
             claim = await idempotency.claim(body.idempotency_key, request_hash)
@@ -562,14 +588,7 @@ async def agent_lifecycle(
     idempotency=Depends(get_agent_ingest_receipt_store),
 ):
     """把上游生命周期事件持久化为服务端选定层级的短/中期上下文。"""
-    request_hash = hashlib.sha256(
-        json.dumps(
-            body.model_dump(mode="json"),
-            ensure_ascii=False,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-    ).hexdigest()
+    request_hash = _canonical_request_hash(body)
     receipt_key = f"lifecycle:{body.idempotency_key}"
     try:
         claim = await idempotency.claim(receipt_key, request_hash)
@@ -612,6 +631,60 @@ async def agent_lifecycle(
     except Exception:
         await idempotency.fail(receipt_key, request_hash)
         raise
+
+
+@app.post(
+    "/agent/idempotency/recover",
+    tags=["Agent"],
+    summary="授权重试一条失败的 Agent 幂等请求",
+)
+async def agent_idempotency_recover(
+    body: AgentRetryRecoveryRequest,
+    idempotency=Depends(get_agent_ingest_receipt_store),
+):
+    """在人工核验副作用后，为完全相同的 FAILED 请求授权一次重试。"""
+    try:
+        if body.operation == IdempotencyOperation.MEMORY_WRITE:
+            original = MemoryWriteRequest.model_validate(body.original_request)
+            if not original.idempotency_key:
+                raise HTTPException(
+                    status_code=400,
+                    detail="IDEMPOTENCY_KEY_REQUIRED",
+                )
+            external_key = original.idempotency_key
+            receipt_key = external_key
+        else:
+            original = AgentLifecycleRequest.model_validate(body.original_request)
+            external_key = original.idempotency_key
+            receipt_key = f"lifecycle:{external_key}"
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="INVALID_RECOVERY_REQUEST",
+        ) from exc
+
+    try:
+        authorization = await idempotency.authorize_retry(
+            receipt_key,
+            _canonical_request_hash(original),
+            body.reason.strip(),
+        )
+    except IdempotencyNotFound as exc:
+        raise HTTPException(status_code=404, detail="IDEMPOTENCY_NOT_FOUND") from exc
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_CONFLICT") from exc
+    except IdempotencyInProgress as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_IN_PROGRESS") from exc
+    except IdempotencyCompleted as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_COMPLETED") from exc
+
+    return {
+        "operation": body.operation.value,
+        "idempotency_key": external_key,
+        "status": "RETRY_AUTHORIZED",
+        "recovery_count": authorization.recovery_count,
+        "authorized_at": authorization.authorized_at,
+    }
 
 
 # ─── 偏好提取 ────────────────────────────────────────────

@@ -221,6 +221,38 @@ def _add_agent_ingest_receipts(conn: sqlite3.Connection) -> None:
     )
 
 
+def _add_agent_retry_audit(conn: sqlite3.Connection) -> None:
+    """Migration #12: one-shot retry authorization and durable recovery audit."""
+    tables = {
+        row[0]
+        for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+    }
+    if "agent_ingest_receipts" not in tables:
+        _add_agent_ingest_receipts(conn)
+    columns = {
+        row[1]
+        for row in conn.execute(
+            "PRAGMA table_info(agent_ingest_receipts)"
+        ).fetchall()
+    }
+    additions = (
+        (
+            "retry_authorized",
+            "INTEGER NOT NULL DEFAULT 0 CHECK (retry_authorized IN (0, 1))",
+        ),
+        ("recovery_count", "INTEGER NOT NULL DEFAULT 0"),
+        ("recovery_reason", "TEXT NOT NULL DEFAULT ''"),
+        ("recovered_at", "INTEGER"),
+    )
+    for name, declaration in additions:
+        if name not in columns:
+            conn.execute(
+                f"ALTER TABLE agent_ingest_receipts ADD COLUMN {name} {declaration}"
+            )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -233,6 +265,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (9, "vector_id_map", _add_vector_id_map),
     (10, "agent_provenance", _add_agent_provenance),
     (11, "agent_ingest_receipts", _add_agent_ingest_receipts),
+    (12, "agent_retry_audit", _add_agent_retry_audit),
 ]
 
 

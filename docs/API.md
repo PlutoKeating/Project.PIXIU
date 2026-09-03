@@ -21,16 +21,17 @@
 |---------------------|----------|----------------|
 | `initialize` | `GET /capabilities`（已实现） | Module E 已消费并支持 strict fail-closed；真实宿主/V11 证据待补 |
 | `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 已后台预取并只同步读取缓存；真实时序/命中取证待补 |
-| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | Module E 已有有界异步队列、重试/背压；失败 receipt 恢复待补 |
+| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | Module E 已有有界异步队列、重试/背压；失败 receipt 可人工核验后授权一次重试 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 显式 remember 已接入；任意 Shell/搜索结果的自动价值判断仍待 W5 |
 | 显式记忆工具 | query/write/forget/sync 现有端点 | 四个 schema/稳定 JSON 映射已实现；forget 另加一次性确认 token |
-| `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 已触发六类事件；长期化/失败恢复策略与端到端证据待补 |
+| `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 已触发六类事件；长期化策略与端到端证据待补 |
 | 运行审计 | evidence provenance + `/agent/context` 回显 session/turn | 日志与 memory_id 跨端点链路仍待贯通 |
 
 `CONVERSATION` 与 evidence provenance 已同步更新 `foundation/core` 模型、Module B
-Connector、Module C 路由/存储及契约测试；schema v11 的持久化 receipt 保证完成态
-请求跨重启重放不重复产生 evidence/knowledge。Module E 公共 API 客户端及上游
-MemoryProvider 契约测试已贯通；后续仍需失败恢复、长期化策略和真实宿主端到端取证。
+Connector、Module C 路由/存储及契约测试；schema v12 的持久化 receipt 保证完成态
+请求跨重启重放不重复产生 evidence/knowledge，并保留一次性失败恢复授权及审计字段。
+Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；后续仍需长期化策略
+和真实宿主端到端取证。
 不得用 `TOOL_RESULT` 伪装普通对话来源，也不得把契约测试解释成完整多轮 Agent 已验收。
 
 ---
@@ -52,6 +53,7 @@ MemoryProvider 契约测试已贯通；后续仍需失败恢复、长期化策�
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | POST | `/agent/context` | Agent 轮次的预算化、可追溯安全上下文 | ✅ 已实现（scope/敏感过滤/freshness/冲突状态） |
 | POST | `/agent/lifecycle` | 持久化 Agent 生命周期短/中期上下文 | ✅ 基础事件接入（六类事件、幂等、服务端选层） |
+| POST | `/agent/idempotency/recover` | 人工核验后授权失败请求重试一次 | ✅ 已实现（原请求哈希校验 + 持久审计） |
 | GET | `/evidence/{id}` | 证据详情（查看原文） | ✅ 已实现（2026-08-24） |
 | POST | `/memory/ocr` | 图片文字识别（麒麟 kysdk-ocr） | ✅ 已实现（2026-08-24，无 SDK 环境返回 503 OCR_UNAVAILABLE） |
 | POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
@@ -165,8 +167,8 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
   `-`。同键同载荷的完成态请求返回首次保存的完整响应且不重复执行副作用；同键异
   载荷返回 `409 IDEMPOTENCY_CONFLICT`。
 - 首次执行仍在进行中或已失败时，重试分别返回 `IDEMPOTENCY_IN_PROGRESS` 或
-  `IDEMPOTENCY_FAILED`，不自动重放可能已发生的外部向量/同步副作用。失败恢复管理
-  端点尚待实现。
+  `IDEMPOTENCY_FAILED`，不自动重放可能已发生的外部向量/同步副作用。FAILED 状态
+  只能经 §3.2c 的显式风险确认授权一次重试。
 - 服务端在占用幂等 receipt **之前**执行敏感检测。`user:*` 内容可在本机保存，但按
   检测结果写入 `sensitivity`，且 `sensitivity > 0` 不进入 Agent 上下文；敏感内容写
   往 `shared:*` 返回 `422 SENSITIVE_SHARED_SCOPE`，不会落 evidence、receipt 或同步
@@ -304,6 +306,49 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 
 此端点不会自动把会话全文永久化。需要晋升的 context_id 由 Module E/策略层显式提交
 给 `/memory/flow/promote`；这使敏感判断、摘要选择和用户策略有清晰审查点。
+
+### 3.2c POST /agent/idempotency/recover
+
+只用于 `/memory/write` 或 `/agent/lifecycle` 已进入 `FAILED` 的收据。操作者必须先核验
+evidence、knowledge、向量和同步日志等副作用，再提交**完整且未修改的原请求**、风险
+确认与审计原因。服务端按对应 Pydantic 模型重建规范请求并自行计算哈希，不接受客户
+端提供哈希。
+
+```jsonc
+{
+  "operation": "MEMORY_WRITE",
+  "original_request": {
+    "source_type": "CONVERSATION",
+    "raw": {"user": "请记住项目偏好", "assistant": "已记录"},
+    "scope": "user:alice",
+    "idempotency_key": "session-01:turn-03",
+    "provenance": {
+      "session_id": "session-01",
+      "run_id": "run-01",
+      "turn_id": "turn-03",
+      "occurred_at": 1788393600
+    }
+  },
+  "confirm_duplicate_risk": true,
+  "reason": "已核验首次执行未完成下游写入"
+}
+```
+
+`operation` 只能是 `MEMORY_WRITE` 或 `LIFECYCLE`。确认值必须为 `true`，reason 去除
+首尾空白后为 3～256 字符。收据不存在、载荷已改变、仍在执行或已经完成时分别返回
+404/409，绝不覆盖原收据。授权本身不执行原请求；下一次提交完全相同的原端点请求会
+原子消费该授权，之后再次重试仍 fail closed。`recovery_count`、`recovery_reason` 与
+`recovered_at` 在 schema v12 receipt 中持续保留。
+
+```jsonc
+{
+  "operation": "MEMORY_WRITE",
+  "idempotency_key": "session-01:turn-03",
+  "status": "RETRY_AUTHORIZED",
+  "recovery_count": 1,
+  "authorized_at": 1788393900
+}
+```
 
 ### 3.3 GET /evidence/{id}
 
@@ -1000,6 +1045,12 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 | `IDEMPOTENCY_CONFLICT` | 409 | 幂等键已绑定到不同请求载荷 |
 | `IDEMPOTENCY_IN_PROGRESS` | 409 | 同键首次请求尚未完成，安全拒绝重复执行 |
 | `IDEMPOTENCY_FAILED` | 409 | 同键首次请求失败，需恢复处理后再决定是否重放 |
+| `IDEMPOTENCY_NOT_FOUND` | 404 | 找不到待恢复的幂等收据 |
+| `IDEMPOTENCY_COMPLETED` | 409 | 已完成收据禁止恢复重放 |
+| `IDEMPOTENCY_KEY_REQUIRED` | 400 | MEMORY_WRITE 恢复目标未提供幂等键 |
+| `INVALID_RECOVERY_REQUEST` | 400 | 完整原请求与所选操作的 Schema 不匹配 |
+| `SENSITIVE_SHARED_SCOPE` | 422 | 敏感内容禁止写入共享域 |
+| `SENSITIVITY_CHECK_FAILED` | 503 | 敏感检测不可用，写入已 fail closed |
 | `NOT_FOUND` | 404 | 资源不存在 |
 | `CONFLICT_TIMEOUT` | 408 | 遗忘确认超时 |
 | `PAIRING_FAILED` | 422 | 设备配对失败 |

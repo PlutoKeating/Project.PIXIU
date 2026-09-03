@@ -18,7 +18,7 @@
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
   `config.py`（`auto`/`kylin`/`portable` 能力选择）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
-- `storage/`：`schema.py`（20 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v11 版本化迁移，含 evidence provenance 与 Agent 幂等 receipt）、
+- `storage/`：`schema.py`（20 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v12 版本化迁移，含 evidence provenance、Agent 幂等 receipt 与恢复审计）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
 - `api/`：全部 REST 契约端点真实接入（含 `/sync/*`），request_id 中间件 + API.md §5
   统一错误契约（`{error, message, request_id}`），D-Bus 服务（`com.kylin.pixiu.Memory`：
@@ -34,8 +34,8 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 最新后端全量回归记录：pytest 743 passed（Foundation 598 + Engine 145；
-  Foundation 11 条依赖弃用/测试退出资源告警，无失败）；Foundation 356 + Engine 21
+- 最新后端全量回归记录：pytest 754 passed（Foundation 609 + Engine 145；
+  Foundation 10 条依赖弃用/测试退出资源告警，无失败）；Foundation 356 + Engine 21
   = 377 仅保留为 2026-08-11 阶段快照
 
 ### 🔴 赛题 P0 待完成
@@ -52,11 +52,12 @@
   `GET /capabilities` 已实现配置/实际分栏与脱敏平台判定，严格双 SDK 启动预检已接入；
   Agent runtime 待 Module E 宿主适配后纳入。
 - C-A2：🟡 session_id/run_id/turn_id/tool_call_id/审批/时间已贯通到 evidence、写入
-  API 和 schema v10；schema v11 已实现完成态持久化幂等与冲突拒绝。日志、按关联 ID
-  查询与失败 receipt 恢复仍待完成；`POST /agent/context` 已提供 session/turn 回显、
+  API 和 schema v10；schema v12 已实现完成态幂等、冲突拒绝与审计式失败恢复。日志、
+  按关联 ID 查询仍待完成；`POST /agent/context` 已提供 session/turn 回显、
   scope/敏感过滤、预算、freshness、冲突状态与 evidence 引用。
-- C-A3：🟡 `/agent/lifecycle` 已提供六类短/中期 context 创建与完成态幂等；既有
-  promote/demote/TTL 清理可复用。Module E 真实触发、更新策略与失败恢复仍待完成。
+- C-A3：🟡 `/agent/lifecycle` 已提供六类短/中期 context 创建、完成态幂等与独立
+  命名空间失败恢复；既有 promote/demote/TTL 清理可复用。Module E 真实触发与更新
+  策略仍待完成。
 - C-A4：Vector Engine 成为严格画像的生产向量 Repository；SQLite/INT8 仅为降级。
 
 进度：C-A4 的公共 `VectorStore` seam 与 `SqliteVectorStore` portable 适配器已实现，

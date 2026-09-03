@@ -116,9 +116,9 @@ W0 基线与计划
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
 | W3.1 | ✅ 已完成：新增 `CONVERSATION` 来源和 session/run/turn/tool-call provenance 模型，schema v10 持久化 | 旧数据兼容；模型、Connector、仓储迁移测试通过 |
-| W3.2 | 🟡 部分完成：会话/工具写入、provenance、schema v11 幂等 receipt 与写入前置敏感策略已实现；失败恢复管理待补 | 同键重放/冲突、用户域标敏隔离、共享域拒绝和检测故障 fail-closed 已测；F1-01/F1-02/F1-05～F1-07 其余待完成 |
+| W3.2 | ✅ 已完成：会话/工具写入、provenance、schema v12 幂等 receipt、一次性失败恢复授权与写入前置敏感策略 | 同键重放/冲突、恢复审计、用户域标敏隔离、共享域拒绝和检测故障 fail-closed 已测 |
 | W3.3 | ✅ 已完成：`POST /agent/context` 提供字符预算、来源引用、scope、freshness、冲突状态与敏感 evidence fail-closed | 多候选/隔离/裁剪/敏感排除及 Module E 消费契约测试通过 |
-| W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件及 Module E 触发测试完成；失败恢复、长期化和真实宿主证据待补 |
+| W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件、独立命名空间失败恢复及 Module E 触发测试完成；长期化和真实宿主证据待补 |
 | W3.5 | 显式记忆工具：search/store/update/forget/status | 权限、确认、审计与错误码稳定 |
 | W3.6 | capabilities/health/version API | Module E 可在启动前 fail closed |
 
@@ -130,7 +130,7 @@ W0 基线与计划
 |------|----------|----------|
 | W4.1 | ✅ 独立包、plugin manifest、环境配置；未修改上游 | 已纳入 `.deb` 用户 profile 安装路径 |
 | W4.2 | ✅ initialize/is_available/system_prompt_block/缓存 prefetch | strict/portable 与召回契约通过 |
-| W4.3 | ✅ sync_turn、有界异步队列、重试、背压、幂等键 | 非阻塞与诊断计数测试通过；持久失败恢复待 W3 |
+| W4.3 | ✅ sync_turn、有界异步队列、重试、背压、幂等键 | 非阻塞与诊断计数测试通过；服务端持久失败恢复已完成，Module E 不自动授权风险重放 |
 | W4.4 | 🟡 六类生命周期已映射 | 契约通过；F6-05 真实宿主证据与长期化待 W5 |
 | W4.5 | ✅ 四个显式记忆工具及稳定 JSON 错误 | 模型自主调用行为待 W5 实证 |
 | W4.6 | 🟡 hard scope、召回围栏中和、超时/错误脱敏、两阶段遗忘 | 契约通过；完整 F5 与宿主审批证据待补 |

@@ -40,7 +40,7 @@ Python 3.10 + SQLite + hnswlib
 |------|------|
 | `core/` | 共享契约（数据模型、Repository 接口、配置） |
 | `api/` | API 网关（HTTP/WS/D-Bus） |
-| `storage/` | SQLite 仓储实现（20 张基础表 + WAL + FTS5 + 向量，schema v11） |
+| `storage/` | SQLite 仓储实现（20 张基础表 + WAL + FTS5 + 向量，schema v12） |
 | `retrieval/` | 混合检索（路由→BM25∥ANN∥Graph→融合→重排→组装） |
 | `flow/` | 记忆流转（promote/demote + TTL） |
 | `sync/` | P2P CRDT 同步（Gossip + 反熵 + TLS） |
