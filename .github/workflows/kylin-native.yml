@@ -23,6 +23,7 @@ jobs:
         run: |
           os_id="$(. /etc/os-release; printf '%s %s' "${ID:-}" "${NAME:-}")"
           os_major="$(. /etc/os-release; printf '%s' "${VERSION_ID%%.*}")"
+          os_major="${os_major#[vV]}"
           [[ "${os_id,,}" == *kylin* ]]
           test "${os_major}" = "11"
 

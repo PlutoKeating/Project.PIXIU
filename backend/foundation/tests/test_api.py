@@ -100,6 +100,14 @@ def test_platform_capability_only_reports_acceptance_identity():
     assert data == {"family": "kylin", "version_major": "11", "v11": True}
 
 
+def test_platform_capability_accepts_kylin_v_prefixed_version():
+    data = platform_capability(
+        {"ID": "kylin", "NAME": "Kylin", "VERSION_ID": "V11"}
+    )
+
+    assert data == {"family": "kylin", "version_major": "11", "v11": True}
+
+
 def test_memory_write_returns_accepted(client):
     resp = client.post(
         "/memory/write",

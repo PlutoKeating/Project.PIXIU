@@ -219,6 +219,7 @@ portable 适配器在内部执行 INT8 量化/扫描；组合根测试会主动�
 closed，`auto` 明确告警后才降级。V11 真 SDK 证据完成前 H-02 仍为不通过。
 `GET /capabilities` 从实际实例化的 embedding/vector store 读取 runtime，并只输出
 验收相关的 OS 家族/主版本；配置意图与运行事实分栏，且不暴露主机、网络或路径信息。
+平台解析同时接受发行版常见的 `11` 与 `V11`/`v11` 版本格式并统一输出 `11`。
 应用 lifespan 在启动其他后台运行时前预检所有显式 `kylin` 后端，任一 SDK 无法实例化
 即中止启动；`auto` 模式仍允许带明确 runtime 标识的 portable 降级。
 未显式注入 seam 的旧测试/自定义构造暂保留 Repository 兼容路径，不得用于生产

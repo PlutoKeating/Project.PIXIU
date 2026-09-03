@@ -32,7 +32,8 @@ def platform_capability(os_release: Mapping[str, str] | None = None) -> dict:
         values.get(key, "") for key in ("ID", "ID_LIKE", "NAME")
     ).casefold()
     version = values.get("VERSION_ID", "")
-    major = version.split(".", 1)[0] if version else "unknown"
+    normalized_version = version.lstrip("vV")
+    major = normalized_version.split(".", 1)[0] if normalized_version else "unknown"
     family = "kylin" if "kylin" in identity else "other"
     return {
         "family": family,
