@@ -275,6 +275,14 @@ PPT 建议参考 MultiWOZ、ToolBench、PersonaChat、BPMN、DailyDialog、TREC�
 
 未达基础指标必须明确优化方向。现有 portable 100%/100%/96%/115ms 只可登记为“开发回归通过”，不能填入最终 V11 双 SDK 结果栏。
 
+最终性能 JSON 由 `build/release/scripts/final-performance-evidence.py` 汇总。它要求原始
+评测报告为 `acceptance` profile、包含至少 90 个逐样本 outcome，并分别达到偏好 15、
+检索 50、冲突 25 和延迟 1000 的最低样本数；四项基础指标会按本节阈值重新判定。
+F7-03 还必须提供相同 `task_set_sha256` 下的 `no_memory`、
+`single_device_memory`、`distributed_memory` 三个变体，每组至少 30 例并报告任务成功率
+和平均轮数。汇总器同时绑定 strict V11 原生证据、Agent 生命周期证据、冻结数据集、
+候选包和全部输入文件摘要；当前仅完成 4 项工具契约测试，最终性能仍未实测。
+
 ## 5. 分布式全连接记忆网络专项（团队创新）
 
 这些不是 PPT 单独规定的零分门槛，但应作为技术创新性、可行性和实用性的主要证据。

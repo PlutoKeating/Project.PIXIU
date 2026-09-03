@@ -149,6 +149,30 @@ Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定
 保护且不得放入 D-07；最终 JSON 只保留哈希、计数、工具名和通过项。工具的通过只说明
 采集程序契约已验证，最终状态仍取决于同一候选包在 V11 上的真实输出。
 
+## 最终性能证据汇总
+
+原始逐样本报告和三变体对比完成后，用同一候选的五项输入生成性能主记录：
+
+```bash
+python3 build/release/scripts/final-performance-evidence.py build \
+  --native-evidence NATIVE_SDK_JSON \
+  --agent-evidence AGENT_LIFECYCLE_JSON \
+  --dataset-manifest FINAL_DATASET_MANIFEST_JSON \
+  --eval-report FULL_EVAL_REPORT_JSON \
+  --comparison MEMORY_ABLATION_JSON \
+  --output final-performance.json
+python3 build/release/scripts/final-performance-evidence.py validate \
+  --output final-performance.json
+```
+
+评测报告必须是完整 `acceptance` profile，至少含 90 个逐样本结果；汇总器重验 15 个
+偏好、50 个检索、25 个冲突和 1000 个 P95 样本及四项官方阈值。消融 JSON 使用
+`schema_version=1`、`status=pass`、release/dataset/task-set 摘要，并且 `variants`
+恰好包含 `no_memory`、`single_device_memory`、`distributed_memory`；每组
+`sample_count>=30`，`metrics` 恰好包含 0～1 的 `task_success_rate` 和正数
+`mean_turns`。汇总不要求结果必须单调变好，但不得删掉不利数据。五个输入及逐样本
+原始结果仍须作为 D-07 去敏附件保存；汇总 JSON 不能替代它们。
+
 ## 三台设备拓扑取证
 
 严格原生取证成功文件固定标识 `evidence_schema=1`、

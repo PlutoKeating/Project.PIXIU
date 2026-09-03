@@ -66,3 +66,9 @@ CI 的 Python 3.12 job 会执行第 3 步，校验三节点逻辑视图摘要一
 
 > 本报告为**诚实的 portable 管线基线**：无桩注入或人为改分，但不满足
 > `AcceptanceTestSpecification.md` 的 H-01～H-03 证明要求，也未覆盖完整 Agent 闭环。
+
+最终报告不得直接复制本目录数值。发布阶段使用
+`build/release/scripts/final-performance-evidence.py` 绑定 strict V11 原生证据、完整
+Agent 生命周期证据、冻结数据集 manifest、逐样本评测 JSON 与无记忆/单机/分布式
+三变体矩阵；汇总器会重验四项阈值和最低样本数。当前工具契约已通过，真实输入尚缺，
+所以 `kylin-v11-final-performance` 尚未生成。

@@ -213,6 +213,12 @@ Kylin Agent 桌面宿主及 Runtime 后再执行 `after-restart`。工具仅接�
 随机标记召回；最终 JSON 不保存对话、工具输出、网址、PID 或会话标识原文。`validate`
 可离线复核结构。没有同版实测输出时，原始证据 ZIP 和最终提交包必须继续失败关闭。
 
+性能主记录同样禁止手填汇总数值：`final-performance-evidence.py build` 必须读取
+strict 原生、Agent 生命周期、冻结数据集、完整逐样本评测报告和三变体消融矩阵五个
+输入，复算输入摘要、同版身份、阈值和最低样本数后才产生
+`kylin-v11-final-performance`。五个原始输入须作为 D-07 受控附件保存；portable 报告、
+缺 outcome 的百分比表或不足 30 例的对比均不能过门。
+
 最终外层目录和 ZIP 名固定为
 `华南理工大学－OSAgent记忆优化及高效应用研究－PIXIU`；自动打包前还必须放入团队
 负责人提供的 PPT、≤7 分钟视频及经报名系统审核通过的盖章报名表。视频/PPT 不由

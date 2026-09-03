@@ -76,6 +76,10 @@ SHA-256 一致；供应链报告另须 `ready=true`。生成和复验都会拒�
 中间 capture state 含原始会话标识和随机标记，只用于续跑，禁止作为附件进入归档。
 最终 `agent-lifecycle.json` 不含对话和工具载荷，并可由该工具的 `validate` 子命令复核。
 
+`performance` 主记录必须由 `final-performance-evidence.py` 生成并通过离线复核；其五个
+输入（原生、Agent、数据集、逐样本报告、三变体消融矩阵）应作为去敏附件一并保留，
+否则即使汇总百分比达标，也不满足 D-07 原始结果要求。
+
 `--package` 在任何门未通过、文件缺失、命名/格式错误、官方原件哈希改变或工作区不
 洁净时都会失败。D-07 的 `three-device-final-suite.json` 还必须满足最终三设备契约，
 并与 `release_commit` 和最终 `.deb` SHA-256 一致；仅将任意 JSON 放入目录无法通过。
