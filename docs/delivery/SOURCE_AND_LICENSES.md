@@ -13,7 +13,7 @@
 
 | 依赖 | 角色 | 当前已知许可证/边界 |
 |------|------|---------------------|
-| `third_party/kylin-agent` | 桌面宿主参考/依赖 | 上游许可证文件可确认 GNU Affero GPL v3 族；官方 0.9.6 二进制可在 V11 启动，但公开标签不可重建，0.9.7 与目标 ABI 不兼容；不得在对应源码闭环前纳入最终包 |
+| `third_party/kylin-agent` | 桌面宿主参考/依赖 | 官方 Gitee 仓库元数据声明 `AGPL-3.0`，按 SPDX 3.0 规范化为 `AGPL-3.0-only`；官方 0.9.6 二进制可在 V11 启动，但公开标签不可重建，0.9.7 与目标 ABI 不兼容；不得在对应源码闭环前纳入最终包 |
 | `third_party/kylin-agent-runtime` | Agent runtime/MemoryProvider | MIT；固定 commit，适配代码另存 Module E |
 | `third_party/kylin-coreai-embedding` | 指定 Embedding SDK | GPL-3.0-or-later；按系统分发规则继续审查 |
 | `third_party/libkysdk-vector-engine-client` | 指定 Vector Engine 客户端 | Apache-2.0；按系统分发规则继续审查 |
@@ -25,8 +25,10 @@
 当前 `.deb` 已包含机器可读的 `/usr/share/pixiu/release-manifest.json`，记录四个
 submodule 的 gitlink、实际检出 commit/ref、洁净状态和许可证信息；生成器会拒绝
 gitlink 与实际检出不一致或含本地修改的子模块。这不替代最终 SBOM、许可证全文及
-分发义务的人工复核。`kylin-agent` 当前只确认到许可证族，清单将 SPDX expression
-保持为空并标记 `pending-only-or-later-review`，不得将未决后缀固化为授权结论。
+分发义务的人工复核。`kylin-agent` 的官方仓库 API 元数据值为 `AGPL-3.0`；SPDX 3.0
+将该旧标识拆分并以 `AGPL-3.0-only` 表示仅版本 3，因此清单同时保存官方 URL、原值与
+规范化值。仓库 LICENSE 尾部的“or later”文字属于许可证附录中的示例，不能覆盖官方
+仓库声明。该结论仍要求最终包附完整对应源码、许可证和 NOTICE。
 清单还明确保留 `agent-runtime` 的上游版本文件 0.9.9 与包元数据 0.9.8 两个不同事实，
 最终兼容矩阵须以实际安装 runtime 再验证。
 

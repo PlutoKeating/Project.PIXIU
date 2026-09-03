@@ -270,13 +270,12 @@ def record_legal(args: argparse.Namespace, policy: dict[str, Any]) -> None:
         "packages": packages,
         "hasExtractedLicensingInfos": [
             {
-                "licenseId": "LicenseRef-AGPL-3.0-family-pending",
-                "name": "GNU Affero GPL version 3 family (operator pending)",
-                "extractedText": (
-                    "The upstream license file is GNU Affero GPL version 3; "
-                    "the only/or-later operator remains pending legal review."
-                ),
+                "licenseId": component["declared_license"],
+                "name": f"Extracted upstream license for {component['package_name']}",
+                "extractedText": "See the corresponding archived upstream LICENSE file.",
             }
+            for component in policy["components"].values()
+            if component["declared_license"].startswith("LicenseRef-")
         ],
     }
     write_json(directory / policy["evidence"]["sbom"], document)

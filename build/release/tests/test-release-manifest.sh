@@ -72,9 +72,14 @@ assert manifest["host_compatibility"]["agent_runtime"]["declared_versions"] == {
 }
 assert manifest["host_compatibility"]["kylin_agent"]["declared_version"] == "0.9.6"
 assert manifest["host_compatibility"]["kylin_agent"]["license"] == {
-    "family": "GNU Affero General Public License v3",
-    "spdx_expression": None,
-    "review_status": "pending-only-or-later-review",
+    "family": "GNU Affero General Public License v3.0 only",
+    "spdx_expression": "AGPL-3.0-only",
+    "review_status": "confirmed",
+    "evidence": {
+        "repository_metadata_url": "https://gitee.com/api/v5/repos/openkylin/kylin-agent",
+        "repository_metadata_value": "AGPL-3.0",
+        "spdx_normalization": "AGPL-3.0-only",
+    },
 }
 assert manifest["sdk_sources"]["embedding"]["license"]["spdx_expression"] == (
     "GPL-3.0-or-later"

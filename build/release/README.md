@@ -69,8 +69,10 @@ build/release/
 构建时间、架构、profile、KYSDK/Python ABI、HTTP API、Agent Memory API、schema、
 Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际运行时 SDK 版本仍
 以目标系统包管理器和 `/capabilities` 取证为准，源码钉住版本不得冒充运行时版本。
-生成器要求各 submodule 的 gitlink、实际 HEAD 一致且工作树洁净；未确认精确 SPDX
-后缀的许可证只记录许可证族和待审状态，不固化为授权结论。
+生成器要求各 submodule 的 gitlink、实际 HEAD 一致且工作树洁净。`kylin-agent`
+仓库的官方 Gitee API 元数据声明 `AGPL-3.0`；按 SPDX 3.0 对该已弃用标识的规范化，
+清单记录为 `AGPL-3.0-only`，并保存元数据 URL、原值和规范化结果。许可证闭环不免除
+完整对应源码、版权声明、NOTICE 与 AGPL 分发义务。
 
 Agent 供应链另由机器门禁审计。普通开发可生成事实报告；正式候选必须使用强制模式：
 

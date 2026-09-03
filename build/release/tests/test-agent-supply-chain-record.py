@@ -87,6 +87,22 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
             result = self.run_record(evidence, "legal")
             self.assertEqual(result.returncode, 0, result.stderr)
 
+            policy = json.loads(
+                (ROOT / "build/release/agent-supply-chain-policy.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            sbom = json.loads(
+                (evidence / policy["evidence"]["sbom"]).read_text(encoding="utf-8")
+            )
+            agent_package = next(
+                package
+                for package in sbom["packages"]
+                if package["name"] == "kylin-agent"
+            )
+            self.assertEqual(agent_package["licenseDeclared"], "AGPL-3.0-only")
+            self.assertEqual(sbom["hasExtractedLicensingInfos"], [])
+
             audit = work / "audit.json"
             subprocess.run(
                 ["python3", str(AUDITOR), "--root", str(ROOT), "--evidence-dir", str(evidence), "--output", str(audit)],

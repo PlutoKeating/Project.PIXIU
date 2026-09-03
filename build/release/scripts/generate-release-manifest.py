@@ -137,10 +137,14 @@ def build_manifest(root: Path) -> dict[str, object]:
     kylin_agent = source_pin(
         root,
         "third_party/kylin-agent",
-        "GNU Affero General Public License v3",
-        None,
-        "pending-only-or-later-review",
+        "GNU Affero General Public License v3.0 only",
+        "AGPL-3.0-only",
     )
+    kylin_agent["license"]["evidence"] = {
+        "repository_metadata_url": "https://gitee.com/api/v5/repos/openkylin/kylin-agent",
+        "repository_metadata_value": "AGPL-3.0",
+        "spdx_normalization": "AGPL-3.0-only",
+    }
     kylin_agent["declared_version"] = read_match(
         root / "third_party/kylin-agent/CMakeLists.txt",
         r"project\(KylinAgent VERSION ([^ )]+)",

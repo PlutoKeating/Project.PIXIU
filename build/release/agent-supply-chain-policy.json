@@ -11,7 +11,12 @@
       "source_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
       "package_name": "kylin-agent",
       "spdx_id": "SPDXRef-Package-kylin-agent",
-      "declared_license": "LicenseRef-AGPL-3.0-family-pending",
+      "declared_license": "AGPL-3.0-only",
+      "license_evidence": {
+        "repository_metadata_url": "https://gitee.com/api/v5/repos/openkylin/kylin-agent",
+        "repository_metadata_value": "AGPL-3.0",
+        "spdx_normalization": "AGPL-3.0-only"
+      },
       "source_url": "https://gitee.com/openkylin/kylin-agent",
       "license_files": [
         "LICENSE"
