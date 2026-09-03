@@ -22,6 +22,7 @@ from backend.foundation.core.models import (
     KnowledgeStatus,
     SourceType,
 )
+from backend.foundation.core.vector_store import VectorMatch, VectorStore
 from backend.foundation.storage.repository import (
     SqliteEntityRepo,
     SqliteEvidenceRepo,
@@ -43,6 +44,26 @@ class StubTextEmbedder:
         digest = hashlib.sha256(text.encode("utf-8")).digest()
         rng = random.Random(int.from_bytes(digest[:8], "big"))
         return [rng.uniform(-1.0, 1.0) for _ in range(self.dim)]
+
+
+class RecordingVectorStore(VectorStore):
+    def __init__(self, match: VectorMatch) -> None:
+        self.match = match
+        self.queries: list[tuple[list[float], int]] = []
+
+    @property
+    def runtime(self) -> str:
+        return "recording"
+
+    async def upsert(self, knowledge_id: str, vector: list[float]) -> None:
+        raise AssertionError("not used by retrieval")
+
+    async def search(self, vector: list[float], limit: int) -> list[VectorMatch]:
+        self.queries.append((vector, limit))
+        return [self.match]
+
+    async def delete(self, knowledge_id: str) -> None:
+        raise AssertionError("not used by retrieval")
 
 
 def _quantize_bytes(vector: list[float]) -> bytes:
@@ -185,6 +206,22 @@ async def test_ann_channel_misses_unrelated(svc):
 
     results = await ANNChannel(knw_repo, embedder).search("完全无关的词语文本", top_k=5)
     assert len(results) == 0 or results[0][1] < 0.5
+
+
+@pytest.mark.asyncio
+async def test_ann_channel_queries_injected_vector_store(svc):
+    _, knw_repo, _, _, embedder = svc
+    item = await _save_knowledge(knw_repo, embedder, title="系统向量库接线")
+    store = RecordingVectorStore(VectorMatch(item.id, 0.97))
+
+    from backend.foundation.retrieval.ann import ANNChannel
+
+    results = await ANNChannel(knw_repo, embedder, vector_store=store).search(
+        "查询原文", top_k=3
+    )
+
+    assert results == [(item, 0.97)]
+    assert store.queries == [(embedder.embed("查询原文"), 3)]
 
 
 # ═══════════════════════════════════════════════════════

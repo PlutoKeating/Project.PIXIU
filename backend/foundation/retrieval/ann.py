@@ -15,6 +15,7 @@ from typing import Protocol, runtime_checkable
 
 from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
 from backend.foundation.core.repository import KnowledgeRepository
+from backend.foundation.core.vector_store import VectorStore
 
 
 @runtime_checkable
@@ -52,19 +53,29 @@ def _cosine(a: list[int], b: list[int]) -> float:
 class ANNChannel:
     """INT8 向量近邻通道。"""
 
-    def __init__(self, knw_repo: KnowledgeRepository, embedder: Embedder) -> None:
+    def __init__(
+        self,
+        knw_repo: KnowledgeRepository,
+        embedder: Embedder,
+        vector_store: VectorStore | None = None,
+    ) -> None:
         self._knw_repo = knw_repo
         self._embedder = embedder
+        self._vector_store = vector_store
         # 解码缓存：knowledge_id -> (字节数, 解码后的量化向量)。
         # 避免每次查询对全量向量重复 struct.unpack；以 (id, 字节数) 判定是否复用。
         self._decoded: dict[str, tuple[int, list[int]]] = {}
 
     async def search(self, text: str, top_k: int = 20) -> list[tuple[KnowledgeItem, float]]:
         """返回 [(KnowledgeItem, similarity)]，按相似度降序。"""
-        # 同步 embedding 与扫描放入线程池
-        query_vec = await asyncio.to_thread(
-            lambda: quantize_int8(self._embedder.embed(text))
-        )
+        raw_query = await asyncio.to_thread(self._embedder.embed, text)
+        if self._vector_store is not None:
+            matches = await self._vector_store.search(raw_query, top_k)
+            scored = [(match.knowledge_id, match.score) for match in matches]
+            return await self._resolve_active(scored)
+
+        # 兼容旧测试/自定义构造；生产 DI 始终注入明确 VectorStore。
+        query_vec = quantize_int8(raw_query)
         vectors = await self._knw_repo.list_vectors()
 
         scored: list[tuple[str, float]] = []
@@ -85,10 +96,13 @@ class ANNChannel:
             }
 
         scored.sort(key=lambda t: t[1], reverse=True)
-        top = scored[:top_k]
+        return await self._resolve_active(scored[:top_k])
 
+    async def _resolve_active(
+        self, scored: list[tuple[str, float]]
+    ) -> list[tuple[KnowledgeItem, float]]:
         items: list[tuple[KnowledgeItem, float]] = []
-        for knowledge_id, sim in top:
+        for knowledge_id, sim in scored:
             if sim <= 0:
                 continue
             item = await self._knw_repo.get(knowledge_id)

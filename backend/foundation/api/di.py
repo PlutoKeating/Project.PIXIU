@@ -165,6 +165,7 @@ async def get_retrieval_service(
         entity_repo=SqliteEntityRepo(db),
         evidence_repo=SqliteEvidenceRepo(db),
         embedder=get_embedder(settings.embedding),
+        vector_store=SqliteVectorStore(db),
     )
 
 

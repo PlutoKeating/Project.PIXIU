@@ -20,9 +20,12 @@ from backend.foundation.api.di import (
     get_knowledge_service,
     get_preference_repo,
     get_preference_service,
+    get_retrieval_service,
     get_security_service,
     get_sync_service,
 )
+from backend.foundation.core.idgen import gen_evidence_id
+from backend.foundation.core.models import Evidence, SourceType
 from backend.foundation.flow import FlowService
 from backend.foundation.sync import SyncService
 from backend.foundation.storage.migrations import latest_version
@@ -30,6 +33,7 @@ from backend.foundation.storage.repository import (
     SqliteConflictRepo,
     SqliteEvidenceRepo,
     SqlitePreferenceRepo,
+    SqliteKnowledgeRepo,
 )
 
 
@@ -80,6 +84,36 @@ async def test_service_factories_return_real_services(fresh_di):
         assert isinstance(await get_evidence_repo(db), SqliteEvidenceRepo)
         assert isinstance(await get_preference_repo(db), SqlitePreferenceRepo)
         assert isinstance(await get_conflict_repo(db), SqliteConflictRepo)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_production_di_writes_and_queries_through_vector_store(
+    fresh_di, monkeypatch
+):
+    db = await get_db()
+    try:
+        knowledge = await get_knowledge_service(db)
+        retrieval = await get_retrieval_service(db)
+        evidence = Evidence(
+            id=gen_evidence_id(),
+            source_type=SourceType.MANUAL_CONFIG,
+            raw={"title": "向量存储组合根", "body": {"description": "生产接线验证"}},
+            quality_score=1.0,
+            scope="user:test",
+            created_at=1,
+        )
+        await SqliteEvidenceRepo(db).save(evidence)
+        item = await knowledge.structure(evidence)
+
+        async def _legacy_path_must_not_run(self):
+            raise AssertionError("legacy KnowledgeRepository vector scan was used")
+
+        monkeypatch.setattr(SqliteKnowledgeRepo, "list_vectors", _legacy_path_must_not_run)
+        result = await retrieval.query("向量存储组合根", {"top_k": 1})
+
+        assert result.source_knowledge == item.id
     finally:
         await db.close()
 

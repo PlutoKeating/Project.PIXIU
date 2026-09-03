@@ -69,6 +69,7 @@ async def _capture(db_path: str) -> list[dict]:
         entity_repo=entity_repo,
         evidence_repo=evidence_repo,
         embedder=embedder,
+        vector_store=SqliteVectorStore(db),
     )
 
     dataset = build_reference_dataset()

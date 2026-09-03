@@ -15,6 +15,7 @@ from backend.foundation.core.repository import (
     EvidenceRepository,
     KnowledgeRepository,
 )
+from backend.foundation.core.vector_store import VectorStore
 
 from .ann import ANNChannel, Embedder
 from .assembler import Assembler
@@ -34,11 +35,13 @@ class RetrievalService:
         entity_repo: EntityRepository,
         evidence_repo: EvidenceRepository,
         embedder: Embedder,
+        vector_store: VectorStore | None = None,
     ) -> None:
         self._knw_repo = knw_repo
         self._entity_repo = entity_repo
         self._evidence_repo = evidence_repo
         self._embedder = embedder
+        self._vector_store = vector_store
 
     async def _entity_names(self) -> list[str]:
         """收集全部已知实体名（来自 ACTIVE 知识的 entities 字段，供 router 匹配）。"""
@@ -67,7 +70,9 @@ class RetrievalService:
         if "bm25" in intent.channels:
             searches["bm25"] = BM25Channel(self._knw_repo).search(text, search_limit)
         if "ann" in intent.channels:
-            searches["ann"] = ANNChannel(self._knw_repo, self._embedder).search(text, search_limit)
+            searches["ann"] = ANNChannel(
+                self._knw_repo, self._embedder, self._vector_store
+            ).search(text, search_limit)
         if "graph" in intent.channels:
             searches["graph"] = GraphChannel(self._knw_repo, self._entity_repo).search(
                 intent.entities, search_limit

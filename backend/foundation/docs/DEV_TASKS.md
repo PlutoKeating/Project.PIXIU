@@ -52,8 +52,9 @@
 - C-A3：提供短/中期 context 创建、更新、promote/demote 与清理的公共 API。
 - C-A4：Vector Engine 成为严格画像的生产向量 Repository；SQLite/INT8 仅为降级。
 
-进度：C-A4 的公共 `VectorStore` seam 与 `SqliteVectorStore` portable 适配器已实现并
-通过写入/排序/删除契约测试；Kylin 适配、生产管线注入和 strict/auto 选择仍未完成。
+进度：C-A4 的公共 `VectorStore` seam 与 `SqliteVectorStore` portable 适配器已实现，
+生产 DI 的知识写入和 ANN 查询已注入并通过禁用旧扫描的端到端组合根测试；Kylin
+适配、遗忘注入和 strict/auto 选择仍未完成。
 - C-A5：与 Module E 做 HTTP/WS 契约测试，禁止 E 直接导入本模块。
 
 > Module A 三通道联调与 WS `/events` 注册已在 2026-08-29 前完成，已从当前 P0
