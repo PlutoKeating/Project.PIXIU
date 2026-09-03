@@ -344,6 +344,8 @@ sync/
 生产 DI 同时向物化器和冲突服务注入 `KnowledgeService`：远端快进与自动仲裁结果都会
 重建实体关联及 embedding/VectorStore 索引，更新替换旧向量；知识墓碑通过同一服务
 隐藏条目并删除向量。不得再用直接 repository save 作为生产物化成功口径。
+本地 `shared:*` 写入在冲突仲裁后也必须从 repository 重读最终持久化知识，再记录
+knowledge op；否则 MERGE 会把仲裁前的新输入广播出去，导致发送端视图与 oplog 分叉。
 当 knowledge 引用的 evidence 尚未到达时，物化器以 `sync_meta` 的逐引用键持久记录，
 先保存无悬空外键的知识；evidence 后续到达后补写 `knowledge_evidence` 并删除待办键。
 墓碑会清除该知识的待补键，防止迟到 evidence 重新挂接已遗忘条目。

@@ -88,6 +88,8 @@ CRDT 胜者现统一复用 `KnowledgeService` 重建实体图与 embedding/Vecto
 内容可本地标记隔离，敏感内容不得写入 `shared:*` 或同步；检测异常时 fail closed。
 `POST /memory/update` 已提供同一知识 ID 的原子版本 compare-and-swap、更新 evidence、
 图/向量重建索引和 shared 同步操作，为多设备离线并发修改进入 CRDT 仲裁提供正式入口。
+`POST /memory/write` 的 shared 冲突写入会在仲裁完成后重新读取最终持久化条目，再把
+MERGE/NEW_WINS 的最终正文与版本写入同步日志，避免其他设备收到仲裁前的陈旧输入。
 Module E 已实现独立 `pixiu`
 MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、五个显式
 记忆工具、背压诊断及两阶段遗忘均有契约测试；初始化还会校验 `/version`、`/health`、

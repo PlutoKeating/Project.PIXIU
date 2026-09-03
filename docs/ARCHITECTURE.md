@@ -183,6 +183,8 @@ query + context_hint
 
 - 检测：同实体同字段新旧值做矛盾判定
 - 裁决：默认 NEW_WINS，旧版 SUPERSEDED（保留而非删除），可配 MERGE/MANUAL
+- 本地 shared 写入：仲裁完成后从知识仓储重新读取最终持久化条目，再生成 CRDT 操作；
+  同步载荷不得使用仲裁前输入，确保 MERGE 的正文与 version 和本地业务视图一致
 - 同步物化：远端不同 ID 知识同样进入语义仲裁；同步来源按
   `updated_at`、`created_at`、`id` 全序选胜者，消除两端反向到达造成的业务视图分歧
 - 审计：生成 ConflictRecord，全程留痕
@@ -240,6 +242,8 @@ query + context_hint
 > mDNS 信任过滤、TLS 1.3 mTLS、CRDT 胜者物化；`/sync/*` 端点已真实接入。
 > 物化不直接绕过业务索引层：快进和自动仲裁结果均复用 `KnowledgeService`，重新生成
 > 图关系及 embedding/VectorStore 数据；墓碑同时隐藏知识并删除生产向量。
+> shared 本地写入也不广播仲裁前对象：API 在冲突服务完成持久化后重读最终条目，
+> 再将实际 MERGE/NEW_WINS 正文与版本追加到 oplog。
 > knowledge 早于 evidence 到达时以 `sync_meta` 持久登记待补引用，后续 evidence
 > 物化会补链并清理记录，避免跨批次乱序造成永久无来源知识。
 > SN-4（2026-08-29）起**网络运行时默认开启**（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），

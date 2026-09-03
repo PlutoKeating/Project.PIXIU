@@ -1244,6 +1244,51 @@ def test_shared_write_queues_only_signed_shared_operations(client):
     assert all(isinstance(payload.get("signature"), str) for _, payload in rows)
 
 
+def test_shared_merge_broadcasts_persisted_resolution_not_stale_input(client):
+    first = client.post(
+        "/memory/write",
+        json={
+            "source_type": "MANUAL_CONFIG",
+            "raw": {
+                "title": "shared invoice baseline",
+                "body": {"vendor": "Acme", "amount": 10, "old_note": "baseline"},
+            },
+            "scope": "shared:home",
+        },
+    )
+    second = client.post(
+        "/memory/write",
+        json={
+            "source_type": "MANUAL_CONFIG",
+            "raw": {
+                "title": "shared invoice extension",
+                "body": {"vendor": "Acme", "amount": 10, "new_note": "extension"},
+            },
+            "scope": "shared:home",
+        },
+    )
+
+    assert first.status_code == second.status_code == 200
+    assert second.json()["conflict_detected"] is True
+    with sqlite3.connect(di_module.settings.db_path) as connection:
+        row = connection.execute(
+            """SELECT id, body FROM knowledge_items
+               WHERE status = 'ACTIVE' AND body LIKE '%old_note%'
+                 AND body LIKE '%new_note%'"""
+        ).fetchone()
+    assert row is not None
+    knowledge_id, body_text = row
+    persisted_body = json.loads(body_text)
+    matching_ops = [
+        payload
+        for entity, payload in _sync_rows()
+        if entity == f"knowledge:{knowledge_id}"
+    ]
+    assert matching_ops
+    assert matching_ops[-1]["value"]["body"] == persisted_body
+    assert matching_ops[-1]["value"]["version"] == 2
+
+
 def _write_knowledge_id(client, *, title: str, scope: str) -> str:
     written = client.post(
         "/memory/write",

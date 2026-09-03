@@ -453,6 +453,7 @@ async def memory_write(
     body: MemoryWriteRequest,
     ingestion=Depends(get_ingestion_service),
     knowledge=Depends(get_knowledge_service),
+    knowledge_repo=Depends(get_knowledge_repo),
     preference=Depends(get_preference_service),
     conflict=Depends(get_conflict_service),
     security=Depends(get_security_service),
@@ -496,6 +497,10 @@ async def memory_write(
         item = await knowledge.structure(evidence)
         prefs = await preference.extract(evidence)
         record = await conflict.arbitrate(item)
+        persisted_item = await knowledge_repo.get(item.id)
+        if persisted_item is None:
+            raise RuntimeError("knowledge disappeared after conflict arbitration")
+        item = persisted_item
         if body.scope.startswith("shared:") and sync is not None:
             await sync.record_local(
                 f"evidence:{evidence.id}",

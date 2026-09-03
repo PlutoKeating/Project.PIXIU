@@ -53,7 +53,7 @@
 
 ## 四、测试统计
 
-- 2026-09-04 最新组合回归：pytest 807 passed（Foundation 634 + Engine 154 +
+- 2026-09-04 最新组合回归：pytest 808 passed（Foundation 635 + Engine 154 +
   Module E 19），既有依赖弃用告警，无失败。
 - 同步物化测试覆盖远端知识向量首次创建、更新后重建、墓碑删除，以及 mainline
   自动仲裁结果进入同一索引写入器；最终仍须在 V11 系统 Vector Engine 画像复验。
