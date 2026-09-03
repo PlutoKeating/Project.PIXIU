@@ -11,6 +11,10 @@ R-01～R-06 分层。每组结果记录 release commit、机器、V11 版本、�
 
 ## 已有开发基线
 
+单一版本源回归动态读取根 `VERSION`，核对前端 CMake、独立 control、发布脚本、
+Module E 模板和成包 manifest 的派生关系，并拒绝显式版本漂移；成功路径不再写死
+当前发布号，后续正常升版只需修改一个输入文件。
+
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
 证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine
 145 项、Foundation 619 项、Module E 16 项（合计 pytest 780 passed），前端 ctest

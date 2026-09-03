@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+PRODUCT_VERSION="$(tr -d '\r\n' < "${ROOT}/VERSION")"
 SCRIPT="${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
 TMP="$(mktemp -d)"
 trap 'rm -rf "${TMP}"' EXIT
@@ -22,7 +23,7 @@ DEST="${TMP}/home/.kylin-agent-runtime/plugins/pixiu"
 test -f "${DEST}/.pixiu-managed"
 test -f "${DEST}/provider.py"
 test ! -f "${DEST}/plugin.yaml.in"
-grep -qx 'version: 0.1.7' "${DEST}/plugin.yaml"
+grep -qx "version: ${PRODUCT_VERSION}" "${DEST}/plugin.yaml"
 grep -qx 'config set memory.provider pixiu' \
     "${TMP}/home/.kylin-agent-runtime/runtime-call"
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \

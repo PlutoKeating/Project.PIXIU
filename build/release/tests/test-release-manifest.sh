@@ -10,8 +10,13 @@ cleanup() {
 }
 trap cleanup EXIT
 MANIFEST="${TMP}/release-manifest.json"
+PRODUCT_VERSION="$(tr -d '\r\n' < "${ROOT}/VERSION")"
+IFS=. read -r VERSION_MAJOR VERSION_MINOR VERSION_PATCH <<EOF
+${PRODUCT_VERSION}
+EOF
+MISMATCH_VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.$((10#${VERSION_PATCH} + 1))"
 
-PIXIU_VERSION=0.1.7 \
+PIXIU_VERSION="${PRODUCT_VERSION}" \
 PIXIU_REVISION=9 \
 PIXIU_ARCH=amd64 \
 PIXIU_PROFILE=manifest-test \
@@ -20,7 +25,7 @@ PIXIU_PYTHON_VERSION=312 \
 SOURCE_DATE_EPOCH=0 \
     python3 "${GENERATOR}" --root "${ROOT}" --output "${MANIFEST}"
 
-python3 - "${ROOT}" "${MANIFEST}" <<'PY'
+python3 - "${ROOT}" "${MANIFEST}" "${PRODUCT_VERSION}" <<'PY'
 import json
 import subprocess
 import sys
@@ -28,13 +33,14 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 manifest = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
+product_version = sys.argv[3]
 
 assert manifest["manifest_schema"] == 1
 assert manifest["product"] == {
     "name": "pixiu",
-    "version": "0.1.7",
+    "version": product_version,
     "revision": "9",
-    "debian_version": "0.1.7-9",
+    "debian_version": f"{product_version}-9",
 }
 assert manifest["build"]["architecture"] == "amd64"
 assert manifest["build"]["profile"] == "manifest-test"
@@ -50,7 +56,7 @@ assert manifest["interfaces"] == {
     "agent_memory_api": 1,
     "database_schema": 12,
 }
-assert manifest["provider"] == {"name": "pixiu", "version": "0.1.7"}
+assert manifest["provider"] == {"name": "pixiu", "version": product_version}
 assert manifest["host_compatibility"]["agent_runtime"]["supported"] == "0.9.x"
 assert manifest["host_compatibility"]["agent_runtime"]["declared_versions"] == {
     "package_metadata": "0.9.8",
@@ -81,7 +87,7 @@ for name, path in {
     assert manifest[group][name]["source_tree_clean"] is True
 PY
 
-if PIXIU_VERSION=9.9.9 \
+if PIXIU_VERSION="${MISMATCH_VERSION}" \
         PIXIU_REVISION=1 \
         PIXIU_ARCH=amd64 \
         PIXIU_PROFILE=manifest-test \
@@ -95,7 +101,7 @@ fi
 
 DIRTY_MARKER="${ROOT}/third_party/kylin-agent/.pixiu-manifest-dirty-test"
 touch "${DIRTY_MARKER}"
-if PIXIU_VERSION=0.1.7 \
+if PIXIU_VERSION="${PRODUCT_VERSION}" \
         PIXIU_REVISION=1 \
         PIXIU_ARCH=amd64 \
         PIXIU_PROFILE=manifest-test \
