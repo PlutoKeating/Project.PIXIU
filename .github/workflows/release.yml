@@ -91,6 +91,26 @@ jobs:
           checksum="$(realpath build/release/out/*.deb.sha256)"
           PIXIU_SIGNING_KEY_FILE="${key}" \
             build/release/scripts/sign-release.sh "${checksum}"
+          deb="${checksum%.sha256}"
+          if [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" != *-* ]]; then
+            channel=production
+          else
+            channel=staging
+          fi
+          manifest="${deb%.deb}.assets.json"
+          python build/release/scripts/generate-artifact-manifest.py \
+            --deb "${deb}" --checksum "${checksum}" \
+            --signature "${checksum}.sig" \
+            --public-key build/release/keys/pixiu-release-ed25519.pub \
+            --channel "${channel}" \
+            --git-commit "${GITHUB_SHA}" --output "${manifest}"
+          (
+            cd "$(dirname "${manifest}")"
+            sha256sum "$(basename "${manifest}")" \
+              > "$(basename "${manifest}").sha256"
+          )
+          PIXIU_SIGNING_KEY_FILE="${key}" \
+            build/release/scripts/sign-release.sh "${manifest}.sha256"
 
       - name: Verify and install release package
         shell: bash
@@ -183,6 +203,9 @@ jobs:
             build/release/out/*.deb
             build/release/out/*.sha256
             build/release/out/*.sha256.sig
+            build/release/out/*.assets.json
+            build/release/out/*.assets.json.sha256
+            build/release/out/*.assets.json.sha256.sig
           if-no-files-found: error
 
   publish-release:
@@ -207,3 +230,6 @@ jobs:
             dist/*.deb
             dist/*.sha256
             dist/*.sha256.sig
+            dist/*.assets.json
+            dist/*.assets.json.sha256
+            dist/*.assets.json.sha256.sig

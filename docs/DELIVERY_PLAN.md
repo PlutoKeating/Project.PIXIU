@@ -59,7 +59,10 @@
 与包元数据当前分别为 0.9.9/0.9.8，清单保留两项事实而不擅自归一。仓库根
 `VERSION` 已成为发布脚本和前端 CMake/独立 control 的权威输入，环境变量只能作
 一致性断言；Module E 源码只保留 `plugin.yaml.in`，打包/激活时从同一输入生成
-`plugin.yaml`。后续仍须生成含资产大小、摘要、签名和通道的包外最终清单；
+`plugin.yaml`。发布工作流与 `publish.sh` 已为每个架构生成无自引用的包外
+`.assets.json`，记录 `.deb`/checksum/signature 的大小、SHA-256、commit 和通道，
+生成前以固定公钥验证主包签名，并为清单自身生成 checksum + Ed25519 签名；最终
+候选仍须归档并复验这六件套；
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
 探测结果及 `/capabilities` 一致性，源码 gitlink 不能代替该项实装证据。
 

@@ -43,6 +43,11 @@ Debian 版本、Git commit、构建画像、API/schema/provider 和四个上游�
 `source_tree_clean` 必须为 `true`。`sdk_sources` 是构建所依据的官方源码，不是目标机
 实际库版本；后者仍须另存包管理器输出并与 `/capabilities` 的真实 runtime 对照。
 
+发布介质中每个架构应同时存在 `.deb`、`.deb.sha256`、`.deb.sha256.sig`、
+`.assets.json`、`.assets.json.sha256`、`.assets.json.sha256.sig`。先验证资产清单
+自身的摘要与 Ed25519 签名，再按 JSON 中的文件名、大小和 SHA-256 核对前三个资产；
+清单不包含自身摘要，避免自引用。
+
 V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 `PIXIU_KYSDK=ON` 同时约束桌面 KylinSDK 和后端 Embedding/Vector 原生扩展；构建、
 安装及真实写入/检索由独立 `pixiu-kylin-v11-native` 工作流执行并输出脱敏证据。

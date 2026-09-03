@@ -76,6 +76,11 @@ Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
 前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
 同等验证、打入离线 wheels，并把 `.deb`、SHA-256 与 Ed25519 签名发布到 GitHub Release。
+每个架构同时发布 `pixiu_<version>-<revision>_<arch>.assets.json` 及其 `.sha256`、
+`.sha256.sig`：JSON 枚举主 `.deb`、其 checksum 和独立签名的文件名、大小、SHA-256、
+release commit 与 staging/production 通道；JSON 不收录自身摘要，因而无自引用，
+生成前还会用固定公钥验证主包签名。JSON 的真实性由旁路 Ed25519 签名保证。
+`publish.sh` 也生成同一六件套并要求离线签名密钥。
 校验清单使用标准 `<sha256>  <asset-basename>` 格式，不写入构建机绝对路径。
 
 流水线产物：
