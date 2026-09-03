@@ -85,6 +85,9 @@ op 在回收前重复重放均被拒绝；A 只有收到 B、C 两个活跃 peer
 对应 `sync_evidence` CLI 现把五类场景、拓扑、节点 oplog/逻辑视图摘要、release commit
 和产品版本写为 JSON，同时固定 `final_device_evidence=false` 与限制列表；该报告可进入
 协议回归附件，但不得进入真机证据栏。
+Python 3.12 CI 现自动生成该报告，复核 commit、三节点逻辑视图一致、全部场景通过及
+`final_device_evidence=false` 后，以 `pixiu-sync-protocol-evidence-<commit>` 上传；
+该自动资产减少手工转录，但不会改变其“协议模拟”证据等级。
 
 同用户产品 API 探针随后发现旧包只创建 Vector 客户端、未执行 `LoadDBFile`：能力端点
 可误报双 SDK ready，但 `/memory/write` 以 local storage not found 失败。当前源码已

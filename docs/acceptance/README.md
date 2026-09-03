@@ -22,7 +22,17 @@ PYTHONPATH=. python3 -m backend.foundation.eval \
     --predictions build/release/eval/predictions.json \
     --output-dir docs/acceptance \
     --stem acceptance-baseline-<日期>
+
+# 3) 生成三逻辑节点协议证据（明确不是三台真机证据）
+PYTHONPATH=. python3 -m backend.foundation.eval.sync_evidence \
+    --root . \
+    --output build/release/out/sync-protocol-evidence.json
 ```
+
+CI 的 Python 3.12 job 会执行第 3 步，校验三节点逻辑视图摘要一致、全部场景通过且
+`release_commit` 等于当前提交，并上传 `pixiu-sync-protocol-evidence-<commit>` 资产。
+报告固定 `final_device_evidence=false`，只能进入协议回归附件；最终 N-01～N-08 仍须
+由三台 V11 设备的独立环境 manifest 与网络运行原始证据满足。
 
 数据集 `pixiu-family-expense-v1` 由 `backend/foundation/eval/reference.py`
 确定性生成：50 组家庭支出清单（附录 A 场景）+ 15 偏好用例 + 25 冲突用例。

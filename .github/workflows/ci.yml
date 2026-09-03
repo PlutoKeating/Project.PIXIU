@@ -54,6 +54,37 @@ jobs:
           PIXIU_VECTOR_STORE: portable
         run: python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
 
+      - name: Generate three-node protocol evidence
+        if: matrix.python-version == '3.12'
+        shell: bash
+        run: |
+          mkdir -p build/release/out
+          SOURCE_DATE_EPOCH="$(git show -s --format=%ct "${GITHUB_SHA}")" \
+            python -m backend.foundation.eval.sync_evidence \
+              --root . \
+              --output build/release/out/sync-protocol-evidence.json
+          python - <<'PY'
+          import json
+          import os
+
+          with open("build/release/out/sync-protocol-evidence.json", encoding="utf-8") as stream:
+              report = json.load(stream)
+          assert report["status"] == "passed"
+          assert report["release_commit"] == os.environ["GITHUB_SHA"]
+          assert report["final_device_evidence"] is False
+          assert len(report["nodes"]) == 3
+          assert len({node["logical_view_digest"] for node in report["nodes"]}) == 1
+          assert all(scenario["passed"] for scenario in report["scenarios"])
+          PY
+
+      - name: Upload three-node protocol evidence
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v7
+        with:
+          name: pixiu-sync-protocol-evidence-${{ github.sha }}
+          path: build/release/out/sync-protocol-evidence.json
+          if-no-files-found: error
+
   build-deb:
     runs-on: ubuntu-22.04
     steps:
