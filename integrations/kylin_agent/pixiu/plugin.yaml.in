@@ -1,6 +1,6 @@
 name: pixiu
 description: PIXIU distributed, scoped and auditable memory for openKylin Agent
-version: 0.1.7
+version: @VERSION@
 hooks:
   - on_turn_start
   - on_session_end

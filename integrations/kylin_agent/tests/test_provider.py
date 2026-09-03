@@ -13,6 +13,14 @@ sys.path.insert(0, str(ROOT / "third_party" / "kylin-agent-runtime"))
 
 from integrations.kylin_agent.pixiu import PixiuMemoryProvider  # noqa: E402
 from integrations.kylin_agent.pixiu.client import PixiuApiError  # noqa: E402
+from integrations.kylin_agent.pixiu.compat import provider_version  # noqa: E402
+
+
+def test_provider_version_uses_canonical_repository_version():
+    assert not (ROOT / "integrations/kylin_agent/pixiu/plugin.yaml").exists()
+    template = ROOT / "integrations/kylin_agent/pixiu/plugin.yaml.in"
+    assert "version: @VERSION@" in template.read_text(encoding="utf-8")
+    assert provider_version() == (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
 
 class FakeClient:
