@@ -13,7 +13,7 @@
 - ✅ 版本源统一到 0.1.7（CMake / frontend debian / 发布默认值）。
 - ✅ 真实 GitHub live 升级用例不再写死远端 `0.1.6`，只要求 latest 高于 `0.1.5`。
 
-
+## 实现状态（2026-09-02 · v0.1.6 本机验收）
 
 - ✅ 本机 GitHub 应用内升级闭环：`CheckUpdateDialog` + `UpgradeController`
   拉 `releases/latest`，下载/校验公开发布的 `0.1.6` amd64 包，经与生产相同
