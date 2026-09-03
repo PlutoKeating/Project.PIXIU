@@ -103,7 +103,7 @@ jobs:
             --signature "${checksum}.sig" \
             --public-key build/release/keys/pixiu-release-ed25519.pub \
             --channel "${channel}" \
-            --git-commit "${GITHUB_SHA}" --output "${manifest}"
+            --output "${manifest}"
           (
             cd "$(dirname "${manifest}")"
             sha256sum "$(basename "${manifest}")" \

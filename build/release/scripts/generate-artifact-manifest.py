@@ -61,7 +61,6 @@ def main() -> None:
     parser.add_argument("--signature", type=Path, required=True)
     parser.add_argument("--public-key", type=Path, required=True)
     parser.add_argument("--channel", choices=("staging", "production"), required=True)
-    parser.add_argument("--git-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
@@ -72,6 +71,8 @@ def main() -> None:
     output = args.output.resolve()
     if len({deb.parent, checksum.parent, signature.parent, output.parent}) != 1:
         raise SystemExit("pixiu-assets: all assets and output must share one directory")
+    if output in {deb, checksum, signature, public_key}:
+        raise SystemExit("pixiu-assets: output must not overwrite an input")
 
     match = DEB_NAME.fullmatch(deb.name)
     if not match:
@@ -110,17 +111,44 @@ def main() -> None:
         digest_file.unlink(missing_ok=True)
     if verified.returncode != 0:
         raise SystemExit("pixiu-assets: release signature verification failed")
-    if not re.fullmatch(r"[0-9a-f]{40}", args.git_commit):
-        raise SystemExit("pixiu-assets: git commit must be a full SHA-1 object id")
+    with tempfile.TemporaryDirectory() as directory:
+        subprocess.run(
+            ["dpkg-deb", "-x", str(deb), directory],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+        embedded_path = Path(directory) / "usr/share/pixiu/release-manifest.json"
+        if not embedded_path.is_file():
+            raise SystemExit("pixiu-assets: package component manifest is missing")
+        embedded = json.loads(embedded_path.read_text(encoding="utf-8"))
+
+    control_version = subprocess.check_output(
+        ["dpkg-deb", "--field", str(deb), "Version"], text=True
+    ).strip()
+    control_arch = subprocess.check_output(
+        ["dpkg-deb", "--field", str(deb), "Architecture"], text=True
+    ).strip()
 
     values = match.groupdict()
+    expected_debian_version = f'{values["version"]}-{values["revision"]}'
+    git_commit = embedded.get("build", {}).get("git_commit", "")
+    if not re.fullmatch(r"[0-9a-f]{40}", git_commit):
+        raise SystemExit("pixiu-assets: invalid embedded git commit")
+    if (
+        embedded.get("product", {}).get("debian_version") != expected_debian_version
+        or embedded.get("build", {}).get("architecture") != values["architecture"]
+        or control_version != expected_debian_version
+        or control_arch != values["architecture"]
+    ):
+        raise SystemExit("pixiu-assets: package identity metadata mismatch")
     manifest = {
         "manifest_schema": 1,
         "product_version": values["version"],
-        "debian_version": f'{values["version"]}-{values["revision"]}',
+        "debian_version": expected_debian_version,
         "architecture": values["architecture"],
         "channel": args.channel,
-        "git_commit": args.git_commit,
+        "git_commit": git_commit,
         "generated_at_utc": timestamp(),
         "assets": [
             asset(deb, "package"),
@@ -131,6 +159,18 @@ def main() -> None:
             "checksum": f"{output.name}.sha256",
             "signature": f"{output.name}.sha256.sig",
             "algorithm": "Ed25519-over-lowercase-SHA256",
+        },
+        "generation": {
+            "tool": "build/release/scripts/generate-artifact-manifest.py",
+            "command": [
+                "generate-artifact-manifest.py",
+                "--deb", deb.name,
+                "--checksum", checksum.name,
+                "--signature", signature.name,
+                "--public-key", public_key.name,
+                "--channel", args.channel,
+                "--output", output.name,
+            ],
         },
     }
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -25,7 +25,6 @@ MANIFEST="${DEB%.deb}.assets.json"
     --signature "${OUT}/${DEB}.sha256.sig" \
     --public-key "${PIXIU_RELEASE_DIR}/keys/pixiu-release-ed25519.pub" \
     --channel "${CHANNEL}" \
-    --git-commit "$(git -C "${PIXIU_ROOT}" rev-parse HEAD)" \
     --output "${OUT}/${MANIFEST}"
 (
     cd "${OUT}"

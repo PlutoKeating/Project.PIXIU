@@ -62,7 +62,8 @@
 `plugin.yaml`。发布工作流与 `publish.sh` 已为每个架构生成无自引用的包外
 `.assets.json`，记录 `.deb`/checksum/signature 的大小、SHA-256、commit 和通道，
 生成前以固定公钥验证主包签名，并为清单自身生成 checksum + Ed25519 签名；最终
-候选仍须归档并复验这六件套；
+commit/版本/架构从包内组件清单与 dpkg control 交叉核对，且 JSON 记录规范化生成
+命令。最终候选仍须归档并复验这六件套；
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
 探测结果及 `/capabilities` 一致性，源码 gitlink 不能代替该项实装证据。
 
