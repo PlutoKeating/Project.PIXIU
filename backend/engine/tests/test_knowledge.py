@@ -256,6 +256,36 @@ async def test_structure_writes_original_embedding_through_vector_store() -> Non
     assert any(not float(value).is_integer() for value in vector_store.vectors[item.id])
 
 
+@pytest.mark.asyncio
+async def test_update_preserves_identity_and_reindexes_vector() -> None:
+    knowledge = _FakeKnowledgeRepo()
+    vector_store = _FakeVectorStore()
+    service = KnowledgeService(
+        knw_repo=knowledge,
+        entity_repo=_FakeEntityRepo(),
+        vector_store=vector_store,
+        embedder=StubTextEmbedder(dim=8),
+    )
+    original = await service.structure(_evidence(raw={"title": "old value"}))
+    old_vector = vector_store.vectors[original.id]
+    updated = original.model_copy(
+        update={"title": "new value", "version": 2, "updated_at": 2}
+    )
+
+    result = await service.update(updated)
+
+    assert result.id == original.id
+    assert knowledge.items[original.id].title == "new value"
+    assert vector_store.vectors[original.id] != old_vector
+
+
+@pytest.mark.asyncio
+async def test_update_rejects_unknown_identity() -> None:
+    service, _knowledge, _entities = _knowledge_service()
+    with pytest.raises(KeyError):
+        await service.update(_item_with_entities([]))
+
+
 def test_explicit_kind_overrides_heuristics() -> None:
     evidence = _evidence(
         source_type="OCR",

@@ -42,6 +42,17 @@ class KnowledgeService:
 
     async def structure(self, evidence: Evidence) -> KnowledgeItem:
         item = self._structurer.structure(evidence)
+        return await self._persist(item, evidence_id=evidence.id)
+
+    async def update(self, item: KnowledgeItem) -> KnowledgeItem:
+        """Replace and reindex an existing knowledge item without changing its ID."""
+        if await self._knw_repo.get(item.id) is None:
+            raise KeyError(item.id)
+        return await self._persist(item)
+
+    async def _persist(
+        self, item: KnowledgeItem, *, evidence_id: str = ""
+    ) -> KnowledgeItem:
         step = "graph"
         try:
             await self._graph.build(item, self._entity_repo)
@@ -68,7 +79,7 @@ class KnowledgeService:
                 "knowledge.structure failed at step=%s knowledge_id=%s evidence_id=%s",
                 step,
                 item.id,
-                evidence.id,
+                evidence_id,
             )
             raise
         return item
