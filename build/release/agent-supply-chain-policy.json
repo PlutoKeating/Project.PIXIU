@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "components": {
+    "kylin_agent": {
+      "path": "third_party/kylin-agent",
+      "source_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+      "license_files": [
+        "LICENSE"
+      ]
+    },
+    "agent_runtime": {
+      "path": "third_party/kylin-agent-runtime",
+      "source_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+      "license_files": [
+        "LICENSE"
+      ],
+      "declared_versions": {
+        "cli": "0.9.4",
+        "package_metadata": "0.9.8",
+        "version_file": "0.9.9"
+      }
+    }
+  },
+  "sensitive_scan_paths": [
+    "third_party/kylin-agent/scripts",
+    "third_party/kylin-agent-runtime/scripts"
+  ],
+  "evidence": {
+    "host_build": "agent-host-build.json",
+    "runtime_wheelhouse": "runtime-wheelhouse.json",
+    "sbom": "agent-components.spdx.json",
+    "notice": "NOTICE.agent.txt"
+  }
+}

@@ -35,6 +35,7 @@ build/release/
 ├── scripts/
 │   ├── functions.sh          # 公共函数（版本/架构/路径解析）
 │   ├── build-deb.sh          # 主流水线：构建前端 + 打包后端 + 可选 wheels + dpkg
+│   ├── audit-agent-supply-chain.py # Agent 固定版本/敏感地址/发行证据门禁
 │   ├── generate-release-manifest.py # 从源码/构建输入生成包内组件清单
 │   ├── test.sh               # 独立测试入口（前端 ctest + 可选后端 pytest）
 │   ├── provision-target.sh   # 目标机预置：幂等安装 .deb 所需系统依赖（全新机器可用）
@@ -66,6 +67,25 @@ Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际
 以目标系统包管理器和 `/capabilities` 取证为准，源码钉住版本不得冒充运行时版本。
 生成器要求各 submodule 的 gitlink、实际 HEAD 一致且工作树洁净；未确认精确 SPDX
 后缀的许可证只记录许可证族和待审状态，不固化为授权结论。
+
+Agent 供应链另由机器门禁审计。普通开发可生成事实报告；正式候选必须使用强制模式：
+
+```bash
+python3 build/release/scripts/audit-agent-supply-chain.py \
+  --root . \
+  --evidence-dir build/release/evidence/agent-supply-chain \
+  --output build/release/out/agent-supply-chain-report.json
+python3 build/release/scripts/audit-agent-supply-chain.py \
+  --root . \
+  --evidence-dir build/release/evidence/agent-supply-chain \
+  --require-ready
+```
+
+策略文件固定两个上游 commit 和 Runtime 的三项真实版本声明。报告仅列出命中认证式
+URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿主重建证据、带逐包摘要且
+完成离线安装验证的 Runtime wheelhouse 清单、SPDX JSON 和非空 NOTICE。当前上游
+脚本与发行证据尚未满足这些条件，因此预期 `ready=false`；不得删掉门禁或伪造证据
+来取得绿色结果。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取

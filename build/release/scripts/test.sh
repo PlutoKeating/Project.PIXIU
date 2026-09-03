@@ -36,6 +36,8 @@ bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-native-sdk-smoke.py"
 "${PIXIU_PYTHON:-python3}" \
+    "${PIXIU_ROOT}/build/release/tests/test-agent-supply-chain.py"
+"${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/submission/tests/test_build_submission.py"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/submission/build_submission.py" --check

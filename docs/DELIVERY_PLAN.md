@@ -64,6 +64,10 @@ Gateway 与 PIXIU Provider 无模型探针通过；但公开源码标签不能�
 发布二进制与目标 V11 ABI 不兼容，Runtime 缓存也不是可复现构建。处理方案与禁止项
 见待批准的 [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。在对应
 源码、敏感地址清理、离线锁定和许可证审查完成前，不能把宿主纳入最终单包。
+`build/release/scripts/audit-agent-supply-chain.py` 已把该边界变成机器门禁：固定双上游
+commit 与 Runtime 三套版本事实，扫描时只披露命中文件名；正式候选以
+`--require-ready` 要求 V11 宿主重建、Runtime 离线 wheelhouse、SPDX SBOM 和 NOTICE
+同时有效。当前缺证据且上游扫描有命中，报告必须保持 `ready=false`。
 
 ## 2. 版本管理唯一真相源
 

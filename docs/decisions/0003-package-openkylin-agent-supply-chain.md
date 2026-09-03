@@ -49,6 +49,11 @@
 - S3.5：新装、升级、回滚、卸载和源码合规矩阵通过；
 - S3.6：再执行多轮、Shell、联网搜索、审批、记忆生命周期与三设备完整验收。
 
+以上门槛已由 `build/release/agent-supply-chain-policy.json` 和
+`build/release/scripts/audit-agent-supply-chain.py` 落成第一阶段机器检查。普通模式
+只生成当前事实报告；候选发布必须使用 `--require-ready`。报告对认证式 URL 仅记录
+命中文件相对路径，不回显匹配内容；当前因上游命中与四项发行证据缺失而预期失败。
+
 ## 暂不允许
 
 - 不把当前不可重建的官方二进制直接嵌入 PIXIU 最终包并声称源码完整；

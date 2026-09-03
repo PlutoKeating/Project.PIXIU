@@ -35,3 +35,9 @@ gitlink 与实际检出不一致或含本地修改的子模块。这不替代最
 名为 `web` 的 extra 推导依赖。上游脚本中的认证式源码地址不得进入交付产物或日志。
 若赛方/麒麟不能提供可重建宿主，须先批准 ADR-0003，再以最小补丁、完整对应源码、
 AGPL 义务、锁定 wheelhouse、SBOM 和敏感扫描共同形成可分发组件。
+
+上述条件现由 `build/release/agent-supply-chain-policy.json` 与
+`audit-agent-supply-chain.py` 自动检查。普通模式输出可归档 JSON 事实报告；候选发布
+必须使用 `--require-ready`，并提供宿主重建记录、逐包 SHA-256 的离线 wheelhouse
+记录、SPDX JSON 和 NOTICE。敏感扫描报告只保存规则与相对文件名，不保存匹配文本；
+当前报告不通过是已知供应链阻塞，不得将“脚本执行成功”误写为“供应链通过”。
