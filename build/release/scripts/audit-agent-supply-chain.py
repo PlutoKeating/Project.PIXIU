@@ -244,14 +244,18 @@ def audit(root: Path, policy_path: Path, evidence_dir: Path) -> dict[str, Any]:
         if not component["passed"]
     ]
 
-    actual_versions = runtime_versions(
-        root / policy["components"]["agent_runtime"]["path"]
-    )
     expected_versions = policy["components"]["agent_runtime"][
         "declared_versions"
     ]
+    try:
+        actual_versions = runtime_versions(
+            root / policy["components"]["agent_runtime"]["path"]
+        )
+    except (OSError, ValueError):
+        actual_versions = {}
+        blockers.append("runtime-version-facts-unavailable")
     versions_match = actual_versions == expected_versions
-    if not versions_match:
+    if actual_versions and not versions_match:
         blockers.append("runtime-version-facts-changed")
 
     sensitive_files = authenticated_url_files(root, policy["sensitive_scan_paths"])

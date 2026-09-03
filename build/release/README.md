@@ -85,7 +85,8 @@ python3 build/release/scripts/audit-agent-supply-chain.py \
 URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿主重建证据、带逐包摘要且
 完成离线安装验证的 Runtime wheelhouse 清单、SPDX JSON 和非空 NOTICE。当前上游
 脚本与发行证据尚未满足这些条件，因此预期 `ready=false`；不得删掉门禁或伪造证据
-来取得绿色结果。
+来取得绿色结果。未初始化 submodule 时，普通模式会把组件固定与 Runtime 版本事实
+记为不可用而不是崩溃；强制模式仍必然失败。
 发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
 前端 CMake/独立 control 直接派生，Module E 源码只保留模板并在打包/激活时渲染；
 产品版本已无静态构建元数据副本。版本与 Agent/manifest 成功路径测试也动态读取
