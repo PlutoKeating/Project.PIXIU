@@ -8,8 +8,8 @@
 ## 实现状态（2026-08-11 旧范围冻结；赛题 P0 已重新打开）
 
 > [!IMPORTANT]
-> 2026-09-03 按完整 PPT 复核后，Vector Engine 生产接线、V11 双 SDK 性能和
-> Agent MemoryProvider 端到端接入均是未完成 P0；不得继续使用“功能冻结后不新增”
+> 2026-09-04 按完整 PPT 复核后，Vector Engine 接线与 Module E 已实现并取得阶段性
+> 实证；最终 user service/依赖、V11 双 SDK 性能和模型驱动 Agent 闭环仍是 P0；不得继续使用“功能冻结后不新增”
 > 阻止这些必需整改。以下完成项仅描述旧记忆子系统范围。
 
 ### ✅ 已完成（Phase 0～Phase 7）
@@ -42,9 +42,8 @@
 
 - `retrieval/` + `eval/` 环境验收：麒麟机器上真实 embedding 跑 reference-v1（50 组数据集、
   90 查询、1000 压测），验证召回≥85%、P95≤500ms，产出 runtime="kylin" 报告
-- `engine/kylin/cpp/` 原生绑定构建（`_kylin_text_embedding` pybind11）
-- vector-engine-client 生产对接（submodule 已就位；当前 H-02 不通过）
-- 与项目选定的 openKylin agent-runtime 完成 MemoryProvider 适配和多轮/工具结果闭环
+- 双 SDK 原生绑定和产品链已完成阶段性 V11 实证；固化为最终 user service、组件依赖与 reference-v1 报告
+- openKylin Agent/Runtime 可重建离线供应链与模型驱动多轮/工具结果闭环
 
 其中 Agent 接入的 Module C 责任已由团队批准并冻结为：
 
@@ -69,7 +68,8 @@ Kylin 适配与 strict/auto/portable 选择已完成；生产遗忘已注入 sea
 删除向量；组合根已改用官方 `ConnectParam(appId)` 本地传输，不再传递测试专用
 host/port；当前源码还会在 strict 预检时装载 `PIXIU_VECTOR_DB_PATH`，进程级复用
 store 并在退出时断开，修复旧探针“capabilities 假绿、首次写入无 local storage”的
-问题。`GET /capabilities` 已报告实际适配器。V11 新候选端到端证据仍未完成。
+问题。`GET /capabilities` 已报告实际适配器。提交 `6f6002e` 的 revision 8 已完成
+V11 产品写入、检索、遗忘与隐藏；最终 user service/安装依赖和正式取证仍未完成。
 - C-A5：与 Module E 做 HTTP/WS 契约测试，禁止 E 直接导入本模块。
 
 > Module A 三通道联调与 WS `/events` 注册已在 2026-08-29 前完成，已从当前 P0

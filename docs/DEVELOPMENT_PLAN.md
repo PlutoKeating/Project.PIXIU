@@ -103,6 +103,7 @@
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
 | C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约已供 E 消费 | core/storage/api（含 `/version`/`/health`）、retrieval、六类生命周期 context、失败 receipt 一次性恢复授权、flow、sync P2P CRDT、eval、monitor、D-Bus | 长期化策略/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
 | D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | 2026-09-04 组合回归 790 passed（Foundation 623 + Engine 150 + Module E 17）；前端最近 ctest 38/38；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
+| E · Agent integration | 团队负责人 | 🟡 Provider 已实现，完整宿主未交付 | 17 项契约测试；随包装入/幂等激活；真实 Runtime 发现与无模型 Gateway 探针通过 | 可重建宿主、离线 Runtime、模型驱动多轮/工具/记忆生命周期 |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -326,9 +327,10 @@ Security detector，`user:*` 敏感 evidence 本地隔离，`shared:*` 敏感写
 
 不得把 Agent 循环复制进本模块；不得导入 `frontend/` 或 `backend/` 私有代码；
 不得直接修改 `third_party/` 工作树；不得把上游通用 Agent 功能计为团队原创。
-vNext Agent 记忆契约已先在 `docs/API.md` 冻结并由 Module E 消费。当前 9 项测试覆盖
+vNext Agent 记忆契约已先在 `docs/API.md` 冻结并由 Module E 消费。当前 17 项测试覆盖
 固定上游 ABC/插件发现、strict 能力预检、缓存召回、异步写入/背压、生命周期、工具、
-遗忘确认和错误脱敏；安装包接入与 W5 真实 Agent 场景仍未完成。
+遗忘确认和错误脱敏；安装包已携带并安全激活 Provider，无模型真实 Runtime 发现
+探针已通过，宿主供应链与 W5 模型驱动 Agent 场景仍未完成。
 
 ---
 
@@ -588,6 +590,7 @@ Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契�
 | 文档/源码 | 路径 | 说明 |
 |-----------|------|------|
 | 已批准决策 | `docs/decisions/0001-use-openkylin-agent-host.md` | 宿主、原创与修改边界 |
+| 待批准决策 | `docs/decisions/0003-package-openkylin-agent-supply-chain.md` | 可重建宿主、离线 Runtime 与上游补丁门 |
 | 接入评估 | `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` | 代码事实、生命周期与差距 |
 | API 契约 | `docs/API.md` | 当前端点与尚未实现的 vNext 目标 |
 | Agent runtime | `third_party/kylin-agent-runtime/` | 固定版本 MemoryProvider/生命周期源码 |

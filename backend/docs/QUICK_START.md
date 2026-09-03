@@ -3,8 +3,8 @@
 后端分为两个子模块，各自可独立开发和测试。
 
 > 这里启动的是记忆后端，不是完整 Agent。已批准的 Module E 将在
-> `integrations/kylin_agent/` 通过公共 API 接入；该模块尚未实现时，不得用本指南
-> 的写入/检索冒烟宣称 Agent 闭环完成。
+> `integrations/kylin_agent/` 通过公共 API 接入；该适配器已实现并通过契约测试，
+> 但不得用本指南的写入/检索冒烟宣称真实 Agent 闭环完成。
 
 ---
 

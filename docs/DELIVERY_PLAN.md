@@ -42,7 +42,7 @@
 桌面 Agent 与允许位于用户目录的 runtime 由用户态 Provider 激活器验证。严格启动器
 不会吞掉激活失败，generic/portable 才保留独立控制台降级。构建器强制
 `KYSDK=ON`/`install_strict=1` 成对，组件清单记录最终模式。首次目标运行已证明严格失败
-关闭有效，但也暴露用户会话 SDK 边界尚未实现；该边界闭环后才可生成最终证据。
+关闭有效，也暴露用户会话 SDK 边界尚未交付化；该边界闭环后才可生成最终证据。
 推荐边界已形成待批准的
 [`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：`.deb` 仍为一次
 系统安装，后端改由登录用户的 systemd user manager 运行，数据进入 XDG 用户域，升级
@@ -58,6 +58,12 @@ system service 不删除，H-02/H-03 状态不变。
 整套子系统体积大且包含与 PIXIU 无关的模型和引擎，不列为 PIXIU `.deb` 的整体
 `Depends`；发布前以同版实测确定 Embedding、Vector Engine 及其 runtime 的最小包集，
 并在安装器中对缺失能力给出可操作提示。
+
+Agent 宿主供应链另有独立发布门：官方 0.9.6 二进制可在 V11 启动并连接固定 Runtime，
+Gateway 与 PIXIU Provider 无模型探针通过；但公开源码标签不能重建该宿主，0.9.7
+发布二进制与目标 V11 ABI 不兼容，Runtime 缓存也不是可复现构建。处理方案与禁止项
+见待批准的 [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。在对应
+源码、敏感地址清理、离线锁定和许可证审查完成前，不能把宿主纳入最终单包。
 
 ## 2. 版本管理唯一真相源
 

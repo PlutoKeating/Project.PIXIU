@@ -186,7 +186,9 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
   实现/测试，最终候选仍须完成 V11 图形实证；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
 - `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
-  `pixiu` 启动时更新当前用户 Agent profile，但不打包未修改的上游 Agent 源码。
+  `pixiu` 启动时更新当前用户 Agent profile，但当前仍不打包上游 Agent 宿主/Runtime。
+  官方 0.9.6 宿主虽可在 V11 启动，其公开标签不可重建；0.9.7 又与目标 C++ ABI
+  不兼容。最终单包方案须先通过 ADR-0003 的对应源码、离线依赖、敏感扫描与许可证门。
 
 这些是团队发布门；逐项状态与赛事 D-01～D-10 文档台账见
 `docs/DELIVERY_PLAN.md`。未完成前，现有 `0.1.7` 只能称为功能基线，不能称为最终

@@ -16,14 +16,15 @@
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
 > request_id 统一错误契约；四故事端到端与硬化测试通过，377 项全绿；
-> 1000 次查询压测 P95=19.18ms。仅真实麒麟 SDK 性能 / 局域网互操作 / Module A 联调
-> 待银河麒麟环境验收（详见 docs/ACCEPTANCE.md）。WS `/events` 路由已于
+> 1000 次查询压测 P95=19.18ms。Module A 联调已完成；最终麒麟 SDK 性能、局域网
+> 多机互操作与 Agent 生命周期仍待验收（详见 docs/ACCEPTANCE.md）。WS `/events` 路由已于
 > 2026-08-20 完成真实入口注册与麒麟 V11 握手验证。
 
 > [!CAUTION]
 > 上述“功能冻结/全绿”只覆盖旧的记忆子系统范围。PPT 要求生产向量数据库必须
-> 使用系统 Vector Engine；当前 `retrieval/ann.py` 的 SQLite INT8 扫描不合规，
-> 属于 P0 未完成项。portable/stub 延迟也不能替代 V11 双 SDK 最终性能验收。
+> 使用系统 Vector Engine；SQLite INT8 只能作为 portable 降级。revision 8 已取得
+> 系统 Vector Engine 产品链强实证，但最终 user service、依赖和性能证据仍未闭环；
+> portable/stub 延迟不能替代 V11 双 SDK 最终性能验收。
 
 ---
 

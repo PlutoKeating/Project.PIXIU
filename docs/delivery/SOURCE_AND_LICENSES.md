@@ -13,7 +13,7 @@
 
 | 依赖 | 角色 | 当前已知许可证/边界 |
 |------|------|---------------------|
-| `third_party/kylin-agent` | 桌面宿主参考/依赖 | 上游许可证文件可确认 GNU Affero GPL v3 族；不宣称原创，不原样作为作品主体；`only` / `or-later` 的精确 SPDX 后缀待人工审查 |
+| `third_party/kylin-agent` | 桌面宿主参考/依赖 | 上游许可证文件可确认 GNU Affero GPL v3 族；官方 0.9.6 二进制可在 V11 启动，但公开标签不可重建，0.9.7 与目标 ABI 不兼容；不得在对应源码闭环前纳入最终包 |
 | `third_party/kylin-agent-runtime` | Agent runtime/MemoryProvider | MIT；固定 commit，适配代码另存 Module E |
 | `third_party/kylin-coreai-embedding` | 指定 Embedding SDK | GPL-3.0-or-later；按系统分发规则继续审查 |
 | `third_party/libkysdk-vector-engine-client` | 指定 Vector Engine 客户端 | Apache-2.0；按系统分发规则继续审查 |
@@ -29,3 +29,9 @@ gitlink 与实际检出不一致或含本地修改的子模块。这不替代最
 保持为空并标记 `pending-only-or-later-review`，不得将未决后缀固化为授权结论。
 清单还明确保留 `agent-runtime` 的上游版本文件 0.9.9 与包元数据 0.9.8 两个不同事实，
 最终兼容矩阵须以实际安装 runtime 再验证。
+
+供应链探针还确认：固定 Runtime 的 CLI、Python 包和 `version` 文件分别报告 0.9.4、
+0.9.8、0.9.9，清单必须原样记录三项事实；Gateway 另实际需要 `aiohttp`，不能只按
+名为 `web` 的 extra 推导依赖。上游脚本中的认证式源码地址不得进入交付产物或日志。
+若赛方/麒麟不能提供可重建宿主，须先批准 ADR-0003，再以最小补丁、完整对应源码、
+AGPL 义务、锁定 wheelhouse、SBOM 和敏感扫描共同形成可分发组件。

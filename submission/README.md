@@ -28,7 +28,8 @@
 - `final/`：最终文件生成位置，构建产物不进入 Git，避免源码包递归包含自身；
 - `human-input/`：说明必须由团队负责人提供的 PPT、视频和盖章报名表。
 
-当前 `release_ready=false` 是有意的。只有 H-01～H-03、Agent 闭环、最终 V11 指标、
+当前 `release_ready=false` 是有意的。只有 H-01～H-03、Agent 可重建离线供应链与
+生命周期闭环、最终 V11 指标、
 三设备同步、安装/升级和 D-01～D-10 全部以同一 commit 通过并审核后，才可填写最终
 commit、把各门设置为 `passed`，并运行：
 

@@ -54,13 +54,18 @@ Embedding 的独立系统组件阻断已完成根因与兼容性验证：原目�
 该结果是组件兼容性/直接适配证据，不是最终候选产品证据；发布前必须把兼容版本纳入
 可复现依赖方案并重跑全链路。紧接着的产品探针在写入时暴露 Vector Engine 未执行
 `LoadDBFile`，且旧 `/capabilities` 仍误报 ready；当前源码已让 strict 预检实际装载
-应用数据库并在进程退出时断开，尚待新包 V11 复验。
+应用数据库并在进程退出时断开；下述 revision 8 已完成 V11 复验。
 
 提交 `6f6002e` 的 strict revision 8 已完成该复验：V11、Embedding 与 Vector
 runtime 均报告 compliant，产品 `/memory/write`、`/memory/query`、两阶段遗忘和删除后
 隐藏全部通过。正式取证器没有生成最终证据文件，因为目标系统缺少可执行的
 `kylin-agent` 和 `agent-runtime`，按 A-11/A-12 门禁提前拒绝。故本节仍保持“不通过”，
 但应把“SDK/产品记忆链已实证”与“完整 Agent/可交付依赖未完成”分开记录。
+
+无模型宿主探针进一步证明复用路线可行：官方 0.9.6 发布二进制在 V11 可启动，固定
+Runtime 的 Gateway `/health`、`/api/sessions` 通过，且 Module E 被发现并选中为
+`memory.provider=pixiu`。但官方源码标签不可重建宿主，0.9.7 二进制又与 V11 C++ ABI
+不兼容；宿主/Runtime 的固定、离线和许可证供应链仍未闭环，故 A-01～A-10 不升级。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

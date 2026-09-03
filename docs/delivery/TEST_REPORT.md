@@ -80,6 +80,12 @@ runtime 均 compliant。正式取证器在检查到目标系统缺少 `kylin-age
 `agent-runtime` 可执行文件时按门禁拒绝生成最终证据，因此该记录不计完整 Agent 或
 release-ready。
 
+无模型 Agent 集成探针随后通过：官方 0.9.6 宿主在 V11 启动，固定 Runtime Gateway
+返回健康，空会话 API 返回列表，Module E 被发现并配置为 `memory.provider=pixiu`。
+该探针同时发现官方 0.9.7 ABI 不兼容、公开标签不可重建宿主、Runtime `web` extra
+漏装 `aiohttp` 及三重版本元数据漂移；故只证明 ADR-0001 架构可行，不计完整 Agent、
+安装或发布通过。
+
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和
 `contest_ready=false`。该结果只覆盖 D-04/R-05 的一个升级切片。

@@ -8,8 +8,8 @@
 ## 实现状态（2026-08-11）
 
 > **赛题状态纠偏（2026-09-03）**：下列“已完成”仅表示适配代码和记忆引擎模块
-> 已实现，不表示 H-02/H-03 通过。系统 Vector Engine 生产接线是 P0 未完成项；
-> Embedding 需用最终版本在 V11 重新形成真实调用证据。
+> 已实现，不表示 H-02/H-03 通过。revision 8 已取得系统 Vector Engine 与 Embedding
+> 产品链强实证，但最终 user service、组件依赖和同版正式证据仍是 P0。
 > 团队批准的 Agent 路线同时重新打开 ingest 契约。`CONVERSATION` Connector 与
 > `TOOL_RESULT`/对话 provenance 基础契约已经实现；Foundation 已提供完成态持久化
 > 幂等与失败恢复已由 Foundation 公共契约实现；专用抽取策略和端到端验收仍未完成。
@@ -23,8 +23,8 @@
 - 🟡 B-A3：Connector、清洗、质量评分和 evidence 追溯已支持新来源；Foundation
   写入入口已调用 Security detector 并执行本地隔离/共享域拒绝，对话/工具专用语义
   抽取策略仍待补齐。
-- 🟡 B-A4：B/C 基础契约测试已完成；与 Module E 的端到端契约尚待实现。禁止用
-  `TOOL_RESULT` 类型伪装普通对话。
+- ✅ B-A4：B/C 与 Module E 的完成态、生命周期和工具契约测试已完成；真实宿主模型
+  触发仍按 Agent 验收项单列。禁止用 `TOOL_RESULT` 类型伪装普通对话。
 
 - ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
   全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
@@ -46,8 +46,9 @@
   host/port 构造误用于生产的问题，默认改走官方 `ConnectParam(appId)` 本地连接。
   绑定已补齐官方 demo 要求的 `LoadDBFile`/`Disconnect` 数据库生命周期；真机产品
   探针发现组合根漏调装载后，当前源码已补 `PIXIU_VECTOR_DB_PATH`、strict 启动装载、
-  进程级复用与退出断开。仍必须以重建候选证明系统 Vector Engine 在
-  V11 严格画像中实际承担生产建库、写入、删除和查询。
+  进程级复用与退出断开。提交 `6f6002e` 的 strict revision 8 已在 V11 证明系统
+  Vector Engine 承担产品写入、检索、遗忘与删除后隐藏；最终 user service/安装包
+  仍须按 H-02 重验。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
 - 测试：2026-09-04 当前 Engine 150 项、Foundation 623 项、Module E 17 项通过

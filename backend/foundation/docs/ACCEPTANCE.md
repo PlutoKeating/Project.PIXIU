@@ -4,8 +4,9 @@
 > 状态列：✅=旧范围本地已验证；🟡=需环境执行；🔴=完整 PPT 下的硬缺口。
 > 刷新于 2026-08-29：Module A 已联调完成（前端 ctest 32/32 + regression.sh 双路径），
 > portable 基线见 `docs/acceptance/`（达到数值阈值，但不等于赛题最终验收）。
-> 2026-09-03 复核确认：系统 Vector Engine 生产接线未完成，H-02 当前不通过。
-> 同日团队批准 ADR-0001；新增 Module E 与 A-11～A-14 原创/上游边界检查尚未通过。
+> 2026-09-04 复核确认：revision 8 已取得 V11 系统 Vector Engine 产品链强实证，
+> 但最终 user service/安装依赖未闭环，H-02 仍未通过。Module E 已实现并进入真实
+> Runtime 发现探针；A-11～A-14 原创/上游边界检查仍未通过。
 
 ## 一、验收追踪重点映射
 
@@ -60,8 +61,8 @@
 ## 五、赛题 P0 遗留（允许并要求实现）
 
 1. 麒麟环境：官方组件修复组合下 PIXIU binding 已返回 768 维真实向量；仍需最终可安装依赖和 reference-v1 数据集验收（产出 runtime="kylin" 报告）
-2. **H-02 阻塞项**：当前源码已修复生产 `LoadDBFile`、store 复用与退出断开；待重建 strict 候选验证写入/检索/遗忘
-3. agent-runtime MemoryProvider 适配与多轮/工具结果端到端闭环
+2. **H-02 阻塞项**：revision 8 写入/检索/遗忘已通过；待最终 user service、依赖与正式取证闭环
+3. Agent 宿主/Runtime 可重建离线供应链，以及模型驱动的多轮/工具结果端到端闭环
 4. Agent 公共契约：capability、`CONVERSATION`、evidence 关联 ID、完成态持久化
    幂等、审计式失败恢复、预算化安全查询上下文和六类 context 生命周期已完成；
    Module E 真实宿主端到端与长期化仍待完成

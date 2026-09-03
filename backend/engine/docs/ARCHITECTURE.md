@@ -5,8 +5,9 @@
 >
 > **已批准 vNext 边界**：Module E 通过 Module C 公共 API 提交 Agent 生命周期
 > 数据；Module B 已增加 `CONVERSATION` Connector，`Evidence.provenance` 为对话与
-> `TOOL_RESULT` 保留 session/run/turn/tool-call、时间和审批来源。幂等与完整生命周期
-> 尚未实现，不得据此宣称完整 Agent 已接入。
+> `TOOL_RESULT` 保留 session/run/turn/tool-call、时间和审批来源。Foundation 幂等与
+> Module E 生命周期映射已实现，但模型驱动的真实生命周期尚未验收，不得据此宣称
+> 完整 Agent 已接入。
 
 > [!CAUTION]
 > “SDK 适配/封装存在”不等于赛题硬门槛已通过。最终 V11 生产路径必须真实调用

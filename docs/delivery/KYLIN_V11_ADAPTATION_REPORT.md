@@ -1,7 +1,7 @@
 # D-10 银河麒麟 V11 适配报告工作稿
 
 - 更新日期：2026-09-04
-- 状态：V11 strict 原生编译已通过；最终 Agent + 双 SDK 运行 + 安装升级取证未完成
+- 状态：V11 双 SDK 产品链与无模型 Agent 宿主链已有强实证；最终供应链、模型运行和安装升级取证未完成
 
 ## 已确认基线
 
@@ -14,14 +14,15 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 提交 `ea92b28` 完成 strict 原生编译。首次 strict 安装运行进一步确认 AI runtime
 socket 按 UID 隔离，当前专用系统服务账户无法复用桌面用户会话 runtime，后端因此
 按 strict 规则拒绝就绪；恢复 portable 配置后服务重新健康。该结果只证明失败关闭，
-Agent 宿主/runtime 与双 SDK 真服务调用仍未完成，不得宣称 H-02/H-03 通过。
+该旧结果已被 revision 8 同用户双 SDK 产品链实证推进，但最终依赖仍未交付化，
+不得宣称 H-02/H-03 通过。
 
 ## 最终适配矩阵
 
 | 项目 | x86_64 | arm64 | 必须证据 |
 |------|--------|-------|----------|
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
-| openKylin Agent + Module E | 未完成 | 未完成 | 版本、provider 加载、完整 run |
+| openKylin Agent + Module E | 官方 0.9.6 宿主、固定 Runtime、Gateway 与 Provider 无模型探针通过；供应链/模型 run 未完成 | 未完成 | 可重建源码、版本、provider 加载、完整 run |
 | Embedding SDK | revision 8 产品链已使用真实 gte-base 768 维向量；最终依赖/Agent 待验 | 待真机 | runtime、调用日志、严格失败 |
 | Vector Engine SDK | revision 8 产品写入/检索/遗忘/隐藏通过；最终 user service 待实现 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
 | UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
@@ -99,6 +100,13 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
 runtime，写入、召回、遗忘、删除后隐藏均通过。正式取证器进一步检查时发现目标系统
 没有 `kylin-agent`/`agent-runtime` 可执行文件并拒绝出证；因此宿主供应链、ADR-0002
 user service 与最终组件依赖仍是发布阻断。
+
+同日宿主供应链探针确认：官方 0.9.6 amd64 二进制可在 V11 启动并创建用户级
+Gateway，`/health` 与 `/api/sessions` 可用，Runtime 发现并选中 PIXIU Provider。
+但 0.9.6 公开标签链接缺实现、0.9.5/0.9.4 标签缺源文件，0.9.7 二进制要求目标系统
+不具备的 `CXXABI_1.3.15`。此外 Runtime `web` extra 未带 API Server 实际需要的
+`aiohttp`，同一提交还有 0.9.4/0.9.8/0.9.9 三项版本事实。以上均纳入 ADR-0003，
+不把临时拼接环境计为安装验收。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 

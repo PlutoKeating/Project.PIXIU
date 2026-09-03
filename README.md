@@ -155,6 +155,11 @@ Embedding 的 err=3/err=10 已定位为系统组件组合问题：官方 embeddi
 revision 8 已在 V11 同用户会话通过写入、向量检索、遗忘和删除后隐藏。正式取证器
 随后正确拒绝继续：目标系统没有 `kylin-agent`/`agent-runtime` 可执行文件。因此该
 结果仍是 SDK/产品记忆链强实证，不是完整 Agent 或最终交付通过。
+随后无模型 Agent 探针完成了另一条关键验证：官方 0.9.6 宿主二进制可在 V11 启动，
+固定 Runtime 的 Gateway 健康与会话 API 可用，且 Module E 被发现并配置为
+`memory.provider=pixiu`。但公开宿主源码标签无法重建该二进制，官方 0.9.7 包又与
+目标 V11 C++ ABI 不兼容；Runtime 还存在版本元数据漂移和不可复现缓存问题。因此
+“复用完整 Agent”的架构已证实可行，宿主/Runtime 的安全合规单包供应链仍是 P0。
 最终 V11 双 SDK 与全新机/图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
@@ -163,6 +168,8 @@ revision 8 已在 V11 同用户会话通过写入、向量检索、遗忘和删�
 从当前差距到最终候选版本的关键路径、阶段门、逐工作包完成定义和预期提交序列见
 [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md)。该计划是执行台账；两份
 官方赛事原件仍是不可修改的权威要求来源。
+宿主供应链的调查事实、建议边界和批准门见
+[ADR-0003](docs/decisions/0003-package-openkylin-agent-supply-chain.md)。
 
 ## 仓库结构
 
