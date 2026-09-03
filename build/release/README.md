@@ -35,6 +35,7 @@ build/release/
 ├── scripts/
 │   ├── functions.sh          # 公共函数（版本/架构/路径解析）
 │   ├── build-deb.sh          # 主流水线：构建前端 + 打包后端 + 可选 wheels + dpkg
+│   ├── generate-release-manifest.py # 从源码/构建输入生成包内组件清单
 │   ├── test.sh               # 独立测试入口（前端 ctest + 可选后端 pytest）
 │   ├── provision-target.sh   # 目标机预置：幂等安装 .deb 所需系统依赖（全新机器可用）
 │   └── publish.sh            # 发布 staging/production（本地 dist + 可选 rsync 远端）
@@ -59,6 +60,12 @@ build/release/
 `/usr/lib/pixiu/install-update`，作为 root-only 副本二次校验后调用 `dpkg`
 的 `pkexec` 特权边界；`frontend/scripts/restart-client` 安装到同目录，以当前桌面
 用户等待旧客户端退出后启动 `/usr/bin/pixiu`，不持有安装权限。
+每个包还包含 `/usr/share/pixiu/release-manifest.json`：记录产品/Debian 版本、commit、
+构建时间、架构、profile、KYSDK/Python ABI、HTTP API、Agent Memory API、schema、
+Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际运行时 SDK 版本仍
+以目标系统包管理器和 `/capabilities` 取证为准，源码钉住版本不得冒充运行时版本。
+`source_tree_clean` 会如实标记构建是否来自洁净工作树；CI 从完成的 `.deb` 反向提取
+该文件，并要求 commit、包版本、架构和画像一致。
 
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
 前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
@@ -145,8 +152,9 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 本地签名须把私钥文件路径放入 `PIXIU_SIGNING_KEY_FILE` 后执行
 `build/release/scripts/sign-release.sh <deb.sha256>`，不得提交私钥。最终仍须：
 
-- 一个发布输入派生 tag、CMake、Debian control、Release 资产和 manifest，CI 检查不一致；
-- manifest 记录 Git/API/schema/provider/宿主/双 SDK 版本和兼容范围；
+- 包内组件 manifest 已记录 Git/build/API/schema/provider/宿主/双 SDK 钉住版本和
+  兼容范围，并由 CI 验包；仍须用一个发布输入派生 tag、CMake、Debian control 与
+  Release 资产，并生成包含大小、摘要、签名和通道的包外最终资产 manifest；
 - 双架构签名 CI 与 Kylin V11 有效/篡改签名已验证；
   `tests/test-release-key-rotation.sh` 用临时密钥和两个真实 `.deb` 验证“旧钥签发含
   新公钥的过渡版本、下一版切换新钥、旧钥拒绝下一版”，不接触或落盘生产私钥；

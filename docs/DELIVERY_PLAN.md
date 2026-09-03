@@ -52,8 +52,12 @@
 
 图形“关于/更新”页必须展示当前版本、可用版本、通道、组件兼容状态和发行说明。
 不得只在多个源码文件手工重复版本号。当前 `0.1.7` 发布预检已同步校验 CMake、
-前端宏、Debian 默认版本及 Module E manifest；后续仍须收敛后端/API/schema/宿主
-manifest，并改为由单一发布输入生成，而不是长期依赖多处手工编辑。
+前端宏、Debian 默认版本及 Module E manifest。构建现生成包内只读
+`/usr/share/pixiu/release-manifest.json`，从源码和构建输入记录产品/Debian、Git、
+构建时间、架构/profile/KYSDK/Python ABI、API/schema/provider、Agent 上游及双 SDK
+源码钉住版本与许可证；CI 会从成包反向提取并核对。上游 runtime 的 `version` 文件
+与包元数据当前分别为 0.9.9/0.9.8，清单保留两项事实而不擅自归一。后续仍须把
+产品版本改为真正单一输入，并生成含资产大小、摘要、签名和通道的包外最终清单。
 
 ## 3. 图形界面一键升级
 

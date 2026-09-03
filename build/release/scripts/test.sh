@@ -28,4 +28,5 @@ fi
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-update-helper.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-release-key-rotation.sh"
+bash "${PIXIU_ROOT}/build/release/tests/test-release-manifest.sh"
 log "tests OK"

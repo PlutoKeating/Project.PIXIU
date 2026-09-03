@@ -38,6 +38,11 @@ systemctl status pixiu-backend.service
 三者用途不可互相替代。Provider 初始化会拒绝混装版本、API 漂移、未就绪后端或超出
 已验证 0.9.x 范围的宿主。
 
+安装包同时提供 `/usr/share/pixiu/release-manifest.json`。交付审查应核对其中的
+Debian 版本、Git commit、构建画像、API/schema/provider 和四个上游源码钉住值；
+`source_tree_clean` 必须为 `true`。`sdk_sources` 是构建所依据的官方源码，不是目标机
+实际库版本；后者仍须另存包管理器输出并与 `/capabilities` 的真实 runtime 对照。
+
 V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 `PIXIU_KYSDK=ON` 同时约束桌面 KylinSDK 和后端 Embedding/Vector 原生扩展；构建、
 安装及真实写入/检索由独立 `pixiu-kylin-v11-native` 工作流执行并输出脱敏证据。

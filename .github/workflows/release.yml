@@ -103,6 +103,21 @@ jobs:
             "${{ matrix.architecture }}"
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${deb}"
           test -f /usr/share/pixiu/pixiu.env.default
+          test -f /usr/share/pixiu/release-manifest.json
+          python - /usr/share/pixiu/release-manifest.json \
+            "${GITHUB_SHA}" "${PIXIU_VERSION}-1" \
+            "${{ matrix.architecture }}" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              manifest = json.load(stream)
+          assert manifest["build"]["git_commit"] == sys.argv[2]
+          assert manifest["product"]["debian_version"] == sys.argv[3]
+          assert manifest["build"]["architecture"] == sys.argv[4]
+          assert manifest["build"]["source_tree_clean"] is True
+          assert manifest["provider"]["version"] == manifest["product"]["version"]
+          PY
           test -z "$(dpkg-deb --ctrl-tarfile "${deb}" | tar -tf - | \
             grep '^./conffiles$' || true)"
           test "$(stat -c '%a' /etc/pixiu/pixiu.env)" = "640"

@@ -77,6 +77,33 @@ jobs:
           PIXIU_SKIP_TESTS: "0"
         run: make -C build/release build-deb
 
+      - name: Verify package component manifest
+        shell: bash
+        run: |
+          deb="$(realpath build/release/out/*.deb)"
+          manifest="$(mktemp)"
+          trap 'rm -f "${manifest}"' EXIT
+          dpkg-deb --fsys-tarfile "${deb}" \
+            | tar -xOf - ./usr/share/pixiu/release-manifest.json \
+            > "${manifest}"
+          python3 - "${manifest}" "${GITHUB_SHA}" \
+            "$(dpkg-deb --field "${deb}" Version)" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              manifest = json.load(stream)
+          assert manifest["build"]["git_commit"] == sys.argv[2]
+          assert manifest["product"]["debian_version"] == sys.argv[3]
+          assert manifest["build"]["architecture"] == "amd64"
+          assert manifest["build"]["profile"] == "generic-ubuntu"
+          assert manifest["build"]["kysdk"] == "OFF"
+          assert manifest["build"]["source_tree_clean"] is True
+          assert manifest["provider"]["version"] == manifest["product"]["version"]
+          assert manifest["sdk_sources"]["embedding"]["required_in_profile"] is False
+          assert manifest["sdk_sources"]["vector_engine"]["required_in_profile"] is False
+          PY
+
       - name: Upload Debian package
         uses: actions/upload-artifact@v7
         with:

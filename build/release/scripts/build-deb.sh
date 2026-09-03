@@ -233,6 +233,16 @@ mkdir -p "${STAGE}/DEBIAN" \
 install -d -m 0755 "${STAGE}/usr/share/pixiu/keys"
 install -m 0644 "${PIXIU_RELEASE_DIR}/keys/pixiu-release-ed25519.pub" \
     "${STAGE}/usr/share/pixiu/keys/pixiu-release-ed25519.pub"
+PIXIU_VERSION="${PIXIU_VERSION}" \
+PIXIU_REVISION="${PIXIU_REVISION}" \
+PIXIU_ARCH="${PIXIU_ARCH}" \
+PIXIU_PROFILE="${PIXIU_PROFILE}" \
+PIXIU_KYSDK="${PIXIU_KYSDK}" \
+PIXIU_PYTHON_VERSION="${PIXIU_PYTHON_VERSION}" \
+    "${PIXIU_PYTHON}" \
+    "${PIXIU_RELEASE_DIR}/scripts/generate-release-manifest.py" \
+    --root "${PIXIU_ROOT}" \
+    --output "${STAGE}/usr/share/pixiu/release-manifest.json"
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
     PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, openssl, dpkg-repack, pkexec, \
