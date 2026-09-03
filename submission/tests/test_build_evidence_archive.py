@@ -363,6 +363,7 @@ class EvidenceArchiveTest(unittest.TestCase):
             output = root / "evidence.zip"
             with (
                 patch.object(MODULE, "validate_deep_record", return_value=[]),
+                patch.object(MODULE, "validate_ablation_sources", return_value=[]),
                 patch.object(MODULE, "validate_three_device_sources", return_value=[]),
                 patch.object(MODULE, "validate_supply_chain_sources", return_value=[]),
             ):
@@ -428,6 +429,156 @@ class EvidenceArchiveTest(unittest.TestCase):
                 [path for path in attachments if path.name != "memory-ablation.json"],
             )
             self.assertTrue(any("comparison input is not archived" in error for error in errors))
+
+    def test_requires_recursive_ablation_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            policy, package, records, attachments = self.fixtures(root)
+            output = root / "evidence.zip"
+            with (
+                patch.object(MODULE, "validate_deep_record", return_value=[]),
+                patch.object(MODULE, "validate_three_device_sources", return_value=[]),
+                patch.object(MODULE, "validate_supply_chain_sources", return_value=[]),
+            ):
+                with self.assertRaisesRegex(ValueError, "ablation source validation failed"):
+                    MODULE.build_archive(
+                        output, records, attachments, policy,
+                        release_commit="a" * 40, package=package, epoch=315532800,
+                    )
+
+    def test_recursive_ablation_sources_recompute_all_variants(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            identity = {"git_commit": "a" * 40, "candidate_package_sha256": "b" * 64}
+            native = root / "native.json"
+            native.write_text("{}", encoding="utf-8")
+            native_sha = MODULE.sha256_file(native)
+            task_set = root / "tasks.json"
+            task_set.write_bytes(
+                (MODULE.ROOT / "build/release/agent-memory-ablation-tasks.json").read_bytes()
+            )
+            task_sha = MODULE.sha256_file(task_set)
+            attachments = [native, task_set]
+            report_paths = {}
+
+            for variant_index, variant in enumerate(
+                ("no_memory", "single_device_memory", "distributed_memory")
+            ):
+                snapshot_paths = []
+                for role_index, role in enumerate(("teach", "recall")):
+                    node_sha = None
+                    node_identity = None
+                    topology_run_id = None
+                    if variant == "distributed_memory":
+                        node_identity = str(role_index + 7) * 64
+                        topology_run_id = "ablation-run"
+                        node = root / f"{variant}-{role}-node.json"
+                        node.write_text(json.dumps({
+                            "evidence_class": "kylin-v11-sync-node",
+                            "real_device_evidence": True,
+                            "run_id": topology_run_id,
+                            "release": identity,
+                            "node": {
+                                "identity_digest": node_identity,
+                                "peers_total": 3,
+                                "peers_online": 3,
+                                "pending_outgoing_ops": 0,
+                                "enabled": True,
+                                "paused": False,
+                            },
+                        }), encoding="utf-8")
+                        node_sha = MODULE.sha256_file(node)
+                        attachments.append(node)
+                    enabled = variant == "distributed_memory"
+                    config = (
+                        {"provider": "", "memory_enabled": False,
+                         "user_profile_enabled": False, "profile_enabled": False,
+                         "context_engine": "compressor"}
+                        if variant == "no_memory" else {"provider": "pixiu"}
+                    )
+                    snapshot = root / f"{variant}-{role}-snapshot.json"
+                    snapshot.write_text(json.dumps({
+                        "schema_version": 1,
+                        "evidence_class": "kylin-v11-agent-ablation-runtime-snapshot",
+                        "real_device_evidence": True,
+                        "variant": variant,
+                        "snapshot_role": role,
+                        "release": identity,
+                        "native_evidence_sha256": native_sha,
+                        "runtime_process_identity_digest": str(variant_index + role_index + 1) * 64,
+                        "configuration_sha256": str(variant_index + role_index + 3) * 64,
+                        "configuration": config,
+                        "strict_provider": variant != "no_memory",
+                        "sync": {
+                            "enabled": enabled, "paused": False,
+                            "peers_total": 3 if enabled else 0,
+                            "peers_online": 3 if enabled else 0,
+                            "pending_outgoing_ops": 0,
+                        },
+                        "node_identity_digest": node_identity,
+                        "node_manifest_sha256": node_sha,
+                        "topology_run_id": topology_run_id,
+                    }), encoding="utf-8")
+                    snapshot_paths.append(snapshot)
+                    attachments.append(snapshot)
+                outcomes = [
+                    {"task_id": f"task-{index:02d}", "success": index <= 20,
+                     "turn_count": 2, "recall_run_id_digest": f"{index:064x}",
+                     "recall_tools": [] if variant == "no_memory" else ["pixiu_memory_search"]}
+                    for index in range(1, 31)
+                ]
+                taught = [
+                    {"task_id": f"task-{index:02d}", "run_id_digest": f"{index + 30:064x}",
+                     "tools": [] if variant == "no_memory" else ["pixiu_memory_remember"]}
+                    for index in range(1, 31)
+                ]
+                report = root / f"{variant}-report.json"
+                report.write_text(json.dumps({
+                    "schema_version": 1,
+                    "evidence_class": "kylin-v11-agent-memory-ablation-variant",
+                    "real_device_evidence": True,
+                    "status": "complete",
+                    "variant": variant,
+                    "release": identity,
+                    "task_set_sha256": task_sha,
+                    "sample_count": 30,
+                    "metrics": {"task_success_rate": 20 / 30, "mean_turns": 2.0},
+                    "outcomes": outcomes,
+                    "teach_runs": taught,
+                    "source_sha256": {
+                        "native": native_sha,
+                        "teach_snapshot": MODULE.sha256_file(snapshot_paths[0]),
+                        "recall_snapshot": MODULE.sha256_file(snapshot_paths[1]),
+                    },
+                }), encoding="utf-8")
+                report_paths[variant] = report
+                attachments.append(report)
+
+            matrix = root / "matrix.json"
+            matrix.write_text(json.dumps({
+                "schema_version": 1,
+                "evidence_class": "kylin-v11-agent-memory-ablation",
+                "real_device_evidence": True,
+                "status": "pass",
+                "release": identity,
+                "dataset_sha256": "c" * 64,
+                "dataset_manifest_sha256": "d" * 64,
+                "task_set_sha256": task_sha,
+                "variants": [
+                    {"name": name, "sample_count": 30,
+                     "metrics": {"task_success_rate": 20 / 30, "mean_turns": 2.0}}
+                    for name in sorted(report_paths)
+                ],
+                "source_variant_sha256": {
+                    name: MODULE.sha256_file(path) for name, path in report_paths.items()
+                },
+            }), encoding="utf-8")
+            attachments.append(matrix)
+            documents = {"performance": {
+                "release": identity,
+                "source_sha256": {"native": native_sha, "comparison": MODULE.sha256_file(matrix)},
+            }}
+            self.assertEqual(MODULE.validate_ablation_sources(documents, attachments), [])
 
     def test_embedded_source_validation_rejects_non_dataset_attachment(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -184,11 +184,13 @@ def _validate_node_manifest(value: dict[str, Any], identity: dict[str, str]) -> 
 
 
 def snapshot(
-    *, variant: str, native_path: Path, config_path: Path, env_path: Path,
+    *, variant: str, role: str, native_path: Path, config_path: Path, env_path: Path,
     gateway_url: str, backend_url: str, node_path: Path | None,
 ) -> dict[str, Any]:
     if variant not in VARIANTS:
         raise EvidenceError("unknown ablation variant")
+    if role not in {"teach", "recall"}:
+        raise EvidenceError("snapshot role must be teach or recall")
     native = read_json(native_path)
     identity = identity_from_native(native)
     lifecycle = load_lifecycle_module()
@@ -230,6 +232,7 @@ def snapshot(
         "real_device_evidence": True,
         "captured_at": utc_now(),
         "variant": variant,
+        "snapshot_role": role,
         "release": identity,
         "native_evidence_sha256": sha256_file(native_path),
         "runtime_process_identity_digest": client.runtime_identity(),
@@ -249,7 +252,9 @@ def snapshot(
     }
 
 
-def validate_snapshot(value: dict[str, Any], variant: str, identity: dict[str, str]) -> None:
+def validate_snapshot(
+    value: dict[str, Any], variant: str, identity: dict[str, str], role: str | None = None
+) -> None:
     config = value.get("configuration")
     sync = value.get("sync")
     if not (
@@ -257,6 +262,8 @@ def validate_snapshot(value: dict[str, Any], variant: str, identity: dict[str, s
         and value.get("evidence_class") == "kylin-v11-agent-ablation-runtime-snapshot"
         and value.get("real_device_evidence") is True
         and value.get("variant") == variant and value.get("release") == identity
+        and value.get("snapshot_role") in {"teach", "recall"}
+        and (role is None or value.get("snapshot_role") == role)
         and isinstance(config, dict) and isinstance(sync, dict)
         and SHA256.fullmatch(str(value.get("native_evidence_sha256", "")))
         and SHA256.fullmatch(str(value.get("runtime_process_identity_digest", "")))
@@ -293,8 +300,10 @@ def capture(
     tasks = validate_task_set(read_json(task_path))
     teach_snapshot = read_json(teach_snapshot_path)
     recall_snapshot = read_json(recall_snapshot_path)
-    validate_snapshot(teach_snapshot, variant, identity)
-    validate_snapshot(recall_snapshot, variant, identity)
+    validate_snapshot(teach_snapshot, variant, identity, "teach")
+    validate_snapshot(recall_snapshot, variant, identity, "recall")
+    if sha256_file(teach_snapshot_path) == sha256_file(recall_snapshot_path):
+        raise EvidenceError("teach and recall require distinct runtime snapshots")
     teach_device = teach_snapshot.get("node_identity_digest")
     recall_device = recall_snapshot.get("node_identity_digest")
     if variant == "distributed_memory":
@@ -403,6 +412,11 @@ def validate_variant_report(value: dict[str, Any]) -> None:
     rate = sum(item["success"] for item in outcomes) / count
     if metrics.get("task_success_rate") != rate or metrics.get("mean_turns") != 2.0:
         raise EvidenceError("variant metrics do not reproduce from outcomes")
+    if value["variant"] == "no_memory" and (
+        any(PIXIU_TOOLS.intersection(item["tools"]) for item in taught)
+        or any(PIXIU_TOOLS.intersection(item["recall_tools"]) for item in outcomes)
+    ):
+        raise EvidenceError("no-memory report contains PIXIU tool execution")
 
 
 def build_matrix(paths: list[Path], dataset_path: Path) -> dict[str, Any]:
@@ -489,6 +503,7 @@ def main() -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     snap = sub.add_parser("snapshot")
     snap.add_argument("--variant", choices=sorted(VARIANTS), required=True)
+    snap.add_argument("--role", choices=("teach", "recall"), required=True)
     snap.add_argument("--native-evidence", type=Path, required=True)
     snap.add_argument("--runtime-config", type=Path, required=True)
     snap.add_argument("--runtime-env", type=Path, required=True)
@@ -515,7 +530,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "snapshot":
-            result = snapshot(variant=args.variant, native_path=args.native_evidence,
+            result = snapshot(variant=args.variant, role=args.role, native_path=args.native_evidence,
                               config_path=args.runtime_config, env_path=args.runtime_env,
                               gateway_url=args.gateway_url, backend_url=args.backend_url,
                               node_path=args.node_manifest)

@@ -173,7 +173,7 @@ profile、外部 provider 和同步并只用非持久化 compressor context，�
 
 ```bash
 python3 build/release/scripts/agent-memory-ablation.py snapshot \
-  --variant VARIANT --native-evidence NATIVE_SDK_JSON \
+  --variant VARIANT --role teach-or-recall --native-evidence NATIVE_SDK_JSON \
   --runtime-config RUNTIME_CONFIG_YAML --runtime-env RUNTIME_ENV_FILE \
   --node-manifest DISTRIBUTED_NODE_MANIFEST_IF_REQUIRED \
   --output VARIANT_NODE_SNAPSHOT_JSON
@@ -244,6 +244,10 @@ Agent、性能、数据集、安装/升级矩阵、三设备和 Agent 供应链�
 三设备最终套件还会递归重建两份拓扑、四份场景，并从归档内节点清单/检查点重新运行
 原场景校验器；供应链会重读构建产物、对应源码、日志、wheel、锁文件、SBOM 与 NOTICE，
 核对摘要、固定 commit、离线性和许可证覆盖。同样检查会在 ZIP 解包复验时重跑。
+
+消融矩阵还会递归到固定任务集、三份逐任务报告、教学/召回配置快照和分布式节点
+manifest；归档器重新运行变体校验、复算指标并确认跨节点身份。Runtime 原始配置和
+`.env` 可能含密钥，禁止入档；只归档采集器产生的去敏快照及其原文件摘要。
 
 ## 安装、升级、回滚与卸载矩阵取证
 

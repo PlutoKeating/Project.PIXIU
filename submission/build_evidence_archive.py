@@ -216,6 +216,82 @@ def validate_embedded_sources(
     return []
 
 
+def validate_ablation_sources(
+    documents: dict[str, dict[str, Any]], attachment_paths: list[Path]
+) -> list[str]:
+    """Rebuild the Agent ablation chain from archived reports and snapshots."""
+    try:
+        performance = documents["performance"]
+        performance_sources = performance["source_sha256"]
+        by_digest = {sha256_file(path): path for path in attachment_paths}
+        comparison_path = by_digest[performance_sources["comparison"]]
+        matrix = read_json(comparison_path)
+        spec = importlib.util.spec_from_file_location(
+            "pixiu_embedded_ablation_validator",
+            ROOT / "build/release/scripts/agent-memory-ablation.py",
+        )
+        if spec is None or spec.loader is None:
+            raise RuntimeError("ablation validator cannot be loaded")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.validate_matrix(matrix)
+        task_path = by_digest[matrix["task_set_sha256"]]
+        tasks = module.validate_task_set(read_json(task_path))
+        expected_task_ids = {task["id"] for task in tasks}
+        release = matrix["release"]
+        variant_sources = matrix["source_variant_sha256"]
+        rebuilt_variants = []
+        distributed_snapshots: list[dict[str, Any]] = []
+        for variant in sorted(module.VARIANTS):
+            report_path = by_digest[variant_sources[variant]]
+            report = read_json(report_path)
+            module.validate_variant_report(report)
+            if not (
+                report["variant"] == variant
+                and report["release"] == release
+                and report["task_set_sha256"] == matrix["task_set_sha256"]
+                and {item["task_id"] for item in report["outcomes"]} == expected_task_ids
+            ):
+                raise ValueError(f"ablation variant does not bind the matrix task set: {variant}")
+            sources = report.get("source_sha256")
+            if not isinstance(sources, dict) or set(sources) != {"native", "teach_snapshot", "recall_snapshot"}:
+                raise ValueError(f"ablation variant source map is incomplete: {variant}")
+            if sources["native"] != performance_sources["native"]:
+                raise ValueError(f"ablation variant identifies another native run: {variant}")
+            snapshots = []
+            for phase, role in (("teach_snapshot", "teach"), ("recall_snapshot", "recall")):
+                snapshot = read_json(by_digest[sources[phase]])
+                module.validate_snapshot(snapshot, variant, release, role)
+                snapshots.append(snapshot)
+                if snapshot["native_evidence_sha256"] != performance_sources["native"]:
+                    raise ValueError(f"ablation snapshot identifies another native run: {variant}")
+                node_sha = snapshot.get("node_manifest_sha256")
+                if variant == "distributed_memory":
+                    node_manifest = read_json(by_digest[node_sha])
+                    module._validate_node_manifest(node_manifest, release)
+                    if node_manifest.get("run_id") != snapshot.get("topology_run_id"):
+                        raise ValueError("distributed snapshot and node manifest run differ")
+            if variant == "distributed_memory":
+                if (
+                    snapshots[0]["node_identity_digest"] == snapshots[1]["node_identity_digest"]
+                    or snapshots[0]["topology_run_id"] != snapshots[1]["topology_run_id"]
+                ):
+                    raise ValueError("distributed ablation is not a cross-device recall")
+                distributed_snapshots = snapshots
+            rebuilt_variants.append({
+                "name": variant,
+                "sample_count": report["sample_count"],
+                "metrics": report["metrics"],
+            })
+        if sorted(rebuilt_variants, key=lambda item: item["name"]) != matrix["variants"]:
+            raise ValueError("ablation matrix does not reproduce from variant reports")
+        if len(distributed_snapshots) != 2:
+            raise ValueError("distributed ablation snapshots are missing")
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError, RuntimeError) as exc:
+        return [f"ablation source validation failed: {exc}"]
+    return []
+
+
 def validate_install_sources(
     documents: dict[str, dict[str, Any]], attachment_paths: list[Path]
 ) -> list[str]:
@@ -594,6 +670,7 @@ def validate_cross_references(
         errors.append("agent_supply_chain: audited artifacts are not archived")
     if not errors:
         errors.extend(validate_embedded_sources(documents, attachment_paths))
+        errors.extend(validate_ablation_sources(documents, attachment_paths))
         errors.extend(validate_install_sources(documents, attachment_paths))
         errors.extend(validate_three_device_sources(documents, attachment_paths))
         errors.extend(validate_supply_chain_sources(documents, attachment_paths))

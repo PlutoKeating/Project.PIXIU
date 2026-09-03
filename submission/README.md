@@ -79,6 +79,9 @@ SHA-256 一致；供应链报告另须 `ready=true`。生成和复验都会拒�
 `performance` 主记录必须由 `final-performance-evidence.py` 生成并通过离线复核；其五个
 输入（原生、Agent、数据集、逐样本报告、三变体消融矩阵）应作为去敏附件一并保留，
 否则即使汇总百分比达标，也不满足 D-07 原始结果要求。
+消融附件还必须包含固定任务集、三份逐任务报告、六份去敏 Runtime 快照和分布式节点
+manifest；归档器会复算全部结果并核对跨节点身份。不得归档可能含密钥的原始
+`config.yaml` 或 `.env`。
 其中逐样本报告必须来自安装包内 `capture_final_eval.py`，携带真实双 SDK runtime、安装
 路径、native 证据摘要和同版 release identity；归档器会再次核对，portable 报告无效。
 
@@ -94,7 +97,7 @@ operation JSON、动作前后快照和 proof 均须作为 `--attachment` 加入�
 归档器会深度复核全部七类主记录，并要求 Agent 引用归档内 native、
 性能引用三类主记录及实际逐样本/消融附件、dataset manifest 引用实际冻结 JSON。
 它会重新规范化数据集、重新评分两个性能附件，逐层复核安装 operation/快照/proof，
-递归重建三设备拓扑/场景，并复核 Agent 供应链全部构建、离线安装与许可证实物；
+递归重建消融任务/变体/快照与三设备拓扑/场景，并复核 Agent 供应链全部构建、离线安装与许可证实物；
 外层字段正确但内容或摘要不符仍会失败。
 
 `--package` 在任何门未通过、文件缺失、命名/格式错误、官方原件哈希改变或工作区不
