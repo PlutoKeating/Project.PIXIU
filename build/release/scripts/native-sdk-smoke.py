@@ -256,10 +256,13 @@ def run_direct_sdk_lifecycle(
     if not vector:
         raise RuntimeError("Kylin Embedding SDK returned an empty vector")
     client = client_factory(app_id="pixiu")
+    database_dir = Path(tempfile.mkdtemp(prefix="pixiu-vector-acceptance-"))
+    database_path = database_dir / "acceptance.db"
     create_attempted = False
     failure: Exception | None = None
-    cleanup_failure: Exception | None = None
+    cleanup_failures: list[Exception] = []
     try:
+        client.load_db_file(str(database_path))
         if client.has_collection(collection):
             raise RuntimeError("isolated acceptance collection already exists")
         create_attempted = True
@@ -296,17 +299,26 @@ def run_direct_sdk_lifecycle(
                 if client.has_collection(collection):
                     raise RuntimeError("acceptance collection cleanup was not confirmed")
             except Exception as exc:
-                cleanup_failure = exc
-    if failure is not None and cleanup_failure is not None:
+                cleanup_failures.append(exc)
+        try:
+            client.disconnect()
+        except Exception as exc:
+            cleanup_failures.append(exc)
+        try:
+            shutil.rmtree(database_dir)
+        except Exception as exc:
+            cleanup_failures.append(exc)
+    if failure is not None and cleanup_failures:
         raise RuntimeError(
-            f"direct SDK lifecycle failed and cleanup also failed: {cleanup_failure}"
+            f"direct SDK lifecycle failed and cleanup also failed: {cleanup_failures[0]}"
         ) from failure
     if failure is not None:
         raise failure
-    if cleanup_failure is not None:
-        raise cleanup_failure
+    if cleanup_failures:
+        raise cleanup_failures[0]
     return {
         "embedding": "passed",
+        "database_load": "passed",
         "collection_create": "passed",
         "collection_load": "passed",
         "vector_upsert": "passed",
@@ -314,6 +326,7 @@ def run_direct_sdk_lifecycle(
         "vector_delete": "passed",
         "deleted_vector_hidden": "passed",
         "collection_drop": "passed",
+        "disconnect": "passed",
     }
 
 

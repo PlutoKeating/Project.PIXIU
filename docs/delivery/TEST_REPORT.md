@@ -26,8 +26,9 @@ KYSDK/strict 错配拒绝，以及用户态 Agent/runtime 缺失、版本命令�
 在目标 V11 保存完整真实结果。
 原生取证器单测另验证：非严格 manifest 必须拒绝；成功证据绑定候选包摘要/commit、
 包内与已装 manifest、dpkg 的 PIXIU/双 SDK 版本、Agent runtime 和三个端点；隔离集合
-直接执行 create/load/upsert/search/delete/drop，产品 API 另走写入/召回/遗忘且失败
-时清理。该测试只证明取证器逻辑，不能替代目标 V11 的真实输出。
+直接执行 LoadDBFile/create/load/upsert/search/delete/drop/disconnect，产品 API 另走
+写入/召回/遗忘且失败时清理数据库与集合。该测试只证明取证器逻辑，不能替代目标
+V11 的真实输出。
 取证器随后修正运行端点组件标识为实际的 `pixiu-memory-backend`，并强制把已安装的
 `/usr/lib/pixiu` 放到导入路径首位，避免工作副本源码遮蔽候选包；对应 7 项单测通过。
 提交 `ea92b28` 已在 V11 amd64/Python 3.12 按 strict profile 完成 `KYSDK=ON` 构建：

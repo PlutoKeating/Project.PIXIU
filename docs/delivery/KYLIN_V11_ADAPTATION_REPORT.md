@@ -34,6 +34,8 @@ Agent 宿主/runtime 与双 SDK 真服务调用仍未完成，不得宣称 H-02/
 摘要/commit、已装 manifest、dpkg 架构与 PIXIU/双 SDK 版本、Agent runtime 和三个
 运行端点，再以唯一临时集合直测 SDK 全生命周期并清理。当前仅完成脚本及隔离测试，
 尚无最终候选的目标 V11 输出。
+取证生命周期已补齐官方 demo 的 `LoadDBFile` 与 `Disconnect`，数据库放在独立临时
+目录并在断开后清理，避免验收数据污染用户的生产向量库。
 严格画像的目标构建发现桌面 KylinSDK 与 gsettings-qt 运行包不提供 `pkg-config` 开发
 元数据；画像已补入系统仓库确认存在的 gsettings-qt 及 shortcut/notification/
 qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足以通过前端配置和

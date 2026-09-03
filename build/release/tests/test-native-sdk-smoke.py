@@ -151,6 +151,13 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 return [0.25, 0.75]
 
         class Client:
+            def load_db_file(self, path: str) -> None:
+                self.database_path = path
+                calls.append("load_db")
+
+            def disconnect(self) -> None:
+                calls.append("disconnect")
+
             def has_collection(self, name: str) -> bool:
                 calls.append("has")
                 return getattr(self, "created", False)
@@ -183,9 +190,13 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 calls.append("drop")
                 self.created = False
 
+        clients: list[Client] = []
+
         def client_factory(**kwargs):
             connection.update(kwargs)
-            return Client()
+            client = Client()
+            clients.append(client)
+            return client
 
         result = MODULE.run_direct_sdk_lifecycle(
             embedder_factory=Embedder,
@@ -196,6 +207,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
             calls,
             [
                 "embed",
+                "load_db",
                 "has",
                 "create",
                 "load",
@@ -206,8 +218,10 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 "has",
                 "drop",
                 "has",
+                "disconnect",
             ],
         )
+        self.assertFalse(Path(clients[0].database_path).exists())
         self.assertEqual(result["collection_drop"], "passed")
 
         calls.clear()
@@ -217,7 +231,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 embedder_factory=Embedder,
                 client_factory=client_factory,
             )
-        self.assertEqual(calls[-3:], ["has", "drop", "has"])
+        self.assertEqual(calls[-4:], ["has", "drop", "has", "disconnect"])
 
     def test_rejects_non_loopback_service_url(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "loopback"):

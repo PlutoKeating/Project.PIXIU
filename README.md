@@ -131,8 +131,9 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 其中 commit/版本/架构须与包内组件清单和 dpkg 元数据自洽，并记录规范化生成命令；
 随后对清单自身再做 Ed25519 签名。原生取证脚本现会把包内 commit/版本/架构/strict
 画像、本次 `.deb` SHA-256 与已装 PIXIU、双 SDK 包版本、Agent runtime、`/version`、
-`/health`、`/capabilities` 绑定；另以隔离集合直接执行 SDK 的 create/load/upsert/
-search/delete/drop，再验证产品 API 写入/召回/遗忘。首次目标 V11 严格候选证据仍待
+`/health`、`/capabilities` 绑定；另以独立临时数据库和隔离集合直接执行 SDK 的
+LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 API 写入/
+召回/遗忘。首次目标 V11 严格候选证据仍待
 生成，未生成前不得将 H-02/H-03 标为通过。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按
 调用进程 UID 隔离，而当前后端以专用系统账户运行，不能直接复用桌面用户会话中的
