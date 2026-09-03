@@ -19,7 +19,7 @@
    ```bash
    sudo apt install ./build/dist/pixiu-frontend_0.1.0-1_amd64.deb
    ```
-2. 后端已启动（24 个 REST 端点全部真实实现，含 `/memory/query`、`/sync/*`、
+2. 后端已启动（30 个 REST 端点全部真实实现，含 `/memory/query`、`/sync/*`、
    `/monitor/*`、`/delivery/*`、`/memory/flow/promote`；六类 WS 事件
    （memory_ready / conflict_detected / forget_confirmation / sync_event /
    capture_event / pair_request）均已真实广播（`/events` 注册 2026-08-20 修复）；

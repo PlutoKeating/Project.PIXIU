@@ -704,14 +704,6 @@ This action cannot be undone.</translation>
         <source>未发现附近设备</source>
         <translation>No nearby devices found</translation>
     </message>
-    <message>
-        <source>立即同步</source>
-        <translation>Sync now</translation>
-    </message>
-    <message>
-        <source>立即执行同步</source>
-        <translation>Run sync now</translation>
-    </message>
 </context>
 <context>
     <name>MessageList</name>
@@ -974,8 +966,8 @@ Your input is kept; edit and retry.</translation>
         <translation>Memory stored</translation>
     </message>
     <message>
-        <source>配对接口待后端实现（Phase 6）</source>
-        <translation>Pairing API pending backend implementation (Phase 6)</translation>
+        <source>当前后端版本不支持设备配对</source>
+        <translation>The current backend version does not support device pairing</translation>
     </message>
     <message>
         <source>配对成功：%1</source>
@@ -1006,12 +998,12 @@ Your input is kept; edit and retry.</translation>
         <translation>Unbound device %1</translation>
     </message>
     <message>
-        <source>解绑接口待后端实现（Phase 6）</source>
-        <translation>Unbind API pending backend implementation (Phase 6)</translation>
+        <source>当前后端版本不支持设备解绑</source>
+        <translation>The current backend version does not support device unbinding</translation>
     </message>
     <message>
-        <source>节点列表与同步状态待后端实现（Phase 6）</source>
-        <translation>Peer list and sync status pending backend implementation (Phase 6)</translation>
+        <source>当前后端版本不支持同步状态查询</source>
+        <translation>The current backend version does not support sync status queries</translation>
     </message>
     <message>
         <source>同步刷新失败（%1）：%2</source>
@@ -1078,8 +1070,8 @@ Your input is kept; edit and retry.</translation>
         <translation>Pairing confirmation failed: %1</translation>
     </message>
     <message>
-        <source>退出网络失败：解绑接口待后端实现</source>
-        <translation>Failed to leave network: unbind API pending backend implementation</translation>
+        <source>退出网络失败：当前后端版本不支持设备解绑</source>
+        <translation>Failed to leave the network: the current backend version does not support device unbinding</translation>
     </message>
     <message>
         <source>退出网络失败（%1）：%2</source>

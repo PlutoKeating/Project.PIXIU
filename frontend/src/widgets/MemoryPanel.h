@@ -105,8 +105,6 @@ signals:
     void syncPairRequested(const QString &targetId);
     // 用户已确认退出网络（整网解除，逐台 revoke 由应用层执行）。
     void syncLeaveRequested();
-    // 用户请求立即同步（复用 refresh 语义）。
-    void syncNowRequested();
 
 protected:
     // Esc 关闭面板（键盘可达）。
@@ -143,7 +141,6 @@ private:
     QListWidget *m_discoveredDeviceList = nullptr;
     QLabel *m_discoverEmptyLabel = nullptr;
     QPushButton *m_pairButton = nullptr;
-    QPushButton *m_syncNowButton = nullptr;
     QPushButton *m_leaveNetworkButton = nullptr;
     QDialog *m_leaveConfirmDialog = nullptr;
     QLabel *m_leaveConfirmText = nullptr;

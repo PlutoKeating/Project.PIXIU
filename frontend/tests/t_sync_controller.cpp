@@ -69,7 +69,6 @@ private slots:
     void requestPairingSendsTargetAndForwardsPin();
     void confirmPairingForwardsResult();
     void updateSettingsSendsBothAndForwards();
-    void syncNowReusesRefresh();
     void pairingNotImplementedIsReported();
     void newFlowErrorsAreForwarded();
     void newFlowStaleResponsesAreIgnored();
@@ -352,17 +351,6 @@ void TestSyncController::updateSettingsSendsBothAndForwards()
     const QJsonObject result = settingsSpy.takeFirst().at(0).toJsonObject();
     QCOMPARE(result.value(QStringLiteral("enabled")).toBool(), false);
     QCOMPARE(result.value(QStringLiteral("paused")).toBool(), true);
-}
-
-void TestSyncController::syncNowReusesRefresh()
-{
-    FakeTransport transport;
-    SyncController controller(&transport);
-
-    // 后端无 /sync/now 端点：立即同步复用 refresh（listPeers + syncStatus）。
-    controller.syncNow();
-    QCOMPARE(transport.listPeersCalls, 1);
-    QCOMPARE(transport.syncStatusCalls, 1);
 }
 
 void TestSyncController::pairingNotImplementedIsReported()

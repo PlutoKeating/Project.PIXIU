@@ -4,7 +4,7 @@
 
 **Goal:** 将 PIXIU 去中心化网状同步升级为默认开启、GUI 可管理的多人场景功能：mDNS 发现未配对设备、确认式配对入网、main 主干 + 快进检测 + 分叉人工仲裁、运行时开关（enabled/paused）、同步 Tab 全量管理控件。
 
-**Architecture:** 后端扩展 sync 层（discovery 广播未配对能力、pair request/confirm 通道、mainline 快进判定置于 CRDT 之上、运行时设置存储）；前端升级记忆面板同步 Tab（总开关/暂停/发现列表/退出网络/立即同步/冲突横幅），移除单设备解绑。契约写回 docs/API.md。
+**Architecture:** 后端扩展 sync 层（discovery 广播未配对能力、pair request/confirm 通道、mainline 快进判定置于 CRDT 之上、运行时设置存储）；前端升级记忆面板同步 Tab（总开关/暂停/发现列表/退出网络/状态刷新/冲突横幅），移除单设备解绑。契约写回 docs/API.md。原计划中的“立即同步”最终未保留：后端没有对应动作，自动 Gossip/反熵继续负责同步。
 
 **Tech Stack:** Python 3.12 · FastAPI · zeroconf(mDNS) · SQLite | C++17 · Qt5 Widgets · QtTest(offscreen)
 
@@ -881,7 +881,7 @@ git commit -m "feat(sync): default-on runtime sync settings"
 
 **Interfaces:**
 - Consumes: 既有 HttpBackendTransport.postJson/getJson/putJson（存在 putJson？实现时查——若无则补）、EventRouter 既有 isKnownBusinessEvent
-- Produces: `SyncController::discover() -> 信号 discoveredDevices(QJsonArray)`；`requestPairing(QString targetId)`；`confirmPairing(QString requestId, bool accept)`；`updateSettings(bool enabled, bool paused)`；`syncNow()`；`EventRouter::pairingRequested(QJsonObject)` 信号
+- Produces: `SyncController::discover() -> 信号 discoveredDevices(QJsonArray)`；`requestPairing(QString targetId)`；`confirmPairing(QString requestId, bool accept)`；`updateSettings(bool enabled, bool paused)`；`EventRouter::pairingRequested(QJsonObject)` 信号
 - 契约形状与 docs/API.md Task 1/2/4 一致。
 
 - [ ] **Step 1: 写失败测试**（t_sync_controller.cpp，offscreen，仿 t_app_navigation 隔离配方）
@@ -915,13 +915,13 @@ git commit -m "feat(frontend): sync network transport and controller"
 
 ---
 
-## Task 6: 同步 Tab 升级（开关/发现/退出/手动同步/冲突横幅 + 移除单设备解绑）
+## Task 6: 同步 Tab 升级（开关/发现/退出/状态刷新/冲突横幅 + 移除单设备解绑）
 
 **Covers:** [S3.1, S3.2, S6]
 
 **Files:**
 - Modify: `frontend/src/widgets/MemoryPanel.h/.cpp`（同步 Tab 控件集 + 冲突横幅 + showConflictTab）
-- Modify: `frontend/src/widgets/MemoryPanel.cpp` createSyncTab（总开关/暂停/发现列表/退出网络/立即同步/冲突横幅）
+- Modify: `frontend/src/widgets/MemoryPanel.cpp` createSyncTab（总开关/暂停/发现列表/退出网络/状态刷新/冲突横幅）
 - Modify: `frontend/src/app/PixiuApp.h/.cpp`（pair_request WS 接线 → 配对确认对话框；冲突横幅计数联动）
 - Modify: `frontend/src/app/SyncController.h/.cpp`（leaveNetwork 批处理）
 - Modify: `frontend/src/widgets/PairDialog.cpp`（可选：适配确认式配对）
@@ -930,8 +930,8 @@ git commit -m "feat(frontend): sync network transport and controller"
 
 **Interfaces:**
 - Consumes: Task 5 的 SyncController 信号、GET /sync/status（含 enabled/paused）、`/sync/peers`、`/sync/discover`、conflicts 列表
-- Produces: 同步 Tab 控件 objectName：`syncMasterSwitch`/`syncPauseSwitch`/`discoveredDeviceList`/`leaveNetworkButton`/`syncNowButton`/`syncConflictBanner`；配对确认对话框（`pairRequestDialog`）
-- 行为：总开关默认开（初始值 GET status.enabled）；off 时下级控件禁用；暂停仅停传输；发现列表「配对」→ requestPairing → 对方 confirm；「退出网络」确认框 → 逐台 revoke（复用既有 /sync/peers/{id}/revoke）；「立即同步」→ syncNow；横幅 N>0 可见、点击 showConflictTab()。
+- Produces: 同步 Tab 控件 objectName：`syncMasterSwitch`/`syncPauseSwitch`/`discoveredDeviceList`/`leaveNetworkButton`/`syncConflictBanner`；配对确认对话框（`pairRequestDialog`）
+- 行为：总开关默认开（初始值 GET status.enabled）；off 时下级控件禁用；暂停仅停传输；发现列表「配对」→ requestPairing → 对方 confirm；「退出网络」确认框 → 逐台 revoke（复用既有 /sync/peers/{id}/revoke）；状态刷新读取 peers/status；横幅 N>0 可见、点击 showConflictTab()。
 
 - [ ] **Step 1: 写失败测试**（t_app_navigation 扩展两用例：syncMasterSwitchDefaultOnAndGates、leaveNetworkButtonShowsConfirmAndRevokesAll；t_memory_panel 若存在加 discoverListRenders + conflictBannerCounts）
 

@@ -371,8 +371,8 @@ bool PixiuApp::start()
     connect(m_transport, &BackendTransport::monitorLogResult, this,
             &PixiuApp::handleMonitorLogResult);
 
-    // 设备配对（Phase 6 壳）：UI 与契约载荷已就绪；后端 /sync/pair 落地后
-    // 真实闭环，当前如实呈现 not_implemented / 网络错误，不伪造成功。
+    // 设备配对：UI 与当前 /sync/pair 契约闭环；仍兼容旧后端的
+    // not_implemented 响应，并如实呈现网络错误/未知状态，不伪造成功。
     connect(m_memoryPanel, &MemoryPanel::pairRequested, this,
             [this](const QJsonObject &payload) {
                 m_pairPending = true;
@@ -396,7 +396,7 @@ bool PixiuApp::start()
                     response.value(QStringLiteral("status")).toString();
                 if (status == QStringLiteral("not_implemented")) {
                     m_memoryPanel->setSyncStatus(
-                        tr("配对接口待后端实现（Phase 6）"));
+                        tr("当前后端版本不支持设备配对"));
                     return;
                 }
                 // 契约成功态为 "paired"（docs/API.md §3.8）；其余状态如实
@@ -481,8 +481,8 @@ bool PixiuApp::start()
     });
     m_deliveryController->loadInsights();
 
-    // 同步管理：总开关/暂停/发现/确认式配对/退出网络/立即同步（SN-6）。
-    // 后端占位返回 not_implemented 时如实呈现，不伪造节点或成功状态。
+    // 同步管理：总开关/暂停/发现/确认式配对/退出网络（SN-6）。
+    // 兼容旧后端的 not_implemented 响应，不伪造节点或成功状态。
     m_syncController = new SyncController(m_transport, this);
     connect(m_memoryPanel, &MemoryPanel::syncRefreshRequested,
             m_syncController, &SyncController::refresh);
@@ -494,8 +494,6 @@ bool PixiuApp::start()
             m_syncController, &SyncController::requestPairing);
     connect(m_memoryPanel, &MemoryPanel::syncLeaveRequested,
             this, &PixiuApp::startLeaveNetwork);
-    connect(m_memoryPanel, &MemoryPanel::syncNowRequested,
-            m_syncController, &SyncController::syncNow);
     connect(m_syncController, &SyncController::peersLoaded, this,
             [this](const QJsonArray &peers) {
                 m_syncPeers = peers;
@@ -568,16 +566,16 @@ bool PixiuApp::start()
                     m_leaveRevoking = false;
                     m_leaveRevokeQueue.clear();
                     m_memoryPanel->setSyncStatus(
-                        tr("退出网络失败：解绑接口待后端实现"));
+                        tr("退出网络失败：当前后端版本不支持设备解绑"));
                     m_syncController->refresh();
                     return;
                 }
                 if (feature == QStringLiteral("revoke")) {
                     m_memoryPanel->setSyncStatus(
-                        tr("解绑接口待后端实现（Phase 6）"));
+                        tr("当前后端版本不支持设备解绑"));
                 } else {
                     m_memoryPanel->setSyncStatus(
-                        tr("节点列表与同步状态待后端实现（Phase 6）"));
+                        tr("当前后端版本不支持同步状态查询"));
                 }
             });
     connect(m_syncController, &SyncController::failed, this,

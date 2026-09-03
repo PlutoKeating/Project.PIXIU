@@ -51,7 +51,7 @@ private slots:
     void setSyncSettingsGatesChildControls();
     void discoverListRendersAndPairButtonEmits();
     void discoverListShowsEmptyState();
-    void syncNowButtonEmitsRequest();
+    void syncTabDoesNotOfferFakeManualSync();
     void conflictBannerCountsAndJumps();
     void leaveNetworkFlowShowsConfirmAndEmits();
     void extractButtonEmitsRequest();
@@ -588,17 +588,13 @@ void TestMemoryPanel::setSyncSettingsGatesChildControls()
         panel.findChild<QCheckBox *>(QStringLiteral("syncPauseSwitch"));
     QPushButton *pair =
         panel.findChild<QPushButton *>(QStringLiteral("pairDeviceButton"));
-    QPushButton *now =
-        panel.findChild<QPushButton *>(QStringLiteral("syncNowButton"));
     QListWidget *discovered =
         panel.findChild<QListWidget *>(QStringLiteral("discoveredDeviceList"));
     QVERIFY(pause != nullptr);
     QVERIFY(pair != nullptr);
-    QVERIFY(now != nullptr);
     QVERIFY(discovered != nullptr);
     QVERIFY(pause->isEnabled());
     QVERIFY(pair->isEnabled());
-    QVERIFY(now->isEnabled());
 
     // 程序化回填（GET /sync/status 或 PUT 回声）不得发射请求信号（防回环）。
     QSignalSpy spy(&panel, &MemoryPanel::syncSettingsRequested);
@@ -606,7 +602,6 @@ void TestMemoryPanel::setSyncSettingsGatesChildControls()
     QCOMPARE(spy.count(), 0);
     QVERIFY(!pause->isEnabled());
     QVERIFY(!pair->isEnabled());
-    QVERIFY(!now->isEnabled());
     QVERIFY(!discovered->isEnabled());
     QVERIFY(pause->isChecked());   // paused=true 回填到开关
 
@@ -615,7 +610,6 @@ void TestMemoryPanel::setSyncSettingsGatesChildControls()
     QCOMPARE(spy.count(), 0);
     QVERIFY(pause->isEnabled());
     QVERIFY(pair->isEnabled());
-    QVERIFY(now->isEnabled());
     QVERIFY(!pause->isChecked());
 }
 
@@ -694,15 +688,13 @@ void TestMemoryPanel::discoverListShowsEmptyState()
     QVERIFY(!empty->isHidden());
 }
 
-void TestMemoryPanel::syncNowButtonEmitsRequest()
+void TestMemoryPanel::syncTabDoesNotOfferFakeManualSync()
 {
     MemoryPanel panel;
-    QSignalSpy spy(&panel, &MemoryPanel::syncNowRequested);
-    QPushButton *button =
-        panel.findChild<QPushButton *>(QStringLiteral("syncNowButton"));
-    QVERIFY(button != nullptr);
-    QTest::mouseClick(button, Qt::LeftButton);
-    QCOMPARE(spy.count(), 1);
+    QVERIFY(panel.findChild<QPushButton *>(QStringLiteral("syncNowButton"))
+            == nullptr);
+    QVERIFY(panel.findChild<QPushButton *>(QStringLiteral("syncRefreshButton"))
+            != nullptr);
 }
 
 void TestMemoryPanel::conflictBannerCountsAndJumps()

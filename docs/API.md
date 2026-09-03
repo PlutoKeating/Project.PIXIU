@@ -82,7 +82,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 
-> 状态说明（2026-09-03）：27 个 REST 端点已按本文档契约真实实现；
+> 状态说明（当前）：30 个 REST 端点已按本文档契约真实实现；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md

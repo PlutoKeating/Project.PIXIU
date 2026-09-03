@@ -10,7 +10,7 @@ PIXIU 的多人场景价值主张是"多设备集体 agent memory 同步"：设�
 - mDNS 仅服务**已配对设备**（`TrustedPeerDirectory` 信任过滤），未配对设备不可被发现；
 - 配对为**令牌式**（QR/PIN），无"一键发现 + 对方确认"的 GUI 主路径；
 - 冲突处理为 **LWW 人人平等**（后写者胜），无"main 主干 + 快进检测 + 人工仲裁"语义；
-- 前端同步 Tab 仅有「配对设备」「刷新」入口 + 节点列表/摘要，无总开关/发现/退出/手动同步/冲突入口。
+- 前端同步 Tab 当时仅有「配对设备」「刷新」入口 + 节点列表/摘要，无总开关/发现/退出/冲突入口。
 
 本批次目标：**默认开启、GUI 可管理、main 主干 + 快进 + 人工仲裁**。
 
@@ -60,8 +60,7 @@ PIXIU 的多人场景价值主张是"多设备集体 agent memory 同步"：设�
 4. **附近设备发现列表**（objectName=`discoveredDeviceList`，QListWidget；每项：设备名+地址+「配对」按钮；数据源 GET /sync/discover；点击配对 → POST /sync/pair/request → 等待对方确认态；收到 WS `pair_request` → 弹确认框）；
 5. **已配对节点列表**（既有 `peerList`；**移除每个节点的 RevokeDialog 解绑入口**——功能移除，节点仅展示名称/在线/上次同步）；
 6. **「退出网络」按钮**（objectName=`leaveNetworkButton`，确认对话框「将解除全部 N 台设备配对并停止同步，确定？」→ 逐台 revoke 或新增 `POST /sync/leave`（实现选一，倾向逐台复用既有 revoke 端点）→ 回单机态）；
-7. **「立即同步」按钮**（objectName=`syncNowButton` → 触发一次 `POST /sync/now` 或复用 `syncRefreshRequested` 强化（实现选一，倾向复用现有 refresh + 后端 run_once））；
-8. **「待处理冲突 N」横幅**（objectName=`syncConflictBanner`，仅 N>0 可见；点击 → `showConflictTab()` 聚焦冲突 Tab）。
+7. **「待处理冲突 N」横幅**（objectName=`syncConflictBanner`，仅 N>0 可见；点击 → `showConflictTab()` 聚焦冲突 Tab）。
 - i18n：全部新文案 tr() 中文源文本；Task 收尾 lupdate/lrelease。
 - 新增交互态：pairRequestPending / pairConfirmDialog / leavingNetwork（防重复点击）。
 
@@ -100,5 +99,4 @@ PIXIU 的多人场景价值主张是"多设备集体 agent memory 同步"：设�
 ## [S7] 风险与开放点
 - 默认开启的安全暴露面（mDNS 广播）——已在 S2.4 提示，UI 引导关闭入口；
 - main 主干语义与既有 LWW 合并的兼容性：新 mainline 判定置于 CRDT 之上，需对既有三节点收敛测试回归不破坏；
-- 「立即同步」与「暂停传输」并发语义：paused 时立即同步是否允许（倾向：paused 时按钮禁用并提示）；
 - pair_request WS 帧在目标机离线时的处理（倾向：请求 TTL 内目标上线仍可确认，需后端队列语义确认——实现时若超出 TTL 则拒绝并提示）。

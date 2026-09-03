@@ -435,9 +435,6 @@ void MemoryPanel::updateSyncControlsEnabled()
     if (m_discoveredDeviceList) {
         m_discoveredDeviceList->setEnabled(active);
     }
-    if (m_syncNowButton) {
-        m_syncNowButton->setEnabled(active);
-    }
     if (m_leaveNetworkButton) {
         m_leaveNetworkButton->setEnabled(active && m_syncPeerCount > 0);
     }
@@ -813,14 +810,6 @@ QWidget *MemoryPanel::createSyncTab()
         m_pairDialog->showAndFocus();
     });
 
-    // 立即同步：复用 refresh 语义（后端无 /sync/now 端点）。
-    m_syncNowButton = new QPushButton(tr("立即同步"), page);
-    m_syncNowButton->setObjectName(QStringLiteral("syncNowButton"));
-    m_syncNowButton->setAccessibleName(tr("立即执行同步"));
-    m_syncNowButton->setCursor(Qt::PointingHandCursor);
-    connect(m_syncNowButton, &QPushButton::clicked,
-            this, &MemoryPanel::syncNowRequested);
-
     // 退出网络：整网解除（逐台 revoke 由应用层执行）。
     m_leaveNetworkButton = new QPushButton(tr("退出网络"), page);
     m_leaveNetworkButton->setObjectName(QStringLiteral("leaveNetworkButton"));
@@ -843,7 +832,6 @@ QWidget *MemoryPanel::createSyncTab()
 
     QHBoxLayout *buttonRow = new QHBoxLayout();
     buttonRow->addWidget(m_pairButton);
-    buttonRow->addWidget(m_syncNowButton);
     buttonRow->addWidget(m_leaveNetworkButton);
     buttonRow->addWidget(refreshButton);
     buttonRow->addStretch(1);

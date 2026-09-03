@@ -12,7 +12,7 @@ class BackendTransport;
 // 的请求与结果上抛（Phase 6 节点列表 / 同步状态 / 解绑）。
 //
 // 契约语义（docs/API.md §3.9-3.11）：
-//   - 后端占位实现返回 {"status":"not_implemented"}（HTTP 200）时，如实上报
+//   - 兼容旧后端的 {"status":"not_implemented"}（HTTP 200）响应并如实上报
 //     notImplemented(feature)，不把空数组/空对象当作成功；
 //   - 解绑仅在契约成功态 status=revoked 时上报 revoked；
 //   - 网络/HTTP/API 错误走 failed，不伪造成功。
@@ -42,10 +42,6 @@ public:
 
     // 运行时开关更新（PUT /sync/settings）。结果经 settingsResult 上抛。
     void updateSettings(bool enabled, bool paused);
-
-    // 立即同步：后端无 /sync/now 端点，复用 refresh()（syncStatus + peers）
-    // 语义，结果仍经 syncStatusLoaded/peersLoaded 上抛（无独立结果信号）。
-    void syncNow();
 
 signals:
     void peersLoaded(const QJsonArray &peers);

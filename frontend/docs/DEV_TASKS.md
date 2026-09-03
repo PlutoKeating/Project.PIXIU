@@ -4,7 +4,7 @@
 > **目录**：`frontend/`
 > **技术栈**：C++17 · Qt5 Widgets · KylinSDK
 > **开发人员**：1人（Qt/C++ 桌面开发）
-> **与后端契约**：`docs/API.md` 定义的 24 个 REST 端点 + WS
+> **与后端契约**：`docs/API.md` 定义的 30 个 REST 端点 + WS
 
 > [!IMPORTANT]
 > 2026-09-03 赛题复核后，Module A 已完成状态仅指 PIXIU 记忆控制台范围，
@@ -67,12 +67,11 @@
   双路径（KYSDK OFF/ON）ctest 31/31 全绿（含契约一致性测试
   `t_contract_fixtures`）；`.deb` 打包产物已在麒麟 V11 真机安装验证。
 - 后端契约历史基线（2026-08-10 合入 main）：当时 12 个 REST 端点已实现，当前
-  为 24 个（以 `docs/API.md` 为准），前端
+  为 30 个（以 `docs/API.md` 为准），前端
   传输层与解析已按真实响应形状对齐；2026-08-11 起后端经 request_id 中间件统一
   返回 `{error, message, request_id}`，前端两种形状（`error`/`detail`）均兼容。
-- 剩余均为**后端契约阻塞或人工验收项**：WS 的 conflict/forget 事件补齐、
-  证据详情/偏好列表/QR 令牌端点、真实麒麟 SDK 环境
-  性能与原生快捷键人工复测。
+- 上述历史后端契约缺口均已关闭；剩余为最终 Kylin V11 图形会话、双架构、完整
+  Agent、双 SDK 与多设备端到端人工验收。
 
 > 下文的文件清单为任务定义与优先级；已实现项以"实现状态"与
 > `frontend/docs/DEVELOPMENT_PLAN.md` 为准。
@@ -100,14 +99,14 @@
   复测（当前运行会话未加载 grab，详见 `UKUI_ADAPTATION_REPORT.md` 第 5 节）。
 - 新增测试专用 WS 事件桩 `scripts/ws_smoke_server.py`（仅用于前端 UI 事件
   冒烟，不参与生产路径；后端 `/events` 修复后以真实后端复测）。
-- Phase 6 设备配对 UI 壳（非阻塞部分，2026-08-09）：新增 `PairDialog`
+- Phase 6 设备配对前端切片（2026-08-09；后端闭环状态见本段末尾更新）：新增 `PairDialog`
   （PIN/二维码方式切换、6 位 PIN 门控、Esc/取消语义、契约载荷
   `{"method","pin","token"}`）、记忆面板同步 Tab 配对入口与状态行，
   PixiuApp 已接线 `/sync/pair` 并如实呈现 `not_implemented`/网络错误/未知状态
   （仅契约 `paired` 判成功，不伪造成功）；窗口与托盘图标改用内嵌
   `pixiu.svg`；新增 `t_pair_dialog`/`t_app_icon`，套件由 21 增至 23 例全绿，
   双路径回归脚本（OFF/ON 构建 + ctest + offscreen 冒烟 + desktop 校验 + `.deb`）
-  通过。真实配对闭环、节点列表/状态/解绑仍待 `foundation/sync` 契约落地。
+  通过。该历史切片当时等待 `foundation/sync`；相关契约已于 2026-08-29 全部落地。
 - 进度与验证记录以 `frontend/docs/DEVELOPMENT_PLAN.md` 为准；真实桌面会话复测与
   x86/ARM 目标机验收仍需人工执行。
 
@@ -131,9 +130,9 @@
   `t_revoke_dialog`（5 例）、`t_event_router`（7 例），扩展 `t_memory_panel`
   （同步 Tab 刷新/节点渲染/解绑流/摘要/冲突 Tab 切换）与 `t_forget_controller`
   （远端确认第二阶段）。i18n `.ts` 增至 127 条、0 未完成，`.qm` 已重新生成。
-- 仍被后端契约阻塞（记录待 Module C）：偏好列表、证据详情、二维码配对令牌、
-  `/memory/flow/promote` 的上下文来源、真实配对闭环/节点真实数据/真实事件
-  广播（见 `frontend/docs/DEVELOPMENT_PLAN.md` §1.3 与 §4 风险表）。
+- 本阶段曾等待 Module C 的偏好列表、证据详情、二维码配对令牌、
+  `/memory/flow/promote` 上下文来源、真实配对/节点数据和事件广播；这些历史阻塞均已
+  解除，当前状态见下方 2026-08-29 更新。
 
 > 更新（2026-08-29）：上述后端契约阻塞已全部解除——偏好列表/证据详情/二维码
 > 配对令牌于 2026-08-24 落地（`GET /preferences`、`GET /evidence/{id}`、

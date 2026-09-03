@@ -1073,25 +1073,21 @@ void TestAppNavigation::syncMasterSwitchDefaultOnAndGates()
     // PUT 回声回填开关。
     QVERIFY(!master->isChecked());
 
-    // off 禁用下级控件：暂停开关 / 配对 / 立即同步 / 退出网络 / 发现列表。
+    // off 禁用下级控件：暂停开关 / 配对 / 退出网络 / 发现列表。
     QCheckBox *pause = panel->findChild<QCheckBox *>(
         QStringLiteral("syncPauseSwitch"));
     QPushButton *pair = panel->findChild<QPushButton *>(
         QStringLiteral("pairDeviceButton"));
-    QPushButton *now = panel->findChild<QPushButton *>(
-        QStringLiteral("syncNowButton"));
     QPushButton *leave = panel->findChild<QPushButton *>(
         QStringLiteral("leaveNetworkButton"));
     QListWidget *discovered = panel->findChild<QListWidget *>(
         QStringLiteral("discoveredDeviceList"));
     QVERIFY(pause != nullptr);
     QVERIFY(pair != nullptr);
-    QVERIFY(now != nullptr);
     QVERIFY(leave != nullptr);
     QVERIFY(discovered != nullptr);
     QVERIFY(!pause->isEnabled());
     QVERIFY(!pair->isEnabled());
-    QVERIFY(!now->isEnabled());
     QVERIFY(!leave->isEnabled());
     QVERIFY(!discovered->isEnabled());
 

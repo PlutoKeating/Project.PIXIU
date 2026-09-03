@@ -2,7 +2,7 @@
 
 > **角色**：运行于银河麒麟桌面环境（UKUI）的 PIXIU 记忆控制台——桌面悬浮球 + 检索框 + 记忆管理面板。
 > **技术栈**：C++17 + Qt5 Widgets + KylinSDK（kysdk）。
-> **后端通信**：通过 `docs/API.md` 定义的 24 个 REST API 端点 + WS 事件推送（JSON over HTTP/D-Bus）。
+> **后端通信**：通过 `docs/API.md` 定义的 30 个 REST API 端点 + WS 事件推送（JSON over HTTP/D-Bus）。
 > **总体架构见**：`docs/ARCHITECTURE.md`；通俗介绍见同目录 `README.md`；开发任务见 `DEV_TASKS.md`。
 >
 > **与后端的隔离**：前端是**独立的 C++ Qt5 项目**，与后端（backend/）的代码零交叉、零引用。

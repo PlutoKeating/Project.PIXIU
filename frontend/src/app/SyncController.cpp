@@ -124,13 +124,6 @@ void SyncController::updateSettings(bool enabled, bool paused)
     m_transport->updateSyncSettings(enabled, paused);
 }
 
-void SyncController::syncNow()
-{
-    // 后端无 /sync/now 端点（SN-4 未实现）：立即同步复用 refresh() 语义，
-    // 即重新拉取同步状态与节点列表，结果经 syncStatusLoaded/peersLoaded 上抛。
-    refresh();
-}
-
 void SyncController::handlePeersResponse(const QJsonObject &response)
 {
     if (!m_peersPending) {

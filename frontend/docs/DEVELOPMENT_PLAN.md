@@ -18,20 +18,18 @@
 > `.deb` 产物校验），已固化为 `frontend/scripts/regression.sh`；中/英文案
 > i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
 > 适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
-> Phase 6 设备配对 UI 壳（非阻塞部分，2026-08-09）已完成：`PairDialog`、
+> Phase 6 设备配对前端切片（2026-08-09）已完成：`PairDialog`、
 > 同步 Tab 配对入口与状态行、`/sync/pair` 接线（如实呈现占位/错误，仅
 > `paired` 判成功）、窗口/托盘内嵌 `pixiu.svg` 图标；新增 `t_pair_dialog`/
-> `t_app_icon`，套件增至 23 例全绿，双路径回归通过；真实配对闭环与
-> 节点列表/状态/解绑仍待 `foundation/sync` 契约落地；
+> `t_app_icon`，套件增至 23 例全绿，双路径回归通过；真实配对、节点列表、状态和
+> 解绑已于后续 `foundation/sync` 批次落地；
 > Phase 6 同步管理 UI 与 WS 业务事件路由（2026-08-09）已完成：`SyncController`
 > + 同步 Tab 节点列表/同步摘要/刷新/解绑二次确认（`RevokeDialog`），
 > `BackendTransport::peersResult` 改为携带完整响应体以如实识别占位态；
 > `EventRouter` 将 `conflict_detected`/`forget_confirmation`/`sync_event`
 > 路由为通知、角标、面板刷新与远端遗忘确认（`ForgetController::confirmRemote`）；
 > 新增 `t_sync_controller`/`t_revoke_dialog`/`t_event_router`，套件增至 26 例
-> 全绿；真实节点/状态/解绑闭环仍待 `foundation/sync` 契约落地；
-> WebSocketClient 真实环境验收依赖 Module C 修复 `/events` 注册与 WebSocket 导入问题
-> （见 `frontend/docs/BACKEND_ISSUES.md`）；
+> 全绿；真实节点/状态/解绑闭环和 `/events` 注册问题均已在后续批次完成；
 > Phase 8 真实桌面收尾（2026-08-08）：第二实例激活通道、通知弹窗
 > （测试专用 WS 桩驱动 `memory_ready` → KNotifier id 有效）、窗口阴影应用
 > 均已在本机实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发在当前
@@ -118,7 +116,7 @@
   展示 old/new 对比与裁决结果；面板每次打开时刷新。
 - 已实现偏好历史视图：面板偏好 Tab 支持输入偏好 ID 加载
   `GET /preference/{id}/history` 的版本历史（偏好列表接口落地后替换为选择入口）。
-- 已实现 Phase 6 设备配对 UI 壳（非阻塞部分，2026-08-09）：`PairDialog`
+- 已实现 Phase 6 设备配对前端切片（2026-08-09）：`PairDialog`
   （PIN/二维码方式、6 位 PIN 门控、Esc/取消语义、契约载荷）、记忆面板同步
   Tab 配对入口与状态行；PixiuApp 经 `HttpBackendTransport::pairDevice` 发
   `POST /sync/pair`，`not_implemented`/网络错误/未知状态如实呈现，仅契约
@@ -237,29 +235,14 @@
   与既有入口统一接线（记忆面板复用聊天框顶栏入口逻辑，退出复用托盘
   退出逻辑）；`t_floating_ball` 覆盖动作触发。
 
-### 1.2 尚未完成
+### 1.2 当前剩余
 
-截至 2026-08-11（当时后端 12 个 REST 端点已实现；当前契约为 24 个，见 `docs/API.md`），前端剩余
-项均为**后端契约阻塞或人工验收**：
+截至当前契约版本，30 个 REST 端点、六类 WS 事件、偏好/证据、配对令牌、真实配对、
+节点数据和 `/memory/flow/promote` 上下文均已落地。前端不再保留“等待后端实现”的
+当前状态声明；`not_implemented` 只用于兼容旧后端，并显示为版本不兼容。
 
-- WS `/events` 真实广播：后端路由注册/导入问题仍未修复（见
-  `frontend/docs/BACKEND_ISSUES.md`），前端已具备退避重连与事件路由，修复后
-  无需改前端。
-- `conflict_detected` / `forget_confirmation` 广播：后端尚无广播调用，前端
-  路由已就绪。
-- 偏好列表、证据详情（原文）端点：后端契约缺失，前端保持 ID 输入/占位。
-- 配对令牌生成/二维码展示端点：后端未暴露，PIN 配对当前为令牌粘贴方式。
-- 真实麒麟环境人工复测：全局快捷键真实按键触发（全新登录会话）、通知点击、
-  HiDPI/多屏、x86/ARM 目标机（清单见 `UKUI_ADAPTATION_REPORT.md` 第 4 节）。
-- 整包 .deb 已在麒麟 V11 真机安装验证（`build/release/`），见
-  `build/release/README.md` 实测记录。
-
-> 更新（2026-08-29）：上述「后端契约阻塞」条目已全部解除——WS `/events` 注册
-> 于 2026-08-20 修复（六类事件真实广播）；偏好列表/证据详情/二维码配对令牌于
-> 2026-08-24 落地（`GET /preferences`、`GET /evidence/{id}`、`POST /sync/token`）；
-> 真实配对闭环/节点真实数据随同步网络批次（2026-08-29）闭环；`/memory/flow/promote`
-> 上下文由批次②目录监视链路真实供给。前端当前仅剩真机人工复测项（全局快捷键
-> 真机按键、xprop 方言验证）。
+剩余项均为最终目标环境人工验收：全局快捷键、通知点击、HiDPI/多屏、x86/ARM 目标
+画像，以及随最终候选完成的完整 Agent、双 SDK、安装升级与三设备端到端取证。
 
 ### 1.3 下一项最小独立 feature
 
@@ -367,7 +350,7 @@ git submodule update --init --recursive
 ### 3.1 REST 实现状态
 
 路径与契约以 `docs/API.md` 为准。下表是 2026-08-10 的 **12 端点历史基线**；
-当前 24 个 REST 端点见 `docs/API.md`，不得用此表判定完整 Agent 能力：
+当前 30 个 REST 端点见 `docs/API.md`，不得用此表判定完整 Agent 能力：
 
 | 接口 | 当前状态 | 前端计划影响 |
 |---|---|---|
@@ -584,7 +567,7 @@ WebSocket 客户端必须：
 4. [x] PIN 配对：`feat(frontend): add device PIN pairing`
    - `PairDialog` 契约载荷与结果反馈已完成；真实闭环已通（PIN+令牌，
      2026-08-11 麒麟 V11 实测）。
-5. 二维码展示：等待令牌生成契约后 `feat(frontend): add device QR pairing`
+5. [x] 二维码展示：`POST /sync/token` 返回令牌后由 `PairDialog` 展示 QR/PIN 备选流程。
 6. [x] 解绑确认：`feat(frontend): add peer revoke flow`
    - `RevokeDialog` 二次确认 + `SyncController::revokePeer` 已就绪；真实闭环
      已通（2026-08-11 麒麟 V11 实测）。
