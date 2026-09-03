@@ -66,7 +66,13 @@ qtwidgets 四个 `-dev` 包；提交 `ea92b28` 的重建已确认这些依赖足
 - Vector Engine user unit 升级后经 daemon reload/restart 正常启动；首次 direct SDK
   仍失败是 PIXIU 误用了官方测试专用 TCP 构造，已改为 `ConnectParam(appId)` 待重编；
 - Embedding 已连接 runtime 1.3.0，但系统端模型元数据缺少 `model_catalog`，SDK
-  `getModelList` 返回 err=3；这是当前软件源组件组合的独立外部阻断，仍待确认；
+  `getModelList` 返回 err=3；显式以已安装模型名初始化仍返回 err=10（Text model not
+  found），不能以硬编码模型名绕过；
+- 官方 `kylin-ai-runtime` `devel/26w` 提交
+  `34843d14363a1c1dff932a9a1cf9b4f09ea75de2` 的生命周期实现明确要求对象型
+  `model_catalog` 并从 `TEXT`/`IMAGE` 目录建立模型组；该契约与目标系统日志吻合，
+  当前阻断应按 runtime、引擎和模型包的版本/元数据契约不一致处理，而不是 PIXIU
+  侧静默降级或伪造成功；
 - 该结果登记为 W2.6 的发布阻断证据。完成用户会话 SDK 边界并在同一候选上重跑
   direct SDK 与产品 API 生命周期之前，H-02/H-03 均保持不通过。
 

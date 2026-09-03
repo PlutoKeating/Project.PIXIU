@@ -43,6 +43,13 @@ strict 模式错配，组件清单记录 `install_strict=true`。这些门禁只
 必须完成用户会话 SDK 边界、验证最小系统运行依赖，并在同一候选包上重跑本节用例。
 Vector Engine 的生产连接还必须使用官方 demo 的 `ConnectParam(appId)` 本地传输；
 host/port 重载在官方头文件中标为测试用途，不得再以 `127.0.0.1:19530` 作为验收假设。
+Embedding 另有独立系统组件阻断：目标 V11 上 `getModelList` 返回 err=3，显式以已安装
+模型名调用初始化仍返回 err=10（Text model not found）。官方 `kylin-ai-runtime`
+`devel/26w` 提交 `34843d14363a1c1dff932a9a1cf9b4f09ea75de2` 的
+`LifecycleAwareEmbeddingEngine::parseModelInfo()` 明确要求对象型 `model_catalog`，并从
+其中的 `TEXT`/`IMAGE` 目录建立模型组；目标系统模型元数据不满足该契约。该证据证明
+不能通过跳过模型枚举或硬编码模型名规避，须修复/对齐系统 runtime、引擎与模型包后
+重新取证，不能把 portable 向量或 direct Vector 成功计入 H-03。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

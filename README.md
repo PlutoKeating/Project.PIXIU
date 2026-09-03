@@ -144,6 +144,10 @@ runtime；strict 后端因此按设计失败关闭。下一步必须实现并评
 已改回 demo 使用的 `ConnectParam(appId)` 本地传输并补齐 LoadDBFile/Disconnect。
 提交 `4011d0d` 的 V11 strict revision 7 已用固定测试向量完成 direct SDK 全生命周期；
 这不包含 Embedding 或产品 API，故只计底层适配证据，不计 H-02 最终通过。
+Embedding 已能连接 runtime 1.3.0，但模型枚举返回 err=3，显式使用已安装模型名初始化
+仍返回 err=10。官方 runtime 源码确认生命周期层要求模型元数据提供对象型
+`model_catalog` 及 `TEXT`/`IMAGE` 目录；当前系统组件未满足这一契约，必须在目标系统
+组件对齐后重验，不能以硬编码模型名或 portable 实现规避 H-03。
 最终 V11 双 SDK 与全新机/图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见

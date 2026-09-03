@@ -45,7 +45,12 @@ V11 的真实输出。
 host/port 构造，因而错误连接未监听的 `127.0.0.1:19530`；现已改用官方 demo 的
 `ConnectParam(appId)` 并增加契约测试，待原生重编。Embedding 在 ABI 修复后已连接
 runtime 1.3.0，但系统模型元数据缺少 runtime 所需的 `model_catalog`，导致
-`getModelList` err=3。两者均未产生成功生命周期证据，H-02/H-03 状态不变。
+`getModelList` err=3；显式以已安装模型名调用初始化仍返回 err=10（Text model not
+found），因此不能绕过模型发现。官方 `kylin-ai-runtime` `devel/26w` 提交
+`34843d14363a1c1dff932a9a1cf9b4f09ea75de2` 的
+`LifecycleAwareEmbeddingEngine::parseModelInfo()` 明确要求对象型 `model_catalog`，
+并从 `TEXT`/`IMAGE` 目录建立模型组，与运行日志一致。Vector 后续已取得下述独立
+成功切片；Embedding 仍未产生成功生命周期证据，H-02/H-03 状态不变。
 
 随后提交 `4011d0d` 的 strict revision 7 修正本地连接并补齐数据库生命周期：前端
 ctest 38/38、双原生扩展链接及包安装通过；Vector Engine direct SDK 使用独立临时
