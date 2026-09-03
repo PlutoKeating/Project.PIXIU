@@ -8,7 +8,7 @@ on:
       version:
         description: Debian package version used for a manual validation build
         required: true
-        default: "0.1.6"
+        default: "0.1.7"
 
 permissions:
   contents: read
