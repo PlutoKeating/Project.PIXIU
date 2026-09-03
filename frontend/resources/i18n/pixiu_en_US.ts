@@ -1393,6 +1393,14 @@ You can forget any memory with natural-language instructions — your data stays
         <translation>Post-upgrade health verification failed; no further action was taken.</translation>
     </message>
     <message>
+        <source>升级失败，已自动恢复上一版本和数据</source>
+        <translation>The upgrade failed; the previous version and data were restored automatically.</translation>
+    </message>
+    <message>
+        <source>升级恢复失败，请立即检查系统日志</source>
+        <translation>Upgrade recovery failed. Check the system logs immediately.</translation>
+    </message>
+    <message>
         <source>升级失败，请检查系统日志</source>
         <translation>Upgrade failed. Please check the system logs.</translation>
     </message>

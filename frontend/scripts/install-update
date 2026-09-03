@@ -50,10 +50,16 @@ ulimit -f 1048576
 ROOT_PACKAGE=$(/usr/bin/mktemp /var/tmp/pixiu-update-root.XXXXXX.deb)
 ROOT_SIGNATURE=
 ROOT_DIGEST=
+ROLLBACK_DIR=
+SERVICE_STOPPED=0
 cleanup() {
+    if [ "${SERVICE_STOPPED}" -eq 1 ] && command -v systemctl >/dev/null 2>&1; then
+        /usr/bin/systemctl start pixiu-backend.service >/dev/null 2>&1 || true
+    fi
     /usr/bin/rm -f -- "${ROOT_PACKAGE}"
     [ -z "${ROOT_SIGNATURE}" ] || /usr/bin/rm -f -- "${ROOT_SIGNATURE}"
     [ -z "${ROOT_DIGEST}" ] || /usr/bin/rm -f -- "${ROOT_DIGEST}"
+    [ -z "${ROLLBACK_DIR}" ] || /usr/bin/rm -rf -- "${ROLLBACK_DIR}"
 }
 trap cleanup EXIT HUP INT TERM
 ROOT_SIGNATURE=$(/usr/bin/mktemp /var/tmp/pixiu-update-root.XXXXXX.sig)
@@ -102,27 +108,119 @@ fi
 # prerelease suffix such as 1.2.3-rc.1 while removing only "-1".
 PRODUCT_VERSION=${PACKAGE_VERSION%-*}
 
+HEALTH_PY=/usr/lib/pixiu/venv/bin/python
+if [ ! -x "${HEALTH_PY}" ]; then
+    HEALTH_PY=/usr/bin/python3
+fi
+command -v dpkg-repack >/dev/null 2>&1 || {
+    echo "pixiu: rollback preparation requires dpkg-repack" >&2
+    exit 2
+}
+CURRENT_VERSION=$(/usr/bin/dpkg-query -W -f='${Version}' pixiu 2>/dev/null) || {
+    echo "pixiu: no installed PIXIU package to back up" >&2
+    exit 2
+}
+ROLLBACK_DIR=$(/usr/bin/mktemp -d /var/tmp/pixiu-rollback.XXXXXX)
+/usr/bin/chmod 0700 "${ROLLBACK_DIR}"
+if ! (cd "${ROLLBACK_DIR}" && /usr/bin/dpkg-repack pixiu >/dev/null); then
+    echo "pixiu: failed to reconstruct installed rollback package" >&2
+    exit 2
+fi
+ROLLBACK_PACKAGE=$(find "${ROLLBACK_DIR}" -maxdepth 1 -type f \
+    -name 'pixiu_*.deb' -print -quit)
+if [ -z "${ROLLBACK_PACKAGE}" ]; then
+    echo "pixiu: rollback package was not created" >&2
+    exit 2
+fi
+
+DATABASE=/var/lib/pixiu/pixiu.db
+CONFIG=/etc/pixiu/pixiu.env
+DATABASE_BACKUP=${ROLLBACK_DIR}/pixiu.db
+CONFIG_BACKUP=${ROLLBACK_DIR}/pixiu.env
+if command -v systemctl >/dev/null 2>&1; then
+    /usr/bin/systemctl stop pixiu-backend.service
+    SERVICE_STOPPED=1
+fi
+if [ ! -f "${DATABASE}" ] || [ ! -f "${CONFIG}" ]; then
+    echo "pixiu: database or configuration missing; refusing unsafe upgrade" >&2
+    exit 2
+fi
+if ! "${HEALTH_PY}" - "${DATABASE}" "${DATABASE_BACKUP}" <<'PY'
+import sqlite3
+import sys
+
+source = sqlite3.connect(f"file:{sys.argv[1]}?mode=ro", uri=True)
+target = sqlite3.connect(sys.argv[2])
+try:
+    source.backup(target)
+    result = target.execute("PRAGMA integrity_check").fetchone()
+    if result != ("ok",):
+        raise RuntimeError("backup integrity check failed")
+finally:
+    target.close()
+    source.close()
+PY
+then
+    echo "pixiu: database backup failed; upgrade not started" >&2
+    exit 2
+fi
+/usr/bin/cp --preserve=mode,ownership,timestamps -- "${CONFIG}" "${CONFIG_BACKUP}"
+
+rollback() {
+    reason=$1
+    echo "pixiu: ${reason}; restoring previous version ${CURRENT_VERSION}" >&2
+    command -v systemctl >/dev/null 2>&1 \
+        && /usr/bin/systemctl stop pixiu-backend.service >/dev/null 2>&1 || true
+    SERVICE_STOPPED=1
+    /usr/bin/rm -f -- "${DATABASE}-wal" "${DATABASE}-shm"
+    /usr/bin/install -m 0640 -o pixiu -g pixiu \
+        "${DATABASE_BACKUP}" "${DATABASE}" || exit 6
+    /usr/bin/cp --preserve=mode,ownership,timestamps -- \
+        "${CONFIG_BACKUP}" "${CONFIG}" || exit 6
+    if ! /usr/bin/dpkg --force-confdef --force-confold -i \
+            "${ROLLBACK_PACKAGE}" >/dev/null; then
+        echo "pixiu: automatic rollback package installation failed" >&2
+        exit 6
+    fi
+    SERVICE_STOPPED=0
+    if command -v systemctl >/dev/null 2>&1 \
+        && ! /usr/bin/systemctl is-active --quiet pixiu-backend.service; then
+        echo "pixiu: automatic rollback service verification failed" >&2
+        exit 6
+    fi
+    RESTORED_VERSION=$(/usr/bin/dpkg-query -W -f='${Version}' pixiu 2>/dev/null || true)
+    if [ "${RESTORED_VERSION}" != "${CURRENT_VERSION}" ]; then
+        echo "pixiu: automatic rollback version verification failed" >&2
+        exit 6
+    fi
+    echo "pixiu: previous version restored successfully" >&2
+    exit 5
+}
+
 ulimit -f unlimited
 DEBIAN_FRONTEND=noninteractive
 export DEBIAN_FRONTEND
 # Current packages keep runtime configuration outside dpkg conffiles.  Retain
 # these flags so upgrades from legacy packages also preserve their old config.
-/usr/bin/dpkg --force-confdef --force-confold -i "${ROOT_PACKAGE}"
+if ! /usr/bin/dpkg --force-confdef --force-confold -i "${ROOT_PACKAGE}"; then
+    rollback "package installation failed"
+fi
+SERVICE_STOPPED=0
 
 INSTALLED_VERSION=$(/usr/bin/dpkg-query -W -f='${Version}' pixiu)
 if [ "${INSTALLED_VERSION}" != "${PACKAGE_VERSION}" ]; then
     echo "pixiu: installed package version mismatch" >&2
-    exit 4
+    rollback "installed package version mismatch"
 fi
+# Re-resolve after dpkg because the new package may replace the venv/runtime.
 HEALTH_PY=/usr/lib/pixiu/venv/bin/python
-if [ ! -x "${HEALTH_PY}" ]; then
-    HEALTH_PY=/usr/bin/python3
-fi
-if ! PYTHONPATH=/usr/lib/pixiu "${HEALTH_PY}" \
+[ -x "${HEALTH_PY}" ] || HEALTH_PY=/usr/bin/python3
+if [ "${PIXIU_UPGRADE_TEST_FAIL_HEALTH:-0}" = "1" ]; then
+    rollback "injected post-upgrade health failure"
+elif ! PYTHONPATH=/usr/lib/pixiu "${HEALTH_PY}" \
         -m backend.foundation.api.install_health \
         --expected-version "${PRODUCT_VERSION}" \
         --provider-manifest \
         /usr/lib/pixiu/integrations/kylin_agent/pixiu/plugin.yaml; then
-    echo "pixiu: post-upgrade health verification failed" >&2
-    exit 4
+    rollback "post-upgrade health verification failed"
 fi

@@ -577,6 +577,14 @@ void UpgradeController::handleInstallFinished(int exitCode)
         setState(State::Failed);
         emit upgradeFinished(false, tr("升级后健康检查失败，已停止继续操作"),
                              FailedReason::Health);
+    } else if (exitCode == 5) {
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("升级失败，已自动恢复上一版本和数据"),
+                             FailedReason::Recovered);
+    } else if (exitCode == 6) {
+        setState(State::Failed);
+        emit upgradeFinished(false, tr("升级恢复失败，请立即检查系统日志"),
+                             FailedReason::Recovery);
     } else {
         QString detail = m_installErrorOutput.simplified().left(300);
         failInstall(

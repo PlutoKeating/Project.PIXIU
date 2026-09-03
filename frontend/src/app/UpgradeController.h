@@ -64,6 +64,8 @@ public:
         Download,      // 下载失败（网络 / 写入 / 提交失败）
         Install,       // pkexec/dpkg 启动或执行失败
         Health,        // dpkg 成功但新组件版本/schema/服务健康校验失败
+        Recovered,     // 升级失败，但数据与上一软件版本已自动恢复
+        Recovery,      // 自动恢复本身失败，需要人工处理
         Other,         // 其它失败（本地文件 / 进程异常等）
     };
 

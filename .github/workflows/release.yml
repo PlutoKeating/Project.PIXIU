@@ -126,6 +126,17 @@ jobs:
           signature="$(base64 -w0 "${checksum}.sig")"
           sudo /usr/lib/pixiu/install-update \
             "${deb}" "${digest}" "${signature}"
+          config_before_rollback="$(sudo sha256sum /etc/pixiu/pixiu.env | awk '{print $1}')"
+          set +e
+          sudo env PIXIU_UPGRADE_TEST_FAIL_HEALTH=1 \
+            /usr/lib/pixiu/install-update \
+            "${deb}" "${digest}" "${signature}"
+          rollback_rc=$?
+          set -e
+          test "${rollback_rc}" -eq 5
+          test "$(sudo sha256sum /etc/pixiu/pixiu.env | awk '{print $1}')" = \
+            "${config_before_rollback}"
+          test "$(systemctl is-active pixiu-backend.service)" = active
           set +e
           sudo /usr/lib/pixiu/install-update "${deb}" \
             0000000000000000000000000000000000000000000000000000000000000000 \

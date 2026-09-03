@@ -540,6 +540,8 @@ void TestUpgradeController::installHandlesExitCodes()
         {126, UpgradeController::State::Cancelled, "已取消，升级未执行"},
         {127, UpgradeController::State::Cancelled, "已取消，升级未执行"},
         {4, UpgradeController::State::Failed, "升级后健康检查失败，已停止继续操作"},
+        {5, UpgradeController::State::Failed, "升级失败，已自动恢复上一版本和数据"},
+        {6, UpgradeController::State::Failed, "升级恢复失败，请立即检查系统日志"},
         {123, UpgradeController::State::Failed, "升级失败，请检查系统日志"},
     };
 
@@ -573,6 +575,8 @@ void TestUpgradeController::installHandlesExitCodes()
             : (c.exitCode == 126 || c.exitCode == 127)
             ? UpgradeController::FailedReason::Other
             : c.exitCode == 4 ? UpgradeController::FailedReason::Health
+            : c.exitCode == 5 ? UpgradeController::FailedReason::Recovered
+            : c.exitCode == 6 ? UpgradeController::FailedReason::Recovery
             : UpgradeController::FailedReason::Install;
         QCOMPARE(finishedSpy.at(0).at(2).value<UpgradeController::FailedReason>(),
                  expectedReason);

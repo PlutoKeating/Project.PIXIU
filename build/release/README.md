@@ -148,7 +148,7 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 - manifest 记录 Git/API/schema/provider/宿主/双 SDK 版本和兼容范围；
 - 双架构签名 CI 与 Kylin V11 有效/篡改签名已验证；仍需完成“旧钥签发含新公钥
   版本、下一版切换新钥”的轮换演练；
-- 可信安装前状态/旧包备份和健康失败自动回滚；
+- `dpkg-repack` 旧包、SQLite/配置快照和健康失败自动回滚已实现，真实故障注入待验；
 - GUI 中显示版本、通道、发行说明、进度、授权、失败恢复和受控重启状态；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
 - `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
