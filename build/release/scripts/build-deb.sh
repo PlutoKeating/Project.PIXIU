@@ -49,16 +49,18 @@ log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSD
 # 用户宗旨①的可执行化：frontend/CMakeLists.txt（project VERSION 及其派生的
 # PIXIU_VERSION 宏）、frontend/src/main.cpp（消费宏、不得硬编码）、
 # frontend/src/services/HttpBackendTransport.cpp（User-Agent 消费宏、不得
-# 硬编码，S4 曾因硬编码 0.1.0 漏检）、build/release/scripts/functions.sh
-# （resolve_version 默认值）及 Module E plugin.yaml 必须一致。
+# 硬编码，S4 曾因硬编码 0.1.0 漏检）及 Module E plugin.yaml 必须与根
+# VERSION 单一事实源一致。
 check_version_consistency() {
     local frontend_cmake="${PIXIU_ROOT}/frontend/CMakeLists.txt"
     local frontend_main="${PIXIU_ROOT}/frontend/src/main.cpp"
     local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
-    local funcs_file="${PIXIU_ROOT}/build/release/scripts/functions.sh"
+    local version_file="${PIXIU_ROOT}/VERSION"
     local backend_version="${PIXIU_ROOT}/backend/foundation/api/version.py"
     local backend_service="${PIXIU_ROOT}/build/release/debian/pixiu-backend.service"
-    local cmake_ver pixiu_ver funcs_ver provider_ver
+    local source_ver cmake_ver pixiu_ver provider_ver
+
+    source_ver="$(tr -d '\r\n' < "${version_file}")"
 
     # 1) CMakeLists project VERSION（单一事实源）
     cmake_ver="$(sed -nE 's/.*project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
@@ -73,9 +75,7 @@ check_version_consistency() {
             | sed -nE 's/.*PIXIU_VERSION=[^0-9]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
             | head -n1 || true)"
     fi
-    # 3) functions.sh resolve_version 默认版本
-    funcs_ver="$(sed -nE 's/.*PIXIU_VERSION:-([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
-        "${funcs_file}" | head -n1)"
+    # 3) Module E 当前源码 manifest（后续由 VERSION 生成）
     provider_ver="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
         "${PIXIU_ROOT}/integrations/kylin_agent/pixiu/plugin.yaml" | head -n1)"
     # 4) main.cpp 必须消费宏、不得残留硬编码版本
@@ -85,7 +85,7 @@ check_version_consistency() {
     if grep -qE 'setApplicationVersion\(QStringLiteral\("[0-9]+\.[0-9]+\.[0-9]+"\)\)' "${frontend_main}"; then
         die "frontend/src/main.cpp 的 setApplicationVersion 存在硬编码版本（应改用 PIXIU_VERSION 宏）"
     fi
-    # 5) HttpBackendTransport.cpp（第 4 处版本源，S4 曾漏检）：User-Agent 必须
+    # 5) HttpBackendTransport.cpp：User-Agent 必须
     #    消费 PIXIU_VERSION 宏、不得残留 "PIXIU-Frontend/<版本>" 硬编码字面量。
     if ! grep -qF 'QStringLiteral(PIXIU_VERSION)' "${frontend_http}"; then
         die "frontend/src/services/HttpBackendTransport.cpp 未使用 PIXIU_VERSION 宏" \
@@ -93,30 +93,31 @@ check_version_consistency() {
     fi
     if grep -qF 'PIXIU-Frontend/0.1.' "${frontend_http}"; then
         die "frontend/src/services/HttpBackendTransport.cpp 存在硬编码 User-Agent 版本" \
-            "（应改用 PIXIU_VERSION 宏，杜绝第 4 处版本源漂移）"
+            "（应改用 PIXIU_VERSION 宏，杜绝派生版本漂移）"
     fi
     if ! grep -qF 'PIXIU_PRODUCT_VERSION' "${backend_version}" \
        || ! grep -qF 'PIXIU_PRODUCT_VERSION=@PRODUCT_VERSION@' "${backend_service}"; then
         die "后端产品版本未由发布包注入（version API 与 systemd 模板必须同时接线）"
     fi
 
-    log "version precheck: CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} functions.sh=${funcs_ver:-?} provider=${provider_ver:-?} HttpTransport=macro-ok backend=runtime-injected"
-    if [ -z "${cmake_ver}" ] || [ -z "${pixiu_ver}" ] || [ -z "${funcs_ver}" ] \
+    log "version precheck: VERSION=${source_ver:-?} CMakeLists=${cmake_ver:-?} PIXIU_VERSION宏=${pixiu_ver:-?} provider=${provider_ver:-?} HttpTransport=macro-ok backend=runtime-injected"
+    if [ -z "${source_ver}" ] || [ -z "${cmake_ver}" ] || [ -z "${pixiu_ver}" ] \
        || [ -z "${provider_ver}" ] || [ "${cmake_ver}" != "${pixiu_ver}" ] \
-       || [ "${pixiu_ver}" != "${funcs_ver}" ] \
-       || [ "${funcs_ver}" != "${provider_ver}" ]; then
+       || [ "${source_ver}" != "${pixiu_ver}" ] \
+       || [ "${source_ver}" != "${provider_ver}" ]; then
         die "版本不一致（发布版本与 Module E 均不得遗漏）：" \
+            "VERSION=${source_ver:-<未提取>}，" \
             "frontend/CMakeLists.txt=${cmake_ver:-<未提取>}，" \
             "PIXIU_VERSION 宏=${pixiu_ver:-<未提取>}，" \
-            "functions.sh=${funcs_ver:-<未提取>}，provider=${provider_ver:-<未提取>}"
+            "provider=${provider_ver:-<未提取>}"
     fi
     # 6) 显式 PIXIU_VERSION 覆盖（CI tag/手动输入）若与文件版本不一致，
     #    .deb 包版本将与 App 内版本不符——同样中止发布。
-    if [ -n "${PIXIU_VERSION:-}" ] && [ "${PIXIU_VERSION}" != "${funcs_ver}" ]; then
-        die "环境变量 PIXIU_VERSION=${PIXIU_VERSION} 与源码版本 ${funcs_ver} 不一致：" \
-            "deb 包版本将与 App 版本不符，请先同步四处版本再发布"
+    if [ -n "${PIXIU_VERSION:-}" ] && [ "${PIXIU_VERSION}" != "${source_ver}" ]; then
+        die "环境变量 PIXIU_VERSION=${PIXIU_VERSION} 与源码版本 ${source_ver} 不一致：" \
+            "deb 包版本将与 App 版本不符，请先更新 VERSION 及其派生清单"
     fi
-    log "version consistency OK: ${funcs_ver}"
+    log "version consistency OK: ${source_ver}"
 }
 
 check_version_consistency

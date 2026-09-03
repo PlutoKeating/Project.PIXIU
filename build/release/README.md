@@ -66,7 +66,9 @@ Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际
 以目标系统包管理器和 `/capabilities` 取证为准，源码钉住版本不得冒充运行时版本。
 生成器要求各 submodule 的 gitlink、实际 HEAD 一致且工作树洁净；未确认精确 SPDX
 后缀的许可证只记录许可证族和待审状态，不固化为授权结论。
-`source_tree_clean` 会如实标记构建是否来自洁净工作树；CI 从完成的 `.deb` 反向提取
+发布脚本只从仓库根 `VERSION` 解析产品版本；环境变量只能作一致性断言，不能覆盖。
+当前前端 CMake 与 Module E manifest 仍是受预检约束的派生副本，后续切片将移除这两处
+静态重复。`source_tree_clean` 会如实标记构建是否来自洁净工作树；CI 从完成的 `.deb` 反向提取
 该文件，并要求 commit、包版本、架构和画像一致。
 
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
@@ -131,7 +133,7 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 
 | 变量 | 默认 | 说明 |
 |------|------|------|
-| `PIXIU_VERSION` | `0.1.7` | 软件版本（写入 control Version） |
+| `PIXIU_VERSION` | 根 `VERSION` | 可选版本断言；若设置则必须与权威版本文件一致 |
 | `PIXIU_REVISION` | `1` | Debian 修订号 |
 | `PIXIU_ARCH` | `dpkg --print-architecture` | 目标架构（amd64 / arm64） |
 | `PIXIU_KYSDK` | `OFF` | `ON` 时同时强制前端链接 KylinSDK、构建后端双 SDK 原生扩展并打入包；缺依赖即失败 |

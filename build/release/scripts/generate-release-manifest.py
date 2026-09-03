@@ -94,22 +94,18 @@ def build_manifest(root: Path) -> dict[str, object]:
         r"project\(pixiu-frontend VERSION ([0-9]+\.[0-9]+\.[0-9]+)",
         "frontend version",
     )
-    default_version = read_match(
-        root / "build/release/scripts/functions.sh",
-        r"PIXIU_VERSION=\"\$\{PIXIU_VERSION:-([0-9]+\.[0-9]+\.[0-9]+)\}\"",
-        "release default version",
-    )
+    canonical_version = (root / "VERSION").read_text(encoding="utf-8").strip()
     provider_version = read_match(
         root / "integrations/kylin_agent/pixiu/plugin.yaml",
         r"^version:\s*([^\s]+)\s*$",
         "provider version",
     )
-    versions = {version, cmake_version, default_version, provider_version}
+    versions = {version, canonical_version, cmake_version, provider_version}
     if len(versions) != 1:
         raise SystemExit(
             "pixiu-manifest: product version mismatch: "
-            f"build={version}, frontend={cmake_version}, "
-            f"release_default={default_version}, provider={provider_version}"
+            f"build={version}, canonical={canonical_version}, "
+            f"frontend={cmake_version}, provider={provider_version}"
         )
 
     api_file = root / "backend/foundation/api/version.py"

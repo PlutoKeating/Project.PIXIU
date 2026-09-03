@@ -51,13 +51,15 @@
 - 每个资产的大小、SHA-256、独立数字签名和发布通道。
 
 图形“关于/更新”页必须展示当前版本、可用版本、通道、组件兼容状态和发行说明。
-不得只在多个源码文件手工重复版本号。当前 `0.1.7` 发布预检已同步校验 CMake、
-前端宏、Debian 默认版本及 Module E manifest。构建现生成包内只读
+不得只在多个源码文件手工重复版本号。当前 `0.1.7` 发布预检已同步校验根
+`VERSION`、CMake/前端宏及 Module E manifest。构建现生成包内只读
 `/usr/share/pixiu/release-manifest.json`，从源码和构建输入记录产品/Debian、Git、
 构建时间、架构/profile/KYSDK/Python ABI、API/schema/provider、Agent 上游及双 SDK
 源码钉住版本与许可证；CI 会从成包反向提取并核对。上游 runtime 的 `version` 文件
-与包元数据当前分别为 0.9.9/0.9.8，清单保留两项事实而不擅自归一。后续仍须把
-产品版本改为真正单一输入，并生成含资产大小、摘要、签名和通道的包外最终清单；
+与包元数据当前分别为 0.9.9/0.9.8，清单保留两项事实而不擅自归一。仓库根
+`VERSION` 已成为发布脚本的权威输入，环境变量只能作一致性断言；后续仍须让前端
+CMake 与 Module E manifest 直接派生于该输入，并生成含资产大小、摘要、签名和通道
+的包外最终清单；
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
 探测结果及 `/capabilities` 一致性，源码 gitlink 不能代替该项实装证据。
 

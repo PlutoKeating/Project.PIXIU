@@ -6,9 +6,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Debian package version used for a manual validation build
-        required: true
-        default: "0.1.7"
+        description: Optional version assertion; must match the repository VERSION
+        required: false
 
 permissions:
   contents: read
@@ -55,11 +54,16 @@ jobs:
         env:
           MANUAL_VERSION: ${{ inputs.version }}
         run: |
+          source_version="$(tr -d '\r\n' < VERSION)"
+          requested="${MANUAL_VERSION}"
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            echo "PIXIU_VERSION=${GITHUB_REF_NAME#v}" >> "${GITHUB_ENV}"
-          else
-            echo "PIXIU_VERSION=${MANUAL_VERSION}" >> "${GITHUB_ENV}"
+            requested="${GITHUB_REF_NAME#v}"
           fi
+          if [[ -n "${requested}" && "${requested}" != "${source_version}" ]]; then
+            echo "requested version ${requested} != VERSION ${source_version}" >&2
+            exit 1
+          fi
+          echo "PIXIU_VERSION=${source_version}" >> "${GITHUB_ENV}"
 
       - name: Run backend tests
         env:
