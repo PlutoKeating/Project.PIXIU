@@ -26,6 +26,7 @@ test -x "${RESTART_HELPER}"
 sh -n "${RESTART_HELPER}"
 grep -q '/usr/bin/pixiu' "${RESTART_HELPER}"
 grep -q 'restart-client' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q '^deb: build-deb$' "${ROOT}/build/release/Makefile"
 if "${RESTART_HELPER}" invalid >/dev/null 2>&1; then
     echo "restart helper must reject a non-numeric PID" >&2
     exit 1
