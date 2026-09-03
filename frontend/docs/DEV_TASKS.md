@@ -4,7 +4,13 @@
 > **目录**：`frontend/`
 > **技术栈**：C++17 · Qt5 Widgets · KylinSDK
 > **开发人员**：1人（Qt/C++ 桌面开发）
-> **与后端契约**：`docs/API.md` 定义的 12 个端点
+> **与后端契约**：`docs/API.md` 定义的 24 个 REST 端点 + WS
+
+> [!IMPORTANT]
+> 2026-09-03 赛题复核后，Module A 已完成状态仅指 PIXIU 记忆控制台范围，
+> 不代表完整 OS Agent 已实现。多轮会话、规划、工具/Shell/联网搜索和审批复用
+> 官方 `kylin-agent` + `agent-runtime`；本模块后续只承担记忆管理 UI 与必要集成，
+> 不在 `frontend/` 内另造 Agent 循环。
 
 ---
 
@@ -46,7 +52,8 @@
   录入/设置/配对/解绑/同步管理/WS 事件路由/偏好提取；i18n 180 条 0 未完成；
   双路径（KYSDK OFF/ON）ctest 31/31 全绿（含契约一致性测试
   `t_contract_fixtures`）；`.deb` 打包产物已在麒麟 V11 真机安装验证。
-- 后端契约（2026-08-10 合入 main）：12 个 REST 端点已全部真实实现，前端
+- 后端契约历史基线（2026-08-10 合入 main）：当时 12 个 REST 端点已实现，当前
+  为 24 个（以 `docs/API.md` 为准），前端
   传输层与解析已按真实响应形状对齐；2026-08-11 起后端经 request_id 中间件统一
   返回 `{error, message, request_id}`，前端两种形状（`error`/`detail`）均兼容。
 - 剩余均为**后端契约阻塞或人工验收项**：WS 的 conflict/forget 事件补齐、

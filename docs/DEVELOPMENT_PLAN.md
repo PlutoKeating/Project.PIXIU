@@ -10,13 +10,13 @@
 **PIXIU（貔貅）**—— 面向银河麒麟 OS Agent 的去中心化分布式记忆系统。
 
 - **目标**：多设备记忆共享、神经-符号混合检索（≤500ms）、偏好动态捕捉、安全与精准遗忘
-- **截止**：2026年9月15日（挑战杯作品提交）
+- **截止**：待赛方最新正式通知确认。文字方案为 2026-09-15；2026.05 PPT 为 10 月初提交，两者冲突
 - **团队**：4人（2-3名开发 + 1-2名支持/测试）
 
 ### 1.1 平台兼容与验收基线
 
-1. 银河麒麟 OS V11 是产品的首要目标平台；正式赛题验收必须验证 KylinSDK
-   embedding、UKUI 集成及麒麟安装包。
+1. 银河麒麟桌面操作系统 V11 是 PPT 硬门槛；不满足计 0 分。正式赛题验收必须
+   验证最终安装包、系统 Embedding 接口和系统向量数据库 SDK 的真实生产调用。
 2. Debian 系发行版是强制兼容基线。没有 KylinSDK/UKUI 时，前端以纯 Qt5
    编译，后端以 `PIXIU_EMBEDDING=auto` 自动选择可移植软件向量器，核心写入、
    检索、同步和 API 不得因专有 SDK 缺失而整体不可用。
@@ -26,6 +26,19 @@
    submodule 源码/头文件 → `build/release/profiles/` 已验证平台事实。
 5. CI 必须持续验证 Debian 系通用构建；麒麟真机/自托管 runner 验证单独记录，
    不能用软件降级测试冒充 KylinSDK 验收。
+
+### 1.2 2026-09-03 赛题复核后的 P0 纠偏
+
+此前“各模块全部完成/全项达标”只描述既定记忆子系统范围，不能外推为赛题完成。
+当前必须优先完成：
+
+1. 系统 Vector Engine 接管生产向量建库、写入、删除和查询；SQLite INT8 扫描只保留降级/对照。
+2. 最终版本在 V11 严格画像同时真实调用指定 Embedding 与 Vector Engine，并生成可复现证据。
+3. 复用 `third_party/kylin-agent` 与 `third_party/kylin-agent-runtime`，实现 MemoryProvider 适配；不从零重造 Agent。
+4. 跑通多轮会话、自主规划、Shell/联网搜索/其他工具、记忆召回与工具结果回写闭环。
+5. 用至少三台设备证明分布式记忆的离线、并发、重连、冲突、遗忘和最终收敛。
+
+在上述 P0 完成前，历史 portable 指标仅标记“开发回归通过”，不得写“最终验收达标”。
 
 ### 1.5 当前进度总览（2026-08-07 · 历史基线）
 
@@ -46,9 +59,9 @@
 - 移除全部 mock（`engine/mocks`、`MockEmbedding`、`PIXIU_EMBEDDING=mock`），接入麒麟 SDK（官方仓库以 submodule 纳入 `third_party/`）
 - 测试：229 项通过（含引擎 × SQLite 全链路集成测试与 API 端点测试）
 
-### 1.6 当前进度总览（2026-08-29 更新）
+### 1.6 记忆子系统历史进度总览（2026-08-29，不代表赛题完成）
 
-> 本节为最新状态快照（2026-08-29，发布收尾）：同步网络批次（SN-1..SN-7）与被动监控
+> 本节是赛题复核前的记忆子系统快照：同步网络批次（SN-1..SN-7）与被动监控
 > 四批次（①掌控层 → ②目录监视 → ③行为偏好 → ④递送层）已全部完成并合入 main；
 > §1.5 为 2026-08-07 历史基线，§1.7 保留 2026-08-10 的分支同步摘要。
 
@@ -57,7 +70,7 @@
 | A · frontend | 团队负责人 | ✅ 全部完成（含四批次前端） | Qt5/CMake 桌面应用：悬浮球/聊天框/记忆面板/遗忘/设置/配对/同步 Tab；监控中心双 Tab 面板 + 三处暂停入口 + 徽标；确认式配对（发现+弹窗确认）+ 同步 Tab 全量管理（整网退出）；洞察卡/「今日简报」/相关主题提醒；i18n 279 条 0 未完成；ctest 32/32 + `regression.sh` 双路径绿 | 真实麒麟会话人工复测（全局快捷键真机按键、xprop 方言验证） |
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
 | C · foundation | @17% | ✅ Phase 0~7 + 同步网络/监控批次全部完成 | core/storage/api、retrieval（`/memory/query`）、flow、sync P2P CRDT（默认开启）、eval 评测框架+基准、monitor daemon（目录监视 + 配置热生效 + 行为采集）、D-Bus 服务、24 个 REST 端点 + 六类 WS 事件；后端 pytest 673 passed | 麒麟真实 SDK 性能验收（召回率≥85%、P95≤500ms）；真实局域网互操作 |
-| D · tests/support | @捌嘎君 | ✅ 测试/压测/验收评测已完成 | foundation+engine 全量测试绿（后端 pytest 673 passed）；前端 ctest 32/32 + `regression.sh`；验收基线报告 `docs/acceptance/`（100%/96%/115ms 全项达标）；打包发布脚手架 `.deb` 已发布 `v0.1.0-staging` | 真机人工验收清单（`docs/AcceptanceTestSpecification.md`） |
+| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 全量测试绿（后端 pytest 673 passed）；前端 ctest 32/32 + `regression.sh`；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -245,9 +258,9 @@ D-Bus 服务与 request_id 统一错误契约均已落地，麒麟 V11 真机 37
 已发布 `v0.1.0-staging`）；正式支持工作（测试数据集、性能压测、
 验收评测报告）尚未开工。
 
-**状态（2026-08-29）**：正式支持工作全部完成——测试数据集 `pixiu-family-expense-v1`
+**状态（2026-08-29 portable 范围）**：开发回归支持工作完成——自建测试数据集 `pixiu-family-expense-v1`
 （50 检索 + 15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告
-`docs/acceptance/`（全项达标）；后端 pytest 673 passed；见 §1.6。
+`docs/acceptance/`（portable 路径达到数值阈值，不代表赛题最终验收）；后端 pytest 673 passed；见 §1.6。
 
 ---
 
@@ -352,6 +365,8 @@ Project.PIXIU/
 │   ├── QUICK_START.md              # 快速启动指南
 │   ├── OriginProblemDescription.md # 赛题原文
 │   ├── AcceptanceTestSpecification.md  # 验收规范
+│   ├── OS_AGENT_INTEGRATION_ASSESSMENT.md # Agent 选型与赛题差距
+│   ├── 完整赛题要求.pptx            # 2026.05 权威宣讲材料
 │   └── kylin_sdk_docs/             # KylinSDK 参考（不动）
 │
 ├── backend/                        # 后端全部源码
@@ -405,7 +420,9 @@ Project.PIXIU/
 │   ├── CMakeLists.txt
 │   └── .env.example
 
-├── third_party/                    # 第三方依赖（官方麒麟 SDK submodule）
+├── third_party/                    # openKylin 官方源码/SDK submodule
+│   ├── kylin-agent/                # 官方桌面 Agent 参考/目标宿主
+│   ├── kylin-agent-runtime/        # 官方 Agent 运行时与 MemoryProvider 接口
 │   ├── kylin-coreai-embedding/     # 文本向量化 SDK（C API）
 │   └── libkysdk-vector-engine-client/  # 向量数据库客户端（C++/gRPC）
 ```

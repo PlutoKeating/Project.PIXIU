@@ -1,16 +1,17 @@
-# Module C · 最终验收清单（2026-09-09 冻结）
+# Module C · 旧范围验收清单（赛题 P0 已重新打开）
 
 > 对照 `docs/AcceptanceTestSpecification.md` 与赛题验收追踪重点。
-> 状态列：✅=本地已验证（后端 pytest 673 passed + 压测证据）；🟡=需麒麟环境执行。
+> 状态列：✅=旧范围本地已验证；🟡=需环境执行；🔴=完整 PPT 下的硬缺口。
 > 刷新于 2026-08-29：Module A 已联调完成（前端 ctest 32/32 + regression.sh 双路径），
-> 验收基线报告见 `docs/acceptance/`（100%/96%/115ms 全项达标）。
+> portable 基线见 `docs/acceptance/`（达到数值阈值，但不等于赛题最终验收）。
+> 2026-09-03 复核确认：系统 Vector Engine 生产接线未完成，H-02 当前不通过。
 
 ## 一、验收追踪重点映射
 
 | 能力 | 验收项 | 实现证据 | 状态 |
 |------|--------|---------|------|
 | 关联检索 | F3-02 / SC-02 / SC-03 | `retrieval/` 三通道（BM25+ANN+Graph）混合检索；`test_e2e_stories.py::test_story_s1`（检索+证据回溯）；`test_retrieval.py`（14 项） | ✅ |
-| 轻量存储与性能 | F4-03 / F4-04 / P-03 | 压测证据 `evidence/pressure_report.json`：P95=19.18ms（≤500ms PASS）、0 错误、命中率 100%；`test_hardening.py`（磁盘 <10MB、内存有界） | ✅ |
+| 轻量存储与性能 | F4-03～F4-05 / P-03 | portable/stub 压测 P95=19.18ms；生产向量仍未接系统 Vector Engine | 🔴 H-02 未通过；V11 双 SDK 待测 |
 | 记忆流转 | F6-01～F6-03 / D-05 | `flow/` promote/demote/TTL；`test_flow.py`；`/memory/flow/promote` 真实端点 | ✅ |
 | 评测机制 | F7-01～F7-05 | `eval/` 评测引擎（Recall@1/3/5、P50/P95/P99、scope 隔离、聚合/追溯/冲突/偏好 12 指标）+ 基准框架（CRDT 收敛/同步耗时/DB/内存/CPU）+ CLI | ✅ |
 | 模糊检索 | SC-04 / SC-08 | BM25 长句滑动窗口回退 + ANN 语义通道（`retrieval/bm25.py`、`ann.py`） | ✅ |
@@ -34,12 +35,12 @@
 | 1000 次查询压测 | P50=16.99 / P95=19.18 / P99=20.73 ms，0 错误 | `evidence/pressure_report.json`、`pressure_latencies.csv`、`pressure_test_report.md` |
 | ARM/x86 麒麟兼容 | 🟡 需麒麟环境 | `engine/kylin/cpp/` 绑定源码 + submodule 已就位 |
 
-## 三、核心指标门槛（stub runtime）
+## 三、开发回归指标（stub runtime，不是最终赛题结果）
 
 | 指标 | 门槛 | stub 实测 | 状态 |
 |------|------|----------|------|
 | 知识检索召回率 | ≥85% | 命中率 100%（reference 数据集待麒麟） | ✅/🟡 |
-| 检索 P95 | ≤500ms | 19.18ms | ✅ |
+| 检索 P95 | ≤500ms | 19.18ms | ✅ stub 回归；最终待测 |
 | 聚合正确率 | 100% | 门槛内置（`aggregation_accuracy`=1.0） | ✅ |
 | 证据追溯成功率 | 100% | 门槛内置 | ✅ |
 | scope 隔离 | 100% | 门槛内置（`scope_isolation_accuracy`=1.0） | ✅ |
@@ -53,9 +54,10 @@
 - Engine：21 项
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`
 
-## 五、遗留（功能冻结后仅验收，不新增功能）
+## 五、赛题 P0 遗留（允许并要求实现）
 
 1. 麒麟环境：真实 embedding 绑定构建（本机已构建成功，真机 AI 运行时端到端验收）+ reference-v1 数据集验收（产出 runtime="kylin" 报告）
-2. vector-engine-client 对接（submodule 就位；检索当前由 foundation/retrieval INT8 扫描承担）
-3. ~~Module A 三通道联调~~ ✅ 已完成（2026-08-29，前端全量回归绿）
-4. 根文档/API 实现状态由 Module D/Human 更新（2026-08-29 已随文档巡检刷新）
+2. **H-02 阻塞项**：vector-engine-client 生产对接（检索当前由 SQLite INT8 扫描承担）
+3. agent-runtime MemoryProvider 适配与多轮/工具结果端到端闭环
+4. ~~Module A 三通道联调~~ ✅ 已完成（2026-08-29，前端全量回归绿）
+5. 根文档/API 实现状态由 Module D/Human 更新（2026-08-29 已随文档巡检刷新）

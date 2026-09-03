@@ -10,6 +10,11 @@
 > 待银河麒麟环境验收（详见 docs/ACCEPTANCE.md）。WS `/events` 路由已于
 > 2026-08-20 完成真实入口注册与麒麟 VM 握手验证。
 
+> [!CAUTION]
+> 上述“功能冻结/全绿”只覆盖旧的记忆子系统范围。PPT 要求生产向量数据库必须
+> 使用系统 Vector Engine；当前 `retrieval/ann.py` 的 SQLite INT8 扫描不合规，
+> 属于 P0 未完成项。portable/stub 延迟也不能替代 V11 双 SDK 最终性能验收。
+
 ---
 
 ## 1. 子包详解
@@ -190,7 +195,7 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 |------|------|------|------|
 | 路由 | `router.py` | 意图分类 + 实体抽取 + 通道选择 | ~15ms |
 | 全文 | `bm25.py` | FTS5 BM25 打分 | 并行 |
-| 语义 | `ann.py` | query embedding → INT8 ANN 近邻 | 并行 |
+| 语义（当前降级） | `ann.py` | query embedding → SQLite INT8 扫描 | 并行；不满足 H-02 |
 | 图 | `graph_search.py` | 从命中实体沿 BELONG_TO 遍历 | 并行 |
 | 融合 | `fuse.py` | RRF + context_hint 加权 | ~10ms |
 | 重排 | `rerank.py` | INT8 reranker 细粒度 relevance | ~150ms |

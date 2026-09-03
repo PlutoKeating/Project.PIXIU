@@ -21,6 +21,8 @@
 
 - `docs/OriginProblemDescription.md` —— 赛题原文与附录 A 场景
 - `docs/AcceptanceTestSpecification.md` —— 功能/性能/交付验收条目
+- `docs/完整赛题要求.pptx` —— 2026.05 赛方完整宣讲材料与硬门槛（必须实际读取，不得仅依赖摘要）
+- `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` —— 完整 Agent 接入决策、代码事实与赛题差距
 
 ### 1.2 必读模块文档
 
@@ -59,6 +61,9 @@ Agent 必须把文档中确认的项目结构、API 约定、模块边界、环�
 - **可移植基线**：产品同时必须兼容 Debian 系发行版。缺少 KylinSDK、UKUI 或麒麟 AI 运行时时，不得导致核心服务无法编译、启动或完成基本记忆写入/检索。
 - 所有麒麟专有依赖必须位于适配层之后，通过编译期开关或运行时能力探测选择；必须提供明确、可测试的软件降级路径，并记录功能/质量差异，禁止伪装成麒麟 SDK 验收结果。
 - 新增系统依赖或 SDK 调用前，必须先查阅 `docs/kylin_sdk_docs/`、`third_party/` 官方 submodule 与 `build/release/profiles/`，不得凭通用 Linux 经验猜测麒麟接口或包名。
+- 涉及完整 OS Agent、会话、工具或记忆生命周期时，必须先查阅
+  `third_party/kylin-agent` 与 `third_party/kylin-agent-runtime`；默认通过扩展接口适配，
+  不得把 `frontend/` 的聊天/检索界面误称为完整 Agent，也不得无依据重写上游核心。
 - CI 至少覆盖 Debian 系通用画像（`KYSDK=OFF`）；发布前另在麒麟 V11 画像或真机验证 `KYSDK=ON` 的专有能力。两类结果必须分开汇报。
 
 ---

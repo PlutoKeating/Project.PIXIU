@@ -4,6 +4,13 @@
 > **题目**：麒麟软件《OSAgent 记忆优化及高效应用研究》
 > **定位**：面向居家/办公多用户协作环境的**去中心化分布式 Agent 记忆共享系统**
 
+> [!CAUTION]
+> 2026-09-03 赛题复核：当前实现是记忆子系统和记忆控制台，不是完整 OS Agent；
+> 生产向量检索仍由 SQLite/INT8 扫描承担，也尚未满足 PPT 指定的系统向量数据库
+> SDK 硬门槛。目标架构新增官方 `kylin-agent`/`agent-runtime` 基座与
+> MemoryProvider 适配层。完整差距和验收状态见
+> `OS_AGENT_INTEGRATION_ASSESSMENT.md` 与 `AcceptanceTestSpecification.md`。
+
 ---
 
 ## 1. 设计目标与约束
@@ -17,15 +24,19 @@
 验证模式。Qt/UKUI 同样以 `PIXIU_HAVE_KYSDK` 控制专有集成。降级路径保证可用性，
 不承诺也不替代麒麟 SDK 的召回率、时延和桌面集成验收。
 
-### 1.1 模块划分（新增）
+### 1.1 模块划分与 Agent 基座
 
 PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `backend/` 下的不同目录树，通过 `foundation/core/` 中的抽象接口（ABC）解耦：
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  Module A: UKUI 桌面客户端 (frontend/)                     │  C++17 + Qt5 + Kysdk
-│  悬浮球 · 聊天框 · 记忆面板 · 设备配对                     │
-│  ★ 与后端仅通过固定 API 契约（docs/API.md，24 端点）通信              │
+│  官方 Agent 基座（third_party 参考，待适配）               │
+│  kylin-agent + agent-runtime：会话/规划/工具/审批/搜索      │
+└────────────────────────┬─────────────────────────────────┘
+                         │ MemoryProvider / HTTP adapter
+┌────────────────────────▼─────────────────────────────────┐
+│  Module A: PIXIU 记忆控制台 (frontend/)                    │  C++17 + Qt5 + Kysdk
+│  悬浮球 · 记忆查询/管理 · 设备配对；当前不承担 Agent 循环   │
 └────────────────────────┬─────────────────────────────────┘
                          │ HTTP REST · WS · D-Bus
 ┌────────────────────────┴─────────────────────────────────┐
@@ -52,7 +63,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (1) | 多源数据统一接入、清洗、标准化、质量校验 | B engine/ingest | F1-01~F1-07 |
 | (2) | 偏好记忆动态捕捉、版本化、跨场景适配与回溯 | B engine/preference | F2-01~F2-07 |
 | (3) | 知识结构化整合、冲突处理、关联检索 | B engine/{knowledge,conflict} + C foundation/retrieval | F3-01~F3-05 |
-| (4) | 端侧部署、调用麒麟 embeddingSDK、检索 ≤500ms | B engine/kylin + C foundation/retrieval | F4-01~F4-04 |
+| (4) | V11 端侧部署、调用麒麟 embeddingSDK 和系统向量数据库、检索 ≤500ms | B engine/kylin + C foundation/retrieval | H-01~H-03、F4-01~F4-05 |
 | (5) | 敏感信息识别过滤、自然语言精准遗忘 | B engine/security | F5-01~F5-05 |
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
@@ -61,7 +72,8 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 
 - **端侧轻量化**：x86/ARM 麒麟机型，内存占用低，离线可用
 - **检索在线零 LLM**：仅用 embedding + 结构化字段 + 图遍历，保证 P95 ≤ 500ms
-- **国产化适配**：embedding 必须经麒麟 `coreai/embedding` C 接口；桌面交互基于 UKUI/Qt5 + KylinSDK
+- **国产化硬门槛**：embedding 必须经麒麟 `coreai/embedding` C 接口；生产向量存储/检索必须经系统 Vector Engine SDK；最终软件必须在银河麒麟桌面操作系统 V11 验证
+- **Agent 完整性**：多轮会话、规划、工具、Shell/联网搜索和审批由官方 Agent 基座提供；PIXIU 通过记忆适配层接入，不重复实现通用 Agent
 
 ---
 
@@ -242,7 +254,7 @@ query + context_hint
 | 能力 | SDK | 用途 | 调用者 | 状态 |
 |------|-----|------|--------|------|
 | 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 本机构建成功（麒麟运行时验收待真机） |
-| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin（pybind11 绑定） | 🟡 客户端就绪，检索由 foundation/retrieval INT8 扫描承担 |
+| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin 适配 + foundation/retrieval | 🔴 **硬门槛未通过**：客户端封装存在，但生产检索仍由 SQLite INT8 扫描承担 |
 | OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ✅ 已接入（2026-08-24，`POST /memory/ocr`） |
 | 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference | ⬜ 待接入 |
 | 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为系统托盘通知 |
@@ -295,8 +307,13 @@ Project.PIXIU/
 │   ├── scripts/               # 工具脚本
 │   ├── tests/                 # 测试
 │   └── docs/                  # 后端文档
-└── frontend/                  # Module A: UKUI 桌面客户端
-    └── docs/                  # 前端文档
+├── frontend/                  # Module A: PIXIU 记忆控制台
+│   └── docs/                  # 前端文档
+└── third_party/
+    ├── kylin-agent/           # 官方桌面 Agent
+    ├── kylin-agent-runtime/   # 官方 Agent 运行时/记忆扩展点
+    ├── kylin-coreai-embedding/
+    └── libkysdk-vector-engine-client/
 ```
 
 详细架构见 `backend/engine/docs/ARCHITECTURE.md`、`backend/foundation/docs/ARCHITECTURE.md`、`frontend/docs/ARCHITECTURE.md`。

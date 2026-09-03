@@ -4,6 +4,10 @@
 > **开发人员**：1人（测试/运维/工具开发）
 > **对其他模块**：零依赖，可使用 mock 数据独立工作
 
+> [!CAUTION]
+> mock/stub/portable 只用于开发回归。赛题最终报告必须在银河麒麟桌面操作系统
+> V11 上真实调用指定 Embedding 与 Vector Engine，并覆盖完整 Agent 和多设备闭环。
+
 ---
 
 ## 实现状态（2026-08-11）
@@ -15,9 +19,9 @@
 - ✅ **打包发布脚手架**：`build/release/` 提供整包 .deb 构建、目标机预置
   （`provision-target.sh`）、麒麟 VM 部署冒烟（`vm-deploy-test.sh`）与
   staging/production 发布；已在麒麟 V11 真机验证并发布 `v0.1.0-staging`。
-- ✅ **已完成（2026-08-29）**：正式测试数据集（`pixiu-family-expense-v1`：50 检索 +
+- 🟡 **portable 回归已完成（2026-08-29），最终验收未完成**：自建测试数据集（`pixiu-family-expense-v1`：50 检索 +
   15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告
-  `docs/acceptance/`（100%/96%/115ms 全项达标，真实管线采集非桩注入）。
+  `docs/acceptance/`（portable 管线达到数值阈值，非桩注入；不作为 H-01～H-03 证据）。
 - ❌ **Docker 容器化**：本项目交付物为原生 `.deb` 安装包，不依赖 Docker，相关文件已移除。
 
 ---
@@ -32,6 +36,7 @@ git submodule update --init --recursive
 
 - `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API）
 - `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
+- `third_party/kylin-agent`、`third_party/kylin-agent-runtime` —— 完整 Agent 与记忆接入的官方参考
 
 测试、压测与容器化验证均依赖完整仓库（含 submodule），请勿跳过此步骤。
 

@@ -3,6 +3,10 @@
 > 后端（`backend/`）按架构维度拆分为**两个独立开发模块**，分属不同子目录。
 > **严禁跨目录引用代码**，模块间仅通过 `foundation/core/` 中的抽象接口通信。
 
+> 赛题复核状态：这是 PIXIU **记忆后端**，不是完整 OS Agent。当前 SQLite/INT8
+> 向量扫描不满足系统 Vector Engine 硬门槛；完整 Agent 由官方
+> `kylin-agent`/`agent-runtime` 提供并通过适配器调用本后端。
+
 ---
 
 ## 模块 B · 记忆业务引擎（`backend/engine/`）
@@ -19,9 +23,9 @@ Python 3.10 + C++（KylinSDK pybind11 封装）
 | `kylin/` | 麒麟 SDK 适配（coreai/embedding pybind11）+ Debian 软件降级 |
 
 **文档**：
-- [架构设计](engine/docs/ARCHITECTURE.md)
-- [开发任务书](engine/docs/DEV_TASKS.md)
-- [快速启动](engine/docs/QUICK_START.md)
+- [架构设计](../engine/docs/ARCHITECTURE.md)
+- [开发任务书](../engine/docs/DEV_TASKS.md)
+- [快速启动](../engine/docs/QUICK_START.md)
 
 ## 模块 C · 后台基础设施（`backend/foundation/`）
 
@@ -38,13 +42,13 @@ Python 3.10 + SQLite + hnswlib
 | `eval/` | 评测框架 |
 
 > **状态（2026-08-11）**：foundation Phase 0~7 全部完成（retrieval/flow/sync/eval/
-> D-Bus + request_id 统一错误契约），12 个 REST 端点真实实现；引擎核心管线已
-> 集成，麒麟 SDK 绑定待构建。全量测试：麒麟 V11 真机 pytest 377 passed。
+> D-Bus + request_id 统一错误契约），当前 24 个 REST 端点真实实现；引擎核心管线已
+> 集成。历史测试通过不等于 H-01～H-03 或完整 Agent 验收通过。
 
 **文档**：
-- [架构设计](foundation/docs/ARCHITECTURE.md)
-- [开发任务书](foundation/docs/DEV_TASKS.md)
-- [快速启动](foundation/docs/QUICK_START.md)
+- [架构设计](../foundation/docs/ARCHITECTURE.md)
+- [开发任务书](../foundation/docs/DEV_TASKS.md)
+- [快速启动](../foundation/docs/QUICK_START.md)
 
 ## 快速索引
 

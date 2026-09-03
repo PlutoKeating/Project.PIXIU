@@ -3,6 +3,11 @@
 > **角色**：常驻记忆服务中的业务逻辑层，处理所有"记忆写入→结构化→应用"的流程。
 > **与模块 C 的边界**：引擎**消费** `foundation/core/` 中的 Repository 接口（ABC）和数据模型，**不依赖** `foundation/` 中的任何实现代码。
 
+> [!CAUTION]
+> “SDK 适配/封装存在”不等于赛题硬门槛已通过。最终 V11 生产路径必须真实调用
+> `kylin-coreai-embedding`，且系统 Vector Engine 必须实际承担向量存储与检索；
+> 当前 SQLite/INT8 检索不能作为向量数据库 SDK 验收证据。
+
 > **状态（2026-08-11）**：全部子包已实现并通过 SQLite 全链路集成测试（麒麟 V11
 > 真机全量 pytest 364 passed）；kylin 为真实麒麟 SDK 适配，pybind11 绑定源码
 > 就绪，待麒麟环境构建验证。默认 `auto` 模式优先使用该 SDK；缺少原生能力的

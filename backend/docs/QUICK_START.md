@@ -54,9 +54,9 @@ curl -X POST http://127.0.0.1:8765/memory/write \
 curl http://127.0.0.1:8765/conflicts
 ```
 
-> 12 个 REST 端点（含 `/memory/query`、`/memory/flow/promote`、`/sync/*`）已全部
-> 真实实现（2026-08-10 合入 main）；默认优先麒麟 embedding，无 SDK 绑定的
-> Debian 环境自动使用可移植软件向量器。正式麒麟验收使用严格 `kylin` 模式。
+> 当前 24 个 REST 端点已实现（以 `docs/API.md` 为准）；默认优先麒麟 embedding，
+> 无 SDK 绑定的 Debian 环境自动使用可移植软件向量器。此启动方式验证的是记忆服务，
+> 不是完整 Agent；正式赛题验收还必须在 V11 严格画像接入系统 Vector Engine。
 
 ## 打包安装
 

@@ -3,6 +3,13 @@
 > 本文档定义前端（Module A）与后端（Module C API 网关）之间的全部通信契约。
 > 所有端点、请求结构、响应结构、事件类型的变更须经 Module A + Module C 双方确认。
 
+> [!IMPORTANT]
+> 这是 **PIXIU 记忆服务 API**，不是完整 OS Agent API。它没有定义会话、消息、
+> Agent run、模型规划、工具调用、Shell、联网搜索或审批契约；`/memory/query`
+> 返回记忆检索结果，不是聊天补全。目标方案由 `third_party/kylin-agent-runtime`
+> 提供 Agent 能力，通过 MemoryProvider/适配器调用本 API。接口映射和缺口见
+> `OS_AGENT_INTEGRATION_ASSESSMENT.md`。
+
 ---
 
 ## 1. 通信协议

@@ -7,6 +7,10 @@
 
 ## 实现状态（2026-08-11）
 
+> **赛题状态纠偏（2026-09-03）**：下列“已完成”仅表示适配代码和记忆引擎模块
+> 已实现，不表示 H-02/H-03 通过。系统 Vector Engine 生产接线是 P0 未完成项；
+> Embedding 需用最终版本在 V11 重新形成真实调用证据。
+
 - ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
   全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
   仓储语义 / 偏好版本化），并经 SQLite 全链路集成测试验证。
@@ -18,8 +22,9 @@
 - 🟡 **OCR（kysdk-ocr / libkyocr）已接入**（2026-08-24）：pybind11 绑定
   `_kylin_ocr` + `engine/kylin/ocr.py` 适配层 + REST `POST /memory/ocr`
   （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）。
-- 🟡 **向量库检索接入**：检索已由 foundation/retrieval 的 INT8 向量扫描承担；
-  `engine/kylin/vector.py`（vector-engine-client）客户端已就绪，生产接线待麒麟环境。
+- 🔴 **向量数据库硬门槛未通过**：当前检索由 foundation/retrieval 的 SQLite INT8
+  扫描承担；`engine/kylin/vector.py` 只有客户端封装。必须让系统 Vector Engine
+  实际承担生产建库、写入、删除和查询，并在 V11 严格画像中验证。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
 - 测试：21 项全绿（麒麟 V11 真机与 foundation 联合 pytest 377 passed）；

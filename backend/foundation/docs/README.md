@@ -5,8 +5,12 @@
 > **开发人员**：1人（后端基础设施）
 > **提供**：`core/` 中的共享数据模型和 Repository 接口
 
+> [!CAUTION]
+> 当前 Foundation 是记忆基础设施而非完整 Agent；SQLite/INT8 语义扫描只可作为
+> 降级/对照，尚未满足系统 Vector Engine 硬门槛。
+
 > **当前状态（2026-08-11）**：Phase 0~5 全部完成——retrieval、flow、sync（CRDT）、
-> eval（评测框架+基准）、D-Bus 服务均已落地，12 个 REST 端点真实实现。
+> eval（评测框架+基准）、D-Bus 服务均已落地，当前 24 个 REST 端点真实实现。
 > Foundation + Engine 全量测试通过（麒麟 V11 真机 pytest 364 passed）。
 > 剩余：真实麒麟 SDK 性能验收、真实局域网互操作、WS `/events` 路由注册修复。
 

@@ -5,7 +5,12 @@
 
 ---
 
-## 实现状态（2026-08-11，功能冻结：Phase 0～Phase 7）
+## 实现状态（2026-08-11 旧范围冻结；赛题 P0 已重新打开）
+
+> [!IMPORTANT]
+> 2026-09-03 按完整 PPT 复核后，Vector Engine 生产接线、V11 双 SDK 性能和
+> Agent MemoryProvider 端到端接入均是未完成 P0；不得继续使用“功能冻结后不新增”
+> 阻止这些必需整改。以下完成项仅描述旧记忆子系统范围。
 
 ### ✅ 已完成（Phase 0～Phase 7）
 
@@ -31,12 +36,13 @@
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
 - 测试：Foundation 356 项 + Engine 21 项，共 377 项全绿
 
-### ⬜ 待麒麟环境完成（功能冻结后不新增）
+### 🔴 赛题 P0 待完成
 
 - `retrieval/` + `eval/` 环境验收：麒麟机器上真实 embedding 跑 reference-v1（50 组数据集、
   90 查询、1000 压测），验证召回≥85%、P95≤500ms，产出 runtime="kylin" 报告
 - `engine/kylin/cpp/` 原生绑定构建（`_kylin_text_embedding` pybind11）
-- vector-engine-client 对接（submodule 已就位）
+- vector-engine-client 生产对接（submodule 已就位；当前 H-02 不通过）
+- 与官方 agent-runtime 的 MemoryProvider 适配和完整多轮/工具结果闭环
 - Module A（前端）HTTP/WS/D-Bus 三通道联调
 - `api/`：WS `/events` 路由注册修复（`http_app.py` 未导入 `ws.py`、
   `ws.py` 未导入 `fastapi.WebSocket`，见 `frontend/docs/BACKEND_ISSUES.md`）
