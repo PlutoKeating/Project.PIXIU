@@ -484,12 +484,14 @@ void TestAppNavigation::initTestCase()
     QVERIFY(m_app->start());
 
     // 注入假升级控制器（本地假 server）：避免设置对话框点「检查更新」触发
-    // 真实 GitHub 网络。release JSON 指向新版 0.1.6 → 控制器进入 Updatable。
+    // 真实 GitHub 网络。远端必须严格大于 PIXIU_VERSION，否则与产品版本
+    // 持平会走 UpToDate，升级按钮保持禁用。
     m_upgradeServer = new FakeServer(this);
     QVERIFY(m_upgradeServer->start());
     m_upgradeServer->addJson("/releases/latest",
                              upgradeReleaseJson(m_upgradeServer->baseUrl(),
-                                                QStringLiteral("0.1.7")));
+                                                QStringLiteral(PIXIU_VERSION)
+                                                    + QStringLiteral(".1")));
     m_upgradeNetwork = new QNetworkAccessManager(this);
     m_upgradeController = new UpgradeController(
         m_upgradeNetwork,
@@ -739,7 +741,7 @@ void TestAppNavigation::settingsOpensAboutTermsPrivacyAndUpdatePages()
     QCOMPARE(privacyDialogs.first()->windowTitle(), QStringLiteral("隐私政策"));
 
     // 检查更新：懒创建 CheckUpdateDialog，注入升级控制器；点击即触发检查，
-    // 假 server 返回新版 0.1.6 → Updatable → 一键升级可用 + 远程版本展示。
+    // 假 server 返回高于 PIXIU_VERSION 的版本 → Updatable → 一键升级可用。
     const auto updatesBefore = topLevels<CheckUpdateDialog>();
     QPushButton *update = settings->findChild<QPushButton *>(
         QStringLiteral("checkUpdateButton"));
