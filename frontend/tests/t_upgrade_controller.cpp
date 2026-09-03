@@ -188,7 +188,7 @@ private:
 namespace {
 
 // release/latest JSON（与 UpgradeUtils::parseRelease 期望形状一致），
-// 资产 browser_download_url 指回本地 server 的 /deb 与 /deb.sha256。
+// 资产 browser_download_url 指回本地 server 的 deb、sha256 与独立签名。
 QByteArray releaseJson(const QString &base, const QString &tag)
 {
     const QByteArray tagName = ("v" + tag).toUtf8();
@@ -203,7 +203,11 @@ QByteArray releaseJson(const QString &base, const QString &tag)
         + R"(/deb"},
           {"name":"pixiu_0.1.6-1_)"
         + arch + R"(.deb.sha256","browser_download_url":")"
-        + b + R"(/deb.sha256"} ]})";
+        + b
+        + R"(/deb.sha256"},
+          {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb.sha256.sig","browser_download_url":")"
+        + b + R"(/deb.sha256.sig"} ]})";
     return j;
 }
 
@@ -285,6 +289,8 @@ private:
         server->addJson("/releases/latest", releaseJson(base, tag));
         server->addRoute("/deb", 200, "application/octet-stream", debContent);
         server->addRoute("/deb.sha256", 200, "text/plain", shaOf(debContent));
+        server->addRoute("/deb.sha256.sig", 200,
+                         "application/octet-stream", "test-signature");
         return server;
     }
 };
@@ -458,13 +464,15 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
     QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
 
     QCOMPARE(installProgram, QStringLiteral("/usr/bin/pkexec"));
-    QCOMPARE(installArgs.size(), 3);
+    QCOMPARE(installArgs.size(), 4);
     QCOMPARE(installArgs.at(0),
              QStringLiteral("/usr/lib/pixiu/install-update"));
     QVERIFY(QFileInfo(installArgs.at(1)).fileName().startsWith(
         QStringLiteral("pixiu-update-")));
     QCOMPARE(installArgs.at(2),
              QString::fromLatin1(ui::sha256Hex(deb)));
+    QCOMPARE(installArgs.at(3),
+             QString::fromLatin1(QByteArray("test-signature").toBase64()));
 
     QVERIFY(progressSpy.count() > 0);
     QCOMPARE(progressSpy.last().at(0).toInt(), 100);
@@ -628,6 +636,8 @@ void TestUpgradeController::downloadFollowsRedirect()
     server->addRedirect("/deb", base + "/real-deb");
     server->addRoute("/real-deb", 200, "application/octet-stream", deb);
     server->addRoute("/deb.sha256", 200, "text/plain", shaOf(deb));
+    server->addRoute("/deb.sha256.sig", 200,
+                     "application/octet-stream", "test-signature");
 
     QNetworkAccessManager net;
     UpgradeController controller(&net, QUrl(base + "/releases/latest"));
@@ -713,12 +723,15 @@ void TestUpgradeController::invalidSourceRejected()
         const char *name;
         QByteArray debUrl;
         QByteArray shaUrl;
+        QByteArray sigUrl;
     };
     const Case cases[] = {
         {"http-scheme", QByteArrayLiteral("http://127.0.0.1:1/deb"),
-         QByteArrayLiteral("http://127.0.0.1:1/deb.sha256")},
+         QByteArrayLiteral("http://127.0.0.1:1/deb.sha256"),
+         QByteArrayLiteral("http://127.0.0.1:1/deb.sha256.sig")},
         {"non-allowlist-host", QByteArrayLiteral("https://evil.example.com/deb"),
-         QByteArrayLiteral("https://evil.example.com/deb.sha256")},
+         QByteArrayLiteral("https://evil.example.com/deb.sha256"),
+         QByteArrayLiteral("https://evil.example.com/deb.sha256.sig")},
     };
 
     for (const Case &c : cases) {
@@ -732,6 +745,8 @@ void TestUpgradeController::invalidSourceRejected()
             + R"(","browser_download_url":")" + c.debUrl
             + R"("},{"name":")" + assetBase
             + R"(.sha256","browser_download_url":")" + c.shaUrl
+            + R"("},{"name":")" + assetBase
+            + R"(.sha256.sig","browser_download_url":")" + c.sigUrl
             + R"("} ]})";
         server->addJson("/releases/latest", json);
 

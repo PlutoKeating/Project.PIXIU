@@ -43,8 +43,10 @@ struct ReleaseInfo {
     QString tag;     // strip 'v' 后的版本号（如 0.1.6）
     QString debUrl;  // pixiu_<ver>-1_amd64.deb 的 browser_download_url
     QString shaUrl;  // 同名 .deb.sha256 的 browser_download_url
+    QString sigUrl;  // 同名 .deb.sha256.sig 的 browser_download_url
     QString debName;
     QString shaName;
+    QString sigName;
     QString architecture;
 };
 

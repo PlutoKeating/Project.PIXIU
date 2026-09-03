@@ -259,19 +259,19 @@ PIXIU 前端
 
 ### 6.6 应用内安全升级
 
-> 当前实现提供一键下载安装和安装后健康判定；最终交付还必须按
-> `docs/DELIVERY_PLAN.md` 增加独立签名、完整组件兼容矩阵、可信备份/失败回滚与
+> 当前实现提供一键下载安装、Ed25519 独立签名校验和安装后健康判定；最终交付还必须按
+> `docs/DELIVERY_PLAN.md` 增加完整组件兼容矩阵、可信备份/失败回滚与
 > 受控前端重启。SHA-256 与资产
 > 同源发布时只能作为完整性校验，不单独承担发布者身份认证。
 
 ```
 设置 → 检查更新
   → UpgradeController 请求公开 GitHub Release latest API
-  → 按当前 Debian 架构（amd64 / arm64）选择同版本 .deb + .sha256
+  → 按当前 Debian 架构选择同版本 .deb + .sha256 + .sha256.sig
   → 流式下载到唯一临时文件 → 流式 SHA-256 校验（含资产文件名绑定）
-  → pkexec /usr/lib/pixiu/install-update <deb> <sha256> → polkit 系统授权
+  → pkexec install-update <deb> <sha256> <signature> → polkit 系统授权
   → 特权 helper 复制到 root-only 文件并再次校验
-  → 校验 Package/Version/Architecture → 非交互 dpkg（保留已安装的设备配置）
+  → 固定 Ed25519 公钥验签 → 校验 Package/Version/Architecture → 非交互 dpkg
   → 核对 dpkg 已装版本及后端 /version、/health、schema、包内 Provider 版本
   → 全部就绪才提示成功；健康失败返回专用状态，当前不声称已自动回滚
 ```

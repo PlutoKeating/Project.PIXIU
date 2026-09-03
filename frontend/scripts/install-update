@@ -6,13 +6,14 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin
 export PATH
 umask 077
 
-if [ "$#" -ne 2 ]; then
-    echo "usage: install-update <package.deb> <sha256>" >&2
+if [ "$#" -ne 3 ]; then
+    echo "usage: install-update <package.deb> <sha256> <signature-base64>" >&2
     exit 2
 fi
 
 SOURCE=$1
 EXPECTED=$2
+SIGNATURE_BASE64=$3
 case "${EXPECTED}" in
     *[!0-9A-Fa-f]*|"")
         echo "pixiu: invalid expected SHA-256" >&2
@@ -21,6 +22,16 @@ case "${EXPECTED}" in
 esac
 if [ "${#EXPECTED}" -ne 64 ]; then
     echo "pixiu: invalid expected SHA-256 length" >&2
+    exit 2
+fi
+case "${SIGNATURE_BASE64}" in
+    *[!0-9A-Za-z+/=]*|"")
+        echo "pixiu: invalid release signature encoding" >&2
+        exit 2
+        ;;
+esac
+if [ "${#SIGNATURE_BASE64}" -gt 256 ]; then
+    echo "pixiu: release signature exceeds size limit" >&2
     exit 2
 fi
 if [ ! -f "${SOURCE}" ] || [ -L "${SOURCE}" ]; then
@@ -37,10 +48,16 @@ fi
 ulimit -f 1048576
 
 ROOT_PACKAGE=$(/usr/bin/mktemp /var/tmp/pixiu-update-root.XXXXXX.deb)
+ROOT_SIGNATURE=
+ROOT_DIGEST=
 cleanup() {
     /usr/bin/rm -f -- "${ROOT_PACKAGE}"
+    [ -z "${ROOT_SIGNATURE}" ] || /usr/bin/rm -f -- "${ROOT_SIGNATURE}"
+    [ -z "${ROOT_DIGEST}" ] || /usr/bin/rm -f -- "${ROOT_DIGEST}"
 }
 trap cleanup EXIT HUP INT TERM
+ROOT_SIGNATURE=$(/usr/bin/mktemp /var/tmp/pixiu-update-root.XXXXXX.sig)
+ROOT_DIGEST=$(/usr/bin/mktemp /var/tmp/pixiu-update-root.XXXXXX.digest)
 
 /usr/bin/cp -- "${SOURCE}" "${ROOT_PACKAGE}"
 /usr/bin/chown root:root "${ROOT_PACKAGE}"
@@ -51,6 +68,21 @@ ACTUAL=${ACTUAL%% *}
 EXPECTED=$(printf '%s' "${EXPECTED}" | /usr/bin/tr 'A-F' 'a-f')
 if [ "${ACTUAL}" != "${EXPECTED}" ]; then
     echo "pixiu: privileged SHA-256 verification failed" >&2
+    exit 3
+fi
+
+if ! printf '%s' "${SIGNATURE_BASE64}" \
+        | /usr/bin/base64 --decode >"${ROOT_SIGNATURE}" 2>/dev/null; then
+    echo "pixiu: invalid release signature" >&2
+    exit 3
+fi
+/usr/bin/chown root:root "${ROOT_SIGNATURE}" "${ROOT_DIGEST}"
+/usr/bin/chmod 0600 "${ROOT_SIGNATURE}" "${ROOT_DIGEST}"
+printf '%s\n' "${EXPECTED}" >"${ROOT_DIGEST}"
+if ! /usr/bin/openssl pkeyutl -verify -pubin -rawin \
+        -inkey /usr/share/pixiu/keys/pixiu-release-ed25519.pub \
+        -in "${ROOT_DIGEST}" -sigfile "${ROOT_SIGNATURE}" >/dev/null 2>&1; then
+    echo "pixiu: release signature verification failed" >&2
     exit 3
 fi
 

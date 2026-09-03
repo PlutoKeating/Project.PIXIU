@@ -33,6 +33,7 @@ private slots:
     void parseReleaseRejectsMismatchedAssetPair();
     void parseReleaseMissingDeb();
     void parseReleaseMissingSha();
+    void parseReleaseMissingSignature();
     void parseReleaseInvalidJson();
 };
 
@@ -177,7 +178,9 @@ void TestUpgradeUtils::parseReleaseValid()
                 {"name": "pixiu_0.1.6-1_amd64.deb",
                  "browser_download_url": "https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb"},
                 {"name": "pixiu_0.1.6-1_amd64.deb.sha256",
-                 "browser_download_url": "https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb.sha256"}
+                 "browser_download_url": "https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb.sha256"},
+                {"name": "pixiu_0.1.6-1_amd64.deb.sha256.sig",
+                 "browser_download_url": "https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb.sha256.sig"}
             ]
         }
     )");
@@ -190,6 +193,8 @@ void TestUpgradeUtils::parseReleaseValid()
              QStringLiteral("https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb"));
     QCOMPARE(info.shaUrl,
              QStringLiteral("https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb.sha256"));
+    QCOMPARE(info.sigUrl,
+             QStringLiteral("https://github.com/PlutoKeating/Project.PIXIU/releases/download/v0.1.6/pixiu_0.1.6-1_amd64.deb.sha256.sig"));
 }
 
 void TestUpgradeUtils::parseReleaseSelectsRequestedArchitecture()
@@ -201,10 +206,14 @@ void TestUpgradeUtils::parseReleaseSelectsRequestedArchitecture()
              "browser_download_url":"https://github.com/a/amd64.deb"},
             {"name":"pixiu_0.1.6-1_amd64.deb.sha256",
              "browser_download_url":"https://github.com/a/amd64.deb.sha256"},
+            {"name":"pixiu_0.1.6-1_amd64.deb.sha256.sig",
+             "browser_download_url":"https://github.com/a/amd64.deb.sha256.sig"},
             {"name":"pixiu_0.1.6-1_arm64.deb",
              "browser_download_url":"https://github.com/a/arm64.deb"},
             {"name":"pixiu_0.1.6-1_arm64.deb.sha256",
-             "browser_download_url":"https://github.com/a/arm64.deb.sha256"}
+             "browser_download_url":"https://github.com/a/arm64.deb.sha256"},
+            {"name":"pixiu_0.1.6-1_arm64.deb.sha256.sig",
+             "browser_download_url":"https://github.com/a/arm64.deb.sha256.sig"}
         ]
     })");
     ui::ReleaseInfo info;
@@ -256,6 +265,21 @@ void TestUpgradeUtils::parseReleaseMissingSha()
             ]
         }
     )");
+    ui::ReleaseInfo info;
+    QVERIFY(!ui::parseRelease(json, info, QStringLiteral("amd64")));
+}
+
+void TestUpgradeUtils::parseReleaseMissingSignature()
+{
+    const QByteArray json = QByteArray(R"({
+        "tag_name": "v0.1.6",
+        "assets": [
+            {"name":"pixiu_0.1.6-1_amd64.deb",
+             "browser_download_url":"https://github.com/a/package.deb"},
+            {"name":"pixiu_0.1.6-1_amd64.deb.sha256",
+             "browser_download_url":"https://github.com/a/package.deb.sha256"}
+        ]
+    })");
     ui::ReleaseInfo info;
     QVERIFY(!ui::parseRelease(json, info, QStringLiteral("amd64")));
 }

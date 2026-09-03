@@ -22,8 +22,8 @@ class QSaveFile;
 // 流程：checkForUpdate → (Checking) → Updatable | UpToDate | Failed；
 //       仅 Updatable 可 downloadAndInstall → Downloading → Verifying →
 //       Installing → Success | Failed | Cancelled。
-// 安全铁律：HTTPS + sha256 双校验（ui::verifySha256），安装经 pkexec 调用
-//       root-only 副本二次校验 helper，不绕过授权；失败/取消清理临时 deb，
+// 安全铁律：HTTPS + sha256 完整性校验；安装经 pkexec 调用 root-only helper，
+//       再以固定 Ed25519 公钥验证独立签名，不绕过授权；失败/取消清理临时 deb，
 //       不自动重启（手动提示）。
 //
 // 测试 seam：
@@ -95,8 +95,8 @@ public:
     void checkForUpdate();
 
     // 下载 + 校验 + 安装（仅 Updatable 可调）。下载流式写入 TempLocation
-    // 的 pixiu-update.deb，进度 progressChanged(0-100)；随后 GET sha256 →
-    // ui::verifySha256；通过才 Installing，不通过清理 + Failed。
+    // 的 pixiu-update.deb，进度 progressChanged(0-100)；随后 GET sha256 与独立
+    // 签名；摘要通过后由特权 helper 验签，任一缺失均不进入 dpkg。
     void downloadAndInstall();
 
     // 取消下载/校验：清理临时 deb + 停止进行中的 reply。安装开始后不允许
@@ -135,6 +135,8 @@ private:
     void handleDownloadFinished();
     void fetchSha();
     void handleShaFinished(QNetworkReply *reply);
+    void fetchSignature();
+    void handleSignatureFinished(QNetworkReply *reply);
     void startInstall();
     void handleInstallFinished(int exitCode);
     void protectRedirect(QNetworkReply *reply);
@@ -148,13 +150,16 @@ private:
     State m_state = State::Idle;
     QString m_debPath;
     QString m_expectedSha256;
+    QString m_signatureBase64;
 
     QNetworkReply *m_checkReply = nullptr;
     QNetworkReply *m_downloadReply = nullptr;
     QNetworkReply *m_shaReply = nullptr;
+    QNetworkReply *m_signatureReply = nullptr;
     QSaveFile *m_downloadFile = nullptr;
     QByteArray m_checkBody;
     QByteArray m_shaBody;
+    QByteArray m_signatureBody;
     qint64 m_downloadBytes = 0;
     QProcess *m_installProcess = nullptr;
     QString m_installErrorOutput;

@@ -75,6 +75,19 @@ jobs:
           PIXIU_SKIP_TESTS: "0"
         run: make -C build/release build-deb
 
+      - name: Sign release checksum
+        env:
+          PIXIU_RELEASE_SIGNING_KEY: ${{ secrets.PIXIU_RELEASE_SIGNING_KEY }}
+        run: |
+          test -n "${PIXIU_RELEASE_SIGNING_KEY}"
+          key="$(mktemp)"
+          trap 'rm -f "${key}"' EXIT
+          chmod 600 "${key}"
+          printf '%s\n' "${PIXIU_RELEASE_SIGNING_KEY}" > "${key}"
+          checksum="$(realpath build/release/out/*.deb.sha256)"
+          PIXIU_SIGNING_KEY_FILE="${key}" \
+            build/release/scripts/sign-release.sh "${checksum}"
+
       - name: Verify and install release package
         shell: bash
         run: |
@@ -111,7 +124,8 @@ jobs:
             'from backend.foundation.api.http_app import app; assert app'
           set +e
           sudo /usr/lib/pixiu/install-update "${deb}" \
-            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000 \
+            AAA=
           helper_rc=$?
           set -e
           test "${helper_rc}" -eq 3
@@ -119,7 +133,8 @@ jobs:
           truncate --size=513M "${oversized}"
           set +e
           sudo /usr/lib/pixiu/install-update "${oversized}" \
-            0000000000000000000000000000000000000000000000000000000000000000
+            0000000000000000000000000000000000000000000000000000000000000000 \
+            AAA=
           size_rc=$?
           set -e
           rm -f "${oversized}"
@@ -133,6 +148,7 @@ jobs:
           path: |
             build/release/out/*.deb
             build/release/out/*.sha256
+            build/release/out/*.sha256.sig
           if-no-files-found: error
 
   publish-release:
@@ -156,3 +172,4 @@ jobs:
           files: |
             dist/*.deb
             dist/*.sha256
+            dist/*.sha256.sig

@@ -230,9 +230,12 @@ mkdir -p "${STAGE}/DEBIAN" \
          "${STAGE}/lib/systemd/system" \
          "${STAGE}/usr/bin" \
          "${STAGE}/usr/share/pixiu"
+install -d -m 0755 "${STAGE}/usr/share/pixiu/keys"
+install -m 0644 "${PIXIU_RELEASE_DIR}/keys/pixiu-release-ed25519.pub" \
+    "${STAGE}/usr/share/pixiu/keys/pixiu-release-ed25519.pub"
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
-    PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, pkexec, \
+    PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, openssl, pkexec, \
 libqt5widgets5, libqt5network5, libqt5websockets5, libqt5svg5, \
 libkysdk-shortcut, libkysdk-notification, libkysdk-qtwidgets, libgsettings-qt1"
 fi

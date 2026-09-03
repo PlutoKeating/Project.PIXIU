@@ -136,9 +136,11 @@ bool parseRelease(const QByteArray &json, ReleaseInfo &out,
     out.debName = QStringLiteral("pixiu_%1-1_%2.deb")
                       .arg(out.tag, architecture);
     out.shaName = out.debName + QStringLiteral(".sha256");
+    out.sigName = out.shaName + QStringLiteral(".sig");
 
     bool foundDeb = false;
     bool foundSha = false;
+    bool foundSig = false;
     const QJsonArray assets = root.value(QLatin1String("assets")).toArray();
     for (const QJsonValue &value : assets) {
         const QJsonObject asset = value.toObject();
@@ -158,10 +160,17 @@ bool parseRelease(const QByteArray &json, ReleaseInfo &out,
             }
             out.shaUrl = url;
             foundSha = true;
+        } else if (name == out.sigName) {
+            if (foundSig) {
+                return false;
+            }
+            out.sigUrl = url;
+            foundSig = true;
         }
     }
 
-    if (!foundDeb || !foundSha || out.debUrl.isEmpty() || out.shaUrl.isEmpty()) {
+    if (!foundDeb || !foundSha || !foundSig || out.debUrl.isEmpty()
+        || out.shaUrl.isEmpty() || out.sigUrl.isEmpty()) {
         return false;
     }
     return true;

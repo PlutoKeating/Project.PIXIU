@@ -151,7 +151,7 @@ private:
 namespace {
 
 // release/latest JSON（与 UpgradeUtils::parseRelease 期望形状一致），
-// 资产 browser_download_url 指回本地 server 的 /deb 与 /deb.sha256。
+// 资产 browser_download_url 指回本地 server 的 deb、sha256 与独立签名。
 QByteArray releaseJson(const QString &base, const QString &tag)
 {
     const QByteArray tagName = ("v" + tag).toUtf8();
@@ -166,7 +166,11 @@ QByteArray releaseJson(const QString &base, const QString &tag)
         + R"(/deb"},
           {"name":"pixiu_0.1.6-1_)"
         + arch + R"(.deb.sha256","browser_download_url":")"
-        + b + R"(/deb.sha256"} ]})";
+        + b
+        + R"(/deb.sha256"},
+          {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb.sha256.sig","browser_download_url":")"
+        + b + R"(/deb.sha256.sig"} ]})";
     return j;
 }
 
@@ -240,6 +244,8 @@ private:
         server->addJson("/releases/latest", releaseJson(base, tag));
         server->addRoute("/deb", 200, "application/octet-stream", debContent);
         server->addRoute("/deb.sha256", 200, "text/plain", shaOf(debContent));
+        server->addRoute("/deb.sha256.sig", 200,
+                         "application/octet-stream", "test-signature");
         return server;
     }
 };
@@ -451,7 +457,11 @@ void TestCheckUpdateDialog::invalidSourceRejectedShowsInvalidSource()
         + QByteArrayLiteral("http://evil.example.com/deb") + R"("},
         {"name":"pixiu_0.1.6-1_)"
         + arch + R"(.deb.sha256","browser_download_url":")"
-        + QByteArrayLiteral("http://evil.example.com/deb.sha256") + R"("} ]})";
+        + QByteArrayLiteral("http://evil.example.com/deb.sha256") + R"("},
+        {"name":"pixiu_0.1.6-1_)"
+        + arch + R"(.deb.sha256.sig","browser_download_url":")"
+        + QByteArrayLiteral("http://evil.example.com/deb.sha256.sig")
+        + R"("} ]})";
     server->addJson("/releases/latest", json);
 
     QNetworkAccessManager net;

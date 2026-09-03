@@ -20,6 +20,7 @@ namespace {
 constexpr int kUpgradeTransferTimeoutMs = 15000;
 constexpr qint64 kMaxReleaseMetadataBytes = 1024 * 1024;
 constexpr qint64 kMaxChecksumBytes = 64 * 1024;
+constexpr qint64 kMaxSignatureBytes = 4096;
 constexpr qint64 kMaxPackageBytes = 512LL * 1024 * 1024;
 
 // GitHub 资产下载源的铁律校验：HTTPS + host allowlist。GitHub 的
@@ -103,6 +104,12 @@ void UpgradeController::resetTransport()
         m_shaReply->deleteLater();
         m_shaReply = nullptr;
     }
+    if (m_signatureReply) {
+        m_signatureReply->disconnect(this);
+        m_signatureReply->abort();
+        m_signatureReply->deleteLater();
+        m_signatureReply = nullptr;
+    }
     if (m_downloadFile) {
         m_downloadFile->cancelWriting();
         delete m_downloadFile;
@@ -129,8 +136,10 @@ void UpgradeController::resetTransport()
     }
     m_checkBody.clear();
     m_shaBody.clear();
+    m_signatureBody.clear();
     m_downloadBytes = 0;
     m_expectedSha256.clear();
+    m_signatureBase64.clear();
 }
 
 void UpgradeController::checkForUpdate()
@@ -233,9 +242,12 @@ void UpgradeController::downloadAndInstall()
     // 允许发起下载；否则 Failed + 更新源无效（不发起下载，不落盘）。
     const QUrl debUrl(m_release.debUrl);
     const QUrl shaUrl(m_release.shaUrl);
-    if (!m_sourceValidator(debUrl) || !m_sourceValidator(shaUrl)) {
+    const QUrl sigUrl(m_release.sigUrl);
+    if (!m_sourceValidator(debUrl) || !m_sourceValidator(shaUrl)
+        || !m_sourceValidator(sigUrl)) {
         qCWarning(lcUpgrade) << "untrusted download source:"
-                             << m_release.debUrl << m_release.shaUrl;
+                             << m_release.debUrl << m_release.shaUrl
+                             << m_release.sigUrl;
         setState(State::Failed);
         emit upgradeFinished(false, tr("更新源无效"),
                              FailedReason::InvalidSource);
@@ -443,6 +455,58 @@ void UpgradeController::handleShaFinished(QNetworkReply *reply)
                              FailedReason::Verify);
         return;
     }
+    fetchSignature();
+}
+
+void UpgradeController::fetchSignature()
+{
+    QNetworkRequest request(QUrl(m_release.sigUrl));
+    request.setRawHeader("User-Agent", QByteArrayLiteral("Pixiu-Update/1.0"));
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+    request.setTransferTimeout(kUpgradeTransferTimeoutMs);
+    m_signatureReply = m_network->get(request);
+    protectRedirect(m_signatureReply);
+    QNetworkReply *signature = m_signatureReply;
+    connect(signature, &QNetworkReply::readyRead, this,
+            [this, signature]() {
+                collectBoundedReply(
+                    signature, m_signatureBody, kMaxSignatureBytes);
+            });
+    connect(signature, &QNetworkReply::finished, this,
+            [this, signature]() { handleSignatureFinished(signature); });
+}
+
+void UpgradeController::handleSignatureFinished(QNetworkReply *reply)
+{
+    if (m_signatureReply == reply) {
+        m_signatureReply = nullptr;
+    }
+    if (!reply) {
+        return;
+    }
+    collectBoundedReply(reply, m_signatureBody, kMaxSignatureBytes);
+    const bool invalidRedirect =
+        reply->property("pixiuInvalidRedirect").toBool();
+    const bool tooLarge = reply->property("pixiuTooLarge").toBool();
+    const bool ok = reply->error() == QNetworkReply::NoError;
+    const QByteArray signature = std::move(m_signatureBody);
+    m_signatureBody.clear();
+    reply->deleteLater();
+    if (m_state != State::Verifying) {
+        return;
+    }
+    if (invalidRedirect || tooLarge || !ok || signature.isEmpty()) {
+        QFile::remove(m_debPath);
+        m_debPath.clear();
+        setState(State::Failed);
+        emit upgradeFinished(
+            false, invalidRedirect ? tr("更新源无效") : tr("下载失败"),
+            invalidRedirect ? FailedReason::InvalidSource
+                            : FailedReason::Download);
+        return;
+    }
+    m_signatureBase64 = QString::fromLatin1(signature.toBase64());
     startInstall();
 }
 
@@ -455,6 +519,7 @@ void UpgradeController::startInstall()
         QStringLiteral("/usr/lib/pixiu/install-update"),
         m_debPath,
         m_expectedSha256,
+        m_signatureBase64,
     };
     if (m_installRunner) {
         // test seam：注入的执行器记录 program/argv 并自行回调退出码。

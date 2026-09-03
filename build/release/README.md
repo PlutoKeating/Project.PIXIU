@@ -61,7 +61,7 @@ build/release/
 
 仓库根目录的 `.github/workflows/ci.yml` 在 `main`/PR 上执行后端全量测试、
 前端编译测试和 `.deb` 打包；`.github/workflows/release.yml` 在 `v*` tag 上执行
-同等验证、打入离线 wheels，并把 `.deb` 与 SHA-256 校验文件发布到 GitHub Release。
+同等验证、打入离线 wheels，并把 `.deb`、SHA-256 与 Ed25519 签名发布到 GitHub Release。
 校验清单使用标准 `<sha256>  <asset-basename>` 格式，不写入构建机绝对路径。
 
 流水线产物：
@@ -135,15 +135,19 @@ Python 无 pip/venv → get-pip.py 自举；PEP 668 externally-managed →
 
 ## 最终版本与一键升级门禁
 
-当前应用内升级已具备 latest 查询、架构匹配、流式 SHA-256、HTTPS/重定向白名单、
+当前应用内升级已具备 latest 查询、架构匹配、流式 SHA-256、强制签名资产、HTTPS/重定向白名单、
 `pkexec` 授权、root-only 副本二次校验、包名/版本/架构检查和 `dpkg` 安装。安装后
 helper 会核对实际 dpkg 版本，并轮询后端 `/version`、`/health`/schema 与包内
 Provider 版本；全部通过才返回成功，健康失败使用专用退出状态。最终候选版还必须
-补齐并验证：
+补齐并验证。发布私钥只存在于 `PIXIU_RELEASE_SIGNING_KEY` 仓库 Secret；仓库固定公钥
+DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e38ee28e8`。
+本地签名须把私钥文件路径放入 `PIXIU_SIGNING_KEY_FILE` 后执行
+`build/release/scripts/sign-release.sh <deb.sha256>`，不得提交私钥。最终仍须：
 
 - 一个发布输入派生 tag、CMake、Debian control、Release 资产和 manifest，CI 检查不一致；
 - manifest 记录 Git/API/schema/provider/宿主/双 SDK 版本和兼容范围；
-- 独立数字签名、可信安装前状态/旧包备份和健康失败自动回滚；
+- 正式签名资产/坏签名与“旧钥签发含新公钥版本、下一版切换新钥”的轮换演练；
+- 可信安装前状态/旧包备份和健康失败自动回滚；
 - GUI 中显示版本、通道、发行说明、进度、授权、失败恢复和受控重启状态；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
 - `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；

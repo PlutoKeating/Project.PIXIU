@@ -371,7 +371,12 @@ QByteArray upgradeReleaseJson(const QString &base, const QString &tag)
           {"name":"pixiu_)"
         + version + "-1_" + architecture
         + R"(.deb.sha256","browser_download_url":")"
-        + b + R"(/deb.sha256"} ]})";
+        + b
+        + R"(/deb.sha256"},
+          {"name":"pixiu_)"
+        + version + "-1_" + architecture
+        + R"(.deb.sha256.sig","browser_download_url":")"
+        + b + R"(/deb.sha256.sig"} ]})";
     return j;
 }
 

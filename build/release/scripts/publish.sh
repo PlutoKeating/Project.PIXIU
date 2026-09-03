@@ -15,8 +15,11 @@ DIST="$(dist_dir)/${CHANNEL}"
 DEB="pixiu_${PIXIU_VERSION}-${PIXIU_REVISION}_${PIXIU_ARCH}.deb"
 
 [ -f "${OUT}/${DEB}" ] || die "build artifact missing: ${OUT}/${DEB}（先执行 build-deb.sh）"
+[ -f "${OUT}/${DEB}.sha256.sig" ] || \
+    die "signed checksum missing: ${OUT}/${DEB}.sha256.sig（先用离线密钥执行 sign-release.sh）"
 mkdir -p "${DIST}"
-cp "${OUT}/${DEB}" "${OUT}/${DEB}.sha256" "${DIST}/"
+cp "${OUT}/${DEB}" "${OUT}/${DEB}.sha256" \
+    "${OUT}/${DEB}.sha256.sig" "${DIST}/"
 {
     printf '%s\t%s\t%s\t%s\n' \
         "$(date -Is)" \
