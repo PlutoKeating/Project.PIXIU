@@ -49,6 +49,11 @@ curl http://127.0.0.1:8765/conflicts
 # 查询记忆（真实链路：路由 → 多通道召回 → 融合/重排 → 组装）
 curl -X POST http://127.0.0.1:8765/memory/query -H "Content-Type: application/json" -d '{"text":"上个月水电燃气支出是多少？","context_hint":{"scope":"user:test","time_range":"last_month"}}'
 
+# Agent 每轮预取：scope/敏感度硬过滤 + 字符预算 + evidence 引用
+curl -X POST http://127.0.0.1:8765/agent/context \
+  -H "Content-Type: application/json" \
+  -d '{"query":"按我的习惯回答","scope":"user:test","session_id":"session-demo","turn_id":"turn-1","max_chars":2000}'
+
 # 将 FlowService.remember 生成的短期上下文沉淀为长期知识
 curl -X POST http://127.0.0.1:8765/memory/flow/promote \
   -H "Content-Type: application/json" \

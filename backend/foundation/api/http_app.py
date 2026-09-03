@@ -35,6 +35,7 @@ from ..storage.idempotency import (
 )
 from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound
 from .di import (
+    get_agent_context_service,
     get_agent_ingest_receipt_store,
     get_conflict_repo,
     get_conflict_service,
@@ -236,6 +237,24 @@ class ForgetRequest(BaseModel):
 class MemoryQueryRequest(BaseModel):
     text: str
     context_hint: dict[str, Any] = Field(default_factory=dict)
+
+
+class AgentContextRequest(BaseModel):
+    query: str = Field(min_length=1, max_length=16 * 1024)
+    scope: str = Field(pattern=r"^(user|shared):[A-Za-z0-9._-]+$")
+    session_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+    turn_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+    top_k: int = Field(default=5, ge=1, le=20)
+    max_chars: int = Field(default=4000, ge=64, le=16000)
+    freshness_seconds: int = Field(default=30 * 24 * 3600, ge=0, le=365 * 24 * 3600)
 
 
 class FlowPromoteRequest(BaseModel):
@@ -457,6 +476,23 @@ async def memory_query(
     """BM25 + ANN + Graph 三通道融合检索，返回 MemoryAtom。"""
     atom = await retrieval.query(body.text, body.context_hint)
     return atom.model_dump(mode="json")
+
+
+@app.post("/agent/context", tags=["Agent"], summary="构建 Agent 轮次记忆上下文")
+async def agent_context(
+    body: AgentContextRequest,
+    service=Depends(get_agent_context_service),
+):
+    """返回受 scope、敏感度和字符预算约束且可追溯的记忆上下文。"""
+    return await service.build(
+        body.query,
+        body.scope,
+        session_id=body.session_id,
+        turn_id=body.turn_id,
+        top_k=body.top_k,
+        max_chars=body.max_chars,
+        freshness_seconds=body.freshness_seconds,
+    )
 
 
 # ─── 偏好提取 ────────────────────────────────────────────

@@ -20,12 +20,12 @@
 | MemoryProvider 行为 | 当前映射 | 必须补齐的契约 |
 |---------------------|----------|----------------|
 | `initialize` | `GET /capabilities`（已实现） | 消费 V11、Embedding、Vector Engine 的真实 capability/runtime；Module E 尚需实现严格画像拒绝 |
-| `prefetch(query, session_id)` | `POST /memory/query` | `context_hint` 增加 `session_id`/`turn_id`，响应保留 evidence 来源 |
+| `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 调用、后台预取/缓存与失败降级仍待实现 |
 | `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | 异步重试、失败 receipt 恢复与 Module E 调用仍待实现 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 输入摘要策略、失败 receipt 恢复与 Module E 调用仍待实现 |
 | 显式记忆工具 | query/write/forget/sync 现有端点 | Module E 做 schema 和错误映射，不新增 Agent 私有直连 |
 | `on_pre_compress`/会话结束或切换 | `/memory/flow/promote` 仅处理已有 context | 增加可创建/更新短中期 context 的公共端点，再触发 promote/demote/清理 |
-| 运行审计 | evidence 已持久化 session_id/run_id/turn_id/tool_call_id | 日志、查询上下文与 memory_id 链路仍待贯通 |
+| 运行审计 | evidence provenance + `/agent/context` 回显 session/turn | 日志与 memory_id 跨端点链路仍待贯通 |
 
 `CONVERSATION` 与 evidence provenance 已同步更新 `foundation/core` 模型、Module B
 Connector、Module C 路由/存储及契约测试；schema v11 的持久化 receipt 保证完成态
@@ -50,6 +50,7 @@ Module E 客户端仍须贯通；不得用 `TOOL_RESULT` 伪装普通对话来�
 | GET | `/capabilities` | 平台与双 SDK 的配置/实际运行能力 | ✅ 已实现（不含主机、网络、路径信息） |
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
+| POST | `/agent/context` | Agent 轮次的预算化、可追溯安全上下文 | ✅ 已实现（scope/敏感过滤/freshness/冲突状态） |
 | GET | `/evidence/{id}` | 证据详情（查看原文） | ✅ 已实现（2026-08-24） |
 | POST | `/memory/ocr` | 图片文字识别（麒麟 kysdk-ocr） | ✅ 已实现（2026-08-24，无 SDK 环境返回 503 OCR_UNAVAILABLE） |
 | POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
@@ -74,7 +75,7 @@ Module E 客户端仍须贯通；不得用 `TOOL_RESULT` 伪装普通对话来�
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 
-> 状态说明（2026-09-03）：25 个 REST 端点已按本文档契约真实实现；
+> 状态说明（2026-09-03）：26 个 REST 端点已按本文档契约真实实现；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
@@ -208,6 +209,59 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
   "latency_ms": 210
 }
 ```
+
+### 3.2a POST /agent/context
+
+为 OS Agent 即将开始的一个 turn 构建可直接交给 MemoryProvider 的结构化上下文。
+该端点复用 BM25/向量/图检索，但返回多候选和审计元数据；`scope` 是硬过滤，任何
+关联 evidence 的 `sensitivity > 0` 都会使该候选从上下文中排除，客户端不能提高
+这一服务端阈值。
+
+**请求体：**
+
+```jsonc
+{
+  "query": "请按我的习惯整理结果",
+  "scope": "user:alice",
+  "session_id": "session-01",
+  "turn_id": "turn-04",
+  "top_k": 5,
+  "max_chars": 4000,
+  "freshness_seconds": 2592000
+}
+```
+
+`session_id`、`turn_id` 必填；`top_k` 范围 1～20，`max_chars` 范围 64～16000。
+`freshness_seconds` 只决定 `fresh|stale` 标签，不放宽 scope、状态或敏感过滤。
+
+**响应体（200）：**
+
+```jsonc
+{
+  "session_id": "session-01",
+  "turn_id": "turn-04",
+  "context": "- 用户偏好简洁回答: {...} [knowledge=knw_...; evidence=evd_...]",
+  "items": [
+    {
+      "knowledge_id": "knw_...",
+      "title": "用户偏好简洁回答",
+      "scope": "user:alice",
+      "evidence_ids": ["evd_..."],
+      "confidence": 0.91,
+      "updated_at": 1788393600,
+      "freshness": "fresh",
+      "conflict_status": "none|resolved|manual"
+    }
+  ],
+  "truncated": false,
+  "latency_ms": 42
+}
+```
+
+`context` 保证不超过 `max_chars`；`truncated=true` 表示最后一项或后续候选因预算
+被截断。每个返回项必须至少解析到一条真实 evidence，缺失来源的候选 fail-closed。
+返回内容仍属于不可信外部记忆，Module E 必须继续使用上游 MemoryProvider 的上下文
+隔离/转义机制，不能把其中的文本当系统指令执行。
 
 ### 3.3 GET /evidence/{id}
 

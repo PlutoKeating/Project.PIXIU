@@ -9,7 +9,7 @@ import asyncio
 import time
 from typing import Any
 
-from backend.foundation.core.models import MemoryAtom
+from backend.foundation.core.models import KnowledgeItem, MemoryAtom
 from backend.foundation.core.repository import (
     EntityRepository,
     EvidenceRepository,
@@ -58,6 +58,24 @@ class RetrievalService:
     async def query(self, text: str, context_hint: dict[str, Any] | None = None) -> MemoryAtom:
         """执行混合检索，返回 MemoryAtom。"""
         started = time.monotonic()
+        reranked = await self.ranked(text, context_hint)
+
+        if not reranked:
+            latency = int((time.monotonic() - started) * 1000)
+            return MemoryAtom(answer="", latency_ms=latency)
+
+        top_item, top_score = reranked[0]
+        latency = int((time.monotonic() - started) * 1000)
+        return await Assembler(self._evidence_repo).assemble(
+            top_item, top_score, text, latency
+        )
+
+    async def ranked(
+        self,
+        text: str,
+        context_hint: dict[str, Any] | None = None,
+    ) -> list[tuple[KnowledgeItem, float]]:
+        """Return ranked knowledge candidates for context assembly."""
         hint = context_hint or {}
         top_k = max(1, min(100, int(hint.get("top_k", 5))))
         scope = hint.get("scope")
@@ -93,15 +111,7 @@ class RetrievalService:
             time_range=time_range,
             top_k=pool_k,
         )
-        reranked = rerank(fused, text)[:top_k]
-
-        if not reranked:
-            latency = int((time.monotonic() - started) * 1000)
-            return MemoryAtom(answer="", latency_ms=latency)
-
-        top_item, top_score = reranked[0]
-        latency = int((time.monotonic() - started) * 1000)
-        return await Assembler(self._evidence_repo).assemble(top_item, top_score, text, latency)
+        return rerank(fused, text)[:top_k]
 
 
 __all__ = ["RetrievalService"]

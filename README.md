@@ -58,7 +58,8 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 
 当前 Agent 记忆接入进度：`POST /memory/write` 已支持独立 `CONVERSATION` 来源，
 并将 session/run/turn/tool-call/审批/时间 provenance 与原始正文分离持久化；完成态
-请求具备跨重启幂等 receipt。失败恢复、上下文预算与生命周期 API、Module E 宿主
+请求具备跨重启幂等 receipt；`POST /agent/context` 已提供 scope/敏感度硬过滤、字符
+预算、freshness/冲突状态和 evidence 引用。失败恢复、生命周期 API 与 Module E 宿主
 适配仍在实施中，因此这不是完整 Agent 闭环。
 
 ## 目标架构

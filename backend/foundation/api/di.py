@@ -26,6 +26,7 @@ from backend.engine.kylin import (
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
 
+from ..agent_context import AgentContextService
 from ..core.config import settings
 from ..core.logger import get_logger
 from ..core.vector_store import VectorStore
@@ -226,6 +227,17 @@ async def get_retrieval_service(
         evidence_repo=SqliteEvidenceRepo(db),
         embedder=get_embedder(settings.embedding),
         vector_store=await get_vector_store(db),
+    )
+
+
+async def get_agent_context_service(
+    db: aiosqlite.Connection = Depends(get_db),
+    retrieval: RetrievalService = Depends(get_retrieval_service),
+) -> AgentContextService:
+    return AgentContextService(
+        retrieval=retrieval,
+        evidence_repo=SqliteEvidenceRepo(db),
+        conflict_repo=SqliteConflictRepo(db),
     )
 
 

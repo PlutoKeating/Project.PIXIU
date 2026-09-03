@@ -5,7 +5,8 @@
 > **与模块 E 的边界**：Foundation 只提供 `docs/API.md` 中的公共 HTTP/WS 契约；
 > E 不得导入 Service、Repository 或数据库实现。真实 capability/runtime 端点已实现；
 > Agent 关联 ID 已进入 evidence 模型/API，schema v11 已提供持久化幂等 receipt；
-> 日志、查询上下文、失败恢复以及短中期 context 写入能力仍待完成。
+> `/agent/context` 已提供 scope/敏感过滤、预算、freshness、冲突状态与 evidence 引用；
+> 日志贯通、失败恢复以及短中期 context 写入能力仍待完成。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
@@ -92,7 +93,7 @@ class ConflictRepository(ABC): ...
 
 ```
 http_app.py  → FastAPI app + 路由（/memory/write、/memory/query、/preference/*、/forget、
-               /conflicts、/memory/flow/promote、/sync/* 已实现）
+               /agent/context、/conflicts、/memory/flow/promote、/sync/* 已实现）
 ws.py + ws_manager.py → WebSocket /events（连接/心跳/广播，memory_ready 已接入写入链路）
 dbus_service.py → com.kylin.pixiu.Memory（桌面 D-Bus）
 ```

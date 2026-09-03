@@ -3,12 +3,13 @@
 > 本文档从后端整体视角阐述系统设计，详细设计分别见 engine/ 和 foundation/ 的子架构文档。
 > 这是两端开发者之间的"接口层"文档。
 >
-> **状态（2026-09-03）**：引擎核心管线 + foundation 全部阶段完成；25 个 REST 端点
+> **状态（2026-09-03）**：引擎核心管线 + foundation 旧阶段完成；26 个 REST 端点
 > 与六类 WS 事件（memory_ready / conflict_detected / forget_confirmation / sync_event /
 > capture_event / pair_request）真实实现；WS `/events` 注册已于 2026-08-20 修复；
 > 麒麟 SDK 绑定（embedding/OCR）本机构建成功；同步网络（默认开启）与被动监控四批次
 > （掌控层/目录监视/行为偏好/递送层）已全部落地。最近全量测试：后端 pytest
-> 731 passed（Engine 145 + Foundation 586）、前端 ctest 37/37。
+> 735 passed（Engine 145 + Foundation 590）、前端 ctest 37/37。Agent 公共契约已含
+> provenance、完成态幂等与预算化安全上下文，生命周期和 Module E 仍待完成。
 >
 > 团队已批准由外部 Module E (`integrations/kylin_agent/`) 通过公共 HTTP/WS 契约
 > 接入 openKylin Agent。本后端仍只负责记忆能力，不承载会话、规划或工具循环。

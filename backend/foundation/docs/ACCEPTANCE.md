@@ -51,8 +51,8 @@
 
 ## 四、测试统计
 
-- 最新后端全量回归记录：pytest 731 passed（Engine 145 + Foundation 586）；
-  Foundation 有 12 条依赖弃用/测试退出资源告警，无失败。
+- 最新后端全量回归记录：pytest 735 passed（Engine 145 + Foundation 590）；
+  Foundation 有 10 条依赖弃用告警，无失败。
 - 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`
 
@@ -62,6 +62,7 @@
 2. **H-02 阻塞项**：vector-engine-client 生产对接（检索当前由 SQLite INT8 扫描承担）
 3. agent-runtime MemoryProvider 适配与多轮/工具结果端到端闭环
 4. Agent 公共契约：capability、`CONVERSATION`、evidence 关联 ID 与完成态持久化
-   幂等已完成；失败恢复、查询上下文、context 生命周期和 Module E 端到端仍待完成
+   幂等和预算化安全查询上下文已完成；失败恢复、context 生命周期和 Module E
+   端到端仍待完成
 5. ~~Module A 三通道联调~~ ✅ 已完成（2026-08-29，前端全量回归绿）
 6. 根文档/API 实现状态由 Module D/Human 更新（2026-09-03 已随决策巡检刷新）

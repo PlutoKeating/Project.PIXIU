@@ -143,6 +143,9 @@ ANN/图召回由 retrieval 阶段（Phase 2）消费。
 > `/memory/query` 为真实链路。当前机制：规则路由；FTS5 trigram（含 CJK 回退）；
 > INT8 向量线性扫描；持久化图召回；三通道 `asyncio.gather` 并发；scope/time_range
 > 硬过滤；RRF 融合；词法重排；查询类别聚合与证据回溯。
+> `/agent/context` 在相同召回之上组装多候选上下文，强制 scope 和敏感 evidence
+> fail-closed，并输出字符预算、freshness、冲突状态及 knowledge/evidence 引用；
+> Module E 负责继续按上游 MemoryProvider 的不可信上下文边界转义后注入。
 > 开发基线（50 条记录、1000 次查询、stub embedding）为 P50=11.4ms、P95=13.3ms，
 > 真实麒麟 embedding + 正式数据集的召回率/P95 验收留待麒麟环境。
 
@@ -282,6 +285,7 @@ query + context_hint
 |------|------|------|
 | POST | `/memory/write` | 写入记忆（✅ 已实现） |
 | POST | `/memory/query` | 混合检索（✅ 已实现） |
+| POST | `/agent/context` | Agent 预算化安全上下文（✅ 已实现） |
 | GET | `/evidence/{id}` | 证据详情（✅ 已实现，2026-08-24） |
 | POST | `/memory/ocr` | 图片 OCR 识别（✅ 已实现，2026-08-24） |
 | POST | `/preference/extract` | 偏好提取（✅ 已实现） |

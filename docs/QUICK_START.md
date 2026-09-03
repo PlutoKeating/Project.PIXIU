@@ -48,7 +48,12 @@ curl -X POST http://127.0.0.1:8765/memory/query \
   -H "Content-Type: application/json" \
   -d '{"text":"测试","context_hint":{"top_k":5}}'
 
-# 5) 前端（KYSDK=OFF 降级构建；麒麟机器可用 KYSDK=ON）
+# 5) Agent 轮次上下文（当前供后续 Module E 调用）
+curl -X POST http://127.0.0.1:8765/agent/context \
+  -H "Content-Type: application/json" \
+  -d '{"query":"测试","scope":"user:test","session_id":"session-demo","turn_id":"turn-1"}'
+
+# 6) 前端（KYSDK=OFF 降级构建；麒麟机器可用 KYSDK=ON）
 cmake -S frontend -B build/frontend -DPIXIU_HAVE_KYSDK=OFF -DCMAKE_BUILD_TYPE=Release
 cmake --build build/frontend -j
 PIXIU_BACKEND_URL=http://127.0.0.1:8765 ./build/frontend/pixiu-frontend

@@ -11,7 +11,8 @@
 
 ## 生命周期映射
 
-`prefetch` 在每轮前按 query/session/scope 召回长期记忆；`sync_turn` 把完整用户与
+`prefetch` 在每轮前通过 `/agent/context` 按 query/session/scope 召回受预算和敏感
+过滤约束的长期记忆；`sync_turn` 把完整用户与
 助手轮次作为 `CONVERSATION` evidence；工具结果以 `TOOL_RESULT` 保存 run/turn/
 tool-call/审批来源；`on_pre_compress` 生成中期摘要；session 切换/结束触发
 promote、demote、TTL 与清理；显式记忆工具支持查询、记住、遗忘和同步状态。

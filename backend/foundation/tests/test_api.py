@@ -297,6 +297,155 @@ def test_agent_memory_write_rejects_key_reuse_with_different_payload(client):
     assert conflict.json()["error"] == "IDEMPOTENCY_CONFLICT"
 
 
+def test_agent_context_returns_budgeted_cited_memory(client):
+    write = client.post(
+        "/memory/write",
+        json={
+            "source_type": "CONVERSATION",
+            "raw": {"user": "我偏好简洁回答", "assistant": "已记住"},
+            "scope": "user:alice",
+            "idempotency_key": "session-context:turn-1",
+            "provenance": {
+                "session_id": "session-context",
+                "run_id": "run-context",
+                "turn_id": "turn-1",
+                "occurred_at": 1700000010,
+            },
+        },
+    )
+    assert write.status_code == 200
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        knowledge_id = conn.execute(
+            "SELECT knowledge_id FROM knowledge_evidence WHERE evidence_id = ?",
+            (write.json()["evidence_id"],),
+        ).fetchone()[0]
+        conn.execute(
+            "UPDATE knowledge_items SET updated_at = 1 WHERE id = ?",
+            (knowledge_id,),
+        )
+        conn.execute(
+            """INSERT INTO conflict_records
+               (id, target_knowledge, field, old_value, new_value,
+                resolution, created_at, source, severity)
+               VALUES (?, ?, 'body', '{}', '{}', 'MANUAL', 1, 'write', 'high')""",
+            ("cfl_" + "A" * 26, knowledge_id),
+        )
+
+    response = client.post(
+        "/agent/context",
+        json={
+            "query": "简洁回答",
+            "scope": "user:alice",
+            "session_id": "session-context",
+            "turn_id": "turn-2",
+            "max_chars": 1024,
+            "top_k": 5,
+            "freshness_seconds": 60,
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["session_id"] == "session-context"
+    assert data["turn_id"] == "turn-2"
+    assert "我偏好简洁回答" in data["context"]
+    assert data["items"][0]["evidence_ids"] == [write.json()["evidence_id"]]
+    assert data["items"][0]["scope"] == "user:alice"
+    assert data["items"][0]["freshness"] == "stale"
+    assert data["items"][0]["conflict_status"] == "manual"
+    assert data["truncated"] is False
+
+
+def test_agent_context_enforces_scope_and_character_budget(client):
+    for scope, suffix in (("user:alice", "alice"), ("user:bob", "bob")):
+        result = client.post(
+            "/memory/write",
+            json={
+                "source_type": "CONVERSATION",
+                "raw": {
+                    "user": f"项目代号是长城-{suffix}" + "甲" * 120,
+                    "assistant": "已记住",
+                },
+                "scope": scope,
+                "idempotency_key": f"session-{suffix}:turn-1",
+                "provenance": {
+                    "session_id": f"session-{suffix}",
+                    "run_id": f"run-{suffix}",
+                    "turn_id": "turn-1",
+                    "occurred_at": 1700000011,
+                },
+            },
+        )
+        assert result.status_code == 200
+
+    response = client.post(
+        "/agent/context",
+        json={
+            "query": "项目代号长城",
+            "scope": "user:alice",
+            "session_id": "session-alice",
+            "turn_id": "turn-2",
+            "max_chars": 96,
+            "top_k": 5,
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["context"]) <= 96
+    assert "bob" not in data["context"]
+    assert all(item["scope"] == "user:alice" for item in data["items"])
+    assert data["truncated"] is True
+
+
+def test_agent_context_requires_stable_turn_identifiers(client):
+    response = client.post(
+        "/agent/context",
+        json={"query": "anything", "scope": "user:alice", "max_chars": 1000},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+
+
+def test_agent_context_excludes_sensitive_evidence(client):
+    write = client.post(
+        "/memory/write",
+        json={
+            "source_type": "CONVERSATION",
+            "raw": {"user": "银行卡密码是秘密", "assistant": "不会主动展示"},
+            "scope": "user:alice",
+            "idempotency_key": "session-sensitive:turn-1",
+            "provenance": {
+                "session_id": "session-sensitive",
+                "run_id": "run-sensitive",
+                "turn_id": "turn-1",
+                "occurred_at": 1700000012,
+            },
+        },
+    )
+    assert write.status_code == 200
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        conn.execute(
+            "UPDATE evidence SET sensitivity = 3 WHERE id = ?",
+            (write.json()["evidence_id"],),
+        )
+
+    response = client.post(
+        "/agent/context",
+        json={
+            "query": "银行卡密码秘密",
+            "scope": "user:alice",
+            "session_id": "session-sensitive",
+            "turn_id": "turn-2",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["context"] == ""
+    assert response.json()["items"] == []
+
+
 def test_evidence_detail_404(client):
     resp = client.get("/evidence/evd_AAAAAAAAAAAAAAAAAAAAAAAAAA")
     assert resp.status_code == 404
