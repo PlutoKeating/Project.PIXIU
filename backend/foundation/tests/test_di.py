@@ -23,6 +23,7 @@ from backend.foundation.api.di import (
     get_retrieval_service,
     get_security_service,
     get_sync_service,
+    get_vector_store,
 )
 from backend.foundation.core.idgen import gen_evidence_id
 from backend.foundation.core.models import Evidence, SourceType
@@ -35,12 +36,18 @@ from backend.foundation.storage.repository import (
     SqlitePreferenceRepo,
     SqliteKnowledgeRepo,
 )
+from backend.foundation.storage.vector_store import SqliteVectorStore
 
 
 class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self.embedding = "portable"
+        self.vector_store = "portable"
+        self.vector_host = "127.0.0.1"
+        self.vector_port = 19530
+        self.vector_app_id = "pixiu-test"
+        self.vector_collection = "pixiu_test"
         self.sync_device_name = "test-device"
         self.sync_domain = "shared:test"
         self.sync_key_passphrase = "phase3-di-test-passphrase"
@@ -81,9 +88,42 @@ async def test_service_factories_return_real_services(fresh_di):
         assert isinstance(await get_conflict_service(db), ConflictService)
         assert isinstance(await get_security_service(db), SecurityService)
         assert isinstance(await get_knowledge_service(db), KnowledgeService)
+        assert isinstance(await get_vector_store(db), SqliteVectorStore)
         assert isinstance(await get_evidence_repo(db), SqliteEvidenceRepo)
         assert isinstance(await get_preference_repo(db), SqlitePreferenceRepo)
         assert isinstance(await get_conflict_repo(db), SqliteConflictRepo)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_strict_kylin_vector_store_fails_closed(fresh_di, monkeypatch):
+    db = await get_db()
+    di_module.settings.vector_store = "kylin"
+
+    def _unavailable(**kwargs):
+        raise RuntimeError("vector engine unavailable")
+
+    monkeypatch.setattr(di_module, "VectorEngineClient", _unavailable)
+    try:
+        with pytest.raises(RuntimeError, match="vector engine unavailable"):
+            await get_vector_store(db)
+    finally:
+        await db.close()
+
+
+@pytest.mark.asyncio
+async def test_auto_vector_store_reports_portable_fallback(fresh_di, monkeypatch):
+    db = await get_db()
+    di_module.settings.vector_store = "auto"
+
+    def _unavailable(**kwargs):
+        raise RuntimeError("vector engine unavailable")
+
+    monkeypatch.setattr(di_module, "VectorEngineClient", _unavailable)
+    try:
+        store = await get_vector_store(db)
+        assert store.runtime == "portable"
     finally:
         await db.close()
 

@@ -8,10 +8,12 @@ from __future__ import annotations
 
 import ipaddress
 import os
+import re
 import socket
 
 _VALID_EMBEDDING = frozenset({"auto", "kylin", "portable"})
 _VALID_OCR = frozenset({"auto", "kylin", "portable"})
+_VALID_VECTOR_STORE = frozenset({"auto", "kylin", "portable"})
 _VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR"})
 # 公开占位符/示例值：转公开 repo 后这些常量会暴露，禁止被用作 Ed25519
 # 加密口令（否则攻击者可解密任意用户的同步私钥）。仅当显式设置了这些值
@@ -82,6 +84,13 @@ def _env_shared_scope(key: str, default: str) -> str:
     return value
 
 
+def _env_identifier(key: str, default: str) -> str:
+    value = _env_str(key, default)
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,127}", value):
+        raise ValueError(f"{key} must be a safe identifier")
+    return value
+
+
 def _is_placeholder_passphrase(value: str | None) -> bool:
     return (
         value is not None
@@ -104,6 +113,15 @@ class Settings:
         self._api_host = _env_str("PIXIU_API_HOST", "127.0.0.1")
         self._api_port = _env_port("PIXIU_API_PORT", 8765)
         self._embedding = _env_choice("PIXIU_EMBEDDING", "auto", _VALID_EMBEDDING)
+        self._vector_store = _env_choice(
+            "PIXIU_VECTOR_STORE", "auto", _VALID_VECTOR_STORE
+        )
+        self._vector_host = _env_lan_host("PIXIU_VECTOR_HOST", "127.0.0.1")
+        self._vector_port = _env_port("PIXIU_VECTOR_PORT", 19530)
+        self._vector_app_id = _env_identifier("PIXIU_VECTOR_APP_ID", "pixiu")
+        self._vector_collection = _env_identifier(
+            "PIXIU_VECTOR_COLLECTION", "pixiu_memory"
+        )
         self._ocr = _env_choice("PIXIU_OCR", "auto", _VALID_OCR)
         self._log_level = _env_choice("PIXIU_LOG_LEVEL", "INFO", _VALID_LOG_LEVELS)
         self._data_dir = _env_str("PIXIU_DATA_DIR", "./data")
@@ -154,6 +172,26 @@ class Settings:
     @property
     def embedding(self) -> str:
         return self._embedding
+
+    @property
+    def vector_store(self) -> str:
+        return self._vector_store
+
+    @property
+    def vector_host(self) -> str:
+        return self._vector_host
+
+    @property
+    def vector_port(self) -> int:
+        return self._vector_port
+
+    @property
+    def vector_app_id(self) -> str:
+        return self._vector_app_id
+
+    @property
+    def vector_collection(self) -> str:
+        return self._vector_collection
 
     @property
     def ocr(self) -> str:

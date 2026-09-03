@@ -39,7 +39,9 @@ cmake --install build
 构建产物安装到 `backend/engine/kylin/`。默认 `PIXIU_EMBEDDING=auto`：优先调用
 真实 SDK，缺失时使用可移植软件向量器；`PIXIU_EMBEDDING=kylin` 为严格麒麟验收
 模式并在 SDK 不可用时抛出 `KylinSDKUnavailableError`，`portable` 可用于通用
-Debian 验证。`VectorEngineClient` 仍只在麒麟 SDK 可用时启用。
+Debian 验证。向量存储同样使用 `PIXIU_VECTOR_STORE=auto|kylin|portable`；
+`kylin` 模式连接或 SDK 不可用时依赖装配立即失败，只有 `auto` 允许记录告警后
+降级。
 
 ## 依赖关系
 

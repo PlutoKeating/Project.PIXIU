@@ -91,7 +91,7 @@ W0 基线与计划
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam 与结果类型实现完成；生产注入待 W1.4 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 写入/排序/删除及持久化双向 ID 映射通过；Kylin 适配待实施 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 双适配器及 portable 生产链完成；Kylin 配置选择待 W1.5，V11 待 W1.6 |
-| W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接配置、能力与健康报告 | strict 缺失即失败；auto 降级明确；API 报告真实 runtime |
+| W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接配置、能力与健康报告 | 配置/DI strict 与 auto 完成；能力 API 待 W2.2 |
 | W1.6 | V11 | 真 SDK 建库、写入、删除、查询、进程/链接和日志取证 | H-02、F4-03 通过 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite

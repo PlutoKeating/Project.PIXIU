@@ -214,8 +214,11 @@ scope/time_range 硬过滤；RRF 融合；词法重排；查询类别聚合与�
 `storage.SqliteVectorStore` 是首个适配器，封装 INT8 量化、持久化、相似度和删除。
 生产 DI 的 `KnowledgeService` 与 `ANNChannel` 已通过该 seam 完成写入和查询，
 portable 适配器在内部执行 INT8 量化/扫描；组合根测试会主动禁用旧 Repository 扫描
-并验证端到端检索。Kylin 适配器和后端选择完成前 H-02 仍为不通过。未显式注入
-seam 的旧测试/自定义构造暂保留 Repository 兼容路径，不得用于生产或验收。
+并验证端到端检索。Kylin 适配器已可由
+`PIXIU_VECTOR_STORE=auto|kylin|portable` 选择：`kylin` 对 SDK/连接错误 fail
+closed，`auto` 明确告警后才降级。V11 真 SDK 证据完成前 H-02 仍为不通过。
+未显式注入 seam 的旧测试/自定义构造暂保留 Repository 兼容路径，不得用于生产
+或验收。
 
 开发基线（50 条记录、1000 次查询、测试 stub embedding）为 P50=11.4ms、P95=13.3ms。
 该数据仅用于回归，不代表真实麒麟 SDK 和正式验收数据下的最终性能。

@@ -40,6 +40,7 @@ class _FakeSettings:
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self.embedding = "portable"
+        self.vector_store = "portable"
         self.ocr = "portable"
         self.sync_device_name = "书房工作站"
         self.sync_domain = "shared:home"

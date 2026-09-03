@@ -26,6 +26,17 @@ def test_default_embedding_is_auto():
         assert s.embedding == "auto"
 
 
+def test_default_vector_store_is_auto():
+    """Default prefers the required system store with an explicit fallback."""
+    with mock.patch.dict(os.environ, {}, clear=True):
+        settings = Settings()
+        assert settings.vector_store == "auto"
+        assert settings.vector_host == "127.0.0.1"
+        assert settings.vector_port == 19530
+        assert settings.vector_app_id == "pixiu"
+        assert settings.vector_collection == "pixiu_memory"
+
+
 def test_default_db_path():
     """Default PIXIU_DB_PATH is './pixiu.db'."""
     with mock.patch.dict(os.environ, {}, clear=True):
@@ -182,6 +193,12 @@ def test_invalid_embedding_rejected():
     """PIXIU_EMBEDDING=openai should raise ValueError."""
     with mock.patch.dict(os.environ, {"PIXIU_EMBEDDING": "openai"}):
         with pytest.raises(ValueError, match="PIXIU_EMBEDDING"):
+            Settings()
+
+
+def test_invalid_vector_store_rejected():
+    with mock.patch.dict(os.environ, {"PIXIU_VECTOR_STORE": "sqlite"}):
+        with pytest.raises(ValueError, match="PIXIU_VECTOR_STORE"):
             Settings()
 
 

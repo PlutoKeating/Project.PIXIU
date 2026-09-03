@@ -17,12 +17,18 @@ from backend.engine.conflict import ConflictService
 from backend.engine.delivery import DeliveryDigestService, DeliveryInsightsService
 from backend.engine.ingest import IngestionService
 from backend.engine.knowledge import KnowledgeService
-from backend.engine.kylin import get_embedder, get_ocr
+from backend.engine.kylin import (
+    KylinVectorStore,
+    VectorEngineClient,
+    get_embedder,
+    get_ocr,
+)
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
 
 from ..core.config import settings
 from ..core.logger import get_logger
+from ..core.vector_store import VectorStore
 from .dbus_service import PixiuMemoryHandler
 from ..flow import FlowService, SqliteFlowStore
 from ..monitor.behavior import BehaviorCollector
@@ -38,6 +44,7 @@ from ..storage.repository import (
     SqlitePreferenceRepo,
 )
 from ..storage.vector_store import SqliteVectorStore
+from ..storage.vector_id_map import SqliteVectorIdMap
 from ..sync import Mainline, SqliteSyncStore, SyncService
 from ..sync.discovery import MdnsDiscovery
 from ..sync.runtime import SyncRuntime, create_sync_runtime
@@ -92,6 +99,32 @@ async def get_ingestion_service(
     return IngestionService(evidence_repo=SqliteEvidenceRepo(db))
 
 
+async def get_vector_store(
+    db: aiosqlite.Connection = Depends(get_db),
+) -> VectorStore:
+    """Select the system vector engine or the explicit portable adapter."""
+    if settings.vector_store == "portable":
+        return SqliteVectorStore(db)
+    try:
+        client = VectorEngineClient(
+            app_id=settings.vector_app_id,
+            host=settings.vector_host,
+            port=settings.vector_port,
+        )
+    except Exception:
+        if settings.vector_store == "kylin":
+            raise
+        _log.warning(
+            "Kylin Vector Engine unavailable; using explicit portable fallback"
+        )
+        return SqliteVectorStore(db)
+    return KylinVectorStore(
+        client,
+        SqliteVectorIdMap(db),
+        collection=settings.vector_collection,
+    )
+
+
 async def get_evidence_repo(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> SqliteEvidenceRepo:
@@ -122,7 +155,7 @@ async def get_knowledge_service(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
         embedder=get_embedder(settings.embedding),
-        vector_store=SqliteVectorStore(db),
+        vector_store=await get_vector_store(db),
     )
 
 
@@ -154,7 +187,7 @@ async def get_security_service(
     return SecurityService(
         knw_repo=SqliteKnowledgeRepo(db),
         entity_repo=SqliteEntityRepo(db),
-        vector_store=SqliteVectorStore(db),
+        vector_store=await get_vector_store(db),
     )
 
 
@@ -166,7 +199,7 @@ async def get_retrieval_service(
         entity_repo=SqliteEntityRepo(db),
         evidence_repo=SqliteEvidenceRepo(db),
         embedder=get_embedder(settings.embedding),
-        vector_store=SqliteVectorStore(db),
+        vector_store=await get_vector_store(db),
     )
 
 

@@ -370,6 +370,7 @@ async def test_di_wiring_creates_collector_with_real_services(tmp_path, monkeypa
         def __init__(self, db_path: str) -> None:
             self.db_path = db_path
             self.embedding = "portable"
+            self.vector_store = "portable"
             self.sync_device_name = "test-device"
             self.sync_domain = "shared:test"
             self.sync_key_passphrase = "phase3-di-test-passphrase"
