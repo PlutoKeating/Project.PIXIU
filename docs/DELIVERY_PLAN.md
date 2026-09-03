@@ -43,6 +43,11 @@
 不会吞掉激活失败，generic/portable 才保留独立控制台降级。构建器强制
 `KYSDK=ON`/`install_strict=1` 成对，组件清单记录最终模式。首次目标运行已证明严格失败
 关闭有效，但也暴露用户会话 SDK 边界尚未实现；该边界闭环后才可生成最终证据。
+推荐边界已形成待批准的
+[`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：`.deb` 仍为一次
+系统安装，后端改由登录用户的 systemd user manager 运行，数据进入 XDG 用户域，升级
+采用用户态停启/健康检查与特权安装两阶段。在 ADR 获批并完成迁移/回滚矩阵前，现有
+system service 不删除，H-02/H-03 状态不变。
 
 官方 AI 子系统是目标系统前置能力，应通过系统提供的 AI 模块管理完成安装/启用。
 整套子系统体积大且包含与 PIXIU 无关的模型和引擎，不列为 PIXIU `.deb` 的整体

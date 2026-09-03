@@ -106,7 +106,7 @@ W0 基线与计划
 | W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 流水线已拆分；提交 `ea92b28` 的 V11 strict 双扩展构建及前端 38/38 已通过，自动安装/真实写查仍待 Agent/runtime 与服务 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
 | W2.5 | 在双 SDK 路径运行质量、延迟、资源和冷热压测 | P-01～P-04、F4-04/F4-05 原始报告生成 |
-| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | ADR 批准；strict 服务与直接 SDK 在同一用户会话成功，系统账户不越权访问 socket |
+| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | ADR-0002 已提出、待负责人批准；strict 服务与直接 SDK 在同一用户会话成功，系统账户不越权访问 socket |
 
 当前 V11 x86_64 软件源已确认并安装双 SDK、桌面 KylinSDK 及开发包；提交 `ea92b28`
 已生成 `KYSDK=ON`/strict amd64 包，包内包含两个 cp312 原生扩展，前端 ctest 38/38。
@@ -119,6 +119,12 @@ Vector Engine 的独立诊断同时确认新版 user service 正常启动，但 
 `ConnectParam(appId)`，相关 Module B/C/发布配置已分层修正；提交 `4011d0d` 的 V11
 revision 7 原生重编及固定测试向量 direct lifecycle 已全部通过。该结果不替代产品
 API 和 Embedding 闭环。
+
+W2.6 的推荐设计已写入
+[`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：系统级 `.deb`
+安装 root-owned 程序，后端作为桌面用户服务与 Agent/双 SDK 同 UID 运行，用户数据迁入
+XDG 目录，图形升级拆成用户态停启/健康检查与特权安装两阶段。ADR 批准前不删除旧
+system service 或移动数据。
 
 ### W3：面向完整 Agent 的 vNext 公共 API 与数据模型（P0）
 

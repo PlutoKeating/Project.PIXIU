@@ -52,7 +52,8 @@
 
 ## 四、测试统计
 
-- 最新后端全量回归记录：pytest 764 passed（Engine 145 + Foundation 619）；
+- 2026-09-04 最新组合回归：pytest 787 passed（Foundation 621 + Engine 149 +
+  Module E 17），11 条既有依赖弃用/异步线程退出告警，无失败；
   全部组合回归有 11 条依赖弃用/异步线程退出告警，无失败。
 - 旧范围快照：Foundation 356 项 + Engine 21 项，共 377 项；仅用于阶段追溯。
 - 运行：`pytest backend/foundation/tests/ backend/engine/tests/ -q`

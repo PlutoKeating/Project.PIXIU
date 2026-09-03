@@ -59,11 +59,16 @@ deleted-hidden/drop/disconnect，全部返回 passed。该成功记录没有调�
 产品 API，因此只计 W1.1 底层 SDK 实证，H-02/H-03 仍保持不通过。
 
 portable 自建数据集记录为偏好 100%、知识召回 100%、冲突 96%、P95 115ms；它只
-证明通用路径可回归，不能证明 H-01～H-03。2026-09-03 最近全量快照为 Engine
-145 项、Foundation 619 项、Module E 16 项（合计 pytest 780 passed），前端 ctest
-37/37；Python 回归另报告 11 条依赖弃用/异步线程退出告警但无失败。新增安装健康
+证明通用路径可回归，不能证明 H-01～H-03。2026-09-04 最新组合回归为 Foundation
+621 项、Engine 149 项、Module E 17 项（合计 pytest 787 passed），最近前端 ctest
+38/38；Python 回归另报告 11 条既有依赖弃用/异步线程退出告警但无失败。新增安装健康
 切片另由 7 项单元测试及发布 helper 脚本覆盖。提交最终稿前仍必须从
 同一候选 commit 重新运行并保存原始日志。
+
+同日还修复了升级停服风险：`SyncRuntime.stop()` 原先只设置调度停止事件，却会等待
+当前 mDNS/反熵/对端请求完整超时；现改为取消当前调度任务、等待协程清理并关闭
+discovery/TLS server。永久阻塞轮次的有界停止测试及上述 621 项 Foundation 回归通过；
+目标 V11 安装包的实际 systemd 停止时长仍须随下一候选重验。
 
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和

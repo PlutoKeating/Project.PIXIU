@@ -11,7 +11,7 @@
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Memory%20Console-Qt5%20%2F%20UKUI-41CD52?style=flat-square)](frontend/docs/ARCHITECTURE.md)
 
-[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [已批准架构决策](docs/decisions/0001-use-openkylin-agent-host.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
+[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [Agent 宿主决策](docs/decisions/0001-use-openkylin-agent-host.md) · [用户会话后端提案](docs/decisions/0002-run-native-backend-in-user-session.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
 
 </div>
 
