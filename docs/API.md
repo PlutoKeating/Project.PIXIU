@@ -24,7 +24,7 @@
 | `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | 异步重试、失败 receipt 恢复与 Module E 调用仍待实现 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 输入摘要策略、失败 receipt 恢复与 Module E 调用仍待实现 |
 | 显式记忆工具 | query/write/forget/sync 现有端点 | Module E 做 schema 和错误映射，不新增 Agent 私有直连 |
-| `on_pre_compress`/会话结束或切换 | `/memory/flow/promote` 仅处理已有 context | 增加可创建/更新短中期 context 的公共端点，再触发 promote/demote/清理 |
+| `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 触发及长期化/失败恢复策略仍待实现；长期化显式调用 promote |
 | 运行审计 | evidence provenance + `/agent/context` 回显 session/turn | 日志与 memory_id 跨端点链路仍待贯通 |
 
 `CONVERSATION` 与 evidence provenance 已同步更新 `foundation/core` 模型、Module B
@@ -51,6 +51,7 @@ Module E 客户端仍须贯通；不得用 `TOOL_RESULT` 伪装普通对话来�
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | POST | `/agent/context` | Agent 轮次的预算化、可追溯安全上下文 | ✅ 已实现（scope/敏感过滤/freshness/冲突状态） |
+| POST | `/agent/lifecycle` | 持久化 Agent 生命周期短/中期上下文 | ✅ 基础事件接入（六类事件、幂等、服务端选层） |
 | GET | `/evidence/{id}` | 证据详情（查看原文） | ✅ 已实现（2026-08-24） |
 | POST | `/memory/ocr` | 图片文字识别（麒麟 kysdk-ocr） | ✅ 已实现（2026-08-24，无 SDK 环境返回 503 OCR_UNAVAILABLE） |
 | POST | `/preference/extract` | 触发偏好提取 | ✅ 已实现 |
@@ -75,7 +76,7 @@ Module E 客户端仍须贯通；不得用 `TOOL_RESULT` 伪装普通对话来�
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 
-> 状态说明（2026-09-03）：26 个 REST 端点已按本文档契约真实实现；
+> 状态说明（2026-09-03）：27 个 REST 端点已按本文档契约真实实现；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
@@ -262,6 +263,43 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 被截断。每个返回项必须至少解析到一条真实 evidence，缺失来源的候选 fail-closed。
 返回内容仍属于不可信外部记忆，Module E 必须继续使用上游 MemoryProvider 的上下文
 隔离/转义机制，不能把其中的文本当系统指令执行。
+
+### 3.2b POST /agent/lifecycle
+
+接收 openKylin Agent 生命周期钩子并持久化为短期或中期 context。层级由服务端按
+事件类型决定，调用方不能指定：`TURN_START`/`TURN_END` → `SHORT_TERM`；
+`PRE_COMPRESS`/`SESSION_SWITCH`/`SESSION_END`/`DELEGATION` → `MID_TERM`。
+
+```jsonc
+{
+  "event": "TURN_START|TURN_END|PRE_COMPRESS|SESSION_SWITCH|SESSION_END|DELEGATION",
+  "scope": "user:alice",
+  "session_id": "session-01",
+  "run_id": "run-01",
+  "turn_id": "turn-04",
+  "occurred_at": 1788393600,
+  "idempotency_key": "session-01:pre-compress:04",
+  "data": {"summary": "压缩前的受控摘要"}
+}
+```
+
+`data` 必须是非空对象；TURN 两类事件必须提供 `turn_id`，其他事件可省略。
+`idempotency_key` 格式与 `/memory/write` 相同，但生命周期和记忆写入使用独立 receipt
+命名空间；同一轮可安全复用相同外部键。完成态重试不重复创建 context，同键异载荷
+和进行中/失败态沿用 §5 的 409 错误码。
+
+```jsonc
+{
+  "event": "PRE_COMPRESS",
+  "context_id": "ctx_...",
+  "tier": "MID_TERM",
+  "status": "ACTIVE",
+  "expires_at": 1788998400
+}
+```
+
+此端点不会自动把会话全文永久化。需要晋升的 context_id 由 Module E/策略层显式提交
+给 `/memory/flow/promote`；这使敏感判断、摘要选择和用户策略有清晰审查点。
 
 ### 3.3 GET /evidence/{id}
 

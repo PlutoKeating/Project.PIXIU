@@ -29,6 +29,7 @@ PIXIU 面向“OS Agent 记忆能力优化与应用”，解决记忆散落在�
 ## 当前缺口与完成标准
 
 H-02 当前不通过；H-03 和最终 V11 仍待同版证据；`CONVERSATION`/provenance/完成态
-幂等已实现，Module E、失败恢复和 Agent 生命周期尚未实现。只有
+幂等、预算化召回和六类生命周期 context 入口已实现，Module E 真实触发、失败恢复
+与长期化策略尚未实现。只有
 `AcceptanceTestSpecification.md` 全门通过后，才能把本稿状态
 改为“最终已审核”。性能数值必须引用最终原始 JSON/CSV，不沿用 portable 基线冒充。

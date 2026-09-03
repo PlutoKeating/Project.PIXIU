@@ -34,8 +34,8 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 最新后端全量回归记录：pytest 735 passed（Foundation 590 + Engine 145；
-  Foundation 10 条依赖弃用告警，无失败）；Foundation 356 + Engine 21
+- 最新后端全量回归记录：pytest 743 passed（Foundation 598 + Engine 145；
+  Foundation 11 条依赖弃用/测试退出资源告警，无失败）；Foundation 356 + Engine 21
   = 377 仅保留为 2026-08-11 阶段快照
 
 ### 🔴 赛题 P0 待完成
@@ -55,7 +55,8 @@
   API 和 schema v10；schema v11 已实现完成态持久化幂等与冲突拒绝。日志、按关联 ID
   查询与失败 receipt 恢复仍待完成；`POST /agent/context` 已提供 session/turn 回显、
   scope/敏感过滤、预算、freshness、冲突状态与 evidence 引用。
-- C-A3：提供短/中期 context 创建、更新、promote/demote 与清理的公共 API。
+- C-A3：🟡 `/agent/lifecycle` 已提供六类短/中期 context 创建与完成态幂等；既有
+  promote/demote/TTL 清理可复用。Module E 真实触发、更新策略与失败恢复仍待完成。
 - C-A4：Vector Engine 成为严格画像的生产向量 Repository；SQLite/INT8 仅为降级。
 
 进度：C-A4 的公共 `VectorStore` seam 与 `SqliteVectorStore` portable 适配器已实现，

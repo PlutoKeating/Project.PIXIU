@@ -60,7 +60,8 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 并将 session/run/turn/tool-call/审批/时间 provenance 与原始正文分离持久化；完成态
 请求具备跨重启幂等 receipt；`POST /agent/context` 已提供 scope/敏感度硬过滤、字符
 预算、freshness/冲突状态和 evidence 引用。失败恢复、生命周期 API 与 Module E 宿主
-适配仍在实施中，因此这不是完整 Agent 闭环。
+适配仍在实施中。`POST /agent/lifecycle` 已能幂等保存六类短/中期事件，但真实钩子
+触发和长期化策略仍待 Module E，因此这不是完整 Agent 闭环。
 
 ## 目标架构
 

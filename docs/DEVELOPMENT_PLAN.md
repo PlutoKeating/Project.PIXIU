@@ -101,8 +101,8 @@
 |------|--------|----------|--------|--------|
 | A · frontend | 团队负责人 | ✅ 全部完成（含四批次前端） | Qt5/CMake 桌面应用：悬浮球/聊天框/记忆面板/遗忘/设置/配对/同步 Tab；监控中心双 Tab 面板 + 三处暂停入口 + 徽标；确认式配对（发现+弹窗确认）+ 同步 Tab 全量管理（整网退出）；洞察卡/「今日简报」/相关主题提醒；i18n 279 条 0 未完成；ctest 32/32 + `regression.sh` 双路径绿 | 真实麒麟会话人工复测（全局快捷键真机按键、xprop 方言验证） |
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
-| C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约实施中 | core/storage/api、retrieval（`/memory/query` + `/agent/context`）、flow、sync P2P CRDT（默认开启）、eval、monitor、D-Bus、26 个 REST 端点 + 六类 WS 事件 | context 生命周期/失败恢复/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
-| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 全量测试绿（后端 pytest 735 passed）；前端 ctest 37/37；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
+| C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约实施中 | core/storage/api、retrieval（`/memory/query` + `/agent/context`）、六类生命周期 context、flow、sync P2P CRDT、eval、monitor、D-Bus、27 个 REST 端点 + 六类 WS 事件 | Module E 生命周期触发/长期化策略/失败恢复/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
+| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 全量测试绿（后端 pytest 743 passed）；前端 ctest 37/37；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -226,7 +226,7 @@
 | 与其他模块 | **零代码依赖** — 仅通过 HTTP REST / WebSocket / D-Bus 调用后端 API |
 | 自身完整 | 含完整 src/（widgets/services/models/app）+ CMakeLists.txt + resources/ |
 
-**对外契约**：`docs/API.md` 中定义的全部端点（当前 26 个 REST + WS）及其请求/响应 JSON 结构。
+**对外契约**：`docs/API.md` 中定义的全部端点（当前 27 个 REST + WS）及其请求/响应 JSON 结构。
 
 **状态（2026-08-11）**：独立功能与 UI/UX polish 全部完成（双路径 ctest 31/31、
 i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与后端契约阻塞，

@@ -13,6 +13,7 @@ import json
 import os
 import tempfile
 from contextlib import asynccontextmanager
+from enum import Enum
 
 import time
 from typing import Any
@@ -257,6 +258,52 @@ class AgentContextRequest(BaseModel):
     freshness_seconds: int = Field(default=30 * 24 * 3600, ge=0, le=365 * 24 * 3600)
 
 
+class AgentLifecycleEvent(str, Enum):
+    TURN_START = "TURN_START"
+    TURN_END = "TURN_END"
+    PRE_COMPRESS = "PRE_COMPRESS"
+    SESSION_SWITCH = "SESSION_SWITCH"
+    SESSION_END = "SESSION_END"
+    DELEGATION = "DELEGATION"
+
+
+class AgentLifecycleRequest(BaseModel):
+    event: AgentLifecycleEvent
+    scope: str = Field(pattern=r"^(user|shared):[A-Za-z0-9._-]+$")
+    session_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+    run_id: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+    turn_id: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+    occurred_at: int = Field(ge=0)
+    idempotency_key: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    )
+    data: dict[str, Any] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _require_turn_for_turn_events(self) -> "AgentLifecycleRequest":
+        if self.event in {
+            AgentLifecycleEvent.TURN_START,
+            AgentLifecycleEvent.TURN_END,
+        } and not self.turn_id:
+            raise ValueError(f"{self.event.value} requires turn_id")
+        return self
+
+
 class FlowPromoteRequest(BaseModel):
     source: MemoryTier
     context_ids: list[str] = Field(min_length=1)
@@ -493,6 +540,65 @@ async def agent_context(
         max_chars=body.max_chars,
         freshness_seconds=body.freshness_seconds,
     )
+
+
+@app.post("/agent/lifecycle", tags=["Agent"], summary="记录 Agent 生命周期上下文")
+async def agent_lifecycle(
+    body: AgentLifecycleRequest,
+    flow=Depends(get_flow_service),
+    idempotency=Depends(get_agent_ingest_receipt_store),
+):
+    """把上游生命周期事件持久化为服务端选定层级的短/中期上下文。"""
+    request_hash = hashlib.sha256(
+        json.dumps(
+            body.model_dump(mode="json"),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    receipt_key = f"lifecycle:{body.idempotency_key}"
+    try:
+        claim = await idempotency.claim(receipt_key, request_hash)
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_CONFLICT") from exc
+    except IdempotencyInProgress as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_IN_PROGRESS") from exc
+    except IdempotencyFailed as exc:
+        raise HTTPException(status_code=409, detail="IDEMPOTENCY_FAILED") from exc
+    if claim.status == ClaimStatus.REPLAY:
+        return claim.response
+
+    tier = (
+        MemoryTier.SHORT_TERM
+        if body.event in {AgentLifecycleEvent.TURN_START, AgentLifecycleEvent.TURN_END}
+        else MemoryTier.MID_TERM
+    )
+    try:
+        context = await flow.remember(
+            tier,
+            {
+                "event": body.event.value,
+                "session_id": body.session_id,
+                "run_id": body.run_id,
+                "turn_id": body.turn_id,
+                "occurred_at": body.occurred_at,
+                "data": body.data,
+            },
+            body.scope,
+        )
+        response = {
+            "event": body.event.value,
+            "context_id": context.id,
+            "tier": context.tier.value,
+            "status": context.status.value,
+            "expires_at": context.expires_at,
+        }
+        await idempotency.complete(receipt_key, request_hash, response)
+        return response
+    except Exception:
+        await idempotency.fail(receipt_key, request_hash)
+        raise
 
 
 # ─── 偏好提取 ────────────────────────────────────────────

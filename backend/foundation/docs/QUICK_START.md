@@ -54,6 +54,11 @@ curl -X POST http://127.0.0.1:8765/agent/context \
   -H "Content-Type: application/json" \
   -d '{"query":"按我的习惯回答","scope":"user:test","session_id":"session-demo","turn_id":"turn-1","max_chars":2000}'
 
+# 生命周期事件：服务端按事件选择 SHORT_TERM/MID_TERM，完成态重试不重复创建
+curl -X POST http://127.0.0.1:8765/agent/lifecycle \
+  -H "Content-Type: application/json" \
+  -d '{"event":"PRE_COMPRESS","scope":"user:test","session_id":"session-demo","run_id":"run-demo","turn_id":"turn-1","occurred_at":1788393600,"idempotency_key":"session-demo:compress:1","data":{"summary":"受控摘要"}}'
+
 # 将 FlowService.remember 生成的短期上下文沉淀为长期知识
 curl -X POST http://127.0.0.1:8765/memory/flow/promote \
   -H "Content-Type: application/json" \

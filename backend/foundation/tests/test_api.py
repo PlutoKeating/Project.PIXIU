@@ -446,6 +446,86 @@ def test_agent_context_excludes_sensitive_evidence(client):
     assert response.json()["items"] == []
 
 
+@pytest.mark.parametrize(
+    ("event", "expected_tier"),
+    [
+        ("TURN_START", "SHORT_TERM"),
+        ("TURN_END", "SHORT_TERM"),
+        ("PRE_COMPRESS", "MID_TERM"),
+        ("SESSION_SWITCH", "MID_TERM"),
+        ("SESSION_END", "MID_TERM"),
+        ("DELEGATION", "MID_TERM"),
+    ],
+)
+def test_agent_lifecycle_persists_server_selected_tier(client, event, expected_tier):
+    payload = {
+        "event": event,
+        "scope": "user:alice",
+        "session_id": "session-lifecycle",
+        "run_id": "run-lifecycle",
+        "turn_id": "turn-1",
+        "occurred_at": 1700000020,
+        "idempotency_key": f"lifecycle:{event.lower()}:1",
+        "data": {"summary": f"event {event}"},
+    }
+
+    response = client.post("/agent/lifecycle", json=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["event"] == event
+    assert data["tier"] == expected_tier
+    assert data["context_id"].startswith("ctx_")
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        row = conn.execute(
+            "SELECT tier, scope, payload FROM memory_contexts WHERE id = ?",
+            (data["context_id"],),
+        ).fetchone()
+    assert row[0] == expected_tier
+    assert row[1] == "user:alice"
+    assert json.loads(row[2])["session_id"] == "session-lifecycle"
+
+
+def test_agent_lifecycle_replay_does_not_duplicate_context(client):
+    payload = {
+        "event": "PRE_COMPRESS",
+        "scope": "user:alice",
+        "session_id": "session-lifecycle",
+        "run_id": "run-lifecycle",
+        "turn_id": "turn-2",
+        "occurred_at": 1700000021,
+        "idempotency_key": "lifecycle:pre-compress:2",
+        "data": {"summary": "compact this turn"},
+    }
+
+    first = client.post("/agent/lifecycle", json=payload)
+    replay = client.post("/agent/lifecycle", json=payload)
+
+    assert first.status_code == 200
+    assert replay.status_code == 200
+    assert replay.json() == first.json()
+    with sqlite3.connect(di_module.settings.db_path) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM memory_contexts").fetchone()[0] == 1
+
+
+def test_agent_lifecycle_turn_event_requires_turn_id(client):
+    response = client.post(
+        "/agent/lifecycle",
+        json={
+            "event": "TURN_END",
+            "scope": "user:alice",
+            "session_id": "session-lifecycle",
+            "run_id": "run-lifecycle",
+            "occurred_at": 1700000022,
+            "idempotency_key": "lifecycle:turn-end:missing",
+            "data": {"summary": "done"},
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+
+
 def test_evidence_detail_404(client):
     resp = client.get("/evidence/evd_AAAAAAAAAAAAAAAAAAAAAAAAAA")
     assert resp.status_code == 404

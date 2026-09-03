@@ -286,6 +286,7 @@ query + context_hint
 | POST | `/memory/write` | 写入记忆（✅ 已实现） |
 | POST | `/memory/query` | 混合检索（✅ 已实现） |
 | POST | `/agent/context` | Agent 预算化安全上下文（✅ 已实现） |
+| POST | `/agent/lifecycle` | Agent 生命周期短/中期 context（🟡 基础事件接入） |
 | GET | `/evidence/{id}` | 证据详情（✅ 已实现，2026-08-24） |
 | POST | `/memory/ocr` | 图片 OCR 识别（✅ 已实现，2026-08-24） |
 | POST | `/preference/extract` | 偏好提取（✅ 已实现） |
