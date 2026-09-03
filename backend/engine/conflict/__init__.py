@@ -65,12 +65,19 @@ class ConflictService:
         for existing in candidates:
             if not await self._is_candidate(new_item, existing):
                 continue
-            record = self._arbiter.detect(new_item, existing)
+            winner = new_item
+            loser = existing
+            if source == "sync" and _sync_precedence(existing) > _sync_precedence(
+                new_item
+            ):
+                winner = existing
+                loser = new_item
+            record = self._arbiter.detect(winner, loser)
             if record is None:
                 continue
             if source != "write":
                 record.source = source
-            await self._apply_resolution(existing, new_item, record)
+            await self._apply_resolution(loser, winner, record)
             return record
 
         await self._knw_repo.save(new_item)
@@ -124,6 +131,7 @@ class ConflictService:
         record: ConflictRecord,
     ) -> None:
         # 保留两条知识 ACTIVE，让人工后续裁决。
+        await self._knw_repo.save(existing)
         new_item.version = max(existing.version + 1, new_item.version)
         new_item.updated_at = int(time.time())
         await self._knw_repo.save(new_item)
@@ -141,7 +149,7 @@ class ConflictService:
         merged.version = max(existing.version + 1, new_item.version)
         merged.updated_at = int(time.time())
         merged.evidence_ids = list(
-            set(merged.evidence_ids or []) | set(new_item.evidence_ids or [])
+            sorted(set(merged.evidence_ids or []) | set(new_item.evidence_ids or []))
         )
 
         existing.status = "SUPERSEDED"
@@ -194,3 +202,8 @@ def _item_signature(element: object) -> str:
         if vendor or category or amount is not None:
             return f"vendor={vendor}|category={category}|amount={amount}"
     return str(element)
+
+
+def _sync_precedence(item: KnowledgeItem) -> tuple[int, int, str]:
+    """Total order used only for peer-to-peer semantic conflict resolution."""
+    return item.updated_at, item.created_at, item.id

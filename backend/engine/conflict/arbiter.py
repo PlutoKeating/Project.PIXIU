@@ -97,7 +97,7 @@ class Arbiter:
         for key in shared_keys:
             if self._field.values_conflict(old_facts[key], new_facts[key]):
                 return False
-        return bool(set(new_facts) - set(old_facts))
+        return bool(set(new_facts) ^ set(old_facts))
 
     def _record(
         self,

@@ -6,6 +6,7 @@ trigram. Original SQLite integration tests in test_conflict.py are kept.
 
 from __future__ import annotations
 
+import copy
 from typing import Any, Optional
 
 import pytest
@@ -109,6 +110,69 @@ async def test_numeric_conflict_same_entity_same_field() -> None:
     assert record.old_value == 210
     assert record.new_value == 230
     assert record.resolution == "NEW_WINS"
+
+
+@pytest.mark.asyncio
+async def test_sync_conflict_converges_independent_of_arrival_direction() -> None:
+    older = _item(
+        title="utility statement",
+        entities=["AlphaPower"],
+        body={"vendor": "AlphaPower", "amount": 210},
+    )
+    newer = _item(
+        title="corrected utility statement",
+        entities=["AlphaPower"],
+        body={"vendor": "AlphaPower", "amount": 230},
+    )
+    older.updated_at = 1_700_000_001
+    newer.updated_at = 1_700_000_002
+
+    service_a, knowledge_a, conflicts_a = _service()
+    await knowledge_a.save(copy.deepcopy(older))
+    record_a = await service_a.arbitrate(copy.deepcopy(newer), source="sync")
+
+    service_b, knowledge_b, conflicts_b = _service()
+    await knowledge_b.save(copy.deepcopy(newer))
+    record_b = await service_b.arbitrate(copy.deepcopy(older), source="sync")
+
+    for knowledge in (knowledge_a, knowledge_b):
+        assert knowledge.items[older.id].status == "SUPERSEDED"
+        assert knowledge.items[newer.id].status == "ACTIVE"
+        assert knowledge.items[newer.id].version == 2
+        assert knowledge.items[newer.id].body["amount"] == 230
+    assert record_a is not None and record_b is not None
+    assert record_a.target_knowledge == record_b.target_knowledge == older.id
+    assert record_a.old_value == record_b.old_value == 210
+    assert record_a.new_value == record_b.new_value == 230
+    assert conflicts_a.records[0].source == conflicts_b.records[0].source == "sync"
+
+
+@pytest.mark.asyncio
+async def test_sync_merge_keeps_fields_when_newer_item_is_the_subset() -> None:
+    older = _item(
+        title="utility statement",
+        entities=["AlphaPower"],
+        body={"vendor": "AlphaPower", "amount": 210, "note": "meter checked"},
+    )
+    newer = _item(
+        title="utility statement update",
+        entities=["AlphaPower"],
+        body={"vendor": "AlphaPower", "amount": 210},
+    )
+    older.updated_at = 1_700_000_001
+    newer.updated_at = 1_700_000_002
+
+    service, knowledge, _ = _service()
+    await knowledge.save(copy.deepcopy(newer))
+    record = await service.arbitrate(copy.deepcopy(older), source="sync")
+
+    assert record is not None and record.resolution == "MERGE"
+    assert knowledge.items[older.id].status == "SUPERSEDED"
+    assert knowledge.items[newer.id].body == {
+        "vendor": "AlphaPower",
+        "amount": 210,
+        "note": "meter checked",
+    }
 
 
 @pytest.mark.asyncio

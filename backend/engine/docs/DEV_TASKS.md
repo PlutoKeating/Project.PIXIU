@@ -51,8 +51,9 @@
   仍须按 H-02 重验。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-04 当前 Engine 150 项、Foundation 626 项、Module E 17 项通过
-  （组合回归 793 passed，10 条既有依赖弃用告警，无失败）；
+- 测试：2026-09-04 当前 Engine 152 项、Foundation 626 项、Module E 17 项通过
+  （组合回归 795 passed，10 条既有依赖弃用告警，无失败）；新增反向到达测试证明
+  同一对远端矛盾知识按稳定全序选择相同胜者，MERGE 在较新项为字段子集时仍保留扩展；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
   打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，
@@ -131,8 +132,8 @@ git submodule update --init --recursive
 
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
-| `conflict/__init__.py` | ★★ | 导出 `ConflictService` |
-| `conflict/arbiter.py` | ★★ | 矛盾检测（同实体同字段比较）+ 裁决（NEW_WINS/MERGE/MANUAL）+ 审计（ConflictRecord） |
+| `conflict/__init__.py` | ★★ | 导出 `ConflictService`；同步来源以 updated_at/created_at/id 全序消除反向到达歧义 |
+| `conflict/arbiter.py` | ★★ | 矛盾检测（同实体同字段比较）+ 裁决（NEW_WINS/MERGE/MANUAL）+ 审计（ConflictRecord）；MERGE 扩展判定对输入方向对称 |
 
 ### security/ —— 安全与遗忘
 

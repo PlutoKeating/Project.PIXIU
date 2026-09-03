@@ -14,7 +14,7 @@
 > `kylin-coreai-embedding`，且系统 Vector Engine 必须实际承担向量存储与检索；
 > 当前 SQLite/INT8 检索不能作为向量数据库 SDK 验收证据。
 
-> **状态（2026-09-04）**：全部业务子包已实现，Engine 150 项测试通过。严格画像已
+> **状态（2026-09-04）**：全部业务子包已实现，Engine 152 项测试通过。严格画像已
 > 同时构建 Embedding 与 Vector Engine pybind11 绑定；提交 `6f6002e` 的 revision 8
 > 已取得 V11 同用户产品写入、检索、遗忘与隐藏阶段性实证。最终 user service、安装
 > 依赖、完整 Agent 和同版性能报告仍未闭环。默认 `auto` 模式优先使用系统 SDK；缺少
@@ -123,6 +123,9 @@ evidence → structurer（结构化）
     → 数值/枚举：直接比较
     → 文本：语义相似度判断反义
   → 裁决：默认 NEW_WINS（旧版 SUPERSEDED）
+    → `source=sync` 时先按 updated_at、created_at、id 的全序确定胜负，
+      相反到达顺序仍得到相同 ACTIVE/SUPERSEDED、version 与正文
+    → MERGE 的扩展判定对输入方向对称，合并 evidence ID 稳定排序
   → 生成 ConflictRecord{old, new, resolution}
 ```
 
