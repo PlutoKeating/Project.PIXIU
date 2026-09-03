@@ -21,10 +21,12 @@ class FoundationMaterializer:
         evidence_repo,
         knowledge_repo,
         preference_repo,
+        conflict_service=None,
     ) -> None:
         self._evidence_repo = evidence_repo
         self._knowledge_repo = knowledge_repo
         self._preference_repo = preference_repo
+        self._conflict_service = conflict_service
 
     async def __call__(self, record: SyncRecord) -> None:
         kind, separator, entity_id = record.entity.partition(":")
@@ -53,9 +55,14 @@ class FoundationMaterializer:
                 for evidence_id in item.evidence_ids
                 if await self._evidence_repo.get(evidence_id) is not None
             ]
-            await self._knowledge_repo.save(
-                item.model_copy(update={"evidence_ids": available_evidence})
-            )
+            item = item.model_copy(update={"evidence_ids": available_evidence})
+            if self._conflict_service is None:
+                await self._knowledge_repo.save(item)
+            else:
+                # A first-seen remote entity is a CRDT fast-forward, but it may
+                # still contradict another local knowledge ID semantically.
+                # Route it through the same engine policy as local writes.
+                await self._conflict_service.arbitrate(item, source="sync")
             return
         if kind == "preference":
             preference = Preference.model_validate(record.payload)

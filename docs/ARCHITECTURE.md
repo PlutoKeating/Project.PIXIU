@@ -180,6 +180,8 @@ query + context_hint
 
 - 检测：同实体同字段新旧值做矛盾判定
 - 裁决：默认 NEW_WINS，旧版 SUPERSEDED（保留而非删除），可配 MERGE/MANUAL
+- 同步物化：远端不同 ID 知识同样进入语义仲裁；同步来源按
+  `updated_at`、`created_at`、`id` 全序选胜者，消除两端反向到达造成的业务视图分歧
 - 审计：生成 ConflictRecord，全程留痕
 
 ### 3.5 安全识别与精准遗忘（engine/security）

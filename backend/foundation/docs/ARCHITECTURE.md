@@ -308,7 +308,7 @@ sync/
 ├── gossip.py       # 有界 fanout、持久化重传和 ACK
 ├── crdt.py         # LWW-Element-Set + 版本向量
 ├── anti_entropy.py # digest/delta 对账
-├── materializer.py # CRDT 胜者物化到本地仓储
+├── materializer.py # CRDT 胜者物化；远端知识复用 engine 语义冲突仲裁
 ├── gc.py           # 全网 ACK 后 tombstone 回收
 ├── scheduler.py    # 有界退避调度
 └── runtime.py      # 默认开启的 mDNS/mTLS 生命周期（缺配置自动降级）
@@ -335,6 +335,11 @@ sync/
 | 处理对象 | 同一条记忆的并发副本 | 不同记忆的语义矛盾 |
 | 判定依据 | 版本向量 + LWW | 字段级语义比对新旧 |
 | 结果 | 数据层收敛 | 生成 ConflictRecord |
+
+远端首次出现的 `knowledge:*` 虽然在 CRDT 层属于快进，物化时仍会调用
+`ConflictService.arbitrate(..., source="sync")`，避免绕过不同 ID 知识的语义冲突。
+同步来源先按 `updated_at`、`created_at`、`id` 的全序选定胜负，因此两端以相反顺序
+收到同一对矛盾知识时，最终 ACTIVE/SUPERSEDED、version、时间与正文一致。
 
 
 **安全与运行边界**：

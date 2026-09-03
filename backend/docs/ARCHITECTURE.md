@@ -8,7 +8,7 @@
 > capture_event / pair_request）真实实现；WS `/events` 注册已于 2026-08-20 修复；
 > Embedding/Vector Engine 严格绑定已构建并取得 revision 8 产品链阶段性实证；同步网络
 > （默认开启）与被动监控四批次（掌控层/目录监视/行为偏好/递送层）已全部落地。
-> 最近组合回归 793 passed（Engine 150 + Foundation 626 + Module E 17），前端 ctest
+> 最近组合回归 797 passed（Engine 152 + Foundation 628 + Module E 17），前端 ctest
 > 38/38；这些数字仍不替代最终 V11/Agent/三设备验收。
 > Agent 公共契约已含 provenance、schema v12 幂等/失败恢复与预算化安全上下文；
 > 六类生命周期事件已有幂等短/中期 context 入口，Module E 适配已实现。真实宿主

@@ -523,8 +523,9 @@ async def test_receive_ops_merge_fork_keeps_merged_body_in_knowledge_repo(
 
         assert await svc_b.receive_ops([op_a]) == 1
 
-        # 仲裁产物（合并体）成为最终事实：旧备注 + 新备注并存
-        merged = await knw_repo_b.get(incoming_id)
+        # 同时间戳按 id 全序选择 existing_id；仲裁产物（合并体）必须保留
+        # 双方备注，且不得被 incoming 原始 payload 覆盖。
+        merged = await knw_repo_b.get(existing_id)
         assert merged is not None
         assert merged.body == {
             "vendor": "小米",
@@ -533,8 +534,9 @@ async def test_receive_ops_merge_fork_keeps_merged_body_in_knowledge_repo(
             "note": "报销",
         }
         assert merged.status == KnowledgeStatus.ACTIVE
-        old = await knw_repo_b.get(existing_id)
-        assert old is not None and old.status == KnowledgeStatus.SUPERSEDED
+        incoming = await knw_repo_b.get(incoming_id)
+        assert incoming is not None
+        assert incoming.status == KnowledgeStatus.SUPERSEDED
         records = await SqliteConflictRepo(db_b).list()
         assert any(
             r.resolution == ConflictResolution.MERGE and r.source == "sync"
@@ -579,12 +581,15 @@ async def test_receive_ops_new_wins_keeps_version_bump_in_knowledge_repo(
 
         assert await svc_b.receive_ops([op_a]) == 1
 
-        # NEW_WINS 抬升：existing.version+1 = 2 必须保留
-        winner = await knw_repo_b.get(incoming_id)
+        # 同时间戳按 id 全序选择 existing_id；其 version 抬升必须保留，
+        # incoming 原始 payload 不得在 materializer 阶段重新覆盖。
+        winner = await knw_repo_b.get(existing_id)
         assert winner is not None
         assert winner.version == 2
-        old = await knw_repo_b.get(existing_id)
-        assert old is not None and old.status == KnowledgeStatus.SUPERSEDED
+        assert winner.status == KnowledgeStatus.ACTIVE
+        incoming = await knw_repo_b.get(incoming_id)
+        assert incoming is not None
+        assert incoming.status == KnowledgeStatus.SUPERSEDED
         records = await SqliteConflictRepo(db_b).list()
         assert any(
             r.resolution == ConflictResolution.NEW_WINS and r.source == "sync"

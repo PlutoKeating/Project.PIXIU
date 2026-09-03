@@ -16,7 +16,7 @@
 > **当前状态（2026-09-04）**：Phase 0~5 基础范围完成——retrieval、flow、sync（CRDT）、
 > eval（评测框架+基准）、D-Bus 服务均已落地，当前 27 个 REST 端点真实实现（含
 > Agent 预算化安全上下文和六类生命周期 context）。
-> 当前 Foundation 626 + Engine 150 项通过；WS `/events` 已注册并验证。剩余 P0 是
+> 当前 Foundation 628 + Engine 152 项通过；WS `/events` 已注册并验证。剩余 P0 是
 > 最终 V11 双 SDK 性能/服务拓扑、完整 Agent 生命周期和三台设备真实局域网互操作；
 > 历史单机或 portable 通过数不得替代这些证据。
 
