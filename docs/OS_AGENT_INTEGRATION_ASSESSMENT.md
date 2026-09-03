@@ -27,7 +27,10 @@
 集成、双 SDK 合规、多设备记忆创新和量化效果。若需要零争议的“正式允许”结论，
 仍应向赛题答疑联系人取得书面确认。
 
-当前仓库不能把 `frontend/` 的聊天外观等同于完整 Agent。代码事实是：普通输入直接调用 `/memory/query`，后端返回记忆检索结果；仓库内没有模型驱动的 Agent 循环、会话消息持久化、工具自主选择、Shell/联网搜索执行与审批编排。
+当前仓库不能把 `frontend/` 的聊天外观等同于完整 Agent。普通输入仍直接调用
+`/memory/query`；完整 Agent 循环由选定的 openKylin 宿主提供。仓库现已新增原创
+`integrations/kylin_agent/` MemoryProvider，但尚未完成安装包部署和真实宿主端到端
+取证，不能据适配器契约测试宣称完整 Agent 已验收。
 
 ## 2. 权威材料、角色与源码依据
 
@@ -114,12 +117,12 @@ PPT 将 OS Agent 定义为系统级智能助手：能够理解复杂指令、规
 | 领域 | 已有事实 | 结论/缺口 |
 |------|----------|-----------|
 | Agent 主体 | `frontend/` 有悬浮球、聊天窗和记忆面板 | 是记忆控制台，不是完整 Agent |
-| 会话 | API 没有 session/message/run/tool-call 契约 | 缺多轮会话与任务运行状态 |
-| 自主规划/工具 | 没有模型工具循环、审批、Shell、联网搜索编排 | 项目决定接入 openKylin Agent 基座，非赛方指定 |
+| 会话 | PIXIU 已保存 session/run/turn provenance；会话主体由上游宿主管理 | 待真实宿主多轮、切换和重启恢复取证 |
+| 自主规划/工具 | Module E 已注册四个记忆工具；规划、审批、Shell、联网搜索来自上游 | 待证明模型自主选择及工具结果回写，不计为团队原创 |
 | Embedding | 有 SDK submodule、pybind 源码和适配层 | 需补最终版本的 V11 真实调用证据 |
 | 向量数据库 | 有客户端 submodule 和封装，但生产检索走 SQLite INT8 扫描 | H-02 当前未通过，是最高优先级缺口 |
-| 记忆引擎 | 多源接入、偏好、知识、冲突、安全、遗忘已有实现 | 需通过 Agent 生命周期触发，而非仅独立 API 演示 |
-| 记忆流转 | 有短/中/长期流转设计 | 需映射真实 session、压缩前和会话结束事件 |
+| 记忆引擎 | 多源接入、偏好、知识、冲突、安全、遗忘及 Module E 调用已有实现 | 契约测试已触发，仍需真实 Agent 生命周期实证 |
+| 记忆流转 | 六类事件已由 Module E 映射到短/中期 API | 长期化策略及真实 session/压缩/结束证据待补 |
 | 分布式同步 | CRDT、Gossip、反熵、配对、签名、mTLS、墓碑 | 是主要创新项，需做多机收敛实证 |
 | 指标 | portable 基线 100%/100%/96%/115ms | 仅开发回归；不能替代 H-01～H-03 和最终数据集验收 |
 
@@ -130,12 +133,12 @@ PPT 将 OS Agent 定义为系统级智能助手：能够理解复杂指令、规
 | Agent 生命周期 | PIXIU 行为 |
 |----------------|------------|
 | `initialize` | 探测 PIXIU 服务、V11 与双 SDK 能力；严格画像缺失即失败 |
-| `prefetch(query, session_id)` | 调用 `/memory/query`，把来源可追溯的长期记忆注入本轮上下文 |
+| `prefetch(query, session_id)` | 后台调用 `/agent/context`，同步读取缓存并由上游安全围栏注入 |
 | `sync_turn(user, assistant, session_id)` | 将完整对话轮次送入多源接入，异步提取偏好与知识 |
 | `get_tool_schemas` / `handle_tool_call` | 暴露显式查询、记住、遗忘、同步状态等记忆工具 |
 | `on_memory_write` | 接收 Agent 原生记忆写入并标准化为 PIXIU evidence/knowledge |
-| `on_pre_compress` | 压缩前生成中期摘要，保留任务状态与未完成事项 |
-| `on_session_end` / `on_session_switch` | 执行短→中→长期流转、作用域映射与清理 |
+| `on_pre_compress` | 压缩前把有界消息保存为中期 context；摘要/长期化策略待补 |
+| `on_session_end` / `on_session_switch` | 保存中期生命周期 context 并更新 session/run；长期晋升待策略决定 |
 | `on_delegation` | 在子 Agent/任务委派时传递最小必要记忆上下文 |
 
 批准边界：

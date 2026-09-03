@@ -5,7 +5,7 @@
 
 ## 团队原创范围
 
-`backend/engine/`、`backend/foundation/`、`frontend/`、待实现的
+`backend/engine/`、`backend/foundation/`、`frontend/`、已实现的
 `integrations/kylin_agent/`、测试/评测、构建发布和派生项目文档属于 PIXIU 交付
 范围。最终清单须按文件/模块给出作者、主要功能和对应提交。
 

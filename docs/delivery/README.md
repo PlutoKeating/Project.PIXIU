@@ -14,9 +14,9 @@
 | D-03 | `SOURCE_AND_LICENSES.md` | 源码包/仓库快照 + 清单 | 边界已定义，SBOM/最终 commit 待补 |
 | D-04 | `DEPLOYMENT_GUIDE.md` | 部署文档 `.pdf` | 工作稿已建立，最终包待重验 |
 | D-05 | `PRESENTATION_AND_VIDEO.md` | ≤7 分钟演示视频 | 脚本已建立，最终录制待完成 |
-| D-06 | `USER_MANUAL.md` | 用户手册 `.pdf` | 工作稿已建立，Module E UI 待补 |
+| D-06 | `USER_MANUAL.md` | 用户手册 `.pdf` | Module E 契约已写，真实宿主截图待补 |
 | D-07 | `TEST_REPORT.md` | 效果/测试报告 `.pdf` + 原始数据 | portable 证据已有，最终 V11 待补 |
-| D-08 | `MEMORY_LIFECYCLE.md` | 记忆流转说明 `.pdf` | 设计已写，Agent 实证待补 |
+| D-08 | `MEMORY_LIFECYCLE.md` | 记忆流转说明 `.pdf` | Module E 映射已写，宿主/长期化实证待补 |
 | D-09 | `APPLICATION_CASES.md` | 实际应用案例章节/附件 | 流程已写，最终截图/日志待补 |
 | D-10 | `KYLIN_V11_ADAPTATION_REPORT.md` | V11 适配报告 `.pdf` | 历史基线已有，最终双 SDK 待补 |
 

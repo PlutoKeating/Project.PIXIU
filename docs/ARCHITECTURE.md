@@ -324,7 +324,7 @@ Project.PIXIU/
 ├── frontend/                  # Module A: PIXIU 记忆控制台
 │   └── docs/                  # 前端文档
 ├── integrations/
-│   └── kylin_agent/           # Module E: Agent/MemoryProvider 适配（待实现）
+│   └── kylin_agent/           # Module E: Agent/MemoryProvider 适配与契约测试
 └── third_party/
     ├── kylin-agent/           # 官方桌面 Agent
     ├── kylin-agent-runtime/   # 官方 Agent 运行时/记忆扩展点

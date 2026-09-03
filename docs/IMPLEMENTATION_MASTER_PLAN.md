@@ -117,8 +117,8 @@ W0 基线与计划
 |------|----------|----------|
 | W3.1 | ✅ 已完成：新增 `CONVERSATION` 来源和 session/run/turn/tool-call provenance 模型，schema v10 持久化 | 旧数据兼容；模型、Connector、仓储迁移测试通过 |
 | W3.2 | 🟡 部分完成：会话/工具写入、provenance 校验与 schema v11 持久化幂等 receipt 已实现；失败恢复管理和 Agent 专用敏感策略待补 | 同键同载荷不重复、异载荷冲突契约已测；F1-01/F1-02/F1-05～F1-07 其余待完成 |
-| W3.3 | ✅ 已完成：`POST /agent/context` 提供字符预算、来源引用、scope、freshness、冲突状态与敏感 evidence fail-closed | 多候选/隔离/裁剪/敏感排除契约测试通过；Module E 消费待 W4 |
-| W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件/层级/重放/校验测试已完成；Module E 触发、失败恢复及长期化策略待 W4 |
+| W3.3 | ✅ 已完成：`POST /agent/context` 提供字符预算、来源引用、scope、freshness、冲突状态与敏感 evidence fail-closed | 多候选/隔离/裁剪/敏感排除及 Module E 消费契约测试通过 |
+| W3.4 | 🟡 基础完成：`POST /agent/lifecycle` 接入 turn start/end、session switch/end、pre-compress、delegation，服务端选层且持久化幂等 | 六事件及 Module E 触发测试完成；失败恢复、长期化和真实宿主证据待补 |
 | W3.5 | 显式记忆工具：search/store/update/forget/status | 权限、确认、审计与错误码稳定 |
 | W3.6 | capabilities/health/version API | Module E 可在启动前 fail closed |
 
@@ -128,13 +128,13 @@ W0 基线与计划
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W4.1 | 建立 `integrations/kylin_agent/` 独立包、manifest、配置和版本 | 可独立测试/安装，无上游工作树修改 |
-| W4.2 | 实现 initialize/is_available/system_prompt_block/prefetch | 启动探测与主动召回契约通过 |
-| W4.3 | 实现 sync_turn 与异步队列、重试、背压、幂等 | 不阻塞 Agent；失败可观察且不重复写 |
-| W4.4 | 映射 session switch/end、pre-compress、delegation 等生命周期 | F6-05 端到端事件证据 |
-| W4.5 | 注册显式记忆工具 schema 与 handle_tool_call | 模型可自主调用且结果为稳定 JSON |
-| W4.6 | 安全/隐私：scope、敏感内容、忘记确认、超时、最小日志 | A-13 与 F5 系列通过 |
-| W4.7 | 插件发现与宿主兼容矩阵 | 固定上游 commit/版本范围，拒绝不兼容宿主 |
+| W4.1 | ✅ 独立包、plugin manifest、环境配置；未修改上游 | 纳入 `.deb` 自动安装待 W7 |
+| W4.2 | ✅ initialize/is_available/system_prompt_block/缓存 prefetch | strict/portable 与召回契约通过 |
+| W4.3 | ✅ sync_turn、有界异步队列、重试、背压、幂等键 | 非阻塞与诊断计数测试通过；持久失败恢复待 W3 |
+| W4.4 | 🟡 六类生命周期已映射 | 契约通过；F6-05 真实宿主证据与长期化待 W5 |
+| W4.5 | ✅ 四个显式记忆工具及稳定 JSON 错误 | 模型自主调用行为待 W5 实证 |
+| W4.6 | 🟡 hard scope、召回围栏中和、超时/错误脱敏、两阶段遗忘 | 契约通过；完整 F5 与宿主审批证据待补 |
+| W4.7 | 🟡 固定上游 commit，用户插件发现测试通过 | 支持版本范围及不兼容宿主拒绝待补 |
 
 ### W5：完整 OS Agent 产品闭环（P0）
 

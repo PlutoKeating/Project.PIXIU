@@ -101,8 +101,8 @@
 |------|--------|----------|--------|--------|
 | A · frontend | 团队负责人 | ✅ 全部完成（含四批次前端） | Qt5/CMake 桌面应用：悬浮球/聊天框/记忆面板/遗忘/设置/配对/同步 Tab；监控中心双 Tab 面板 + 三处暂停入口 + 徽标；确认式配对（发现+弹窗确认）+ 同步 Tab 全量管理（整网退出）；洞察卡/「今日简报」/相关主题提醒；i18n 279 条 0 未完成；ctest 32/32 + `regression.sh` 双路径绿 | 真实麒麟会话人工复测（全局快捷键真机按键、xprop 方言验证） |
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
-| C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约实施中 | core/storage/api、retrieval（`/memory/query` + `/agent/context`）、六类生命周期 context、flow、sync P2P CRDT、eval、monitor、D-Bus、27 个 REST 端点 + 六类 WS 事件 | Module E 生命周期触发/长期化策略/失败恢复/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
-| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 全量测试绿（后端 pytest 743 passed）；前端 ctest 37/37；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
+| C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约已供 E 消费 | core/storage/api、retrieval（`/memory/query` + `/agent/context`）、六类生命周期 context、flow、sync P2P CRDT、eval、monitor、D-Bus、27 个 REST 端点 + 六类 WS 事件 | 长期化策略/失败恢复/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
+| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | foundation+engine 743 passed；Module E 契约 9 passed；前端 ctest 37/37；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
 
 ### 1.7 2026-08-10 分支同步摘要
 
@@ -260,8 +260,8 @@ ctest 32/32、i18n 279 条 0 未完成；见 §1.6。
 
 **Agent 记忆契约进展（2026-09-03）**：新增第 5 类 `CONVERSATION` Connector；
 对话与 Agent 工具结果可把 session/run/turn/tool-call/审批/时间作为独立 provenance
-写入 evidence；schema v11 receipt 已保证完成态重试不重复执行。失败 receipt 恢复、
-专用语义/敏感策略及 Module E 生命周期仍待完成。
+写入 evidence；schema v11 receipt 已保证完成态重试不重复执行。Module E 已消费这些
+契约；失败 receipt 恢复、专用语义/敏感策略及真实宿主取证仍待完成。
 
 ### 2.3 模块 C — 后台基础设施
 
@@ -311,7 +311,7 @@ provenance，SQLite schema v11 完成兼容迁移与持久化幂等 receipt；�
 
 ### 2.5 模块 E — Agent 集成适配
 
-**目录**：`integrations/kylin_agent/`（待创建实现；本文档与 ADR 先冻结边界）
+**目录**：`integrations/kylin_agent/`（已建立独立 Provider、客户端、工具与契约测试）
 
 | 子领域 | 内容 |
 |--------|------|
@@ -319,11 +319,13 @@ provenance，SQLite schema v11 完成兼容迁移与持久化幂等 receipt；�
 | `client` | 封装 PIXIU HTTP/WS 公共契约、超时、重试与错误映射 |
 | `tools` | 查询、记住、遗忘、同步状态等显式记忆工具 |
 | `capabilities` | 探测后端、V11、Embedding、Vector Engine 严格状态 |
-| `audit` | 记录召回、写入、工具调用、生命周期与来源关联 |
+| `audit` | 通过 provenance、幂等键和本地诊断计数关联召回、写入与生命周期 |
 
 不得把 Agent 循环复制进本模块；不得导入 `frontend/` 或 `backend/` 私有代码；
 不得直接修改 `third_party/` 工作树；不得把上游通用 Agent 功能计为团队原创。
-进入编码前必须先在 `docs/API.md` 冻结 vNext Agent 记忆契约。
+vNext Agent 记忆契约已先在 `docs/API.md` 冻结并由 Module E 消费。当前 9 项测试覆盖
+固定上游 ABC/插件发现、strict 能力预检、缓存召回、异步写入/背压、生命周期、工具、
+遗忘确认和错误脱敏；安装包接入与 W5 真实 Agent 场景仍未完成。
 
 ---
 
@@ -486,7 +488,7 @@ Project.PIXIU/
 │   └── .env.example
 
 ├── integrations/
-│   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配（待实现）
+│   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配与契约测试
 
 ├── third_party/                    # openKylin 官方源码/SDK submodule
 │   ├── kylin-agent/                # 官方桌面 Agent 参考/目标宿主

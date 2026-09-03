@@ -1,7 +1,7 @@
 # D-08 Agent 记忆流转说明
 
 - 更新日期：2026-09-03
-- 状态：架构基线；Module E 生命周期实证待补
+- 状态：Module E 六类生命周期契约已实现；真实宿主与长期化实证待补
 
 ## 三层边界
 
@@ -14,8 +14,9 @@
 `prefetch` 在每轮前通过 `/agent/context` 按 query/session/scope 召回受预算和敏感
 过滤约束的长期记忆；`sync_turn` 把完整用户与
 助手轮次作为 `CONVERSATION` evidence；工具结果以 `TOOL_RESULT` 保存 run/turn/
-tool-call/审批来源；`on_pre_compress` 生成中期摘要；session 切换/结束触发
-promote、demote、TTL 与清理；显式记忆工具支持查询、记住、遗忘和同步状态。
+tool-call/审批来源；`on_pre_compress` 保存有界中期 context；session 切换/结束保存
+中期事件并轮换 run。当前不会自动永久保存整段会话，长期晋升仍由后续策略显式调用
+promote；显式记忆工具支持查询、记住、两阶段遗忘和同步状态。
 
 ## 分布式与安全
 
@@ -24,5 +25,5 @@ promote、demote、TTL 与清理；显式记忆工具支持查询、记住、遗
 子 Agent 时只传最小必要上下文。
 
 当前后端 flow 已有基础结构，`CONVERSATION`、Agent 关联 ID、完成态持久化幂等、
-预算化召回以及六类生命周期 context 公共写入已实现；失败恢复、真实上游触发与
-长期化策略尚未完成。完成前不得把本说明当成完整运行证据。
+预算化召回、六类生命周期公共写入及 Module E 映射已实现并有契约测试；失败恢复、
+真实上游触发与长期化策略尚未完成。完成前不得把本说明当成完整运行证据。

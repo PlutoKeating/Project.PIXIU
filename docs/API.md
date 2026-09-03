@@ -19,19 +19,19 @@
 
 | MemoryProvider 行为 | 当前映射 | 必须补齐的契约 |
 |---------------------|----------|----------------|
-| `initialize` | `GET /capabilities`（已实现） | 消费 V11、Embedding、Vector Engine 的真实 capability/runtime；Module E 尚需实现严格画像拒绝 |
-| `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 调用、后台预取/缓存与失败降级仍待实现 |
-| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | 异步重试、失败 receipt 恢复与 Module E 调用仍待实现 |
-| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 输入摘要策略、失败 receipt 恢复与 Module E 调用仍待实现 |
-| 显式记忆工具 | query/write/forget/sync 现有端点 | Module E 做 schema 和错误映射，不新增 Agent 私有直连 |
-| `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 触发及长期化/失败恢复策略仍待实现；长期化显式调用 promote |
+| `initialize` | `GET /capabilities`（已实现） | Module E 已消费并支持 strict fail-closed；真实宿主/V11 证据待补 |
+| `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 已后台预取并只同步读取缓存；真实时序/命中取证待补 |
+| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | Module E 已有有界异步队列、重试/背压；失败 receipt 恢复待补 |
+| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 显式 remember 已接入；任意 Shell/搜索结果的自动价值判断仍待 W5 |
+| 显式记忆工具 | query/write/forget/sync 现有端点 | 四个 schema/稳定 JSON 映射已实现；forget 另加一次性确认 token |
+| `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 已触发六类事件；长期化/失败恢复策略与端到端证据待补 |
 | 运行审计 | evidence provenance + `/agent/context` 回显 session/turn | 日志与 memory_id 跨端点链路仍待贯通 |
 
 `CONVERSATION` 与 evidence provenance 已同步更新 `foundation/core` 模型、Module B
 Connector、Module C 路由/存储及契约测试；schema v11 的持久化 receipt 保证完成态
-请求跨重启重放不重复产生 evidence/knowledge。后续失败恢复、上下文、生命周期和
-Module E 客户端仍须贯通；不得用 `TOOL_RESULT` 伪装普通对话来源，也不得把基础写入
-契约解释成完整多轮 Agent 已接入。
+请求跨重启重放不重复产生 evidence/knowledge。Module E 公共 API 客户端及上游
+MemoryProvider 契约测试已贯通；后续仍需失败恢复、长期化策略和真实宿主端到端取证。
+不得用 `TOOL_RESULT` 伪装普通对话来源，也不得把契约测试解释成完整多轮 Agent 已验收。
 
 ---
 

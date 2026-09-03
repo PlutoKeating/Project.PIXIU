@@ -1,0 +1,1 @@
+"""Module E contract tests."""

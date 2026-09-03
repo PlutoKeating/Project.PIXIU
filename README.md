@@ -59,9 +59,10 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 当前 Agent 记忆接入进度：`POST /memory/write` 已支持独立 `CONVERSATION` 来源，
 并将 session/run/turn/tool-call/审批/时间 provenance 与原始正文分离持久化；完成态
 请求具备跨重启幂等 receipt；`POST /agent/context` 已提供 scope/敏感度硬过滤、字符
-预算、freshness/冲突状态和 evidence 引用。失败恢复、生命周期 API 与 Module E 宿主
-适配仍在实施中。`POST /agent/lifecycle` 已能幂等保存六类短/中期事件，但真实钩子
-触发和长期化策略仍待 Module E，因此这不是完整 Agent 闭环。
+预算、freshness/冲突状态和 evidence 引用。Module E 已实现独立 `pixiu`
+MemoryProvider：严格 capability 预检、后台召回/写入、六类生命周期映射、四个显式
+记忆工具、背压诊断及两阶段遗忘均有契约测试。尚未完成的是 `.deb` 自动部署、真实
+宿主多轮取证、失败 receipt 恢复和长期化策略，因此这仍不是完整 Agent 闭环。
 
 ## 目标架构
 
@@ -105,7 +106,8 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 团队追加的发布硬门是：最终提供一个可在银河麒麟 V11 图形安装器打开的一体化
 `.deb`，内含 PIXIU 记忆服务、控制台和 Module E；软件内可检查版本并一键完成
 下载、签名/摘要校验、授权安装、健康检查和恢复。当前 `.deb` 与 GUI 更新基线已经
-存在，但 Module E、独立签名/回滚、最终 V11 双 SDK 与全新机/升级取证尚未闭环，
+存在，但 Module E 尚未纳入安装包，独立签名/回滚、最终 V11 双 SDK 与全新机/升级
+取证尚未闭环，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
 [最终交付与版本管理计划](docs/DELIVERY_PLAN.md)。
 
@@ -118,7 +120,7 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 ```text
 Project.PIXIU/
 ├── frontend/                         # PIXIU 记忆控制台（Qt5/UKUI）
-├── integrations/kylin_agent/         # Module E：待实现的原创 Agent/MemoryProvider 适配
+├── integrations/kylin_agent/         # Module E：原创 Agent/MemoryProvider 适配与契约测试
 ├── backend/engine/                   # 记忆业务引擎
 ├── backend/foundation/               # API、存储、检索、流转、同步、评测
 ├── backend/tests/                    # 自动化测试
