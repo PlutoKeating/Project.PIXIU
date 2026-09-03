@@ -10,6 +10,7 @@ _SOURCE_CONFIDENCE: dict[str, float] = {
     "TOOL_RESULT": 0.90,
     "OCR": 0.80,
     "USER_BEHAVIOR": 0.75,
+    "CONVERSATION": 0.90,
 }
 
 

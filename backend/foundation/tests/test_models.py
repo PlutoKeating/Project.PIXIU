@@ -10,6 +10,7 @@ import pytest
 from pydantic import ValidationError
 
 from backend.foundation.core.models import (
+    AgentProvenance,
     ConflictRecord,
     ConflictResolution,
     Entity,
@@ -91,6 +92,28 @@ def test_evidence_source_type_from_str():
         created_at=NOW,
     )
     assert e.source_type == SourceType.MANUAL_CONFIG
+
+
+def test_conversation_evidence_requires_complete_turn_provenance():
+    provenance = AgentProvenance(
+        session_id="session-1",
+        run_id="run-1",
+        turn_id="turn-1",
+        occurred_at=1_700_000_000,
+    )
+    evidence = _valid_evidence(
+        source_type=SourceType.CONVERSATION,
+        raw={"user": "记住我偏好简洁回答", "assistant": "好的"},
+        provenance=provenance,
+    )
+
+    assert evidence.provenance == provenance
+
+    with pytest.raises(ValidationError, match="requires session_id"):
+        _valid_evidence(
+            source_type=SourceType.CONVERSATION,
+            raw={"user": "hello", "assistant": "hi"},
+        )
 
 
 def test_knowledge_valid():
@@ -518,6 +541,7 @@ def test_source_type_enum_values():
     assert SourceType.TOOL_RESULT.value == "TOOL_RESULT"
     assert SourceType.USER_BEHAVIOR.value == "USER_BEHAVIOR"
     assert SourceType.MANUAL_CONFIG.value == "MANUAL_CONFIG"
+    assert SourceType.CONVERSATION.value == "CONVERSATION"
 
 
 def test_knowledge_kind_enum_values():

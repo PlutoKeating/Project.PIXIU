@@ -15,7 +15,7 @@ import re
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 # ══════════════════════════════════════════════════════════
 # 枚举（Python 3.10 兼容 str + Enum）
@@ -29,6 +29,7 @@ class SourceType(str, Enum):
     TOOL_RESULT = "TOOL_RESULT"
     USER_BEHAVIOR = "USER_BEHAVIOR"
     MANUAL_CONFIG = "MANUAL_CONFIG"
+    CONVERSATION = "CONVERSATION"
 
 
 class KnowledgeKind(str, Enum):
@@ -99,6 +100,24 @@ def validate_scope(v: str) -> str:
 # ══════════════════════════════════════════════════════════
 
 
+class AgentProvenance(BaseModel):
+    """Stable OS Agent identifiers attached to memory evidence."""
+
+    session_id: str | None = Field(default=None, min_length=1, max_length=128)
+    run_id: str | None = Field(default=None, min_length=1, max_length=128)
+    turn_id: str | None = Field(default=None, min_length=1, max_length=128)
+    tool_call_id: str | None = Field(default=None, min_length=1, max_length=128)
+    tool_name: str | None = Field(default=None, min_length=1, max_length=128)
+    approved: bool | None = None
+    occurred_at: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def _not_empty(self) -> "AgentProvenance":
+        if not any(value is not None for value in self.model_dump().values()):
+            raise ValueError("agent provenance must contain at least one field")
+        return self
+
+
 class Evidence(BaseModel):
     """原始证据（可追溯源）。
 
@@ -113,6 +132,7 @@ class Evidence(BaseModel):
     raw: dict[str, Any] = Field(default_factory=dict)
     quality_score: float = Field(default=0.0, ge=0.0, le=1.0)
     sensitivity: int = Field(default=0, ge=0, le=10)
+    provenance: AgentProvenance | None = None
     scope: str
     created_at: int
 
@@ -125,6 +145,24 @@ class Evidence(BaseModel):
     @classmethod
     def _validate_scope(cls, v: str) -> str:
         return validate_scope(v)
+
+    @model_validator(mode="after")
+    def _validate_conversation_provenance(self) -> "Evidence":
+        if self.source_type == SourceType.CONVERSATION:
+            provenance = self.provenance
+            if provenance is None or not all(
+                (
+                    provenance.session_id,
+                    provenance.run_id,
+                    provenance.turn_id,
+                    provenance.occurred_at is not None,
+                )
+            ):
+                raise ValueError(
+                    "CONVERSATION evidence requires session_id, run_id, turn_id "
+                    "and occurred_at"
+                )
+        return self
 
     model_config = {"validate_assignment": True}
 

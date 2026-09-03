@@ -34,12 +34,14 @@ from ..core.repository import (
 
 
 def _row_to_evidence(row: aiosqlite.Row) -> Evidence:
+    provenance = json.loads(row["provenance"] or "{}")
     return Evidence(
         id=row["id"],
         source_type=row["source_type"],
         raw=json.loads(row["raw"]),
         quality_score=row["quality_score"],
         sensitivity=row["sensitivity"],
+        provenance=provenance or None,
         scope=row["scope"],
         created_at=row["created_at"],
     )
@@ -117,13 +119,20 @@ class SqliteEvidenceRepo(EvidenceRepository):
     async def save(self, evidence: Evidence) -> str:
         await self._db.execute(
             """INSERT OR REPLACE INTO evidence (id, source_type, raw, quality_score,
-               sensitivity, scope, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+               sensitivity, provenance, scope, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 evidence.id,
                 evidence.source_type.value,
                 json.dumps(evidence.raw, ensure_ascii=False),
                 evidence.quality_score,
                 evidence.sensitivity,
+                json.dumps(
+                    evidence.provenance.model_dump(exclude_none=True)
+                    if evidence.provenance
+                    else {},
+                    ensure_ascii=False,
+                ),
                 evidence.scope,
                 evidence.created_at,
             ),

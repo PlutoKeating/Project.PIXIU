@@ -85,9 +85,13 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 ## 2. 核心数据模型
 
 ```jsonc
-// evidence：原始证据（可追溯源）；下列为当前枚举，vNext 增加 CONVERSATION
-{ "id": "evd_...", "source_type": "OCR|TOOL_RESULT|USER_BEHAVIOR|MANUAL_CONFIG",
-  "raw": {}, "quality_score": 0.94, "sensitivity": 0, "scope": "user:alice", "created_at": "..." }
+// evidence：原始证据（可追溯源）；Agent 关联字段与正文分离存储
+{ "id": "evd_...", "source_type": "OCR|TOOL_RESULT|USER_BEHAVIOR|MANUAL_CONFIG|CONVERSATION",
+  "raw": {}, "quality_score": 0.94, "sensitivity": 0,
+  "provenance": {"session_id": "...", "run_id": "...", "turn_id": "...",
+                 "tool_call_id": null, "tool_name": null, "approved": null,
+                 "occurred_at": 1788393600},
+  "scope": "user:alice", "created_at": "..." }
 
 // knowledge_item：结构化知识条目
 { "id": "knw_...", "kind": "FACT|WORKFLOW|CASE|TEMPLATE", "title": "...",

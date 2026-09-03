@@ -10,15 +10,20 @@
 > **赛题状态纠偏（2026-09-03）**：下列“已完成”仅表示适配代码和记忆引擎模块
 > 已实现，不表示 H-02/H-03 通过。系统 Vector Engine 生产接线是 P0 未完成项；
 > Embedding 需用最终版本在 V11 重新形成真实调用证据。
-> 团队批准的 Agent 路线同时重新打开 ingest 契约：增加 `CONVERSATION` Connector，
-> 扩展 `TOOL_RESULT` 运行来源，并对接 Module E 生命周期。该工作未实现前保持 🔴。
+> 团队批准的 Agent 路线同时重新打开 ingest 契约。`CONVERSATION` Connector 与
+> `TOOL_RESULT`/对话 provenance 基础契约已经实现；幂等、专用抽取策略、Module E
+> 生命周期和端到端验收仍未完成。
 
-### 🔴 已批准的 Agent 接入任务
+### 已批准的 Agent 接入任务
 
-- B-A1：定义 `CONVERSATION` raw schema（user/assistant、session_id、turn_id、时间和 scope）。
-- B-A2：扩展 `TOOL_RESULT` schema（run_id、tool_call_id、工具名、审批状态和来源）。
-- B-A3：清洗、质量、敏感检测、偏好/知识抽取支持上述来源并保留 evidence 追溯。
-- B-A4：与 C/E 完成契约测试；禁止用现有 `TOOL_RESULT` 类型伪装普通对话。
+- ✅ B-A1：`CONVERSATION` raw schema 接收 user/assistant；session/run/turn/time/scope
+  由独立 provenance/evidence 字段承载并持久化。
+- ✅ B-A2：Agent `TOOL_RESULT` provenance 校验 run_id、tool_call_id、工具名、审批状态
+  和时间；保留无 provenance 的旧版非 Agent 工具采集兼容路径。
+- 🟡 B-A3：Connector、清洗、质量评分和 evidence 追溯已支持新来源；专用敏感判断与
+  对话/工具语义抽取策略仍待补齐。
+- 🟡 B-A4：B/C 基础契约测试已完成；与 Module E 的端到端契约尚待实现。禁止用
+  `TOOL_RESULT` 类型伪装普通对话。
 
 - ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
   全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
@@ -40,7 +45,8 @@
   V11 严格画像中实际承担生产建库、写入、删除和查询。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-03 当前 Engine 全量 144 项通过；Foundation 结果单独记录；
+- 测试：2026-09-03 当前 Engine 全量 145 项通过；Foundation 577 项通过（11 条
+  依赖弃用/测试退出资源告警，无失败）；
   无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
 - 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
   打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，

@@ -7,8 +7,8 @@
 > 与六类 WS 事件（memory_ready / conflict_detected / forget_confirmation / sync_event /
 > capture_event / pair_request）真实实现；WS `/events` 注册已于 2026-08-20 修复；
 > 麒麟 SDK 绑定（embedding/OCR）本机构建成功；同步网络（默认开启）与被动监控四批次
-> （掌控层/目录监视/行为偏好/递送层）已全部落地。全量测试：后端 pytest 673 passed、
-> 前端 ctest 32/32、`regression.sh` 双路径绿。
+> （掌控层/目录监视/行为偏好/递送层）已全部落地。最近全量测试：后端 pytest
+> 722 passed（Engine 145 + Foundation 577）、前端 ctest 37/37。
 >
 > 团队已批准由外部 Module E (`integrations/kylin_agent/`) 通过公共 HTTP/WS 契约
 > 接入 openKylin Agent。本后端仍只负责记忆能力，不承载会话、规划或工具循环。

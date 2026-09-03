@@ -4,7 +4,8 @@
 > **与模块 B 的边界**：Foundation **提供** `core/` 中的接口，**消费** 引擎 Service 并通过 `api/di.py` 注入路由。
 > **与模块 E 的边界**：Foundation 只提供 `docs/API.md` 中的公共 HTTP/WS 契约；
 > E 不得导入 Service、Repository 或数据库实现。真实 capability/runtime 端点已实现；
-> 已批准 vNext 仍需增加 Agent 关联 ID 和短中期 context 写入能力。
+> Agent 关联 ID 已进入 evidence 模型/API/schema v10，日志、查询上下文以及短中期
+> context 写入能力仍待完成。
 
 > **状态（2026-08-11，功能冻结）**：Phase 0～Phase 7 全部完成——core/storage/api、
 > retrieval、flow、sync、eval、D-Bus 均已实现；REST 全端点 + WS + D-Bus 可用；
@@ -42,7 +43,9 @@ core/
 ```python
 class Evidence(BaseModel):
     id: str; source_type: str; raw: dict
-    quality_score: float; sensitivity: int; scope: str; created_at: int
+    quality_score: float; sensitivity: int
+    provenance: AgentProvenance | None  # session/run/turn/tool-call/time/approval
+    scope: str; created_at: int
 
 class KnowledgeItem(BaseModel):
     id: str; kind: str; title: str; body: dict; status: str
@@ -149,7 +152,8 @@ WAL + foreign_keys + busy_timeout 已启用。
 -- 证据
 CREATE TABLE evidence (
   id TEXT PRIMARY KEY, source_type TEXT, raw JSON,
-  quality_score REAL, sensitivity INTEGER, scope TEXT, created_at INTEGER);
+  quality_score REAL, sensitivity INTEGER, provenance JSON,
+  scope TEXT, created_at INTEGER);
 
 -- 知识条目
 CREATE TABLE knowledge_items (

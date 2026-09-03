@@ -5,9 +5,9 @@
 > **开发人员**：1人（后端业务逻辑）
 > **依赖**：`backend/foundation/core/` 中的 Repository 接口和数据模型
 
-> 已批准的 Agent 路线要求 Module B 在 vNext 增加合法的 `CONVERSATION` 接入，
-> 并完善 `TOOL_RESULT` 的 session/run/turn/tool-call 来源信息。Module E 只通过
-> 公共 API 提交这些数据；当前四类 Connector 未扩展前，不得宣称多轮对话已接入。
+> Agent 记忆基础契约已增加合法的 `CONVERSATION` 接入，并以独立 provenance 保存
+> `TOOL_RESULT`/对话的 session/run/turn/tool-call/审批/时间信息。Module E 仍只可
+> 通过公共 API 提交；幂等和生命周期未闭环前不得宣称完整多轮 Agent 已接入。
 
 ---
 

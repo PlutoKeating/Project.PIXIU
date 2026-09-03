@@ -19,10 +19,10 @@ from fastapi import Body, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from ..core.logger import get_logger
-from ..core.models import SourceType
+from ..core.models import AgentProvenance, SourceType
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from ..monitor.config_store import InvalidMonitorConfig
 from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound
@@ -170,6 +170,39 @@ class MemoryWriteRequest(BaseModel):
     raw: dict[str, Any] = Field(default_factory=dict)
     scope: str
     context: dict[str, Any] = Field(default_factory=dict)
+    provenance: AgentProvenance | None = None
+
+    @model_validator(mode="after")
+    def _validate_agent_evidence(self) -> "MemoryWriteRequest":
+        provenance = self.provenance
+        turn_fields = (
+            provenance is not None
+            and provenance.session_id
+            and provenance.run_id
+            and provenance.turn_id
+            and provenance.occurred_at is not None
+        )
+        if self.source_type == SourceType.CONVERSATION:
+            if not turn_fields:
+                raise ValueError(
+                    "CONVERSATION requires session_id, run_id, turn_id and occurred_at"
+                )
+            if not str(self.raw.get("user") or "").strip() or not str(
+                self.raw.get("assistant") or ""
+            ).strip():
+                raise ValueError("CONVERSATION requires user and assistant text")
+        if self.source_type == SourceType.TOOL_RESULT and provenance is not None:
+            if not (
+                turn_fields
+                and provenance.tool_call_id
+                and provenance.tool_name
+                and provenance.approved is not None
+            ):
+                raise ValueError(
+                    "agent TOOL_RESULT requires session/run/turn/time/"
+                    "tool_call/tool_name/approved"
+                )
+        return self
 
 
 class PreferenceExtractRequest(BaseModel):
@@ -243,7 +276,12 @@ async def memory_write(
 ):
     """同步落 evidence，随后执行结构化/偏好提取/冲突仲裁，并推送 memory_ready 事件。"""
     started = time.monotonic()
-    evidence = await ingestion.ingest(body.source_type.value, body.raw, body.scope)
+    evidence = await ingestion.ingest(
+        body.source_type.value,
+        body.raw,
+        body.scope,
+        provenance=body.provenance,
+    )
     item = await knowledge.structure(evidence)
     prefs = await preference.extract(evidence)
     record = await conflict.arbitrate(item)

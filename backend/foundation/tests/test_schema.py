@@ -92,7 +92,16 @@ def test_evidence_has_expected_columns(tmp_path: Path):
         r[1]
         for r in conn.execute("PRAGMA table_info('evidence')").fetchall()
     }
-    assert cols == {"id", "source_type", "raw", "quality_score", "sensitivity", "scope", "created_at"}
+    assert cols == {
+        "id",
+        "source_type",
+        "raw",
+        "quality_score",
+        "sensitivity",
+        "provenance",
+        "scope",
+        "created_at",
+    }
 
 
 def test_knowledge_items_has_expected_columns(tmp_path: Path):
@@ -289,7 +298,7 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 8
+    assert apply_pending(conn) == 9
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
@@ -297,7 +306,7 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     assert "monitor_config" in _table_names(conn)
     assert "monitor_log" in _table_names(conn)
     assert "vector_id_map" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 9
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 10
     conn.close()
 
 
@@ -327,7 +336,7 @@ def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
     conn.execute("INSERT INTO _schema_version VALUES (6, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 3  # 迁移 #7 + #8 + #9
+    assert apply_pending(conn) == 4  # 迁移 #7 + #8 + #9 + #10
     conn.commit()
 
     columns = {
@@ -391,7 +400,7 @@ def test_pending_migrations_add_conflict_severity_to_v7_database(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (7, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 2  # 迁移 #8 + #9
+    assert apply_pending(conn) == 3  # 迁移 #8 + #9 + #10
     conn.commit()
 
     columns = {
@@ -421,6 +430,40 @@ def test_pending_migrations_add_conflict_severity_to_v7_database(tmp_path):
         ("cfl_BBBBBBBBBBBBBBBBBBBBBBBBBBBB",),
     ).fetchone()
     assert row2[0] == "low"
+    conn.close()
+
+
+def test_pending_migration_adds_agent_provenance_to_v9_evidence(tmp_path):
+    conn = create_connection(str(tmp_path / "test.db"))
+    conn.execute(
+        """CREATE TABLE evidence (
+            id TEXT PRIMARY KEY,
+            source_type TEXT NOT NULL,
+            raw TEXT NOT NULL DEFAULT '{}',
+            quality_score REAL NOT NULL DEFAULT 0.0,
+            sensitivity INTEGER NOT NULL DEFAULT 0,
+            scope TEXT NOT NULL DEFAULT '',
+            created_at INTEGER NOT NULL
+        )"""
+    )
+    conn.execute(
+        "INSERT INTO evidence (id, source_type, scope, created_at) VALUES (?, ?, ?, ?)",
+        ("evd_AAAAAAAAAAAAAAAAAAAAAAAAAA", "OCR", "user:alice", 1),
+    )
+    conn.execute(
+        "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)"
+    )
+    conn.execute("INSERT INTO _schema_version VALUES (9, 1)")
+    conn.commit()
+
+    assert apply_pending(conn) == 1
+    conn.commit()
+    row = conn.execute(
+        "SELECT provenance FROM evidence WHERE id = ?",
+        ("evd_AAAAAAAAAAAAAAAAAAAAAAAAAA",),
+    ).fetchone()
+    assert row[0] == "{}"
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 10
     conn.close()
 
 

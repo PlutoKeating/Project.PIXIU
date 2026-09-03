@@ -20,7 +20,7 @@ Python 3.10 + C++（KylinSDK pybind11 封装）
 
 | 子包 | 职责 |
 |------|------|
-| `ingest/` | 多源数据接入（4类 Connector → Cleaner → Normalizer → Quality） |
+| `ingest/` | 多源数据接入（5类 Connector，含 CONVERSATION → Cleaner → Normalizer → Quality） |
 | `preference/` | 偏好捕捉（Extractor → Versioning → Adapter） |
 | `knowledge/` | 知识结构化（Structurer → Graph → EmbedWriter） |
 | `conflict/` | 冲突仲裁（Arbiter：检测→裁决→审计） |
@@ -40,7 +40,7 @@ Python 3.10 + SQLite + hnswlib
 |------|------|
 | `core/` | 共享契约（数据模型、Repository 接口、配置） |
 | `api/` | API 网关（HTTP/WS/D-Bus） |
-| `storage/` | SQLite 仓储实现（16 张表 + WAL + FTS5 + 向量，版本化迁移） |
+| `storage/` | SQLite 仓储实现（19 张基础表 + WAL + FTS5 + 向量，schema v10） |
 | `retrieval/` | 混合检索（路由→BM25∥ANN∥Graph→融合→重排→组装） |
 | `flow/` | 记忆流转（promote/demote + TTL） |
 | `sync/` | P2P CRDT 同步（Gossip + 反熵 + TLS） |

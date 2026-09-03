@@ -182,6 +182,26 @@ def _add_vector_id_map(conn: sqlite3.Connection) -> None:
     )
 
 
+def _add_agent_provenance(conn: sqlite3.Connection) -> None:
+    """Migration #10: persist session/run/turn/tool provenance on evidence."""
+    tables = {
+        row[0]
+        for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+    }
+    if "evidence" not in tables:
+        return
+    columns = {
+        row[1] for row in conn.execute("PRAGMA table_info(evidence)").fetchall()
+    }
+    if "provenance" not in columns:
+        conn.execute(
+            "ALTER TABLE evidence "
+            "ADD COLUMN provenance TEXT NOT NULL DEFAULT '{}'"
+        )
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -192,6 +212,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (7, "conflict_source", _add_conflict_source),
     (8, "conflict_severity", _add_conflict_severity),
     (9, "vector_id_map", _add_vector_id_map),
+    (10, "agent_provenance", _add_agent_provenance),
 ]
 
 

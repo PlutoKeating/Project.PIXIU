@@ -140,6 +140,91 @@ def test_evidence_detail_returns_raw(client):
     assert data["scope"] == "shared:home"
 
 
+def test_memory_write_accepts_conversation_with_agent_provenance(client):
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "CONVERSATION",
+            "raw": {"user": "我喜欢简洁回答", "assistant": "我会记住"},
+            "scope": "user:alice",
+            "provenance": {
+                "session_id": "session-1",
+                "run_id": "run-1",
+                "turn_id": "turn-1",
+                "occurred_at": 1700000000,
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    evidence_id = response.json()["evidence_id"]
+    evidence = client.get(f"/evidence/{evidence_id}").json()
+    assert evidence["source_type"] == "CONVERSATION"
+    assert evidence["provenance"]["session_id"] == "session-1"
+
+
+def test_memory_write_rejects_conversation_without_turn_provenance(client):
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "CONVERSATION",
+            "raw": {"user": "hello", "assistant": "hi"},
+            "scope": "user:alice",
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+
+
+def test_agent_tool_result_requires_complete_audit_provenance(client):
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "TOOL_RESULT",
+            "raw": {"tool_name": "shell", "body": {"result": "done"}},
+            "scope": "user:alice",
+            "provenance": {
+                "session_id": "session-1",
+                "run_id": "run-1",
+                "turn_id": "turn-1",
+                "tool_call_id": "call-1",
+                "occurred_at": 1700000000
+            },
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"] == "INVALID_REQUEST"
+
+
+def test_agent_tool_result_persists_complete_audit_provenance(client):
+    response = client.post(
+        "/memory/write",
+        json={
+            "source_type": "TOOL_RESULT",
+            "raw": {"tool_name": "shell", "body": {"result": "done"}},
+            "scope": "user:alice",
+            "provenance": {
+                "session_id": "session-1",
+                "run_id": "run-1",
+                "turn_id": "turn-1",
+                "tool_call_id": "call-1",
+                "tool_name": "shell",
+                "approved": True,
+                "occurred_at": 1700000000
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    evidence = client.get(
+        f"/evidence/{response.json()['evidence_id']}"
+    ).json()
+    assert evidence["provenance"]["tool_call_id"] == "call-1"
+    assert evidence["provenance"]["approved"] is True
+
+
 def test_evidence_detail_404(client):
     resp = client.get("/evidence/evd_AAAAAAAAAAAAAAAAAAAAAAAAAA")
     assert resp.status_code == 404

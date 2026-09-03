@@ -115,8 +115,8 @@ W0 基线与计划
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W3.1 | 新增 `CONVERSATION` 来源和 session/run/turn/tool-call provenance 模型 | 迁移可回滚，旧数据兼容 |
-| W3.2 | 会话轮次与工具结果写入 API；幂等键、来源、作用域、敏感策略完整 | F1-01/F1-02/F1-05～F1-07 契约测试 |
+| W3.1 | ✅ 已完成：新增 `CONVERSATION` 来源和 session/run/turn/tool-call provenance 模型，schema v10 持久化 | 旧数据兼容；模型、Connector、仓储迁移测试通过 |
+| W3.2 | 🟡 部分完成：会话轮次与工具结果基础写入、来源与 provenance 校验已实现；幂等键和 Agent 专用敏感策略待补 | F1-01/F1-02/F1-05～F1-07 契约测试 |
 | W3.3 | Agent 上下文检索 API：预算、来源引用、scope、freshness、冲突状态 | A-07、F3-02、F6-03 测试 |
 | W3.4 | 生命周期 API：turn start/end、session switch/end、pre-compress、delegation | F6-01～F6-05 状态机测试 |
 | W3.5 | 显式记忆工具：search/store/update/forget/status | 权限、确认、审计与错误码稳定 |

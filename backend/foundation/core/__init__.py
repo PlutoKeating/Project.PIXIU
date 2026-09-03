@@ -6,6 +6,7 @@
 
 from .config import settings
 from .models import (
+    AgentProvenance,
     ConflictRecord,
     ConflictResolution,
     Entity,
@@ -43,6 +44,7 @@ from .vector_store import VectorMatch, VectorStore
 from .vector_id_map import VectorIdMap
 
 __all__ = [
+    "AgentProvenance",
     # config
     "settings",
     # models

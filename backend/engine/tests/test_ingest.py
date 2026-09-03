@@ -11,7 +11,7 @@ from backend.engine.ingest import IngestionService
 from backend.engine.ingest.cleaner import Cleaner
 from backend.engine.ingest.normalizer import Normalizer
 from backend.engine.ingest.quality import Quality, QualityError
-from backend.foundation.core.models import Evidence
+from backend.foundation.core.models import AgentProvenance, Evidence
 from backend.foundation.core.repository import EvidenceRepository
 from backend.foundation.storage.repository import SqliteEvidenceRepo
 
@@ -92,6 +92,26 @@ async def test_ingest_tool_result(service: IngestionService) -> None:
     assert evidence.source_type == "TOOL_RESULT"
     assert evidence.raw["title"] == "file_search"
     assert "hits" in evidence.raw["body"]
+
+
+@pytest.mark.asyncio
+async def test_ingest_conversation_preserves_provenance(service: IngestionService) -> None:
+    provenance = AgentProvenance(
+        session_id="session-1",
+        run_id="run-1",
+        turn_id="turn-1",
+        occurred_at=1_700_000_000,
+    )
+    evidence = await service.ingest(
+        "CONVERSATION",
+        {"user": "我喜欢简洁回答", "assistant": "我会记住"},
+        scope="user:alice",
+        provenance=provenance,
+    )
+
+    assert evidence.source_type == "CONVERSATION"
+    assert evidence.raw["body"]["user"] == "我喜欢简洁回答"
+    assert evidence.provenance == provenance
 
 
 @pytest.mark.asyncio

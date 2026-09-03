@@ -18,7 +18,7 @@
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
   `config.py`（`auto`/`kylin`/`portable` 能力选择）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
-- `storage/`：`schema.py`（19 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v9 版本化迁移）、
+- `storage/`：`schema.py`（19 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v10 版本化迁移，含 evidence provenance）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
 - `api/`：全部 REST 契约端点真实接入（含 `/sync/*`），request_id 中间件 + API.md §5
   统一错误契约（`{error, message, request_id}`），D-Bus 服务（`com.kylin.pixiu.Memory`：
@@ -34,8 +34,9 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 最新后端全量回归记录：pytest 673 passed；Foundation 356 + Engine 21 = 377
-  仅保留为 2026-08-11 阶段快照
+- 最新后端全量回归记录：pytest 722 passed（Foundation 577 + Engine 145；
+  Foundation 11 条依赖弃用/测试退出资源告警，无失败）；Foundation 356 + Engine 21
+  = 377 仅保留为 2026-08-11 阶段快照
 
 ### 🔴 赛题 P0 待完成
 
@@ -50,7 +51,8 @@
 - C-A1：提供可判定 V11、Embedding、Vector Engine 实际 runtime 的 capability 契约。
   `GET /capabilities` 已实现配置/实际分栏与脱敏平台判定，严格双 SDK 启动预检已接入；
   Agent runtime 待 Module E 宿主适配后纳入。
-- C-A2：贯通 session_id/run_id/turn_id/tool_call_id 到 evidence、日志与查询上下文。
+- C-A2：🟡 session_id/run_id/turn_id/tool_call_id/审批/时间已贯通到 evidence、写入
+  API 和 schema v10；日志、按关联 ID 查询与检索 context_hint 仍待完成。
 - C-A3：提供短/中期 context 创建、更新、promote/demote 与清理的公共 API。
 - C-A4：Vector Engine 成为严格画像的生产向量 Repository；SQLite/INT8 仅为降级。
 

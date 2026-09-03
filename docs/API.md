@@ -12,24 +12,25 @@
 
 > [!IMPORTANT]
 > 团队已批准 [ADR-0001](decisions/0001-use-openkylin-agent-host.md)：Module E
-> 将通过本 API 接入 openKylin Agent。下节“vNext Agent 接入契约”在标记为已实现
-> 前只是冻结的开发目标；当前可用端点仍以 §2 的状态列为准。
+> 将通过本 API 接入 openKylin Agent。下节逐项区分已实现基础契约与仍待实现能力；
+> 当前可用端点仍以 §2 的状态列为准，禁止据局部完成宣称 Agent 闭环已完成。
 
-## 0. vNext Agent 接入契约（已批准，尚未实现）
+## 0. vNext Agent 接入契约（已批准，分阶段实现）
 
 | MemoryProvider 行为 | 当前映射 | 必须补齐的契约 |
 |---------------------|----------|----------------|
 | `initialize` | `GET /capabilities`（已实现） | 消费 V11、Embedding、Vector Engine 的真实 capability/runtime；Module E 尚需实现严格画像拒绝 |
 | `prefetch(query, session_id)` | `POST /memory/query` | `context_hint` 增加 `session_id`/`turn_id`，响应保留 evidence 来源 |
-| `sync_turn(user, assistant, session_id)` | 暂无合法对话来源 | `POST /memory/write` 新增 `CONVERSATION`，携带 user/assistant、session/turn 与时间 |
-| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT` | 携带 tool name/call id/run id、输入摘要、结果、来源和审批状态 |
+| `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（已实现基础写入） | 幂等键、异步重试与 Module E 调用仍待实现 |
+| 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance 已实现） | 幂等键、输入摘要策略与 Module E 调用仍待实现 |
 | 显式记忆工具 | query/write/forget/sync 现有端点 | Module E 做 schema 和错误映射，不新增 Agent 私有直连 |
 | `on_pre_compress`/会话结束或切换 | `/memory/flow/promote` 仅处理已有 context | 增加可创建/更新短中期 context 的公共端点，再触发 promote/demote/清理 |
-| 运行审计 | request_id 和部分 evidence | 贯通 session_id/run_id/turn_id/tool_call_id/memory_id |
+| 运行审计 | evidence 已持久化 session_id/run_id/turn_id/tool_call_id | 日志、查询上下文与 memory_id 链路仍待贯通 |
 
-vNext 变更必须同步更新 `foundation/core` 模型、Module B Connector、Module C
-路由/存储、Module E 客户端及测试。不得在实现前把 `CONVERSATION` 加入下方“已实现”
-清单，也不得用 `TOOL_RESULT` 伪装普通对话来源。
+`CONVERSATION` 与 evidence provenance 已同步更新 `foundation/core` 模型、Module B
+Connector、Module C 路由/存储及契约测试。后续幂等、上下文、生命周期和 Module E
+客户端仍须按同一方式贯通；不得用 `TOOL_RESULT` 伪装普通对话来源，也不得把基础写入
+契约解释成完整多轮 Agent 已接入。
 
 ---
 
@@ -111,7 +112,7 @@ IP、文件路径或测试环境拓扑。
 
 ```jsonc
 {
-  "source_type": "OCR|TOOL_RESULT|USER_BEHAVIOR|MANUAL_CONFIG",
+  "source_type": "OCR|TOOL_RESULT|USER_BEHAVIOR|MANUAL_CONFIG|CONVERSATION",
   "raw": {
     "title": "2026年4月家庭支出清单",
     "body": {
@@ -128,9 +129,35 @@ IP、文件路径或测试环境拓扑。
   "context": {
     "source_device": "书房工作站",
     "trigger_event": "OCR_RESULT"
+  },
+  "provenance": null
+}
+```
+
+Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
+
+```jsonc
+{
+  "source_type": "CONVERSATION",
+  "raw": {"user": "请保持回答简洁", "assistant": "好的，我会记住。"},
+  "scope": "user:alice",
+  "provenance": {
+    "session_id": "session-01",
+    "run_id": "run-01",
+    "turn_id": "turn-03",
+    "occurred_at": 1788393600
   }
 }
 ```
+
+校验规则：
+
+- `CONVERSATION` 必须同时提供非空 `raw.user`、`raw.assistant` 以及
+  `session_id`、`run_id`、`turn_id`、`occurred_at`。
+- Agent 产生的 `TOOL_RESULT` 一旦携带 `provenance`，还必须提供 `tool_call_id`、
+  `tool_name` 与布尔值 `approved`；旧版非 Agent 工具采集允许不携带 provenance。
+- provenance 单独持久化并由 `GET /evidence/{id}` 原样返回；当前尚未提供基于这些
+  标识的查询索引、幂等写入或生命周期端点。
 
 **响应体（200）：**
 
@@ -877,7 +904,7 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 ```jsonc
 {
   "error": "INVALID_REQUEST",
-  "message": "field 'source_type' must be one of: OCR, TOOL_RESULT, USER_BEHAVIOR, MANUAL_CONFIG",
+  "message": "field 'source_type' must be one of: OCR, TOOL_RESULT, USER_BEHAVIOR, MANUAL_CONFIG, CONVERSATION",
   "request_id": "req_..."
 }
 ```

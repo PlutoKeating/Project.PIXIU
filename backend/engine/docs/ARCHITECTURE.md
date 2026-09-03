@@ -4,9 +4,9 @@
 > **与模块 C 的边界**：引擎**消费** `foundation/core/` 中的 Repository 接口（ABC）和数据模型，**不依赖** `foundation/` 中的任何实现代码。
 >
 > **已批准 vNext 边界**：Module E 通过 Module C 公共 API 提交 Agent 生命周期
-> 数据；Module B 增加 `CONVERSATION` Connector，并为 `TOOL_RESULT` 保留
-> session/run/turn/tool-call 与审批来源。下述当前 `Literal` 仍是已实现事实，扩展前
-> 不得把对话伪装成现有来源。
+> 数据；Module B 已增加 `CONVERSATION` Connector，`Evidence.provenance` 为对话与
+> `TOOL_RESULT` 保留 session/run/turn/tool-call、时间和审批来源。幂等与完整生命周期
+> 尚未实现，不得据此宣称完整 Agent 已接入。
 
 > [!CAUTION]
 > “SDK 适配/封装存在”不等于赛题硬门槛已通过。最终 V11 生产路径必须真实调用
@@ -35,14 +35,14 @@
 管线流程：
 
 ```
-Connector（4类来源适配）
+Connector（5类来源适配）
   → Cleaner（去噪·去重·缺失补齐）
     → Normalizer（格式标准化·实体规范化）
       → Quality（Schema 校验·quality_score）
         → 落 evidence（通过 EvidenceRepository 接口）
 ```
 
-**Connector 支持的四类来源**：
+**Connector 支持的五类来源**：
 
 | source_type | 输入格式 | 示例 |
 |-------------|----------|------|
@@ -50,16 +50,18 @@ Connector（4类来源适配）
 | `USER_BEHAVIOR` | 事件序列 | 用户操作日志 |
 | `MANUAL_CONFIG` | 键值对 | 用户配置内容 |
 | `OCR` | 结构化文本 | OCR 识别的清单数据 |
+| `CONVERSATION` | 单轮 user/assistant 文本 | OS Agent 已完成的一轮对话 |
 
 **Output**：`Evidence` 对象（通过 `EvidenceRepository.save()` 写入）
 
 ```python
 class Evidence(BaseModel):
     id: str
-    source_type: Literal["OCR", "TOOL_RESULT", "USER_BEHAVIOR", "MANUAL_CONFIG"]
+    source_type: Literal["OCR", "TOOL_RESULT", "USER_BEHAVIOR", "MANUAL_CONFIG", "CONVERSATION"]
     raw: dict
     quality_score: float  # 0~1, 由 Quality 模块计算
     sensitivity: int      # 0~3, 由 Detector 计算（0=无敏感）
+    provenance: AgentProvenance | None  # session/run/turn/tool-call/time/approval
     scope: str            # "user:alice" | "shared:home"
     created_at: int
 ```

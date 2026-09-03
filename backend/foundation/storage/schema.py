@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 9
+SCHEMA_VERSION = 10
 
 # monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
 # 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
@@ -74,6 +74,7 @@ DDL_STATEMENTS: list[str] = [
         raw           TEXT NOT NULL DEFAULT '{}',
         quality_score REAL NOT NULL DEFAULT 0.0,
         sensitivity   INTEGER NOT NULL DEFAULT 0,
+        provenance    TEXT NOT NULL DEFAULT '{}',
         scope         TEXT NOT NULL DEFAULT '',
         created_at    INTEGER NOT NULL
     )

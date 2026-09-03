@@ -6,11 +6,18 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from backend.engine.ingest.connectors.manual_config import ManualConfigConnector
+from backend.engine.ingest.connectors.conversation import ConversationConnector
 from backend.engine.ingest.connectors.ocr import OcrConnector
 from backend.engine.ingest.connectors.tool_result import ToolResultConnector
 from backend.engine.ingest.connectors.user_behavior import UserBehaviorConnector
 
-SOURCE_TYPES = ("OCR", "TOOL_RESULT", "USER_BEHAVIOR", "MANUAL_CONFIG")
+SOURCE_TYPES = (
+    "OCR",
+    "TOOL_RESULT",
+    "USER_BEHAVIOR",
+    "MANUAL_CONFIG",
+    "CONVERSATION",
+)
 
 
 class Connector(ABC):
@@ -28,6 +35,7 @@ _REGISTRY: dict[str, Connector] = {
     "USER_BEHAVIOR": UserBehaviorConnector(),
     "MANUAL_CONFIG": ManualConfigConnector(),
     "OCR": OcrConnector(),
+    "CONVERSATION": ConversationConnector(),
 }
 
 

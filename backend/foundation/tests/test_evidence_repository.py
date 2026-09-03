@@ -10,7 +10,7 @@ import aiosqlite
 import pytest
 import pytest_asyncio
 
-from backend.foundation.core.models import Evidence, SourceType
+from backend.foundation.core.models import AgentProvenance, Evidence, SourceType
 from backend.foundation.storage.repository import SqliteEvidenceRepo
 from backend.foundation.storage.schema import init_db_on_connection
 
@@ -115,6 +115,30 @@ async def test_get_returns_saved_evidence(repo: SqliteEvidenceRepo):
     assert fetched.id == evd.id
     assert fetched.source_type == SourceType.USER_BEHAVIOR
     assert fetched.raw == {"action": "click"}
+
+
+@pytest.mark.asyncio
+async def test_conversation_provenance_roundtrips(repo: SqliteEvidenceRepo):
+    evd = _evd(
+        source_type=SourceType.CONVERSATION,
+        raw={"user": "hello", "assistant": "hi"},
+        provenance=AgentProvenance(
+            session_id="session-1",
+            run_id="run-1",
+            turn_id="turn-1",
+            occurred_at=1_700_000_000,
+        ),
+    )
+    await repo.save(evd)
+
+    fetched = await repo.get(evd.id)
+    assert fetched is not None
+    assert fetched.provenance is not None
+    assert fetched.provenance.session_id == "session-1"
+    row = await repo._db.execute_fetchall(
+        "SELECT provenance FROM evidence WHERE id = ?", (evd.id,)
+    )
+    assert json.loads(row[0]["provenance"])["turn_id"] == "turn-1"
 
 
 @pytest.mark.asyncio
