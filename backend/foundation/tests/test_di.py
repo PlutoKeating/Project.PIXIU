@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 from pathlib import Path
 
 import pytest
@@ -27,6 +28,7 @@ from backend.foundation.api.di import (
     get_sync_service,
     get_vector_store,
     preflight_strict_capabilities,
+    stop_db,
     stop_vector_store,
 )
 from backend.foundation.core.idgen import gen_evidence_id
@@ -41,6 +43,9 @@ from backend.foundation.storage.repository import (
     SqliteKnowledgeRepo,
 )
 from backend.foundation.storage.vector_store import SqliteVectorStore
+
+
+http_app_module = importlib.import_module("backend.foundation.api.http_app")
 
 
 class _FakeSettings:
@@ -82,6 +87,32 @@ async def test_get_db_runs_migrations(fresh_di, tmp_path):
         assert version_rows[0][0] == latest_version()
     finally:
         await db.close()
+
+
+@pytest.mark.asyncio
+async def test_stop_db_closes_connection_and_failed_startup_db(fresh_di, monkeypatch):
+    db = await get_db()
+    di_module._delivery_service = object()
+
+    await stop_db()
+    await stop_db()
+
+    assert di_module._db is None
+    assert di_module._delivery_service is None
+    with pytest.raises(ValueError, match="no active connection"):
+        await db.execute("SELECT 1")
+
+    async def _failing_preflight():
+        await get_db()
+        raise RuntimeError("strict startup rejected")
+
+    monkeypatch.setattr(
+        http_app_module, "preflight_strict_capabilities", _failing_preflight
+    )
+    with pytest.raises(RuntimeError, match="strict startup rejected"):
+        async with http_app_module._lifespan(http_app_module.app):
+            pass
+    assert di_module._db is None
 
 
 @pytest.mark.asyncio

@@ -252,6 +252,9 @@ store 在进程内单例复用并由 lifespan 调用 `Disconnect`，strict 预�
 平台解析同时接受发行版常见的 `11` 与 `V11`/`v11` 版本格式并统一输出 `11`。
 应用 lifespan 在启动其他后台运行时前预检所有显式 `kylin` 后端，任一 SDK 无法实例化
 即中止启动；`auto` 模式仍允许带明确 runtime 标识的 portable 降级。
+所有启动步骤现处于同一清理边界：正常退出或 strict 预检/后台运行时启动失败时，依次
+停止行为采集、监控、同步和 Vector Engine，最后幂等关闭全局 aiosqlite 连接并失效
+DB 绑定服务，避免工作线程在事件循环关闭后回调。
 未显式注入 seam 的旧测试/自定义构造暂保留 Repository 兼容路径，不得用于生产
 或验收。
 

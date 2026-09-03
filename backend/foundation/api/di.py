@@ -97,6 +97,19 @@ async def get_db() -> aiosqlite.Connection:
     return _db
 
 
+async def stop_db() -> None:
+    """Close the process-wide SQLite worker and invalidate DB-bound services."""
+    global _db, _delivery_service, _monitor_config_store, _monitor_log_store
+    db = _db
+    _db = None
+    _delivery_service = None
+    _monitor_config_store = None
+    _monitor_log_store = None
+    if db is not None:
+        await db.close()
+        _log.info("Database disconnected")
+
+
 async def get_ingestion_service(
     db: aiosqlite.Connection = Depends(get_db),
 ) -> IngestionService:

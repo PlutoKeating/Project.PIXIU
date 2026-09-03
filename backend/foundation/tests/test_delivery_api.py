@@ -58,6 +58,7 @@ def client(tmp_path, monkeypatch):
     di_module._monitor_log_store = None
     with TestClient(app) as c:
         yield c
+    assert di_module._db is None
     app.dependency_overrides.clear()
     di_module._db = None
     di_module._sync_runtime = None
