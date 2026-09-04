@@ -112,6 +112,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 str(output),
             ]
             with (
+                patch.object(MODULE, "ensure_product_interpreter"),
                 patch.object(MODULE, "wait_for_capabilities", return_value=capabilities),
                 patch.object(MODULE, "request_json", side_effect=responses),
                 patch.object(
