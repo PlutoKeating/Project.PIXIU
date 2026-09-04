@@ -67,7 +67,7 @@ index 7c8319a..2b19fb5 100644
                     QStringLiteral("anthropic"), QStringLiteral("claude-sonnet-4-20250514"),
                     QString(), 0),
 diff --git a/src/ui/chatwidget.cpp b/src/ui/chatwidget.cpp
-index 496e400..e89c81b 100644
+index 496e400..a081d4d 100644
 --- a/src/ui/chatwidget.cpp
 +++ b/src/ui/chatwidget.cpp
 @@ -16,6 +16,7 @@
@@ -332,7 +332,7 @@ index 496e400..e89c81b 100644
 +        author->setObjectName(QStringLiteral("messageAuthor"));
 +        messageLayout->addWidget(author);
 +        messageLayout->addWidget(bubble);
-+        columnLayout->addWidget(messageStack, 0);
++        columnLayout->addWidget(messageStack, 1);
 +        columnLayout->addStretch();
      }
 +    row->addWidget(messageColumn, 20);
