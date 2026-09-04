@@ -177,11 +177,26 @@ def valid_target(
     )
 
 
+def host_adaptation_inputs(root: Path, policy: dict[str, Any]) -> dict[str, str]:
+    inputs: dict[str, str] = {}
+    for relative in policy.get("host_adaptation_inputs", []):
+        if not isinstance(relative, str) or not relative:
+            raise ValueError("host adaptation input path is invalid")
+        path = (root / relative).resolve()
+        if not path.is_file() or not path.is_relative_to(root):
+            raise ValueError("host adaptation input is unavailable")
+        inputs[relative] = sha256_file(path)
+    if not inputs:
+        raise ValueError("host adaptation inputs are not configured")
+    return inputs
+
+
 def validate_evidence(
     evidence_dir: Path,
     evidence: dict[str, Any],
     policy: dict[str, Any],
     expected_arch: str | None = None,
+    root: Path | None = None,
 ) -> list[str]:
     blockers: list[str] = []
     host_item = evidence["host_build"]
@@ -192,6 +207,9 @@ def validate_evidence(
             host = read_json(evidence_dir / host_item["file"])
             valid = (
                 host.get("schema_version") == 1
+                and root is not None
+                and host.get("release_commit") == git(root, "rev-parse", "HEAD")
+                and host.get("adaptation_inputs") == host_adaptation_inputs(root, policy)
                 and host.get("source_commit")
                 == policy["components"]["kylin_agent"]["source_commit"]
                 and valid_target(host, policy, expected_arch)
@@ -207,7 +225,14 @@ def validate_evidence(
                     evidence_dir, host, "build_log", "build_log_sha256"
                 ) is not None
             )
-        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
+        except (
+            KeyError,
+            OSError,
+            TypeError,
+            ValueError,
+            json.JSONDecodeError,
+            subprocess.CalledProcessError,
+        ):
             valid = False
         host_item["valid"] = valid
         if not valid:
@@ -457,7 +482,9 @@ def audit(
     )
 
     evidence = load_evidence(evidence_dir, policy["evidence"])
-    blockers.extend(validate_evidence(evidence_dir, evidence, policy, expected_arch))
+    blockers.extend(validate_evidence(
+        evidence_dir, evidence, policy, expected_arch, root=root
+    ))
     blockers = sorted(set(blockers))
     try:
         release_commit = git(root, "rev-parse", "HEAD")

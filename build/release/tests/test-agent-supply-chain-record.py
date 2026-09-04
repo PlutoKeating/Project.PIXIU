@@ -65,6 +65,25 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
                 "--network-isolated",
             )
             self.assertEqual(result.returncode, 0, result.stderr)
+            host_record = json.loads(
+                (evidence / "agent-host-build.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                host_record["release_commit"],
+                subprocess.check_output(
+                    ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
+                ).strip(),
+            )
+            self.assertEqual(
+                set(host_record["adaptation_inputs"]),
+                set(
+                    json.loads(
+                        (ROOT / "build/release/agent-supply-chain-policy.json").read_text(
+                            encoding="utf-8"
+                        )
+                    )["host_adaptation_inputs"]
+                ),
+            )
 
             wheels = inputs / "wheels"
             wheels.mkdir()

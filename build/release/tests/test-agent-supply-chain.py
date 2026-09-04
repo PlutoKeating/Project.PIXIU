@@ -214,6 +214,8 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
             documents = {
                 "agent-host-build.json": {
                     "schema_version": 1,
+                    "release_commit": AUDIT.git(ROOT, "rev-parse", "HEAD"),
+                    "adaptation_inputs": AUDIT.host_adaptation_inputs(ROOT, policy),
                     "source_commit": agent_policy["source_commit"],
                     "target_os": "kylin-v11",
                     "target_arch": "amd64",
@@ -346,17 +348,31 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
 
             evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
             blockers = AUDIT.validate_evidence(
-                evidence_dir, evidence, policy, expected_arch="amd64"
+                evidence_dir, evidence, policy, expected_arch="amd64", root=ROOT
             )
             self.assertEqual(blockers, [])
             self.assertTrue(all(item.get("valid") for item in evidence.values()))
 
             evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
             blockers = AUDIT.validate_evidence(
-                evidence_dir, evidence, policy, expected_arch="arm64"
+                evidence_dir, evidence, policy, expected_arch="arm64", root=ROOT
             )
             self.assertIn("invalid-host-build-evidence", blockers)
             self.assertIn("invalid-runtime-wheelhouse-evidence", blockers)
+
+            host_document = json.loads(
+                (evidence_dir / "agent-host-build.json").read_text(encoding="utf-8")
+            )
+            first_input = next(iter(host_document["adaptation_inputs"]))
+            host_document["adaptation_inputs"][first_input] = "0" * 64
+            (evidence_dir / "agent-host-build.json").write_text(
+                json.dumps(host_document), encoding="utf-8"
+            )
+            evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
+            blockers = AUDIT.validate_evidence(
+                evidence_dir, evidence, policy, expected_arch="amd64", root=ROOT
+            )
+            self.assertIn("invalid-host-build-evidence", blockers)
 
     def test_claim_only_evidence_is_rejected(self) -> None:
         policy = AUDIT.read_json(

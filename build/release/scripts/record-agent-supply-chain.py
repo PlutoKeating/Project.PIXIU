@@ -9,6 +9,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tarfile
 import zipfile
@@ -34,6 +35,26 @@ def sha256_file(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def release_commit(root: Path) -> str:
+    return subprocess.check_output(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        text=True,
+        stderr=subprocess.DEVNULL,
+    ).strip()
+
+
+def host_adaptation_inputs(root: Path, policy: dict[str, Any]) -> dict[str, str]:
+    inputs: dict[str, str] = {}
+    for relative in policy.get("host_adaptation_inputs", []):
+        if not isinstance(relative, str) or not relative:
+            raise ValueError("host adaptation input path is invalid")
+        path = require_regular(root / relative, "host adaptation input")
+        inputs[relative] = sha256_file(path)
+    if not inputs:
+        raise ValueError("host adaptation inputs are not configured")
+    return inputs
 
 
 def require_regular(path: Path, label: str) -> Path:
@@ -131,7 +152,9 @@ def record_host(args: argparse.Namespace, policy: dict[str, Any]) -> None:
     log = copy_evidence(log, directory, f"host/{args.build_log.name}", "build log")
     document: dict[str, Any] = {
         "schema_version": 1,
+        "release_commit": release_commit(args.root.resolve()),
         "source_commit": policy["components"]["kylin_agent"]["source_commit"],
+        "adaptation_inputs": host_adaptation_inputs(args.root.resolve(), policy),
         **target(args, policy),
         "recorded_at": timestamp(),
         "rebuild_verified": True,
@@ -349,7 +372,14 @@ def main() -> int:
         {"host-build": record_host, "runtime-wheelhouse": record_wheelhouse, "legal": record_legal}[
             args.command
         ](args, policy)
-    except (KeyError, OSError, TypeError, ValueError, zipfile.BadZipFile) as exc:
+    except (
+        KeyError,
+        OSError,
+        TypeError,
+        ValueError,
+        subprocess.CalledProcessError,
+        zipfile.BadZipFile,
+    ) as exc:
         print(f"agent-supply-chain-record: {exc}", file=sys.stderr)
         return 2
     return 0
