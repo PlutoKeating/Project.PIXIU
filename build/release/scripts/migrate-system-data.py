@@ -37,8 +37,15 @@ def _snapshot(path: Path) -> dict[str, object]:
             identity_rows = connection.execute(
                 "SELECT device_id, public_key FROM sync_identity ORDER BY device_id"
             ).fetchall()
+        normalized_identity = [
+            [
+                value.hex() if isinstance(value, bytes) else str(value)
+                for value in row
+            ]
+            for row in identity_rows
+        ]
         identity_digest = hashlib.sha256(
-            json.dumps(identity_rows, ensure_ascii=False, separators=(",", ":")).encode()
+            json.dumps(normalized_identity, ensure_ascii=False, separators=(",", ":")).encode()
         ).hexdigest()
         return {"schema_version": schema, "table_counts": counts, "identity_digest": identity_digest}
     finally:

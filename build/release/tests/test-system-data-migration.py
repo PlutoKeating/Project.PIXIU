@@ -25,7 +25,7 @@ def test_migration_preserves_schema_counts_identity_and_source(tmp_path: Path) -
         "CREATE TABLE knowledge_items(id TEXT PRIMARY KEY, body TEXT);"
         "CREATE TABLE sync_identity(device_id TEXT, public_key TEXT);"
         "INSERT INTO knowledge_items VALUES('knw_test', 'remember me');"
-        "INSERT INTO sync_identity VALUES('dev_test', 'public');"
+        "INSERT INTO sync_identity VALUES('dev_test', X'7075626c6963');"
     )
     connection.commit()
     connection.close()
