@@ -255,7 +255,10 @@ def run_direct_sdk_lifecycle(
     vector = list(embedder_factory().embed(marker))
     if not vector:
         raise RuntimeError("Kylin Embedding SDK returned an empty vector")
-    client = client_factory(app_id="pixiu")
+    # The vector daemon isolates loaded database state by application id.
+    # Reusing the product id here would switch the live backend's SDK session
+    # to this temporary database and invalidate its active collection.
+    client = client_factory(app_id="pixiu-native-acceptance")
     database_dir = Path(tempfile.mkdtemp(prefix="pixiu-vector-acceptance-"))
     database_path = database_dir / "acceptance.db"
     create_attempted = False

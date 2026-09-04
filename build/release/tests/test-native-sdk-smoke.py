@@ -217,7 +217,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
             embedder_factory=Embedder,
             client_factory=client_factory,
         )
-        self.assertEqual(connection, {"app_id": "pixiu"})
+        self.assertEqual(connection, {"app_id": "pixiu-native-acceptance"})
         self.assertEqual(
             calls,
             [
