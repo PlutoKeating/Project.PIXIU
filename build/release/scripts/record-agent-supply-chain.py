@@ -149,12 +149,16 @@ def record_host(args: argparse.Namespace, policy: dict[str, Any]) -> None:
 def wheel_metadata(path: Path, policy: dict[str, Any]) -> tuple[str, str, str]:
     with zipfile.ZipFile(path) as archive:
         authenticated_members: list[str] = []
+        authenticated_member_hashes: dict[str, str] = {}
         for info in archive.infolist():
             if info.is_dir():
                 continue
             with archive.open(info) as stream:
                 if stream_has_authenticated_url(stream):
                     authenticated_members.append(info.filename)
+                    authenticated_member_hashes[info.filename] = hashlib.sha256(
+                        archive.read(info.filename)
+                    ).hexdigest()
         members = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
         if len(members) != 1:
             raise ValueError(f"{path.name}: wheel must contain exactly one METADATA")
@@ -172,11 +176,14 @@ def wheel_metadata(path: Path, policy: dict[str, Any]) -> tuple[str, str, str]:
         exception = policy.get("wheel_authenticated_url_exceptions", {}).get(
             f"{normalized_name}=={version}", {}
         )
-        allowed = (
-            exception.get("sha256") == sha256_file(path)
-            and sorted(exception.get("members", [])) == sorted(authenticated_members)
-            and bool(str(exception.get("reason", "")).strip())
+        member_hashes = exception.get("member_sha256")
+        identity_matches = exception.get("sha256") == sha256_file(path) or (
+            isinstance(member_hashes, dict)
+            and member_hashes == authenticated_member_hashes
         )
+        allowed = identity_matches and (
+            sorted(exception.get("members", [])) == sorted(authenticated_members)
+        ) and bool(str(exception.get("reason", "")).strip())
         if not allowed:
             raise ValueError(
                 f"{path.name}: wheel contains an unapproved authenticated URL location"

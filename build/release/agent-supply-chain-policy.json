@@ -58,6 +58,15 @@
         "httpx/_urls.py"
       ],
       "reason": "Static URL-parser documentation example; not an operational endpoint or credential"
+    },
+    "kylin-agent-runtime==0.9.8": {
+      "members": [
+        "agent/redact.py"
+      ],
+      "member_sha256": {
+        "agent/redact.py": "67888b131759789408f136093b1b033486a632db8cda9eb5abe19cee4adf12df"
+      },
+      "reason": "Protective redaction regular expression and documentation example"
     }
   },
   "evidence": {

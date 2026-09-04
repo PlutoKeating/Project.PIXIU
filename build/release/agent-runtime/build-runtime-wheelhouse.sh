@@ -19,12 +19,42 @@ fi
 case "${action}" in
 prepare)
     rm -rf "${repo_root}/build/release/out/agent-runtime"
-    mkdir -p "${wheelhouse}"
+    mkdir -p "${wheelhouse}" "${output_root}/source"
+    git -C "${runtime_source}" archive --format=tar HEAD | tar -xf - -C "${output_root}/source"
+    python3 - "${output_root}/source" <<'PY'
+from pathlib import Path
+import re
+import shutil
+import sys
+
+root = Path(sys.argv[1])
+for relative in (
+    "optional-skills/research/scrapling",
+    "skills/github/github-auth",
+    "skills/github/github-code-review",
+    "skills/github/github-issues",
+    "skills/github/github-pr-workflow",
+    "skills/github/github-repo-management",
+):
+    candidate = root / relative
+    if not candidate.is_dir():
+        raise SystemExit(f"expected optional Runtime skill is missing: {relative}")
+    shutil.rmtree(candidate)
+pattern = re.compile(rb"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@")
+findings = [
+    path.relative_to(root).as_posix()
+    for path in root.rglob("*")
+    if path.is_file() and pattern.search(path.read_bytes())
+]
+if findings != ["agent/redact.py"]:
+    raise SystemExit(f"unexpected authenticated URL locations after pruning: {findings}")
+PY
     build_venv="${output_root}/build-venv"
     python3 -m venv "${build_venv}"
     "${build_venv}/bin/pip" install --upgrade pip setuptools wheel
-    "${build_venv}/bin/pip" wheel --wheel-dir "${wheelhouse}" \
-        "${runtime_source}" "aiohttp==3.13.3"
+    SOURCE_DATE_EPOCH="$(git -C "${runtime_source}" show -s --format=%ct HEAD)" \
+        "${build_venv}/bin/pip" wheel --wheel-dir "${wheelhouse}" \
+        "${output_root}/source" "aiohttp==3.13.3"
     python3 "${script_dir}/make-wheel-lock.py" "${wheelhouse}" "${lockfile}"
     ;;
 verify-offline)

@@ -12,3 +12,8 @@ wheel 的 METADATA 读取名称/版本并写入逐包 SHA-256 锁文件。
 扫描不会因为第三方 wheel 而整体关闭。当前 `httpx==0.28.1` 的 URL 解析器带有一个
 userinfo 文档示例；策略仅按包版本、wheel 完整 SHA-256 和唯一成员路径放行该静态
 示例。包内容或命中位置发生任何变化都会重新失败，其他 wheel 仍不允许此类 URL。
+
+Runtime 上游随 wheel 安装的若干可选 GitHub/Scrapling skill 会构造 userinfo URL，发行
+构建在固定源码副本中删除这些与赛题无关的可选 skill；submodule 本身不改。唯一保留
+命中是 `agent/redact.py` 的防泄漏正则表达式，记录器以成员路径和成员内容 SHA-256
+精确放行。裁剪后出现任何额外命中都会在构建 wheel 前失败。
