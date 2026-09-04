@@ -62,7 +62,9 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 经同版实测确认的最小 SDK/runtime 包。当前官方 runtime 的 Unix socket 按 UID 隔离，
 历史系统级 `pixiu-backend.service` 使用专用账户，不能直接访问桌面用户会话 socket。
 当前安装结构已改为 systemd user service，并把配置、数据和状态置于当前用户 XDG
-目录；旧数据迁移、升级事务和最终 strict 复验完成前，仍不得声明 H-02/H-03 通过。
+目录；启动器要求 unit 的 MainPID 属于当前 UID，并核对 loopback `/version` 的组件与
+包版本，拒绝端口伪服务。旧数据迁移、升级事务和最终 strict 复验完成前，仍不得声明
+H-02/H-03 通过。
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净 strict amd64 包已再次完成构建、
 安装和失败关闭复验：保留 portable 配置时服务健康，切换 strict 后稳定暴露上述用户
 会话边界，恢复配置后服务、配置和数据库摘要保持。该切片不代表已交付 user service，

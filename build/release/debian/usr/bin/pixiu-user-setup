@@ -57,4 +57,61 @@ if [ "${MODE}" = "--start" ]; then
     }
     systemctl --user daemon-reload
     systemctl --user start pixiu-backend.service
+
+    # A process from another UID (or an unrelated service on the same port)
+    # must not satisfy startup merely by returning HTTP. Require the user
+    # manager's MainPID to belong to this UID, then verify PIXIU identity and
+    # package version over loopback.
+    EXPECTED_VERSION=$(tr -d '\r\n' </usr/share/pixiu/VERSION)
+    SERVICE_PID=$(systemctl --user show --property MainPID --value pixiu-backend.service)
+    case "${SERVICE_PID}" in
+        ''|0|*[!0-9]*)
+            echo "pixiu-user-setup: user service has no valid main process" >&2
+            exit 4
+            ;;
+    esac
+    PROCESS_UID=$(awk '/^Uid:/{print $2; exit}' "/proc/${SERVICE_PID}/status" 2>/dev/null || true)
+    [ "${PROCESS_UID}" = "$(id -u)" ] || {
+        echo "pixiu-user-setup: user service process identity mismatch" >&2
+        exit 4
+    }
+
+    set -a
+    . "${CONFIG}"
+    set +a
+    [ "${PIXIU_API_HOST:-127.0.0.1}" = "127.0.0.1" ] || {
+        echo "pixiu-user-setup: packaged desktop service must use loopback" >&2
+        exit 4
+    }
+    VERSION_URL="http://127.0.0.1:${PIXIU_API_PORT:-8765}/version"
+    VERSION_JSON="${STATE_DIR}/startup-version.json"
+    READY=0
+    ATTEMPT=0
+    while [ "${ATTEMPT}" -lt 50 ]; do
+        if curl --silent --show-error --fail --max-time 1 \
+                --output "${VERSION_JSON}" "${VERSION_URL}" 2>/dev/null; then
+            if /usr/bin/python3 - "${VERSION_JSON}" "${EXPECTED_VERSION}" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as handle:
+    payload = json.load(handle)
+if payload.get("component") != "pixiu-memory-backend":
+    raise SystemExit(1)
+if payload.get("product_version") != sys.argv[2]:
+    raise SystemExit(1)
+PY
+            then
+                READY=1
+                break
+            fi
+        fi
+        ATTEMPT=$((ATTEMPT + 1))
+        sleep 0.1
+    done
+    rm -f "${VERSION_JSON}"
+    [ "${READY}" = "1" ] || {
+        echo "pixiu-user-setup: backend identity/version handshake failed" >&2
+        exit 4
+    }
 fi
