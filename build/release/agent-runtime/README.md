@@ -17,3 +17,6 @@ Runtime 上游随 wheel 安装的若干可选 GitHub/Scrapling skill 会构造 u
 构建在固定源码副本中删除这些与赛题无关的可选 skill；submodule 本身不改。唯一保留
 命中是 `agent/redact.py` 的防泄漏正则表达式，记录器以成员路径和成员内容 SHA-256
 精确放行。裁剪后出现任何额外命中都会在构建 wheel 前失败。
+
+预构建扫描覆盖实际打包源码与数据；上游的 `tests/`、`website/`、`skills-old/` 不进入
+wheel，作为只读参考事实保留但不混入发行输入。

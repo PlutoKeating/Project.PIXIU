@@ -44,7 +44,9 @@ pattern = re.compile(rb"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@")
 findings = [
     path.relative_to(root).as_posix()
     for path in root.rglob("*")
-    if path.is_file() and pattern.search(path.read_bytes())
+    if path.is_file()
+    and path.relative_to(root).parts[0] not in {"tests", "website", "skills-old"}
+    and pattern.search(path.read_bytes())
 ]
 if findings != ["agent/redact.py"]:
     raise SystemExit(f"unexpected authenticated URL locations after pruning: {findings}")
