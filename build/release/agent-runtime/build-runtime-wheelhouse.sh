@@ -8,6 +8,7 @@ output_root="${repo_root}/build/release/out/agent-runtime"
 wheelhouse="${output_root}/wheelhouse"
 lockfile="${output_root}/runtime-cp312.lock"
 generated_lock="${output_root}/runtime-cp312.generated.lock"
+dependency_lock="${output_root}/runtime-cp312.dependencies.lock"
 committed_lock="${script_dir}/runtime-cp312.lock"
 build_tools_lock="${script_dir}/build-tools-cp312.lock"
 action="${1:-prepare}"
@@ -85,16 +86,17 @@ PY
     SOURCE_DATE_EPOCH="$(git -C "${runtime_source}" show -s --format=%ct HEAD)" \
         "${build_venv}/bin/pip" wheel --no-deps --no-build-isolation \
         --wheel-dir "${wheelhouse}" "${output_root}/source"
+    grep -v '^kylin-agent-runtime==' "${committed_lock}" > "${dependency_lock}"
     "${build_venv}/bin/pip" download --only-binary=:all: \
         --dest "${wheelhouse}" --find-links "${wheelhouse}" \
-        --require-hashes -r "${committed_lock}"
+        --require-hashes -r "${dependency_lock}"
     python3 "${script_dir}/make-wheel-lock.py" "${wheelhouse}" "${generated_lock}"
     cmp "${committed_lock}" "${generated_lock}" || {
         echo "Built Runtime wheelhouse differs from the committed lock" >&2
         exit 2
     }
     cp "${committed_lock}" "${lockfile}"
-    rm -f "${generated_lock}"
+    rm -f "${generated_lock}" "${dependency_lock}"
     ;;
 verify-offline)
     [[ -d "${wheelhouse}" && -s "${lockfile}" ]] || {
