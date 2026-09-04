@@ -72,6 +72,18 @@ def tool_choice_policy(value: Any) -> tuple[int, str]:
     return 0, ""
 
 
+def initialize_model_session(lib: Any, session: ctypes.c_void_p, model: str) -> tuple[ctypes.c_void_p, int]:
+    """Apply model settings before session initialization, as required by Kylin GenAI."""
+
+    config = ctypes.c_void_p(lib.chat_model_config_create())
+    lib.chat_model_config_set_deploy_type(config, PUBLIC_CLOUD)
+    lib.chat_model_config_set_stream(config, True)
+    if model:
+        lib.chat_model_config_set_name(config, model.encode())
+    lib.genai_text_set_model_config(session, config)
+    return config, int(lib.genai_text_init_session(session))
+
+
 def openai_tool_calls(payload: str) -> list[dict[str, Any]]:
     """Translate the SDK tool callback to OpenAI function-call objects."""
 
@@ -261,16 +273,10 @@ class NativeConversation:
         if not self.session.value:
             raise RuntimeError("Kylin GenAI could not create a text session")
         sdk.lib.genai_text_enable_internal_event_loop(self.session, True)
-        error = sdk.lib.genai_text_init_session(self.session)
+        self.config, error = initialize_model_session(sdk.lib, self.session, self.model)
         if error:
             self.close()
             raise RuntimeError(f"Kylin GenAI session initialization failed ({error})")
-        self.config = ctypes.c_void_p(sdk.lib.chat_model_config_create())
-        sdk.lib.chat_model_config_set_deploy_type(self.config, PUBLIC_CLOUD)
-        sdk.lib.chat_model_config_set_stream(self.config, True)
-        if self.model:
-            sdk.lib.chat_model_config_set_name(self.config, self.model.encode())
-        sdk.lib.genai_text_set_model_config(self.session, self.config)
         sdk.lib.genai_text_result_set_callback(self.session, self._result_callback, None)
         sdk.lib.genai_text_set_tool_handler(self.session, self._tool_callback, None)
         for tool in tools:

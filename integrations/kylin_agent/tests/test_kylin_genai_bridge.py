@@ -1,13 +1,53 @@
 import json
+import ctypes
 
 from integrations.kylin_agent.kylin_genai_bridge import (
     ModelInfo,
     extract_tool_results,
+    initialize_model_session,
     openai_tool_calls,
     sdk_tool_schema,
     select_cloud_models,
     tool_choice_policy,
 )
+
+
+def test_model_configuration_precedes_sdk_session_initialization():
+    calls = []
+
+    class FakeLibrary:
+        def chat_model_config_create(self):
+            calls.append("create_config")
+            return 42
+
+        def chat_model_config_set_deploy_type(self, _config, _deploy_type):
+            calls.append("set_deploy_type")
+
+        def chat_model_config_set_stream(self, _config, _stream):
+            calls.append("set_stream")
+
+        def chat_model_config_set_name(self, _config, _name):
+            calls.append("set_name")
+
+        def genai_text_set_model_config(self, _session, _config):
+            calls.append("set_model_config")
+
+        def genai_text_init_session(self, _session):
+            calls.append("init_session")
+            return 0
+
+    config, error = initialize_model_session(FakeLibrary(), ctypes.c_void_p(7), "qwen")
+
+    assert config.value == 42
+    assert error == 0
+    assert calls == [
+        "create_config",
+        "set_deploy_type",
+        "set_stream",
+        "set_name",
+        "set_model_config",
+        "init_session",
+    ]
 
 
 def test_only_tool_capable_public_cloud_models_are_agent_candidates():
