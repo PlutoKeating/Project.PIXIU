@@ -167,8 +167,10 @@ agent-runtime ── MemoryProvider adapter ── PIXIU REST API
 
 适配器归属 `integrations/kylin_agent/`（Module E），只依赖稳定的 HTTP/API 契约，
 不直接导入 `backend/engine` 或 `backend/foundation` 私有实现。现有 `frontend/`
-保留为记忆诊断、设备管理和独立演示控制台，不并入 Agent 循环；宿主 UI 的最小
-入口调整只有在现有扩展点不足且新 ADR 获批后才能进行。
+保留为记忆诊断、设备管理和独立演示控制台，不并入 Agent 循环。宿主表现层依据已批准
+的 [ADR-0004](decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)
+维护可重放下游补丁，统一双主题令牌、品牌层级和空状态；补丁不改变 Agent 循环，
+也不得直接导入 PIXIU 后端私有实现。
 
 ## 6. 实施优先级
 

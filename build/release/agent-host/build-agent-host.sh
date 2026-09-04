@@ -26,6 +26,8 @@ mkdir -p "${output_dir}/source" "${output_dir}/build" "${output_dir}/install"
 git -C "${source_dir}" archive --format=tar HEAD | tar -xf - -C "${output_dir}/source"
 patch -d "${output_dir}/source" -p1 --forward --batch \
     < "${script_dir}/patches/0001-build-coherent-offline-host.patch"
+patch -d "${output_dir}/source" -p1 --forward --batch \
+    < "${script_dir}/patches/0002-pixiu-premium-accessible-ui.patch"
 install -D -m 0644 "${script_dir}/compat/pixiu_host_compat.cpp" \
     "${output_dir}/source/src/services/pixiu_host_compat.cpp"
 # The public upstream tree contains one credential-bearing clone URL and two

@@ -17,6 +17,10 @@ PIXIU 面向“OS Agent 记忆能力优化与应用”，解决记忆散落在�
 记忆后端由 engine 与 foundation 组成，Module A 是独立记忆控制台。详细边界见
 `../decisions/0001-use-openkylin-agent-host.md` 和 `../ARCHITECTURE.md`。
 
+宿主表现层不直接修改官方 submodule：ADR-0004 批准的第二顺序补丁只作用于固定上游
+的隔离构建副本，以双主题语义令牌替换页面硬编码颜色，重构 PIXIU 产品层级、会话、
+云端模型、消息与输入区域，并用 4.5:1 对比度门和 V11 视觉矩阵约束发布。
+
 ## 核心技术
 
 - 多源 evidence：对话、工具结果、用户行为、手动配置和 OCR；保留来源与质量。

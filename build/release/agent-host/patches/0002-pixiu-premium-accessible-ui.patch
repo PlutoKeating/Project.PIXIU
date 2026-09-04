@@ -1,0 +1,747 @@
+diff --git a/src/ui/chatwidget.cpp b/src/ui/chatwidget.cpp
+index 496e400..18f621a 100644
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -42,23 +42,30 @@ ChatWidget::~ChatWidget() = default;
+
+ void ChatWidget::setupUi()
+ {
++    setObjectName(QStringLiteral("chatWorkspace"));
+     QVBoxLayout *root = new QVBoxLayout(this);
+     root->setContentsMargins(0, 0, 0, 0);
+     root->setSpacing(0);
+
+     QWidget *header = new QWidget(this);
+-    header->setFixedHeight(48);
+-    header->setStyleSheet(QStringLiteral("border-bottom: 1px solid #dfe3ea; background: #ffffff;"));
++    header->setFixedHeight(64);
++    header->setObjectName(QStringLiteral("chatHeader"));
+     QHBoxLayout *headerLayout = new QHBoxLayout(header);
+-    headerLayout->setContentsMargins(18, 0, 18, 0);
+-    m_titleLabel = new QLabel(QStringLiteral("No session selected"), header);
+-    m_titleLabel->setStyleSheet(QStringLiteral("font-weight: 600; color: #20242a;"));
++    headerLayout->setContentsMargins(24, 0, 24, 0);
++    headerLayout->setSpacing(10);
++    m_titleLabel = new QLabel(QStringLiteral("开始新对话"), header);
++    m_titleLabel->setObjectName(QStringLiteral("conversationTitle"));
+     headerLayout->addWidget(m_titleLabel);
+     headerLayout->addStretch();
+
+     m_modelCombo = new QComboBox(header);
+-    m_modelCombo->setMinimumWidth(220);
+-    m_modelCombo->setToolTip(QStringLiteral("Model"));
++    QLabel *modelLabel = new QLabel(QStringLiteral("云端模型"), header);
++    modelLabel->setObjectName(QStringLiteral("mutedLabel"));
++    headerLayout->addWidget(modelLabel);
++    m_modelCombo->setMinimumWidth(230);
++    m_modelCombo->setMinimumHeight(36);
++    m_modelCombo->setObjectName(QStringLiteral("modelSelector"));
++    m_modelCombo->setToolTip(QStringLiteral("选择云端模型"));
+     connect(m_modelCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
+         if (index >= 0) {
+             ConfigService::instance().setSelectedModelId(m_modelCombo->itemData(index).toString());
+@@ -72,30 +79,34 @@ void ChatWidget::setupUi()
+     m_messagesArea->setFrameShape(QFrame::NoFrame);
+     m_messagesContainer = new QWidget(m_messagesArea);
+     m_messagesLayout = new QVBoxLayout(m_messagesContainer);
+-    m_messagesLayout->setContentsMargins(24, 24, 24, 24);
+-    m_messagesLayout->setSpacing(12);
++    m_messagesContainer->setObjectName(QStringLiteral("conversationCanvas"));
++    m_messagesLayout->setContentsMargins(40, 34, 40, 34);
++    m_messagesLayout->setSpacing(16);
+     m_messagesLayout->addStretch();
+     m_messagesArea->setWidget(m_messagesContainer);
+     root->addWidget(m_messagesArea, 1);
+
+     QWidget *inputBar = new QWidget(this);
+-    inputBar->setStyleSheet(QStringLiteral("border-top: 1px solid #dfe3ea; background: #ffffff;"));
++    inputBar->setObjectName(QStringLiteral("composerArea"));
+     QHBoxLayout *inputLayout = new QHBoxLayout(inputBar);
+-    inputLayout->setContentsMargins(16, 12, 16, 12);
+-    inputLayout->setSpacing(10);
++    inputLayout->setContentsMargins(28, 18, 28, 22);
++    inputLayout->setSpacing(12);
+
+     m_inputEdit = new QTextEdit(inputBar);
+-    m_inputEdit->setFixedHeight(72);
+-    m_inputEdit->setPlaceholderText(QStringLiteral("Type a message..."));
++    m_inputEdit->setFixedHeight(82);
++    m_inputEdit->setObjectName(QStringLiteral("messageComposer"));
++    m_inputEdit->setPlaceholderText(QStringLiteral("输入任务，让 Agent 使用工具与跨设备记忆协助你…"));
+     inputLayout->addWidget(m_inputEdit, 1);
+
+-    m_sendButton = new QPushButton(QStringLiteral("Send"), inputBar);
+-    m_sendButton->setFixedSize(88, 40);
++    m_sendButton = new QPushButton(QStringLiteral("发送"), inputBar);
++    m_sendButton->setObjectName(QStringLiteral("sendButton"));
++    m_sendButton->setFixedSize(92, 44);
+     connect(m_sendButton, &QPushButton::clicked, this, &ChatWidget::sendMessage);
+     inputLayout->addWidget(m_sendButton);
+
+-    m_stopButton = new QPushButton(QStringLiteral("Stop"), inputBar);
+-    m_stopButton->setFixedSize(88, 40);
++    m_stopButton = new QPushButton(QStringLiteral("停止"), inputBar);
++    m_stopButton->setObjectName(QStringLiteral("secondaryButton"));
++    m_stopButton->setFixedSize(76, 44);
+     m_stopButton->setEnabled(false);
+     connect(m_stopButton, &QPushButton::clicked, this, &ChatWidget::cancelGeneration);
+     inputLayout->addWidget(m_stopButton);
+@@ -151,7 +162,7 @@ QString ChatWidget::selectedModelName() const
+ void ChatWidget::loadSession(const QString &sessionId)
+ {
+     m_currentSessionId = sessionId;
+-    m_titleLabel->setText(QStringLiteral("Session %1").arg(sessionId.left(8)));
++    m_titleLabel->setText(QStringLiteral("会话 %1").arg(sessionId.left(8)));
+     updateRequestButtons();
+     refreshMessages();
+ }
+@@ -159,8 +170,13 @@ void ChatWidget::loadSession(const QString &sessionId)
+ void ChatWidget::showStatus(const QString &text)
+ {
+     clearMessages();
+-    m_titleLabel->setText(QStringLiteral("Kylin-Agent"));
+-    addMessageBubble(QStringLiteral("system"), text);
++    m_titleLabel->setText(QStringLiteral("开始新对话"));
++    const QString welcome = text.trimmed().isEmpty()
++        ? QStringLiteral("你好，我是 PIXIU\n\n在这里发起任务，我可以通过云端模型调用系统工具，"
++                         "并在已授权设备之间检索与同步你的长期记忆。\n\n"
++                         "点击左侧“新建会话”开始。")
++        : text;
++    addMessageBubble(QStringLiteral("system"), welcome);
+ }
+
+ void ChatWidget::clearMessages()
+@@ -180,7 +196,8 @@ void ChatWidget::refreshMessages()
+     clearMessages();
+     const QVector<SessionMessage> messages = SessionService::instance().getSessionMessages(m_currentSessionId);
+     if (messages.isEmpty()) {
+-        addMessageBubble(QStringLiteral("system"), QStringLiteral("This session has no messages yet."));
++        addMessageBubble(QStringLiteral("system"),
++                         QStringLiteral("这是一个新会话\n\n描述你的目标，我会自主规划并在需要时申请工具权限。"));
+         return;
+     }
+
+@@ -197,25 +214,19 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+     bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
+     bubble->setContextMenuPolicy(Qt::CustomContextMenu);
+     bubble->setContentsMargins(12, 10, 12, 10);
++    bubble->setMaximumWidth(760);
++    bubble->setMinimumWidth(role == QStringLiteral("system") ? 420 : 180);
+
+     const bool isUser = role == QStringLiteral("user");
+-    const QString background = isUser ? QStringLiteral("#dff6e8") : QStringLiteral("#eef3fb");
+-    bubble->setStyleSheet(QStringLiteral(
+-        "QLabel {"
+-        "  background: %1;"
+-        "  border: 1px solid #d7dde7;"
+-        "  border-radius: 6px;"
+-        "  color: #20242a;"
+-        "}"
+-    ).arg(background));
++    bubble->setProperty("messageRole", role);
+     connect(bubble, &QLabel::customContextMenuRequested, this, [this, bubble](const QPoint &pos) {
+         QMenu menu(bubble);
+-        QAction *copyAction = menu.addAction(QStringLiteral("Copy"));
++        QAction *copyAction = menu.addAction(QStringLiteral("复制"));
+         copyAction->setEnabled(!bubble->text().isEmpty());
+         QAction *selected = menu.exec(bubble->mapToGlobal(pos));
+         if (selected == copyAction) {
+             QApplication::clipboard()->setText(bubble->text());
+-            QToolTip::showText(bubble->mapToGlobal(pos), QStringLiteral("Copied"));
++            QToolTip::showText(bubble->mapToGlobal(pos), QStringLiteral("已复制"));
+         }
+     });
+
+@@ -275,7 +286,7 @@ void ChatWidget::sendMessage()
+             showStatus(QStringLiteral("Failed to create a local session."));
+             return;
+         }
+-        m_titleLabel->setText(QStringLiteral("Session %1").arg(m_currentSessionId.left(8)));
++        m_titleLabel->setText(QStringLiteral("会话 %1").arg(m_currentSessionId.left(8)));
+     }
+
+     if (!SessionService::instance().addMessage(m_currentSessionId, QStringLiteral("user"), text)) {
+diff --git a/src/ui/mainwindow.cpp b/src/ui/mainwindow.cpp
+index 27a450b..8a90b39 100644
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -31,10 +31,12 @@ MainWindow::~MainWindow() = default;
+
+ void MainWindow::setupUi()
+ {
+-    setWindowTitle(QStringLiteral("KylinAgent"));
+-    setMinimumSize(900, 640);
++    setWindowTitle(QStringLiteral("PIXIU · KylinAgent"));
++    setMinimumSize(760, 560);
++    setObjectName(QStringLiteral("mainWindow"));
+
+     QWidget *central = new QWidget(this);
++    central->setObjectName(QStringLiteral("appSurface"));
+     setCentralWidget(central);
+
+     QVBoxLayout *rootLayout = new QVBoxLayout(central);
+@@ -42,37 +44,47 @@ void MainWindow::setupUi()
+     rootLayout->setSpacing(0);
+
+     QWidget *titleBar = new QWidget(central);
+-    titleBar->setFixedHeight(40);
++    titleBar->setFixedHeight(64);
+     titleBar->setObjectName(QStringLiteral("titleBar"));
+-    titleBar->setStyleSheet(QStringLiteral(
+-        "#titleBar {"
+-        "  background: #f7f8fa;"
+-        "  border-bottom: 1px solid #dfe3ea;"
+-        "}"
+-    ));
+
+     QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
+-    titleLayout->setContentsMargins(10, 0, 8, 0);
+-    titleLayout->setSpacing(8);
++    titleLayout->setContentsMargins(18, 0, 14, 0);
++    titleLayout->setSpacing(10);
+
+     QPushButton *sidebarButton = createTitleButton(QStringLiteral("☰"), QStringLiteral("Toggle sidebar"));
+     connect(sidebarButton, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
+     titleLayout->addWidget(sidebarButton);
+
+-    QLabel *title = new QLabel(QStringLiteral("KylinAgent"), titleBar);
+-    title->setStyleSheet(QStringLiteral("font-weight: 600; color: #20242a;"));
+-    titleLayout->addWidget(title);
++    QLabel *brandMark = new QLabel(QStringLiteral("P"), titleBar);
++    brandMark->setObjectName(QStringLiteral("brandMark"));
++    brandMark->setAlignment(Qt::AlignCenter);
++    brandMark->setFixedSize(34, 34);
++    titleLayout->addWidget(brandMark);
++
++    QVBoxLayout *brandLayout = new QVBoxLayout;
++    brandLayout->setContentsMargins(0, 0, 0, 0);
++    brandLayout->setSpacing(0);
++    QLabel *title = new QLabel(QStringLiteral("PIXIU"), titleBar);
++    title->setObjectName(QStringLiteral("brandTitle"));
++    QLabel *subtitle = new QLabel(QStringLiteral("KylinAgent · 分布式记忆工作台"), titleBar);
++    subtitle->setObjectName(QStringLiteral("brandSubtitle"));
++    brandLayout->addWidget(title);
++    brandLayout->addWidget(subtitle);
++    titleLayout->addLayout(brandLayout);
+     titleLayout->addStretch();
+
+-    QPushButton *settingsButton = createTitleButton(QStringLiteral("⚙"), QStringLiteral("Settings"));
++    QPushButton *settingsButton = createTitleButton(QStringLiteral("设置"), QStringLiteral("打开设置"));
++    settingsButton->setObjectName(QStringLiteral("titleTextButton"));
++    settingsButton->setFixedWidth(64);
+     connect(settingsButton, &QPushButton::clicked, this, &MainWindow::openSettings);
+     titleLayout->addWidget(settingsButton);
+
+-    QPushButton *minimizeButton = createTitleButton(QStringLiteral("_"), QStringLiteral("Minimize"));
++    QPushButton *minimizeButton = createTitleButton(QStringLiteral("—"), QStringLiteral("最小化"));
+     connect(minimizeButton, &QPushButton::clicked, this, &QMainWindow::showMinimized);
+     titleLayout->addWidget(minimizeButton);
+
+-    QPushButton *closeButton = createTitleButton(QStringLiteral("x"), QStringLiteral("Close"));
++    QPushButton *closeButton = createTitleButton(QStringLiteral("×"), QStringLiteral("关闭"));
++    closeButton->setProperty("danger", true);
+     connect(closeButton, &QPushButton::clicked, this, &QMainWindow::close);
+     titleLayout->addWidget(closeButton);
+
+@@ -82,7 +94,7 @@ void MainWindow::setupUi()
+     splitter->setChildrenCollapsible(false);
+
+     m_sidebar = new Sidebar(splitter);
+-    m_sidebar->setMinimumWidth(220);
++    m_sidebar->setMinimumWidth(260);
+     m_sidebar->setMaximumWidth(360);
+     connect(m_sidebar, &Sidebar::newSessionRequested, this, &MainWindow::createNewSession);
+     connect(m_sidebar, &Sidebar::searchChanged, this, &MainWindow::searchSessions);
+@@ -94,35 +106,28 @@ void MainWindow::setupUi()
+     m_chatWidget = new ChatWidget(splitter);
+     connect(m_chatWidget, &ChatWidget::messageSent, this, &MainWindow::refreshSessionSummary);
+     splitter->addWidget(m_chatWidget);
+-    splitter->setSizes({260, 940});
++    splitter->setSizes({288, 912});
++    splitter->setHandleWidth(1);
+
+     rootLayout->addWidget(splitter, 1);
+
+     connect(&ApiService::instance(), &ApiService::connectedChanged,
+             this, &MainWindow::showBackendConnectionState);
+     connect(&ApiService::instance(), &ApiService::backendChanged, this, [this]() {
+-        statusBar()->showMessage(QStringLiteral("agent-rt backend: %1").arg(ApiService::instance().networkApiUrl()), 5000);
++        statusBar()->showMessage(QStringLiteral("Agent Runtime · 服务地址已更新"), 5000);
+     });
+-    statusBar()->showMessage(QStringLiteral("agent-rt backend: %1").arg(ApiService::instance().networkApiUrl()));
++    statusBar()->setObjectName(QStringLiteral("connectionBar"));
++    statusBar()->showMessage(QStringLiteral("Agent Runtime · 正在连接"));
+     ApiService::instance().checkConnection();
+ }
+
+ QPushButton *MainWindow::createTitleButton(const QString &text, const QString &toolTip)
+ {
+     QPushButton *button = new QPushButton(text, this);
+-    button->setFixedSize(32, 28);
++    button->setFixedSize(36, 36);
+     button->setToolTip(toolTip);
+     button->setCursor(Qt::PointingHandCursor);
+-    button->setStyleSheet(QStringLiteral(
+-        "QPushButton {"
+-        "  background: transparent;"
+-        "  border: 0;"
+-        "  border-radius: 4px;"
+-        "}"
+-        "QPushButton:hover {"
+-        "  background: #e3e8ef;"
+-        "}"
+-    ));
++    button->setObjectName(QStringLiteral("titleIconButton"));
+     return button;
+ }
+
+@@ -144,9 +149,8 @@ void MainWindow::openSettings()
+ void MainWindow::showBackendConnectionState(bool connected)
+ {
+     statusBar()->showMessage(
+-        QStringLiteral("agent-rt %1: %2")
+-            .arg(connected ? QStringLiteral("connected") : QStringLiteral("unavailable"),
+-                 ApiService::instance().networkApiUrl()),
++        connected ? QStringLiteral("Agent Runtime · 已连接")
++                  : QStringLiteral("Agent Runtime · 暂不可用，请检查云端模型配置"),
+         5000
+     );
+ }
+@@ -246,8 +250,7 @@ void MainWindow::refreshSessionSummary()
+     }
+
+     if (sessions.isEmpty()) {
+-        m_chatWidget->showStatus(QStringLiteral("No local sessions yet.\nDatabase: %1")
+-            .arg(DatabaseService::instance().databasePath()));
++        m_chatWidget->showStatus(QString());
+     } else if (m_chatWidget->currentSessionId().isEmpty() ||
+                SessionService::instance().getSession(m_chatWidget->currentSessionId()).id().isEmpty()) {
+         loadSession(sessions.first().id());
+diff --git a/src/ui/sessionlistwidget.cpp b/src/ui/sessionlistwidget.cpp
+index cff9044..8964e19 100644
+--- a/src/ui/sessionlistwidget.cpp
++++ b/src/ui/sessionlistwidget.cpp
+@@ -10,25 +10,8 @@ SessionListWidget::SessionListWidget(QWidget *parent)
+ {
+     setAlternatingRowColors(false);
+     setSelectionMode(QAbstractItemView::SingleSelection);
+-    setSpacing(2);
+-    setStyleSheet(QStringLiteral(
+-        "QListWidget {"
+-        "  background: transparent;"
+-        "  border: 0;"
+-        "  outline: 0;"
+-        "}"
+-        "QListWidget::item {"
+-        "  padding: 8px 10px;"
+-        "  border-radius: 5px;"
+-        "}"
+-        "QListWidget::item:selected {"
+-        "  background: #dfeeff;"
+-        "  color: #175fa8;"
+-        "}"
+-        "QListWidget::item:hover {"
+-        "  background: #e8eef6;"
+-        "}"
+-    ));
++    setSpacing(4);
++    setObjectName(QStringLiteral("sessionList"));
+
+     connect(this, &QListWidget::itemClicked, this, [this](QListWidgetItem *item) {
+         if (item) {
+@@ -81,8 +64,8 @@ void SessionListWidget::contextMenuEvent(QContextMenuEvent *event)
+
+     const QString sessionId = entry->data(Qt::UserRole).toString();
+     QMenu menu(this);
+-    QAction *renameAction = menu.addAction(QStringLiteral("Rename"));
+-    QAction *deleteAction = menu.addAction(QStringLiteral("Delete"));
++    QAction *renameAction = menu.addAction(QStringLiteral("重命名"));
++    QAction *deleteAction = menu.addAction(QStringLiteral("删除"));
+
+     QAction *selected = menu.exec(event->globalPos());
+     if (selected == renameAction) {
+@@ -98,5 +81,5 @@ QString SessionListWidget::fallbackTitle(const QString &title, const QString &id
+         return title.trimmed();
+     }
+
+-    return id.isEmpty() ? QStringLiteral("New Session") : id.left(8);
++    return id.isEmpty() ? QStringLiteral("新会话") : QStringLiteral("会话 %1").arg(id.left(8));
+ }
+diff --git a/src/ui/sidebar.cpp b/src/ui/sidebar.cpp
+index fdacbf8..ba3e406 100644
+--- a/src/ui/sidebar.cpp
++++ b/src/ui/sidebar.cpp
+@@ -22,33 +22,31 @@ Sidebar::~Sidebar() = default;
+ void Sidebar::setupUi()
+ {
+     setObjectName(QStringLiteral("sidebar"));
+-    setStyleSheet(QStringLiteral(
+-        "#sidebar {"
+-        "  background: #eef2f6;"
+-        "  border-right: 1px solid #d8dde6;"
+-        "}"
+-    ));
+
+     QVBoxLayout *layout = new QVBoxLayout(this);
+-    layout->setContentsMargins(16, 16, 16, 16);
+-    layout->setSpacing(10);
++    layout->setContentsMargins(18, 22, 18, 18);
++    layout->setSpacing(12);
+
+-    QLabel *title = new QLabel(QStringLiteral("Sessions"), this);
+-    title->setStyleSheet(QStringLiteral("font-weight: 600; color: #20242a;"));
++    QLabel *title = new QLabel(QStringLiteral("会话与记忆"), this);
++    title->setObjectName(QStringLiteral("sectionTitle"));
+     layout->addWidget(title);
+
+-    m_newSessionButton = new QPushButton(QStringLiteral("New Session"), this);
++    m_newSessionButton = new QPushButton(QStringLiteral("＋  新建会话"), this);
++    m_newSessionButton->setObjectName(QStringLiteral("primaryButton"));
++    m_newSessionButton->setMinimumHeight(42);
+     m_newSessionButton->setCursor(Qt::PointingHandCursor);
+     connect(m_newSessionButton, &QPushButton::clicked, this, &Sidebar::newSessionRequested);
+     layout->addWidget(m_newSessionButton);
+
+     m_searchEdit = new QLineEdit(this);
+-    m_searchEdit->setPlaceholderText(QStringLiteral("Search sessions"));
++    m_searchEdit->setPlaceholderText(QStringLiteral("搜索会话"));
++    m_searchEdit->setObjectName(QStringLiteral("sessionSearch"));
++    m_searchEdit->setMinimumHeight(38);
+     connect(m_searchEdit, &QLineEdit::textChanged, this, &Sidebar::searchChanged);
+     layout->addWidget(m_searchEdit);
+
+     m_sessionCountLabel = new QLabel(this);
+-    m_sessionCountLabel->setStyleSheet(QStringLiteral("color: #5c6675;"));
++    m_sessionCountLabel->setObjectName(QStringLiteral("mutedLabel"));
+     layout->addWidget(m_sessionCountLabel);
+
+     m_sessionList = new SessionListWidget(this);
+@@ -66,7 +64,9 @@ void Sidebar::setSessionCount(int count)
+         return;
+     }
+
+-    m_sessionCountLabel->setText(QStringLiteral("%1 local sessions").arg(count));
++    m_sessionCountLabel->setText(count == 0
++        ? QStringLiteral("暂无会话")
++        : QStringLiteral("%1 个本地会话").arg(count));
+ }
+
+ void Sidebar::setSessions(const QVector<SessionSummary> &sessions)
+diff --git a/src/utils/thememanager.cpp b/src/utils/thememanager.cpp
+index 449efbd..8e7d5e3 100644
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -273,135 +273,201 @@ void ThemeManager::apply()
+
+     QPalette palette;
+     if (m_dark) {
+-        palette.setColor(QPalette::Window, QColor(QStringLiteral("#17191d")));
+-        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#eef1f5")));
+-        palette.setColor(QPalette::Base, QColor(QStringLiteral("#202329")));
+-        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#292d34")));
+-        palette.setColor(QPalette::ToolTipBase, QColor(QStringLiteral("#2f3440")));
+-        palette.setColor(QPalette::ToolTipText, QColor(QStringLiteral("#eef1f5")));
+-        palette.setColor(QPalette::Text, QColor(QStringLiteral("#eef1f5")));
+-        palette.setColor(QPalette::Button, QColor(QStringLiteral("#2a2e36")));
+-        palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#eef1f5")));
++        palette.setColor(QPalette::Window, QColor(QStringLiteral("#0b1117")));
++        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#edf5f7")));
++        palette.setColor(QPalette::Base, QColor(QStringLiteral("#111a23")));
++        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#17232e")));
++        palette.setColor(QPalette::ToolTipBase, QColor(QStringLiteral("#17232e")));
++        palette.setColor(QPalette::ToolTipText, QColor(QStringLiteral("#edf5f7")));
++        palette.setColor(QPalette::Text, QColor(QStringLiteral("#edf5f7")));
++        palette.setColor(QPalette::Button, QColor(QStringLiteral("#17232e")));
++        palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#edf5f7")));
+         palette.setColor(QPalette::BrightText, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#4a90d9")));
++        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#167d80")));
+         palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::Link, QColor(QStringLiteral("#8ab4f8")));
+-        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#3a3f48")));
+-        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#444a54")));
+-        palette.setColor(QPalette::Dark, QColor(QStringLiteral("#101216")));
+-        palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#8a8a8a")));
++        palette.setColor(QPalette::Link, QColor(QStringLiteral("#62e4d6")));
++        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#283946")));
++        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#20303c")));
++        palette.setColor(QPalette::Dark, QColor(QStringLiteral("#070b10")));
++        palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#93a8b3")));
++        palette.setColor(QPalette::Disabled, QPalette::Text, QColor(QStringLiteral("#71848f")));
++        palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(QStringLiteral("#71848f")));
+     } else {
+         palette = m_app->style()->standardPalette();
+-        palette.setColor(QPalette::Window, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#202124")));
++        palette.setColor(QPalette::Window, QColor(QStringLiteral("#f4f7fb")));
++        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#132238")));
+         palette.setColor(QPalette::Base, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#f7f8fa")));
++        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#f8fafc")));
+         palette.setColor(QPalette::ToolTipBase, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::ToolTipText, QColor(QStringLiteral("#202124")));
+-        palette.setColor(QPalette::Text, QColor(QStringLiteral("#202124")));
+-        palette.setColor(QPalette::Button, QColor(QStringLiteral("#f0f0f0")));
+-        palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#202124")));
+-        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#cfe8ff")));
+-        palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#202124")));
+-        palette.setColor(QPalette::Link, QColor(QStringLiteral("#1565c0")));
+-        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#d9dce2")));
+-        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#eef0f3")));
+-        palette.setColor(QPalette::Dark, QColor(QStringLiteral("#c4c8d0")));
+-        palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#8a8a8a")));
++        palette.setColor(QPalette::ToolTipText, QColor(QStringLiteral("#132238")));
++        palette.setColor(QPalette::Text, QColor(QStringLiteral("#132238")));
++        palette.setColor(QPalette::Button, QColor(QStringLiteral("#ffffff")));
++        palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#132238")));
++        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#087f8c")));
++        palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
++        palette.setColor(QPalette::Link, QColor(QStringLiteral("#08727e")));
++        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#dce5ee")));
++        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#edf3f7")));
++        palette.setColor(QPalette::Dark, QColor(QStringLiteral("#b8c7d4")));
++        palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#627587")));
++        palette.setColor(QPalette::Disabled, QPalette::Text, QColor(QStringLiteral("#7d8c9c")));
++        palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(QStringLiteral("#7d8c9c")));
+     }
+
+     m_app->setPalette(palette);
+-    const QString globalStyleSheet = QStringLiteral(R"(
++    const QString background = m_dark ? QStringLiteral("#0b1117") : QStringLiteral("#f4f7fb");
++    const QString surface = m_dark ? QStringLiteral("#111a23") : QStringLiteral("#ffffff");
++    const QString elevated = m_dark ? QStringLiteral("#17232e") : QStringLiteral("#f8fafc");
++    const QString text = m_dark ? QStringLiteral("#edf5f7") : QStringLiteral("#132238");
++    const QString muted = m_dark ? QStringLiteral("#a9bbc5") : QStringLiteral("#526477");
++    const QString border = m_dark ? QStringLiteral("#283946") : QStringLiteral("#dce5ee");
++    const QString accent = m_dark ? QStringLiteral("#41d3c4") : QStringLiteral("#066a75");
++    const QString accentHover = m_dark ? QStringLiteral("#62e4d6") : QStringLiteral("#055560");
++    const QString selection = m_dark ? QStringLiteral("#174c50") : QStringLiteral("#e0f4f5");
++    const QString userBubble = m_dark ? QStringLiteral("#167d80") : QStringLiteral("#087f8c");
++    const QString disabled = m_dark ? QStringLiteral("#71848f") : QStringLiteral("#7d8c9c");
++
++    QString globalStyleSheet = QStringLiteral(R"(
+         QWidget {
+-            background-color: palette(window);
+-            color: palette(window-text);
+-        }
+-        QDialog, QMainWindow, QScrollArea, QStackedWidget {
+-            background-color: palette(window);
+-            color: palette(window-text);
+-        }
+-        QDialog, QMainWindow {
+-            border: 1px solid palette(mid);
+-        }
+-        QLabel {
+-            background-color: transparent;
+-            color: palette(window-text);
+-        }
++            color: %4;
++            font-family: "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
++            font-size: 14px;
++        }
++        QMainWindow#mainWindow, QWidget#appSurface, QDialog {
++            background-color: %1;
++        }
++        QWidget#titleBar, QWidget#chatHeader, QWidget#composerArea {
++            background-color: %2;
++            border-color: %6;
++        }
++        QWidget#titleBar, QWidget#chatHeader { border-bottom: 1px solid %6; }
++        QWidget#composerArea { border-top: 1px solid %6; }
++        QWidget#sidebar {
++            background-color: %2;
++            border-right: 1px solid %6;
++        }
++        QWidget#conversationCanvas, QScrollArea { background-color: %1; border: 0; }
++        QLabel { background-color: transparent; color: %4; }
++        QLabel#brandMark {
++            color: #ffffff;
++            background-color: %7;
++            border-radius: 10px;
++            font-size: 18px;
++            font-weight: 800;
++        }
++        QLabel#brandTitle { color: %4; font-size: 15px; font-weight: 800; letter-spacing: 1px; }
++        QLabel#brandSubtitle, QLabel#mutedLabel { color: %5; font-size: 12px; }
++        QLabel#sectionTitle, QLabel#conversationTitle { color: %4; font-size: 16px; font-weight: 700; }
+         QPushButton {
+-            background-color: palette(button);
+-            color: palette(button-text);
+-            border: 1px solid palette(mid);
+-            border-radius: 6px;
+-            padding: 6px 12px;
+-        }
+-        QPushButton:hover {
+-            background-color: palette(midlight);
+-        }
+-        QPushButton:pressed {
+-            background-color: palette(mid);
+-        }
+-        kdk--KWindowButtonBar QPushButton,
+-        kdk--KIconBar QPushButton {
++            color: %4;
++            background-color: %2;
++            border: 1px solid %6;
++            border-radius: 9px;
++            padding: 7px 14px;
++            font-weight: 600;
++        }
++        QPushButton:hover { background-color: %3; border-color: %7; }
++        QPushButton:pressed { background-color: %9; }
++        QPushButton:focus, QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
++            border: 2px solid %7;
++        }
++        QPushButton:disabled { color: %11; background-color: %3; border-color: %6; }
++        QPushButton#primaryButton, QPushButton#sendButton {
++            color: #ffffff;
++            background-color: %7;
++            border-color: %7;
++        }
++        QPushButton#primaryButton:hover, QPushButton#sendButton:hover {
++            background-color: %8;
++            border-color: %8;
++        }
++        QPushButton#titleIconButton, QPushButton#titleTextButton {
+             background-color: transparent;
+-            border: none;
+-            border-radius: 0px;
+-            outline: none;
+-            padding: 0px;
+-        }
+-        kdk--KWindowButtonBar QPushButton:hover,
+-        kdk--KIconBar QPushButton:hover {
+-            background-color: palette(midlight);
+-            border: none;
+-        }
+-        kdk--KWindowButtonBar QPushButton:pressed,
+-        kdk--KIconBar QPushButton:pressed {
+-            background-color: palette(mid);
+-            border: none;
+-        }
+-        QLineEdit, QTextEdit, QPlainTextEdit, QComboBox, QListWidget, QTreeWidget, QTableWidget {
+-            background-color: palette(base);
+-            color: palette(text);
+-            border: 1px solid palette(mid);
+-            selection-background-color: palette(highlight);
+-            selection-color: palette(highlighted-text);
+-        }
++            border: 0;
++            color: %5;
++            padding: 0;
++        }
++        QPushButton#titleIconButton:hover, QPushButton#titleTextButton:hover {
++            color: %4;
++            background-color: %3;
++        }
++        QPushButton#titleIconButton[danger="true"]:hover { color: #ffffff; background-color: #d43f4f; }
++        QLineEdit, QTextEdit, QPlainTextEdit, QComboBox {
++            color: %4;
++            background-color: %2;
++            border: 1px solid %6;
++            border-radius: 9px;
++            padding: 8px 11px;
++            selection-background-color: %7;
++            selection-color: #ffffff;
++        }
++        QTextEdit#messageComposer { background-color: %3; font-size: 15px; padding: 12px 14px; }
++        QComboBox#modelSelector { padding-left: 12px; }
++        QComboBox::drop-down { width: 30px; border: 0; }
+         QComboBox QAbstractItemView {
+-            background-color: palette(base);
+-            color: palette(text);
+-            selection-background-color: palette(highlight);
+-            selection-color: palette(highlighted-text);
+-        }
+-        QAbstractItemView::item:selected {
+-            background-color: palette(highlight);
+-            color: palette(highlighted-text);
+-        }
+-        QAbstractItemView::item:hover:!selected {
+-            background-color: palette(midlight);
+-            color: palette(text);
+-        }
+-        QListWidget::item:selected, QTreeWidget::item:selected {
+-            background-color: palette(highlight);
+-            color: palette(highlighted-text);
+-        }
+-        QListWidget::item:hover, QTreeWidget::item:hover {
+-            background-color: palette(midlight);
+-        }
+-        QScrollBar:vertical, QScrollBar:horizontal {
+-            background-color: palette(window);
+-        }
+-        QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+-            background-color: palette(mid);
+-            border-radius: 3px;
+-        }
+-        QSplitter::handle {
+-            background-color: palette(mid);
+-        }
++            color: %4;
++            background-color: %2;
++            border: 1px solid %6;
++            selection-background-color: %9;
++            selection-color: %4;
++            outline: 0;
++            padding: 6px;
++        }
++        QListWidget#sessionList { background-color: transparent; border: 0; outline: 0; }
++        QListWidget#sessionList::item { color: %4; padding: 11px 12px; border-radius: 8px; }
++        QListWidget#sessionList::item:hover { background-color: %3; }
++        QListWidget#sessionList::item:selected { color: %7; background-color: %9; font-weight: 700; }
++        QLabel[messageRole="user"] {
++            color: #ffffff;
++            background-color: %10;
++            border: 1px solid %10;
++            border-radius: 14px;
++            padding: 4px;
++        }
++        QLabel[messageRole="assistant"] {
++            color: %4;
++            background-color: %2;
++            border: 1px solid %6;
++            border-radius: 14px;
++            padding: 4px;
++        }
++        QLabel[messageRole="system"] {
++            color: %4;
++            background-color: %2;
++            border: 1px solid %6;
++            border-left: 4px solid %7;
++            border-radius: 14px;
++            padding: 12px;
++            font-size: 15px;
++        }
++        QStatusBar#connectionBar { color: %5; background-color: %2; border-top: 1px solid %6; }
++        QStatusBar#connectionBar::item { border: 0; }
++        QMenu {
++            color: %4;
++            background-color: %2;
++            border: 1px solid %6;
++            padding: 6px;
++        }
++        QMenu::item { padding: 8px 22px; border-radius: 6px; }
++        QMenu::item:selected { color: %4; background-color: %9; }
++        kdk--KWindowButtonBar QPushButton, kdk--KIconBar QPushButton {
++            background-color: transparent; border: none; border-radius: 0; outline: none; padding: 0;
++        }
++        kdk--KWindowButtonBar QPushButton:hover, kdk--KIconBar QPushButton:hover { background-color: %3; }
++        QScrollBar:vertical { background: transparent; width: 10px; margin: 3px; }
++        QScrollBar::handle:vertical { background: %6; min-height: 28px; border-radius: 4px; }
++        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
++        QSplitter::handle { background-color: %6; }
+         QToolTip {
+-            background-color: palette(base);
+-            color: palette(text);
+-            border: 1px solid palette(mid);
++            color: %4;
++            background-color: %3;
++            border: 1px solid %6;
++            padding: 6px;
+         }
+     )");
++    globalStyleSheet = globalStyleSheet.arg(background)
++        .arg(surface).arg(elevated).arg(text).arg(muted).arg(border)
++        .arg(accent).arg(accentHover).arg(selection).arg(userBubble).arg(disabled);
+     m_app->setStyleSheet(QString());
+     m_app->setStyleSheet(globalStyleSheet);

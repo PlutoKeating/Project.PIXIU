@@ -13,6 +13,8 @@ mkdir -p "${fixture}/source"
 git -C "${source_dir}" archive --format=tar HEAD | tar -xf - -C "${fixture}/source"
 patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0001-build-coherent-offline-host.patch"
+patch -d "${fixture}/source" -p1 --forward --batch \
+    < "${repo_root}/build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch"
 install -D -m 0644 "${repo_root}/build/release/agent-host/compat/pixiu_host_compat.cpp" \
     "${fixture}/source/src/services/pixiu_host_compat.cpp"
 
@@ -43,6 +45,17 @@ grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 ! grep -q 'src/ui/modelsettingswidget.cpp' "${fixture}/source/CMakeLists.txt"
 grep -q '/v1/chat/completions' "${fixture}/source/src/services/pixiu_host_compat.cpp"
 grep -q 'chatCompletionFinished' "${fixture}/source/src/services/pixiu_host_compat.cpp"
+grep -q 'PIXIU · KylinAgent' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q '分布式记忆工作台' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q '选择云端模型' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'messageRole' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q '#066a75' "${fixture}/source/src/utils/thememanager.cpp"
+grep -q '#41d3c4' "${fixture}/source/src/utils/thememanager.cpp"
+! grep -q 'Database:' "${fixture}/source/src/ui/mainwindow.cpp"
+! grep -q 'setStyleSheet' "${fixture}/source/src/ui/mainwindow.cpp"
+! grep -q 'setStyleSheet' "${fixture}/source/src/ui/sidebar.cpp"
+! grep -q 'setStyleSheet' "${fixture}/source/src/ui/chatwidget.cpp"
+! grep -q 'setStyleSheet' "${fixture}/source/src/ui/sessionlistwidget.cpp"
 grep -q -- '--hide' "${repo_root}/build/release/agent-host/build-agent-host.sh"
 ! grep -q -- 'kylin-agent.*--version' "${repo_root}/build/release/agent-host/build-agent-host.sh"
 

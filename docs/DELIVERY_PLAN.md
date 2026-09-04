@@ -86,6 +86,12 @@ Runtime 离线闭包必须包含免密 `ddgs` 搜索后端；验收要求 `web_s
 用户态集成事务在文件和配置切换后必须显式重启包管 Gateway；`enable --now` 不能替代
 重启，因为已运行服务会继续持有旧模块。重启失败须恢复 Provider、配置和原用户 unit。
 
+宿主界面依据 [ADR-0004](decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)
+作为同一供应链的第二个顺序补丁应用，不修改官方 submodule。发布证据必须使用应用
+双主题语义令牌、PIXIU 产品层级和无内部路径空状态后的真实二进制；旧截图立即失效。
+最终候选补充 V11 浅/深主题、100%/125%/150% 缩放、键盘焦点、模型下拉、长会话、
+流式/停止/错误/禁用态矩阵，并保留自动复算关键配色 ≥4.5:1 的测试结果。
+
 ## 2. 版本管理唯一真相源
 
 采用 SemVer `MAJOR.MINOR.PATCH`，Debian 包版本为 `MAJOR.MINOR.PATCH-REVISION`。

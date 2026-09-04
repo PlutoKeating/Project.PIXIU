@@ -11,7 +11,7 @@
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Memory%20Console-Qt5%20%2F%20UKUI-41CD52?style=flat-square)](frontend/docs/ARCHITECTURE.md)
 
-[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [Agent 宿主决策](docs/decisions/0001-use-openkylin-agent-host.md) · [用户会话后端决策](docs/decisions/0002-run-native-backend-in-user-session.md) · [Agent 供应链决策](docs/decisions/0003-package-openkylin-agent-supply-chain.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
+[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [Agent 宿主决策](docs/decisions/0001-use-openkylin-agent-host.md) · [用户会话后端决策](docs/decisions/0002-run-native-backend-in-user-session.md) · [Agent 供应链决策](docs/decisions/0003-package-openkylin-agent-supply-chain.md) · [宿主 UI 决策](docs/decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
 
 </div>
 
@@ -72,6 +72,13 @@ Runtime 的 CPython 3.12/amd64 全闭包及构建工具锁均已提交为构建�
 商业搜索 API Key；用户态激活事务会显式重启包管 Gateway，确保新 provider 当场生效。
 目标 V11 的真实 Gateway 已完成一次 `web_search` 成功调用；完整 Agent 生命周期仍以
 固定三轮、审批、记忆写入和重启后跨会话召回全部成功为准。
+
+KylinAgent 宿主界面现按
+[ADR-0004](docs/decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)
+维护独立下游补丁：浅色/深色主题使用统一语义令牌，消除页面局部硬编码颜色，重做
+PIXIU 品牌层级、会话侧栏、云端模型选择、消息画布、输入区与无路径泄露的空状态。
+关键普通文本和交互配色由自动化复算 4.5:1 对比度；最终状态仍须绑定新候选包完成
+V11 双主题、缩放、键盘和运行状态截图复核，不能沿用旧界面截图。
 
 同步控制台现只呈现真实动作：设备发现/确认式配对、自动 Gossip/反熵状态、暂停、
 状态刷新和整网退出。旧“立即同步”按钮实际只刷新状态、没有触发后端同步动作，现已

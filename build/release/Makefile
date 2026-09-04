@@ -19,6 +19,8 @@ governance:
 	python3 $(ROOT)/build/release/tests/test-system-data-migration.py
 	bash $(ROOT)/build/release/tests/test-agent-integration.sh
 	bash $(ROOT)/build/release/tests/test-agent-runtime-lock.sh
+	bash $(ROOT)/build/release/tests/test-agent-host-adaptation.sh
+	python3 $(ROOT)/build/release/tests/test-agent-host-ui-contrast.py
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain.py
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain-record.py
 

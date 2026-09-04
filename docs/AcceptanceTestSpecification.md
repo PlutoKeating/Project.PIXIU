@@ -7,7 +7,8 @@
 >
 > 团队执行决定：2026-09-03 已批准 [ADR-0001](decisions/0001-use-openkylin-agent-host.md)，
 > 2026-09-04 已批准 [ADR-0002](decisions/0002-run-native-backend-in-user-session.md) 与
-> [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。这些决定确定
+> [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)、
+> [ADR-0004](decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)。这些决定确定
 > PIXIU 的实现、用户会话运行边界与供应链取证方式，不改变或扩写官方评分条款。
 
 ## 0. 证据与判定规则
@@ -106,6 +107,7 @@ PPT 明文口径是“会用工具、会规划、会记忆，不只是聊天”�
 | A-08 `[A]` | 记忆自主写入 | 对话或任务后按价值决定写入/更新/忽略，避免机械保存全部聊天 |
 | A-09 `[A]` | 工具结果沉淀 | Shell、搜索及其他工具结果进入统一多源管线，后续会话可复用 |
 | A-10 `[A]` | 运行控制 | 支持流式事件、停止、失败恢复、工具审批和可观察运行状态 |
+| A-10a `[A][D]` | 宿主 UI 可用性（团队质量门） | V11 浅/深主题下文字、占位符、下拉框、按钮与消息均可读；关键普通文本对比度 ≥4.5:1；空状态不泄露内部路径；100%/125%/150% 缩放与键盘焦点可用 |
 
 项目选定 `third_party/kylin-agent` + `third_party/kylin-agent-runtime`，通过原创
 MemoryProvider 适配 PIXIU。官方材料未点名允许或禁止该具体基座；能确认的是：
