@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SERVER = ROOT / "build/release/testing/openai-compatible-mock.py"
+RUNNER = ROOT / "build/release/testing/run-agent-mock-acceptance.py"
+
+
+def load_runner():
+    spec = importlib.util.spec_from_file_location("pixiu_mock_acceptance", RUNNER)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load mock acceptance runner")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 class MockNodeContractTests(unittest.TestCase):
@@ -144,6 +156,42 @@ class MockNodeContractTests(unittest.TestCase):
             completion = json.load(response)
         content = completion["choices"][0]["message"]["content"]
         self.assertIn("偏好保存", content)
+
+    def test_memory_suite_covers_shared_memory_without_repeating_network(self) -> None:
+        runner = load_runner()
+        scenario = runner.scenario_for_suite(
+            "memory", "PIXIU-" + "A" * 32, Path("/tmp/unused-marker.txt")
+        )
+        self.assertEqual(
+            scenario.required_tools,
+            {
+                "pixiu_memory_remember",
+                "pixiu_memory_search",
+                "pixiu_memory_update",
+                "pixiu_sync_status",
+            },
+        )
+        self.assertNotIn("web_search", scenario.required_tools)
+        self.assertNotIn("terminal", scenario.required_tools)
+        self.assertEqual(len(scenario.prompts), 4)
+        self.assertEqual(scenario.search_run_index, 1)
+
+    def test_full_suite_keeps_real_web_and_terminal_coverage(self) -> None:
+        runner = load_runner()
+        scenario = runner.scenario_for_suite(
+            "full", "PIXIU-" + "B" * 32, Path("/tmp/marker.txt")
+        )
+        self.assertIn("web_search", scenario.required_tools)
+        self.assertIn("terminal", scenario.required_tools)
+        self.assertEqual(len(scenario.prompts), 6)
+        self.assertEqual(scenario.search_run_index, 3)
+
+    def test_unknown_suite_fails_closed(self) -> None:
+        runner = load_runner()
+        with self.assertRaisesRegex(runner.AcceptanceError, "unsupported acceptance suite"):
+            runner.scenario_for_suite(
+                "unknown", "PIXIU-" + "C" * 32, Path("/tmp/unused-marker.txt")
+            )
 
 
 if __name__ == "__main__":

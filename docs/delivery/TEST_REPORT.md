@@ -22,9 +22,10 @@
   DeepSeek/Anthropic/OpenAI 直连云端模型；OpenRouter 和本地推理提供商必须缺席。
 - `6f242f7` 修复验收客户端仅发送 session ID、未显式传递持久化历史的问题；9 项契约
   测试证明后续 run 只携带用户/助手历史并保持输入顺序。`e8aad1a` 增加确定性、无推理
-  OpenAI-compatible 节点和六轮验收：真实 Runtime/Gateway 执行 Shell 审批、DDGS 联网、
-  PIXIU 记忆写入/检索/更新/同步状态，本地私域与共享域均通过；去敏 trace 证明每次
-  请求均带非空系统提示，用户轮数逐轮增长，工具结果回送。证据固定标注
+  OpenAI-compatible 节点和验收入口：`full` 六轮套件经真实 Runtime/Gateway 执行
+  Shell 审批、DDGS 联网和 PIXIU 记忆工具链，`memory` 四轮套件在 `shared:*` 域独立
+  验证写入、检索、更新和同步状态，避免再次调用第三方搜索导致限流污染记忆判定；
+  两套去敏 trace 均证明每次请求带非空系统提示、历史逐轮增长且工具结果回送。证据固定标注
   `mock_only=true`、`not_release_evidence=true`，不计官方云端模型自主性或正式 D-07。
 - 有消息会话实测曾暴露刷新后重复气泡、错位残影与空状态遮挡；SQL 确认
   持久层无重复，根因为裸子布局被移出顶层布局时未销毁其气泡 widget。补丁已改为
