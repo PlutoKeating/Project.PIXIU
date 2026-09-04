@@ -1,4 +1,5 @@
 #include "services/apiservice.h"
+#include "services/modelservice.h"
 #include "ui/mainwindow.h"
 #include "ui/settingsdialog.h"
 
@@ -6,8 +7,10 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QEventLoop>
 #include <QNetworkRequest>
 #include <QSettings>
+#include <QTimer>
 #include <QUrl>
 
 namespace {
@@ -160,6 +163,90 @@ void ApiService::cancelStreamForSession(const QString &sessionId, bool emitCompl
     if (emitCompletion) {
         emit chatCompletionFinished(sessionId, QString(), false);
     }
+}
+
+QJsonDocument ApiService::requestSync(const QString &method,
+                                      const QString &endpoint,
+                                      const QJsonObject &body,
+                                      bool *ok)
+{
+    if (ok) {
+        *ok = false;
+    }
+    QNetworkRequest request(runtimeUrl(m_apiUrl, endpoint));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
+    applyAuthentication(&request);
+
+    QNetworkReply *reply = nullptr;
+    const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
+    if (method == QStringLiteral("GET")) {
+        reply = m_networkManager->get(request);
+    } else if (method == QStringLiteral("POST")) {
+        reply = m_networkManager->post(request, payload);
+    } else if (method == QStringLiteral("PUT")) {
+        reply = m_networkManager->put(request, payload);
+    } else if (method == QStringLiteral("DELETE")) {
+        reply = m_networkManager->deleteResource(request);
+    } else {
+        emit error(QStringLiteral("Unsupported HTTP method: %1").arg(method));
+        return QJsonDocument();
+    }
+
+    QEventLoop loop;
+    QTimer timeout;
+    timeout.setSingleShot(true);
+    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    connect(&timeout, &QTimer::timeout, reply, &QNetworkReply::abort);
+    timeout.start(15000);
+    loop.exec();
+
+    const QByteArray response = reply->readAll();
+    const bool succeeded = timeout.isActive() && reply->error() == QNetworkReply::NoError;
+    if (ok) {
+        *ok = succeeded;
+    }
+    if (!succeeded) {
+        emit error(reply->errorString());
+    }
+    reply->deleteLater();
+    return QJsonDocument::fromJson(response);
+}
+
+void ApiService::cacheSessionUsage(const QMap<QString, QVariant> &session)
+{
+    const QString id = session.value(QStringLiteral("id")).toString();
+    if (!id.isEmpty()) {
+        m_sessionUsageCache.insert(id, session);
+    }
+}
+
+void ApiService::clearSessionMemoryTracking(const QString &sessionId)
+{
+    auto it = m_sessionMemoryStates.find(sessionId);
+    if (it == m_sessionMemoryStates.end()) {
+        return;
+    }
+    if (it->inactivityTimer) {
+        it->inactivityTimer->stop();
+        it->inactivityTimer->deleteLater();
+    }
+    m_sessionMemoryStates.erase(it);
+    m_sessionUsageCache.remove(sessionId);
+}
+
+void ApiService::loadModels()
+{
+    QVector<QJsonObject> result;
+    for (const SavedModel &model : ModelService::instance().listModels()) {
+        result.append(QJsonObject{
+            {QStringLiteral("id"), model.id()},
+            {QStringLiteral("name"), model.name()},
+            {QStringLiteral("provider"), model.provider()},
+            {QStringLiteral("model"), model.model()},
+            {QStringLiteral("base_url"), model.baseUrl()},
+        });
+    }
+    emit modelsLoaded(result);
 }
 
 void MainWindow::showFromTray()
