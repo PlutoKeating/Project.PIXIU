@@ -210,6 +210,7 @@ if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     "${PIXIU_PYTHON}" "${PIXIU_RELEASE_DIR}/scripts/audit-agent-supply-chain.py" \
         --root "${PIXIU_ROOT}" --evidence-dir "${AGENT_EVIDENCE}" \
         --output "${STAGE}/usr/share/pixiu/agent-supply-chain-audit.json" \
+        --expected-arch "${PIXIU_ARCH}" \
         --require-ready
     install -m 0755 "${AGENT_EVIDENCE}/host/kylin-agent" \
         "${STAGE}/usr/bin/kylin-agent"

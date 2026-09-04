@@ -326,10 +326,18 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
             )
 
             evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
-            blockers = AUDIT.validate_evidence(evidence_dir, evidence, policy)
+            blockers = AUDIT.validate_evidence(
+                evidence_dir, evidence, policy, expected_arch="amd64"
+            )
+            self.assertEqual(blockers, [])
+            self.assertTrue(all(item.get("valid") for item in evidence.values()))
 
-        self.assertEqual(blockers, [])
-        self.assertTrue(all(item.get("valid") for item in evidence.values()))
+            evidence = AUDIT.load_evidence(evidence_dir, policy["evidence"])
+            blockers = AUDIT.validate_evidence(
+                evidence_dir, evidence, policy, expected_arch="arm64"
+            )
+            self.assertIn("invalid-host-build-evidence", blockers)
+            self.assertIn("invalid-runtime-wheelhouse-evidence", blockers)
 
     def test_claim_only_evidence_is_rejected(self) -> None:
         policy = AUDIT.read_json(
