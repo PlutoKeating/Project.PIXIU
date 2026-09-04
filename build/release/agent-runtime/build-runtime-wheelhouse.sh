@@ -36,6 +36,13 @@ prepare)
     rm -rf "${repo_root}/build/release/out/agent-runtime"
     mkdir -p "${wheelhouse}" "${output_root}/source"
     git -C "${runtime_source}" archive --format=tar HEAD | tar -xf - -C "${output_root}/source"
+    for runtime_patch in "${script_dir}"/patches/*.patch; do
+        [[ -f "${runtime_patch}" ]] || {
+            echo "At least one Runtime distribution patch is required" >&2
+            exit 2
+        }
+        patch -d "${output_root}/source" -p1 --forward --batch < "${runtime_patch}"
+    done
     # The pinned upstream setuptools configuration packages plugin Python
     # modules but omits their manifests.  Without plugin.yaml the Runtime
     # scanner cannot discover bundled backends (including keyless DDGS).

@@ -12,6 +12,11 @@
     "build/release/agent-host/patches/0003-kylin-cloud-model-settings.patch",
     "build/release/agent-host/compat/pixiu_host_compat.cpp"
   ],
+  "runtime_adaptation_inputs": [
+    "build/release/agent-runtime/build-runtime-wheelhouse.sh",
+    "build/release/agent-runtime/runtime-wheel-MANIFEST.in",
+    "build/release/agent-runtime/patches/0001-secure-model-management.patch"
+  ],
   "components": {
     "kylin_agent": {
       "path": "third_party/kylin-agent",

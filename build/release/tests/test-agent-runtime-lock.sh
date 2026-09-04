@@ -18,6 +18,7 @@ grep -q 'cpython-312' "${SCRIPT}"
 grep -q '^ddgs==' "${RUNTIME_LOCK}"
 grep -q 'import ddgs' "${SCRIPT}"
 grep -q 'runtime-wheel-MANIFEST.in' "${SCRIPT}"
+grep -q 'patches/\*.patch' "${SCRIPT}"
 grep -q 'bundled DDGS manifest is missing' "${SCRIPT}"
 grep -Eq '^recursive-include plugins .*\*\.yaml' "${MANIFEST}"
 

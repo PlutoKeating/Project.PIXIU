@@ -57,6 +57,18 @@ def host_adaptation_inputs(root: Path, policy: dict[str, Any]) -> dict[str, str]
     return inputs
 
 
+def runtime_adaptation_inputs(root: Path, policy: dict[str, Any]) -> dict[str, str]:
+    inputs: dict[str, str] = {}
+    for relative in policy.get("runtime_adaptation_inputs", []):
+        if not isinstance(relative, str) or not relative:
+            raise ValueError("runtime adaptation input path is invalid")
+        path = require_regular(root / relative, "runtime adaptation input")
+        inputs[relative] = sha256_file(path)
+    if not inputs:
+        raise ValueError("runtime adaptation inputs are not configured")
+    return inputs
+
+
 def require_regular(path: Path, label: str) -> Path:
     resolved = path.resolve()
     if path.is_symlink() or not resolved.is_file() or resolved.stat().st_size == 0:
@@ -253,7 +265,9 @@ def record_wheelhouse(args: argparse.Namespace, policy: dict[str, Any]) -> None:
     log = copy_evidence(log, directory, f"runtime/{args.offline_install_log.name}", "offline install log")
     document: dict[str, Any] = {
         "schema_version": 1,
+        "release_commit": release_commit(args.root.resolve()),
         "source_commit": policy["components"]["agent_runtime"]["source_commit"],
+        "adaptation_inputs": runtime_adaptation_inputs(args.root.resolve(), policy),
         **target(args, policy),
         "python_abi": args.python_abi,
         "recorded_at": timestamp(),

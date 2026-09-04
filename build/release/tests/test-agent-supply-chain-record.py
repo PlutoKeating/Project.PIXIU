@@ -85,6 +85,11 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
                 ),
             )
 
+            policy = json.loads(
+                (ROOT / "build/release/agent-supply-chain-policy.json").read_text(
+                    encoding="utf-8"
+                )
+            )
             wheels = inputs / "wheels"
             wheels.mkdir()
             wheel(wheels / "runtime.whl", "kylin-agent-runtime", "0.9.8")
@@ -104,14 +109,16 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
                 "--network-isolated",
             )
             self.assertEqual(result.returncode, 0, result.stderr)
+            runtime_record = json.loads(
+                (evidence / "runtime-wheelhouse.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                set(runtime_record["adaptation_inputs"]),
+                set(policy["runtime_adaptation_inputs"]),
+            )
             result = self.run_record(evidence, "legal")
             self.assertEqual(result.returncode, 0, result.stderr)
 
-            policy = json.loads(
-                (ROOT / "build/release/agent-supply-chain-policy.json").read_text(
-                    encoding="utf-8"
-                )
-            )
             sbom = json.loads(
                 (evidence / policy["evidence"]["sbom"]).read_text(encoding="utf-8")
             )

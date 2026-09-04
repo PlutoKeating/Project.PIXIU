@@ -4,6 +4,8 @@
 CPython 3.12/amd64 构建输入。`build-runtime-wheelhouse.sh prepare` 只按这两份锁及
 固定 Runtime submodule 构建、下载；所有包必须匹配逐包 SHA-256，构建结果会从 wheel
 的 METADATA 重新生成锁并逐字节比对，任何版本、哈希或闭包漂移都会失败。
+构建先在归档副本上应用 `patches/` 中的发行适配；上游 submodule 保持只读。证据记录
+同时绑定发布提交及每个适配输入的 SHA-256，GUI 模型凭据管理不能绕开审计进入安装包。
 锁中显式包含 Runtime 支持的免密 `ddgs` 搜索后端，确保 strict 单包不依赖第三方
 搜索 API Key 也能执行真实 `web_search`；离线验证会同时导入该后端。
 

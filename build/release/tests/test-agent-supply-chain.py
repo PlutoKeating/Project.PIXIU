@@ -230,6 +230,8 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                 },
                 "runtime-wheelhouse.json": {
                     "schema_version": 1,
+                    "release_commit": AUDIT.git(ROOT, "rev-parse", "HEAD"),
+                    "adaptation_inputs": AUDIT.runtime_adaptation_inputs(ROOT, policy),
                     "source_commit": runtime_policy["source_commit"],
                     "target_os": "kylin-v11",
                     "target_arch": "amd64",
