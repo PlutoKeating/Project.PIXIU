@@ -1,0 +1,77 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7f8af01..e0d3bb2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -47,9 +47,6 @@ set(SOURCES
+     src/services/databaseservice.cpp
+     src/services/sessionservice.cpp
+     src/services/modelservice.cpp
+-    src/services/modeldownloadservice.cpp
+-    src/services/cuamodelconfigsync.cpp
+-    src/services/realtimeasrservice.cpp
+     src/services/apiservice.cpp
+     src/services/configservice.cpp
+     src/services/gatewayservice.cpp
+@@ -60,14 +57,6 @@ set(SOURCES
+     src/ui/sidebar.cpp
+     src/ui/settingsdialog.cpp
+-    src/ui/modelsettingswidget.cpp
+-    src/ui/cuamodelsettingswidget.cpp
+-    src/ui/voicemodelsettingswidget.cpp
+-    src/ui/skillssettingswidget.cpp
+-    src/ui/personasettingswidget.cpp
+-    src/ui/memorysettingswidget.cpp
+-    src/ui/logsettingswidget.cpp
+-    src/ui/usagesettingswidget.cpp
+-    src/ui/generalsettingswidget.cpp
++    src/services/pixiu_host_compat.cpp
+     src/utils/svgicon.cpp
+     src/utils/thememanager.cpp
+     src/utils/kylinfiledialog.cpp
+@@ -82,9 +71,6 @@ set(HEADERS
+     include/services/databaseservice.h
+     include/services/sessionservice.h
+     include/services/modelservice.h
+-    include/services/modeldownloadservice.h
+-    include/services/cuamodelconfigsync.h
+-    include/services/realtimeasrservice.h
+     include/services/apiservice.h
+     include/services/configservice.h
+     include/services/gatewayservice.h
+@@ -95,14 +81,5 @@ set(HEADERS
+     include/ui/sidebar.h
+     include/ui/settingsdialog.h
+-    include/ui/modelsettingswidget.h
+-    include/ui/cuamodelsettingswidget.h
+-    include/ui/voicemodelsettingswidget.h
+-    include/ui/skillssettingswidget.h
+-    include/ui/personasettingswidget.h
+-    include/ui/memorysettingswidget.h
+-    include/ui/logsettingswidget.h
+-    include/ui/usagesettingswidget.h
+-    include/ui/generalsettingswidget.h
+     include/utils/svgicon.h
+     include/utils/thememanager.h
+     include/utils/kylinfiledialog.h
+diff --git a/src/main.cpp b/src/main.cpp
+index 9a81710..b4045f0 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -9,6 +9,6 @@
+ #include <cstdlib>
+ 
+ #include "app.h"
+-#include "services/hermesgatewayservice.h"
++#include "services/gatewayservice.h"
+ #include "ui/mainwindow.h"
+ #include "utils/thememanager.h"
+@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
+ 
+     ThemeManager::instance().applySavedTheme(&app);
+ 
+-    HermesGatewayService hermesGatewayService(&app);
+-    hermesGatewayService.ensureReady();
++    GatewayService gatewayService(&app);
++    gatewayService.ensureReady();
+     
+     MainWindow window;
