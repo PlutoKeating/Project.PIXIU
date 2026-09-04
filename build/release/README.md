@@ -129,7 +129,9 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 时，普通模式会把组件固定与 Runtime 版本事实记为不可用而不是崩溃；强制模式仍必然
 失败。CPython 3.12/amd64 Runtime 及构建工具锁位于 `agent-runtime/`，是
 `--require-hashes` 构建输入而非构建后输出；生成 wheelhouse 后必须反向生成并逐字节
-比对运行时锁。
+比对运行时锁。固定上游 setuptools 当前不会自动把 bundled plugin 的 YAML 清单放入
+wheel；构建器通过受版本控制的 `runtime-wheel-MANIFEST.in` 做发行层修正，不修改
+submodule，并在全新离线 venv 中验证 DDGS 清单、插件发现和活动搜索 provider。
 报告同时固定输出 `agent-supply-chain-audit` 证据类型、仓库 commit 和明确 pass/fail，
 供 D-07 原始证据归档做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
 

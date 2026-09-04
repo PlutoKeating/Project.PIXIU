@@ -78,7 +78,9 @@ wheel、锁文件和离线安装日志均须提供路径与匹配摘要；目标
 来源、commit 和许可证边界；当前强制报告为 `ready=true`、零 blocker。上游原始仓库
 中被识别的认证式 URL 不进入发行源码或入包范围，实际发行范围复扫通过。
 Runtime 离线闭包必须包含免密 `ddgs` 搜索后端；验收要求 `web_search` 返回真实结果，
-不能只以工具注册或“未配置搜索 provider”的错误响应计为成功。
+不能只以工具注册或“未配置搜索 provider”的错误响应计为成功。固定上游的 setuptools
+配置会遗漏 bundled plugin 清单，故发布适配必须把 `plugins/**/plugin.yaml` 纳入 wheel；
+离线安装门同时验证 DDGS 清单存在、插件加载和活动 provider 解析，缺一即拒绝候选。
 
 ## 2. 版本管理唯一真相源
 

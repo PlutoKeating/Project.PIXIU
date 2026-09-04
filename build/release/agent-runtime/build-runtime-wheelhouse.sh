@@ -36,6 +36,12 @@ prepare)
     rm -rf "${repo_root}/build/release/out/agent-runtime"
     mkdir -p "${wheelhouse}" "${output_root}/source"
     git -C "${runtime_source}" archive --format=tar HEAD | tar -xf - -C "${output_root}/source"
+    # The pinned upstream setuptools configuration packages plugin Python
+    # modules but omits their manifests.  Without plugin.yaml the Runtime
+    # scanner cannot discover bundled backends (including keyless DDGS).
+    # Keep this distribution-only correction outside the read-only submodule.
+    install -m 0644 "${script_dir}/runtime-wheel-MANIFEST.in" \
+        "${output_root}/source/MANIFEST.in"
     python3 - "${output_root}/source" <<'PY'
 from pathlib import Path
 import re
@@ -97,10 +103,21 @@ verify-offline)
 import aiohttp
 import ddgs
 import kylin_agent_runtime_cli
+from agent.web_search_registry import get_active_search_provider
 from gateway.platforms.api_server import APIServerAdapter
+from kylin_agent_runtime_cli.plugins import discover_plugins, get_bundled_plugins_dir
+
+manifest = get_bundled_plugins_dir() / "web" / "ddgs" / "plugin.yaml"
+if not manifest.is_file():
+    raise SystemExit(f"bundled DDGS manifest is missing from Runtime wheel: {manifest}")
+discover_plugins()
+provider = get_active_search_provider()
+if provider is None or provider.name != "ddgs" or not provider.is_available():
+    raise SystemExit("bundled DDGS web-search provider is not active")
 print(f"kylin-agent-runtime-cli={kylin_agent_runtime_cli.__version__}")
 print(f"aiohttp={aiohttp.__version__}")
 print(f"ddgs={ddgs.__version__}")
+print(f"web-search-provider={provider.name}")
 print(f"gateway-adapter={APIServerAdapter.__name__}")
 PY
     "${verify_root}/venv/bin/kylin-agent-runtime" --version

@@ -5,9 +5,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 SCRIPT="${ROOT}/build/release/agent-runtime/build-runtime-wheelhouse.sh"
 RUNTIME_LOCK="${ROOT}/build/release/agent-runtime/runtime-cp312.lock"
 TOOLS_LOCK="${ROOT}/build/release/agent-runtime/build-tools-cp312.lock"
+MANIFEST="${ROOT}/build/release/agent-runtime/runtime-wheel-MANIFEST.in"
 
 test -s "${RUNTIME_LOCK}"
 test -s "${TOOLS_LOCK}"
+test -s "${MANIFEST}"
 grep -q -- '--require-hashes -r "${build_tools_lock}"' "${SCRIPT}"
 grep -q -- '--require-hashes -r "${committed_lock}"' "${SCRIPT}"
 grep -q 'cmp "${committed_lock}" "${generated_lock}"' "${SCRIPT}"
@@ -15,6 +17,9 @@ grep -q 'dpkg --print-architecture' "${SCRIPT}"
 grep -q 'cpython-312' "${SCRIPT}"
 grep -q '^ddgs==' "${RUNTIME_LOCK}"
 grep -q 'import ddgs' "${SCRIPT}"
+grep -q 'runtime-wheel-MANIFEST.in' "${SCRIPT}"
+grep -q 'bundled DDGS manifest is missing' "${SCRIPT}"
+grep -Eq '^recursive-include plugins .*\*\.yaml' "${MANIFEST}"
 
 python3 - "${RUNTIME_LOCK}" "${TOOLS_LOCK}" <<'PY'
 from pathlib import Path

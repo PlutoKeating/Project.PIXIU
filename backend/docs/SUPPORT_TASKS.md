@@ -41,6 +41,8 @@
   GUI 升级、卸载及数据保留；
   消融矩阵另递归到固定任务集、三份逐任务报告、六份去敏配置快照和分布式节点清单；
   逐样本报告、三变体来源链或冻结 JSON 缺失/被替换时，生成与解包复验均失败。
+  Runtime 锁现覆盖 58 个 wheel；发行层补入 bundled plugin YAML，并在全新离线 venv
+  验证 DDGS 清单、自动发现及活动 provider，避免“依赖可 import 但搜索仍不可用”。
 
 - 🟡 **历史测试基线（2026-08-11）**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
   pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见

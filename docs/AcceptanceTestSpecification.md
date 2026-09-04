@@ -76,11 +76,16 @@ compare-and-swap 校验 `expected_version`，更新产生独立 evidence、重�
 更新可提交；Module E 工具接线和三台真实设备的并发收敛仍未取证，故 A-08 不升级。
 
 无模型宿主探针和最终供应链构建已证明复用路线可行：固定源码经审计适配后在 V11
-网络隔离环境可重建，strict 包携带宿主、54 个锁定 wheels、对应源码/日志、SPDX 与
+网络隔离环境可重建，strict 包携带宿主、全量哈希锁定 wheels、对应源码/日志、SPDX 与
 NOTICE，离线安装和供应链审计均为 `ready=true`；Gateway、会话 API 与
 `memory.provider=pixiu` 通过。因此 A-11/A-12 供应链部分已满足。A-01～A-10 的模型
 行为仍不升级：当前环境没有推理提供商/API key，真实 run 明确失败，不能以无模型
 探针代替自主规划、Shell、联网搜索、审批和跨会话记忆证据。
+
+新增免密 DDGS 后端时发现固定上游 wheel 会遗漏 bundled plugin 的 `plugin.yaml`，造成
+代码存在但 Runtime 无法发现 provider。发布构建现以仓库内可审计的 distribution
+manifest 补齐该非代码资产，并在全新离线 venv 中同时验证清单、插件发现、provider
+选择和依赖可用；只验证 `import ddgs` 不再视为 A-06 的充分前置证据。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

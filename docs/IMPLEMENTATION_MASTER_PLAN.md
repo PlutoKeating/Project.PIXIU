@@ -221,7 +221,7 @@ F7-02 冻结链已补 `final-dataset-manifest.py`：从 release commit 的确定
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
 | W7.1 | 🟡 根 `VERSION` 已成为唯一产品版本输入；包内组件 manifest 与包外签名 asset manifest 已接线；`829d944` 原生证据已绑定候选包摘要/commit、已装 manifest、dpkg 版本/架构、Agent runtime 和三个能力端点 | 文档冻结后重建最终候选六件套并归档复验 |
-| W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、可重建宿主、54 个锁定 Runtime wheels、桌面入口及安全激活工具；覆盖安装、旧 gateway 迁移和 Provider 激活通过 | 命令行安装已实测；全新 V11 图形安装与模型 run 待补 |
+| W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、可重建宿主、58 个锁定 Runtime wheels、bundled plugin 清单、桌面入口及安全激活工具；覆盖离线 DDGS provider 发现、安装、旧 gateway 迁移和 Provider 激活 | 命令行安装已实测；全新 V11 图形安装与完整模型 run 待补 |
 | W7.3 | 🟡 strict `preinst` 解包前探测 V11/架构；SDK 依赖交由 Debian 排序并由 strict 后端验证，用户态激活器验证 Agent 与单一 0.9.x runtime；构建强制 KYSDK/strict 不变量，generic/portable 明确降级 | 各阶段隔离成功/拒绝测试已过；最终目标 V11 真实严格包各路径待取证 |
 | W7.4 | ✅ Ed25519 发布 Secret、双架构签名资产、固定公钥及 dpkg 前验签已验证；两个临时 `.deb` 已完成旧钥签过渡包、部署新公钥、新钥签下一包及旧钥拒绝演练 | 摘要和签名任一失败均拒绝安装；生产私钥不入库 |
 | W7.5 | GUI 展示当前/最新版本、通道、兼容性、发行说明和进度 | 用户一次点击触发受控升级 |
