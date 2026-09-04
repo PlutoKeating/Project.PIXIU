@@ -1,8 +1,9 @@
 # Kylin Agent Runtime 离线 wheelhouse
 
-`build-runtime-wheelhouse.sh prepare` 从固定 Runtime submodule 构建项目 wheel，并解析
-基础依赖及 Gateway 明确需要的 `aiohttp==3.13.3` 全闭包。`make-wheel-lock.py` 从每个
-wheel 的 METADATA 读取名称/版本并写入逐包 SHA-256 锁文件。
+`runtime-cp312.lock` 与 `build-tools-cp312.lock` 是经过目标环境验证并提交入库的
+CPython 3.12/amd64 构建输入。`build-runtime-wheelhouse.sh prepare` 只按这两份锁及
+固定 Runtime submodule 构建、下载；所有包必须匹配逐包 SHA-256，构建结果会从 wheel
+的 METADATA 重新生成锁并逐字节比对，任何版本、哈希或闭包漂移都会失败。
 
 随后应在目标 V11 的断网网络命名空间执行 `verify-offline`。验证使用全新 venv、
 `--no-index --require-hashes` 安装全部 wheel，并导入 Runtime、aiohttp 与 Gateway

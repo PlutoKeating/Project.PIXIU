@@ -7,6 +7,9 @@ runtime_source="${repo_root}/third_party/kylin-agent-runtime"
 output_root="${repo_root}/build/release/out/agent-runtime"
 wheelhouse="${output_root}/wheelhouse"
 lockfile="${output_root}/runtime-cp312.lock"
+generated_lock="${output_root}/runtime-cp312.generated.lock"
+committed_lock="${script_dir}/runtime-cp312.lock"
+build_tools_lock="${script_dir}/build-tools-cp312.lock"
 action="${1:-prepare}"
 
 expected_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["components"]["agent_runtime"]["source_commit"])' "${repo_root}/build/release/agent-supply-chain-policy.json")"
@@ -18,6 +21,18 @@ fi
 
 case "${action}" in
 prepare)
+    [[ "$(dpkg --print-architecture)" = "amd64" ]] || {
+        echo "The committed Runtime lock is only valid for amd64" >&2
+        exit 2
+    }
+    [[ "$(python3 -c 'import sys; print(sys.implementation.cache_tag)')" = "cpython-312" ]] || {
+        echo "The committed Runtime lock requires CPython 3.12" >&2
+        exit 2
+    }
+    [[ -s "${committed_lock}" && -s "${build_tools_lock}" ]] || {
+        echo "Committed Runtime and build-tool locks are required" >&2
+        exit 2
+    }
     rm -rf "${repo_root}/build/release/out/agent-runtime"
     mkdir -p "${wheelhouse}" "${output_root}/source"
     git -C "${runtime_source}" archive --format=tar HEAD | tar -xf - -C "${output_root}/source"
@@ -53,11 +68,20 @@ if findings != ["agent/redact.py"]:
 PY
     build_venv="${output_root}/build-venv"
     python3 -m venv "${build_venv}"
-    "${build_venv}/bin/pip" install --upgrade pip setuptools wheel
+    "${build_venv}/bin/pip" install --require-hashes -r "${build_tools_lock}"
     SOURCE_DATE_EPOCH="$(git -C "${runtime_source}" show -s --format=%ct HEAD)" \
-        "${build_venv}/bin/pip" wheel --wheel-dir "${wheelhouse}" \
-        "${output_root}/source" "aiohttp==3.13.3"
-    python3 "${script_dir}/make-wheel-lock.py" "${wheelhouse}" "${lockfile}"
+        "${build_venv}/bin/pip" wheel --no-deps --no-build-isolation \
+        --wheel-dir "${wheelhouse}" "${output_root}/source"
+    "${build_venv}/bin/pip" download --only-binary=:all: \
+        --dest "${wheelhouse}" --find-links "${wheelhouse}" \
+        --require-hashes -r "${committed_lock}"
+    python3 "${script_dir}/make-wheel-lock.py" "${wheelhouse}" "${generated_lock}"
+    cmp "${committed_lock}" "${generated_lock}" || {
+        echo "Built Runtime wheelhouse differs from the committed lock" >&2
+        exit 2
+    }
+    cp "${committed_lock}" "${lockfile}"
+    rm -f "${generated_lock}"
     ;;
 verify-offline)
     [[ -d "${wheelhouse}" && -s "${lockfile}" ]] || {
