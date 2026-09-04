@@ -24,7 +24,7 @@ grep -qx 'version: @VERSION@' \
     "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in"
 test ! -e "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml"
 
-if rg -n -F "${EXPECTED}" \
+if grep -nF "${EXPECTED}" \
         "${ROOT}/frontend/CMakeLists.txt" \
         "${ROOT}/frontend/debian/control" \
         "${ROOT}/frontend/scripts/build-deb.sh" \
