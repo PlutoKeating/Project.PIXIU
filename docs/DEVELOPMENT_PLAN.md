@@ -591,7 +591,7 @@ Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契�
 | 文档/源码 | 路径 | 说明 |
 |-----------|------|------|
 | 已批准决策 | `docs/decisions/0001-use-openkylin-agent-host.md` | 宿主、原创与修改边界 |
-| 待批准决策 | `docs/decisions/0003-package-openkylin-agent-supply-chain.md` | 可重建宿主、离线 Runtime 与上游补丁门 |
+| 已批准决策 | `docs/decisions/0003-package-openkylin-agent-supply-chain.md` | 可重建宿主、离线 Runtime 与上游补丁门 |
 | 接入评估 | `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` | 代码事实、生命周期与差距 |
 | API 契约 | `docs/API.md` | 当前端点与尚未实现的 vNext 目标 |
 | Agent runtime | `third_party/kylin-agent-runtime/` | 固定版本 MemoryProvider/生命周期源码 |

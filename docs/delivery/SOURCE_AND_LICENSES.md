@@ -35,7 +35,7 @@ gitlink 与实际检出不一致或含本地修改的子模块。这不替代最
 供应链探针还确认：固定 Runtime 的 CLI、Python 包和 `version` 文件分别报告 0.9.4、
 0.9.8、0.9.9，清单必须原样记录三项事实；Gateway 另实际需要 `aiohttp`，不能只按
 名为 `web` 的 extra 推导依赖。上游脚本中的认证式源码地址不得进入交付产物或日志。
-若赛方/麒麟不能提供可重建宿主，须先批准 ADR-0003，再以最小补丁、完整对应源码、
+赛方/麒麟不能提供可重建宿主时，已批准的 ADR-0003 允许以最小补丁、完整对应源码、
 AGPL 义务、锁定 wheelhouse、SBOM 和敏感扫描共同形成可分发组件。
 
 上述条件现由 `build/release/agent-supply-chain-policy.json` 与

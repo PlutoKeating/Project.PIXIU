@@ -43,11 +43,11 @@
 不会吞掉激活失败，generic/portable 才保留独立控制台降级。构建器强制
 `KYSDK=ON`/`install_strict=1` 成对，组件清单记录最终模式。首次目标运行已证明严格失败
 关闭有效，也暴露用户会话 SDK 边界尚未交付化；该边界闭环后才可生成最终证据。
-推荐边界已形成待批准的
+推荐边界已于 2026-09-04 获负责人批准，见
 [`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：`.deb` 仍为一次
 系统安装，后端改由登录用户的 systemd user manager 运行，数据进入 XDG 用户域，升级
-采用用户态停启/健康检查与特权安装两阶段。在 ADR 获批并完成迁移/回滚矩阵前，现有
-system service 不删除，H-02/H-03 状态不变。
+采用用户态停启/健康检查与特权安装两阶段。在迁移/回滚矩阵完成前，现有 system
+service 不删除，H-02/H-03 状态不变。
 
 当前源码新增 `PIXIU_VECTOR_DB_PATH`，strict 启动必须实际装载应用数据库，store 按
 进程复用并在退出时断开。当前组合回归 809 项通过；提交 `6f6002e` 的 revision 8
@@ -66,7 +66,7 @@ amd64 构建、38/38 前端测试和安装；保留 portable 配置时服务健�
 Agent 宿主供应链另有独立发布门：官方 0.9.6 二进制可在 V11 启动并连接固定 Runtime，
 Gateway 与 PIXIU Provider 无模型探针通过；但公开源码标签不能重建该宿主，0.9.7
 发布二进制与目标 V11 ABI 不兼容，Runtime 缓存也不是可复现构建。处理方案与禁止项
-见待批准的 [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。在对应
+见已批准的 [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。在对应
 源码、敏感地址清理、离线锁定和许可证审查完成前，不能把宿主纳入最终单包。
 `build/release/scripts/audit-agent-supply-chain.py` 已把该边界变成机器门禁：固定双上游
 commit 与 Runtime 三套版本事实，扫描时只披露命中文件名；正式候选以

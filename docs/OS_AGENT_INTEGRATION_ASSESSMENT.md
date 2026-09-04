@@ -6,8 +6,10 @@
 > 权威输入：[完整赛题要求 PPTX](完整赛题要求.pptx)、[赛题文字方案](OriginProblemDescription.md)、本仓库代码、`third_party/` 中 openKylin 官方源码
 >
 > **团队决策状态**：华南理工大学 PIXIU 团队负责人已于 2026-09-03 批准
-> [ADR-0001](decisions/0001-use-openkylin-agent-host.md)。本文件中的接入设计从
-> “建议方案”转为项目执行基线；赛方事实与团队决策仍必须分开表述。
+> [ADR-0001](decisions/0001-use-openkylin-agent-host.md)，并于 2026-09-04 批准
+> [ADR-0002](decisions/0002-run-native-backend-in-user-session.md) 与
+> [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。宿主接入、
+> 用户会话运行和固定供应链均为项目执行基线；赛方事实与团队决策仍必须分开表述。
 
 ## 1. 结论
 

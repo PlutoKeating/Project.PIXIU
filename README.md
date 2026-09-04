@@ -11,7 +11,7 @@
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Memory%20Console-Qt5%20%2F%20UKUI-41CD52?style=flat-square)](frontend/docs/ARCHITECTURE.md)
 
-[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [Agent 宿主决策](docs/decisions/0001-use-openkylin-agent-host.md) · [用户会话后端提案](docs/decisions/0002-run-native-backend-in-user-session.md) · [Agent 供应链提案](docs/decisions/0003-package-openkylin-agent-supply-chain.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
+[赛题与口径](docs/OriginProblemDescription.md) · [验收清单](docs/AcceptanceTestSpecification.md) · [完整交付主实施计划](docs/IMPLEMENTATION_MASTER_PLAN.md) · [最终交付计划](docs/DELIVERY_PLAN.md) · [Agent 宿主决策](docs/decisions/0001-use-openkylin-agent-host.md) · [用户会话后端决策](docs/decisions/0002-run-native-backend-in-user-session.md) · [Agent 供应链决策](docs/decisions/0003-package-openkylin-agent-supply-chain.md) · [关键问题与接入结论](docs/OS_AGENT_INTEGRATION_ASSESSMENT.md) · [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API](docs/API.md)
 
 </div>
 
@@ -258,7 +258,7 @@ revision 8 已在 V11 同用户会话通过写入、向量检索、遗忘和删�
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 又从洁净固定源码完成 strict amd64
 重建、38/38 前端测试与安装；portable 配置可健康运行，strict 系统服务则再次因用户级
 AI runtime 边界失败关闭，恢复后配置和数据库摘要保持。该复验排除了构建漂移，但未
-实现待批准的 user service，也没有完整 Agent，故不改变验收状态。
+实现已批准但尚未完成的 user service，也没有完整 Agent，故不改变验收状态。
 随后无模型 Agent 探针完成了另一条关键验证：官方 0.9.6 宿主二进制可在 V11 启动，
 固定 Runtime 的 Gateway 健康与会话 API 可用，且 Module E 被发现并配置为
 `memory.provider=pixiu`。但公开宿主源码标签无法重建该二进制，官方 0.9.7 包又与

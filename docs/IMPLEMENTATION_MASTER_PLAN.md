@@ -34,7 +34,7 @@
 - **实现路线**：执行 ADR-0001；不从零重造 OS Agent，以固定版本的
   `kylin-agent`/`agent-runtime` 为宿主，PIXIU 保持作品主体和记忆创新边界。
 - **供应链门**：官方宿主/Runtime 尚未形成 V11 可重建、离线、无认证地址的发行
-  组合；按 Proposed ADR-0003 完成前，不得把阶段性宿主探针当作最终单包。
+  组合；按已批准 ADR-0003 完成前，不得把阶段性宿主探针当作最终单包。
 - **模块边界**：A 仅改 `frontend/`；B 仅改 `backend/engine/` 与必要的 core 公共
   契约；C 仅改 `backend/foundation/`；E 仅改 `integrations/kylin_agent/`；跨模块
   装配只在公开 API、core 契约和 DI 组合根发生。
@@ -108,7 +108,7 @@ W0 基线与计划
 | W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 流水线已拆分；提交 `ea92b28` 的 V11 strict 双扩展构建及前端 38/38 已通过，自动安装/真实写查仍待 Agent/runtime 与服务 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
 | W2.5 | 在双 SDK 路径运行质量、延迟、资源和冷热压测 | P-01～P-04、F4-04/F4-05 原始报告生成 |
-| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | ADR-0002 已提出、待负责人批准；strict 服务与直接 SDK 在同一用户会话成功，系统账户不越权访问 socket |
+| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | ADR-0002 已批准，进入测试优先实施；strict 服务与直接 SDK 在同一用户会话成功，系统账户不越权访问 socket |
 
 当前 V11 x86_64 软件源已确认并安装双 SDK、桌面 KylinSDK 及开发包；提交 `ea92b28`
 已生成 `KYSDK=ON`/strict amd64 包，包内包含两个 cp312 原生扩展，前端 ctest 38/38。

@@ -5,8 +5,10 @@
 > 依据：[官方技术/赛事细则 PPTX](完整赛题要求.pptx)、[官方平台赛题文字方案与附录 A](OriginProblemDescription.md)；两份只读原件共同适用
 > 目的：把硬门槛、功能、性能、评分、交付和 Agent 完整性转为可执行、可判定、可追溯的清单
 >
-> 团队执行决定：2026-09-03 已批准 [ADR-0001](decisions/0001-use-openkylin-agent-host.md)。
-> 该决定确定 PIXIU 的实现与取证方式，不改变或扩写官方评分条款。
+> 团队执行决定：2026-09-03 已批准 [ADR-0001](decisions/0001-use-openkylin-agent-host.md)，
+> 2026-09-04 已批准 [ADR-0002](decisions/0002-run-native-backend-in-user-session.md) 与
+> [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。这些决定确定
+> PIXIU 的实现、用户会话运行边界与供应链取证方式，不改变或扩写官方评分条款。
 
 ## 0. 证据与判定规则
 
