@@ -32,11 +32,11 @@ API 仍被实际调用；测试节点只按可观察状态返回固定 tool call
 更新和同步状态调用。它只用于工程回归，证据类别固定为 `pixiu-agent-mock-e2e`，不得
 替代 DeepSeek 官方云端的自主规划实测或写入正式 D-07。
 
-2026-09-04 的目标 V11 严格候选已越过此前的用户会话和 Agent 供应链阻断。提交
-`d3b6bae` 的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
+2026-09-04 的目标 V11 严格候选已越过此前的用户会话和 Agent 供应链阻断。当前审阅
+候选的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
 生命周期和产品写入/检索/遗忘均通过；`/capabilities` 返回 Embedding/Vector
-`runtime=kylin`、两者 compliant 且 `contest_ready=true`。该候选 SHA-256 为
-`7a2908a31d95715937232805ef173642e0c9d9f3bd3a6e0682546c6c7c87a082`。包内同时包含
+`runtime=kylin`、两者 compliant 且 `contest_ready=true`。候选的完整 commit 和
+SHA-256 以 `submission/review/00-软件候选/` 中同版 JSON 与 `.sha256` 为准。包内同时包含
 可重建 `kylin-agent`、58 个哈希锁定 Runtime wheels、PIXIU Provider、SBOM、NOTICE
 和对应源码/构建证据。最终文档冻结后仍须对新 commit 重建并重新绑定证据。
 
@@ -250,8 +250,8 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 | 门槛 | 赛方要求 | 当前状态 | 最终通过证据 |
 |------|----------|----------|--------------|
 | H-01 | 软件部署在银河麒麟桌面操作系统 V11；不满足计 0 分 | **产品安装/启动已通过，赛事总门仍待闭环**：strict 单包已在 V11 安装、升级并运行；完整 Agent/三设备/视频仍待最终同版取证 | V11 安装、启动、全链路视频与机器信息 |
-| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：`d3b6bae` 同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
-| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：`d3b6bae` 同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
+| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：当前审阅候选同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
+| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：当前审阅候选同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
 
 现有 portable 基线（偏好 100%、召回 100%、冲突 96%、P95 115ms）只证明通用软件路径可回归，**不代表 H-01～H-03 或最终比赛性能验收通过**。详见 [验收证据说明](docs/acceptance/README.md)。
 
@@ -305,8 +305,8 @@ Ed25519 私钥完成签名。
 画像、本次 `.deb` SHA-256 与已装 PIXIU、双 SDK 包版本、Agent runtime、`/version`、
 `/health`、`/capabilities` 绑定；另以独立临时数据库和隔离集合直接执行 SDK 的
 LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 API 写入/
-召回/遗忘。`d3b6bae` 目标 V11 strict 候选已生成同版原生证据：安装包 SHA-256 为
-`7a2908a31d95715937232805ef173642e0c9d9f3bd3a6e0682546c6c7c87a082`，Embedding
+召回/遗忘。当前目标 V11 strict 审阅候选已生成同版原生证据；完整 commit 与包摘要
+以 `submission/review/00-软件候选/native-sdk-smoke.json` 和同目录 `.sha256` 为准。Embedding
 实际使用 runtime 1.3.0/gte-base 768 维向量，Vector direct SDK 与产品写入、召回、
 遗忘链均通过，`contest_ready=true`。正式 D-07 仍须在最终冻结 commit 重跑并归档。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按

@@ -33,7 +33,7 @@
 |------|----------|----------|
 | 记忆服务 + 控制台 `.deb` | root-owned 单包 + systemd user service + XDG 私有目录；旧库迁移、覆盖安装、健康检查和 GUI 升级事务均已实现 | 命令行安装/覆盖升级通过；完整矩阵待补 |
 | Module E 随包安装 | `.deb` 携带只读 Provider；用户启动时幂等安装并激活；旧用户 Runtime unit 会先备份再迁移到包内网关 | **安装与激活通过；模型 run 待补** |
-| V11 双 SDK 严格画像 | `d3b6bae` 同包原生证据完成 direct SDK 和产品写查遗忘，双 SDK compliant、`contest_ready=true` | 技术门通过；最终冻结 commit 重跑归档 |
+| V11 双 SDK 严格画像 | 当前审阅候选的同包原生证据完成 direct SDK 和产品写查遗忘，双 SDK compliant、`contest_ready=true` | 技术门通过；最终冻结 commit 重跑归档 |
 | 图形安装器双击安装 | 尚无最终版本取证 | 阻断 |
 | 离线/全新机安装 | 现有 wheels 路径可用，需最终包重验 | 待重验 |
 
@@ -129,7 +129,7 @@ commit/版本/架构从包内组件清单与 dpkg control 交叉核对，且 JSO
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
 探测结果及 `/capabilities` 一致性。原生取证器已自动化绑定候选包摘要/commit、已装
 manifest、dpkg 版本、Agent runtime 和三个端点，并以独立临时数据库和隔离集合直接
-执行 SDK 的装载、集合、向量及断开生命周期。`d3b6bae` 已生成真实通过输出并绑定
+执行 SDK 的装载、集合、向量及断开生命周期。当前审阅候选已生成真实通过输出并绑定
 候选 SHA；文档冻结后仍需对最终 commit 重跑，源码 gitlink不能代替实装证据。
 
 三设备证据采用两级门禁：`three-device-evidence.py capture` 必须在各节点本地复用

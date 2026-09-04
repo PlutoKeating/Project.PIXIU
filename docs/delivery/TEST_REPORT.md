@@ -5,8 +5,8 @@
 
 ## 2026-09-04 当前候选事实
 
-- `d3b6bae` strict amd64 候选 SHA-256：
-  `7a2908a31d95715937232805ef173642e0c9d9f3bd3a6e0682546c6c7c87a082`；
+- 当前 strict amd64 审阅候选的完整 commit 和 SHA-256 以
+  `submission/review/00-软件候选/native-sdk-smoke.json` 与同目录 `.sha256` 为准；
 - 包内 Agent 宿主、58 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
   SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
 - 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自

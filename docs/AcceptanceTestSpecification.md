@@ -29,8 +29,8 @@
 | 编号 | 验收项 | 测试方法 | 通过标准 | PIXIU 当前状态 |
 |------|--------|----------|----------|----------------|
 | H-01 `[GATE]` | 部署于银河麒麟桌面操作系统 V11 | 记录系统版本、架构；安装最终包并完成全链路演示 | 最终版本在 V11 可安装、启动、操作；PPT 明示不满足计 0 分 | **安装/启动已通过；最终同版 Agent、三设备和视频待补** |
-| H-02 `[GATE]` | 数据库使用系统向量数据库 SDK | 跟踪建库、索引、写入、删除、查询调用；检查链接/进程与运行日志 | 生产向量存储和检索实际调用 `kylin-ai-vector-engine`/官方客户端；严格模式缺失即失败 | **技术门通过、最终归档待重跑：`d3b6bae` strict 同包 direct SDK 与产品写入/检索/遗忘/隐藏通过，`runtime=kylin`/compliant** |
-| H-03 `[GATE]` | 文本向量使用系统 Embedding 接口 | 运行 `runtime=kylin` 端到端用例；检查调用日志和缺失 SDK 失败行为 | 实际调用 `kylin-coreai-embedding`；不能由 portable/hash/stub 顶替 | **技术门通过、最终归档待重跑：`d3b6bae` strict 同包使用 runtime 1.3.0/gte-base 768 维真实向量，`runtime=kylin`/compliant** |
+| H-02 `[GATE]` | 数据库使用系统向量数据库 SDK | 跟踪建库、索引、写入、删除、查询调用；检查链接/进程与运行日志 | 生产向量存储和检索实际调用 `kylin-ai-vector-engine`/官方客户端；严格模式缺失即失败 | **技术门通过、最终归档待重跑：当前审阅候选 strict 同包 direct SDK 与产品写入/检索/遗忘/隐藏通过，`runtime=kylin`/compliant** |
+| H-03 `[GATE]` | 文本向量使用系统 Embedding 接口 | 运行 `runtime=kylin` 端到端用例；检查调用日志和缺失 SDK 失败行为 | 实际调用 `kylin-coreai-embedding`；不能由 portable/hash/stub 顶替 | **技术门通过、最终归档待重跑：当前审阅候选 strict 同包使用 runtime 1.3.0/gte-base 768 维真实向量，`runtime=kylin`/compliant** |
 
 H-02 允许 SQLite 保存结构化元数据、关系和审计，但向量的生产存储/检索必须经过指定系统向量数据库。BGE-M3 等模型只能作为对比实验，不能替代 H-03。
 

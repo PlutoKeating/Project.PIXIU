@@ -1,7 +1,7 @@
 # D-04 银河麒麟 V11 部署指南工作稿
 
 - 适用版本：0.1.7 功能基线；最终候选号待定
-- 状态：`d3b6bae` Kylin V11 strict 单包已完成构建、覆盖安装、事务式用户服务/gateway 迁移、
+- 状态：当前审阅候选 Kylin V11 strict 单包已完成构建、覆盖安装、事务式用户服务/gateway 迁移、
   双 SDK 产品生命周期并返回 compliant、`contest_ready=true`；最终图形安装、模型
   Agent、三设备及冻结 commit 的 D-07 证据仍未闭环
 
