@@ -14,6 +14,7 @@ if [ -f "${STRICT_FILE}" ]; then
 fi
 if [ "${STRICT}" = "1" ]; then
     /usr/bin/pixiu-agent-integrate --quiet
+    exec /usr/bin/kylin-agent "$@"
 else
     /usr/bin/pixiu-agent-integrate --quiet || true
 fi

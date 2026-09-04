@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+runtime=/usr/lib/pixiu/venv/bin/kylin-agent-runtime
+[ -x "${runtime}" ] || {
+    echo "kylin-agent-runtime: packaged Runtime is unavailable" >&2
+    exit 127
+}
+exec "${runtime}" "$@"

@@ -86,7 +86,25 @@ if [ -d "${VENV}" ]; then
     chown -Rh root:root "${VENV}"
 fi
 
-# 3) 停用旧版系统服务，但保留 /var/lib/pixiu 与 /etc/pixiu 供显式迁移。
+# 3) A strict candidate contains the complete Agent Runtime wheelhouse and a
+# hash lock. It must install without an index into the same root-owned venv;
+# falling back to network or a mutable per-user runtime is forbidden.
+AGENT_ROOT="${PIXIU_LIB}/agent-runtime"
+if [ -d "${AGENT_ROOT}/wheelhouse" ]; then
+    [ "${VPY}" != "${PY}" ] || {
+        echo "pixiu: strict Agent Runtime requires python3-venv" >&2
+        exit 1
+    }
+    echo "pixiu: installing hash-locked Agent Runtime from bundled wheels (offline)"
+    install_reqs --no-index --find-links="${AGENT_ROOT}/wheelhouse" \
+        --require-hashes -r "${AGENT_ROOT}/runtime-cp312.lock"
+    [ -x "${VENV}/bin/kylin-agent-runtime" ] || {
+        echo "pixiu: packaged Agent Runtime entry point is missing" >&2
+        exit 1
+    }
+fi
+
+# 4) 停用旧版系统服务，但保留 /var/lib/pixiu 与 /etc/pixiu 供显式迁移。
 if command -v systemctl >/dev/null 2>&1; then
     systemctl stop pixiu-backend.service >/dev/null 2>&1 || true
     systemctl disable pixiu-backend.service >/dev/null 2>&1 || true

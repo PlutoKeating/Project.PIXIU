@@ -111,6 +111,12 @@ grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
+grep -q 'exec /usr/bin/kylin-agent' \
+    "${ROOT}/build/release/debian/usr/bin/pixiu"
+grep -q 'agent-supply-chain.py\|audit-agent-supply-chain.py' \
+    "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'runtime-cp312.lock' "${ROOT}/build/release/debian/postinst"
+grep -q -- '--require-hashes' "${ROOT}/build/release/debian/postinst"
 grep -q 'plugin.yaml.in' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'PIXIU_PRODUCT_VERSION=@PRODUCT_VERSION@' \
     "${ROOT}/build/release/debian/pixiu-backend.service"

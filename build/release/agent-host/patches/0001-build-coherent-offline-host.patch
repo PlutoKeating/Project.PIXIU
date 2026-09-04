@@ -88,3 +88,23 @@ index 9a81710..b4045f0 100644
 +    gatewayService.ensureReady();
      
      MainWindow window;
+diff --git a/src/services/gatewayservice.cpp b/src/services/gatewayservice.cpp
+index 60714d1..29c5184 100644
+--- a/src/services/gatewayservice.cpp
++++ b/src/services/gatewayservice.cpp
+@@ -772,5 +772,15 @@ bool GatewayService::ensureRuntimeSkillsSeeded()
+ bool GatewayService::ensureStartupRuntimes(bool gatewayWasRunning, bool skipConfirm)
+ {
++    Q_UNUSED(gatewayWasRunning)
++    Q_UNUSED(skipConfirm)
++    // PIXIU ships a root-owned, hash-locked Runtime venv and launcher in the
++    // same Debian package. Never invoke the upstream network installers or
++    // require the optional CUA bundle during desktop startup.
++    if (!hasRuntimeExecutable()) {
++        qWarning() << "Packaged kylin-agent-runtime executable is unavailable";
++        return false;
++    }
++    return true;
+     const bool runtimeCacheAvailable = hasRuntimeCachePackage();
+     const bool needRuntimeCacheInstall = runtimeCacheAvailable && !hasRuntimeCacheInstalled();
+     bool needCuaUpdate = needsCuaRuntimeUpdate();

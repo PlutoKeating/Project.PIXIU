@@ -201,6 +201,33 @@ find "${INTEGRATION_ROOT}" -name '*.pyc' -delete
 find "${INTEGRATION_ROOT}" -type d -exec chmod 0755 {} +
 find "${INTEGRATION_ROOT}" -type f -exec chmod 0644 {} +
 
+# A strict release is a single complete OS Agent package. Its host/runtime
+# inputs must already have passed the artifact-backed supply-chain audit.
+if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
+    AGENT_EVIDENCE="${PIXIU_RELEASE_DIR}/evidence/agent-supply-chain"
+    AGENT_DOC="${STAGE}/usr/share/doc/pixiu/agent"
+    AGENT_RUNTIME="${STAGE}/usr/lib/pixiu/agent-runtime"
+    "${PIXIU_PYTHON}" "${PIXIU_RELEASE_DIR}/scripts/audit-agent-supply-chain.py" \
+        --root "${PIXIU_ROOT}" --evidence-dir "${AGENT_EVIDENCE}" \
+        --output "${STAGE}/usr/share/pixiu/agent-supply-chain-audit.json" \
+        --require-ready
+    install -m 0755 "${AGENT_EVIDENCE}/host/kylin-agent" \
+        "${STAGE}/usr/bin/kylin-agent"
+    install -d -m 0755 "${AGENT_RUNTIME}/wheelhouse" "${AGENT_DOC}"
+    cp -a "${AGENT_EVIDENCE}/wheelhouse/." "${AGENT_RUNTIME}/wheelhouse/"
+    install -m 0644 "${AGENT_EVIDENCE}/runtime/runtime-cp312.lock" \
+        "${AGENT_RUNTIME}/runtime-cp312.lock"
+    for item in agent-host-build.json runtime-wheelhouse.json \
+            agent-components.spdx.json NOTICE.agent.txt; do
+        install -m 0644 "${AGENT_EVIDENCE}/${item}" "${AGENT_DOC}/${item}"
+    done
+    cp -a "${AGENT_EVIDENCE}/host/"*.tar.* "${AGENT_DOC}/"
+    install -m 0644 "${PIXIU_ROOT}/third_party/kylin-agent/LICENSE" \
+        "${AGENT_DOC}/LICENSE.kylin-agent"
+    install -m 0644 "${PIXIU_ROOT}/third_party/kylin-agent-runtime/LICENSE" \
+        "${AGENT_DOC}/LICENSE.kylin-agent-runtime"
+fi
+
 if [ "${PIXIU_KYSDK}" = "ON" ]; then
     log "[2.5/5] backend Kylin SDK native bindings"
     NATIVE_BUILD_DIR="${OUT}/kylin-native"
@@ -310,6 +337,13 @@ install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backe
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-user-setup" "${STAGE}/usr/bin/pixiu-user-setup"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
     "${STAGE}/usr/bin/pixiu-agent-integrate"
+if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
+    install -m 0755 "${DEB_SRC}/usr/bin/kylin-agent-runtime" \
+        "${STAGE}/usr/bin/kylin-agent-runtime"
+    DESKTOP_FILE="${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"
+    [ -f "${DESKTOP_FILE}" ] || die "PIXIU desktop entry is missing from frontend install"
+    sed -i 's/^Exec=.*/Exec=pixiu/' "${DESKTOP_FILE}"
+fi
 install -m 0755 "${PIXIU_RELEASE_DIR}/scripts/migrate-system-data.py" \
     "${STAGE}/usr/lib/pixiu/migrate-system-data"
 install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
