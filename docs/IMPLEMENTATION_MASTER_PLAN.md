@@ -95,7 +95,7 @@ W0 基线与计划
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；809 项组合回归通过，V11 新包待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
-| W1.6 | V11 | ✅ `f2a25f4` strict 同包证据返回 Vector `runtime=kylin`/compliant、`contest_ready=true`，并完成 direct SDK 与产品写入/检索/遗忘/隐藏 | H-02 技术门通过；最终冻结 commit 随 G2/G5 重跑归档 |
+| W1.6 | V11 | ✅ `829d944` strict 同包证据返回 Vector `runtime=kylin`/compliant、`contest_ready=true`，并完成 direct SDK 与产品写入/检索/遗忘/隐藏 | H-02 技术门通过；最终冻结 commit 随 G2/G5 重跑归档 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite
 映射、FTS/关系/缓存；SDK int64 主键与知识 ULID 的映射必须持久化并检测碰撞。
@@ -220,7 +220,7 @@ F7-02 冻结链已补 `final-dataset-manifest.py`：从 release commit 的确定
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W7.1 | 🟡 根 `VERSION` 已成为唯一产品版本输入；包内组件 manifest 与包外签名 asset manifest 已接线；`f2a25f4` 原生证据已绑定候选包摘要/commit、已装 manifest、dpkg 版本/架构、Agent runtime 和三个能力端点 | 文档冻结后重建最终候选六件套并归档复验 |
+| W7.1 | 🟡 根 `VERSION` 已成为唯一产品版本输入；包内组件 manifest 与包外签名 asset manifest 已接线；`829d944` 原生证据已绑定候选包摘要/commit、已装 manifest、dpkg 版本/架构、Agent runtime 和三个能力端点 | 文档冻结后重建最终候选六件套并归档复验 |
 | W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、可重建宿主、54 个锁定 Runtime wheels、桌面入口及安全激活工具；覆盖安装、旧 gateway 迁移和 Provider 激活通过 | 命令行安装已实测；全新 V11 图形安装与模型 run 待补 |
 | W7.3 | 🟡 strict `preinst` 解包前探测 V11/架构；SDK 依赖交由 Debian 排序并由 strict 后端验证，用户态激活器验证 Agent 与单一 0.9.x runtime；构建强制 KYSDK/strict 不变量，generic/portable 明确降级 | 各阶段隔离成功/拒绝测试已过；最终目标 V11 真实严格包各路径待取证 |
 | W7.4 | ✅ Ed25519 发布 Secret、双架构签名资产、固定公钥及 dpkg 前验签已验证；两个临时 `.deb` 已完成旧钥签过渡包、部署新公钥、新钥签下一包及旧钥拒绝演练 | 摘要和签名任一失败均拒绝安装；生产私钥不入库 |

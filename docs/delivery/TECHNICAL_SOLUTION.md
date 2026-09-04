@@ -28,7 +28,7 @@ PIXIU 面向“OS Agent 记忆能力优化与应用”，解决记忆散落在�
 
 ## 当前缺口与完成标准
 
-H-02/H-03 技术门已由 `f2a25f4` strict 同包原生证据通过；`CONVERSATION`/provenance/完成态
+H-02/H-03 技术门已由 `829d944` strict 同包原生证据通过；`CONVERSATION`/provenance/完成态
 幂等、审计式失败恢复、预算化召回和六类生命周期 context 入口已实现，Module E
 已在包内 Runtime 中被发现并选中。V11 可重建宿主、离线 Runtime、Gateway/会话 API
 与供应链 `ready=true` 已通过；模型驱动的真实触发和跨会话长期化实证尚未完成。只有

@@ -5,8 +5,8 @@
 
 ## 2026-09-04 当前候选事实
 
-- `f2a25f4` strict amd64 候选 SHA-256：
-  `576f2044958daffd05855ccc4f8f43ccc0166b02ec9c434a9e795ffe51569d8c`；
+- `829d944` strict amd64 候选 SHA-256：
+  `43780c6a8460d8a518811d1968ff20bb6eceeae0c6da6344b5f18b4339e3f180`；
 - 包内 Agent 宿主、54 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
   SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
 - 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自
