@@ -67,6 +67,20 @@
         "agent/redact.py": "67888b131759789408f136093b1b033486a632db8cda9eb5abe19cee4adf12df"
       },
       "reason": "Protective redaction regular expression and documentation example"
+    },
+    "pydantic==2.13.4": {
+      "sha256": "45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba",
+      "members": [
+        "pydantic/networks.py"
+      ],
+      "reason": "Static URL validation documentation example; not an operational endpoint or credential"
+    },
+    "urllib3==2.7.0": {
+      "sha256": "9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897",
+      "members": [
+        "urllib3/util/url.py"
+      ],
+      "reason": "Static URL parser documentation example; not an operational endpoint or credential"
     }
   },
   "evidence": {
