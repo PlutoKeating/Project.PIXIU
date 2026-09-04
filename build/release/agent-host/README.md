@@ -15,6 +15,10 @@ SSE 对话取消/完成语义以及窗口激活行为。它不是空桩，也不
 PIXIU 品牌栏、云端模型入口、消息、输入区和状态反馈，并删除空状态中的内部数据库
 路径。关键配色由 `test-agent-host-ui-contrast.py` 复算 WCAG AA 4.5:1；补丁不改变
 会话、工具、Runtime 或 MemoryProvider 语义。
+消息行不得以裸 `QLayout` 嵌入画布：每行必须由 `messageRow` widget 持有气泡与
+布局，`clearMessages()` 删除该 widget 时递归释放子控件。这一所有权规则防止历史
+刷新或侧栏折叠后的重复气泡、错位残影和空状态遮挡，由
+`test-agent-host-adaptation.sh` 失败关闭。
 
 同一补丁还执行负责人批准的云端模型边界：新装和既有配置补入并优先显示 DeepSeek
 官方 `deepseek-chat`，宿主下拉框只展示 DeepSeek、Anthropic、OpenAI 直连云端模型；

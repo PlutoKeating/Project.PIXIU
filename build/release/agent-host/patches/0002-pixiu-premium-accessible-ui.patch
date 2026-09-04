@@ -208,6 +208,18 @@ index 496e400..37b7b57 100644
  }
 
  void ChatWidget::clearMessages()
+@@ -167,10 +193,10 @@ void ChatWidget::clearMessages()
+ {
+     m_streamBubbles.clear();
+     while (QLayoutItem *item = m_messagesLayout->takeAt(0)) {
+         if (item->widget()) {
+-            item->widget()->deleteLater();
++            delete item->widget();
+         }
+         delete item;
+     }
+     m_messagesLayout->addStretch();
+ }
 @@ -180,7 +206,8 @@ void ChatWidget::refreshMessages()
      clearMessages();
      const QVector<SessionMessage> messages = SessionService::instance().getSessionMessages(m_currentSessionId);
@@ -218,7 +230,7 @@ index 496e400..37b7b57 100644
          return;
      }
 
-@@ -197,25 +224,19 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+@@ -197,39 +224,35 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
      bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
      bubble->setContextMenuPolicy(Qt::CustomContextMenu);
      bubble->setContentsMargins(12, 10, 12, 10);
@@ -249,7 +261,32 @@ index 496e400..37b7b57 100644
          }
      });
 
-@@ -275,7 +296,7 @@ void ChatWidget::sendMessage()
+-    QHBoxLayout *row = new QHBoxLayout;
++    QWidget *rowWidget = new QWidget(m_messagesContainer);
++    rowWidget->setObjectName(QStringLiteral("messageRow"));
++    QHBoxLayout *row = new QHBoxLayout(rowWidget);
+     row->setContentsMargins(0, 0, 0, 0);
+     if (isUser) {
+         row->addStretch();
+         row->addWidget(bubble, 0);
+     } else {
+         row->addWidget(bubble, 0);
+         row->addStretch();
+     }
+
+-    m_messagesLayout->insertLayout(qMax(0, m_messagesLayout->count() - 1), row);
++    m_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), rowWidget);
+     return bubble;
+ }
+
+@@ -237,5 +260,5 @@ QString ChatWidget::localAssistantReply(const QString &userText) const
+ {
+     Q_UNUSED(userText)
+-    return QStringLiteral("已保存到本机会话。agent-rt 接入后，这里将显示后端回复。");
++    return QStringLiteral("云端模型暂未响应。请确认已完成凭据配置，然后重试。");
+ }
+
+@@ -275,7 +298,7 @@ void ChatWidget::sendMessage()
              showStatus(QStringLiteral("Failed to create a local session."));
              return;
          }
