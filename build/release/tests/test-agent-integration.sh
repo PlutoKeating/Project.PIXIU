@@ -15,6 +15,9 @@ chmod 0755 "${FAKE_BIN}"
 FAKE_HOST="${TMP}/kylin-agent"
 printf '%s\n' '#!/bin/sh' 'exit 0' > "${FAKE_HOST}"
 chmod 0755 "${FAKE_HOST}"
+FAKE_USER_SETUP="${TMP}/pixiu-user-setup"
+printf '%s\n' '#!/bin/sh' 'test "${1:-}" = "--start"' > "${FAKE_USER_SETUP}"
+chmod 0755 "${FAKE_USER_SETUP}"
 STRICT_FILE="${TMP}/install-strict"
 printf '1\n' > "${STRICT_FILE}"
 FAKE_SYSTEMCTL="${TMP}/systemctl"
@@ -36,6 +39,7 @@ HOME="${TMP}/home" \
 PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
 PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
 PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
 PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
 PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-call" \
@@ -73,6 +77,7 @@ HOME="${TMP}/home" \
 PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
 PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
 PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
 PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
 PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-call" \
@@ -88,6 +93,7 @@ printf 'user owned\n' > "${TMP}/other/plugins/pixiu/custom.txt"
 if HOME="${TMP}/other-home" HERMES_HOME="${TMP}/other" \
    PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+   PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
    "${SCRIPT}" --quiet 2>/dev/null; then
     echo "unmanaged plugin collision must fail" >&2
@@ -98,6 +104,7 @@ grep -qx 'user owned' "${TMP}/other/plugins/pixiu/custom.txt"
 if HOME="${TMP}/home" HERMES_HOME=relative/path \
    PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+   PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
    "${SCRIPT}" --quiet 2>/dev/null; then
     echo "relative Agent profile must fail" >&2
@@ -130,6 +137,7 @@ for scenario in missing-host runtime-nonzero runtime-unsupported runtime-ambiguo
     if HOME="${TMP}/failure-home" \
        PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
        PIXIU_AGENT_RUNTIME_BIN="${runtime}" PIXIU_AGENT_HOST_BIN="${host}" \
+       PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
        PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
        "${SCRIPT}" --quiet >/dev/null 2>&1; then
         echo "Agent integration must reject ${scenario}" >&2
