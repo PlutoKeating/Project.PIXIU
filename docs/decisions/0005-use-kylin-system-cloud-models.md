@@ -16,6 +16,12 @@ KylinAgent Runtime 保持会话、规划、工具调用、审批和 MemoryProvid
 结果转换为 Kylin GenAI SDK 的会话、回调及 continuation 接口。只有
 `PublicCloud` 且声明支持 tool choice 的系统模型进入 Agent 可选集合。
 
+适配服务在初始化 SDK 会话前写入模型配置；工具回合使用 SDK 的
+`genai_text_chat_async` 与注册工具回调，既有多轮消息以有界 JSON 上下文写入系统提示，
+工具结果通过 `genai_text_submit_tool_result` 续传到同一会话。该顺序与调用组合已在
+银河麒麟 V11 的 Qwen-Plus 系统云模型上完成“选择工具—返回参数—提交结果—最终答复”
+闭环验证。
+
 用户仍可在 KylinAgent 的“云端模型设置”中导入 DeepSeek、Anthropic 或 OpenAI
 官方直连 API Key。输入框使用密码模式；Runtime 在本用户配置中以 `0600` 原子写入，
 管理 API 只返回 `credential_configured` 状态。保存前必须验证 HTTPS 地址、认证和模型
