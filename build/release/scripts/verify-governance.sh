@@ -38,7 +38,10 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
-if [ ! -d "${ROOT}/.git" ]; then
+ROOT_REAL="$(cd "${ROOT}" 2>/dev/null && pwd -P || true)"
+GIT_TOP="$(git -C "${ROOT}" rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "${ROOT_REAL}" ] || [ -z "${GIT_TOP}" ] \
+   || [ "$(cd "${GIT_TOP}" 2>/dev/null && pwd -P || true)" != "${ROOT_REAL}" ]; then
     printf 'governance: not a Git worktree: %s\n' "${ROOT}" >&2
     exit 1
 fi

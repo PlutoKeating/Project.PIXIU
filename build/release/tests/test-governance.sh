@@ -67,7 +67,17 @@ test_dirty_repository_fails() {
     fi
 }
 
+test_clean_linked_worktree_passes() {
+    local fixture="${TMP}/linked-base"
+    local worktree="${TMP}/linked-worktree"
+    make_fixture "${fixture}"
+    git -C "${fixture}" worktree add --quiet --detach "${worktree}" HEAD
+    "${CHECKER}" --root "${worktree}" >/dev/null
+    git -C "${fixture}" worktree remove --force "${worktree}"
+}
+
 test_clean_repository_passes
 test_changed_official_source_fails
 test_dirty_repository_fails
+test_clean_linked_worktree_passes
 printf 'governance tests: OK\n'

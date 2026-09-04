@@ -28,6 +28,9 @@ make -C build/release governance
 候选发布审计。版本一致性继续由 `build-deb.sh` 在任何打包前强制检查。
 治理测试的临时 Git fixture 采用有界重试清理，并始终保留实际测试退出码，避免后台
 Git 维护造成的瞬时目录竞争把已通过门禁误报为失败；真实校验失败仍原样返回非零。
+治理入口同时接受独立 clone 和 Git linked worktree，但要求传入路径必须就是该
+worktree 顶层；这样可在不改动已有构建目录的情况下隔离候选发布，同时仍完整检查
+官方原件和整个 worktree 的洁净状态。
 
 ## 目录结构
 
