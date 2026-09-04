@@ -108,7 +108,7 @@ python3 build/release/scripts/record-agent-supply-chain.py \
   --network-isolated
 python3 build/release/scripts/record-agent-supply-chain.py \
   --root . --evidence-dir EVIDENCE runtime-wheelhouse --target-arch amd64 \
-  --python-abi cp311 --wheelhouse WHEELS --lockfile LOCK \
+  --python-abi cp312 --wheelhouse WHEELS --lockfile LOCK \
   --offline-install-log INSTALL_LOG --network-isolated
 python3 build/release/scripts/record-agent-supply-chain.py \
   --root . --evidence-dir EVIDENCE legal
@@ -124,9 +124,12 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 无网络离线安装日志与逐项摘要。SPDX 2.3 必须精确描述两个固定上游并覆盖 wheelhouse
 全部包；NOTICE 必须包含组件名、来源、固定 commit 和许可证结论/未决标识，不能再用
 任意非空文件占位。当前上游
-脚本与发行证据尚未满足这些条件，因此预期 `ready=false`；不得删掉门禁或伪造证据
-来取得绿色结果。未初始化 submodule 时，普通模式会把组件固定与 Runtime 版本事实
-记为不可用而不是崩溃；强制模式仍必然失败。
+当前目标 V11 证据已满足这些条件并报告 `ready=true`；正式包必须再传入
+`--expected-arch`，把宿主和 Runtime 证据精确绑定到候选包架构。未初始化 submodule
+时，普通模式会把组件固定与 Runtime 版本事实记为不可用而不是崩溃；强制模式仍必然
+失败。CPython 3.12/amd64 Runtime 及构建工具锁位于 `agent-runtime/`，是
+`--require-hashes` 构建输入而非构建后输出；生成 wheelhouse 后必须反向生成并逐字节
+比对运行时锁。
 报告同时固定输出 `agent-supply-chain-audit` 证据类型、仓库 commit 和明确 pass/fail，
 供 D-07 原始证据归档做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
 
@@ -635,10 +638,11 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 - GUI 中显示版本、通道、发行说明、进度、授权和失败恢复；受控重启源码与包结构已
   实现/测试，最终候选仍须完成 V11 图形实证；
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
-- `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
-  `pixiu` 启动时更新当前用户 Agent profile，但当前仍不打包上游 Agent 宿主/Runtime。
-  官方 0.9.6 宿主二进制虽可在 V11 启动，其公开源码标签当前链接失败；0.9.7 又与目标 C++ ABI
-  不兼容。最终单包方案须先通过 ADR-0003 的对应源码、离线依赖、敏感扫描与许可证门。
+- strict `.deb` 已包含 Module E、最小适配后可重建的上游宿主与离线 Runtime；只读
+  Provider 源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`。`pixiu` 启动时先
+  拒绝不受管 user unit，再以事务方式更新 Agent profile 和包内 Gateway；Provider、
+  `.env`、Runtime 配置或 Gateway 激活失败会恢复原快照。模型驱动完整生命周期仍须
+  在配置真实推理提供商后取证，不能用无模型 Gateway 健康替代。
 
 这些是团队发布门；逐项状态与赛事 D-01～D-10 文档台账见
 `docs/DELIVERY_PLAN.md`。未完成前，现有 `0.1.7` 只能称为功能基线，不能称为最终

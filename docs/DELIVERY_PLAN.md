@@ -66,10 +66,12 @@ amd64 构建、38/38 前端测试和安装；保留 portable 配置时服务健�
 Agent 宿主供应链另有独立发布门：官方公开源码原状不可完整链接，仓库依据
 [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md) 保留可审计最小补丁，移除未完成且
 未使用的 UI 单元、补全 Gateway/stream/cancel/model 适配，并在净化后的隔离源码副本
-上完成 V11 网络隔离重建。Runtime 以完整 hash lock wheelhouse 网络隔离安装。
+上完成 V11 网络隔离重建。Runtime 以入库的 CPython 3.12/amd64 运行时锁和构建工具锁
+作为唯一解析输入，使用 `--require-hashes` 生成完整 wheelhouse，并在网络隔离环境安装。
 `build/release/scripts/audit-agent-supply-chain.py` 已把该边界变成机器门禁：固定双上游
 commit 与 Runtime 三套版本事实，扫描时只披露命中文件名；正式候选以
-`--require-ready` 要求 V11 宿主重建、Runtime 离线 wheelhouse、SPDX SBOM 和 NOTICE
+`--require-ready --expected-arch <包架构>` 要求 V11 宿主重建、Runtime 离线
+wheelhouse、SPDX SBOM 和 NOTICE
 同时有效。证据不能仅靠布尔声明：宿主产物、完整对应源码和构建日志，Runtime 全量
 wheel、锁文件和离线安装日志均须提供路径与匹配摘要；目标 OS/架构/Python ABI 必须
 显式记录。SPDX 2.3 覆盖固定宿主、Runtime 及 wheelhouse 全部包，NOTICE 复述固定

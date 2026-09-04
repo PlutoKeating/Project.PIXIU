@@ -184,6 +184,10 @@ amd64 候选，两个 cp312 原生扩展入包且前端 ctest 38/38。保留 por
 extra 漏装 `aiohttp` 及三重版本元数据漂移；这些供应链问题现已由固定最小宿主适配、
 hash lock 全量 wheelhouse、隔离构建/安装及 SPDX/NOTICE 闭环解决。无模型探针本身
 仍不计模型 Agent 生命周期通过。
+发布复审进一步把 CPython 3.12/amd64 Runtime 和构建工具的逐包哈希锁改为提交入库的
+构建输入；解析漂移会在生成锁反向比对时失败。供应链审计增加候选包目标架构参数，
+amd64 证据用于 arm64 构建的负例已通过。Agent 用户态激活新增不受管 unit 前置拒绝、
+Runtime 配置失败与 systemd 激活失败注入，两类失败均恢复原 Provider、配置和 unit。
 
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和

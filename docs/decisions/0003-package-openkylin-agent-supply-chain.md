@@ -52,9 +52,12 @@
 - S3.6：再执行多轮、Shell、联网搜索、审批、记忆生命周期与三设备完整验收。
 
 以上门槛已由 `build/release/agent-supply-chain-policy.json` 和
-`build/release/scripts/audit-agent-supply-chain.py` 落成第一阶段机器检查。普通模式
-只生成当前事实报告；候选发布必须使用 `--require-ready`。报告对认证式 URL 仅记录
-命中文件相对路径，不回显匹配内容；当前因上游命中与四项发行证据缺失而预期失败。
+`build/release/scripts/audit-agent-supply-chain.py` 落成机器检查。普通模式只生成当前
+事实报告；候选发布必须同时使用 `--require-ready` 和与包一致的
+`--expected-arch`。目标 V11 已完成最小宿主补丁的网络隔离重建、提交锁驱动的 Runtime
+wheelhouse 网络隔离安装，以及 SPDX/NOTICE/源码/日志/产物摘要闭环，当前证据为
+`ready=true`、零 blocker。报告对认证式 URL 仅记录命中文件相对路径，不回显匹配内容；
+正式冻结 commit 仍须重建同版候选并重跑 S3.4～S3.6，不能沿用旧候选结论。
 
 ## 暂不允许
 

@@ -103,7 +103,7 @@
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
 | C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约已供 E 消费 | core/storage/api（含 `/version`/`/health`）、retrieval、六类生命周期 context、失败 receipt 一次性恢复授权、flow、sync P2P CRDT、eval、monitor、D-Bus | 长期化策略/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
 | D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | 2026-09-04 组合回归 809 passed（Foundation 636 + Engine 154 + Module E 19）；前端最近 ctest 38/38；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
-| E · Agent integration | 团队负责人 | 🟡 Provider 已实现，完整宿主未交付 | 19 项契约测试；随包装入/幂等激活；真实 Runtime 发现与无模型 Gateway 探针通过 | 可重建宿主、离线 Runtime、模型驱动多轮/工具/记忆生命周期 |
+| E · Agent integration | 团队负责人 | 🟡 完整宿主已交付，模型场景待验 | 19 项契约测试；strict 单包内置 V11 可重建宿主、由提交锁和逐包哈希驱动的离线 Runtime、Provider；激活前检查 unit 所有权，失败恢复 Provider/配置/unit；无模型 Gateway 探针通过 | 配置推理提供商后完成模型驱动多轮/工具/记忆生命周期与最终同版取证 |
 
 ### 1.7 2026-08-10 分支同步摘要
 

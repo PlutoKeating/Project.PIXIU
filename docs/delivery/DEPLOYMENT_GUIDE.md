@@ -33,6 +33,11 @@ systemctl --user status pixiu-backend.service
 替代 V11 双 SDK 严格画像。最终安装必须记录系统版本、架构、包版本、宿主/runtime、
 双 SDK capability、服务状态和首次完整 Agent 操作。
 
+严格激活会先核对现有用户 unit 是否确为固定 Gateway 启动形式，再进行任何 profile
+修改；未知命令、额外启动钩子或符号链接均拒绝迁移。被迁移 unit 按内容 SHA-256 保留
+独立恢复副本，Provider、Agent `.env`、Runtime 配置和 unit 同处一次激活事务中；配置
+拒绝或 Gateway 启动失败时恢复原快照，不显示安装成功。
+
 包构建会把同一个 `PIXIU_VERSION` 写入 `/usr/share/pixiu/VERSION`，并经 systemd 的
 `PIXIU_PRODUCT_VERSION` 注入后端。安装后先检查 `GET /version` 的产品/API/schema，
 再检查 `GET /health` 的数据库就绪状态，最后以 `/capabilities` 判定 V11 双 SDK；
