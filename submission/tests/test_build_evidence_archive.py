@@ -243,7 +243,8 @@ class EvidenceArchiveTest(unittest.TestCase):
                 },
                 "installed": {
                     "present": installed, "debian_version": version,
-                    "service_active": installed, "binary_present": installed,
+                    "service_active": installed, "service_same_uid": installed,
+                    "binary_present": installed,
                     "release_manifest_present": installed,
                 },
                 "runtime": {
