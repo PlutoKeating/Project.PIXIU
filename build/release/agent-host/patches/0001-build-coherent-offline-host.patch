@@ -53,6 +53,19 @@ index 7f8af01..e0d3bb2 100644
      include/utils/svgicon.h
      include/utils/thememanager.h
      include/utils/kylinfiledialog.h
+@@ -150,12 +127,5 @@ target_link_libraries(${APP_EXECUTABLE_NAME} PRIVATE
+ # Install targets
+ install(TARGETS ${APP_EXECUTABLE_NAME} DESTINATION /usr/bin)
+-install(FILES packaging/kylin-agent.desktop DESTINATION /usr/share/applications)
+-install(PROGRAMS scripts/agent_runtime_install.sh
+-                 scripts/ydotool_install.sh
+-                 scripts/seed_runtime_skills.sh
+-                 scripts/repair_hermes_home.sh
+-                 scripts/install_runtime_cache.sh
+-        DESTINATION /usr/local/share/kylin-agent/scripts)
+ install(FILES res/ai-agent.png
+         DESTINATION /usr/share/icons/hicolor/512x512/apps
+         RENAME kylin-agent.png)
 diff --git a/src/main.cpp b/src/main.cpp
 index 9a81710..b4045f0 100644
 --- a/src/main.cpp
