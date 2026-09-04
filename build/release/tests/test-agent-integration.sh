@@ -10,19 +10,33 @@ trap 'rm -rf "${TMP}"' EXIT
 FAKE_BIN="${TMP}/kylin-agent-runtime"
 printf '%s\n' '#!/bin/sh' \
     'if [ "${1:-}" = "--version" ]; then printf "%s\n" "KylinAgent v0.9.8"; exit 0; fi' \
-    'printf "%s\n" "$*" > "${HERMES_HOME}/runtime-call"' > "${FAKE_BIN}"
+    'printf "%s\n" "$*" >> "${HERMES_HOME}/runtime-call"' > "${FAKE_BIN}"
 chmod 0755 "${FAKE_BIN}"
 FAKE_HOST="${TMP}/kylin-agent"
 printf '%s\n' '#!/bin/sh' 'exit 0' > "${FAKE_HOST}"
 chmod 0755 "${FAKE_HOST}"
 STRICT_FILE="${TMP}/install-strict"
 printf '1\n' > "${STRICT_FILE}"
+FAKE_SYSTEMCTL="${TMP}/systemctl"
+printf '%s\n' '#!/bin/sh' 'printf "%s\n" "$*" >> "${PIXIU_SYSTEMCTL_LOG}"' \
+    > "${FAKE_SYSTEMCTL}"
+chmod 0755 "${FAKE_SYSTEMCTL}"
+FAKE_UNIT="${TMP}/kylin-agent-runtime-gateway.service"
+printf '%s\n' '[Service]' 'ExecStart=/usr/bin/kylin-agent-runtime gateway run --replace' \
+    > "${FAKE_UNIT}"
+mkdir -p "${TMP}/home/.config/systemd/user"
+printf '%s\n' '[Service]' \
+    'ExecStart=/home/tester/.local/bin/kylin-agent-runtime gateway run --replace' \
+    > "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
 
 HOME="${TMP}/home" \
 PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
 PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
 PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
+PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
+PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-call" \
+PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
     "${SCRIPT}" --quiet
 
 DEST="${TMP}/home/.kylin-agent-runtime/plugins/pixiu"
@@ -32,6 +46,12 @@ test ! -f "${DEST}/plugin.yaml.in"
 grep -qx "version: ${PRODUCT_VERSION}" "${DEST}/plugin.yaml"
 grep -qx 'config set memory.provider pixiu' \
     "${TMP}/home/.kylin-agent-runtime/runtime-call"
+grep -qx -- '--user daemon-reload' "${TMP}/systemctl-call"
+grep -qx -- '--user enable --now kylin-agent-runtime-gateway.service' \
+    "${TMP}/systemctl-call"
+test ! -e "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
+grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
+    "${TMP}/home/.local/state/pixiu/service-backups/kylin-agent-runtime-gateway.service.pre-pixiu"
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \
     "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
@@ -46,6 +66,9 @@ PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
 PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
 PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
+PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
+PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-call" \
+PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
     "${SCRIPT}" --quiet
 grep -qx 'PIXIU_AGENT_SCOPE=user:tester' "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
@@ -119,6 +142,8 @@ grep -q 'KYLIN_AGENT_FORCE_RUNTIME_RESTART=1' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
 grep -q 'RUNTIME=/usr/bin/kylin-agent-runtime' \
     "${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
+grep -q 'kylin-agent-runtime-gateway.service' \
+    "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'agent-supply-chain.py\|audit-agent-supply-chain.py' \
     "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'runtime-cp312.lock' "${ROOT}/build/release/debian/postinst"

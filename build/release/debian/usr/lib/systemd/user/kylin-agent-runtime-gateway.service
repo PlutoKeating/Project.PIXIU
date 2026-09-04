@@ -1,0 +1,19 @@
+[Unit]
+Description=PIXIU packaged Kylin Agent Runtime Gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kylin-agent-runtime gateway run --replace
+Environment=HERMES_HOME=%h/.kylin-agent-runtime
+Environment=AGENT_RUNTIME_HOME=%h/.kylin-agent-runtime
+Restart=on-failure
+RestartSec=5
+RestartForceExitStatus=75
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=210
+
+[Install]
+WantedBy=default.target

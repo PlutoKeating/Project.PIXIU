@@ -340,6 +340,9 @@ install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
 if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     install -m 0755 "${DEB_SRC}/usr/bin/kylin-agent-runtime" \
         "${STAGE}/usr/bin/kylin-agent-runtime"
+    install -D -m 0644 \
+        "${DEB_SRC}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service" \
+        "${STAGE}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service"
     DESKTOP_FILE="${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"
     [ -f "${DESKTOP_FILE}" ] || die "PIXIU desktop entry is missing from frontend install"
     sed -i 's/^Exec=.*/Exec=pixiu/' "${DESKTOP_FILE}"

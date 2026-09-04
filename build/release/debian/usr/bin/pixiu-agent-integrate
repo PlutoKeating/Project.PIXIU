@@ -11,6 +11,9 @@ MARKER="${DEST}/.pixiu-managed"
 QUIET=0
 STRICT_FILE="${PIXIU_AGENT_DEFAULT_STRICT_FILE:-/usr/share/pixiu/install-strict}"
 USER_SETUP="${PIXIU_USER_SETUP_BIN:-/usr/bin/pixiu-user-setup}"
+SYSTEMCTL="${PIXIU_SYSTEMCTL_BIN:-systemctl}"
+GATEWAY_UNIT="kylin-agent-runtime-gateway.service"
+PACKAGED_UNIT="${PIXIU_AGENT_GATEWAY_UNIT:-/usr/lib/systemd/user/${GATEWAY_UNIT}}"
 
 if [ "${1:-}" = "--quiet" ]; then
     QUIET=1
@@ -161,4 +164,29 @@ fi
 
 HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set memory.provider pixiu >/dev/null \
     || fail "Agent runtime rejected memory.provider=pixiu" 5
+
+# A strict release owns the complete Agent runtime. Migrate an older generated
+# per-user override out of systemd's precedence path, but retain a recoverable
+# copy under PIXIU state before activating the package-owned unit.
+if [ "${DEFAULT_STRICT}" = "1" ]; then
+    [ -f "${PACKAGED_UNIT}" ] || fail "packaged Agent gateway unit is missing" 2
+    USER_UNIT_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/systemd/user"
+    USER_UNIT="${USER_UNIT_DIR}/${GATEWAY_UNIT}"
+    if [ -f "${USER_UNIT}" ]; then
+        if ! grep -Eq '^ExecStart=.*(kylin-agent-runtime|hermes)' "${USER_UNIT}"; then
+            fail "refusing to replace unmanaged Agent gateway unit: ${USER_UNIT}" 3
+        fi
+        BACKUP_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/pixiu/service-backups"
+        mkdir -p "${BACKUP_DIR}"
+        if [ ! -f "${BACKUP_DIR}/${GATEWAY_UNIT}.pre-pixiu" ]; then
+            cp "${USER_UNIT}" "${BACKUP_DIR}/${GATEWAY_UNIT}.pre-pixiu"
+            chmod 0600 "${BACKUP_DIR}/${GATEWAY_UNIT}.pre-pixiu"
+        fi
+        rm -f -- "${USER_UNIT}"
+    fi
+    "${SYSTEMCTL}" --user daemon-reload \
+        || fail "failed to reload the user service manager" 5
+    "${SYSTEMCTL}" --user enable --now "${GATEWAY_UNIT}" \
+        || fail "failed to activate the packaged Agent gateway" 5
+fi
 say "PIXIU Agent memory provider is installed and active."
