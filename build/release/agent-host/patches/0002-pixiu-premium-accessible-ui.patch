@@ -466,7 +466,7 @@ diff --git a/src/ui/sessionlistwidget.cpp b/src/ui/sessionlistwidget.cpp
 index cff9044..8964e19 100644
 --- a/src/ui/sessionlistwidget.cpp
 +++ b/src/ui/sessionlistwidget.cpp
-@@ -10,25 +10,8 @@ SessionListWidget::SessionListWidget(QWidget *parent)
+@@ -10,25 +10,12 @@ SessionListWidget::SessionListWidget(QWidget *parent)
  {
      setAlternatingRowColors(false);
      setSelectionMode(QAbstractItemView::SingleSelection);
@@ -491,6 +491,10 @@ index cff9044..8964e19 100644
 -    ));
 +    setSpacing(4);
 +    setObjectName(QStringLiteral("sessionList"));
++    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
++    setTextElideMode(Qt::ElideRight);
++    setWordWrap(false);
++    setUniformItemSizes(true);
 
      connect(this, &QListWidget::itemClicked, this, [this](QListWidgetItem *item) {
          if (item) {
