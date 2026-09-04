@@ -61,6 +61,7 @@ grep -q 'insertWidget(qMax(0, m_messagesLayout->count() - 1), rowWidget)' "${fix
 ! grep -q 'insertLayout(qMax(0, m_messagesLayout->count() - 1), row)' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'delete item->widget()' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q '云端模型暂未响应' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'legacyFallback' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q '#066a75' "${fixture}/source/src/utils/thememanager.cpp"
 grep -q '#41d3c4' "${fixture}/source/src/utils/thememanager.cpp"
 ! grep -q 'Database:' "${fixture}/source/src/ui/mainwindow.cpp"

@@ -230,7 +230,18 @@ index 496e400..37b7b57 100644
          return;
      }
 
-@@ -197,39 +224,35 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+@@ -187,3 +214,9 @@ void ChatWidget::refreshMessages()
++    const QString legacyFallback = QStringLiteral(
++        "已保存到本机会话。agent-rt 接入后，这里将显示后端回复。");
+     for (const SessionMessage &message : messages) {
+-        addMessageBubble(message.role(), message.content());
++        QString renderedContent = message.content();
++        if (message.role() == QStringLiteral("assistant") && renderedContent == legacyFallback) {
++            renderedContent = QStringLiteral("云端模型暂未响应。请确认已完成凭据配置，然后重试。");
++        }
++        addMessageBubble(message.role(), renderedContent);
+     }
+@@ -197,39 +230,35 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
      bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
      bubble->setContextMenuPolicy(Qt::CustomContextMenu);
      bubble->setContentsMargins(12, 10, 12, 10);
@@ -279,14 +290,14 @@ index 496e400..37b7b57 100644
      return bubble;
  }
 
-@@ -237,5 +260,5 @@ QString ChatWidget::localAssistantReply(const QString &userText) const
+@@ -237,5 +266,5 @@ QString ChatWidget::localAssistantReply(const QString &userText) const
  {
      Q_UNUSED(userText)
 -    return QStringLiteral("已保存到本机会话。agent-rt 接入后，这里将显示后端回复。");
 +    return QStringLiteral("云端模型暂未响应。请确认已完成凭据配置，然后重试。");
  }
 
-@@ -275,7 +298,7 @@ void ChatWidget::sendMessage()
+@@ -275,7 +304,7 @@ void ChatWidget::sendMessage()
              showStatus(QStringLiteral("Failed to create a local session."));
              return;
          }
