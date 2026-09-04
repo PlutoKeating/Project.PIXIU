@@ -126,8 +126,8 @@ PPT 将 OS Agent 定义为系统级智能助手：能够理解复杂指令、规
 | Agent 主体 | `frontend/` 是记忆控制台；上游固定源码经最小适配后已在 V11 网络隔离构建并随 strict 单包部署，Runtime wheelhouse 离线安装通过；确定性无推理节点已跑通真实 Runtime 工程链路 | 供应链门 `ready=true`；官方云端模型 run 仍是 P0，Mock 不替代 |
 | 会话 | PIXIU 已保存 session/run/turn provenance；会话主体由上游宿主管理；取证客户端现显式向后续 run 发送持久化 `conversation_history`，Mock trace 已证明系统提示存在且轮次增长 | 待最终 V11 候选完成官方云端三轮、宿主/Runtime 重启和会话摘要恢复实测 |
 | 自主规划/工具 | Module E 已注册查询、记住、更新、遗忘、同步状态五个记忆工具；规划、审批、Shell、联网搜索来自上游；Runtime 离线闭包已补齐并验证 DDGS bundled plugin 清单与 provider 发现；Mock 已实际驱动 Shell、DDGS 与 PIXIU 本地/共享记忆 API | 待官方云端模型实际自主选择并完成工具结果跨会话召回；固定 Mock 路由不计模型自主性或团队原创 |
-| Embedding | `2faf3a3` strict 单包同版原生证据经 runtime 1.3.0 使用 gte-base 768 维真实向量 | 技术门通过；最终冻结 commit 需重跑并进入 D-07 |
-| 向量数据库 | `2faf3a3` strict 单包完成 direct SDK 和产品写入/检索/遗忘/隐藏 | 技术门通过；最终冻结 commit 需重跑并进入 D-07 |
+| Embedding | `d3b6bae` strict 单包同版原生证据经 runtime 1.3.0 使用 gte-base 768 维真实向量 | 技术门通过；最终冻结 commit 需重跑并进入 D-07 |
+| 向量数据库 | `d3b6bae` strict 单包完成 direct SDK 和产品写入/检索/遗忘/隐藏 | 技术门通过；最终冻结 commit 需重跑并进入 D-07 |
 | 记忆引擎 | 多源接入、偏好、知识、冲突、安全、遗忘及 Module E 调用已有实现 | 契约测试已触发，仍需真实 Agent 生命周期实证 |
 | 记忆流转 | 六类事件已由 Module E 映射到短/中期 API | 长期化策略及真实 session/压缩/结束证据待补 |
 | 分布式同步 | CRDT、Gossip、反熵、配对、签名、mTLS、墓碑 | 是主要创新项，需做多机收敛实证 |

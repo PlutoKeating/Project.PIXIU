@@ -52,7 +52,7 @@ D-10 及 R-01 相关安装资产；在全部正式门关闭前只能生成带水
 
 | 子目录 | 内容 | 状态 |
 |--------|------|------|
-| `00-软件候选/` | strict `.deb`、checksum、原生 SDK/供应链/Mock 工程记录、GUI 截图 | 可审阅；正式签名和最终同版矩阵待补 |
+| `00-软件候选/` | `pixiu_0.1.7-1_amd64.deb`、同名 `.sha256`、`native-sdk-smoke.json`、`agent-supply-chain-report.json`、`mock-agent-full.json`、`mock-agent-shared-memory.json`、`ui-agent-workspace.png` | 可审阅；正式签名和最终同版矩阵待补 |
 | `02-技术方案/` | DOCX + PDF | 带草稿标识 |
 | `03-源代码及规范/` | 含四个 submodule 实体的源码审阅包 + 许可证 PDF | 可审阅；冻结后改为正式文件名 |
 | `04-部署文档/` | 部署指南 PDF | 带草稿标识 |

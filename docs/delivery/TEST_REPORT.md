@@ -5,8 +5,8 @@
 
 ## 2026-09-04 当前候选事实
 
-- `2faf3a3` strict amd64 候选 SHA-256：
-  `2ac6f507094742896da5bf676ff12963e6d2243aa01d7ad39921c37e905efd2e`；
+- `d3b6bae` strict amd64 候选 SHA-256：
+  `7a2908a31d95715937232805ef173642e0c9d9f3bd3a6e0682546c6c7c87a082`；
 - 包内 Agent 宿主、58 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
   SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
 - 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自
@@ -43,7 +43,8 @@
   气泡按内容取宽、各轮连续排列、最新消息完整可见，输入组合区限制为 960px，连接
   状态可读；该切片只计 A-10a 的单主题/单缩放状态，不能替代最终双主题三档矩阵。
 
-上述 commit/SHA 是文档冻结前候选记录；最终 D-07 必须绑定冻结后的新 commit 与新包，
+上述 commit/SHA 是文档冻结前候选记录；审阅目录采用稳定文件名，JSON 内部与 `.sha256`
+保存实际候选身份。最终 D-07 必须绑定冻结后的新 commit 与新包，
 不得直接复用本段摘要冒充最终证据。
 
 ## 测试口径
