@@ -15,6 +15,8 @@ patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0001-build-coherent-offline-host.patch"
 patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch"
+patch -d "${fixture}/source" -p1 --forward --batch \
+    < "${repo_root}/build/release/agent-host/patches/0003-kylin-cloud-model-settings.patch"
 install -D -m 0644 "${repo_root}/build/release/agent-host/compat/pixiu_host_compat.cpp" \
     "${fixture}/source/src/services/pixiu_host_compat.cpp"
 
@@ -48,13 +50,22 @@ grep -q 'chatCompletionFinished' "${fixture}/source/src/services/pixiu_host_comp
 grep -q 'PIXIU · KylinAgent' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q '分布式记忆工作台' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q '选择云端模型' "${fixture}/source/src/ui/chatwidget.cpp"
-grep -q 'DeepSeek Chat（官方云端）' "${fixture}/source/src/services/modelservice.cpp"
+grep -q '麒灵系统云模型' "${fixture}/source/src/services/modelservice.cpp"
+grep -q 'QStringLiteral("kylin-genai")' "${fixture}/source/src/services/modelservice.cpp"
 grep -q 'https://api.deepseek.com/v1' "${fixture}/source/src/services/modelservice.cpp"
 grep -q 'providerPriority' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'QStringLiteral("kylin-genai")' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'QStringLiteral("deepseek")' "${fixture}/source/src/ui/chatwidget.cpp"
 ! grep -q 'ModelProvider(QStringLiteral("ollama")' "${fixture}/source/src/services/modelservice.cpp"
 ! grep -q 'ModelProvider(QStringLiteral("lmstudio")' "${fixture}/source/src/services/modelservice.cpp"
 ! grep -q 'ModelProvider(QStringLiteral("openrouter")' "${fixture}/source/src/services/modelservice.cpp"
+grep -q 'm_apiKeyEdit->setEchoMode(QLineEdit::Password)' "${fixture}/source/src/ui/modelsettingsdialog.cpp"
+grep -q 'credential_configured' "${fixture}/source/src/ui/modelsettingsdialog.cpp"
+grep -q 'replaceConfigModelsSync' "${fixture}/source/src/ui/modelsettingsdialog.cpp"
+grep -q '/api/config/models' "${fixture}/source/src/services/pixiu_host_compat.cpp"
+grep -q 'probeConfigModelSync' "${fixture}/source/src/ui/modelsettingsdialog.cpp"
+grep -q '/api/config/models/probe' "${fixture}/source/src/services/pixiu_host_compat.cpp"
+grep -q '系统 AI 模块管理' "${fixture}/source/src/ui/modelsettingsdialog.cpp"
 grep -q 'messageRole' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'QWidget \*rowWidget = new QWidget(m_messagesContainer)' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'm_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), rowWidget)' "${fixture}/source/src/ui/chatwidget.cpp"

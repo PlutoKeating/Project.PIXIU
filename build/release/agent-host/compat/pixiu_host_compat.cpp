@@ -249,6 +249,59 @@ void ApiService::loadModels()
     emit modelsLoaded(result);
 }
 
+QVector<QMap<QString, QVariant>> ApiService::getConfigModelsSync()
+{
+    bool ok = false;
+    const QJsonDocument document = requestSync(
+        QStringLiteral("GET"), QStringLiteral("/api/config/models"), QJsonObject(), &ok);
+    QVector<QMap<QString, QVariant>> result;
+    if (!ok || !document.isArray()) {
+        return result;
+    }
+    for (const QJsonValue &value : document.array()) {
+        if (value.isObject()) {
+            result.append(value.toObject().toVariantMap());
+        }
+    }
+    return result;
+}
+
+QJsonObject ApiService::probeConfigModelSync(const QString &rowId,
+                                             const QString &provider,
+                                             const QString &model,
+                                             const QString &baseUrl,
+                                             const QString &apiKey)
+{
+    bool ok = false;
+    const QJsonDocument document = requestSync(
+        QStringLiteral("POST"), QStringLiteral("/api/config/models/probe"),
+        QJsonObject{
+            {QStringLiteral("id"), rowId},
+            {QStringLiteral("provider"), provider},
+            {QStringLiteral("model"), model},
+            {QStringLiteral("baseUrl"), baseUrl},
+            {QStringLiteral("apiKey"), apiKey},
+        }, &ok);
+    QJsonObject result = document.isObject() ? document.object() : QJsonObject();
+    result.insert(QStringLiteral("transport_ok"), ok);
+    return result;
+}
+
+bool ApiService::replaceConfigModelsSync(const QJsonArray &models,
+                                         const QString &preferredDefaultModel,
+                                         const QString &preferredDefaultBaseUrl)
+{
+    bool ok = false;
+    const QJsonDocument document = requestSync(
+        QStringLiteral("PUT"), QStringLiteral("/api/config/models"),
+        QJsonObject{
+            {QStringLiteral("models"), models},
+            {QStringLiteral("preferredDefaultModel"), preferredDefaultModel},
+            {QStringLiteral("preferredDefaultBaseUrl"), preferredDefaultBaseUrl},
+        }, &ok);
+    return ok && document.isArray();
+}
+
 void MainWindow::showFromTray()
 {
     showNormal();

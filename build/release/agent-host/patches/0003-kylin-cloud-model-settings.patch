@@ -1,0 +1,466 @@
+--- a/include/services/apiservice.h
++++ b/include/services/apiservice.h
+@@ -60,6 +60,11 @@
+     QString getSessionDetailsSync(const QString &sessionId);
+     QMap<QString, QVariant> getSessionUsageSync(const QString &sessionId);
+     QVector<QMap<QString, QVariant>> getConfigModelsSync();
++    QJsonObject probeConfigModelSync(const QString &rowId,
++                                     const QString &provider,
++                                     const QString &model,
++                                     const QString &baseUrl,
++                                     const QString &apiKey);
+     int detectLocalModelContextLengthSync(const QString &baseUrl, const QString &modelId);
+     bool replaceConfigModelsSync(const QJsonArray &models,
+                                  const QString &preferredDefaultModel = QString(),
+--- a/include/ui/modelsettingsdialog.h
++++ b/include/ui/modelsettingsdialog.h
+@@ -12,6 +12,7 @@
+ #include <QDialogButtonBox>
+ #include <QFormLayout>
+ #include <QGroupBox>
++#include <QSet>
+ 
+ #include "../models/chatmodel.h"
+ 
+@@ -61,6 +62,9 @@
+     QLineEdit *m_modelEdit;
+     QLineEdit *m_modelIdEdit;
+     QLineEdit *m_baseUrlEdit;
++    QLineEdit *m_apiKeyEdit;
++    QLabel *m_credentialState;
++    QPushButton *m_testButton;
+     QPushButton *m_saveButton;
+     QPushButton *m_restoreButton;
+     QDialogButtonBox *m_buttonBox;
+@@ -69,6 +73,7 @@
+     QString m_editingModelId;
+     bool m_isEditing = false;
+     QVector<SavedModel> m_models;
++    QSet<QString> m_configuredCredentialIds;
+ };
+ 
+ #endif // MODELSETTINGSDIALOG_H
+--- a/src/services/modelservice.cpp
++++ b/src/services/modelservice.cpp
+@@ -263,6 +263,7 @@
+ QVector<ModelProvider> ModelService::getProviders() const
+ {
+     return {
++        ModelProvider(QStringLiteral("kylin-genai"), QStringLiteral("麒灵系统云模型")),
+         ModelProvider(QStringLiteral("deepseek"), QStringLiteral("DeepSeek")),
+         ModelProvider(QStringLiteral("anthropic"), QStringLiteral("Anthropic")),
+         ModelProvider(QStringLiteral("openai"), QStringLiteral("OpenAI")),
+@@ -272,6 +273,9 @@
+ QVector<SavedModel> ModelService::getDefaultModels() const
+ {
+     return {
++        SavedModel(QString(), QStringLiteral("麒灵系统云模型（推荐）"),
++                   QStringLiteral("kylin-genai"), QStringLiteral("kylin-default"),
++                   QStringLiteral("http://127.0.0.1:8767/v1"), 0),
+         SavedModel(QString(), QStringLiteral("DeepSeek Chat（官方云端）"),
+                    QStringLiteral("deepseek"), QStringLiteral("deepseek-chat"),
+                    QStringLiteral("https://api.deepseek.com/v1"), 0),
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -141,6 +141,7 @@
+     int selectedIndex = -1;
+     const QVector<SavedModel> models = ModelService::instance().listModels();
+     const QStringList providerPriority = {
++        QStringLiteral("kylin-genai"),
+         QStringLiteral("deepseek"),
+         QStringLiteral("anthropic"),
+         QStringLiteral("openai"),
+--- a/src/ui/modelsettingsdialog.cpp
++++ b/src/ui/modelsettingsdialog.cpp
+@@ -1,11 +1,14 @@
+ #include "ui/modelsettingsdialog.h"
+ 
++#include "services/apiservice.h"
+ #include "services/configservice.h"
+ #include "services/modelservice.h"
+ 
+ #include <QComboBox>
+ #include <QFormLayout>
+ #include <QHBoxLayout>
++#include <QJsonArray>
++#include <QJsonObject>
+ #include <QLabel>
+ #include <QLineEdit>
+ #include <QListWidget>
+@@ -13,16 +16,38 @@
+ #include <QPushButton>
+ #include <QVBoxLayout>
+ 
++namespace {
++QString defaultBaseUrl(const QString &provider)
++{
++    if (provider == QStringLiteral("kylin-genai")) return QStringLiteral("http://127.0.0.1:8767/v1");
++    if (provider == QStringLiteral("deepseek")) return QStringLiteral("https://api.deepseek.com/v1");
++    if (provider == QStringLiteral("anthropic")) return QStringLiteral("https://api.anthropic.com");
++    if (provider == QStringLiteral("openai")) return QStringLiteral("https://api.openai.com/v1");
++    return QString();
++}
++
++QJsonArray runtimeModels(const QVector<SavedModel> &models, const QString &editedId,
++                         const QString &apiKey)
++{
++    QJsonArray array;
++    for (const SavedModel &model : models) {
++        QJsonObject row{{QStringLiteral("id"), model.id()},
++                        {QStringLiteral("name"), model.name()},
++                        {QStringLiteral("provider"), model.provider()},
++                        {QStringLiteral("model"), model.model()},
++                        {QStringLiteral("baseUrl"), model.baseUrl()}};
++        if (model.id() == editedId && !apiKey.isEmpty()) row.insert(QStringLiteral("apiKey"), apiKey);
++        array.append(row);
++    }
++    return array;
++}
++} // namespace
++
+ ModelSettingsDialog::ModelSettingsDialog(QWidget *parent)
+-    : QDialog(parent)
+-    , m_modelList(nullptr)
+-    , m_nameEdit(nullptr)
+-    , m_providerCombo(nullptr)
+-    , m_modelEdit(nullptr)
+-    , m_baseUrlEdit(nullptr)
+-    , m_saveButton(nullptr)
+-    , m_deleteButton(nullptr)
+-    , m_restoreButton(nullptr)
++    : QDialog(parent), m_modelList(nullptr), m_nameEdit(nullptr), m_providerCombo(nullptr),
++      m_modelEdit(nullptr), m_baseUrlEdit(nullptr), m_apiKeyEdit(nullptr),
++      m_credentialState(nullptr), m_testButton(nullptr), m_saveButton(nullptr),
++      m_deleteButton(nullptr), m_restoreButton(nullptr)
+ {
+     setupUi();
+     loadModels();
+@@ -32,101 +57,114 @@
+ 
+ void ModelSettingsDialog::setupUi()
+ {
+-    setWindowTitle(QStringLiteral("Model Settings"));
+-    setMinimumSize(620, 380);
+-
++    setWindowTitle(QStringLiteral("云端模型设置"));
++    setMinimumSize(760, 480);
+     QHBoxLayout *root = new QHBoxLayout(this);
+-    root->setContentsMargins(16, 16, 16, 16);
+-    root->setSpacing(14);
+-
++    root->setContentsMargins(20, 20, 20, 20);
++    root->setSpacing(18);
+     QVBoxLayout *listLayout = new QVBoxLayout;
+-    QLabel *listTitle = new QLabel(QStringLiteral("Models"), this);
+-    listTitle->setStyleSheet(QStringLiteral("font-weight: 600;"));
+-    listLayout->addWidget(listTitle);
+-
++    listLayout->addWidget(new QLabel(QStringLiteral("可用模型"), this));
+     m_modelList = new QListWidget(this);
+     connect(m_modelList, &QListWidget::currentRowChanged, this, &ModelSettingsDialog::selectModel);
+     listLayout->addWidget(m_modelList, 1);
+     root->addLayout(listLayout, 1);
+ 
+     QVBoxLayout *editorLayout = new QVBoxLayout;
++    QLabel *guide = new QLabel(
++        QStringLiteral("首选麒灵系统云模型：模型与授权由“设置 → AI 模块管理”统一管理，PIXIU 不接触系统密钥。\n"
++                       "也可以在此导入自己的 API Key；保存前会完成连通性和模型可用性检测。"), this);
++    guide->setWordWrap(true);
++    editorLayout->addWidget(guide);
+     QFormLayout *form = new QFormLayout;
+     form->setLabelAlignment(Qt::AlignRight);
+-
+     m_nameEdit = new QLineEdit(this);
+-    form->addRow(QStringLiteral("Name:"), m_nameEdit);
+-
++    form->addRow(QStringLiteral("显示名称："), m_nameEdit);
+     m_providerCombo = new QComboBox(this);
+-    for (const ModelProvider &provider : ModelService::instance().getProviders()) {
++    for (const ModelProvider &provider : ModelService::instance().getProviders())
+         m_providerCombo->addItem(provider.label(), provider.value());
+-    }
+-    form->addRow(QStringLiteral("Provider:"), m_providerCombo);
+-
++    form->addRow(QStringLiteral("服务商："), m_providerCombo);
+     m_modelEdit = new QLineEdit(this);
+-    form->addRow(QStringLiteral("Model:"), m_modelEdit);
+-
++    form->addRow(QStringLiteral("模型 ID："), m_modelEdit);
+     m_baseUrlEdit = new QLineEdit(this);
+-    m_baseUrlEdit->setPlaceholderText(QStringLiteral("Optional"));
+-    form->addRow(QStringLiteral("Base URL:"), m_baseUrlEdit);
++    form->addRow(QStringLiteral("API 地址："), m_baseUrlEdit);
++    m_apiKeyEdit = new QLineEdit(this);
++    m_apiKeyEdit->setEchoMode(QLineEdit::Password);
++    m_apiKeyEdit->setClearButtonEnabled(true);
++    form->addRow(QStringLiteral("API Key："), m_apiKeyEdit);
++    m_credentialState = new QLabel(this);
++    m_credentialState->setWordWrap(true);
++    form->addRow(QStringLiteral("认证状态："), m_credentialState);
+     editorLayout->addLayout(form);
++    connect(m_providerCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int) {
++        const QString provider = m_providerCombo->currentData().toString();
++        const bool systemModel = provider == QStringLiteral("kylin-genai");
++        m_apiKeyEdit->setEnabled(!systemModel);
++        if (systemModel) {
++            m_apiKeyEdit->clear();
++            m_modelEdit->setPlaceholderText(QStringLiteral("kylin-default（跟随系统首选）"));
++            m_credentialState->setText(QStringLiteral("由系统 AI 模块管理，无需向 PIXIU 提供密钥"));
++        } else {
++            m_modelEdit->setPlaceholderText(QString());
++            m_credentialState->setText(QStringLiteral("请输入 API Key，或留空保留已保存凭据"));
++        }
++        if (m_baseUrlEdit->text().trimmed().isEmpty()) m_baseUrlEdit->setText(defaultBaseUrl(provider));
++    });
+ 
+-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+-    QPushButton *newButton = new QPushButton(QStringLiteral("New"), this);
++    QHBoxLayout *buttons = new QHBoxLayout;
++    QPushButton *newButton = new QPushButton(QStringLiteral("新增"), this);
+     connect(newButton, &QPushButton::clicked, this, &ModelSettingsDialog::clearForm);
+-    buttonLayout->addWidget(newButton);
+-
+-    m_restoreButton = new QPushButton(QStringLiteral("Restore Defaults"), this);
++    buttons->addWidget(newButton);
++    m_restoreButton = new QPushButton(QStringLiteral("恢复推荐模型"), this);
+     connect(m_restoreButton, &QPushButton::clicked, this, &ModelSettingsDialog::restoreDefaults);
+-    buttonLayout->addWidget(m_restoreButton);
+-
+-    buttonLayout->addStretch();
+-    m_deleteButton = new QPushButton(QStringLiteral("Delete"), this);
++    buttons->addWidget(m_restoreButton);
++    buttons->addStretch();
++    m_testButton = new QPushButton(QStringLiteral("检测连接"), this);
++    connect(m_testButton, &QPushButton::clicked, this, [this]() {
++        if (!validateForm()) return;
++        const QJsonObject result = ApiService::instance().probeConfigModelSync(
++            currentModelId(), m_providerCombo->currentData().toString(), m_modelEdit->text().trimmed(),
++            m_baseUrlEdit->text().trimmed(), m_apiKeyEdit->text().trimmed());
++        const bool ok = result.value(QStringLiteral("transport_ok")).toBool()
++            && result.value(QStringLiteral("ok")).toBool();
++        QMessageBox::information(this, QStringLiteral("模型检测"),
++            result.value(QStringLiteral("message")).toString(ok ? QStringLiteral("模型连接正常。")
++                                                                : QStringLiteral("模型连接失败。")));
++    });
++    buttons->addWidget(m_testButton);
++    m_deleteButton = new QPushButton(QStringLiteral("删除"), this);
+     connect(m_deleteButton, &QPushButton::clicked, this, &ModelSettingsDialog::deleteModel);
+-    buttonLayout->addWidget(m_deleteButton);
+-
+-    m_saveButton = new QPushButton(QStringLiteral("Save"), this);
++    buttons->addWidget(m_deleteButton);
++    m_saveButton = new QPushButton(QStringLiteral("检测并保存"), this);
+     connect(m_saveButton, &QPushButton::clicked, this, &ModelSettingsDialog::saveModel);
+-    buttonLayout->addWidget(m_saveButton);
+-    editorLayout->addLayout(buttonLayout);
+-
++    buttons->addWidget(m_saveButton);
++    editorLayout->addLayout(buttons);
+     root->addLayout(editorLayout, 2);
+ }
+ 
+ void ModelSettingsDialog::loadModels()
+ {
+     const QString previousId = currentModelId();
++    m_configuredCredentialIds.clear();
++    for (const QMap<QString, QVariant> &row : ApiService::instance().getConfigModelsSync())
++        if (row.value(QStringLiteral("credential_configured")).toBool())
++            m_configuredCredentialIds.insert(row.value(QStringLiteral("id")).toString());
+     m_modelList->blockSignals(true);
+     m_modelList->clear();
+-
++    m_models = ModelService::instance().listModels();
+     int selectedRow = -1;
+-    const QVector<SavedModel> models = ModelService::instance().listModels();
+-    for (const SavedModel &model : models) {
+-        const QString label = model.name().isEmpty() ? model.model() : model.name();
+-        m_modelList->addItem(label);
++    for (const SavedModel &model : m_models) {
++        m_modelList->addItem(model.name().isEmpty() ? model.model() : model.name());
+         m_modelList->item(m_modelList->count() - 1)->setData(Qt::UserRole, model.id());
+-        if (!previousId.isEmpty() && model.id() == previousId) {
+-            selectedRow = m_modelList->count() - 1;
+-        }
++        if (model.id() == previousId) selectedRow = m_modelList->count() - 1;
+     }
+-
+     m_modelList->blockSignals(false);
+-    if (m_modelList->count() == 0) {
+-        clearForm();
+-        m_restoreButton->setEnabled(true);
+-        return;
+-    }
+-
+-    m_restoreButton->setEnabled(true);
+-    m_modelList->setCurrentRow(selectedRow >= 0 ? selectedRow : 0);
++    if (m_modelList->count() == 0) clearForm();
++    else m_modelList->setCurrentRow(selectedRow >= 0 ? selectedRow : 0);
+ }
+ 
+ void ModelSettingsDialog::selectModel(int row)
+ {
+-    if (row < 0 || row >= m_modelList->count()) {
+-        clearForm();
+-        return;
+-    }
+-
++    if (row < 0 || row >= m_modelList->count()) { clearForm(); return; }
+     fillForm(ModelService::instance().getModel(currentModelId()));
+ }
+ 
+@@ -135,9 +173,12 @@
+     m_nameEdit->setText(model.name());
+     m_modelEdit->setText(model.model());
+     m_baseUrlEdit->setText(model.baseUrl());
+-
+-    const int providerIndex = m_providerCombo->findData(model.provider());
+-    m_providerCombo->setCurrentIndex(providerIndex >= 0 ? providerIndex : 0);
++    m_apiKeyEdit->clear();
++    const int index = m_providerCombo->findData(model.provider());
++    m_providerCombo->setCurrentIndex(index >= 0 ? index : 0);
++    if (model.provider() != QStringLiteral("kylin-genai")
++        && m_configuredCredentialIds.contains(model.id()))
++        m_credentialState->setText(QStringLiteral("API Key 已安全保存；留空不会覆盖"));
+     m_deleteButton->setEnabled(!model.id().isEmpty());
+ }
+ 
+@@ -149,71 +190,102 @@
+ 
+ void ModelSettingsDialog::clearForm()
+ {
+-    if (m_modelList) {
+-        m_modelList->setCurrentRow(-1);
+-    }
+-    m_nameEdit->clear();
+-    m_modelEdit->clear();
+-    m_baseUrlEdit->clear();
++    if (m_modelList) m_modelList->setCurrentRow(-1);
++    m_nameEdit->clear(); m_modelEdit->clear(); m_baseUrlEdit->clear(); m_apiKeyEdit->clear();
+     m_providerCombo->setCurrentIndex(0);
+     m_deleteButton->setEnabled(false);
+ }
+ 
+-void ModelSettingsDialog::saveModel()
++bool ModelSettingsDialog::validateForm()
+ {
+-    const QString name = m_nameEdit->text().trimmed();
+-    const QString modelName = m_modelEdit->text().trimmed();
+     const QString provider = m_providerCombo->currentData().toString();
+-    const QString baseUrl = m_baseUrlEdit->text().trimmed();
+-
+-    if (name.isEmpty() || modelName.isEmpty()) {
+-        QMessageBox::warning(this, QStringLiteral("Model Settings"),
+-                             QStringLiteral("Name and model are required."));
+-        return;
++    if (m_nameEdit->text().trimmed().isEmpty() || m_modelEdit->text().trimmed().isEmpty()
++        || m_baseUrlEdit->text().trimmed().isEmpty()) {
++        QMessageBox::warning(this, QStringLiteral("云端模型设置"),
++                             QStringLiteral("显示名称、模型 ID 和 API 地址不能为空。"));
++        return false;
++    }
++    if (provider != QStringLiteral("kylin-genai") && m_apiKeyEdit->text().trimmed().isEmpty()
++        && !m_configuredCredentialIds.contains(currentModelId())) {
++        QMessageBox::warning(this, QStringLiteral("云端模型设置"),
++                             QStringLiteral("首次配置该云端模型时必须输入 API Key。"));
++        return false;
+     }
++    return true;
++}
+ 
++void ModelSettingsDialog::saveModel()
++{
++    if (!validateForm()) return;
+     const QString id = currentModelId();
+-    if (ModelService::instance().hasModel(provider, modelName, id)) {
+-        QMessageBox::warning(this, QStringLiteral("Model Settings"),
+-                             QStringLiteral("A model with this provider and model ID already exists."));
++    const QString provider = m_providerCombo->currentData().toString();
++    const QString modelName = m_modelEdit->text().trimmed();
++    const QString baseUrl = m_baseUrlEdit->text().trimmed();
++    const QString apiKey = m_apiKeyEdit->text().trimmed();
++    const QJsonObject probe = ApiService::instance().probeConfigModelSync(id, provider, modelName, baseUrl, apiKey);
++    if (!probe.value(QStringLiteral("transport_ok")).toBool() || !probe.value(QStringLiteral("ok")).toBool()) {
++        QMessageBox::warning(this, QStringLiteral("模型检测失败"),
++            probe.value(QStringLiteral("message")).toString(QStringLiteral("无法连接或模型不可用，配置未保存。")));
+         return;
+     }
+-
++    SavedModel previous;
++    QString savedId = id;
+     if (id.isEmpty()) {
+-        const SavedModel model = ModelService::instance().addModel(name, provider, modelName, baseUrl);
+-        ConfigService::instance().setSelectedModelId(model.id());
++        savedId = ModelService::instance().addModel(m_nameEdit->text().trimmed(), provider,
++                                                    modelName, baseUrl).id();
+     } else {
+-        QMap<QString, QString> fields;
+-        fields.insert(QStringLiteral("name"), name);
+-        fields.insert(QStringLiteral("provider"), provider);
+-        fields.insert(QStringLiteral("model"), modelName);
+-        fields.insert(QStringLiteral("baseUrl"), baseUrl);
+-        ModelService::instance().updateModel(id, fields);
++        previous = ModelService::instance().getModel(id);
++        QMap<QString, QString> fields{{QStringLiteral("name"), m_nameEdit->text().trimmed()},
++                                     {QStringLiteral("provider"), provider},
++                                     {QStringLiteral("model"), modelName},
++                                     {QStringLiteral("baseUrl"), baseUrl}};
++        if (!ModelService::instance().updateModel(id, fields)) {
++            QMessageBox::warning(this, QStringLiteral("云端模型设置"), QStringLiteral("模型保存失败。"));
++            return;
++        }
+     }
++    const QVector<SavedModel> models = ModelService::instance().listModels();
++    if (!ApiService::instance().replaceConfigModelsSync(runtimeModels(models, savedId, apiKey), modelName, baseUrl)) {
++        if (id.isEmpty()) ModelService::instance().removeModel(savedId);
++        else {
++            QMap<QString, QString> rollback{{QStringLiteral("name"), previous.name()},
++                                           {QStringLiteral("provider"), previous.provider()},
++                                           {QStringLiteral("model"), previous.model()},
++                                           {QStringLiteral("baseUrl"), previous.baseUrl()}};
++            ModelService::instance().updateModel(id, rollback);
++        }
++        QMessageBox::warning(this, QStringLiteral("云端模型设置"),
++                             QStringLiteral("Runtime 拒绝配置，原配置已保留。"));
++        return;
++    }
++    ConfigService::instance().setSelectedModelId(savedId);
+     loadModels();
++    QMessageBox::information(this, QStringLiteral("云端模型设置"), QStringLiteral("模型已检测、保存并启用。"));
+ }
+ 
+ void ModelSettingsDialog::deleteModel()
+ {
+     const QString id = currentModelId();
+-    if (id.isEmpty()) {
++    if (id.isEmpty() || QMessageBox::question(this, QStringLiteral("删除模型"),
++        QStringLiteral("确定删除这个模型吗？")) != QMessageBox::Yes) return;
++    QVector<SavedModel> remaining;
++    for (const SavedModel &model : ModelService::instance().listModels())
++        if (model.id() != id) remaining.append(model);
++    if (!ApiService::instance().replaceConfigModelsSync(runtimeModels(remaining, QString(), QString()))) {
++        QMessageBox::warning(this, QStringLiteral("删除模型"), QStringLiteral("Runtime 拒绝操作，模型未删除。"));
+         return;
+     }
+-
+-    if (QMessageBox::question(this, QStringLiteral("Delete Model"),
+-                              QStringLiteral("Delete this model?")) != QMessageBox::Yes) {
+-        return;
+-    }
+-
+-    if (ConfigService::instance().selectedModelId() == id) {
+-        ConfigService::instance().setSelectedModelId(QString());
+-    }
+     ModelService::instance().removeModel(id);
++    if (ConfigService::instance().selectedModelId() == id)
++        ConfigService::instance().setSelectedModelId(QString());
+     loadModels();
+ }
+ 
+ void ModelSettingsDialog::restoreDefaults()
+ {
+     ModelService::instance().restoreDefaultModels();
++    ApiService::instance().replaceConfigModelsSync(
++        runtimeModels(ModelService::instance().listModels(), QString(), QString()),
++        QStringLiteral("kylin-default"), QStringLiteral("http://127.0.0.1:8767/v1"));
+     loadModels();
+ }
