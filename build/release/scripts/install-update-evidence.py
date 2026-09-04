@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import re
 import sqlite3
 import subprocess
@@ -212,16 +213,28 @@ def capture_snapshot(
     if installed != expect_installed:
         raise EvidenceError("observed package state differs from --expect-installed")
     service = command(
-        "systemctl", "is-active", "pixiu-backend.service", required=False
+        "systemctl", "--user", "is-active", "pixiu-backend.service", required=False
     )
+    service_pid = command(
+        "systemctl", "--user", "show", "--property", "MainPID", "--value",
+        "pixiu-backend.service", required=False,
+    )
+    service_same_uid = False
+    if service_pid.isdigit() and int(service_pid) > 0:
+        try:
+            status = Path(f"/proc/{service_pid}/status").read_text(encoding="utf-8")
+            match = re.search(r"^Uid:\s+(\d+)", status, re.MULTILINE)
+            service_same_uid = bool(match and int(match.group(1)) == os.getuid())
+        except OSError:
+            service_same_uid = False
     version = health = capabilities = None
     if installed:
         base_url = loopback_url(base_url)
         version = request_json(base_url, "/version")
         health = request_json(base_url, "/health")
         capabilities = request_json(base_url, "/capabilities")
-    config = Path("/etc/pixiu/pixiu.env")
-    database = Path("/var/lib/pixiu/pixiu.db")
+    config = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "pixiu/pixiu.env"
+    database = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "pixiu/pixiu.db"
     return {
         "evidence_schema": 1,
         "evidence_class": SNAPSHOT_CLASS,
@@ -233,6 +246,7 @@ def capture_snapshot(
             "present": installed,
             "debian_version": installed_version or None,
             "service_active": service == "active",
+            "service_same_uid": service_same_uid,
             "binary_present": Path("/usr/bin/pixiu").is_file(),
             "release_manifest_present": Path(
                 "/usr/share/pixiu/release-manifest.json"
@@ -276,6 +290,7 @@ def validate_snapshot(value: dict[str, Any]) -> None:
         database = state.get("database")
         if not (
             installed.get("service_active") is True
+            and installed.get("service_same_uid") is True
             and installed.get("binary_present") is True
             and installed.get("release_manifest_present") is True
             and isinstance(runtime, dict)

@@ -71,6 +71,9 @@ build/release/
 `/usr/lib/pixiu/install-update`，作为 root-only 副本二次校验后调用 `dpkg`
 的 `pkexec` 特权边界；`frontend/scripts/restart-client` 安装到同目录，以当前桌面
 用户等待旧客户端退出后启动 `/usr/bin/pixiu`，不持有安装权限。
+升级 GUI 会把当前用户实际 XDG 数据/配置/状态目录作为参数传入；特权 helper 只接受
+`PKEXEC_UID`/`SUDO_UID` 对应用户 home 内、非符号链接且属主匹配的目录，并通过该用户
+的 systemd manager 停启服务。数据库备份、配置恢复与健康失败回滚均作用于该用户域。
 每个包还包含 `/usr/share/pixiu/release-manifest.json`：记录产品/Debian 版本、commit、
 构建时间、架构、profile、KYSDK/Python ABI、HTTP API、Agent Memory API、schema、
 Provider、两个 Agent 上游和双 SDK 的固定 commit/ref/许可证。实际运行时 SDK 版本仍
@@ -264,10 +267,10 @@ manifest；归档器重新运行变体校验、复算指标并确认跨节点身
 strict contest capability 就绪：
 
 ```bash
-sudo python3 build/release/scripts/install-update-evidence.py snapshot \
+python3 build/release/scripts/install-update-evidence.py snapshot \
   --package FINAL_DEB --expect-installed yes --output OPERATION-before.json
 # 通过该场景规定的系统安装器、特权 helper 或 GUI 执行真实动作，并保存去敏日志/测试记录。
-sudo python3 build/release/scripts/install-update-evidence.py snapshot \
+python3 build/release/scripts/install-update-evidence.py snapshot \
   --package FINAL_DEB --expect-installed yes --output OPERATION-after.json
 python3 build/release/scripts/install-update-evidence.py operation \
   --kind OPERATION --before OPERATION-before.json --after OPERATION-after.json \

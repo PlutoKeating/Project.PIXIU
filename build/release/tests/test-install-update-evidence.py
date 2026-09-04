@@ -115,6 +115,7 @@ def snapshot(installed: bool, version: str | None, stamp: str) -> dict:
             "present": installed,
             "debian_version": version,
             "service_active": installed,
+            "service_same_uid": installed,
             "binary_present": installed,
             "release_manifest_present": installed,
         },

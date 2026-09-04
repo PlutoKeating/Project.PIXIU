@@ -271,9 +271,11 @@ PIXIU 前端
   → 按当前 Debian 架构选择同版本 .deb + .sha256 + .sha256.sig
   → 流式下载到唯一临时文件 → 流式 SHA-256 校验（含资产文件名绑定）
   → pkexec install-update <deb> <sha256> <signature> → polkit 系统授权
-  → 特权 helper 复制到 root-only 文件并再次校验
+  → GUI 传递当前 XDG 数据/配置/状态目录；特权 helper 以 PKEXEC_UID 锁定用户，
+    验证目录位于其 home 且属主一致，复制包到 root-only 文件并再次校验
   → 固定 Ed25519 公钥验签 → 校验 Package/Version/Architecture → 非交互 dpkg
-  → 核对 dpkg 已装版本及后端 /version、/health、schema、包内 Provider 版本
+  → 停启该用户的 systemd service，核对 dpkg 已装版本及后端 /version、/health、
+    schema、包内 Provider 版本
   → 全部就绪才开放“立即重启”；失败则恢复 SQLite/配置和 dpkg-repack 重建的旧包
   → 无特权 restart-client 等待当前进程退出，再启动已安装的新客户端
 ```

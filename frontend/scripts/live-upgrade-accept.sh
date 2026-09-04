@@ -6,12 +6,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BUILD="${PIXIU_LIVE_BUILD:-${ROOT}/frontend/build-live-upgrade}"
 SNAP="${PIXIU_LIVE_SNAP:-/tmp/pixiu-upgrade-accept}"
+PIXIU_USER_CONFIG="${XDG_CONFIG_HOME:-${HOME}/.config}/pixiu/pixiu.env"
+PIXIU_USER_DATABASE="${XDG_DATA_HOME:-${HOME}/.local/share}/pixiu/pixiu.db"
 mkdir -p "${SNAP}"
 
-sudo sha256sum /etc/pixiu/pixiu.env | tee "${SNAP}/env.before"
-sudo python3 - <<'PY' | tee "${SNAP}/device.before"
+sha256sum "${PIXIU_USER_CONFIG}" | tee "${SNAP}/env.before"
+PIXIU_USER_DATABASE="${PIXIU_USER_DATABASE}" python3 - <<'PY' | tee "${SNAP}/device.before"
+import os
 import sqlite3
-c = sqlite3.connect("/var/lib/pixiu/pixiu.db")
+c = sqlite3.connect(os.environ["PIXIU_USER_DATABASE"])
 print(c.execute("select device_id from sync_identity").fetchone()[0])
 PY
 curl -fsS -o "${SNAP}/openapi.before.json" http://127.0.0.1:8765/openapi.json
@@ -27,15 +30,16 @@ unset QT_QPA_PLATFORM || true
 
 "${BUILD}/t_upgrade_live"
 
-sudo sha256sum /etc/pixiu/pixiu.env | tee "${SNAP}/env.after"
-sudo python3 - <<'PY' | tee "${SNAP}/device.after"
+sha256sum "${PIXIU_USER_CONFIG}" | tee "${SNAP}/env.after"
+PIXIU_USER_DATABASE="${PIXIU_USER_DATABASE}" python3 - <<'PY' | tee "${SNAP}/device.after"
+import os
 import sqlite3
-c = sqlite3.connect("/var/lib/pixiu/pixiu.db")
+c = sqlite3.connect(os.environ["PIXIU_USER_DATABASE"])
 print(c.execute("select device_id from sync_identity").fetchone()[0])
 PY
 curl -fsS -o "${SNAP}/openapi.after.json" http://127.0.0.1:8765/openapi.json
 dpkg-query -W -f='${Package} ${Version} ${Status}\n' pixiu
-systemctl is-active pixiu-backend.service
+systemctl --user is-active pixiu-backend.service
 
 cmp "${SNAP}/env.before" "${SNAP}/env.after"
 cmp "${SNAP}/device.before" "${SNAP}/device.after"

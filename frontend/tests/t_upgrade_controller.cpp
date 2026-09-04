@@ -465,7 +465,7 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
     QTRY_COMPARE(controller.state(), UpgradeController::State::Success);
 
     QCOMPARE(installProgram, QStringLiteral("/usr/bin/pkexec"));
-    QCOMPARE(installArgs.size(), 4);
+    QCOMPARE(installArgs.size(), 7);
     QCOMPARE(installArgs.at(0),
              QStringLiteral("/usr/lib/pixiu/install-update"));
     QVERIFY(QFileInfo(installArgs.at(1)).fileName().startsWith(
@@ -474,6 +474,9 @@ void TestUpgradeController::downloadAndInstallVerifiesAndInstalls()
              QString::fromLatin1(ui::sha256Hex(deb)));
     QCOMPARE(installArgs.at(3),
              QString::fromLatin1(QByteArray("test-signature").toBase64()));
+    QVERIFY(installArgs.at(4).endsWith(QStringLiteral("/pixiu")));
+    QVERIFY(installArgs.at(5).endsWith(QStringLiteral("/pixiu")));
+    QVERIFY(installArgs.at(6).endsWith(QStringLiteral("/pixiu")));
 
     QVERIFY(progressSpy.count() > 0);
     QCOMPARE(progressSpy.last().at(0).toInt(), 100);

@@ -39,7 +39,7 @@
   拉 `releases/latest`，下载/校验公开发布的 `0.1.6` amd64 包，经与生产相同
   的 `/usr/lib/pixiu/install-update` 参数完成安装。因已装版本等于 latest，
   验收把 `applicationVersion` 压到 `0.1.5` 才会进入 Updatable。无人值守
-  会话用 `sudo -n` 替代图形 `pkexec`。`/etc/pixiu/pixiu.env` 与
+  会话用 `sudo -n` 替代图形 `pkexec`。当前用户 XDG 配置与
   `sync_identity.device_id` 安装前后一致，后端保持 active。
 - ✅ 本机 `PIXIU_HAVE_KYSDK=ON`：ctest 37/37；offscreen 冒烟确认 UKUI 主题
   跟随、窗口阴影、麒麟全局快捷键 `Ctrl+Alt+P`，并连上本机 `pixiu-backend`。

@@ -12,6 +12,15 @@ grep -q 'PRODUCT_VERSION=${PACKAGE_VERSION%-\*}' "${HELPER}"
 grep -q 'openssl pkeyutl -verify -pubin -rawin' "${HELPER}"
 grep -q '/usr/share/pixiu/keys/pixiu-release-ed25519.pub' "${HELPER}"
 grep -q 'backend.foundation.api.install_health' "${HELPER}"
+grep -q 'PKEXEC_UID' "${HELPER}"
+grep -q 'systemctl --user' "${HELPER}"
+grep -q 'DATABASE="${USER_DATA_DIR}/pixiu.db"' "${HELPER}"
+grep -q 'CONFIG="${USER_CONFIG_DIR}/pixiu.env"' "${HELPER}"
+grep -q 'validate_user_dir' "${HELPER}"
+if grep -q 'DATABASE=/var/lib/pixiu/pixiu.db' "${HELPER}"; then
+    echo "upgrade helper must not back up the legacy system-account database" >&2
+    exit 1
+fi
 grep -q 'dpkg-repack' "${HELPER}"
 grep -q 'source.backup(target)' "${HELPER}"
 grep -q 'PIXIU_UPGRADE_TEST_FAIL_HEALTH' "${HELPER}"

@@ -1,6 +1,7 @@
 #include "app/UpgradeController.h"
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QNetworkAccessManager>
@@ -515,11 +516,20 @@ void UpgradeController::startInstall()
     setState(State::Installing);
     m_installErrorOutput.clear();
 
+    QString stateRoot = qEnvironmentVariable("XDG_STATE_HOME");
+    if (stateRoot.isEmpty()) {
+        stateRoot = QDir::homePath() + QStringLiteral("/.local/state");
+    }
     const QStringList args{
         QStringLiteral("/usr/lib/pixiu/install-update"),
         m_debPath,
         m_expectedSha256,
         m_signatureBase64,
+        QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+            + QStringLiteral("/pixiu"),
+        QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation)
+            + QStringLiteral("/pixiu"),
+        stateRoot + QStringLiteral("/pixiu"),
     };
     if (m_installRunner) {
         // test seam：注入的执行器记录 program/argv 并自行回调退出码。

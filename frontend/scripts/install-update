@@ -6,14 +6,17 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin
 export PATH
 umask 077
 
-if [ "$#" -ne 3 ]; then
-    echo "usage: install-update <package.deb> <sha256> <signature-base64>" >&2
+if [ "$#" -ne 6 ]; then
+    echo "usage: install-update <package.deb> <sha256> <signature-base64> <data-dir> <config-dir> <state-dir>" >&2
     exit 2
 fi
 
 SOURCE=$1
 EXPECTED=$2
 SIGNATURE_BASE64=$3
+REQUESTED_DATA_DIR=$4
+REQUESTED_CONFIG_DIR=$5
+REQUESTED_STATE_DIR=$6
 case "${EXPECTED}" in
     *[!0-9A-Fa-f]*|"")
         echo "pixiu: invalid expected SHA-256" >&2
@@ -52,9 +55,67 @@ ROOT_SIGNATURE=
 ROOT_DIGEST=
 ROLLBACK_DIR=
 SERVICE_STOPPED=0
+CALLER_UID=${PKEXEC_UID:-${SUDO_UID:-}}
+case "${CALLER_UID}" in
+    ''|0|*[!0-9]*)
+        echo "pixiu: cannot identify the authorized desktop user" >&2
+        exit 2
+        ;;
+esac
+CALLER_ENTRY=$(getent passwd "${CALLER_UID}") || {
+    echo "pixiu: authorized desktop user no longer exists" >&2
+    exit 2
+}
+CALLER_NAME=$(printf '%s' "${CALLER_ENTRY}" | cut -d: -f1)
+CALLER_GID=$(printf '%s' "${CALLER_ENTRY}" | cut -d: -f4)
+CALLER_HOME=$(printf '%s' "${CALLER_ENTRY}" | cut -d: -f6)
+case "${CALLER_HOME}" in
+    /*) ;;
+    *) echo "pixiu: desktop user home is invalid" >&2; exit 2 ;;
+esac
+USER_RUNTIME_DIR="/run/user/${CALLER_UID}"
+[ -d "${USER_RUNTIME_DIR}" ] || {
+    echo "pixiu: desktop user session is not active" >&2
+    exit 2
+}
+
+validate_user_dir() {
+    requested=$1
+    case "${requested}" in
+        "${CALLER_HOME}"/*) ;;
+        *) echo "pixiu: user data path escapes the authorized home" >&2; exit 2 ;;
+    esac
+    [ -d "${requested}" ] && [ ! -L "${requested}" ] || {
+        echo "pixiu: user data directory is missing or unsafe" >&2
+        exit 2
+    }
+    resolved=$(/usr/bin/readlink -f -- "${requested}")
+    case "${resolved}" in
+        "${CALLER_HOME}"/*) ;;
+        *) echo "pixiu: resolved user data path escapes the authorized home" >&2; exit 2 ;;
+    esac
+    owner=$(/usr/bin/stat --format='%u' "${resolved}")
+    [ "${owner}" = "${CALLER_UID}" ] || {
+        echo "pixiu: user data directory ownership mismatch" >&2
+        exit 2
+    }
+    printf '%s\n' "${resolved}"
+}
+
+USER_DATA_DIR=$(validate_user_dir "${REQUESTED_DATA_DIR}")
+USER_CONFIG_DIR=$(validate_user_dir "${REQUESTED_CONFIG_DIR}")
+USER_STATE_DIR=$(validate_user_dir "${REQUESTED_STATE_DIR}")
+
+user_systemctl() {
+    /usr/sbin/runuser -u "${CALLER_NAME}" -- /usr/bin/env \
+        XDG_RUNTIME_DIR="${USER_RUNTIME_DIR}" \
+        DBUS_SESSION_BUS_ADDRESS="unix:path=${USER_RUNTIME_DIR}/bus" \
+        /usr/bin/systemctl --user "$@"
+}
+
 cleanup() {
-    if [ "${SERVICE_STOPPED}" -eq 1 ] && command -v systemctl >/dev/null 2>&1; then
-        /usr/bin/systemctl start pixiu-backend.service >/dev/null 2>&1 || true
+    if [ "${SERVICE_STOPPED}" -eq 1 ]; then
+        user_systemctl start pixiu-backend.service >/dev/null 2>&1 || true
     fi
     /usr/bin/rm -f -- "${ROOT_PACKAGE}"
     [ -z "${ROOT_SIGNATURE}" ] || /usr/bin/rm -f -- "${ROOT_SIGNATURE}"
@@ -133,14 +194,12 @@ if [ -z "${ROLLBACK_PACKAGE}" ]; then
     exit 2
 fi
 
-DATABASE=/var/lib/pixiu/pixiu.db
-CONFIG=/etc/pixiu/pixiu.env
+DATABASE="${USER_DATA_DIR}/pixiu.db"
+CONFIG="${USER_CONFIG_DIR}/pixiu.env"
 DATABASE_BACKUP=${ROLLBACK_DIR}/pixiu.db
 CONFIG_BACKUP=${ROLLBACK_DIR}/pixiu.env
-if command -v systemctl >/dev/null 2>&1; then
-    /usr/bin/systemctl stop pixiu-backend.service
-    SERVICE_STOPPED=1
-fi
+user_systemctl stop pixiu-backend.service
+SERVICE_STOPPED=1
 if [ ! -f "${DATABASE}" ] || [ ! -f "${CONFIG}" ]; then
     echo "pixiu: database or configuration missing; refusing unsafe upgrade" >&2
     exit 2
@@ -169,11 +228,10 @@ fi
 rollback() {
     reason=$1
     echo "pixiu: ${reason}; restoring previous version ${CURRENT_VERSION}" >&2
-    command -v systemctl >/dev/null 2>&1 \
-        && /usr/bin/systemctl stop pixiu-backend.service >/dev/null 2>&1 || true
+    user_systemctl stop pixiu-backend.service >/dev/null 2>&1 || true
     SERVICE_STOPPED=1
     /usr/bin/rm -f -- "${DATABASE}-wal" "${DATABASE}-shm"
-    /usr/bin/install -m 0640 -o pixiu -g pixiu \
+    /usr/bin/install -m 0600 -o "${CALLER_UID}" -g "${CALLER_GID}" \
         "${DATABASE_BACKUP}" "${DATABASE}" || exit 6
     /usr/bin/cp --preserve=mode,ownership,timestamps -- \
         "${CONFIG_BACKUP}" "${CONFIG}" || exit 6
@@ -182,9 +240,10 @@ rollback() {
         echo "pixiu: automatic rollback package installation failed" >&2
         exit 6
     fi
+    user_systemctl daemon-reload >/dev/null 2>&1 || exit 6
+    user_systemctl start pixiu-backend.service >/dev/null 2>&1 || exit 6
     SERVICE_STOPPED=0
-    if command -v systemctl >/dev/null 2>&1 \
-        && ! /usr/bin/systemctl is-active --quiet pixiu-backend.service; then
+    if ! user_systemctl is-active --quiet pixiu-backend.service; then
         echo "pixiu: automatic rollback service verification failed" >&2
         exit 6
     fi
@@ -205,6 +264,8 @@ export DEBIAN_FRONTEND
 if ! /usr/bin/dpkg --force-confdef --force-confold -i "${ROOT_PACKAGE}"; then
     rollback "package installation failed"
 fi
+user_systemctl daemon-reload
+user_systemctl start pixiu-backend.service
 SERVICE_STOPPED=0
 
 INSTALLED_VERSION=$(/usr/bin/dpkg-query -W -f='${Version}' pixiu)
