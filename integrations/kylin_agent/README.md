@@ -29,7 +29,9 @@ receipt 管理亦已实现。当前未完成：配置真实模型后的宿主多
 
 发布测试已用确定性、无推理的 OpenAI-compatible 节点，经真实 Runtime/Gateway 验证
 Provider 的本地/共享记忆写入、检索、更新和同步状态工具链，以及系统提示和逐轮增长的
-会话历史；该结果仅证明集成接线，不证明模型自主规划，也不属于正式 D-07 证据。
+会话历史；去敏 trace 还断言 system prompt 内的四项记忆操作契约、按原顺序保留的用户
+轮次、assistant/tool 回灌，以及五个 PIXIU 工具的关键参数 schema。该结果仅证明集成
+接线，不证明模型自主规划，也不属于正式 D-07 证据。
 
 源码只维护 `plugin.yaml.in`，其中版本为 `@VERSION@` 占位符；开发态兼容检查读取
 仓库根 `VERSION`，发布打包时才生成 Agent 可发现的合法 `plugin.yaml`。禁止在

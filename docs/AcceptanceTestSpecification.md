@@ -133,9 +133,12 @@ A-10 的局部证据，但不等于 Agent run 恢复。A-01～A-10 的真实宿�
 
 另有 `pixiu-agent-mock-e2e` 工程证据：确定性 OpenAI-compatible 节点不做任何推理，
 但通过真实 Runtime/Gateway 执行多轮消息、SSE、审批、Shell、真实联网搜索与 PIXIU
-本地/共享记忆工具。去敏 trace 仅保留系统提示摘要、角色/轮次数、可用及已选工具，
-用于证明请求组装和工具管线，不得作为 A-03/A-04 的模型自主性证据，也不得计入正式
-D-07 的 `kylin-v11-agent-lifecycle` 主记录。
+本地/共享记忆工具。去敏 trace 仅保留系统提示与逐条用户消息摘要、角色/轮次数、
+assistant 非空消息数、可用及已选工具、工具 schema 摘要与契约布尔值；验收器要求每次
+请求的 system prompt 均明确包含 search/remember/update/forget 记忆契约，最终请求按
+原顺序含全部用户轮次，且五个 PIXIU 工具的关键参数 schema 完整。原始提示、回复、
+工具结果和密钥均不落盘。该证据用于证明请求组装和工具管线，不得作为 A-03/A-04 的
+模型自主性证据，也不得计入正式 D-07 的 `kylin-v11-agent-lifecycle` 主记录。
 
 宿主/组件预检证据：Module E 初始化契约固定验证 runtime 0.9.x、Provider/后端产品
 版本一致、Agent Memory API v1、后端组件身份及 `/health` 数据库就绪；0.10+、API

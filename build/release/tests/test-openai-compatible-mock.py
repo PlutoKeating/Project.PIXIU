@@ -115,8 +115,70 @@ class MockNodeContractTests(unittest.TestCase):
         self.assertEqual(trace["requests"][0]["selected_tool"], "terminal")
         self.assertEqual(trace["requests"][0]["system_message_count"], 1)
         self.assertEqual(trace["requests"][0]["user_turn_count"], 1)
+        self.assertEqual(len(trace["requests"][0]["user_message_sha256"]), 1)
+        self.assertTrue(trace["requests"][0]["tool_schema_valid"])
+        self.assertFalse(trace["requests"][0]["pixiu_tool_schema_contract"])
+        self.assertRegex(trace["requests"][0]["tool_schema_sha256"], r"^[0-9a-f]{64}$")
+        self.assertFalse(trace["requests"][0]["pixiu_prompt_contract"])
         self.assertNotIn("test-secret", json.dumps(trace))
         self.assertNotIn("pixiu-safe-marker", json.dumps(trace))
+
+    def test_trace_proves_pixiu_prompt_and_ordered_context_without_raw_payloads(self) -> None:
+        first = "请记住第一轮内容"
+        second = "请恢复第一轮内容"
+        system = (
+            "Use pixiu_memory_search, pixiu_memory_remember, pixiu_memory_update, "
+            "and pixiu_memory_forget according to the memory policy."
+        )
+        payload = {
+            "model": "hermes-agent",
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": first},
+                {"role": "assistant", "content": "已保存。"},
+                {"role": "user", "content": second},
+            ],
+            "tools": [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": name,
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                property_name: {"type": "string"}
+                                for property_name in properties
+                            },
+                        },
+                    },
+                }
+                for name, properties in {
+                    "pixiu_memory_search": ("query", "top_k"),
+                    "pixiu_memory_remember": ("content", "tool_name"),
+                    "pixiu_memory_update": (
+                        "knowledge_id", "expected_version", "content", "title"
+                    ),
+                    "pixiu_memory_forget": ("command", "confirmation_token"),
+                    "pixiu_sync_status": (),
+                }.items()
+            ],
+        }
+        with self.request("POST", "/v1/chat/completions", payload):
+            pass
+        with self.request("GET", "/_test/trace") as response:
+            request = json.load(response)["requests"][0]
+        import hashlib
+
+        self.assertTrue(request["pixiu_prompt_contract"])
+        self.assertTrue(request["pixiu_tool_schema_contract"])
+        self.assertEqual(
+            request["user_message_sha256"],
+            [hashlib.sha256(value.encode()).hexdigest() for value in (first, second)],
+        )
+        self.assertEqual(request["assistant_nonempty_count"], 1)
+        encoded = json.dumps(request, ensure_ascii=False)
+        self.assertNotIn(first, encoded)
+        self.assertNotIn(second, encoded)
 
     def test_gateway_server_agent_model_alias_is_accepted(self) -> None:
         payload = {

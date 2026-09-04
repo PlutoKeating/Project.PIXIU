@@ -29,6 +29,19 @@ GATEWAY_MODEL_ID = "hermes-agent"
 DESKTOP_MODEL_ID = "deepseek-chat"
 MARKER = re.compile(r"PIXIU-[A-F0-9]{16,64}")
 SAFE_ARTIFACT = re.compile(r"/(?:tmp|run/user/[0-9]+)/[A-Za-z0-9._/-]+")
+PIXIU_PROMPT_TOOLS = {
+    "pixiu_memory_search",
+    "pixiu_memory_remember",
+    "pixiu_memory_update",
+    "pixiu_memory_forget",
+}
+PIXIU_TOOL_REQUIRED_PROPERTIES = {
+    "pixiu_memory_search": {"query", "top_k"},
+    "pixiu_memory_remember": {"content", "tool_name"},
+    "pixiu_memory_update": {"knowledge_id", "expected_version", "content", "title"},
+    "pixiu_memory_forget": {"command", "confirmation_token"},
+    "pixiu_sync_status": set(),
+}
 
 
 def _digest(value: str) -> str:
@@ -56,6 +69,42 @@ def _tool_names(payload: dict[str, Any]) -> set[str]:
         if isinstance(function, dict) and isinstance(function.get("name"), str):
             result.add(function["name"])
     return result
+
+
+def _tool_schema_contract(payload: dict[str, Any]) -> bool:
+    tools = payload.get("tools")
+    if not isinstance(tools, list) or not tools:
+        return False
+    for item in tools:
+        if not isinstance(item, dict):
+            return False
+        function = item.get("function") if item.get("type") == "function" else item
+        if not isinstance(function, dict) or not isinstance(function.get("name"), str):
+            return False
+        parameters = function.get("parameters")
+        if not isinstance(parameters, dict) or parameters.get("type") != "object":
+            return False
+        if "properties" in parameters and not isinstance(parameters["properties"], dict):
+            return False
+    return True
+
+
+def _pixiu_tool_schema_contract(payload: dict[str, Any]) -> bool:
+    schemas: dict[str, dict[str, Any]] = {}
+    for item in payload.get("tools") or []:
+        if not isinstance(item, dict):
+            continue
+        function = item.get("function") if item.get("type") == "function" else item
+        if isinstance(function, dict) and isinstance(function.get("name"), str):
+            schemas[function["name"]] = function
+    if not PIXIU_TOOL_REQUIRED_PROPERTIES.keys() <= schemas.keys():
+        return False
+    for name, required_properties in PIXIU_TOOL_REQUIRED_PROPERTIES.items():
+        parameters = schemas[name].get("parameters")
+        properties = parameters.get("properties") if isinstance(parameters, dict) else None
+        if not isinstance(properties, dict) or not required_properties <= properties.keys():
+            return False
+    return True
 
 
 def _latest_user(messages: list[dict[str, Any]]) -> str:
@@ -174,6 +223,8 @@ class State:
     def record(self, payload: dict[str, Any], selected_tool: str | None) -> None:
         messages = [item for item in payload.get("messages") or [] if isinstance(item, dict)]
         systems = [_text(item.get("content")) for item in messages if item.get("role") == "system"]
+        combined_system = "\n".join(systems)
+        tools = payload.get("tools") or []
         self.requests.append(
             {
                 "request_index": len(self.requests) + 1,
@@ -181,12 +232,29 @@ class State:
                 "message_count": len(messages),
                 "message_roles": [str(item.get("role") or "") for item in messages],
                 "system_message_count": len(systems),
-                "system_prompt_sha256": _digest("\n".join(systems)),
+                "system_prompt_sha256": _digest(combined_system),
                 "system_prompt_nonempty": any(item.strip() for item in systems),
+                "pixiu_prompt_contract": all(
+                    name in combined_system for name in PIXIU_PROMPT_TOOLS
+                ),
                 "user_turn_count": sum(item.get("role") == "user" for item in messages),
+                "user_message_sha256": [
+                    _digest(_text(item.get("content")))
+                    for item in messages
+                    if item.get("role") == "user"
+                ],
                 "assistant_turn_count": sum(item.get("role") == "assistant" for item in messages),
+                "assistant_nonempty_count": sum(
+                    item.get("role") == "assistant" and bool(_text(item.get("content")).strip())
+                    for item in messages
+                ),
                 "tool_result_count": sum(item.get("role") == "tool" for item in messages),
                 "available_tools": sorted(_tool_names(payload)),
+                "tool_schema_valid": _tool_schema_contract(payload),
+                "pixiu_tool_schema_contract": _pixiu_tool_schema_contract(payload),
+                "tool_schema_sha256": _digest(
+                    json.dumps(tools, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                ),
                 "selected_tool": selected_tool,
             }
         )

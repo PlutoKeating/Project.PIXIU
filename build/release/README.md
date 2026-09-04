@@ -189,9 +189,17 @@ OpenAI-compatible 节点，再用 `run-agent-mock-acceptance.py --suite full` �
 `--suite memory --scope shared:<name>` 独立保存共享域记忆写入、检索、更新和同步状态
 证据，避免重复联网请求的第三方限流影响共享记忆判定。两份结果共同覆盖工程链路，
 不能互相替代。入口要求 `--expected-commit`，并核对已安装 release manifest 与后端
-`/version` 后把候选身份写入 JSON。节点不保留原始提示、工具结果或密钥；输出固定带 `suite`、
+`/version` 后把候选身份写入 JSON。去敏 trace 进一步要求每次 system prompt 含 PIXIU
+search/remember/update/forget 契约、最终模型请求按原顺序保留全部用户消息、assistant
+内容和工具结果持续回灌，并核对 OpenAI function schema 与五个 PIXIU 工具的关键参数。
+节点只保留消息与 schema 摘要、计数和契约布尔值，不保留原始提示、回复、工具结果或密钥；输出固定带 `suite`、
 `mock_only=true` 和 `not_release_evidence=true`。
 它不能替代官方云端模型运行，也不得作为 D-07 七类正式主记录之一。
+
+在全新开发环境启用 `PIXIU_BACKEND_TESTS=1` 前，须同时安装
+`backend/requirements.txt` 与 `backend/foundation/requirements-sync.txt`；后者是
+分布式同步的密码学和 mDNS 依赖。正式 `.deb` 的离线 wheel 构建与 `postinst` 已固定
+同时处理这两个清单。
 
 ## 最终性能证据汇总
 

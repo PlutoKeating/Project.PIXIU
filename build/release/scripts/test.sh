@@ -23,7 +23,7 @@ if [ "${PIXIU_BACKEND_TESTS}" = "1" ]; then
     (cd "${PIXIU_ROOT}" && "${PIXIU_PYTHON:-python3}" -m pytest \
         backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q)
 else
-    warn "backend pytest skipped（PIXIU_BACKEND_TESTS=1 启用，需已安装 backend/requirements.txt）"
+    warn "backend pytest skipped（PIXIU_BACKEND_TESTS=1 启用，需安装 backend/requirements.txt 与 backend/foundation/requirements-sync.txt）"
 fi
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-lock.sh"

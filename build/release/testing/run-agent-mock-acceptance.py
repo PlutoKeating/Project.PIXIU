@@ -198,8 +198,14 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise AcceptanceError("Agent search did not return the stored marker")
     if not all(item.get("system_prompt_nonempty") is True for item in requests):
         raise AcceptanceError("Runtime did not inject a non-empty system prompt")
+    if not all(item.get("pixiu_prompt_contract") is True for item in requests):
+        raise AcceptanceError("Runtime system prompt omitted the PIXIU memory contract")
     if not all(MEMORY_REQUIRED_TOOLS <= set(item.get("available_tools", [])) for item in requests):
         raise AcceptanceError("PIXIU memory tools were not present in every model call")
+    if not all(item.get("tool_schema_valid") is True for item in requests):
+        raise AcceptanceError("Runtime supplied an invalid OpenAI function-tool schema")
+    if not all(item.get("pixiu_tool_schema_contract") is True for item in requests):
+        raise AcceptanceError("Runtime supplied an incomplete PIXIU memory tool schema")
     if max(int(item.get("user_turn_count", 0)) for item in requests) < len(scenario.prompts):
         observed = [
             {
@@ -219,6 +225,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise AcceptanceError("multi-turn assistant context was not retained")
     if not any(int(item.get("tool_result_count", 0)) >= 1 for item in requests):
         raise AcceptanceError("tool results were not returned to the model")
+    expected_user_hashes = [_digest(prompt) for prompt in scenario.prompts]
+    final_user_hashes = requests[-1].get("user_message_sha256")
+    if final_user_hashes != expected_user_hashes:
+        raise AcceptanceError("ordered user message content was not retained in the final model call")
+    if int(requests[-1].get("assistant_nonempty_count", 0)) < len(scenario.prompts) - 1:
+        raise AcceptanceError("assistant response content was not retained in the final model call")
     if len([item for item in messages if item.get("role") in {"user", "assistant"}]) < 2 * len(scenario.prompts):
         raise AcceptanceError("Gateway did not persist the complete conversation")
 
@@ -265,7 +277,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "checks": {
             "multi_turn_conversation": "passed",
             "system_prompt_injected": "passed",
+            "pixiu_system_prompt_contract": "passed",
             "conversation_context_retained": "passed",
+            "ordered_user_content_retained": "passed",
+            "assistant_content_retained": "passed",
+            "openai_tool_schema_contract": "passed",
+            "pixiu_tool_schema_contract": "passed",
             "memory_remember": "passed",
             "memory_search": "passed",
             "memory_update": "passed",
@@ -280,6 +297,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "tool_call_count": len(tools),
             "approval_count": sum(item["approvals"] for item in runs),
             "system_prompt_variants": len(system_hashes),
+            "tool_schema_variants": len(
+                {
+                    item.get("tool_schema_sha256")
+                    for item in requests
+                    if isinstance(item.get("tool_schema_sha256"), str)
+                }
+            ),
             "marker_sha256": _digest(marker),
             "payloads_retained": False,
         },

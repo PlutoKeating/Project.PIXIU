@@ -25,8 +25,10 @@
   OpenAI-compatible 节点和验收入口：`full` 六轮套件经真实 Runtime/Gateway 执行
   Shell 审批、DDGS 联网和 PIXIU 记忆工具链，`memory` 四轮套件在 `shared:*` 域独立
   验证写入、检索、更新和同步状态，避免再次调用第三方搜索导致限流污染记忆判定；
-  两套去敏 trace 均证明每次请求带非空系统提示、历史逐轮增长且工具结果回送，并在
-  采集前核对 expected commit、已安装 release manifest 和后端版本三方一致。证据固定标注
+  两套去敏 trace 均证明每次请求的 system prompt 含 PIXIU search/remember/update/forget
+  契约，最终请求按原顺序保留全部用户消息，assistant 内容与工具结果均回送，并验证
+  OpenAI function schema 及五个 PIXIU 工具关键参数完整；trace 只保存摘要和布尔结果。
+  采集前另核对 expected commit、已安装 release manifest 和后端版本三方一致。证据固定标注
   `mock_only=true`、`not_release_evidence=true`，不计官方云端模型自主性或正式 D-07。
 - 有消息会话实测曾暴露刷新后重复气泡、错位残影与空状态遮挡；SQL 确认
   持久层无重复，根因为裸子布局被移出顶层布局时未销毁其气泡 widget。补丁已改为
