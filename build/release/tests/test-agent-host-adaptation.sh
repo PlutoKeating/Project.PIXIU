@@ -16,6 +16,28 @@ patch -d "${fixture}/source" -p1 --forward --batch \
 install -D -m 0644 "${repo_root}/build/release/agent-host/compat/pixiu_host_compat.cpp" \
     "${fixture}/source/src/services/pixiu_host_compat.cpp"
 
+# Exercise the same fail-closed source sanitization used by the real build.
+python3 - "${fixture}/source" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+root = Path(sys.argv[1])
+gateway = root / "src/services/gatewayservice.cpp"
+content = gateway.read_text(encoding="utf-8")
+pattern = re.compile(r"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@[^\"\s]+")
+content, count = pattern.subn("https://gitee.com/openkylin/kylin-cua.git", content)
+test_count = count == 1
+if not test_count:
+    raise SystemExit(f"expected one authenticated upstream URL, found {count}")
+gateway.write_text(content, encoding="utf-8")
+for relative in ("scripts/agent_runtime_install.sh", "scripts/agent_runtime_install_bak.sh"):
+    (root / relative).unlink()
+for candidate in root.rglob("*"):
+    if candidate.is_file() and pattern.search(candidate.read_text(encoding="utf-8", errors="ignore")):
+        raise SystemExit(f"authenticated URL remains in {candidate.relative_to(root)}")
+PY
+
 grep -q 'src/services/pixiu_host_compat.cpp' "${fixture}/source/CMakeLists.txt"
 grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 ! grep -q 'src/ui/modelsettingswidget.cpp' "${fixture}/source/CMakeLists.txt"
