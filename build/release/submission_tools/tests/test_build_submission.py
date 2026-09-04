@@ -86,13 +86,24 @@ class SubmissionBuilderTest(unittest.TestCase):
     def test_package_contains_checksums_but_not_itself_in_checksum_list(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            package = root / "entry"
-            package.mkdir()
-            (package / "document.pdf").write_bytes(b"document")
-            with mock.patch.object(MODULE, "FINAL_ROOT", root):
-                output = MODULE.write_checksums_and_zip({"submission_name": "entry"})
+            submission = root / "submission"
+            output_root = root / "out"
+            document = submission / "02-技术方案及测试结果/document.pdf"
+            document.parent.mkdir(parents=True)
+            document.write_bytes(b"document")
+            plan = {
+                "submission_name": "entry",
+                "deliverables": [{"paths": ["02-技术方案及测试结果/document.pdf"]}],
+                "external_materials": [],
+            }
+            with (
+                mock.patch.object(MODULE, "SUBMISSION_ROOT", submission),
+                mock.patch.object(MODULE, "OUTPUT_ROOT", output_root),
+            ):
+                output = MODULE.write_checksums_and_zip(plan)
             self.assertTrue(output.is_file())
-            checksums = (package / "SHA256SUMS").read_text(encoding="utf-8")
+            with zipfile.ZipFile(output) as archive:
+                checksums = archive.read("entry/SHA256SUMS").decode()
             self.assertIn("document.pdf", checksums)
             self.assertIn("SUBMISSION_MANIFEST.json", checksums)
             self.assertNotIn("SHA256SUMS", checksums)

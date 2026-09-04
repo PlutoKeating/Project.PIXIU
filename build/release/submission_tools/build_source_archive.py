@@ -18,7 +18,7 @@ from typing import Any, Iterable
 
 
 ARCHIVE_PREFIX = "Project.PIXIU-source"
-SOURCE_EXCLUDED_PREFIXES = ("submission/review/", "submission/final/")
+SOURCE_EXCLUDED_PREFIXES = ("submission/",)
 
 
 def git(root: Path, *args: str) -> bytes:

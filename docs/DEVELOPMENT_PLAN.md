@@ -501,6 +501,10 @@ Project.PIXIU/
 ├── integrations/
 │   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配与契约测试
 
+├── build/release/submission_tools/ # 交付清单、渲染、归档、校验与测试工具
+
+├── submission/                     # 00 说明 + 官方 01～05 五类交付实物，不混放工程工具
+
 ├── third_party/                    # openKylin 官方源码/SDK submodule
 │   ├── kylin-agent/                # 官方桌面 Agent 参考/目标宿主
 │   ├── kylin-agent-runtime/        # 官方 Agent 运行时与 MemoryProvider 接口

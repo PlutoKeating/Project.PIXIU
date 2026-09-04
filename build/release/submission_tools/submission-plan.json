@@ -65,7 +65,7 @@
     {
       "id": "A-02",
       "title": "技术方案附件：效果与测试证据",
-      "source": "docs/delivery/TEST_REPORT.md;docs/acceptance;submission/evidence-policy.json",
+      "source": "docs/delivery/TEST_REPORT.md;docs/acceptance;build/release/submission_tools/evidence-policy.json",
       "paths": ["02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.pdf", "02-技术方案及测试结果/02-效果与测试证据/原始证据.zip", "02-技术方案及测试结果/02-效果与测试证据/three-device-final-suite.json"],
       "producer": "repository"
     },

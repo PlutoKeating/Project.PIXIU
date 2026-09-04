@@ -423,7 +423,8 @@ NOTICE，核对固定 commit、摘要、离线性和许可证覆盖。任一步�
 | R-06 `[D]` | 文档同版 | D-01～D-05、A-01～A-05 与最终 release commit、包、视频和原始报告版本一致并经审核 |
 
 当前 R-01～R-06 均不得标记最终通过；详细现状与门禁见 `DELIVERY_PLAN.md`。
-根目录 `submission/submission-plan.json` 是最终文件级清单；外层名称固定为
+`build/release/submission_tools/submission-plan.json` 是最终文件级清单；交付实物直接位于
+根目录 `submission/` 的五类编号目录中，外层名称固定为
 `华南理工大学－OSAgent记忆优化及高效应用研究－PIXIU`。打包器必须在官方原件哈希、
 最终 commit、洁净工作区、全部 release gate 和每个最终文件均通过后才生成 ZIP。
 报名表是官方要求同步报送的外部材料，须由负责人放入审核通过的盖章版本。

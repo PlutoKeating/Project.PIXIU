@@ -19,8 +19,9 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[1]
-POLICY_PATH = ROOT / "submission/evidence-policy.json"
+ROOT = Path(__file__).resolve().parents[3]
+TOOL_ROOT = Path(__file__).resolve().parent
+POLICY_PATH = TOOL_ROOT / "evidence-policy.json"
 SHA1 = re.compile(r"[0-9a-f]{40}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 SENSITIVE = re.compile(
@@ -874,7 +875,7 @@ def main() -> int:
     parser.add_argument("--attachment", action="append", type=Path, default=[])
     args = parser.parse_args()
     root = args.root.resolve()
-    policy = read_json(root / "submission/evidence-policy.json")
+    policy = read_json(root / "build/release/submission_tools/evidence-policy.json")
     try:
         release_commit = subprocess.check_output(
             ["git", "-C", str(root), "rev-parse", "HEAD"], text=True

@@ -9,7 +9,7 @@
 对外最终文件不在本目录手工复制维护，而由根目录 `submission/` 的机器可读清单统一
 收集、校验和打包；这样可防止工作稿与最终 release commit 分叉。
 
-`submission/render_documents.py` 已提供统一 A4 中文排版：可在正式目录外生成带
+`build/release/submission_tools/render_documents.py` 已提供统一 A4 中文排版：可在正式目录外生成带
 “不得提交”标识的草稿 PDF/DOCX，最终模式只有在其他发布门全通过、状态行无待办且
 工作树固定到 `release_commit` 时才写入正式目录。`build_submission.py --package`
 会验证办公文件、PDF、ZIP、视频和安装资产的真实结构，并复核安装包摘要与签名。

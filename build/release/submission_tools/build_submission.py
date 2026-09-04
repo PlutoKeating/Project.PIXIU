@@ -9,6 +9,7 @@ import json
 import os
 import posixpath
 import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -17,10 +18,11 @@ import zipfile
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
+TOOL_ROOT = Path(__file__).resolve().parent
 SUBMISSION_ROOT = ROOT / "submission"
-FINAL_ROOT = SUBMISSION_ROOT / "final"
-PLAN_PATH = SUBMISSION_ROOT / "submission-plan.json"
+OUTPUT_ROOT = ROOT / "build/release/out"
+PLAN_PATH = TOOL_ROOT / "submission-plan.json"
 PASS = "passed"
 SHA1 = re.compile(r"[0-9a-f]{40}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
@@ -32,7 +34,7 @@ OFFICIAL_TOP_LEVEL = {
     "04-部署文档",
     "05-功能演示视频",
 }
-SOURCE_EXCLUDED_PREFIXES = ("submission/review/", "submission/final/")
+SOURCE_EXCLUDED_PREFIXES = ("submission/",)
 FINAL_DEVICE_EVIDENCE = Path("02-技术方案及测试结果/02-效果与测试证据/three-device-final-suite.json")
 RAW_EVIDENCE_ARCHIVE = Path("02-技术方案及测试结果/02-效果与测试证据/原始证据.zip")
 SOURCE_ARCHIVE = Path("03-源代码及规范/Project.PIXIU-source.tar.gz")
@@ -414,7 +416,7 @@ def validate_raw_evidence_archive(archive: Path, package: Path) -> list[str]:
     result = subprocess.run(
         [
             sys.executable,
-            str(SUBMISSION_ROOT / "build_evidence_archive.py"),
+            str(TOOL_ROOT / "build_evidence_archive.py"),
             "--validate",
             "--root",
             str(ROOT),
@@ -480,21 +482,21 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
         if git("status", "--porcelain"):
             errors.append("Git worktree is not clean")
         for relative in paths:
-            final_path = FINAL_ROOT / name / relative
+            final_path = SUBMISSION_ROOT / relative
             if not final_path.is_file():
                 errors.append(f"missing final deliverable: {relative}")
             else:
                 errors.extend(validate_deliverable_format(final_path))
         for item in plan.get("external_materials", []):
             relative = item.get("path", "")
-            external_path = FINAL_ROOT / name / relative
+            external_path = SUBMISSION_ROOT / relative
             if not relative or not external_path.is_file():
                 errors.append(f"missing external material: {relative}")
             else:
                 errors.extend(validate_deliverable_format(external_path))
-        evidence_path = FINAL_ROOT / name / FINAL_DEVICE_EVIDENCE
+        evidence_path = SUBMISSION_ROOT / FINAL_DEVICE_EVIDENCE
         package_paths = [
-            FINAL_ROOT / name / relative
+            SUBMISSION_ROOT / relative
             for relative in paths
             if relative.startswith("04-部署文档/01-可安装软件/") and relative.endswith(".deb")
         ]
@@ -506,10 +508,10 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
                     candidate_package=package_paths[0],
                 )
             )
-        raw_evidence = FINAL_ROOT / name / RAW_EVIDENCE_ARCHIVE
+        raw_evidence = SUBMISSION_ROOT / RAW_EVIDENCE_ARCHIVE
         if raw_evidence.is_file() and len(package_paths) == 1 and package_paths[0].is_file():
             errors.extend(validate_raw_evidence_archive(raw_evidence, package_paths[0]))
-        source_archive = FINAL_ROOT / name / SOURCE_ARCHIVE
+        source_archive = SUBMISSION_ROOT / SOURCE_ARCHIVE
         if source_archive.is_file():
             errors.extend(
                 validate_source_archive(
@@ -521,27 +523,35 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
 
 
 def write_checksums_and_zip(plan: dict) -> Path:
-    package_root = FINAL_ROOT / plan["submission_name"]
-    output = FINAL_ROOT / f'{plan["submission_name"]}.zip'
-    manifest_path = package_root / "SUBMISSION_MANIFEST.json"
-    manifest_path.write_text(
-        json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    members = sorted(path for path in package_root.rglob("*") if path.is_file())
-    checksum_path = package_root / "SHA256SUMS"
-    checksum_path.write_text(
-        "".join(
-            f"{sha256(path)}  {path.relative_to(package_root).as_posix()}\n"
-            for path in members
-            if path != checksum_path
-        ),
-        encoding="utf-8",
-    )
-    members = sorted(path for path in package_root.rglob("*") if path.is_file())
-    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for path in members:
-            archive.write(path, (Path(plan["submission_name"]) / path.relative_to(package_root)).as_posix())
+    OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    output = OUTPUT_ROOT / f'{plan["submission_name"]}.zip'
+    with tempfile.TemporaryDirectory() as temporary:
+        package_root = Path(temporary) / plan["submission_name"]
+        for item in plan.get("deliverables", []) + plan.get("external_materials", []):
+            item_paths = item.get("paths", [item.get("path", "")])
+            for relative in item_paths:
+                source = SUBMISSION_ROOT / relative
+                destination = package_root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, destination)
+        manifest_path = package_root / "SUBMISSION_MANIFEST.json"
+        manifest_path.write_text(
+            json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        members = sorted(path for path in package_root.rglob("*") if path.is_file())
+        checksum_path = package_root / "SHA256SUMS"
+        checksum_path.write_text(
+            "".join(
+                f"{sha256(path)}  {path.relative_to(package_root).as_posix()}\n"
+                for path in members
+            ),
+            encoding="utf-8",
+        )
+        members = sorted(path for path in package_root.rglob("*") if path.is_file())
+        with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            for path in members:
+                archive.write(path, (Path(plan["submission_name"]) / path.relative_to(package_root)).as_posix())
     return output
 
 

@@ -54,7 +54,7 @@ wheel `METADATA` 自动记录并生成，避免手填包名、版本或摘要。
 同时归档，单独出现仍不构成通过结论。
 
 最终 D-03 不使用会遗漏 submodule 内容的普通 `git archive`。供应链强制门通过后，
-由 `submission/build_source_archive.py` 收集 Git 跟踪文件及四个 submodule 的实际
+由 `build/release/submission_tools/build_source_archive.py` 收集 Git 跟踪文件及四个 submodule 的实际
 文件，并把 Agent 供应链证据一并收入归档；内嵌 `SOURCE_MANIFEST.json` 记录 release
 commit、submodule commit 和逐文件 SHA-256。`build_submission.py --package` 会复算
 这些摘要并检查各源码树，还会把归档中的完整路径集合、文件/符号链接类型和摘要逐项

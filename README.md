@@ -36,8 +36,8 @@ API 仍被实际调用；测试节点只按可观察状态返回固定 tool call
 候选的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
 生命周期和产品写入/检索/遗忘均通过；`/capabilities` 返回 Embedding/Vector
 `runtime=kylin`、两者 compliant 且 `contest_ready=true`。候选的完整 commit 和
-SHA-256 以 `submission/review/04-部署文档/01-可安装软件/` 中候选包与摘要，以及
-`submission/review/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/` 中
+SHA-256 以 `submission/04-部署文档/01-可安装软件/` 中候选包与摘要，以及
+`submission/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/` 中
 同版 JSON 为准。包内同时包含
 可重建 `kylin-agent`、58 个哈希锁定 Runtime wheels、PIXIU Provider、SBOM、NOTICE
 和对应源码/构建证据。最终文档冻结后仍须对新 commit 重建并重新绑定证据。
@@ -272,23 +272,23 @@ PPT 第 21 页还明确列出七类踩雷点，项目将其作为反向发布门
 
 ### 已准备的交付实物
 
-仓库根目录的 `submission/` 是唯一赛事交付区。当前可直接审阅的生成物统一放在
-`submission/review/`，全部带“草稿预览，不得提交”标识或 `review` 文件名；正式门全部
-关闭后，同一生成器才会写入 `submission/final/`。当前准备范围如下：
+仓库根目录的 `submission/` 是唯一、直接可见的赛事交付区，不再设置会掩盖实物的
+`review/` 或空 `final/` 中间层。当前文档仍带“草稿预览，不得提交”标识，源码包仍带
+`review` 文件名，发布门全部关闭后必须在原位替换为同版正式文件。当前准备范围如下：
 
 | 类别 | 已准备文件 |
 |------|------------|
-| D-01 | `submission/review/01-项目报告/PIXIU项目报告.pptx`（零字节人工占位，必须替换） |
-| D-02 | `submission/review/02-技术方案及测试结果/PIXIU技术方案及测试结果.docx` 与 `.pdf`；同目录内含 A-01～A-05 附件和审阅证据 |
-| D-03 | `submission/review/03-源代码及规范/Project.PIXIU-source-review.tar.gz`、`源码规范与许可证.pdf` |
-| D-04 | `submission/review/04-部署文档/PIXIU部署指南.pdf`；`01-可安装软件/` 内含候选 `.deb` 与摘要 |
-| D-05 | `submission/review/05-功能演示视频/PIXIU功能演示.mp4`（零字节人工占位，必须替换）；Mock 子目录仅保留经审计的中文重录清单，旧维护模式素材已移除 |
+| D-01 | `submission/01-项目报告/PIXIU项目报告.pptx`（零字节人工占位，必须替换） |
+| D-02 | `submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.docx` 与 `.pdf`；同目录内含 A-01～A-05 附件和审阅证据 |
+| D-03 | `submission/03-源代码及规范/Project.PIXIU-source-review.tar.gz`、`源码规范与许可证.pdf` |
+| D-04 | `submission/04-部署文档/PIXIU部署指南.pdf`；`01-可安装软件/` 内含候选 `.deb` 与摘要 |
+| D-05 | `submission/05-功能演示视频/PIXIU功能演示.mp4`（零字节人工占位，必须替换）；Mock 子目录仅保留经审计的中文重录清单，旧维护模式素材已移除 |
 
 就人工创作/提供的文件而言，负责人只需补充 D-01 项目报告 PPT、D-05 不超过 7 分钟的
 演示视频和盖章报名表，并审核自动生成文档；发布时还需在安全环境提供与仓库公钥匹配的
 Ed25519 私钥完成签名。
 不要把 API Key 或签名私钥提交到仓库。当前仍缺官方云端 Agent、三台真实设备、最终
-性能及完整安装/GUI 升级矩阵，所以 `submission/final/` 不得提前装入上述审阅稿。
+性能及完整安装/GUI 升级矩阵，所以本目录中的审阅稿不得冒充最终验收产物。
 
 团队追加的发布硬门是：最终提供一个可在银河麒麟 V11 图形安装器打开的一体化
 `.deb`，内含 PIXIU 记忆服务、控制台和 Module E；软件内可检查版本并一键完成
@@ -311,8 +311,8 @@ Ed25519 私钥完成签名。
 `/health`、`/capabilities` 绑定；另以独立临时数据库和隔离集合直接执行 SDK 的
 LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 API 写入/
 召回/遗忘。当前目标 V11 strict 审阅候选已生成同版原生证据；完整 commit 与包摘要
-以 `submission/review/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/native-sdk-smoke.json`
-和 `submission/review/04-部署文档/01-可安装软件/` 中候选包摘要为准。Embedding
+以 `submission/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/native-sdk-smoke.json`
+和 `submission/04-部署文档/01-可安装软件/` 中候选包摘要为准。Embedding
 实际使用 runtime 1.3.0/gte-base 768 维向量，Vector direct SDK 与产品写入、召回、
 遗忘链均通过，`contest_ready=true`。正式 A-02 仍须在最终冻结 commit 重跑并归档。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按
@@ -371,9 +371,9 @@ Project.PIXIU/
 ├── backend/engine/                   # 记忆业务引擎
 ├── backend/foundation/               # API、存储、检索、流转、同步、评测
 ├── backend/tests/                    # 自动化测试
-├── build/release/                    # Debian/银河麒麟构建与发布画像
+├── build/release/                    # Debian/银河麒麟构建、发布画像与交付校验工具
 ├── docs/                             # 架构、API、赛题、验收与报告
-├── submission/                       # 官方清单驱动的最终赛事交付区与 fail-closed 打包器
+├── submission/                       # 打开即见 00 说明和官方 01～05 五类交付实物
 └── third_party/
     ├── kylin-agent/                  # openKylin 官方 Agent 桌面端（submodule）
     ├── kylin-agent-runtime/          # openKylin 官方 Agent 运行时（submodule）

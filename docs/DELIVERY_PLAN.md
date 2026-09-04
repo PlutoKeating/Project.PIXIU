@@ -183,13 +183,15 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 
 ## 4. 赛事交付文档台账
 
-仓库根目录 [`submission/`](../submission/) 是唯一正式交付生成区；
-`submission/submission-plan.json` 把两份官方材料、D-01～D-05、D-02 附件 A-01～A-05、团队单包要求及人工
+仓库根目录 [`submission/`](../submission/) 是唯一且直接可见的交付实物区；其中不再
+混放生成脚本、测试、`review/` 或空 `final/` 中间层。所有机器工具统一位于
+`build/release/submission_tools/`；
+`build/release/submission_tools/submission-plan.json` 把两份官方材料、D-01～D-05、D-02 附件 A-01～A-05、团队单包要求及人工
 提供材料映射到最终文件名。当前 `release_ready=false`，全部门通过前打包器拒绝生成
 最终 ZIP。`docs/delivery/` 继续作为可审查工作源，不直接充当对外最终文件。
 
 当前自动化已经能够生成 D-02/D-03/D-04/A-01～A-05 的带“不得提交”水印审阅稿，
-并在最终冻结后生成 D-03 源码归档；`submission/README.md` 是文件路径和命令的唯一入口。
+并在最终冻结后生成 D-03 源码归档；`submission/00-交付说明.md` 是文件路径和命令的唯一入口。
 负责人最终仅需提供 D-01 PPT、D-05 不超过 7 分钟的视频和盖章报名表，并审核自动生成
 文档。工程 Mock 输出不属于七类正式 A-02 主记录，不得放宽 `release_ready`。
 
@@ -228,12 +230,12 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 
 `build_submission.py --package` 会额外解析 A-02 三设备总报告，核对四场景、关键检查、
 严格 V11 画像、Agent Runtime、release commit 和最终 `.deb` 摘要，而非只做存在性检查。
-仓库现以 `submission/render_documents.py` 将 D-02/D-03/D-04/A-01～A-05 的 Markdown
+仓库现以 `build/release/submission_tools/render_documents.py` 将 D-02/D-03/D-04/A-01～A-05 的 Markdown
 权威源统一生成 A4 DOCX/PDF：草稿强制标明不得提交；最终模式要求除文档人工审核外
 所有门已通过、源码状态行不存在待办并绑定洁净 `release_commit`。最终打包器进一步
 解析 PDF/DOCX/PPTX/ZIP/视频的文件签名或容器结构，校验 `.deb` ar 头、摘要文件中的
 文件名与实物 SHA-256，并使用固定 Ed25519 公钥验证签名，不能只靠扩展名过门。
-A-02 原始证据另由 `submission/evidence-policy.json` 定义七类必需主记录；归档器要求
+A-02 原始证据另由 `build/release/submission_tools/evidence-policy.json` 定义七类必需主记录；归档器要求
 双 SDK、Agent 生命周期、性能、三设备、安装升级、数据集和供应链全部同版通过，
 生成逐文件 manifest 并扫描认证 URL、私钥、常见令牌与个人路径。最终总打包会再次
 执行该策略，普通空 ZIP 或只含部分日志的 ZIP 不得通过。

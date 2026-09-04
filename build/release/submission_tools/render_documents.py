@@ -16,10 +16,10 @@ from pathlib import Path
 from typing import Iterable
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
+TOOL_ROOT = Path(__file__).resolve().parent
 SUBMISSION_ROOT = ROOT / "submission"
-FINAL_ROOT = SUBMISSION_ROOT / "final"
-PLAN_PATH = SUBMISSION_ROOT / "submission-plan.json"
+PLAN_PATH = TOOL_ROOT / "submission-plan.json"
 PENDING = re.compile(
     r"^(?:-\s*)?状态：.*(?:待补|未完成|工作稿|非最终候选)|\b(?:TBD|TODO)\b|【待(?:补|定)",
     re.IGNORECASE | re.MULTILINE,
@@ -325,7 +325,7 @@ def render_all(output_root: Path, *, final: bool) -> None:
     plan = load_plan()
     if final:
         version, commit = require_final_inputs(plan)
-        package_root = output_root / plan["submission_name"]
+        package_root = output_root
     else:
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         commit = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
@@ -378,11 +378,11 @@ def main() -> int:
             check_configuration()
         elif args.draft_output:
             output = args.draft_output.resolve()
-            if output == FINAL_ROOT.resolve() or FINAL_ROOT.resolve() in output.parents:
-                raise ValueError("draft output must not be inside submission/final")
+            if output == SUBMISSION_ROOT.resolve() or SUBMISSION_ROOT.resolve() in output.parents:
+                raise ValueError("draft output must not be inside the visible submission directory")
             render_all(output, final=False)
         else:
-            render_all(FINAL_ROOT, final=True)
+            render_all(SUBMISSION_ROOT, final=True)
     except (KeyError, OSError, subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as exc:
         print(f"document-render: {exc}", file=sys.stderr)
         return 1

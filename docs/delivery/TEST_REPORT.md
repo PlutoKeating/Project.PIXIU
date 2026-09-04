@@ -6,8 +6,8 @@
 ## 2026-09-04 当前候选事实
 
 - 当前 strict amd64 审阅候选的完整 commit 和 SHA-256 以
-  `submission/review/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/native-sdk-smoke.json`
-  与 `submission/review/04-部署文档/01-可安装软件/` 中候选包摘要为准；
+  `submission/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/native-sdk-smoke.json`
+  与 `submission/04-部署文档/01-可安装软件/` 中候选包摘要为准；
 - 包内 Agent 宿主、58 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
   SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
 - 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自
@@ -57,7 +57,7 @@
 R-01～R-06 分层。每组结果记录 release commit、机器、V11 版本、架构、SDK/runtime、
 数据集版本、冷热口径、样本数、原始输出和失败样本。
 
-A-02 的 `原始证据.zip` 由 `submission/build_evidence_archive.py` 生成，不能手工塞入
+A-02 的 `原始证据.zip` 由 `build/release/submission_tools/build_evidence_archive.py` 生成，不能手工塞入
 若干日志即宣称完整。策略要求双 SDK、完整 Agent 生命周期、最终性能、三设备总报告、
 安装升级矩阵、数据集清单和 Agent 供应链七类主记录全部通过并绑定同一 commit/候选
 包摘要；附件中的 CSV、日志和截图均进入逐文件摘要，文本附件还接受敏感信息扫描。

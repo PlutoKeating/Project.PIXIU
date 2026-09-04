@@ -27,12 +27,11 @@ class SourceArchiveTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             source = root / "backend/app.py"
-            review = root / "submission/review/demo.mp4"
-            final = root / "submission/final/release.zip"
-            for path in (source, review, final):
+            delivery = root / "submission/05-功能演示视频/demo.mp4"
+            for path in (source, delivery):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"fixture")
-            tracked = b"backend/app.py\0submission/review/demo.mp4\0submission/final/release.zip\0"
+            tracked = b"backend/app.py\0submission/05-demo.mp4\0"
             with mock.patch.object(MODULE, "git", return_value=tracked):
                 self.assertEqual(MODULE.tracked_paths(root), [Path("backend/app.py")])
 
