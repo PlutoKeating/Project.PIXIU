@@ -32,6 +32,7 @@ grep -q 'migrate-system-data.py' "${BUILD}"
 grep -q 'XDG_DATA_HOME' "${BACKEND}"
 grep -q 'XDG_CONFIG_HOME' "${BACKEND}"
 grep -q 'lib/systemd/user' "${BUILD}"
+grep -q 'chmod 0644 .*pixiu-backend.service' "${BUILD}"
 if grep -q 'lib/systemd/system' "${BUILD}"; then
     echo "release package must not install the backend as a system service" >&2
     exit 1

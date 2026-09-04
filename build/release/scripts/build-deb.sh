@@ -301,6 +301,7 @@ install -m 0644 "${DEB_SRC}/pixiu.env" \
 sed "s/@PRODUCT_VERSION@/${PIXIU_VERSION}/g" \
     "${DEB_SRC}/pixiu-backend.service" \
     > "${STAGE}/usr/lib/systemd/user/pixiu-backend.service"
+chmod 0644 "${STAGE}/usr/lib/systemd/user/pixiu-backend.service"
 printf '%s\n' "${PIXIU_VERSION}" > "${STAGE}/usr/share/pixiu/VERSION"
 printf '%s\n' "${PIXIU_INSTALL_STRICT}" \
     > "${STAGE}/usr/share/pixiu/install-strict"
