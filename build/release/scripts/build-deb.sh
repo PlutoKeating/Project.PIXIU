@@ -204,6 +204,8 @@ find "${INTEGRATION_ROOT}" -type f -exec chmod 0644 {} +
 # A strict release is a single complete OS Agent package. Its host/runtime
 # inputs must already have passed the artifact-backed supply-chain audit.
 if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
+    install -m 0755 "${PIXIU_ROOT}/integrations/kylin_agent/kylin_genai_bridge.py" \
+        "${INTEGRATION_ROOT}/kylin_genai_bridge.py"
     AGENT_EVIDENCE="${PIXIU_RELEASE_DIR}/evidence/agent-supply-chain"
     AGENT_DOC="${STAGE}/usr/share/doc/pixiu/agent"
     AGENT_RUNTIME="${STAGE}/usr/lib/pixiu/agent-runtime"
@@ -344,6 +346,9 @@ if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     install -D -m 0644 \
         "${DEB_SRC}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service" \
         "${STAGE}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service"
+    install -D -m 0644 \
+        "${DEB_SRC}/usr/lib/systemd/user/pixiu-kylin-genai-bridge.service" \
+        "${STAGE}/usr/lib/systemd/user/pixiu-kylin-genai-bridge.service"
     DESKTOP_FILE="${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"
     [ -f "${DESKTOP_FILE}" ] || die "PIXIU desktop entry is missing from frontend install"
     sed -i 's/^Exec=.*/Exec=pixiu/' "${DESKTOP_FILE}"

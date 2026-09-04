@@ -1,7 +1,7 @@
 [Unit]
 Description=PIXIU packaged Kylin Agent Runtime Gateway
-After=network-online.target
-Wants=network-online.target
+After=network-online.target pixiu-kylin-genai-bridge.service
+Wants=network-online.target pixiu-kylin-genai-bridge.service
 
 [Service]
 Type=simple

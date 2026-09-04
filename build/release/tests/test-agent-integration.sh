@@ -30,6 +30,10 @@ chmod 0755 "${FAKE_SYSTEMCTL}"
 FAKE_UNIT="${TMP}/kylin-agent-runtime-gateway.service"
 printf '%s\n' '[Service]' 'ExecStart=/usr/bin/kylin-agent-runtime gateway run --replace' \
     > "${FAKE_UNIT}"
+FAKE_BRIDGE="${TMP}/kylin_genai_bridge.py"
+printf '%s\n' '# bridge fixture' > "${FAKE_BRIDGE}"
+FAKE_BRIDGE_UNIT="${TMP}/pixiu-kylin-genai-bridge.service"
+printf '%s\n' '[Service]' 'ExecStart=/usr/bin/true' > "${FAKE_BRIDGE_UNIT}"
 mkdir -p "${TMP}/home/.config/systemd/user"
 printf '%s\n' '[Service]' \
     'ExecStart=/home/tester/.local/bin/kylin-agent-runtime gateway run --replace' \
@@ -47,6 +51,8 @@ PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
 PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
 PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-call" \
 PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
+PIXIU_KYLIN_BRIDGE_SOURCE="${FAKE_BRIDGE}" \
+PIXIU_KYLIN_BRIDGE_UNIT="${FAKE_BRIDGE_UNIT}" \
     "${SCRIPT}" --quiet
 
 DEST="${TMP}/home/.kylin-agent-runtime/plugins/pixiu"
@@ -56,12 +62,23 @@ test ! -f "${DEST}/plugin.yaml.in"
 grep -qx "version: ${PRODUCT_VERSION}" "${DEST}/plugin.yaml"
 grep -qx 'config set memory.provider pixiu' \
     "${TMP}/home/.kylin-agent-runtime/runtime-call"
+grep -qx 'config set model.provider custom' "${TMP}/home/.kylin-agent-runtime/runtime-call"
+grep -qx 'config set model.default kylin-default' "${TMP}/home/.kylin-agent-runtime/runtime-call"
+grep -qx 'config set model.base_url http://127.0.0.1:8767/v1' \
+    "${TMP}/home/.kylin-agent-runtime/runtime-call"
+grep -qx 'config set model.api_key pixiu-local-bridge' \
+    "${TMP}/home/.kylin-agent-runtime/runtime-call"
+test -f "${TMP}/home/.kylin-agent-runtime/.pixiu-kylin-model-seeded"
 grep -qx -- '--user daemon-reload' "${TMP}/systemctl-call"
 grep -qx -- '--user disable --now hermes-gateway.service' \
     "${TMP}/systemctl-call"
 grep -qx -- '--user enable --now kylin-agent-runtime-gateway.service' \
     "${TMP}/systemctl-call"
 grep -qx -- '--user restart kylin-agent-runtime-gateway.service' \
+    "${TMP}/systemctl-call"
+grep -qx -- '--user enable --now pixiu-kylin-genai-bridge.service' \
+    "${TMP}/systemctl-call"
+grep -qx -- '--user restart pixiu-kylin-genai-bridge.service' \
     "${TMP}/systemctl-call"
 test ! -e "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
 test ! -e "${TMP}/home/.config/systemd/user/hermes-gateway.service"
@@ -87,10 +104,14 @@ PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
 PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
 PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-call" \
 PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
+PIXIU_KYLIN_BRIDGE_SOURCE="${FAKE_BRIDGE}" \
+PIXIU_KYLIN_BRIDGE_UNIT="${FAKE_BRIDGE_UNIT}" \
     "${SCRIPT}" --quiet
 grep -qx 'PIXIU_AGENT_SCOPE=user:tester' "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
 test "$(grep -c '^PIXIU_AGENT_ENDPOINT=' "${TMP}/home/.kylin-agent-runtime/.env")" -eq 1
+test "$(grep -c '^config set model.default kylin-default$' \
+    "${TMP}/home/.kylin-agent-runtime/runtime-call")" -eq 1
 
 # An unmanaged collision is never overwritten.
 mkdir -p "${TMP}/other/plugins/pixiu"
@@ -256,6 +277,11 @@ grep -q 'RUNTIME=/usr/bin/kylin-agent-runtime' \
     "${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
 grep -q 'kylin-agent-runtime-gateway.service' \
     "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'pixiu-kylin-genai-bridge.service' \
+    "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'kylin_genai_bridge.py' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'libkysdk-genai-nlp0' \
+    "${ROOT}/build/release/profiles/kylin-v11-native-x86_64.env"
 grep -q 'agent-supply-chain.py\|audit-agent-supply-chain.py' \
     "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'runtime-cp312.lock' "${ROOT}/build/release/debian/postinst"

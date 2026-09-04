@@ -1,0 +1,15 @@
+[Unit]
+Description=PIXIU Kylin GenAI system-cloud bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/pixiu/venv/bin/python /usr/lib/pixiu/integrations/kylin_agent/kylin_genai_bridge.py --host 127.0.0.1 --port 8767
+Restart=on-failure
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

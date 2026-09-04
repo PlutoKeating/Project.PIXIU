@@ -13,7 +13,11 @@ STRICT_FILE="${PIXIU_AGENT_DEFAULT_STRICT_FILE:-/usr/share/pixiu/install-strict}
 USER_SETUP="${PIXIU_USER_SETUP_BIN:-/usr/bin/pixiu-user-setup}"
 SYSTEMCTL="${PIXIU_SYSTEMCTL_BIN:-systemctl}"
 GATEWAY_UNIT="kylin-agent-runtime-gateway.service"
+BRIDGE_UNIT="pixiu-kylin-genai-bridge.service"
 PACKAGED_UNIT="${PIXIU_AGENT_GATEWAY_UNIT:-/usr/lib/systemd/user/${GATEWAY_UNIT}}"
+BRIDGE_SOURCE="${PIXIU_KYLIN_BRIDGE_SOURCE:-/usr/lib/pixiu/integrations/kylin_agent/kylin_genai_bridge.py}"
+PACKAGED_BRIDGE_UNIT="${PIXIU_KYLIN_BRIDGE_UNIT:-/usr/lib/systemd/user/${BRIDGE_UNIT}}"
+BRIDGE_ENABLED=0
 
 if [ "${1:-}" = "--quiet" ]; then
     QUIET=1
@@ -113,6 +117,11 @@ managed_gateway_unit() {
 if [ "${DEFAULT_STRICT}" = "1" ]; then
     [ -f "${PACKAGED_UNIT}" ] && [ ! -L "${PACKAGED_UNIT}" ] \
         || fail "packaged Agent gateway unit is missing or unsafe" 2
+    if [ -f "${BRIDGE_SOURCE}" ]; then
+        [ -f "${PACKAGED_BRIDGE_UNIT}" ] && [ ! -L "${PACKAGED_BRIDGE_UNIT}" ] \
+            || fail "packaged Kylin GenAI bridge unit is missing or unsafe" 2
+        BRIDGE_ENABLED=1
+    fi
     case "${SYSTEMCTL}" in
         */*) [ -x "${SYSTEMCTL}" ] || fail "systemctl helper is not executable" 2 ;;
         *) command -v "${SYSTEMCTL}" >/dev/null 2>&1 \
@@ -137,10 +146,12 @@ BACKUP="${PLUGIN_ROOT}/.pixiu.backup.$$"
 TX_ROOT="${AGENT_HOME}/.pixiu.transaction.$$"
 ENV_FILE="${AGENT_HOME}/.env"
 CONFIG_FILE="${AGENT_HOME}/config.yaml"
+NATIVE_SEED="${AGENT_HOME}/.pixiu-kylin-model-seeded"
 TX_ACTIVE=0
 HAD_DEST=0
 HAD_ENV=0
 HAD_CONFIG=0
+HAD_NATIVE_SEED=0
 cleanup() {
     STATUS=$?
     if [ "${TX_ACTIVE}" = "1" ] && [ "${STATUS}" -ne 0 ]; then
@@ -157,6 +168,9 @@ cleanup() {
             cp "${TX_ROOT}/config.yaml" "${CONFIG_FILE}" || true
         else
             rm -f -- "${CONFIG_FILE}"
+        fi
+        if [ "${HAD_NATIVE_SEED}" != "1" ]; then
+            rm -f -- "${NATIVE_SEED}"
         fi
         if [ "${DEFAULT_STRICT}" = "1" ] && [ -d "${TX_ROOT}/units" ]; then
             mkdir -p "${USER_UNIT_DIR}"
@@ -224,6 +238,9 @@ if [ -f "${CONFIG_FILE}" ]; then
     HAD_CONFIG=1
     cp "${CONFIG_FILE}" "${TX_ROOT}/config.yaml"
 fi
+if [ -f "${NATIVE_SEED}" ]; then
+    HAD_NATIVE_SEED=1
+fi
 if [ "${DEFAULT_STRICT}" = "1" ]; then
     mkdir -p "${TX_ROOT}/units" "${BACKUP_DIR}"
     for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
@@ -272,6 +289,22 @@ fi
 HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set memory.provider pixiu >/dev/null \
     || fail "Agent runtime rejected memory.provider=pixiu" 5
 
+# Seed the package's native system-cloud route exactly once. Later explicit GUI
+# choices remain untouched, while upgrades from older PIXIU builds gain the
+# Kylin-managed model as their first default without asking for a credential.
+if [ "${BRIDGE_ENABLED}" = "1" ] && [ ! -f "${NATIVE_SEED}" ]; then
+    HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set model.provider custom >/dev/null \
+        || fail "Agent runtime rejected the Kylin model provider" 5
+    HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set model.default kylin-default >/dev/null \
+        || fail "Agent runtime rejected the Kylin default model" 5
+    HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set model.base_url http://127.0.0.1:8767/v1 >/dev/null \
+        || fail "Agent runtime rejected the Kylin bridge address" 5
+    HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set model.api_key pixiu-local-bridge >/dev/null \
+        || fail "Agent runtime rejected the local bridge credential marker" 5
+    : > "${NATIVE_SEED}"
+    chmod 0600 "${NATIVE_SEED}"
+fi
+
 # A strict release owns the complete Agent runtime. Migrate an older generated
 # per-user override out of systemd's precedence path, but retain a recoverable
 # copy under PIXIU state before activating the package-owned unit.
@@ -288,6 +321,12 @@ if [ "${DEFAULT_STRICT}" = "1" ]; then
     fi
     "${SYSTEMCTL}" --user daemon-reload \
         || fail "failed to reload the user service manager" 5
+    if [ "${BRIDGE_ENABLED}" = "1" ]; then
+        "${SYSTEMCTL}" --user enable --now "${BRIDGE_UNIT}" \
+            || fail "failed to activate the Kylin GenAI bridge" 5
+        "${SYSTEMCTL}" --user restart "${BRIDGE_UNIT}" \
+            || fail "failed to restart the Kylin GenAI bridge" 5
+    fi
     "${SYSTEMCTL}" --user enable --now "${GATEWAY_UNIT}" \
         || fail "failed to activate the packaged Agent gateway" 5
     # enable --now is a no-op for an already-running unit.  Explicitly
