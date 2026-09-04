@@ -1,0 +1,93 @@
+{
+  "agent_host": {
+    "available": true,
+    "command": "kylin-agent"
+  },
+  "agent_runtime": {
+    "command": "kylin-agent-runtime",
+    "version": "0.9.4"
+  },
+  "candidate_package": {
+    "checksum_filename": "pixiu_0.1.7-1_amd64.deb.sha256",
+    "filename": "pixiu_0.1.7-1_amd64.deb",
+    "sha256": "cf95e13ae406ffe393f6efbdb6944f2518701c675b64a409fb3b3289e1f99e8a",
+    "size": 80185592
+  },
+  "capabilities": {
+    "contest_ready": true,
+    "embedding": {
+      "compliant": true,
+      "configured": "kylin",
+      "runtime": "kylin"
+    },
+    "platform": {
+      "family": "kylin",
+      "v11": true,
+      "version_major": "11"
+    },
+    "vector_store": {
+      "compliant": true,
+      "configured": "kylin",
+      "runtime": "kylin"
+    }
+  },
+  "checks": {
+    "contest_ready": "passed",
+    "deleted_memory_hidden": "passed",
+    "memory_write": "passed",
+    "vector_delete": "passed",
+    "vector_search": "passed"
+  },
+  "direct_sdk": {
+    "collection_create": "passed",
+    "collection_drop": "passed",
+    "collection_load": "passed",
+    "database_load": "passed",
+    "deleted_vector_hidden": "passed",
+    "disconnect": "passed",
+    "embedding": "passed",
+    "vector_delete": "passed",
+    "vector_search": "passed",
+    "vector_upsert": "passed"
+  },
+  "evidence_class": "kylin-v11-native-sdk-product-lifecycle",
+  "evidence_schema": 1,
+  "generated_at_utc": "2026-09-04T11:40:41Z",
+  "health": {
+    "component": "pixiu-memory-backend",
+    "database": "ok",
+    "product_version": "0.1.7",
+    "schema_version": 12,
+    "status": "ready"
+  },
+  "installed": {
+    "architecture": "amd64",
+    "packages": {
+      "libkylin-coreai-embedding": "1.2.0.0-0k0.4",
+      "libkysdk-vector-engine-client": "1.2.0.0-0k1.1",
+      "pixiu": "0.1.7-1"
+    }
+  },
+  "operation_ids": {
+    "evidence_id": "evd_01M1P3H34RQGF3YCQ0VV3S2A2H",
+    "knowledge_id": "knw_01M1P3H3514H6Q72A75TTCPTXE"
+  },
+  "real_device_evidence": true,
+  "release": {
+    "architecture": "amd64",
+    "debian_version": "0.1.7-1",
+    "git_commit": "0f8bcec1f81f3eb3a39c38d049e8b49e85127ddf",
+    "install_strict": true,
+    "kysdk": "ON",
+    "product_version": "0.1.7",
+    "profile": "kylin-v11-native-x86_64"
+  },
+  "status": "pass",
+  "version": {
+    "agent_memory_api": 1,
+    "api_version": "0.4.0",
+    "component": "pixiu-memory-backend",
+    "product_version": "0.1.7",
+    "schema_version": 12
+  }
+}

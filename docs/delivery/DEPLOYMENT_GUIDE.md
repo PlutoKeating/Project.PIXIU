@@ -3,7 +3,7 @@
 - 适用版本：0.1.7 功能基线；最终候选号待定
 - 状态：当前审阅候选 Kylin V11 strict 单包已完成构建、覆盖安装、事务式用户服务/gateway 迁移、
   双 SDK 产品生命周期并返回 compliant、`contest_ready=true`；最终图形安装、模型
-  Agent、三设备及冻结 commit 的 D-07 证据仍未闭环
+  Agent、三设备及冻结 commit 的 A-02 证据仍未闭环
 
 ## 安装目标
 
@@ -70,7 +70,7 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 当前安装结构已改为 systemd user service，并把配置、数据和状态置于当前用户 XDG
 目录；启动器要求 unit 的 MainPID 属于当前 UID，并核对 loopback `/version` 的组件与
 包版本，拒绝端口伪服务。旧数据迁移、升级事务和 strict user-service 复验现已完成；
-在完整 Agent 与同版正式 D-07 归档完成前，H-02/H-03 只能登记“部分通过”，不得声明
+在完整 Agent 与同版正式 A-02 归档完成前，H-02/H-03 只能登记“部分通过”，不得声明
 最终通过。
 
 旧系统账户版存在 `/var/lib/pixiu/pixiu.db` 时，首次用户启动会请求系统授权执行一次性

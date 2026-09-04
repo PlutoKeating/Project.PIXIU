@@ -1,4 +1,4 @@
-# D-10 银河麒麟 V11 适配报告工作稿
+# A-05 银河麒麟 V11 适配报告工作稿（D-02 附件）
 
 - 更新日期：2026-09-04
 - 状态：V11 strict 单包、双 SDK 与 Agent 供应链已通过；模型运行、三设备和完整安装升级取证未完成
@@ -16,7 +16,7 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 systemd user service 与 XDG 私有目录；目标 V11 复验确认 MainPID/UID、产品
 `0.1.7`、schema 12、Embedding/Vector native compliant 和 `contest_ready=true`。
 当前审阅候选进一步把可重建 Agent 宿主、锁定 Runtime wheelhouse、Provider 与双 SDK
-装入同一 `.deb`，覆盖安装和用户 gateway 迁移通过；正式 D-07 仍须绑定文档冻结后的
+装入同一 `.deb`，覆盖安装和用户 gateway 迁移通过；正式 A-02 仍须绑定文档冻结后的
 最终 commit，且完整 Agent 模型行为未出证前不得宣称赛事总门通过。
 
 ## 最终适配矩阵
@@ -121,7 +121,7 @@ Gateway，`/health` 与 `/api/sessions` 可用，Runtime 发现并选中 PIXIU P
 - 切换 strict 双 SDK 后，系统服务账户再次因无法访问桌面用户会话 AI runtime 而
   失败关闭；恢复配置后服务重新健康，数据库与配置摘要仍保持；
 - 本次包不是最终 release commit，未完成 Agent 宿主/Runtime 供应链和 user service，
-  且原始证据尚未进入 D-07 受控归档，因此不得用于宣称 H-01～H-03 通过。
+  且原始证据尚未进入 A-02 受控归档，因此不得用于宣称 H-01～H-03 通过。
 
 ### 2026-09-03 portable 安装升级回归（非原生 SDK 验收）
 

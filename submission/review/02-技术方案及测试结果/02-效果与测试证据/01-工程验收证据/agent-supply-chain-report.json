@@ -1,0 +1,91 @@
+{
+  "blockers": [],
+  "components": {
+    "agent_runtime": {
+      "checkout_clean": true,
+      "checkout_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+      "expected_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+      "gitlink_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+      "license_files_present": true,
+      "name": "agent_runtime",
+      "passed": true,
+      "path": "third_party/kylin-agent-runtime"
+    },
+    "kylin_agent": {
+      "checkout_clean": true,
+      "checkout_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+      "expected_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+      "gitlink_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+      "license_files_present": true,
+      "name": "kylin_agent",
+      "passed": true,
+      "path": "third_party/kylin-agent"
+    }
+  },
+  "evidence": {
+    "host_build": {
+      "file": "agent-host-build.json",
+      "nonempty": true,
+      "present": true,
+      "sha256": "638c9f4a386e283a9f1f5df4f9f4eac3c687a0ab0e4a6880a426f6893b0ad3c8",
+      "valid": true
+    },
+    "notice": {
+      "file": "NOTICE.agent.txt",
+      "nonempty": true,
+      "present": true,
+      "sha256": "266064f8e815d924511446ad5d60e36b549664467b79109f6d8ee472fcc199ba",
+      "valid": true
+    },
+    "runtime_wheelhouse": {
+      "file": "runtime-wheelhouse.json",
+      "nonempty": true,
+      "present": true,
+      "sha256": "118a4c28f40d9b9c8d1b7279718b961e2ec0e18234a4f0487983b5759447afc3",
+      "valid": true
+    },
+    "sbom": {
+      "file": "agent-components.spdx.json",
+      "nonempty": true,
+      "present": true,
+      "sha256": "3f0fa8fa13a5c4d09ed9b690e0d57a7454de1b51c80c5694a528f4cd0346ed16",
+      "valid": true
+    }
+  },
+  "evidence_class": "agent-supply-chain-audit",
+  "evidence_schema": 1,
+  "expected_arch": null,
+  "policy": "build/release/agent-supply-chain-policy.json",
+  "ready": true,
+  "release_commit": "0f8bcec1f81f3eb3a39c38d049e8b49e85127ddf",
+  "runtime_version_facts": {
+    "actual": {
+      "cli": "0.9.4",
+      "package_metadata": "0.9.8",
+      "version_file": "0.9.9"
+    },
+    "expected": {
+      "cli": "0.9.4",
+      "package_metadata": "0.9.8",
+      "version_file": "0.9.9"
+    },
+    "match": true
+  },
+  "schema_version": 1,
+  "sensitive_scan": {
+    "files": [],
+    "matched_values_redacted": true,
+    "passed": true,
+    "rule": "authenticated-url-userinfo"
+  },
+  "status": "pass",
+  "upstream_reference_scan": {
+    "files": [
+      "third_party/kylin-agent/scripts/agent_runtime_install.sh",
+      "third_party/kylin-agent/scripts/agent_runtime_install_bak.sh"
+    ],
+    "matched_values_redacted": true,
+    "release_treatment": "excluded-or-sanitized-by-verified-release-build",
+    "rule": "authenticated-url-userinfo"
+  }
+}

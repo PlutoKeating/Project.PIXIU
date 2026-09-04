@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and validate the fail-closed D-07 raw evidence archive."""
+"""Build and validate the fail-closed A-02 raw evidence archive."""
 
 from __future__ import annotations
 

@@ -2,7 +2,7 @@
 
 > 状态：团队强制交付基线（2026-09-03）
 >
-> 本文把赛事 D-01～D-10 与团队新增的软件可安装/可升级要求统一为可审查的发布门。
+> 本文把赛事官方 D-01～D-05、D-02 内部附件 A-01～A-05 与团队新增的软件可安装/可升级要求统一为可审查的发布门。
 > 官方要求仍以 `OriginProblemDescription.md` 和 `完整赛题要求.pptx` 为准；本文不
 > 修改原文，也不把团队新增门槛伪装为官方条款。
 >
@@ -184,14 +184,14 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 ## 4. 赛事交付文档台账
 
 仓库根目录 [`submission/`](../submission/) 是唯一正式交付生成区；
-`submission/submission-plan.json` 把两份官方材料、D-01～D-10、团队单包要求及人工
+`submission/submission-plan.json` 把两份官方材料、D-01～D-05、D-02 附件 A-01～A-05、团队单包要求及人工
 提供材料映射到最终文件名。当前 `release_ready=false`，全部门通过前打包器拒绝生成
 最终 ZIP。`docs/delivery/` 继续作为可审查工作源，不直接充当对外最终文件。
 
-当前自动化已经能够生成 D-02/D-03/D-04/D-06～D-10 的带“不得提交”水印审阅稿，
+当前自动化已经能够生成 D-02/D-03/D-04/A-01～A-05 的带“不得提交”水印审阅稿，
 并在最终冻结后生成 D-03 源码归档；`submission/README.md` 是文件路径和命令的唯一入口。
 负责人最终仅需提供 D-01 PPT、D-05 不超过 7 分钟的视频和盖章报名表，并审核自动生成
-文档。工程 Mock 输出不属于七类正式 D-07 主记录，不得放宽 `release_ready`。
+文档。工程 Mock 输出不属于七类正式 A-02 主记录，不得放宽 `release_ready`。
 
 | 编号 | 交付物 | 仓库维护源 | 最终格式 | 当前状态 |
 |------|--------|------------|----------|----------|
@@ -200,11 +200,11 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 | D-03 | 源代码 | `delivery/SOURCE_AND_LICENSES.md` | 源码包/仓库快照 | Agent SBOM/NOTICE/源码实物通过；最终 commit 冻结后生成 |
 | D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | V11 strict 单包命令行安装/覆盖升级/离线 Runtime 已验；图形路径待验 |
 | D-05 | 演示视频 | `delivery/PRESENTATION_AND_VIDEO.md` | `.mp4` 优先，≤7 分钟 | 脚本完成，录制待完成 |
-| D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，新 UI 与多轮路径已实走；最终同版截图矩阵待补 |
-| D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV + `three-device-final-suite.json` | portable 已有，最终 V11 待补；总报告已列为打包硬门 |
-| D-08 | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Mock 工程链路已跑通，官方云端 Agent 实证待补 |
-| D-09 | 实际应用案例 | `delivery/APPLICATION_CASES.md` | `.pdf`/报告章节 | 流程完成，最终取证待补 |
-| D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | strict 单包与双 SDK 产品链已验；完整 Agent/三设备待补 |
+| A-01（D-02 附件） | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，新 UI 与多轮路径已实走；最终同版截图矩阵待补 |
+| A-02（D-02 附件） | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV + `three-device-final-suite.json` | portable 已有，最终 V11 待补；总报告已列为打包硬门 |
+| A-03（D-02 附件） | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Mock 工程链路已跑通，官方云端 Agent 实证待补 |
+| A-04（D-02 附件） | 实际应用案例 | `delivery/APPLICATION_CASES.md` | `.pdf`/报告章节 | 流程完成，最终取证待补 |
+| A-05（D-02 附件） | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | strict 单包与双 SDK 产品链已验；完整 Agent/三设备待补 |
 
 “部分完成”不等于可提交。每份最终文档必须包含版本、日期、作者/审核人、适用提交、
 环境、证据链接和已知限制；数据和截图必须能追溯到同一个 release commit。
@@ -216,22 +216,24 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 - H-01～H-03、A-01～A-14、P-01～P-04 和三设备专项按最终 commit 通过；
 - 全新 V11 图形安装、命令安装、同版本重装、旧版本升级、失败恢复和卸载通过；
 - GUI 一键升级通过签名、授权、迁移、健康检查和恢复测试；
-- D-01～D-10 均从“未完成/部分完成”改为“已审核”，且格式符合官方要求；
+- D-01～D-05 与 A-01～A-05 均从“未完成/部分完成”改为“已审核”，且格式符合官方要求；
 - 代码、包、PPT、PDF、视频、原始报告的版本和 SHA-256 台账一致；
 - 无密钥、个人路径、临时数据、缓存、构建目录或未披露许可证进入交付包。
+- `AcceptanceTestSpecification.md` 的 T-01～T-07 七个 PPT 踩雷反向门均有同版实物证据，
+  不以文字自述替代 V11、性能、检索、数据集、架构、格式或原创边界验证。
 
 最终归档应保存只读 manifest，列出每个文件的名称、版本、大小、SHA-256、签名、
 生成命令和对应 Git commit。任何文档内容变更都要随代码提交审查，禁止答辩前复制
 出脱离仓库维护的“最终版”。
 
-`build_submission.py --package` 会额外解析 D-07 三设备总报告，核对四场景、关键检查、
+`build_submission.py --package` 会额外解析 A-02 三设备总报告，核对四场景、关键检查、
 严格 V11 画像、Agent Runtime、release commit 和最终 `.deb` 摘要，而非只做存在性检查。
-仓库现以 `submission/render_documents.py` 将 D-02/D-03/D-04/D-06～D-10 的 Markdown
+仓库现以 `submission/render_documents.py` 将 D-02/D-03/D-04/A-01～A-05 的 Markdown
 权威源统一生成 A4 DOCX/PDF：草稿强制标明不得提交；最终模式要求除文档人工审核外
 所有门已通过、源码状态行不存在待办并绑定洁净 `release_commit`。最终打包器进一步
 解析 PDF/DOCX/PPTX/ZIP/视频的文件签名或容器结构，校验 `.deb` ar 头、摘要文件中的
 文件名与实物 SHA-256，并使用固定 Ed25519 公钥验证签名，不能只靠扩展名过门。
-D-07 原始证据另由 `submission/evidence-policy.json` 定义七类必需主记录；归档器要求
+A-02 原始证据另由 `submission/evidence-policy.json` 定义七类必需主记录；归档器要求
 双 SDK、Agent 生命周期、性能、三设备、安装升级、数据集和供应链全部同版通过，
 生成逐文件 manifest 并扫描认证 URL、私钥、常见令牌与个人路径。最终总打包会再次
 执行该策略，普通空 ZIP 或只含部分日志的 ZIP 不得通过。
@@ -246,22 +248,22 @@ Kylin Agent 桌面宿主及 Runtime 后再执行 `after-restart`。工具仅接�
 性能主记录同样禁止手填汇总数值：`final-performance-evidence.py build` 必须读取
 strict 原生、Agent 生命周期、冻结数据集、完整逐样本评测报告和三变体消融矩阵五个
 输入，复算输入摘要、同版身份、阈值和最低样本数后才产生
-`kylin-v11-final-performance`。五个原始输入须作为 D-07 受控附件保存；portable 报告、
+`kylin-v11-final-performance`。五个原始输入须作为 A-02 受控附件保存；portable 报告、
 缺 outcome 的百分比表或不足 30 例的对比均不能过门。
 
 三变体矩阵由 `agent-memory-ablation.py` 采集而非人工填写。固定 30 项任务分别用教学
 会话和独立召回会话执行；快照必须证明无记忆画像关闭全部 Runtime 记忆面、单机画像
 启用 strict PIXIU 且关闭同步、分布式画像在同一三设备 run 的两个不同节点间完成。
-三份逐任务报告、任务集、配置快照及涉及的节点 manifest 均属于 D-07 原始附件。
+三份逐任务报告、任务集、配置快照及涉及的节点 manifest 均属于 A-02 原始附件。
 
 其中逐样本报告必须先由安装包内 `capture_final_eval.py` 产生：同一桌面用户使用
 `/usr/lib/pixiu/venv/bin/python` 和 `/usr/lib/pixiu` 组件，在隔离数据库中调用真实双 SDK，
-并把 native 文件摘要、commit 与候选包写入 `execution`。汇总器与 D-07 都会复验；
+并把 native 文件摘要、commit 与候选包写入 `execution`。汇总器与 A-02 都会复验；
 repository/portable 采集结果只能作开发对照。
 
 数据集主记录由 `final-dataset-manifest.py build` 同时输出冻结 JSON 和 manifest；工具
 拒绝脏工作树、非候选 commit、非 strict 原生证据和官方原文摘要漂移。冻结 JSON 与
-manifest 都进入 D-07，后者只能如实标注团队合成及附录 A 派生来源，禁止改称赛方提供
+manifest 都进入 A-02，后者只能如实标注团队合成及附录 A 派生来源，禁止改称赛方提供
 或第三方标准数据集。最终性能报告的 `dataset_sha256` 必须等于其规范化摘要。
 
 安装/升级主记录由 `install-update-evidence.py` 汇总；六个真实动作各自需要动作前后
@@ -273,7 +275,7 @@ helper，GUI 升级必须经过真实 `UpgradeController`。重装、升级、�
 原始证据归档器会在写 ZIP 前和解包复验后两次调用上述深度契约，并复算跨记录/附件
 摘要。性能所引用的逐样本报告、消融矩阵和数据集 JSON 必须作为不同实物随档，且内容
 重解析后与性能汇总完全一致；安装主记录引用的六条 operation、十二份快照和六份
-proof 也必须全部在归档内并逐层吻合；仅复制主记录或伪造 `passed` 字段不能满足 D-07。
+proof 也必须全部在归档内并逐层吻合；仅复制主记录或伪造 `passed` 字段不能满足 A-02。
 三设备记录同样递归到初末拓扑、四类场景、六份节点清单和全部场景检查点；Agent
 供应链记录递归到宿主产物/对应源码/构建日志、Runtime wheels/锁文件/离线安装日志、
 SBOM 与 NOTICE。消融记录递归到任务集、三份逐任务报告、六份去敏配置快照和相关

@@ -18,6 +18,7 @@ from typing import Any, Iterable
 
 
 ARCHIVE_PREFIX = "Project.PIXIU-source"
+SOURCE_EXCLUDED_PREFIXES = ("submission/review/", "submission/final/")
 
 
 def git(root: Path, *args: str) -> bytes:
@@ -40,7 +41,13 @@ def sha256_file(path: Path) -> str:
 
 def tracked_paths(root: Path) -> list[Path]:
     raw = git(root, "ls-files", "--recurse-submodules", "-z")
-    paths = [Path(value.decode("utf-8")) for value in raw.split(b"\0") if value]
+    paths = [
+        Path(decoded)
+        for value in raw.split(b"\0")
+        if value
+        for decoded in [value.decode("utf-8")]
+        if not decoded.startswith(SOURCE_EXCLUDED_PREFIXES)
+    ]
     if not paths or len(paths) != len(set(paths)):
         raise ValueError("tracked source list is empty or contains duplicates")
     for relative in paths:

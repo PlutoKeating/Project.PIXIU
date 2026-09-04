@@ -30,13 +30,15 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 API 仍被实际调用；测试节点只按可观察状态返回固定 tool call。该链路已验证系统提示
 每次随请求发送、持久化会话历史逐轮增长、工具结果回送模型，以及记忆写入、检索、
 更新和同步状态调用。它只用于工程回归，证据类别固定为 `pixiu-agent-mock-e2e`，不得
-替代 DeepSeek 官方云端的自主规划实测或写入正式 D-07。
+替代 DeepSeek 官方云端的自主规划实测或写入正式 A-02 测试附件。
 
 2026-09-04 的目标 V11 严格候选已越过此前的用户会话和 Agent 供应链阻断。当前审阅
 候选的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
 生命周期和产品写入/检索/遗忘均通过；`/capabilities` 返回 Embedding/Vector
 `runtime=kylin`、两者 compliant 且 `contest_ready=true`。候选的完整 commit 和
-SHA-256 以 `submission/review/00-软件候选/` 中同版 JSON 与 `.sha256` 为准。包内同时包含
+SHA-256 以 `submission/review/04-部署文档/01-可安装软件/` 中候选包与摘要，以及
+`submission/review/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/` 中
+同版 JSON 为准。包内同时包含
 可重建 `kylin-agent`、58 个哈希锁定 Runtime wheels、PIXIU Provider、SBOM、NOTICE
 和对应源码/构建证据。最终文档冻结后仍须对新 commit 重建并重新绑定证据。
 
@@ -102,14 +104,15 @@ Anthropic/OpenAI 官方直连；OpenRouter 和 Ollama/LM Studio/vLLM/llama.cpp �
 
 赛事交付区现已具备两条 fail-closed 生成链：D-03 源码归档会带入四个 submodule
 实体、供应链证据和逐文件摘要，并把每个归档文件的类型与摘要反向核对到洁净 release
-checkout，不能通过同时替换文件和 manifest 伪造同版源码；D-02/D-03/D-04/D-06～D-10 由统一排版器生成真实
+checkout，不能通过同时替换文件和 manifest 伪造同版源码；D-02/D-03/D-04 与 D-02
+附件 A-01～A-05 由统一排版器生成真实
 DOCX/PDF。草稿强制显示“不得提交”，最终模式绑定 release commit 和发布门；总打包器
 还会解析办公文件、PDF、视频、ZIP 与 Debian 包结构，并核验安装包摘要和签名。
-D-07 原始证据 ZIP 不是任意日志合集：机器策略要求双 SDK、完整 Agent 生命周期、
+A-02 原始证据 ZIP 不是任意日志合集：机器策略要求双 SDK、完整 Agent 生命周期、
 最终性能、三设备、安装升级、数据集和供应链七类记录同 commit、同候选包通过，并对
 附件做摘要与敏感信息扫描。
 
-D-07 归档现不再只信任记录的外层 `status=pass`：生成和解包复验都会重新调用原生
+A-02 归档现不再只信任记录的外层 `status=pass`：生成和解包复验都会重新调用原生
 SDK、Agent 生命周期、最终性能、冻结数据集、安装/升级矩阵、三设备套件和 Agent
 供应链的深度验证契约。Agent 必须引用归档内
 同一份原生证据；性能记录必须引用三份对应主记录及两个不同的逐样本/消融附件；冻结
@@ -121,13 +124,13 @@ SBOM 和 NOTICE，并按摘要及固定上游策略交叉核对。
 消融证据也纳入相同的递归复验：归档器从性能记录定位矩阵，再打开固定任务集、三份
 逐任务变体报告、六份 Runtime 配置快照及分布式节点 manifest，重算任务覆盖、成功率、
 平均轮数，并重新证明无记忆隔离、单机关闭同步以及分布式跨两个不同节点；仅伪造矩阵
-摘要或遗漏失败样本无法进入最终 D-07。
+摘要或遗漏失败样本无法进入最终 A-02。
 
 安装/升级矩阵已有真机状态采集与离线汇总器：在每个动作前后读取 V11、dpkg、systemd、
 `/version`、`/health`、`/capabilities`、配置摘要、数据库完整性/逻辑计数和设备身份摘要，
 并把独立操作日志绑定到首装、重装、升级、故障回滚、GUI 升级和卸载六条记录。最终
 记录要求配置、业务数据及设备身份在重装/升级/回滚中保持，普通卸载保留用户数据；
-D-07 还会打开所有快照和操作记录重新核对。工具契约 6/6 通过，最终 V11 候选尚未实测，
+A-02 还会打开所有快照和操作记录重新核对。工具契约 6/6 通过，最终 V11 候选尚未实测，
 因此 R-01～R-05 仍不能标记通过。
 
 真实 Agent 生命周期门禁现已实现为两阶段采集：它会读取持久化消息并通过固定 Runtime 的 `/v1/runs`
@@ -152,7 +155,7 @@ Runtime 明确启停项、strict provider、同步状态与进程身份；分布
 最终逐样本报告的产生端也已失败关闭：`capture_final_eval.py` 必须由已安装 PIXIU venv
 和 `/usr/lib/pixiu` 组件运行，绑定同版 strict native 证据，并以隔离状态真实调用
 Kylin Embedding 与 Vector Engine；报告写入不可伪装为 portable 的执行来源。性能汇总
-及 D-07 解包复验都会核对该来源、candidate/commit 和 native 文件摘要。当前只有工具
+及 A-02 解包复验都会核对该来源、candidate/commit 和 native 文件摘要。当前只有工具
 契约与 portable 兼容回归通过，尚未在最终 V11 候选上生成报告。
 
 最终 acceptance 数据集也已有独立冻结器：从当前 release commit 的确定性参考生成器
@@ -250,8 +253,8 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 | 门槛 | 赛方要求 | 当前状态 | 最终通过证据 |
 |------|----------|----------|--------------|
 | H-01 | 软件部署在银河麒麟桌面操作系统 V11；不满足计 0 分 | **产品安装/启动已通过，赛事总门仍待闭环**：strict 单包已在 V11 安装、升级并运行；完整 Agent/三设备/视频仍待最终同版取证 | V11 安装、启动、全链路视频与机器信息 |
-| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：当前审阅候选同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
-| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：当前审阅候选同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
+| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：当前审阅候选同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 A-02 归档 |
+| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：当前审阅候选同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 A-02 归档 |
 
 现有 portable 基线（偏好 100%、召回 100%、冲突 96%、P95 115ms）只证明通用软件路径可回归，**不代表 H-01～H-03 或最终比赛性能验收通过**。详见 [验收证据说明](docs/acceptance/README.md)。
 
@@ -261,6 +264,12 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 
 PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化后的比例，并非新的原始分值；完整评分表仍按 30/30/25/10/5 计 100 分。
 
+PPT 第 21 页还明确列出七类踩雷点，项目将其作为反向发布门：必须证明 V11 端侧
+性能与资源可接受、关联检索能满足 Agent 上下文、数据集规范可复现、架构和技术栈
+讲解清晰、交付不是纯文字/txt、功能确实运行在麒麟 V11，并通过上游披露与原创贡献
+证明作品不是开源软件的原样转交。逐项判据见
+[验收测试规范第 7.2 节](docs/AcceptanceTestSpecification.md)。
+
 ### 已准备的交付实物
 
 仓库根目录的 `submission/` 是唯一赛事交付区。当前可直接审阅的生成物统一放在
@@ -269,15 +278,11 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 
 | 类别 | 已准备文件 |
 |------|------------|
-| 软件候选 | `submission/review/00-软件候选/pixiu_0.1.7-1_amd64.deb`、同名 `.sha256`、`native-sdk-smoke.json`、`agent-supply-chain-report.json`、`mock-agent-full.json`、`mock-agent-shared-memory.json`、`ui-agent-workspace.png` |
-| D-02 | `submission/review/02-技术方案/PIXIU技术方案及测试结果.docx` 与 `.pdf` |
+| D-01 | `submission/review/01-项目报告/PIXIU项目报告.pptx`（零字节人工占位，必须替换） |
+| D-02 | `submission/review/02-技术方案及测试结果/PIXIU技术方案及测试结果.docx` 与 `.pdf`；同目录内含 A-01～A-05 附件和审阅证据 |
 | D-03 | `submission/review/03-源代码及规范/Project.PIXIU-source-review.tar.gz`、`源码规范与许可证.pdf` |
-| D-04 | `submission/review/04-部署文档/PIXIU部署指南.pdf` |
-| D-06 | `submission/review/06-用户手册/PIXIU用户手册.pdf` |
-| D-07 | `submission/review/07-效果与测试/PIXIU效果与测试报告.pdf`；正式七类原始证据 ZIP 尚被门禁阻止 |
-| D-08 | `submission/review/08-记忆流转/PIXIU记忆流转说明.pdf` |
-| D-09 | `submission/review/09-应用案例/PIXIU实际应用案例.pdf` |
-| D-10 | `submission/review/10-V11适配/PIXIU银河麒麟V11适配报告.pdf` |
+| D-04 | `submission/review/04-部署文档/PIXIU部署指南.pdf`；`01-可安装软件/` 内含候选 `.deb` 与摘要 |
+| D-05 | `submission/review/05-功能演示视频/PIXIU功能演示.mp4`（零字节人工占位，必须替换）；Mock 子目录仅保留经审计的中文重录清单，旧维护模式素材已移除 |
 
 就人工创作/提供的文件而言，负责人只需补充 D-01 项目报告 PPT、D-05 不超过 7 分钟的
 演示视频和盖章报名表，并审核自动生成文档；发布时还需在安全环境提供与仓库公钥匹配的
@@ -306,9 +311,10 @@ Ed25519 私钥完成签名。
 `/health`、`/capabilities` 绑定；另以独立临时数据库和隔离集合直接执行 SDK 的
 LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 API 写入/
 召回/遗忘。当前目标 V11 strict 审阅候选已生成同版原生证据；完整 commit 与包摘要
-以 `submission/review/00-软件候选/native-sdk-smoke.json` 和同目录 `.sha256` 为准。Embedding
+以 `submission/review/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/native-sdk-smoke.json`
+和 `submission/review/04-部署文档/01-可安装软件/` 中候选包摘要为准。Embedding
 实际使用 runtime 1.3.0/gte-base 768 维向量，Vector direct SDK 与产品写入、召回、
-遗忘链均通过，`contest_ready=true`。正式 D-07 仍须在最终冻结 commit 重跑并归档。
+遗忘链均通过，`contest_ready=true`。正式 A-02 仍须在最终冻结 commit 重跑并归档。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按
 调用进程 UID 隔离；后端现已改为桌面用户 systemd user service，从而复用该用户会话中的
 runtime；strict 后端因此按设计失败关闭。ADR-0002 获批后，安装包已切换为 root
@@ -347,7 +353,7 @@ AI runtime 边界失败关闭，恢复后配置和数据库摘要保持。该复
 不能把 Gateway 健康或无模型探针解释为该生命周期已通过。
 最终 Agent/三设备/性能与全新机图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
-因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
+因此状态仍是“部分完成”。完整门禁、官方 D-01～D-05 与 A-01～A-05 附件台账见
 [最终交付与版本管理计划](docs/DELIVERY_PLAN.md)。
 
 从当前差距到最终候选版本的关键路径、阶段门、逐工作包完成定义和预期提交序列见
@@ -383,4 +389,4 @@ git clone --recurse-submodules <repository-url>
 
 平台策略与启动方法见 [快速启动](docs/QUICK_START.md)。任何 `KYSDK=OFF` 或 portable 结果都必须与银河麒麟 V11、`KYSDK=ON` 的最终验收结果分开汇报。
 仓库已提供独立 `kylin-v11-native-x86_64` 严格画像和手动原生 CI 工作流；双 SDK
-技术门已有同包真实证据，最终冻结 commit 仍须重新生成并进入 D-07 归档。
+技术门已有同包真实证据，最终冻结 commit 仍须重新生成并进入 A-02 归档。

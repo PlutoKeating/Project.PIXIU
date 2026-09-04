@@ -56,52 +56,52 @@
       "producer": "human"
     },
     {
-      "id": "D-06",
-      "title": "用户手册",
+      "id": "A-01",
+      "title": "技术方案附件：用户手册",
       "source": "docs/delivery/USER_MANUAL.md",
-      "paths": ["06-用户手册/PIXIU用户手册.pdf"],
+      "paths": ["02-技术方案及测试结果/01-用户手册/PIXIU用户手册.pdf"],
       "producer": "repository"
     },
     {
-      "id": "D-07",
-      "title": "效果与测试证据",
+      "id": "A-02",
+      "title": "技术方案附件：效果与测试证据",
       "source": "docs/delivery/TEST_REPORT.md;docs/acceptance;submission/evidence-policy.json",
-      "paths": ["07-效果与测试证据/PIXIU效果与测试报告.pdf", "07-效果与测试证据/原始证据.zip", "07-效果与测试证据/three-device-final-suite.json"],
+      "paths": ["02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.pdf", "02-技术方案及测试结果/02-效果与测试证据/原始证据.zip", "02-技术方案及测试结果/02-效果与测试证据/three-device-final-suite.json"],
       "producer": "repository"
     },
     {
-      "id": "D-08",
-      "title": "记忆流转说明",
+      "id": "A-03",
+      "title": "技术方案附件：记忆流转说明",
       "source": "docs/delivery/MEMORY_LIFECYCLE.md",
-      "paths": ["08-记忆流转说明/PIXIU记忆流转说明.pdf"],
+      "paths": ["02-技术方案及测试结果/03-记忆流转说明/PIXIU记忆流转说明.pdf"],
       "producer": "repository"
     },
     {
-      "id": "D-09",
-      "title": "实际应用案例",
+      "id": "A-04",
+      "title": "技术方案附件：实际应用案例",
       "source": "docs/delivery/APPLICATION_CASES.md",
-      "paths": ["09-实际应用案例/PIXIU实际应用案例.pdf"],
+      "paths": ["02-技术方案及测试结果/04-实际应用案例/PIXIU实际应用案例.pdf"],
       "producer": "repository"
     },
     {
-      "id": "D-10",
-      "title": "银河麒麟 V11 适配报告",
+      "id": "A-05",
+      "title": "技术方案附件：银河麒麟 V11 适配报告",
       "source": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
-      "paths": ["10-V11适配报告/PIXIU银河麒麟V11适配报告.pdf"],
+      "paths": ["02-技术方案及测试结果/05-V11适配报告/PIXIU银河麒麟V11适配报告.pdf"],
       "producer": "repository"
     },
     {
       "id": "R-01",
       "title": "一键安装软件",
       "source": "build/release/out",
-      "paths": ["11-可安装软件/pixiu-final_amd64.deb", "11-可安装软件/pixiu-final_amd64.deb.sha256", "11-可安装软件/pixiu-final_amd64.deb.sha256.sig"],
+      "paths": ["04-部署文档/01-可安装软件/pixiu-final_amd64.deb", "04-部署文档/01-可安装软件/pixiu-final_amd64.deb.sha256", "04-部署文档/01-可安装软件/pixiu-final_amd64.deb.sha256.sig"],
       "producer": "repository"
     }
   ],
   "external_materials": [
     {
       "title": "经报名系统审核通过的盖章报名表",
-      "path": "报名表/华南理工大学PIXIU团队报名表.pdf",
+      "path": "01-项目报告/华南理工大学PIXIU团队报名表.pdf",
       "producer": "human"
     }
   ]

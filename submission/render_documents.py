@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render repository-maintained D-02/D-03/D-04/D-06..D-10 documents."""
+"""Render official D-02..D-04 documents and D-02 annexes A-01..A-05."""
 
 from __future__ import annotations
 
@@ -48,30 +48,30 @@ DOCUMENTS = {
         "sources": ["docs/delivery/DEPLOYMENT_GUIDE.md"],
         "outputs": ["04-部署文档/PIXIU部署指南.pdf"],
     },
-    "D-06": {
+    "A-01": {
         "title": "PIXIU 用户手册",
         "sources": ["docs/delivery/USER_MANUAL.md"],
-        "outputs": ["06-用户手册/PIXIU用户手册.pdf"],
+        "outputs": ["02-技术方案及测试结果/01-用户手册/PIXIU用户手册.pdf"],
     },
-    "D-07": {
+    "A-02": {
         "title": "PIXIU 效果与测试报告",
         "sources": ["docs/delivery/TEST_REPORT.md"],
-        "outputs": ["07-效果与测试证据/PIXIU效果与测试报告.pdf"],
+        "outputs": ["02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.pdf"],
     },
-    "D-08": {
+    "A-03": {
         "title": "PIXIU 记忆流转说明",
         "sources": ["docs/delivery/MEMORY_LIFECYCLE.md"],
-        "outputs": ["08-记忆流转说明/PIXIU记忆流转说明.pdf"],
+        "outputs": ["02-技术方案及测试结果/03-记忆流转说明/PIXIU记忆流转说明.pdf"],
     },
-    "D-09": {
+    "A-04": {
         "title": "PIXIU 实际应用案例",
         "sources": ["docs/delivery/APPLICATION_CASES.md"],
-        "outputs": ["09-实际应用案例/PIXIU实际应用案例.pdf"],
+        "outputs": ["02-技术方案及测试结果/04-实际应用案例/PIXIU实际应用案例.pdf"],
     },
-    "D-10": {
+    "A-05": {
         "title": "PIXIU 银河麒麟 V11 适配报告",
         "sources": ["docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md"],
-        "outputs": ["10-V11适配报告/PIXIU银河麒麟V11适配报告.pdf"],
+        "outputs": ["02-技术方案及测试结果/05-V11适配报告/PIXIU银河麒麟V11适配报告.pdf"],
     },
 }
 
@@ -348,7 +348,9 @@ def render_all(output_root: Path, *, final: bool) -> None:
             docx, pdf = convert(office, pdfinfo, html_path, stage, profile)
             for relative in document["outputs"]:
                 source = docx if relative.endswith(".docx") else pdf
-                destination = package_root / relative if final else package_root / Path(relative).name
+                # Drafts mirror the official five-category layout so review cannot
+                # accidentally reintroduce flat or extra top-level deliverables.
+                destination = package_root / relative
                 pending_outputs.append((source, destination))
         existing = [str(destination) for _, destination in pending_outputs if destination.exists()]
         if existing:

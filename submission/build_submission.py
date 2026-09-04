@@ -25,8 +25,16 @@ PASS = "passed"
 SHA1 = re.compile(r"[0-9a-f]{40}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 VIDEO_SUFFIXES = {".avi", ".mp4", ".wmv"}
-FINAL_DEVICE_EVIDENCE = Path("07-效果与测试证据/three-device-final-suite.json")
-RAW_EVIDENCE_ARCHIVE = Path("07-效果与测试证据/原始证据.zip")
+OFFICIAL_TOP_LEVEL = {
+    "01-项目报告",
+    "02-技术方案及测试结果",
+    "03-源代码及规范",
+    "04-部署文档",
+    "05-功能演示视频",
+}
+SOURCE_EXCLUDED_PREFIXES = ("submission/review/", "submission/final/")
+FINAL_DEVICE_EVIDENCE = Path("02-技术方案及测试结果/02-效果与测试证据/three-device-final-suite.json")
+RAW_EVIDENCE_ARCHIVE = Path("02-技术方案及测试结果/02-效果与测试证据/原始证据.zip")
 SOURCE_ARCHIVE = Path("03-源代码及规范/Project.PIXIU-source.tar.gz")
 REQUIRED_SOURCE_PATHS = {
     "README.md",
@@ -81,7 +89,11 @@ def git(*args: str) -> str:
 def worktree_source_entries() -> dict[str, dict[str, str]]:
     """Return the exact tracked source identity of the clean release checkout."""
     raw = git("ls-files", "--recurse-submodules", "-z")
-    paths = [value for value in raw.split("\0") if value]
+    paths = [
+        value
+        for value in raw.split("\0")
+        if value and not value.startswith(SOURCE_EXCLUDED_PREFIXES)
+    ]
     if not paths or len(paths) != len(set(paths)):
         raise ValueError("release source list is empty or contains duplicates")
     entries: dict[str, dict[str, str]] = {}
@@ -433,13 +445,23 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
             errors.append(f"official source hash mismatch: {relative}")
 
     ids = [item.get("id") for item in plan.get("deliverables", [])]
-    expected_ids = [f"D-{number:02d}" for number in range(1, 11)] + ["R-01"]
+    expected_ids = [f"D-{number:02d}" for number in range(1, 6)] + [
+        f"A-{number:02d}" for number in range(1, 6)
+    ] + ["R-01"]
     if ids != expected_ids:
-        errors.append("deliverables must contain ordered D-01..D-10 and R-01")
+        errors.append("deliverables must contain official D-01..D-05, D-02 annexes A-01..A-05, and R-01")
 
     paths = [path for item in plan.get("deliverables", []) for path in item.get("paths", [])]
     if len(paths) != len(set(paths)):
         errors.append("deliverable paths must be unique")
+    external_paths = [item.get("path", "") for item in plan.get("external_materials", [])]
+    top_levels = {
+        Path(path).parts[0]
+        for path in paths + external_paths
+        if isinstance(path, str) and Path(path).parts
+    }
+    if top_levels != OFFICIAL_TOP_LEVEL:
+        errors.append("all submission files must be nested under the five official top-level categories")
     video_paths = [Path(path) for path in paths if path.startswith("05-")]
     if len(video_paths) != 1 or video_paths[0].suffix.lower() not in VIDEO_SUFFIXES:
         errors.append("D-05 must be one AVI, MP4, or WMV video")
@@ -474,7 +496,7 @@ def validate_plan(plan: dict, *, require_ready: bool) -> list[str]:
         package_paths = [
             FINAL_ROOT / name / relative
             for relative in paths
-            if relative.startswith("11-") and relative.endswith(".deb")
+            if relative.startswith("04-部署文档/01-可安装软件/") and relative.endswith(".deb")
         ]
         if evidence_path.is_file() and len(package_paths) == 1 and package_paths[0].is_file():
             errors.extend(

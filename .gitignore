@@ -103,6 +103,9 @@ docker-compose.override.yml
 # AI agent session/tooling data (never commit)
 .mimocode/
 
-# Generated submission review artifacts (never confuse with gated final output)
-submission/review/*
-!submission/review/.gitignore
+# Local office lock/backup files are never project sources.
+docs/.~*.pptx
+
+# Keep this last: every official submission artifact is versioned.
+!submission/
+!submission/**

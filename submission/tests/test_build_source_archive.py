@@ -23,6 +23,19 @@ MODULE_REQUIRED_SUBMODULES = BUILDER.REQUIRED_SUBMODULES
 
 
 class SourceArchiveTest(unittest.TestCase):
+    def test_tracked_paths_exclude_review_and_final_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "backend/app.py"
+            review = root / "submission/review/demo.mp4"
+            final = root / "submission/final/release.zip"
+            for path in (source, review, final):
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"fixture")
+            tracked = b"backend/app.py\0submission/review/demo.mp4\0submission/final/release.zip\0"
+            with mock.patch.object(MODULE, "git", return_value=tracked):
+                self.assertEqual(MODULE.tracked_paths(root), [Path("backend/app.py")])
+
     def test_archive_contains_sources_evidence_and_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

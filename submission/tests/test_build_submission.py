@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import tempfile
@@ -67,6 +68,15 @@ class SubmissionBuilderTest(unittest.TestCase):
 
     def test_repository_plan_is_structurally_valid(self) -> None:
         self.assertEqual(MODULE.validate_plan(MODULE.load_plan(), require_ready=False), [])
+
+    def test_plan_rejects_a_sixth_top_level_category(self) -> None:
+        plan = copy.deepcopy(MODULE.load_plan())
+        plan["external_materials"][0]["path"] = "报名表/报名表.pdf"
+        errors = MODULE.validate_plan(plan, require_ready=False)
+        self.assertIn(
+            "all submission files must be nested under the five official top-level categories",
+            errors,
+        )
 
     def test_pending_plan_refuses_final_package(self) -> None:
         errors = MODULE.validate_plan(MODULE.load_plan(), require_ready=True)

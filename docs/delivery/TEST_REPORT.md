@@ -1,4 +1,4 @@
-# D-07 效果与测试报告工作稿
+# A-02 效果与测试报告工作稿（D-02 附件）
 
 - 更新日期：2026-09-04
 - 状态：V11 strict 单包、双 SDK 产品链、Agent 供应链已通过；确定性无推理 Agent 工程链路已通过；官方云端模型 Agent、三设备、最终性能与安装升级矩阵未完成
@@ -6,7 +6,8 @@
 ## 2026-09-04 当前候选事实
 
 - 当前 strict amd64 审阅候选的完整 commit 和 SHA-256 以
-  `submission/review/00-软件候选/native-sdk-smoke.json` 与同目录 `.sha256` 为准；
+  `submission/review/02-技术方案及测试结果/02-效果与测试证据/01-工程验收证据/native-sdk-smoke.json`
+  与 `submission/review/04-部署文档/01-可安装软件/` 中候选包摘要为准；
 - 包内 Agent 宿主、58 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
   SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
 - 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自
@@ -29,13 +30,13 @@
   契约，最终请求按原顺序保留全部用户消息，assistant 内容与工具结果均回送，并验证
   OpenAI function schema 及五个 PIXIU 工具关键参数完整；trace 只保存摘要和布尔结果。
   采集前另核对 expected commit、已安装 release manifest 和后端版本三方一致。证据固定标注
-  `mock_only=true`、`not_release_evidence=true`，不计官方云端模型自主性或正式 D-07。
+  `mock_only=true`、`not_release_evidence=true`，不计官方云端模型自主性或正式 A-02。
 - 有消息会话实测曾暴露刷新后重复气泡、错位残影与空状态遮挡；SQL 确认
   持久层无重复，根因为裸子布局被移出顶层布局时未销毁其气泡 widget。补丁已改为
   `messageRow` 行容器所有权并增加失败关闭检查。`2793329` 的重建宿主哈希为
   `0563a5d068dfdd8cff55b185a262783f27f8b93323c7b357afe2c02d189824d3`；同一真实会话连续
   刷新 4 次并折叠/展开侧栏 4 次后，可访问树与截图均保持 2 条持久化用户消息对应
-  2 个气泡，无空状态并存，该定向回归通过。最终 D-07 仍须在冻结候选上执行完整状态矩阵。
+  2 个气泡，无空状态并存，该定向回归通过。最终 A-02 仍须在冻结候选上执行完整状态矩阵。
 - `2fd6800` 进一步关闭长会话标题撑开侧栏的问题：会话列表禁用横向滚动并采用右侧省略；
   补丁应用回归已通过，最终候选仍需完成三档缩放和双主题截图矩阵。
 - 真机重打包复核发现宿主供应链记录原先只绑定固定上游 commit，未绑定 PIXIU 下游
@@ -47,7 +48,7 @@
   状态可读；该切片只计 A-10a 的单主题/单缩放状态，不能替代最终双主题三档矩阵。
 
 上述 commit/SHA 是文档冻结前候选记录；审阅目录采用稳定文件名，JSON 内部与 `.sha256`
-保存实际候选身份。最终 D-07 必须绑定冻结后的新 commit 与新包，
+保存实际候选身份。最终 A-02 必须绑定冻结后的新 commit 与新包，
 不得直接复用本段摘要冒充最终证据。
 
 ## 测试口径
@@ -56,7 +57,7 @@
 R-01～R-06 分层。每组结果记录 release commit、机器、V11 版本、架构、SDK/runtime、
 数据集版本、冷热口径、样本数、原始输出和失败样本。
 
-D-07 的 `原始证据.zip` 由 `submission/build_evidence_archive.py` 生成，不能手工塞入
+A-02 的 `原始证据.zip` 由 `submission/build_evidence_archive.py` 生成，不能手工塞入
 若干日志即宣称完整。策略要求双 SDK、完整 Agent 生命周期、最终性能、三设备总报告、
 安装升级矩阵、数据集清单和 Agent 供应链七类主记录全部通过并绑定同一 commit/候选
 包摘要；附件中的 CSV、日志和截图均进入逐文件摘要，文本附件还接受敏感信息扫描。
@@ -79,7 +80,7 @@ commit 上绑定 strict 候选生成。来源必须写作“团队根据赛题�
 划分为 0 train / 0 validation / 90 test；不得把历史 portable 报告中的内嵌数据或
 当前生成器测试当作最终冻结 manifest。
 
-D-07 归档器已从外层字段检查升级为内容深验：native、Agent、性能、数据集分别调用
+A-02 归档器已从外层字段检查升级为内容深验：native、Agent、性能、数据集分别调用
 其正式验证函数；冻结 JSON、逐样本报告和三变体矩阵解包后重新解析、复算并与汇总
 比对。消融还会递归检查任务集、三份逐任务报告、教学/召回去敏快照和分布式节点
 manifest；原始配置和 `.env` 禁止入档。当前归档工具契约通过，但这只证明门禁有效，
@@ -207,7 +208,7 @@ release-ready。
 amd64 候选，两个 cp312 原生扩展入包且前端 ctest 38/38。保留 portable 配置时服务
 健康；切换 strict 后，系统服务账户访问不到桌面用户会话 AI runtime，严格预检按设计
 失败，恢复配置后服务、数据库和配置摘要保持。该复验进一步排除构建漂移，但没有
-形成 user service、完整 Agent 或 D-07 受控证据，验收状态不变。
+形成 user service、完整 Agent 或 A-02 受控证据，验收状态不变。
 
 无模型 Agent 集成探针随后通过：官方 0.9.6 宿主在 V11 启动，固定 Runtime Gateway
 返回健康，空会话 API 返回列表，Module E 被发现并配置为 `memory.provider=pixiu`。
@@ -253,7 +254,7 @@ runtime 均为 portable、`contest_ready=false`，因此只计 D-04/R-05 兼容�
 
 ## 最终必须补齐
 
-- 将已通过的 V11 strict user-service 双 SDK 运行纳入包含完整 Agent 的同版 D-07 正式归档；
+- 将已通过的 V11 strict user-service 双 SDK 运行纳入包含完整 Agent 的同版 A-02 正式归档；
 - 多会话/多轮、自主规划、Shell/联网搜索、审批、记忆召回/写入和新会话复用；
 - 三设备并发、离线、重连、冲突、墓碑和收敛；
 - 全新图形安装、同版重装、跨版升级、坏签名、断网、取消，以及最终候选上的失败回滚和数据保留重验；
