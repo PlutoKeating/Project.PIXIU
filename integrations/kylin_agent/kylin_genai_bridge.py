@@ -47,6 +47,31 @@ def _compact_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
 
+def sdk_tool_schema(function: dict[str, Any]) -> dict[str, Any]:
+    """Build the parameter schema expected by genai_text_register_tool."""
+
+    parameters = function.get("parameters")
+    schema = dict(parameters) if isinstance(parameters, dict) else {"type": "object"}
+    description = str(function.get("description") or "").strip()
+    if description and "description" not in schema:
+        schema["description"] = description
+    return schema
+
+
+def tool_choice_policy(value: Any) -> tuple[int, str]:
+    """Translate OpenAI tool_choice to the Kylin SDK mode and optional name."""
+
+    if value == "none":
+        return 1, ""
+    if value == "required":
+        return 2, ""
+    if isinstance(value, dict):
+        function = value.get("function")
+        if isinstance(function, dict):
+            return 0, str(function.get("name") or "").strip()
+    return 0, ""
+
+
 def openai_tool_calls(payload: str) -> list[dict[str, Any]]:
     """Translate the SDK tool callback to OpenAI function-call objects."""
 
@@ -159,6 +184,7 @@ class KylinGenAiLibrary:
         self.lib.genai_text_register_tool.restype = ctypes.c_int
         self.lib.genai_text_create_tool_choice_config.argtypes = [ctypes.c_int]
         self.lib.genai_text_create_tool_choice_config.restype = pointer
+        self.lib.genai_text_tool_choice_config_set_specific_tool.argtypes = [pointer, ctypes.c_char_p]
         self.lib.genai_text_set_tool_choice_config.argtypes = [pointer, pointer]
         self.lib.genai_text_destroy_tool_choice_config.argtypes = [ctypes.POINTER(pointer)]
         self.lib.chat_message_create.restype = pointer
@@ -220,7 +246,7 @@ class KylinGenAiLibrary:
 
 
 class NativeConversation:
-    def __init__(self, sdk: KylinGenAiLibrary, model: str, tools: list[dict[str, Any]]):
+    def __init__(self, sdk: KylinGenAiLibrary, model: str, tools: list[dict[str, Any]], tool_choice: Any = "auto"):
         self.sdk = sdk
         self.model = "" if model in {"", "default", "kylin-default"} else model
         self.session = ctypes.c_void_p(sdk.lib.genai_text_create_session())
@@ -254,20 +280,20 @@ class NativeConversation:
             name = str(function.get("name") or "").strip()
             if not name:
                 continue
-            schema = {
-                "name": name,
-                "description": str(function.get("description") or ""),
-                "parameters": function.get("parameters") or {"type": "object"},
-            }
             status = sdk.lib.genai_text_register_tool(
-                self.session, name.encode(), 0, _compact_json(schema).encode()
+                self.session, name.encode(), 0, _compact_json(sdk_tool_schema(function)).encode()
             )
             if status:
                 self.close()
                 raise RuntimeError(f"Kylin GenAI rejected tool {name!r} ({status})")
         if tools:
-            choice = ctypes.c_void_p(sdk.lib.genai_text_create_tool_choice_config(0))
+            mode, specific_tool = tool_choice_policy(tool_choice)
+            choice = ctypes.c_void_p(sdk.lib.genai_text_create_tool_choice_config(mode))
             try:
+                if specific_tool:
+                    sdk.lib.genai_text_tool_choice_config_set_specific_tool(
+                        choice, specific_tool.encode()
+                    )
                 sdk.lib.genai_text_set_tool_choice_config(self.session, choice)
             finally:
                 sdk.lib.genai_text_destroy_tool_choice_config(ctypes.byref(choice))
@@ -420,6 +446,7 @@ class KylinCloudBridge:
                 self.sdk,
                 str(body.get("model") or "kylin-default"),
                 body.get("tools") if isinstance(body.get("tools"), list) else [],
+                body.get("tool_choice", "auto"),
             )
             conversation.start(messages)
         try:

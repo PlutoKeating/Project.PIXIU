@@ -4,7 +4,9 @@ from integrations.kylin_agent.kylin_genai_bridge import (
     ModelInfo,
     extract_tool_results,
     openai_tool_calls,
+    sdk_tool_schema,
     select_cloud_models,
+    tool_choice_policy,
 )
 
 
@@ -44,6 +46,35 @@ def test_sdk_tool_callback_is_translated_to_openai_tool_calls():
             },
         }
     ]
+
+
+def test_sdk_registration_receives_parameter_schema_not_openai_wrapper():
+    function = {
+        "name": "pixiu_memory_query",
+        "description": "检索记忆",
+        "parameters": {
+            "type": "object",
+            "properties": {"query": {"type": "string"}},
+            "required": ["query"],
+        },
+    }
+
+    assert sdk_tool_schema(function) == {
+        "type": "object",
+        "description": "检索记忆",
+        "properties": {"query": {"type": "string"}},
+        "required": ["query"],
+    }
+
+
+def test_openai_tool_choice_maps_to_sdk_modes():
+    assert tool_choice_policy("auto") == (0, "")
+    assert tool_choice_policy("none") == (1, "")
+    assert tool_choice_policy("required") == (2, "")
+    assert tool_choice_policy({"function": {"name": "pixiu_memory_query"}}) == (
+        0,
+        "pixiu_memory_query",
+    )
 
 
 def test_runtime_tool_messages_are_bound_to_pending_sdk_calls():
