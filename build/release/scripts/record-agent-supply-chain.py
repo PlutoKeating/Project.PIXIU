@@ -146,14 +146,15 @@ def record_host(args: argparse.Namespace, policy: dict[str, Any]) -> None:
     write_json(directory / policy["evidence"]["host_build"], document)
 
 
-def wheel_metadata(path: Path) -> tuple[str, str, str]:
+def wheel_metadata(path: Path, policy: dict[str, Any]) -> tuple[str, str, str]:
     with zipfile.ZipFile(path) as archive:
+        authenticated_members: list[str] = []
         for info in archive.infolist():
             if info.is_dir():
                 continue
             with archive.open(info) as stream:
                 if stream_has_authenticated_url(stream):
-                    raise ValueError(f"{path.name}: wheel contains an authenticated URL")
+                    authenticated_members.append(info.filename)
         members = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
         if len(members) != 1:
             raise ValueError(f"{path.name}: wheel must contain exactly one METADATA")
@@ -166,6 +167,20 @@ def wheel_metadata(path: Path) -> tuple[str, str, str]:
     name, version = fields.get("Name", "").strip(), fields.get("Version", "").strip()
     if not name or not version:
         raise ValueError(f"{path.name}: wheel metadata lacks Name or Version")
+    normalized_name = name.lower().replace("_", "-")
+    if authenticated_members:
+        exception = policy.get("wheel_authenticated_url_exceptions", {}).get(
+            f"{normalized_name}=={version}", {}
+        )
+        allowed = (
+            exception.get("sha256") == sha256_file(path)
+            and sorted(exception.get("members", [])) == sorted(authenticated_members)
+            and bool(str(exception.get("reason", "")).strip())
+        )
+        if not allowed:
+            raise ValueError(
+                f"{path.name}: wheel contains an unapproved authenticated URL location"
+            )
     license_id = fields.get("License-Expression", "").strip() or "NOASSERTION"
     return name, version, license_id
 
@@ -186,7 +201,7 @@ def record_wheelhouse(args: argparse.Namespace, policy: dict[str, Any]) -> None:
     names: set[str] = set()
     for wheel in wheels:
         wheel = require_regular(wheel, "wheel")
-        name, version, license_id = wheel_metadata(wheel)
+        name, version, license_id = wheel_metadata(wheel, policy)
         normalized_name = name.lower().replace("_", "-")
         if normalized_name in names:
             raise ValueError(f"duplicate wheel distribution: {name}")

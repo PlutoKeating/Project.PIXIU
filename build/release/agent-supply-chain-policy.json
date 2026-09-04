@@ -43,10 +43,23 @@
     "kylin-agent-runtime",
     "aiohttp"
   ],
-  "sensitive_scan_paths": [
+  "upstream_reference_scan_paths": [
     "third_party/kylin-agent/scripts",
     "third_party/kylin-agent-runtime/scripts"
   ],
+  "sensitive_scan_paths": [
+    "build/release/agent-host",
+    "build/release/agent-runtime"
+  ],
+  "wheel_authenticated_url_exceptions": {
+    "httpx==0.28.1": {
+      "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad",
+      "members": [
+        "httpx/_urls.py"
+      ],
+      "reason": "Static URL-parser documentation example; not an operational endpoint or credential"
+    }
+  },
   "evidence": {
     "host_build": "agent-host-build.json",
     "runtime_wheelhouse": "runtime-wheelhouse.json",

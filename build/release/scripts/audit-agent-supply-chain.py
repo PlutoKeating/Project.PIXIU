@@ -441,6 +441,9 @@ def audit(root: Path, policy_path: Path, evidence_dir: Path) -> dict[str, Any]:
     sensitive_files = authenticated_url_files(root, policy["sensitive_scan_paths"])
     if sensitive_files:
         blockers.append("authenticated-url-detected")
+    upstream_reference_files = authenticated_url_files(
+        root, policy.get("upstream_reference_scan_paths", [])
+    )
 
     evidence = load_evidence(evidence_dir, policy["evidence"])
     blockers.extend(validate_evidence(evidence_dir, evidence, policy))
@@ -470,6 +473,12 @@ def audit(root: Path, policy_path: Path, evidence_dir: Path) -> dict[str, Any]:
             "passed": not sensitive_files,
             "files": sensitive_files,
             "matched_values_redacted": True,
+        },
+        "upstream_reference_scan": {
+            "rule": "authenticated-url-userinfo",
+            "files": upstream_reference_files,
+            "matched_values_redacted": True,
+            "release_treatment": "excluded-or-sanitized-by-verified-release-build",
         },
         "evidence": evidence,
         "blockers": blockers,
