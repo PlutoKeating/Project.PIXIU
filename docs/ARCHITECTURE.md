@@ -73,7 +73,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
 | Agent 集成 | 多会话/多轮、规划与工具、记忆生命周期闭环 | E integrations/kylin_agent + openKylin 宿主 | A-01~A-10、F1-01、F1-02、F6-05 |
-| Agent 宿主 UI | 双主题可读性、焦点/缩放、状态与空状态隐私；仅官方直连云端模型 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
+| Agent 宿主 UI | 双主题可读性、焦点/缩放、状态与空状态隐私；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
 
 ### 1.3 关键约束
 
@@ -81,6 +81,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 - **检索在线零 LLM**：仅用 embedding + 结构化字段 + 图遍历，保证 P95 ≤ 500ms
 - **国产化硬门槛**：embedding 必须经麒麟 `coreai/embedding` C 接口；生产向量存储/检索必须经系统 Vector Engine SDK；最终软件必须在银河麒麟桌面操作系统 V11 验证
 - **Agent 完整性**：项目工程上选择由 openKylin Agent 基座提供多轮会话、规划、工具、Shell/联网搜索和审批，PIXIU 通过原创记忆适配层接入；赛方材料未指定必须使用该基座，也未要求从零重写 Agent
+- **推理接入**：V11 通过回环适配服务调用系统 Kylin GenAI PublicCloud 模型，Runtime 继续掌管工具与审批；通用 Debian 画像使用 GUI 配置的官方直连服务
 - **集成隔离**：Module E 只能消费 `docs/API.md` 的公共契约；上游 submodule 默认只读，最小补丁须独立记录来源、理由、许可证和维护方式
 
 ---

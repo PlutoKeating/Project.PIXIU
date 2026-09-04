@@ -46,8 +46,9 @@
 5. 用至少三台设备证明分布式记忆的离线、并发、重连、冲突、遗忘和最终收敛。
 6. 以 ADR-0004 的受控下游补丁修复 KylinAgent 宿主双主题和可访问性；旧界面截图
    不再作为交付证据，最终候选必须重跑 V11 双主题、缩放、键盘与状态矩阵。
-7. 推理只允许 DeepSeek/Anthropic/OpenAI 官方直连云端 API，默认优先 DeepSeek；
-   宿主和发行门排除 OpenRouter 中转及全部本地推理入口，密钥仅由 Runtime 隐藏输入保存。
+7. 银河麒麟 V11 默认优先麒灵系统云模型，由系统 AI 模块管理模型与授权；用户可在
+   KylinAgent GUI 导入 DeepSeek/Anthropic/OpenAI 官方直连 API Key。宿主和发行门
+   排除 OpenRouter 中转及本地推理入口，凭据只由 Runtime 安全存储。
 
 在上述 P0 完成前，历史 portable 指标仅标记“开发回归通过”，不得写“最终验收达标”。
 

@@ -87,16 +87,18 @@ Runtime 离线闭包必须包含免密 `ddgs` 搜索后端；验收要求 `web_s
 重启，因为已运行服务会继续持有旧模块。重启失败须恢复 Provider、配置和原用户 unit。
 
 宿主界面依据 [ADR-0004](decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)
-作为同一供应链的第二个顺序补丁应用，不修改官方 submodule。发布证据必须使用应用
+及 [ADR-0005](decisions/0005-use-kylin-system-cloud-models.md) 作为同一供应链的顺序
+补丁应用，不修改官方 submodule。发布证据必须使用应用
 双主题语义令牌、PIXIU 产品层级和无内部路径空状态后的真实二进制；旧截图立即失效。
 最终候选补充 V11 浅/深主题、100%/125%/150% 缩放、键盘焦点、模型下拉、长会话、
 流式/停止/错误/禁用态矩阵，并保留自动复算关键配色 ≥4.5:1 的测试结果。
 宽屏消息必须保持在 920px 居中阅读列内连续排列，输入组合区不超过 960px；短消息不得
 被压成窄列，末条消息不得被输入区裁切。宿主构建记录必须匹配当前 release commit 和
 全部下游适配输入 SHA-256，防止新候选复用旧界面二进制。
-同版宿主必须默认补入并优先展示 DeepSeek 官方 `deepseek-chat`，选择面只保留
-DeepSeek/Anthropic/OpenAI 直连云端提供商；OpenRouter 与全部本地推理提供商必须缺席。
-认证信息只通过 Runtime 隐藏输入配置，打包、升级、日志和证据均不得携带真实密钥。
+同版宿主必须默认优先展示“麒灵系统云模型”，并通过系统 Kylin GenAI SDK 跟随
+“AI 模块管理”的模型选择与授权。备用选择面只保留 DeepSeek/Anthropic/OpenAI 官方
+直连服务；API Key 在 GUI 密码框导入、连接检测后由 Runtime 以本用户 `0600` 文件保存，
+列表、日志和证据只显示配置状态。OpenRouter 与全部本地推理提供商必须缺席。
 
 ## 2. 版本管理唯一真相源
 

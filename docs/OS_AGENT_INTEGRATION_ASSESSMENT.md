@@ -119,19 +119,19 @@ PPT 将 OS Agent 定义为系统级智能助手：能够理解复杂指令、规
 
 完整功能项、四项量化阈值、初评/复评分值和交付格式已经逐项固化在 [验收测试规范](AcceptanceTestSpecification.md)。其中初评为 30+30+25+10+5=100 分。PPT 饼图的 32/32/26/11 是前四项 95 分被图表自动归一化后的显示，不应改写为新的原始分值。
 
-## 4. 本仓库事实与关键缺口
+## 4. OS Agent 集成事实
 
-| 领域 | 已有事实 | 结论/缺口 |
-|------|----------|-----------|
-| Agent 主体 | `frontend/` 是记忆控制台；上游固定源码经最小适配后已在 V11 网络隔离构建并随 strict 单包部署，Runtime wheelhouse 离线安装通过；确定性无推理节点已跑通真实 Runtime 工程链路 | 供应链门 `ready=true`；官方云端模型 run 仍是 P0，Mock 不替代 |
-| 会话 | PIXIU 已保存 session/run/turn provenance；会话主体由上游宿主管理；取证客户端现显式向后续 run 发送持久化 `conversation_history`，Mock trace 已证明系统提示存在且轮次增长 | 待最终 V11 候选完成官方云端三轮、宿主/Runtime 重启和会话摘要恢复实测 |
-| 自主规划/工具 | Module E 已注册查询、记住、更新、遗忘、同步状态五个记忆工具；规划、审批、Shell、联网搜索来自上游；Runtime 离线闭包已补齐并验证 DDGS bundled plugin 清单与 provider 发现；Mock 已实际驱动 Shell、DDGS 与 PIXIU 本地/共享记忆 API | 待官方云端模型实际自主选择并完成工具结果跨会话召回；固定 Mock 路由不计模型自主性或团队原创 |
-| Embedding | 当前审阅候选 strict 单包同版原生证据经 runtime 1.3.0 使用 gte-base 768 维真实向量 | 技术门通过；最终冻结 commit 需重跑并进入 A-02 |
-| 向量数据库 | 当前审阅候选 strict 单包完成 direct SDK 和产品写入/检索/遗忘/隐藏 | 技术门通过；最终冻结 commit 需重跑并进入 A-02 |
-| 记忆引擎 | 多源接入、偏好、知识、冲突、安全、遗忘及 Module E 调用已有实现 | 契约测试已触发，仍需真实 Agent 生命周期实证 |
-| 记忆流转 | 六类事件已由 Module E 映射到短/中期 API | 长期化策略及真实 session/压缩/结束证据待补 |
-| 分布式同步 | CRDT、Gossip、反熵、配对、签名、mTLS、墓碑 | 是主要创新项，需做多机收敛实证 |
-| 指标 | portable 基线 100%/100%/96%/115ms | 仅开发回归；不能替代 H-01～H-03 和最终数据集验收 |
+| 领域 | 实现与评审依据 |
+|------|----------------|
+| Agent 主体 | 固定版本 KylinAgent 宿主与 Runtime 随 strict 单包部署，离线 wheelhouse、许可证、SBOM 和适配输入纳入供应链审计。 |
+| 系统云模型 | V11 通过 `libkysdk-genai-nlp` 发现支持工具选择的 PublicCloud 模型；回环适配服务向 Runtime 提供模型、生成、停止和工具续传接口。 |
+| 会话 | 上游宿主管理多会话和多轮历史；PIXIU 保存 session/run/turn provenance，并将 MemoryProvider 上下文加入同一运行链。 |
+| 自主规划/工具 | Runtime 提供规划、审批、Shell 和联网搜索；Module E 注册查询、记住、更新、遗忘、同步状态五个记忆工具。 |
+| Embedding | strict 原生画像调用系统 Embedding SDK，使用 gte-base 768 维真实向量。 |
+| 向量数据库 | strict 原生画像通过 Vector Engine SDK 完成建库、写入、检索、遗忘与隐藏。 |
+| 记忆引擎 | 多源接入、偏好、知识、冲突、安全和遗忘共用统一 evidence/knowledge 数据模型。 |
+| 记忆流转 | turn、压缩、会话切换、会话结束和委派事件映射到短中长期记忆接口。 |
+| 分布式同步 | CRDT、Gossip、反熵、可信配对、签名、mTLS 和删除墓碑构成无中心同步链。 |
 
 ## 5. 已批准接入设计
 
@@ -170,8 +170,10 @@ agent-runtime ── MemoryProvider adapter ── PIXIU REST API
 保留为记忆诊断、设备管理和独立演示控制台，不并入 Agent 循环。宿主表现层依据已批准
 的 [ADR-0004](decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)
 维护可重放下游补丁，统一双主题令牌、品牌层级和空状态；补丁不改变 Agent 循环，
-也不得直接导入 PIXIU 后端私有实现。产品推理选择面只保留 DeepSeek、Anthropic、
-OpenAI 官方直连云端 API，默认优先 DeepSeek；OpenRouter 与本地推理入口被明确过滤。
+也不得直接导入 PIXIU 后端私有实现。依据
+[ADR-0005](decisions/0005-use-kylin-system-cloud-models.md)，V11 默认通过回环适配
+调用麒灵系统云模型；备用选择面仅保留 DeepSeek、Anthropic、OpenAI 官方直连服务，
+OpenRouter 与本地推理入口被明确过滤。
 
 ## 6. 实施优先级
 

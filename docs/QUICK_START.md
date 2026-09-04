@@ -42,9 +42,12 @@ curl -X POST http://127.0.0.1:8765/memory/query \
 
 ## 使用 Agent
 
-打开 KylinAgent，新建会话并选择已配置的官方直连模型。PIXIU MemoryProvider 会在任务前召回相关记忆，并在轮次结束后沉淀对话与工具结果。
+打开 KylinAgent 并新建会话。“麒灵系统云模型”默认选中，实际模型与授权由
+“设置 → AI 模块管理”维护。PIXIU MemoryProvider 会在任务前召回相关记忆，并在
+轮次结束后沉淀对话与工具结果。
 
-风险工具会显示审批提示。模型密钥应通过 Runtime 隐藏认证入口配置，不要写入命令行、源码或日志。
+需要使用自己的 DeepSeek、Anthropic 或 OpenAI 服务时，在 KylinAgent 的“云端模型
+设置”中输入 API Key，点击“检测并保存”。风险工具会显示审批提示。
 
 ## 配对设备
 

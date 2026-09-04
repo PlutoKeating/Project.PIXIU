@@ -23,15 +23,16 @@ PIXIU 品牌栏、云端模型入口、消息、输入区和状态反馈，并�
 左对齐并显示稳定的作者标识；输入区使用最大 960px 的居中组合框。该约束避免宽屏下
 消息散落在窗口两端，同时保留 760px 最小窗口下的自适应空间。
 
-同一补丁还执行负责人批准的云端模型边界：新装和既有配置补入并优先显示 DeepSeek
-官方 `deepseek-chat`，宿主下拉框只展示 DeepSeek、Anthropic、OpenAI 直连云端模型；
-OpenRouter 与 Ollama/LM Studio/vLLM/llama.cpp 等本地入口不进入产品选择面。API Key
-只由 Runtime 安全认证存储接收，不能进入宿主模型文件、命令行、源码或构建证据。
+`patches/0003-kylin-cloud-model-settings.patch` 实施 ADR-0005：新装与升级首次默认选择
+“麒灵系统云模型”，通过回环 Kylin GenAI 适配服务跟随系统模型和授权。备用选择面只
+展示 DeepSeek、Anthropic、OpenAI 官方直连服务；API Key 从宿主密码框输入，连接检测
+通过后由 Runtime 以本用户权限原子保存。宿主模型文件、命令行、日志和构建证据均不
+包含真实密钥。OpenRouter 与 Ollama/LM Studio/vLLM/llama.cpp 等入口不进入产品界面。
 
 构建脚本必须在洁净的固定上游归档中按编号顺序应用补丁；任何 hunk 不匹配都立即失败。最终宿主
 产物、完整已补丁源码、构建日志和摘要必须由供应链记录器生成，不能用本目录本身代替
 目标 V11 构建证据。
-宿主记录同时绑定当前 release commit，以及构建脚本、两份补丁和兼容层源码的逐文件
+宿主记录同时绑定当前 release commit，以及构建脚本、全部补丁和兼容层源码的逐文件
 SHA-256。任一适配输入或提交变化都会使旧宿主证据失效，严格打包必须重新构建并记录，
 不能在新候选中复用旧二进制。
 

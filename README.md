@@ -8,13 +8,13 @@
 
 <br/>
 
-[![Kylin OS](https://img.shields.io/badge/Kylin%20OS-V10-DA291C?style=flat-square&logo=linux&logoColor=white)](https://www.kylinos.cn/)
+[![Kylin OS](https://img.shields.io/badge/Kylin%20OS-V11-DA291C?style=flat-square&logo=linux&logoColor=white)](https://www.kylinos.cn/)
 [![KylinSDK](https://img.shields.io/badge/KylinSDK-V3.0-0066CC?style=flat-square)](docs/kylin_sdk_docs/README.md)
 [![Engine](https://img.shields.io/badge/Engine-Python%203.10%20%2B%20C%2B%2B-3776AB?style=flat-square&logo=python&logoColor=white)](backend/engine/docs/ARCHITECTURE.md)
 [![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
 [![Frontend](https://img.shields.io/badge/Frontend-Qt5%20%2F%20UKUI-41CD52?style=flat-square&logo=qt&logoColor=white)](frontend/docs/ARCHITECTURE.md)
 [![Latency](https://img.shields.io/badge/检索延迟-%E2%89%A4500ms-success?style=flat-square)](docs/AcceptanceTestSpecification.md)
-[![Status](https://img.shields.io/badge/status-设计阶段-yellow?style=flat-square)](docs/DEVELOPMENT_PLAN.md)
+[![Status](https://img.shields.io/badge/status-交付版-blue?style=flat-square)](docs/DEVELOPMENT_PLAN.md)
 
 [总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API 规格](docs/API.md) · [验收规范](docs/AcceptanceTestSpecification.md) · [赛题原文](docs/OriginProblemDescription.md)
 
@@ -49,7 +49,9 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 
 **几分钟后**，他想起燃气费记错了，便补了一句"燃气费不是 156，是 186"。PIXIU 的冲突仲裁模块自动识别出与旧记忆的矛盾，以新版本为准，同时完整保留了修改痕迹。临睡前他又说："忘记那张 4 月的支出清单吧。"——系统精准定位目标，连带原始证据与实体关系一并干净地遗忘，不留残影，也不误删别的记忆。
 
-**这一切，发生在三台设备之间，却像在和同一个懂你的助手对话。** 没有云端账号、没有数据外泄、断网依旧可用。这就是 PIXIU 想带给每一位麒麟用户的体验——**让设备彼此相通，让记忆为你所用**。
+**这一切，发生在三台设备之间，却像在和同一个懂你的助手对话。** 记忆数据无需云端
+账号、保留在可信设备中，断网时仍可写入与检索；联网推理由系统麒灵模型或用户选择的
+官方服务完成。这就是 PIXIU 想带给每一位麒麟用户的体验——**让设备彼此相通，让记忆为你所用**。
 
 ## 核心亮点
 
@@ -59,7 +61,7 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 - **神经-符号混合检索** — BM25 + 向量 ANN + 实体关系图三通道融合，结构化聚合，证据可追溯。
 - **冲突智能仲裁** — 新旧知识矛盾自动检测，以新为准并保留完整审计痕迹。
 - **安全与精准遗忘** — 敏感信息识别过滤，自然语言指令驱动级联遗忘。
-- **端侧极致轻量** — 调用麒麟 embeddingSDK + INT8 量化 + SQLite，检索 P95 ≤ 500ms。
+- **端侧极致轻量** — 调用麒麟 Embedding 与 Vector Engine SDK，检索 P95 ≤ 500ms。
 - **UKUI 原生体验** — Qt5 桌面悬浮球 + 聊天框，全局快捷键唤起，系统通知与主题深度融合。
 
 ## 系统架构
@@ -68,9 +70,10 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 ┌────────────────────────────────────────────────────────────┐
 │ 项目选定的 openKylin OS Agent 基座                         │
 │ kylin-agent（桌面） + agent-runtime（会话/规划/工具/审批）   │
-└───────────────────────────┬────────────────────────────────┘
-                            │ MemoryProvider / HTTP adapter
-┌───────────────────────────▼────────────────────────────────┐
+└────────────────────┬───────────────────┬───────────────────┘
+                     │                   └─ Kylin GenAI 回环适配 → 系统云模型
+                     │ MemoryProvider / HTTP adapter
+┌────────────────────▼───────────────────────────────────────┐
 │ PIXIU 记忆系统                                              │
 │ engine：多源接入/偏好/知识/冲突/安全                         │
 │ foundation：API/存储/检索/记忆流转/P2P CRDT/评测             │
@@ -93,8 +96,8 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 | 前端 (Module A) | C++17 · Qt5 Widgets · UKUI · KylinSDK（快捷键/通知/主题/Qt 扩展控件） |
 | 引擎 (Module B) | Python 3.10 · C++（KylinEmbedding shim） |
 | 基础设施 (Module C) | Python 3.10 · FastAPI · asyncio · SQLite(WAL) · FTS5 · hnswlib · CRDT |
-| 存储 | SQLite (WAL) · FTS5 · sqlite-vec/hnswlib · 邻接表图 |
-| AI | 麒麟 `coreai/embedding`（文本/图像向量化）· OCR · INT8 量化 |
+| 存储 | Kylin Vector Engine · SQLite (WAL) · FTS5 · 邻接表图 |
+| AI | 麒麟 `coreai/embedding`（文本/图像向量化）· Kylin GenAI 系统云模型 · OCR · INT8 量化 |
 | 分布式 | CRDT · mDNS/Gossip · TLS |
 
 ## 性能指标
