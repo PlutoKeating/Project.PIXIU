@@ -26,7 +26,8 @@ def ensure_product_interpreter() -> None:
     """Run installed-release probes with the product's locked dependencies."""
     if not PRODUCT_PYTHON.is_file():
         return
-    if Path(sys.executable).resolve() == PRODUCT_PYTHON.resolve():
+    product_prefix = PRODUCT_PYTHON.parent.parent
+    if Path(sys.prefix).resolve() == product_prefix.resolve():
         return
     os.execv(
         str(PRODUCT_PYTHON),

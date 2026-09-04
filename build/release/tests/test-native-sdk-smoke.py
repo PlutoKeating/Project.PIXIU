@@ -43,6 +43,18 @@ class NativeSdkSmokeTest(unittest.TestCase):
             ],
         )
 
+    def test_product_interpreter_does_not_reexec_inside_product_venv(self) -> None:
+        product_python = Path("/opt/pixiu/venv/bin/python")
+        with (
+            patch.object(MODULE, "PRODUCT_PYTHON", product_python),
+            patch.object(Path, "is_file", return_value=True),
+            patch.object(sys, "prefix", "/opt/pixiu/venv"),
+            patch.object(os, "execv") as execv,
+        ):
+            MODULE.ensure_product_interpreter()
+
+        execv.assert_not_called()
+
     def test_main_binds_runtime_operations_to_installed_release(self) -> None:
         manifest = {
             "manifest_schema": 1,
