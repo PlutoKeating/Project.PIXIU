@@ -10,6 +10,7 @@ trap 'rm -rf "${TMP}"' EXIT
 FAKE_BIN="${TMP}/kylin-agent-runtime"
 printf '%s\n' '#!/bin/sh' \
     'if [ "${1:-}" = "--version" ]; then printf "%s\n" "KylinAgent v0.9.8"; exit 0; fi' \
+    'if [ "${PIXIU_RUNTIME_FAIL_CONFIG:-0}" = "1" ]; then exit 9; fi' \
     'printf "%s\n" "$*" >> "${HERMES_HOME}/runtime-call"' > "${FAKE_BIN}"
 chmod 0755 "${FAKE_BIN}"
 FAKE_HOST="${TMP}/kylin-agent"
@@ -22,6 +23,7 @@ STRICT_FILE="${TMP}/install-strict"
 printf '1\n' > "${STRICT_FILE}"
 FAKE_SYSTEMCTL="${TMP}/systemctl"
 printf '%s\n' '#!/bin/sh' 'printf "%s\n" "$*" >> "${PIXIU_SYSTEMCTL_LOG}"' \
+    'if [ "${PIXIU_SYSTEMCTL_FAIL_ENABLE:-0}" = "1" ] && [ "${2:-}" = "enable" ]; then exit 8; fi' \
     > "${FAKE_SYSTEMCTL}"
 chmod 0755 "${FAKE_SYSTEMCTL}"
 FAKE_UNIT="${TMP}/kylin-agent-runtime-gateway.service"
@@ -61,9 +63,9 @@ grep -qx -- '--user enable --now kylin-agent-runtime-gateway.service' \
 test ! -e "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
 test ! -e "${TMP}/home/.config/systemd/user/hermes-gateway.service"
 grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
-    "${TMP}/home/.local/state/pixiu/service-backups/kylin-agent-runtime-gateway.service.pre-pixiu"
+    "${TMP}"/home/.local/state/pixiu/service-backups/kylin-agent-runtime-gateway.service.pre-pixiu.*
 grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
-    "${TMP}/home/.local/state/pixiu/service-backups/hermes-gateway.service.pre-pixiu"
+    "${TMP}"/home/.local/state/pixiu/service-backups/hermes-gateway.service.pre-pixiu.*
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \
     "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
@@ -145,6 +147,74 @@ for scenario in missing-host runtime-nonzero runtime-unsupported runtime-ambiguo
     fi
     test ! -e "${TMP}/failure-home/.kylin-agent-runtime/plugins/pixiu"
 done
+
+# Unsafe user-unit collisions are rejected before the profile is created.
+mkdir -p "${TMP}/unsafe-home/.config/systemd/user"
+printf '%s\n' '[Service]' 'ExecStart=/usr/bin/user-service --serve' \
+    > "${TMP}/unsafe-home/.config/systemd/user/hermes.service"
+if HOME="${TMP}/unsafe-home" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+   PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
+   PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
+   PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
+   PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
+   "${SCRIPT}" --quiet >/dev/null 2>&1; then
+    echo "unmanaged Agent unit must fail preflight" >&2
+    exit 1
+fi
+test ! -e "${TMP}/unsafe-home/.kylin-agent-runtime/plugins/pixiu"
+
+# A Runtime configuration failure restores the provider and profile files.
+ROLLBACK_HOME="${TMP}/rollback-home"
+ROLLBACK_AGENT="${ROLLBACK_HOME}/.kylin-agent-runtime"
+mkdir -p "${ROLLBACK_AGENT}/plugins/pixiu"
+printf '%s\n' 'old-provider' > "${ROLLBACK_AGENT}/plugins/pixiu/.pixiu-managed"
+printf '%s\n' 'old-provider-data' > "${ROLLBACK_AGENT}/plugins/pixiu/old.txt"
+printf '%s\n' 'EXISTING=value' > "${ROLLBACK_AGENT}/.env"
+printf '%s\n' 'memory: old' > "${ROLLBACK_AGENT}/config.yaml"
+if HOME="${ROLLBACK_HOME}" PIXIU_RUNTIME_FAIL_CONFIG=1 \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+   PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
+   PIXIU_AGENT_DEFAULT_STRICT_FILE="${TMP}/non-strict" \
+   "${SCRIPT}" --quiet >/dev/null 2>&1; then
+    echo "Runtime configuration failure must abort activation" >&2
+    exit 1
+fi
+grep -qx 'old-provider-data' "${ROLLBACK_AGENT}/plugins/pixiu/old.txt"
+grep -qx 'EXISTING=value' "${ROLLBACK_AGENT}/.env"
+grep -qx 'memory: old' "${ROLLBACK_AGENT}/config.yaml"
+test ! -e "${ROLLBACK_AGENT}/plugins/pixiu/provider.py"
+
+# A gateway activation failure restores both profile data and migrated units.
+SYSTEMD_HOME="${TMP}/systemd-rollback-home"
+SYSTEMD_AGENT="${SYSTEMD_HOME}/.kylin-agent-runtime"
+SYSTEMD_UNITS="${SYSTEMD_HOME}/.config/systemd/user"
+mkdir -p "${SYSTEMD_AGENT}/plugins/pixiu" "${SYSTEMD_UNITS}"
+printf '%s\n' 'old-provider' > "${SYSTEMD_AGENT}/plugins/pixiu/.pixiu-managed"
+printf '%s\n' 'old-provider-data' > "${SYSTEMD_AGENT}/plugins/pixiu/old.txt"
+printf '%s\n' 'EXISTING=value' > "${SYSTEMD_AGENT}/.env"
+printf '%s\n' '[Service]' \
+    'ExecStart=/home/tester/.local/bin/kylin-agent-runtime gateway run --replace' \
+    > "${SYSTEMD_UNITS}/hermes-gateway.service"
+if HOME="${SYSTEMD_HOME}" PIXIU_SYSTEMCTL_FAIL_ENABLE=1 \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+   PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
+   PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
+   PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
+   PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-rollback-call" \
+   PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
+   "${SCRIPT}" --quiet >/dev/null 2>&1; then
+    echo "gateway activation failure must abort activation" >&2
+    exit 1
+fi
+grep -qx 'old-provider-data' "${SYSTEMD_AGENT}/plugins/pixiu/old.txt"
+grep -qx 'EXISTING=value' "${SYSTEMD_AGENT}/.env"
+grep -q 'kylin-agent-runtime gateway run --replace' \
+    "${SYSTEMD_UNITS}/hermes-gateway.service"
+test ! -e "${SYSTEMD_AGENT}/plugins/pixiu/provider.py"
 
 grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"

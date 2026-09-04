@@ -41,12 +41,6 @@ esac
 [ -f "${SOURCE}/plugin.yaml" ] || [ -f "${SOURCE}/plugin.yaml.in" ] \
     || fail "provider manifest is missing" 2
 
-# Agent may activate the Provider without first opening the PIXIU console.
-# Start the backend in this same desktop UID before the Provider handshake.
-if [ -x "${USER_SETUP}" ]; then
-    "${USER_SETUP}" --start || fail "PIXIU user service failed to start" 4
-fi
-
 DEFAULT_STRICT=0
 if [ -f "${STRICT_FILE}" ]; then
     DEFAULT_STRICT="$(tr -d '\r\n' < "${STRICT_FILE}")"
@@ -95,18 +89,102 @@ VERSION_COUNT="$(printf '%s\n' "${RUNTIME_VERSION}" | grep -c . || true)"
     || fail "openKylin Agent runtime must report exactly one verified 0.9.x version" 4
 
 mkdir -p "${PLUGIN_ROOT}"
+if [ -L "${DEST}" ]; then
+    fail "refusing symlinked plugin destination: ${DEST}" 3
+fi
 if [ -e "${DEST}" ] && [ ! -f "${MARKER}" ]; then
     fail "refusing to overwrite unmanaged plugin: ${DEST}" 3
 fi
 
+USER_UNIT_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/systemd/user"
+BACKUP_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/pixiu/service-backups"
+USER_UNIT="${USER_UNIT_DIR}/${GATEWAY_UNIT}"
+
+managed_gateway_unit() {
+    UNIT_PATH="$1"
+    [ -f "${UNIT_PATH}" ] && [ ! -L "${UNIT_PATH}" ] || return 1
+    [ "$(grep -Ec '^ExecStart=' "${UNIT_PATH}" || true)" = "1" ] || return 1
+    ! grep -Eq '^Exec(StartPre|StartPost|Stop|StopPost)=' "${UNIT_PATH}" || return 1
+    grep -Eq '^ExecStart="?[^[:space:]"]*(kylin-agent-runtime|hermes)"?[[:space:]]+gateway[[:space:]]+run[[:space:]]+--replace[[:space:]]*$' "${UNIT_PATH}" \
+        || grep -Eq '^ExecStart="?[^[:space:]"]*python(3(\.[0-9]+)?)?"?[[:space:]]+-m[[:space:]]+kylin_agent_runtime_cli(\.main)?[[:space:]]+gateway[[:space:]]+run[[:space:]]+--replace[[:space:]]*$' "${UNIT_PATH}"
+}
+
+# Reject every unsafe collision before changing the profile or user units.
+if [ "${DEFAULT_STRICT}" = "1" ]; then
+    [ -f "${PACKAGED_UNIT}" ] && [ ! -L "${PACKAGED_UNIT}" ] \
+        || fail "packaged Agent gateway unit is missing or unsafe" 2
+    case "${SYSTEMCTL}" in
+        */*) [ -x "${SYSTEMCTL}" ] || fail "systemctl helper is not executable" 2 ;;
+        *) command -v "${SYSTEMCTL}" >/dev/null 2>&1 \
+            || fail "systemctl is not available" 2 ;;
+    esac
+    for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
+        UNIT_PATH="${USER_UNIT_DIR}/${UNIT_NAME}"
+        [ -e "${UNIT_PATH}" ] || continue
+        managed_gateway_unit "${UNIT_PATH}" \
+            || fail "refusing to replace unmanaged Agent gateway unit: ${UNIT_PATH}" 3
+    done
+fi
+
+# Agent may activate the Provider without first opening the PIXIU console.
+# Start the backend only after all profile and unit preflight checks pass.
+if [ -x "${USER_SETUP}" ]; then
+    "${USER_SETUP}" --start || fail "PIXIU user service failed to start" 4
+fi
+
 TMP="${PLUGIN_ROOT}/.pixiu.install.$$"
 BACKUP="${PLUGIN_ROOT}/.pixiu.backup.$$"
+TX_ROOT="${AGENT_HOME}/.pixiu.transaction.$$"
+ENV_FILE="${AGENT_HOME}/.env"
+CONFIG_FILE="${AGENT_HOME}/config.yaml"
+TX_ACTIVE=0
+HAD_DEST=0
+HAD_ENV=0
+HAD_CONFIG=0
 cleanup() {
+    STATUS=$?
+    if [ "${TX_ACTIVE}" = "1" ] && [ "${STATUS}" -ne 0 ]; then
+        rm -rf -- "${DEST}"
+        if [ "${HAD_DEST}" = "1" ] && [ -d "${BACKUP}" ]; then
+            mv "${BACKUP}" "${DEST}" || true
+        fi
+        if [ "${HAD_ENV}" = "1" ]; then
+            cp "${TX_ROOT}/env" "${ENV_FILE}" || true
+        else
+            rm -f -- "${ENV_FILE}"
+        fi
+        if [ "${HAD_CONFIG}" = "1" ]; then
+            cp "${TX_ROOT}/config.yaml" "${CONFIG_FILE}" || true
+        else
+            rm -f -- "${CONFIG_FILE}"
+        fi
+        if [ "${DEFAULT_STRICT}" = "1" ] && [ -d "${TX_ROOT}/units" ]; then
+            mkdir -p "${USER_UNIT_DIR}"
+            for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
+                UNIT_PATH="${USER_UNIT_DIR}/${UNIT_NAME}"
+                if [ -f "${TX_ROOT}/units/${UNIT_NAME}" ]; then
+                    cp "${TX_ROOT}/units/${UNIT_NAME}" "${UNIT_PATH}" || true
+                else
+                    rm -f -- "${UNIT_PATH}"
+                fi
+            done
+            "${SYSTEMCTL}" --user daemon-reload >/dev/null 2>&1 || true
+            for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
+                [ -f "${TX_ROOT}/units/${UNIT_NAME}" ] || continue
+                "${SYSTEMCTL}" --user enable --now "${UNIT_NAME}" >/dev/null 2>&1 || true
+            done
+        fi
+    fi
     if [ -d "${TMP}" ]; then
         rm -rf -- "${TMP}"
     fi
+    rm -rf -- "${TX_ROOT}"
+    return "${STATUS}"
 }
-trap cleanup EXIT HUP INT TERM
+trap cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 mkdir "${TMP}"
 cp -R "${SOURCE}/." "${TMP}/"
@@ -129,6 +207,34 @@ find "${TMP}" -type f -exec chmod 0644 {} \;
 VERSION="$(sed -n 's/^version:[[:space:]]*//p' "${TMP}/plugin.yaml" | head -n 1)"
 printf '%s\n' "${VERSION:-unknown}" > "${TMP}/.pixiu-managed"
 
+mkdir "${TX_ROOT}"
+if [ -d "${DEST}" ]; then
+    HAD_DEST=1
+fi
+if [ -f "${ENV_FILE}" ]; then
+    HAD_ENV=1
+    cp "${ENV_FILE}" "${TX_ROOT}/env"
+fi
+if [ -f "${CONFIG_FILE}" ]; then
+    HAD_CONFIG=1
+    cp "${CONFIG_FILE}" "${TX_ROOT}/config.yaml"
+fi
+if [ "${DEFAULT_STRICT}" = "1" ]; then
+    mkdir -p "${TX_ROOT}/units" "${BACKUP_DIR}"
+    for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
+        UNIT_PATH="${USER_UNIT_DIR}/${UNIT_NAME}"
+        [ -f "${UNIT_PATH}" ] || continue
+        cp "${UNIT_PATH}" "${TX_ROOT}/units/${UNIT_NAME}"
+        UNIT_DIGEST="$(sha256sum "${UNIT_PATH}" | awk '{print $1}')"
+        UNIT_BACKUP="${BACKUP_DIR}/${UNIT_NAME}.pre-pixiu.${UNIT_DIGEST}"
+        if [ ! -f "${UNIT_BACKUP}" ]; then
+            cp "${UNIT_PATH}" "${UNIT_BACKUP}"
+            chmod 0600 "${UNIT_BACKUP}"
+        fi
+    done
+fi
+TX_ACTIVE=1
+
 if [ -d "${DEST}" ]; then
     mv "${DEST}" "${BACKUP}"
 fi
@@ -138,13 +244,9 @@ if ! mv "${TMP}" "${DEST}"; then
     fi
     fail "provider activation failed" 1
 fi
-if [ -d "${BACKUP}" ]; then
-    rm -rf -- "${BACKUP}"
-fi
 
 # Provider settings belong to the desktop user's Agent process, not the
 # root-owned backend service environment. Preserve any explicit user values.
-ENV_FILE="${AGENT_HOME}/.env"
 touch "${ENV_FILE}"
 chmod 0600 "${ENV_FILE}"
 grep -q '^PIXIU_AGENT_ENDPOINT=' "${ENV_FILE}" \
@@ -169,33 +271,14 @@ HERMES_HOME="${AGENT_HOME}" "${RUNTIME}" config set memory.provider pixiu >/dev/
 # per-user override out of systemd's precedence path, but retain a recoverable
 # copy under PIXIU state before activating the package-owned unit.
 if [ "${DEFAULT_STRICT}" = "1" ]; then
-    [ -f "${PACKAGED_UNIT}" ] || fail "packaged Agent gateway unit is missing" 2
-    USER_UNIT_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/systemd/user"
-    USER_UNIT="${USER_UNIT_DIR}/${GATEWAY_UNIT}"
-    BACKUP_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/pixiu/service-backups"
-    mkdir -p "${BACKUP_DIR}"
     for LEGACY_UNIT in hermes-gateway.service hermes.service; do
         LEGACY_PATH="${USER_UNIT_DIR}/${LEGACY_UNIT}"
         [ -f "${LEGACY_PATH}" ] || continue
-        if ! grep -Eqi '(gateway|kylin_agent_runtime_cli)' "${LEGACY_PATH}"; then
-            fail "refusing to replace unmanaged legacy Agent unit: ${LEGACY_PATH}" 3
-        fi
-        if [ ! -f "${BACKUP_DIR}/${LEGACY_UNIT}.pre-pixiu" ]; then
-            cp "${LEGACY_PATH}" "${BACKUP_DIR}/${LEGACY_UNIT}.pre-pixiu"
-            chmod 0600 "${BACKUP_DIR}/${LEGACY_UNIT}.pre-pixiu"
-        fi
         "${SYSTEMCTL}" --user disable --now "${LEGACY_UNIT}" \
             || fail "failed to stop legacy Agent gateway ${LEGACY_UNIT}" 5
         rm -f -- "${LEGACY_PATH}"
     done
     if [ -f "${USER_UNIT}" ]; then
-        if ! grep -Eq '^ExecStart=.*(kylin-agent-runtime|hermes)' "${USER_UNIT}"; then
-            fail "refusing to replace unmanaged Agent gateway unit: ${USER_UNIT}" 3
-        fi
-        if [ ! -f "${BACKUP_DIR}/${GATEWAY_UNIT}.pre-pixiu" ]; then
-            cp "${USER_UNIT}" "${BACKUP_DIR}/${GATEWAY_UNIT}.pre-pixiu"
-            chmod 0600 "${BACKUP_DIR}/${GATEWAY_UNIT}.pre-pixiu"
-        fi
         rm -f -- "${USER_UNIT}"
     fi
     "${SYSTEMCTL}" --user daemon-reload \
@@ -203,4 +286,6 @@ if [ "${DEFAULT_STRICT}" = "1" ]; then
     "${SYSTEMCTL}" --user enable --now "${GATEWAY_UNIT}" \
         || fail "failed to activate the packaged Agent gateway" 5
 fi
+TX_ACTIVE=0
+rm -rf -- "${BACKUP}" "${TX_ROOT}"
 say "PIXIU Agent memory provider is installed and active."
