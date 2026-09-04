@@ -58,14 +58,21 @@ esac
 # profile mutation, rather than in root's Debian preinst environment.
 HOST="${PIXIU_AGENT_HOST_BIN:-}"
 if [ -z "${HOST}" ]; then
-    HOST="$(command -v kylin-agent 2>/dev/null || true)"
+    if [ "${DEFAULT_STRICT}" = "1" ] && [ -x /usr/bin/kylin-agent ]; then
+        HOST=/usr/bin/kylin-agent
+    else
+        HOST="$(command -v kylin-agent 2>/dev/null || true)"
+    fi
 fi
 [ -n "${HOST}" ] && [ -x "${HOST}" ] \
     || fail "openKylin Agent desktop host is not available" 4
 
 RUNTIME="${PIXIU_AGENT_RUNTIME_BIN:-}"
 if [ -z "${RUNTIME}" ]; then
-    if command -v kylin-agent-runtime >/dev/null 2>&1; then
+    if [ "${DEFAULT_STRICT}" = "1" ] \
+       && [ -x /usr/bin/kylin-agent-runtime ]; then
+        RUNTIME=/usr/bin/kylin-agent-runtime
+    elif command -v kylin-agent-runtime >/dev/null 2>&1; then
         RUNTIME="$(command -v kylin-agent-runtime)"
     elif command -v hermes >/dev/null 2>&1; then
         RUNTIME="$(command -v hermes)"

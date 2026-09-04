@@ -13,6 +13,12 @@ if [ -f "${STRICT_FILE}" ]; then
     STRICT="$(tr -d '\r\n' < "${STRICT_FILE}")"
 fi
 if [ "${STRICT}" = "1" ]; then
+    # Keep the complete Agent on the Runtime installed from this same package,
+    # even when an older per-user command appears earlier in the desktop PATH.
+    PATH=/usr/bin:/bin:/usr/sbin:/sbin
+    export PATH
+    KYLIN_AGENT_FORCE_RUNTIME_RESTART=1
+    export KYLIN_AGENT_FORCE_RUNTIME_RESTART
     /usr/bin/pixiu-agent-integrate --quiet
     exec /usr/bin/kylin-agent "$@"
 else

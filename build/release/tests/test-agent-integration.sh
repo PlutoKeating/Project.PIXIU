@@ -113,6 +113,12 @@ grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
 grep -q 'exec /usr/bin/kylin-agent' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
+grep -q 'PATH=/usr/bin:/bin:/usr/sbin:/sbin' \
+    "${ROOT}/build/release/debian/usr/bin/pixiu"
+grep -q 'KYLIN_AGENT_FORCE_RUNTIME_RESTART=1' \
+    "${ROOT}/build/release/debian/usr/bin/pixiu"
+grep -q 'RUNTIME=/usr/bin/kylin-agent-runtime' \
+    "${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
 grep -q 'agent-supply-chain.py\|audit-agent-supply-chain.py' \
     "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'runtime-cp312.lock' "${ROOT}/build/release/debian/postinst"
