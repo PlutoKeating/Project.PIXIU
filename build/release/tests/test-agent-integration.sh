@@ -28,6 +28,9 @@ mkdir -p "${TMP}/home/.config/systemd/user"
 printf '%s\n' '[Service]' \
     'ExecStart=/home/tester/.local/bin/kylin-agent-runtime gateway run --replace' \
     > "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
+printf '%s\n' '[Service]' \
+    'ExecStart=/home/tester/.local/bin/kylin-agent-runtime gateway run --replace' \
+    > "${TMP}/home/.config/systemd/user/hermes-gateway.service"
 
 HOME="${TMP}/home" \
 PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
@@ -47,11 +50,16 @@ grep -qx "version: ${PRODUCT_VERSION}" "${DEST}/plugin.yaml"
 grep -qx 'config set memory.provider pixiu' \
     "${TMP}/home/.kylin-agent-runtime/runtime-call"
 grep -qx -- '--user daemon-reload' "${TMP}/systemctl-call"
+grep -qx -- '--user disable --now hermes-gateway.service' \
+    "${TMP}/systemctl-call"
 grep -qx -- '--user enable --now kylin-agent-runtime-gateway.service' \
     "${TMP}/systemctl-call"
 test ! -e "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
+test ! -e "${TMP}/home/.config/systemd/user/hermes-gateway.service"
 grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
     "${TMP}/home/.local/state/pixiu/service-backups/kylin-agent-runtime-gateway.service.pre-pixiu"
+grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
+    "${TMP}/home/.local/state/pixiu/service-backups/hermes-gateway.service.pre-pixiu"
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \
     "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
