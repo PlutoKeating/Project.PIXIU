@@ -170,7 +170,8 @@ agent-runtime ── MemoryProvider adapter ── PIXIU REST API
 保留为记忆诊断、设备管理和独立演示控制台，不并入 Agent 循环。宿主表现层依据已批准
 的 [ADR-0004](decisions/0004-maintain-kylin-agent-visual-accessibility-patch.md)
 维护可重放下游补丁，统一双主题令牌、品牌层级和空状态；补丁不改变 Agent 循环，
-也不得直接导入 PIXIU 后端私有实现。
+也不得直接导入 PIXIU 后端私有实现。产品推理选择面只保留 DeepSeek、Anthropic、
+OpenAI 官方直连云端 API，默认优先 DeepSeek；OpenRouter 与本地推理入口被明确过滤。
 
 ## 6. 实施优先级
 

@@ -1,5 +1,73 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index 757cbcf..762986d 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -4,6 +4,7 @@
+ #include <QDir>
+ #include <QDebug>
+ #include <QIcon>
++#include <QScreen>
+
+ #include <cstdio>
+ #include <cstdlib>
+@@ -91,7 +92,11 @@ int main(int argc, char *argv[])
+
+     MainWindow window;
+     window.setWindowTitle("KylinAgent");
+-    window.resize(1200, 800);
++    const QRect available = app.primaryScreen()
++        ? app.primaryScreen()->availableGeometry()
++        : QRect(0, 0, 1200, 800);
++    window.resize(qMax(760, qMin(1200, available.width() - 48)),
++                  qMax(560, qMin(800, available.height() - 48)));
+     window.show();
+
+     QObject::connect(&app, &App::messageReceived, &window, [&window](const QString &message) {
+diff --git a/src/services/modelservice.cpp b/src/services/modelservice.cpp
+index 7c8319a..2b19fb5 100644
+--- a/src/services/modelservice.cpp
++++ b/src/services/modelservice.cpp
+@@ -37,6 +37,10 @@ bool ModelService::initialize()
+
+     if (!QFileInfo::exists(path)) {
+         seedDefaults();
++    } else {
++        // Keep existing user configuration, while adding newly supported
++        // official cloud defaults such as DeepSeek.
++        restoreDefaultModels();
+     }
+
+     m_initialized = true;
+@@ -259,23 +263,18 @@ QVector<SavedModel> ModelService::restoreDefaultModels()
+ QVector<ModelProvider> ModelService::getProviders() const
+ {
+     return {
+-        ModelProvider(QStringLiteral("openrouter"), QStringLiteral("OpenRouter")),
++        ModelProvider(QStringLiteral("deepseek"), QStringLiteral("DeepSeek")),
+         ModelProvider(QStringLiteral("anthropic"), QStringLiteral("Anthropic")),
+         ModelProvider(QStringLiteral("openai"), QStringLiteral("OpenAI")),
+-        ModelProvider(QStringLiteral("custom"), QStringLiteral("Custom")),
+-        ModelProvider(QStringLiteral("lmstudio"), QStringLiteral("LM Studio")),
+-        ModelProvider(QStringLiteral("ollama"), QStringLiteral("Ollama")),
+-        ModelProvider(QStringLiteral("vllm"), QStringLiteral("vLLM")),
+-        ModelProvider(QStringLiteral("llamacpp"), QStringLiteral("llama.cpp")),
+     };
+ }
+
+ QVector<SavedModel> ModelService::getDefaultModels() const
+ {
+     return {
+-        SavedModel(QString(), QStringLiteral("Claude Sonnet 4 (OpenRouter)"),
+-                   QStringLiteral("openrouter"), QStringLiteral("anthropic/claude-sonnet-4-20250514"),
+-                   QString(), 0),
++        SavedModel(QString(), QStringLiteral("DeepSeek Chat（官方云端）"),
++                   QStringLiteral("deepseek"), QStringLiteral("deepseek-chat"),
++                   QStringLiteral("https://api.deepseek.com/v1"), 0),
+         SavedModel(QString(), QStringLiteral("Claude Sonnet 4 (Anthropic)"),
+                    QStringLiteral("anthropic"), QStringLiteral("claude-sonnet-4-20250514"),
+                    QString(), 0),
 diff --git a/src/ui/chatwidget.cpp b/src/ui/chatwidget.cpp
-index 496e400..18f621a 100644
+index 496e400..9ce0737 100644
 --- a/src/ui/chatwidget.cpp
 +++ b/src/ui/chatwidget.cpp
 @@ -42,23 +42,30 @@ ChatWidget::~ChatWidget() = default;
@@ -86,7 +154,20 @@ index 496e400..18f621a 100644
      m_stopButton->setEnabled(false);
      connect(m_stopButton, &QPushButton::clicked, this, &ChatWidget::cancelGeneration);
      inputLayout->addWidget(m_stopButton);
-@@ -151,7 +162,7 @@ QString ChatWidget::selectedModelName() const
+@@ -118,6 +129,12 @@ void ChatWidget::loadModels()
+     int selectedIndex = -1;
+     const QVector<SavedModel> models = ModelService::instance().listModels();
+     for (const SavedModel &model : models) {
++        const QString provider = model.provider().trimmed().toLower();
++        if (provider != QStringLiteral("deepseek") &&
++            provider != QStringLiteral("anthropic") &&
++            provider != QStringLiteral("openai")) {
++            continue;
++        }
+         const QString label = model.name().isEmpty() ? model.model() : model.name();
+         m_modelCombo->addItem(label, model.id());
+         m_modelCombo->setItemData(m_modelCombo->count() - 1, model.model(), Qt::UserRole + 1);
+@@ -151,7 +168,7 @@ QString ChatWidget::selectedModelName() const
  void ChatWidget::loadSession(const QString &sessionId)
  {
      m_currentSessionId = sessionId;
@@ -95,7 +176,7 @@ index 496e400..18f621a 100644
      updateRequestButtons();
      refreshMessages();
  }
-@@ -159,8 +170,13 @@ void ChatWidget::loadSession(const QString &sessionId)
+@@ -159,8 +176,13 @@ void ChatWidget::loadSession(const QString &sessionId)
  void ChatWidget::showStatus(const QString &text)
  {
      clearMessages();
@@ -111,7 +192,7 @@ index 496e400..18f621a 100644
  }
 
  void ChatWidget::clearMessages()
-@@ -180,7 +196,8 @@ void ChatWidget::refreshMessages()
+@@ -180,7 +202,8 @@ void ChatWidget::refreshMessages()
      clearMessages();
      const QVector<SessionMessage> messages = SessionService::instance().getSessionMessages(m_currentSessionId);
      if (messages.isEmpty()) {
@@ -121,7 +202,7 @@ index 496e400..18f621a 100644
          return;
      }
 
-@@ -197,25 +214,19 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+@@ -197,25 +220,19 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
      bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
      bubble->setContextMenuPolicy(Qt::CustomContextMenu);
      bubble->setContentsMargins(12, 10, 12, 10);
@@ -152,7 +233,7 @@ index 496e400..18f621a 100644
          }
      });
 
-@@ -275,7 +286,7 @@ void ChatWidget::sendMessage()
+@@ -275,7 +292,7 @@ void ChatWidget::sendMessage()
              showStatus(QStringLiteral("Failed to create a local session."));
              return;
          }

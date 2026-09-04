@@ -16,6 +16,11 @@ PIXIU 品牌栏、云端模型入口、消息、输入区和状态反馈，并�
 路径。关键配色由 `test-agent-host-ui-contrast.py` 复算 WCAG AA 4.5:1；补丁不改变
 会话、工具、Runtime 或 MemoryProvider 语义。
 
+同一补丁还执行负责人批准的云端模型边界：新装和既有配置补入并优先显示 DeepSeek
+官方 `deepseek-chat`，宿主下拉框只展示 DeepSeek、Anthropic、OpenAI 直连云端模型；
+OpenRouter 与 Ollama/LM Studio/vLLM/llama.cpp 等本地入口不进入产品选择面。API Key
+只由 Runtime 安全认证存储接收，不能进入宿主模型文件、命令行、源码或构建证据。
+
 构建脚本必须在洁净的固定上游归档中按编号顺序应用补丁；任何 hunk 不匹配都立即失败。最终宿主
 产物、完整已补丁源码、构建日志和摘要必须由供应链记录器生成，不能用本目录本身代替
 目标 V11 构建证据。
