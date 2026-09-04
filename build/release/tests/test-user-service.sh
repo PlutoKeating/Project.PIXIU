@@ -50,6 +50,7 @@ XDG_DATA_HOME="${TMP}/data" \
 XDG_CONFIG_HOME="${TMP}/config" \
 XDG_STATE_HOME="${TMP}/state" \
 PIXIU_DEFAULT_CONFIG="${ROOT}/build/release/debian/pixiu.env" \
+PIXIU_LEGACY_DB="${TMP}/missing-legacy.db" \
     sh "${SETUP}" --prepare-only
 test -f "${TMP}/config/pixiu/pixiu.env"
 test "$(stat -c %a "${TMP}/config/pixiu/pixiu.env")" = 600
@@ -67,6 +68,7 @@ XDG_CONFIG_HOME="${TMP}/strict-config" \
 XDG_STATE_HOME="${TMP}/strict-state" \
 PIXIU_DEFAULT_CONFIG="${ROOT}/build/release/debian/pixiu.env" \
 PIXIU_STRICT_FILE="${TMP}/strict" \
+PIXIU_LEGACY_DB="${TMP}/missing-legacy.db" \
     sh "${SETUP}" --prepare-only
 grep -qx 'PIXIU_EMBEDDING=kylin' "${TMP}/strict-config/pixiu/pixiu.env"
 grep -qx 'PIXIU_VECTOR_STORE=kylin' "${TMP}/strict-config/pixiu/pixiu.env"
