@@ -1,81 +1,74 @@
-# PIXIU 快速启动指南
+# PIXIU 快速开始
 
-> 本文档帮助开发人员在本地快速搭建 PIXIU 开发环境并运行，也覆盖"打包安装
-> 整个软件"的快速路径。各模块详细启动文档见各自 `docs/QUICK_START.md`；
-> 打包/CICD 细节见 `build/release/README.md`。
+## 直接安装
 
-> [!IMPORTANT]
-> 本指南当前启动的是 PIXIU 记忆服务与记忆控制台，不是完整 OS Agent。团队已批准
-> 由已实现的 Module E 接入 openKylin `kylin-agent`/`agent-runtime`；在真实宿主和
-> V11 双 SDK 严格验证完成前，下列命令只能用于开发回归。
-
----
-
-## 环境要求
-
-- **操作系统**：Linux（Debian/Ubuntu 开发回归；赛题最终验收仅认银河麒麟桌面操作系统 V11）
-- **Python**：3.10+（麒麟 V11 实测 3.12.3）
-- **C++ 编译器**：GCC 9+ / Clang 12+（C++17）
-- **CMake**：≥ 3.5（建议 3.20+）
-- **Qt5**：Widgets / Network / WebSockets（前端构建必需）
-
-## 各模块快速启动
-
-| 模块 | 快速命令 | 详细文档 |
-|------|----------|----------|
-| 模块 A（前端） | `cmake -S frontend -B build/frontend -DPIXIU_HAVE_KYSDK=OFF && cmake --build build/frontend` | `frontend/docs/QUICK_START.md` |
-| 模块 B（引擎） | `pip install -r backend/requirements.txt && python -m pytest backend/engine/tests -q` | `backend/engine/docs/QUICK_START.md` |
-| 模块 C（基础设施） | `python -m backend.foundation.api.http_app`（默认 127.0.0.1:8765） | `backend/foundation/docs/QUICK_START.md` |
-| 模块 E（Agent 适配） | `python3 -m pytest -q integrations/kylin_agent/tests` | `integrations/kylin_agent/README.md` |
-
-## 开发模式运行
+适用环境：银河麒麟桌面操作系统 V11 amd64。
 
 ```bash
-# 1) 初始化麒麟 SDK submodule（依赖 SDK 的构建/测试前必做）
-git submodule update --init --recursive
+cd submission/04-部署文档/01-可安装软件
+sha256sum -c pixiu_0.1.7-1_amd64.deb.sha256
+sudo apt install ./pixiu_0.1.7-1_amd64.deb
+pixiu
+```
 
-# 2) 后端依赖与启动（无麒麟 SDK 绑定时写入/检索会如实报错）
+## 验证运行状态
+
+```bash
+systemctl --user status pixiu-backend.service
+curl -s http://127.0.0.1:8765/version
+curl -s http://127.0.0.1:8765/health
+curl -s http://127.0.0.1:8765/capabilities
+```
+
+`/health` 应显示数据库就绪；银河麒麟严格画像的 `/capabilities` 应显示 Embedding 与 Vector Engine 使用 `kylin` runtime，并返回 `contest_ready=true`。
+
+## 写入与检索
+
+写入一条用户域记忆：
+
+```bash
+curl -X POST http://127.0.0.1:8765/memory/write \
+  -H 'Content-Type: application/json' \
+  -d '{"source_type":"MANUAL_CONFIG","raw":{"title":"报告使用简洁中文"},"scope":"user:demo"}'
+```
+
+检索记忆：
+
+```bash
+curl -X POST http://127.0.0.1:8765/memory/query \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"我的报告偏好是什么","context_hint":{"top_k":5},"scope":"user:demo"}'
+```
+
+## 使用 Agent
+
+打开 KylinAgent，新建会话并选择已配置的官方直连模型。PIXIU MemoryProvider 会在任务前召回相关记忆，并在轮次结束后沉淀对话与工具结果。
+
+风险工具会显示审批提示。模型密钥应通过 Runtime 隐藏认证入口配置，不要写入命令行、源码或日志。
+
+## 配对设备
+
+在“同步与设备”中生成配对请求，另一台设备核对名称与六位 PIN 后确认。只有 `shared:*` 记忆参与同步，`user:*` 记忆保留在本机。
+
+## 开发构建
+
+```bash
+git submodule update --init --recursive
 pip install -r backend/requirements.txt
 python -m backend.foundation.api.http_app
+```
 
-# 3) 写入一条记忆（真实链路：ingest → knowledge → preference → conflict）
-curl -X POST http://127.0.0.1:8765/memory/write \
-  -H "Content-Type: application/json" \
-  -d '{"source_type":"MANUAL_CONFIG","raw":{"title":"测试"},"scope":"user:test"}'
+另开终端构建控制台：
 
-# 4) 混合检索（BM25+ANN+Graph，真实麒麟 SDK 环境下可用）
-curl -X POST http://127.0.0.1:8765/memory/query \
-  -H "Content-Type: application/json" \
-  -d '{"text":"测试","context_hint":{"top_k":5}}'
-
-# 5) Agent 轮次上下文（由 Module E 调用）
-curl -X POST http://127.0.0.1:8765/agent/context \
-  -H "Content-Type: application/json" \
-  -d '{"query":"测试","scope":"user:test","session_id":"session-demo","turn_id":"turn-1"}'
-
-# 6) 前端（KYSDK=OFF 降级构建；麒麟机器可用 KYSDK=ON）
-cmake -S frontend -B build/frontend -DPIXIU_HAVE_KYSDK=OFF -DCMAKE_BUILD_TYPE=Release
+```bash
+cmake -S frontend -B build/frontend \
+  -DPIXIU_HAVE_KYSDK=OFF \
+  -DCMAKE_BUILD_TYPE=Release
 cmake --build build/frontend -j
 PIXIU_BACKEND_URL=http://127.0.0.1:8765 ./build/frontend/pixiu-frontend
 ```
 
-## 打包并安装整个软件（生产路径）
-
-> 当前命令生成记忆服务、控制台和 Module E Provider，但不包含尚未交付化的上游
-> Agent 宿主/Runtime；完整最终包的图形安装、一键升级和版本门禁以
-> `DELIVERY_PLAN.md` 为准。
-
-```bash
-# 一键构建整包 .deb（前端+后端+本地 SQLite 记忆/同步库 + systemd 服务）
-PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
-
-# 全新麒麟机安装
-sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64
-sudo apt-get install -y ./build/release/out/pixiu_0.1.7-1_amd64.deb
-```
-
-上述是 `KYSDK=OFF` 兼容包。双 SDK 严格包必须在麒麟 V11 使用独立画像；该命令会
-同时构建前端 KylinSDK 与后端两个原生扩展，缺任何依赖即失败：
+严格 V11 原生包：
 
 ```bash
 sudo bash build/release/scripts/provision-target.sh \
@@ -83,22 +76,11 @@ sudo bash build/release/scripts/provision-target.sh \
 PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ```
 
-安装后由桌面用户运行 `pixiu`，启动器会创建 XDG 私有目录并以 systemd user
-`pixiu-backend.service` 常驻；SQLite 数据库默认位于
-`$XDG_DATA_HOME/pixiu/pixiu.db`。strict Vector Engine 另由 `PIXIU_VECTOR_DB_PATH` 指定
-应用数据库并在启动时执行 `LoadDBFile`。桌面菜单/`pixiu` 命令打开前端。详见
-`build/release/README.md` 与 `frontend/docs/DEMO_GUIDE.md`。
+## 测试
 
-## 开发降级
+```bash
+python3 -m pytest -q backend integrations/kylin_agent/tests
+ctest --test-dir build/frontend --output-on-failure
+```
 
-非麒麟开发机上：
-
-- 前端：`cmake -DPIXIU_HAVE_KYSDK=OFF` 降级构建（`QShortcut`/`QSystemTrayIcon`
-  替代 kysdk 快捷键/通知）；
-- 后端：默认 `PIXIU_EMBEDDING=auto` 与 `PIXIU_VECTOR_STORE=auto` 优先调用麒麟
-  SDK；无 SDK 时切换到本地
-  特征哈希向量器，核心端点保持可用。`kylin` 为严格验收模式，`portable` 为
-  Debian 通用验证模式；测试桩仅用于隔离单元测试；
-- 演示 UI：`python3 frontend/scripts/demo_stub_server.py --port 8877` +
-  `PIXIU_BACKEND_URL=http://127.0.0.1:8877` 可无后端完整演示前端（见
-  `frontend/docs/DEMO_GUIDE.md` §5）。
+完整安装、升级、卸载与排障见 [部署指南](delivery/DEPLOYMENT_GUIDE.md)。
