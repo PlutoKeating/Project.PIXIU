@@ -10,6 +10,7 @@ DEST="${PLUGIN_ROOT}/pixiu"
 MARKER="${DEST}/.pixiu-managed"
 QUIET=0
 STRICT_FILE="${PIXIU_AGENT_DEFAULT_STRICT_FILE:-/usr/share/pixiu/install-strict}"
+USER_SETUP="${PIXIU_USER_SETUP_BIN:-/usr/bin/pixiu-user-setup}"
 
 if [ "${1:-}" = "--quiet" ]; then
     QUIET=1
@@ -36,6 +37,12 @@ esac
 [ -f "${SOURCE}/__init__.py" ] || fail "packaged provider is missing" 2
 [ -f "${SOURCE}/plugin.yaml" ] || [ -f "${SOURCE}/plugin.yaml.in" ] \
     || fail "provider manifest is missing" 2
+
+# Agent may activate the Provider without first opening the PIXIU console.
+# Start the backend in this same desktop UID before the Provider handshake.
+if [ -x "${USER_SETUP}" ]; then
+    "${USER_SETUP}" --start || fail "PIXIU user service failed to start" 4
+fi
 
 DEFAULT_STRICT=0
 if [ -f "${STRICT_FILE}" ]; then

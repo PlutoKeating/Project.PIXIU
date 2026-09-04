@@ -18,7 +18,7 @@ sudo bash build/release/scripts/provision-target.sh \
   kylin-v11-x86_64 --with-build-deps
 PIXIU_PROFILE=kylin-v11-x86_64 make -C build/release deb
 sudo apt-get install -y ./build/release/out/pixiu_0.1.7-1_amd64.deb
-systemctl status pixiu-backend.service
+systemctl --user status pixiu-backend.service
 ```
 
 `kylin-v11-x86_64` 已明确声明 CMake/Ninja/Qt5 等通用构建依赖，预置脚本可幂等建立
@@ -60,9 +60,9 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 严格画像还要求系统已通过“设置 → AI 模块管理”安装并启用官方 AI 子系统。不要把
 整套 AI 子系统作为 PIXIU 包的整体依赖：它包含大量无关模型；最终 control 只保留
 经同版实测确认的最小 SDK/runtime 包。当前官方 runtime 的 Unix socket 按 UID 隔离，
-而系统级 `pixiu-backend.service` 使用专用账户，尚不能直接访问桌面用户会话 socket。
-在用户会话 SDK 边界实现并通过安全评审前，strict 启动失败属于预期阻断，不得改为
-portable 静默降级或据此声明 H-02/H-03 通过。
+历史系统级 `pixiu-backend.service` 使用专用账户，不能直接访问桌面用户会话 socket。
+当前安装结构已改为 systemd user service，并把配置、数据和状态置于当前用户 XDG
+目录；旧数据迁移、升级事务和最终 strict 复验完成前，仍不得声明 H-02/H-03 通过。
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净 strict amd64 包已再次完成构建、
 安装和失败关闭复验：保留 portable 配置时服务健康，切换 strict 后稳定暴露上述用户
 会话边界，恢复配置后服务、配置和数据库摘要保持。该切片不代表已交付 user service，
@@ -91,9 +91,9 @@ Kylin V11 amd64 又完成 `0.1.7-4` → 签名 `0.1.7-1` → 注入失败 → `0
 安装健康成功后，GUI 的“立即重启”调用无特权 `restart-client`；它验证旧进程 PID，
 等待客户端释放单实例资源后启动 `/usr/bin/pixiu`。只有升级 Success 状态可进入该路径，
 调度失败时保留窗口并提示手动重新打开。最终 V11 图形重启后仍须复核版本和全链路。
-默认配置以 `/usr/share/pixiu/pixiu.env.default` 模板随包，`postinst` 仅在首次安装
-创建 `/etc/pixiu/pixiu.env`；后者不属于 dpkg conffile，升级保留并幂等迁移，避免
-每机随机口令导致非交互安装弹出配置冲突。
+默认配置以 `/usr/share/pixiu/pixiu.env.default` 模板随包；桌面用户首次运行
+`pixiu` 时在 `$XDG_CONFIG_HOME/pixiu/pixiu.env` 创建 0600 配置并生成随机同步口令。
+该配置不属于 dpkg conffile，系统安装阶段不会冒充或扫描用户会话。
 卸载与 purge 的数据语义须在最终版明确区分，并在全新机、重装、升级失败上取证。
 
 2026-09-03 以提交 `30e0d64` 在 Kylin V11 amd64 目标环境执行兼容画像：前端

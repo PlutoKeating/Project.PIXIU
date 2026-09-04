@@ -1,11 +1,8 @@
 #!/bin/sh
-# PIXIU 一键启动器：确保后端服务在线后打开桌面客户端。
-set -e
+# PIXIU 一键启动器：在当前桌面用户会话准备并启动后端，再打开控制台。
+set -eu
 
-if command -v systemctl >/dev/null 2>&1; then
-    systemctl is-active --quiet pixiu-backend.service 2>/dev/null \
-        || systemctl start pixiu-backend.service 2>/dev/null || true
-fi
+/usr/bin/pixiu-user-setup --start
 
 # This runs as the desktop user, so user-local Agent runtimes are discoverable.
 # A strict native build must not open while its complete Agent integration is

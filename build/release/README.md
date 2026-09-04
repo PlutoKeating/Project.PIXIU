@@ -50,14 +50,15 @@ build/release/
 │   └── generic-ubuntu.env    # 通用 Ubuntu（CI 默认）
 └── debian/                   # .deb 元数据模板与维护脚本
     ├── control.in            # control 模板（@VERSION@/@ARCH@/@DEPENDS@ 由脚本替换）
-    ├── postinst              # 安装后：建用户/数据目录/venv/装依赖/注册服务
-    ├── prerm                 # 卸载前：停止并禁用服务
-    ├── postrm                # 卸载后：purge 时清理数据
-    ├── pixiu-backend.service # systemd：后端常驻服务（API 8765 + sync runtime）
-    ├── pixiu.env             # 后端默认模板（装到 /usr/share；postinst 首装时创建 /etc 配置）
+    ├── postinst              # 安装后：准备 root-owned venv/依赖，停用旧系统服务
+    ├── prerm                 # 卸载前：兼容停止旧系统服务
+    ├── postrm                # 卸载后：不跨用户删除记忆数据
+    ├── pixiu-backend.service # systemd user unit（API 8765 + sync runtime）
+    ├── pixiu.env             # 用户默认模板（装到 /usr/share；首次桌面启动复制）
     └── usr/bin/
         ├── pixiu             # 一键启动器：后端 + 当前用户 Agent Provider + 控制台
-        ├── pixiu-backend     # 后端启动器：加载 /etc/pixiu 配置 + venv python
+        ├── pixiu-backend     # 后端启动器：加载 XDG 用户配置 + venv python
+        ├── pixiu-user-setup  # 创建私有目录/口令并启动 user service
         └── pixiu-agent-integrate # Provider 幂等安装/激活；不覆盖非受管同名插件
 ```
 
@@ -643,23 +644,20 @@ sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-1_amd64.deb
 
 安装后：
 
-- 后端以 `pixiu-backend.service` 常驻，监听 `127.0.0.1:8765`（HTTP + WS），
-  SQLite 数据库自动创建于 `/var/lib/pixiu/pixiu.db`（首次启动自动迁移）；
+- 后端以当前桌面用户的 `pixiu-backend.service` 常驻，监听 `127.0.0.1:8765`
+  （HTTP + WS），SQLite 数据库自动创建于 `$XDG_DATA_HOME/pixiu/pixiu.db`；
 - 包版本写入 `/usr/share/pixiu/VERSION`，并由服务单元注入
   `PIXIU_PRODUCT_VERSION`；`GET /version`、`GET /health` 与 `GET /capabilities`
   分别用于组件版本、数据库就绪和赛题双 SDK 能力判定；
 - 桌面菜单出现 PIXIU 客户端；或在终端执行 `pixiu`（自动拉起后端后打开前端）；
-- 配置在 `/etc/pixiu/pixiu.env`（API 端口、DB 路径、sync 开关等）；
+- 配置在 `$XDG_CONFIG_HOME/pixiu/pixiu.env`（API 端口、sync 开关等）；
 - Vector Engine 的应用数据库由 `PIXIU_VECTOR_DB_PATH` 指定（默认
-  `/var/lib/pixiu/data/vector-engine.db`）；strict 启动会实际执行 `LoadDBFile`，失败
+  `$XDG_DATA_HOME/pixiu/data/vector-engine.db`）；strict 启动会实际执行 `LoadDBFile`，失败
   即拒绝就绪，进程退出时执行 `Disconnect`；
-- 包只在 `/usr/share/pixiu/pixiu.env.default` 携带公开默认模板；`postinst` 仅在
-  `/etc/pixiu/pixiu.env` 不存在时创建，升级保留现有配置并幂等补字段。运行配置不再
-  注册为 dpkg conffile，避免随机口令使非交互升级触发冲突提示；
-- 安装脚本会生成每机唯一同步私钥口令，并将配置设为 `root:pixiu 0640`；
-  从历史公开默认口令升级时会先重加密 Ed25519 私钥，设备 ID 与配对关系不变；
+- 包只在 `/usr/share/pixiu/pixiu.env.default` 携带公开默认模板；当前用户首次启动时
+  创建 0600 配置并替换随机同步口令。运行配置不属于 dpkg conffile；
 - P2P 同步网络当前默认开启（`PIXIU_SYNC_NETWORK_ENABLED=true`）；未完成可信配对/
-  证书配置或不需要同步时，可在 `/etc/pixiu/pixiu.env` 显式关闭后重启服务。
+  证书配置或不需要同步时，可在用户配置中显式关闭后重启 user service。
 
 ## 当前已知边界（脚手架按现状落地，后续随开发自动受益）
 

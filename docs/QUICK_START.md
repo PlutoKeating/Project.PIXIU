@@ -83,8 +83,9 @@ sudo bash build/release/scripts/provision-target.sh \
 PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ```
 
-安装后后端以 `pixiu-backend.service` 常驻，SQLite 数据库自动创建于
-`/var/lib/pixiu/pixiu.db`；strict Vector Engine 另由 `PIXIU_VECTOR_DB_PATH` 指定
+安装后由桌面用户运行 `pixiu`，启动器会创建 XDG 私有目录并以 systemd user
+`pixiu-backend.service` 常驻；SQLite 数据库默认位于
+`$XDG_DATA_HOME/pixiu/pixiu.db`。strict Vector Engine 另由 `PIXIU_VECTOR_DB_PATH` 指定
 应用数据库并在启动时执行 `LoadDBFile`。桌面菜单/`pixiu` 命令打开前端。详见
 `build/release/README.md` 与 `frontend/docs/DEMO_GUIDE.md`。
 

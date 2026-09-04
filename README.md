@@ -237,8 +237,10 @@ LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 AP
 生成，未生成前不得将 H-02/H-03 标为通过。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按
 调用进程 UID 隔离，而当前后端以专用系统账户运行，不能直接复用桌面用户会话中的
-runtime；strict 后端因此按设计失败关闭。下一步必须实现并评审用户会话 SDK 边界，
-再以同一候选包重跑直接 SDK 与产品 API 生命周期。完整 AI 子系统属于系统级前置
+runtime；strict 后端因此按设计失败关闭。ADR-0002 获批后，安装包已切换为 root
+所有的 systemd user unit，启动器在桌面用户上下文创建 XDG 私有配置/数据/状态目录
+并启动服务；旧系统数据的校验迁移和升级事务仍在实施。完成后须以同一候选包重跑
+直接 SDK 与产品 API 生命周期。完整 AI 子系统属于系统级前置
 能力，不作为 PIXIU 安装包的整套强依赖；最终仅声明经实测确认的最小运行依赖。
 同次检查还发现 Vector 客户端误用了官方标注“for test”的 host/port 构造；生产路径
 已改回 demo 使用的 `ConnectParam(appId)` 本地传输并补齐 LoadDBFile/Disconnect。
@@ -258,7 +260,7 @@ revision 8 已在 V11 同用户会话通过写入、向量检索、遗忘和删�
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 又从洁净固定源码完成 strict amd64
 重建、38/38 前端测试与安装；portable 配置可健康运行，strict 系统服务则再次因用户级
 AI runtime 边界失败关闭，恢复后配置和数据库摘要保持。该复验排除了构建漂移，但未
-实现已批准但尚未完成的 user service，也没有完整 Agent，故不改变验收状态。
+实现 user service 之前的历史证据，也没有完整 Agent，故不改变验收状态。
 随后无模型 Agent 探针完成了另一条关键验证：官方 0.9.6 宿主二进制可在 V11 启动，
 固定 Runtime 的 Gateway 健康与会话 API 可用，且 Module E 被发现并配置为
 `memory.provider=pixiu`。但公开宿主源码标签无法重建该二进制，官方 0.9.7 包又与

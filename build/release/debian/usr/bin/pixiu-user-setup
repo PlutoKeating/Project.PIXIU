@@ -1,0 +1,60 @@
+#!/bin/sh
+# Prepare the current user's private PIXIU runtime directories and optionally
+# start the systemd user service. This helper never scans other users' homes.
+set -eu
+
+MODE=${1:---prepare-only}
+case "${MODE}" in
+    --prepare-only|--start) ;;
+    *)
+        echo "usage: pixiu-user-setup [--prepare-only|--start]" >&2
+        exit 2
+        ;;
+esac
+
+[ -n "${HOME:-}" ] || {
+    echo "pixiu-user-setup: HOME is not set" >&2
+    exit 2
+}
+[ "$(id -u)" -ne 0 ] || {
+    echo "pixiu-user-setup: run this command as the desktop user, not root" >&2
+    exit 2
+}
+
+XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
+XDG_STATE_HOME=${XDG_STATE_HOME:-${HOME}/.local/state}
+DATA_DIR="${XDG_DATA_HOME}/pixiu"
+CONFIG_DIR="${XDG_CONFIG_HOME}/pixiu"
+STATE_DIR="${XDG_STATE_HOME}/pixiu"
+CONFIG="${CONFIG_DIR}/pixiu.env"
+DEFAULT_CONFIG=${PIXIU_DEFAULT_CONFIG:-/usr/share/pixiu/pixiu.env.default}
+
+umask 077
+mkdir -p "${DATA_DIR}/data" "${CONFIG_DIR}" "${STATE_DIR}"
+chmod 0700 "${DATA_DIR}" "${DATA_DIR}/data" "${CONFIG_DIR}" "${STATE_DIR}"
+if [ ! -e "${CONFIG}" ]; then
+    [ -f "${DEFAULT_CONFIG}" ] || {
+        echo "pixiu-user-setup: packaged default configuration is missing" >&2
+        exit 2
+    }
+    cp "${DEFAULT_CONFIG}" "${CONFIG}"
+fi
+if grep -q '^PIXIU_SYNC_KEY_PASSPHRASE=change-me-before-production$' "${CONFIG}"; then
+    command -v openssl >/dev/null 2>&1 || {
+        echo "pixiu-user-setup: openssl is required to initialize device identity" >&2
+        exit 2
+    }
+    PASSPHRASE=$(openssl rand -hex 32)
+    sed -i "s/^PIXIU_SYNC_KEY_PASSPHRASE=change-me-before-production$/PIXIU_SYNC_KEY_PASSPHRASE=${PASSPHRASE}/" "${CONFIG}"
+fi
+chmod 0600 "${CONFIG}"
+
+if [ "${MODE}" = "--start" ]; then
+    command -v systemctl >/dev/null 2>&1 || {
+        echo "pixiu-user-setup: systemd user manager is required" >&2
+        exit 4
+    }
+    systemctl --user daemon-reload
+    systemctl --user start pixiu-backend.service
+fi

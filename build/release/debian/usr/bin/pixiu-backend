@@ -1,12 +1,26 @@
 #!/bin/sh
-# PIXIU 后端启动器：加载 /etc/pixiu 配置，用 venv Python 启动 API 网关。
-set -e
+# PIXIU 后端启动器：加载当前用户配置，用只读 venv Python 启动 API 网关。
+set -eu
 
-if [ -f /etc/pixiu/pixiu.env ]; then
+XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
+XDG_STATE_HOME=${XDG_STATE_HOME:-${HOME}/.local/state}
+PIXIU_USER_DATA="${XDG_DATA_HOME}/pixiu"
+PIXIU_USER_CONFIG="${XDG_CONFIG_HOME}/pixiu/pixiu.env"
+PIXIU_USER_STATE="${XDG_STATE_HOME}/pixiu"
+
+umask 077
+mkdir -p "${PIXIU_USER_DATA}/data" "${PIXIU_USER_STATE}"
+
+if [ -f "${PIXIU_USER_CONFIG}" ]; then
     set -a
-    . /etc/pixiu/pixiu.env
+    . "${PIXIU_USER_CONFIG}"
     set +a
 fi
+
+export PIXIU_DB_PATH=${PIXIU_DB_PATH:-${PIXIU_USER_DATA}/pixiu.db}
+export PIXIU_DATA_DIR=${PIXIU_DATA_DIR:-${PIXIU_USER_DATA}/data}
+export PIXIU_VECTOR_DB_PATH=${PIXIU_VECTOR_DB_PATH:-${PIXIU_USER_DATA}/data/vector-engine.db}
 
 # 顶层 Python 包名是 backend（/usr/lib/pixiu/backend/{engine,foundation,...}），
 # 因此 PYTHONPATH 必须指向 /usr/lib/pixiu 而非其 backend 子目录
@@ -18,7 +32,7 @@ else
     PIXIU_PYTHON=/usr/bin/python3
 fi
 # 用 uvicorn CLI 启动（而非 python -m http_app）：规避 http_app 被包 __init__
-# 重复导入的 RuntimeWarning，并显式使用 /etc/pixiu 配置的 host/port。
+# 重复导入的 RuntimeWarning，并显式使用用户配置的 host/port。
 exec "${PIXIU_PYTHON}" -m uvicorn backend.foundation.api.http_app:app \
     --host "${PIXIU_API_HOST:-127.0.0.1}" \
     --port "${PIXIU_API_PORT:-8765}"

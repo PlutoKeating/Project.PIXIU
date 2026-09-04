@@ -1,6 +1,6 @@
 #!/bin/sh
-# PIXIU 安装后脚本：运行时用户/数据目录、Python 环境（pip/venv 自适应）与
-# 依赖安装、systemd 服务注册。
+# PIXIU 安装后脚本：准备 root-owned Python 环境与 systemd user unit。
+# 用户配置、数据和服务只能由桌面用户首次启动时创建。
 #
 # 兼容性设计（针对麒麟 V11/openKylin 实测）：
 #  - 部分麒麟发行版不提供 python3-venv / python3-pip：本脚本先引导 get-pip，
@@ -8,23 +8,13 @@
 #  - 依赖优先从随包 wheels 离线安装（--no-index），无 wheels 时在线安装。
 set -e
 
-PIXIU_USER=pixiu
-PIXIU_HOME=/var/lib/pixiu
 PIXIU_LIB=/usr/lib/pixiu
 PY=/usr/bin/python3
 VENV="${PIXIU_LIB}/venv"
 
 echo "pixiu: configuring backend runtime environment"
 
-# 1) 运行时用户与数据目录（SQLite 记忆/同步库目录）
-if ! getent passwd "${PIXIU_USER}" >/dev/null 2>&1; then
-    useradd --system --home "${PIXIU_HOME}" \
-            --shell /usr/sbin/nologin "${PIXIU_USER}" 2>/dev/null || true
-fi
-mkdir -p "${PIXIU_HOME}" "${PIXIU_HOME}/data"
-chown -Rh "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
-
-# 2) pip 引导（缺失时下载 get-pip.py）
+# 1) pip 引导（缺失时下载 get-pip.py）
 if ! "${PY}" -m pip --version >/dev/null 2>&1; then
     echo "pixiu: bootstrapping pip"
     command -v curl >/dev/null 2>&1 || {
@@ -41,7 +31,7 @@ if ! "${PY}" -m pip --version >/dev/null 2>&1; then
     rm -f /tmp/pixiu-get-pip.py
 fi
 
-# 3) Python 解释器：venv 存在时优先复用（升级/重装路径——启动器固定跑 venv，
+# 2) Python 解释器：venv 存在时优先复用（升级/重装路径——启动器固定跑 venv，
 #    依赖必须装进 venv，否则升级后服务 ModuleNotFoundError 崩溃循环）；
 #    不存在才尝试创建（无 python3-venv 的发行版回退系统 Python）。
 VPY="${PY}"
@@ -56,28 +46,6 @@ elif "${PY}" -m venv "${VENV}" >/dev/null 2>&1 \
     "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
 else
     echo "pixiu: python3-venv unavailable — using system Python ${PY}"
-fi
-
-# 3.5) 运行配置由 postinst 管理，不作为 dpkg conffile 随包覆盖。配置含每机随机
-#      密钥，若作为 conffile 则升级必然触发交互冲突并破坏一键升级。
-CONF="/etc/pixiu/pixiu.env"
-CONF_TEMPLATE="/usr/share/pixiu/pixiu.env.default"
-mkdir -p /etc/pixiu
-if [ ! -e "${CONF}" ]; then
-    install -m 0640 -o root -g "${PIXIU_USER}" "${CONF_TEMPLATE}" "${CONF}"
-fi
-# 升级保留现有配置，并幂等补入新版本必需的默认变量。
-if [ -f "${CONF}" ]; then
-    grep -q '^PIXIU_MONITOR_ENABLED=' "${CONF}" \
-        || echo 'PIXIU_MONITOR_ENABLED=1' >> "${CONF}"
-    grep -q '^PIXIU_SYNC_NETWORK_ENABLED=' "${CONF}" \
-        || echo 'PIXIU_SYNC_NETWORK_ENABLED=true' >> "${CONF}"
-    grep -q '^PIXIU_VECTOR_STORE=' "${CONF}" \
-        || echo 'PIXIU_VECTOR_STORE=auto' >> "${CONF}"
-    grep -q '^PIXIU_VECTOR_APP_ID=' "${CONF}" \
-        || echo 'PIXIU_VECTOR_APP_ID=pixiu' >> "${CONF}"
-    grep -q '^PIXIU_VECTOR_COLLECTION=' "${CONF}" \
-        || echo 'PIXIU_VECTOR_COLLECTION=pixiu_memory' >> "${CONF}"
 fi
 
 REQ="${PIXIU_LIB}/backend/requirements.txt"
@@ -118,27 +86,12 @@ if [ -d "${VENV}" ]; then
     chown -Rh root:root "${VENV}"
 fi
 
-# 3.6) 同步私钥口令：包内只携带公开占位符，安装时生成每机随机值。
-#      从历史公开默认值升级且已有 sync_identity 时，先原地重加密私钥；
-#      device_id / public_key / peers / CRDT 状态均保持不变。迁移由 root-only
-#      journal 保护，数据库提交与配置替换之间掉电也可在下次配置时恢复。
-if [ -f "${CONF}" ]; then
-    PYTHONPATH="${PIXIU_LIB}${PYTHONPATH:+:${PYTHONPATH}}" \
-        "${VPY}" -m backend.foundation.sync.install_passphrase \
-        --config "${CONF}" --default-database "${PIXIU_HOME}/pixiu.db"
-    chown root:"${PIXIU_USER}" "${CONF}"
-    chmod 0640 "${CONF}"
-fi
-# 口令迁移以 root 打开 SQLite，WAL/SHM 可能被重新创建；服务启动前恢复运行时
-# 目录所有权，避免 pixiu 用户因旁车文件属主错误而无法写库。
-chown -Rh "${PIXIU_USER}:${PIXIU_USER}" "${PIXIU_HOME}"
-
-# 4) systemd 服务
+# 3) 停用旧版系统服务，但保留 /var/lib/pixiu 与 /etc/pixiu 供显式迁移。
 if command -v systemctl >/dev/null 2>&1; then
+    systemctl stop pixiu-backend.service >/dev/null 2>&1 || true
+    systemctl disable pixiu-backend.service >/dev/null 2>&1 || true
     systemctl daemon-reload >/dev/null 2>&1 || true
-    systemctl enable pixiu-backend.service >/dev/null 2>&1 || true
-    systemctl restart pixiu-backend.service >/dev/null 2>&1 || true
 fi
 
-echo "pixiu: install complete — backend on 127.0.0.1:8765, client via 'pixiu' or app menu."
+echo "pixiu: install complete — launch 'pixiu' in the desktop session to initialize the private user service."
 exit 0

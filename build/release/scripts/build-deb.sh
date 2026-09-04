@@ -257,7 +257,7 @@ fi
 # ── 4/5 deb 元数据与运行文件 ────────────────────────────────────
 log "[4/5] deb metadata staging"
 mkdir -p "${STAGE}/DEBIAN" \
-         "${STAGE}/lib/systemd/system" \
+         "${STAGE}/usr/lib/systemd/user" \
          "${STAGE}/usr/bin" \
          "${STAGE}/usr/share/pixiu"
 install -d -m 0755 "${STAGE}/usr/share/pixiu/keys"
@@ -300,12 +300,13 @@ install -m 0644 "${DEB_SRC}/pixiu.env" \
     "${STAGE}/usr/share/pixiu/pixiu.env.default"
 sed "s/@PRODUCT_VERSION@/${PIXIU_VERSION}/g" \
     "${DEB_SRC}/pixiu-backend.service" \
-    > "${STAGE}/lib/systemd/system/pixiu-backend.service"
+    > "${STAGE}/usr/lib/systemd/user/pixiu-backend.service"
 printf '%s\n' "${PIXIU_VERSION}" > "${STAGE}/usr/share/pixiu/VERSION"
 printf '%s\n' "${PIXIU_INSTALL_STRICT}" \
     > "${STAGE}/usr/share/pixiu/install-strict"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
+install -m 0755 "${DEB_SRC}/usr/bin/pixiu-user-setup" "${STAGE}/usr/bin/pixiu-user-setup"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
     "${STAGE}/usr/bin/pixiu-agent-integrate"
 install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
