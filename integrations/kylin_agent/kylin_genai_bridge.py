@@ -48,14 +48,14 @@ def _compact_json(value: Any) -> str:
 
 
 def sdk_tool_schema(function: dict[str, Any]) -> dict[str, Any]:
-    """Build the parameter schema expected by genai_text_register_tool."""
+    """Build the named function schema required by the V11 SDK runtime."""
 
     parameters = function.get("parameters")
-    schema = dict(parameters) if isinstance(parameters, dict) else {"type": "object"}
-    description = str(function.get("description") or "").strip()
-    if description and "description" not in schema:
-        schema["description"] = description
-    return schema
+    return {
+        "name": str(function.get("name") or "").strip(),
+        "description": str(function.get("description") or ""),
+        "parameters": dict(parameters) if isinstance(parameters, dict) else {"type": "object"},
+    }
 
 
 def tool_choice_policy(value: Any) -> tuple[int, str]:

@@ -48,7 +48,7 @@ def test_sdk_tool_callback_is_translated_to_openai_tool_calls():
     ]
 
 
-def test_sdk_registration_receives_parameter_schema_not_openai_wrapper():
+def test_sdk_registration_receives_named_function_schema():
     function = {
         "name": "pixiu_memory_query",
         "description": "检索记忆",
@@ -60,10 +60,13 @@ def test_sdk_registration_receives_parameter_schema_not_openai_wrapper():
     }
 
     assert sdk_tool_schema(function) == {
-        "type": "object",
+        "name": "pixiu_memory_query",
         "description": "检索记忆",
-        "properties": {"query": {"type": "string"}},
-        "required": ["query"],
+        "parameters": {
+            "type": "object",
+            "properties": {"query": {"type": "string"}},
+            "required": ["query"],
+        },
     }
 
 
