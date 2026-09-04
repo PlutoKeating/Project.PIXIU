@@ -351,7 +351,12 @@ def capture_before(
         and max(prior_value_tools) < max(remember_positions)
         and len(_message_fingerprints(messages)) >= 6
     ):
-        raise EvidenceError("first phase did not exercise the required autonomous Agent lifecycle")
+        observed_tools = ",".join(tools) if tools else "none"
+        raise EvidenceError(
+            "first phase did not exercise the required autonomous Agent lifecycle "
+            f"(tools={observed_tools}; approvals={sum(run['approvals'] for run in runs)}; "
+            f"messages={len(_message_fingerprints(messages))})"
+        )
     return {
         "state_schema": 1,
         "state_class": STATE_CLASS,

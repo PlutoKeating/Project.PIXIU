@@ -132,6 +132,12 @@ class FakeAfterClient:
 
 
 class AgentLifecycleEvidenceTest(unittest.TestCase):
+    def test_shipped_scenario_is_valid_and_does_not_name_tools(self) -> None:
+        shipped = MODULE._read_json(ROOT / "agent-lifecycle-scenario.json")
+        self.assertEqual(MODULE.validate_scenario(shipped), shipped)
+        self.assertIn("单次确认", shipped["turns"][1])
+        self.assertIn("跨会话长期记忆", shipped["turns"][2])
+
     def test_scenario_rejects_forced_tool_name(self) -> None:
         value = scenario()
         value["turns"][0] += " 请调用 pixiu_memory_remember。"

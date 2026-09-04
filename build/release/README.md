@@ -141,7 +141,9 @@ submodule，并在全新离线 venv 中验证 DDGS 清单、插件发现和活�
 
 先准备通过的 strict 原生 SDK 证据并启动同包 PIXIU、Kylin Agent 桌面宿主和固定
 Runtime。受控场景不出现具体工具名；采集器会生成一次性随机标记和仅本用户可读的
-临时文件，要求真实 Agent 自主完成 Shell 读取、联网搜索、记忆写入及现场审批：
+临时文件，要求真实 Agent 自主完成系统命令读取和清理、联网搜索、记忆写入及现场审批。
+清理对象只允许是本次采集器创建的临时标记文件；提示表达用户目标而不指定工具实现，
+实际工具序列和审批次数由 SSE 事件判定：
 
 ```bash
 python3 build/release/scripts/agent-lifecycle-evidence.py before-restart \
