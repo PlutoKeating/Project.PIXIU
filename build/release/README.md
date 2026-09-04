@@ -132,6 +132,8 @@ URL 的相对文件名，绝不回显匹配值；强制模式还要求 V11 宿�
 比对运行时锁。固定上游 setuptools 当前不会自动把 bundled plugin 的 YAML 清单放入
 wheel；构建器通过受版本控制的 `runtime-wheel-MANIFEST.in` 做发行层修正，不修改
 submodule，并在全新离线 venv 中验证 DDGS 清单、插件发现和活动搜索 provider。
+`postinst` 对该哈希锁闭包使用 `--force-reinstall`，保证同一 Runtime 版本上的 PIXIU
+重装/升级也精确采用当前包内 wheel，而不是沿用旧文件集合。
 报告同时固定输出 `agent-supply-chain-audit` 证据类型、仓库 commit 和明确 pass/fail，
 供 D-07 原始证据归档做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
 

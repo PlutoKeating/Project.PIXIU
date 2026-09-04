@@ -96,8 +96,13 @@ if [ -d "${AGENT_ROOT}/wheelhouse" ]; then
         exit 1
     }
     echo "pixiu: installing hash-locked Agent Runtime from bundled wheels (offline)"
+    # The upstream package version can remain unchanged while PIXIU's
+    # audited distribution adapter fixes omitted non-code assets.  A normal
+    # pip install would then leave the old wheel contents in place on upgrade.
+    # Reinstall the entire locked closure so same-version package upgrades
+    # converge to the exact Runtime artifact shipped by this .deb.
     install_reqs --no-index --find-links="${AGENT_ROOT}/wheelhouse" \
-        --require-hashes -r "${AGENT_ROOT}/runtime-cp312.lock"
+        --force-reinstall --require-hashes -r "${AGENT_ROOT}/runtime-cp312.lock"
     [ -x "${VENV}/bin/kylin-agent-runtime" ] || {
         echo "pixiu: packaged Agent Runtime entry point is missing" >&2
         exit 1

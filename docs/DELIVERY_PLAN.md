@@ -81,6 +81,8 @@ Runtime 离线闭包必须包含免密 `ddgs` 搜索后端；验收要求 `web_s
 不能只以工具注册或“未配置搜索 provider”的错误响应计为成功。固定上游的 setuptools
 配置会遗漏 bundled plugin 清单，故发布适配必须把 `plugins/**/plugin.yaml` 纳入 wheel；
 离线安装门同时验证 DDGS 清单存在、插件加载和活动 provider 解析，缺一即拒绝候选。
+安装和升级必须对哈希锁闭包执行强制重装，确保上游版本号不变时也不会保留旧 wheel
+内容；该动作仍禁止访问索引或退回用户可变 Runtime。
 
 ## 2. 版本管理唯一真相源
 

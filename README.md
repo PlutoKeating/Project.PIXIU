@@ -67,7 +67,8 @@ Runtime 的 CPython 3.12/amd64 全闭包及构建工具锁均已提交为构建�
 严格识别可迁移 unit，并在 Provider、配置写入或 Gateway 启动失败时恢复事务快照。
 离线 Runtime 闭包现包含 58 个哈希锁定 wheel 及官方支持的免密 `ddgs` 搜索后端；
 发布适配会把上游 setuptools 遗漏的 bundled `plugin.yaml` 清单纳入 Runtime wheel，
-离线门禁再从全新 venv 验证 DDGS 被实际发现并成为可用 provider。因此安装后无需另配
+离线门禁再从全新 venv 验证 DDGS 被实际发现并成为可用 provider；安装/升级会在哈希
+锁约束下强制收敛到包内 Runtime，避免同一上游版本残留旧文件。因此安装后无需另配
 商业搜索 API Key 即可执行真实 `web_search`；最终 Agent 生命周期仍以实际成功结果验收。
 
 同步控制台现只呈现真实动作：设备发现/确认式配对、自动 Gossip/反熵状态、暂停、
