@@ -69,7 +69,9 @@ Runtime 的 CPython 3.12/amd64 全闭包及构建工具锁均已提交为构建�
 发布适配会把上游 setuptools 遗漏的 bundled `plugin.yaml` 清单纳入 Runtime wheel，
 离线门禁再从全新 venv 验证 DDGS 被实际发现并成为可用 provider；安装/升级会在哈希
 锁约束下强制收敛到包内 Runtime，避免同一上游版本残留旧文件。因此安装后无需另配
-商业搜索 API Key 即可执行真实 `web_search`；最终 Agent 生命周期仍以实际成功结果验收。
+商业搜索 API Key；用户态激活事务会显式重启包管 Gateway，确保新 provider 当场生效。
+目标 V11 的真实 Gateway 已完成一次 `web_search` 成功调用；完整 Agent 生命周期仍以
+固定三轮、审批、记忆写入和重启后跨会话召回全部成功为准。
 
 同步控制台现只呈现真实动作：设备发现/确认式配对、自动 Gossip/反熵状态、暂停、
 状态刷新和整网退出。旧“立即同步”按钮实际只刷新状态、没有触发后端同步动作，现已

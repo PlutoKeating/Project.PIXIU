@@ -24,6 +24,7 @@ printf '1\n' > "${STRICT_FILE}"
 FAKE_SYSTEMCTL="${TMP}/systemctl"
 printf '%s\n' '#!/bin/sh' 'printf "%s\n" "$*" >> "${PIXIU_SYSTEMCTL_LOG}"' \
     'if [ "${PIXIU_SYSTEMCTL_FAIL_ENABLE:-0}" = "1" ] && [ "${2:-}" = "enable" ]; then exit 8; fi' \
+    'if [ "${PIXIU_SYSTEMCTL_FAIL_RESTART:-0}" = "1" ] && [ "${2:-}" = "restart" ]; then exit 8; fi' \
     > "${FAKE_SYSTEMCTL}"
 chmod 0755 "${FAKE_SYSTEMCTL}"
 FAKE_UNIT="${TMP}/kylin-agent-runtime-gateway.service"
@@ -59,6 +60,8 @@ grep -qx -- '--user daemon-reload' "${TMP}/systemctl-call"
 grep -qx -- '--user disable --now hermes-gateway.service' \
     "${TMP}/systemctl-call"
 grep -qx -- '--user enable --now kylin-agent-runtime-gateway.service' \
+    "${TMP}/systemctl-call"
+grep -qx -- '--user restart kylin-agent-runtime-gateway.service' \
     "${TMP}/systemctl-call"
 test ! -e "${TMP}/home/.config/systemd/user/kylin-agent-runtime-gateway.service"
 test ! -e "${TMP}/home/.config/systemd/user/hermes-gateway.service"
@@ -215,6 +218,29 @@ grep -qx 'EXISTING=value' "${SYSTEMD_AGENT}/.env"
 grep -q 'kylin-agent-runtime gateway run --replace' \
     "${SYSTEMD_UNITS}/hermes-gateway.service"
 test ! -e "${SYSTEMD_AGENT}/plugins/pixiu/provider.py"
+
+# A running gateway that cannot restart also rolls profile data back.
+RESTART_HOME="${TMP}/restart-rollback-home"
+RESTART_AGENT="${RESTART_HOME}/.kylin-agent-runtime"
+mkdir -p "${RESTART_AGENT}/plugins/pixiu"
+printf '%s\n' 'old-provider' > "${RESTART_AGENT}/plugins/pixiu/.pixiu-managed"
+printf '%s\n' 'old-provider-data' > "${RESTART_AGENT}/plugins/pixiu/old.txt"
+printf '%s\n' 'memory: old' > "${RESTART_AGENT}/config.yaml"
+if HOME="${RESTART_HOME}" PIXIU_SYSTEMCTL_FAIL_RESTART=1 \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+   PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
+   PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
+   PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
+   PIXIU_SYSTEMCTL_LOG="${TMP}/systemctl-restart-rollback-call" \
+   PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
+   "${SCRIPT}" --quiet >/dev/null 2>&1; then
+    echo "gateway restart failure must abort activation" >&2
+    exit 1
+fi
+grep -qx 'old-provider-data' "${RESTART_AGENT}/plugins/pixiu/old.txt"
+grep -qx 'memory: old' "${RESTART_AGENT}/config.yaml"
+test ! -e "${RESTART_AGENT}/plugins/pixiu/provider.py"
 
 grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"

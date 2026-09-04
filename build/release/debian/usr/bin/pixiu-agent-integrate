@@ -173,6 +173,11 @@ cleanup() {
                 [ -f "${TX_ROOT}/units/${UNIT_NAME}" ] || continue
                 "${SYSTEMCTL}" --user enable --now "${UNIT_NAME}" >/dev/null 2>&1 || true
             done
+            # If there was no user override, restore the package-owned
+            # gateway against the rolled-back profile/config as well.
+            if [ ! -f "${TX_ROOT}/units/${GATEWAY_UNIT}" ]; then
+                "${SYSTEMCTL}" --user restart "${GATEWAY_UNIT}" >/dev/null 2>&1 || true
+            fi
         fi
     fi
     if [ -d "${TMP}" ]; then
@@ -285,6 +290,11 @@ if [ "${DEFAULT_STRICT}" = "1" ]; then
         || fail "failed to reload the user service manager" 5
     "${SYSTEMCTL}" --user enable --now "${GATEWAY_UNIT}" \
         || fail "failed to activate the packaged Agent gateway" 5
+    # enable --now is a no-op for an already-running unit.  Explicitly
+    # restart so an upgrade cannot keep old Runtime modules or configuration
+    # resident after the transaction commits.
+    "${SYSTEMCTL}" --user restart "${GATEWAY_UNIT}" \
+        || fail "failed to restart the packaged Agent gateway" 5
 fi
 TX_ACTIVE=0
 rm -rf -- "${BACKUP}" "${TX_ROOT}"
