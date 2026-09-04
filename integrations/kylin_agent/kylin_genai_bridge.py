@@ -58,18 +58,48 @@ def sdk_tool_schema(function: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def tool_choice_policy(value: Any) -> tuple[int, str]:
+def tool_choice_policy(value: Any, tool_names: Iterable[str] = ()) -> tuple[int, str]:
     """Translate OpenAI tool_choice to the Kylin SDK mode and optional name."""
 
     if value == "none":
         return 1, ""
     if value == "required":
-        return 2, ""
+        return 2, next(iter(tool_names), "")
     if isinstance(value, dict):
         function = value.get("function")
         if isinstance(function, dict):
-            return 0, str(function.get("name") or "").strip()
+            return 2, str(function.get("name") or "").strip()
     return 0, ""
+
+
+def sdk_chat_prompt(messages: Iterable[dict[str, Any]]) -> tuple[str, str]:
+    """Preserve OpenAI history while using the SDK path that supports tools."""
+
+    normalized: list[dict[str, str]] = []
+    for message in messages:
+        if not isinstance(message, dict) or message.get("role") == "tool":
+            continue
+        role = str(message.get("role") or "")
+        if role not in {"system", "developer", "user", "assistant"}:
+            continue
+        content = NativeConversation._message_text(message.get("content"))
+        if content:
+            normalized.append({"role": role, "content": content})
+    last_user = next(
+        (index for index in range(len(normalized) - 1, -1, -1) if normalized[index]["role"] == "user"),
+        -1,
+    )
+    if last_user < 0:
+        raise ValueError("Kylin GenAI requires a user message")
+    question = normalized[last_user]["content"]
+    context = normalized[:last_user]
+    if not context:
+        return "", question
+    system_prompt = (
+        "请遵循以下既有对话上下文继续处理当前用户请求。上下文采用 JSON 表示：\n"
+        + _compact_json(context)
+    )
+    return system_prompt, question
 
 
 def initialize_model_session(lib: Any, session: ctypes.c_void_p, model: str) -> tuple[ctypes.c_void_p, int]:
@@ -192,6 +222,8 @@ class KylinGenAiLibrary:
         self.lib.chat_model_config_set_stream.argtypes = [pointer, ctypes.c_bool]
         self.lib.chat_model_config_destroy.argtypes = [ctypes.POINTER(pointer)]
         self.lib.genai_text_set_model_config.argtypes = [pointer, pointer]
+        self.lib.genai_text_set_chat_system_prompt.argtypes = [pointer, ctypes.c_char_p]
+        self.lib.genai_text_chat_async.argtypes = [pointer, ctypes.c_char_p]
         self.lib.genai_text_register_tool.argtypes = [pointer, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
         self.lib.genai_text_register_tool.restype = ctypes.c_int
         self.lib.genai_text_create_tool_choice_config.argtypes = [ctypes.c_int]
@@ -263,7 +295,6 @@ class NativeConversation:
         self.model = "" if model in {"", "default", "kylin-default"} else model
         self.session = ctypes.c_void_p(sdk.lib.genai_text_create_session())
         self.config = ctypes.c_void_p()
-        self.history = ctypes.c_void_p()
         self.event = threading.Event()
         self.output = CompletionOutput(model=model or "kylin-default")
         self.error = ""
@@ -279,6 +310,7 @@ class NativeConversation:
             raise RuntimeError(f"Kylin GenAI session initialization failed ({error})")
         sdk.lib.genai_text_result_set_callback(self.session, self._result_callback, None)
         sdk.lib.genai_text_set_tool_handler(self.session, self._tool_callback, None)
+        tool_names = []
         for tool in tools:
             function = tool.get("function") if isinstance(tool, dict) else None
             if not isinstance(function, dict):
@@ -286,6 +318,7 @@ class NativeConversation:
             name = str(function.get("name") or "").strip()
             if not name:
                 continue
+            tool_names.append(name)
             status = sdk.lib.genai_text_register_tool(
                 self.session, name.encode(), 0, _compact_json(sdk_tool_schema(function)).encode()
             )
@@ -293,7 +326,7 @@ class NativeConversation:
                 self.close()
                 raise RuntimeError(f"Kylin GenAI rejected tool {name!r} ({status})")
         if tools:
-            mode, specific_tool = tool_choice_policy(tool_choice)
+            mode, specific_tool = tool_choice_policy(tool_choice, tool_names)
             choice = ctypes.c_void_p(sdk.lib.genai_text_create_tool_choice_config(mode))
             try:
                 if specific_tool:
@@ -343,23 +376,13 @@ class NativeConversation:
         return str(content or "")
 
     def start(self, messages: Iterable[dict[str, Any]]) -> None:
-        self.history = ctypes.c_void_p(self.sdk.lib.chat_message_create())
-        for message in messages:
-            if not isinstance(message, dict) or message.get("role") == "tool":
-                continue
-            role = str(message.get("role") or "")
-            content = self._message_text(message.get("content"))
-            if role in {"system", "developer"}:
-                function = self.sdk.lib.chat_message_add_system_message
-            elif role == "user":
-                function = self.sdk.lib.chat_message_add_user_message
-            elif role == "assistant" and not message.get("tool_calls"):
-                function = self.sdk.lib.chat_message_add_assistant_message
-            else:
-                continue
-            function(self.history, content.encode())
+        system_prompt, question = sdk_chat_prompt(messages)
+        if system_prompt:
+            self.sdk.lib.genai_text_set_chat_system_prompt(
+                self.session, system_prompt.encode()
+            )
         self.event.clear()
-        self.sdk.lib.genai_text_chat_with_history_messages_async(self.session, self.history)
+        self.sdk.lib.genai_text_chat_async(self.session, question.encode())
 
     def continue_with(self, calls: list[dict[str, Any]], results: list[dict[str, str]]) -> None:
         self.output = CompletionOutput(model=self.output.model)
@@ -383,8 +406,6 @@ class NativeConversation:
         if self._closed:
             return
         self._closed = True
-        if self.history.value:
-            self.sdk.lib.chat_message_destroy(ctypes.byref(self.history))
         if self.config.value:
             self.sdk.lib.chat_model_config_destroy(ctypes.byref(self.config))
         if self.session.value:

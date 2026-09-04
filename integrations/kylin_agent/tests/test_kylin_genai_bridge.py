@@ -6,6 +6,7 @@ from integrations.kylin_agent.kylin_genai_bridge import (
     extract_tool_results,
     initialize_model_session,
     openai_tool_calls,
+    sdk_chat_prompt,
     sdk_tool_schema,
     select_cloud_models,
     tool_choice_policy,
@@ -113,11 +114,29 @@ def test_sdk_registration_receives_named_function_schema():
 def test_openai_tool_choice_maps_to_sdk_modes():
     assert tool_choice_policy("auto") == (0, "")
     assert tool_choice_policy("none") == (1, "")
-    assert tool_choice_policy("required") == (2, "")
-    assert tool_choice_policy({"function": {"name": "pixiu_memory_query"}}) == (
-        0,
+    assert tool_choice_policy("required", ["pixiu_memory_query", "other"]) == (
+        2,
         "pixiu_memory_query",
     )
+    assert tool_choice_policy({"function": {"name": "pixiu_memory_query"}}) == (
+        2,
+        "pixiu_memory_query",
+    )
+
+
+def test_sdk_prompt_keeps_prior_dialogue_and_uses_latest_user_question():
+    system_prompt, question = sdk_chat_prompt(
+        [
+            {"role": "system", "content": "安全执行工具"},
+            {"role": "user", "content": "记住项目名"},
+            {"role": "assistant", "content": "项目名是 PIXIU"},
+            {"role": "user", "content": "项目名是什么？"},
+        ]
+    )
+
+    assert question == "项目名是什么？"
+    assert '"role":"system","content":"安全执行工具"' in system_prompt
+    assert '"role":"assistant","content":"项目名是 PIXIU"' in system_prompt
 
 
 def test_runtime_tool_messages_are_bound_to_pending_sdk_calls():
