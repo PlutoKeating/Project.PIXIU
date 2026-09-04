@@ -67,18 +67,20 @@ index 7c8319a..2b19fb5 100644
                     QStringLiteral("anthropic"), QStringLiteral("claude-sonnet-4-20250514"),
                     QString(), 0),
 diff --git a/src/ui/chatwidget.cpp b/src/ui/chatwidget.cpp
-index 496e400..a081d4d 100644
+index 496e400..5cc4d03 100644
 --- a/src/ui/chatwidget.cpp
 +++ b/src/ui/chatwidget.cpp
-@@ -16,6 +16,7 @@
+@@ -16,7 +16,9 @@
  #include <QPushButton>
  #include <QScrollArea>
  #include <QScrollBar>
 +#include <QSizePolicy>
  #include <QTextEdit>
++#include <QTimer>
  #include <QToolTip>
  #include <QVBoxLayout>
-@@ -42,23 +43,30 @@ ChatWidget::~ChatWidget() = default;
+
+@@ -42,23 +44,30 @@ ChatWidget::~ChatWidget() = default;
 
  void ChatWidget::setupUi()
  {
@@ -116,7 +118,7 @@ index 496e400..a081d4d 100644
      connect(m_modelCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
          if (index >= 0) {
              ConfigService::instance().setSelectedModelId(m_modelCombo->itemData(index).toString());
-@@ -72,33 +80,47 @@ void ChatWidget::setupUi()
+@@ -72,33 +81,47 @@ void ChatWidget::setupUi()
      m_messagesArea->setFrameShape(QFrame::NoFrame);
      m_messagesContainer = new QWidget(m_messagesArea);
      m_messagesLayout = new QVBoxLayout(m_messagesContainer);
@@ -181,7 +183,7 @@ index 496e400..a081d4d 100644
      root->addWidget(inputBar);
 
      loadModels();
-@@ -117,12 +139,22 @@ void ChatWidget::loadModels()
+@@ -117,12 +140,22 @@ void ChatWidget::loadModels()
 
      int selectedIndex = -1;
      const QVector<SavedModel> models = ModelService::instance().listModels();
@@ -210,7 +212,7 @@ index 496e400..a081d4d 100644
          }
      }
 
-@@ -151,7 +183,7 @@ QString ChatWidget::selectedModelName() const
+@@ -151,7 +184,7 @@ QString ChatWidget::selectedModelName() const
  void ChatWidget::loadSession(const QString &sessionId)
  {
      m_currentSessionId = sessionId;
@@ -219,7 +221,7 @@ index 496e400..a081d4d 100644
      updateRequestButtons();
      refreshMessages();
  }
-@@ -159,8 +191,13 @@ void ChatWidget::loadSession(const QString &sessionId)
+@@ -159,8 +192,13 @@ void ChatWidget::loadSession(const QString &sessionId)
  void ChatWidget::showStatus(const QString &text)
  {
      clearMessages();
@@ -235,7 +237,7 @@ index 496e400..a081d4d 100644
  }
 
  void ChatWidget::clearMessages()
-@@ -168,7 +205,7 @@ void ChatWidget::clearMessages()
+@@ -168,7 +206,7 @@ void ChatWidget::clearMessages()
      m_streamBubbles.clear();
      while (QLayoutItem *item = m_messagesLayout->takeAt(0)) {
          if (item->widget()) {
@@ -244,7 +246,7 @@ index 496e400..a081d4d 100644
          }
          delete item;
      }
-@@ -180,12 +217,19 @@ void ChatWidget::refreshMessages()
+@@ -180,12 +218,19 @@ void ChatWidget::refreshMessages()
      clearMessages();
      const QVector<SessionMessage> messages = SessionService::instance().getSessionMessages(m_currentSessionId);
      if (messages.isEmpty()) {
@@ -266,14 +268,13 @@ index 496e400..a081d4d 100644
      }
      scrollToBottom();
  }
-@@ -196,47 +240,64 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+@@ -196,47 +241,68 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
      bubble->setWordWrap(true);
      bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
      bubble->setContextMenuPolicy(Qt::CustomContextMenu);
 -    bubble->setContentsMargins(12, 10, 12, 10);
 +    bubble->setContentsMargins(16, 12, 16, 12);
 +    bubble->setMaximumWidth(role == QStringLiteral("user") ? 620 : 760);
-+    bubble->setMinimumWidth(120);
 
      const bool isUser = role == QStringLiteral("user");
 -    const QString background = isUser ? QStringLiteral("#dff6e8") : QStringLiteral("#eef3fb");
@@ -285,6 +286,9 @@ index 496e400..a081d4d 100644
 -        "  color: #20242a;"
 -        "}"
 -    ).arg(background));
++    const int userWidth = qBound(160, bubble->fontMetrics().horizontalAdvance(content.simplified()) + 44,
++                                 560);
++    bubble->setMinimumWidth(isUser ? userWidth : 120);
 +    bubble->setProperty("messageRole", role);
      connect(bubble, &QLabel::customContextMenuRequested, this, [this, bubble](const QPoint &pos) {
          QMenu menu(bubble);
@@ -303,6 +307,7 @@ index 496e400..a081d4d 100644
 -    row->setContentsMargins(0, 0, 0, 0);
 +    QWidget *rowWidget = new QWidget(m_messagesContainer);
 +    rowWidget->setObjectName(QStringLiteral("messageRow"));
++    rowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 +    QHBoxLayout *row = new QHBoxLayout(rowWidget);
 +    row->setContentsMargins(0, 6, 0, 6);
 +    row->setSpacing(0);
@@ -311,7 +316,7 @@ index 496e400..a081d4d 100644
 +    QWidget *messageColumn = new QWidget(rowWidget);
 +    messageColumn->setObjectName(QStringLiteral("messageColumn"));
 +    messageColumn->setMaximumWidth(920);
-+    messageColumn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
++    messageColumn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 +    QHBoxLayout *columnLayout = new QHBoxLayout(messageColumn);
 +    columnLayout->setContentsMargins(0, 0, 0, 0);
      if (isUser) {
@@ -325,6 +330,7 @@ index 496e400..a081d4d 100644
 +        QWidget *messageStack = new QWidget(messageColumn);
 +        messageStack->setObjectName(QStringLiteral("assistantMessage"));
 +        messageStack->setMaximumWidth(780);
++        messageStack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 +        QVBoxLayout *messageLayout = new QVBoxLayout(messageStack);
 +        messageLayout->setContentsMargins(0, 0, 0, 0);
 +        messageLayout->setSpacing(6);
@@ -351,7 +357,7 @@ index 496e400..a081d4d 100644
  }
 
  void ChatWidget::updateRequestButtons()
-@@ -275,7 +336,7 @@ void ChatWidget::sendMessage()
+@@ -275,7 +341,7 @@ void ChatWidget::sendMessage()
              showStatus(QStringLiteral("Failed to create a local session."));
              return;
          }
@@ -360,6 +366,17 @@ index 496e400..a081d4d 100644
      }
 
      if (!SessionService::instance().addMessage(m_currentSessionId, QStringLiteral("user"), text)) {
+@@ -357,4 +423,10 @@ void ChatWidget::scrollToBottom()
+         return;
+     }
+     m_messagesArea->verticalScrollBar()->setValue(m_messagesArea->verticalScrollBar()->maximum());
++    QTimer::singleShot(0, m_messagesArea, [this]() {
++        if (m_messagesArea && m_messagesArea->verticalScrollBar()) {
++            m_messagesArea->verticalScrollBar()->setValue(
++                m_messagesArea->verticalScrollBar()->maximum());
++        }
++    });
+ }
 diff --git a/src/ui/mainwindow.cpp b/src/ui/mainwindow.cpp
 index 27a450b..8a90b39 100644
 --- a/src/ui/mainwindow.cpp
