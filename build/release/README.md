@@ -188,7 +188,8 @@ OpenAI-compatible 节点，再用 `run-agent-mock-acceptance.py --suite full` �
 验证系统提示、多轮历史、SSE、审批、Shell、真实联网搜索及 PIXIU 记忆工具链；另以
 `--suite memory --scope shared:<name>` 独立保存共享域记忆写入、检索、更新和同步状态
 证据，避免重复联网请求的第三方限流影响共享记忆判定。两份结果共同覆盖工程链路，
-不能互相替代。节点不保留原始提示、工具结果或密钥；输出固定带 `suite`、
+不能互相替代。入口要求 `--expected-commit`，并核对已安装 release manifest 与后端
+`/version` 后把候选身份写入 JSON。节点不保留原始提示、工具结果或密钥；输出固定带 `suite`、
 `mock_only=true` 和 `not_release_evidence=true`。
 它不能替代官方云端模型运行，也不得作为 D-07 七类正式主记录之一。
 

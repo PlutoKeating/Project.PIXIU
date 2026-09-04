@@ -122,7 +122,45 @@ def _write_json(path: Path, value: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
+def _release_identity(
+    manifest_path: Path, expected_commit: str, backend_url: str
+) -> dict[str, Any]:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise AcceptanceError("installed release manifest is invalid")
+    build = manifest.get("build")
+    product = manifest.get("product")
+    interfaces = manifest.get("interfaces")
+    if not all(isinstance(item, dict) for item in (build, product, interfaces)):
+        raise AcceptanceError("installed release manifest lacks identity fields")
+    if build.get("git_commit") != expected_commit:
+        raise AcceptanceError("installed release commit does not match expected commit")
+    version = _request_json(backend_url, "/version")
+    expected_version = {
+        "product_version": product.get("version"),
+        "component": "pixiu-memory-backend",
+        "api_version": interfaces.get("http_api"),
+        "agent_memory_api": interfaces.get("agent_memory_api"),
+        "schema_version": interfaces.get("database_schema"),
+    }
+    if not isinstance(version, dict) or any(
+        version.get(key) != value for key, value in expected_version.items()
+    ):
+        raise AcceptanceError("backend version does not match installed release manifest")
+    return {
+        "git_commit": expected_commit,
+        "product_version": product.get("version"),
+        "debian_version": product.get("debian_version"),
+        "architecture": build.get("architecture"),
+        "profile": build.get("profile"),
+        "install_strict": build.get("install_strict"),
+    }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
+    release = _release_identity(
+        args.release_manifest.resolve(), args.expected_commit, args.backend_url
+    )
     lifecycle = _load_lifecycle(args.lifecycle_script)
     client = lifecycle.AgentClient(args.gateway_url, timeout=args.timeout)
     client.validate_capabilities()
@@ -222,6 +260,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "not_release_evidence": True,
         "inference_performed": False,
         "suite": args.suite,
+        "release": release,
         "scope": args.scope,
         "checks": {
             "multi_turn_conversation": "passed",
@@ -263,6 +302,12 @@ def main() -> int:
     parser.add_argument("--mock-url", default="http://127.0.0.1:18081")
     parser.add_argument("--mock-api-key", required=True)
     parser.add_argument("--scope", required=True)
+    parser.add_argument("--expected-commit", required=True)
+    parser.add_argument(
+        "--release-manifest",
+        type=Path,
+        default=Path("/usr/share/pixiu/release-manifest.json"),
+    )
     parser.add_argument("--lifecycle-script", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=300)
@@ -270,6 +315,8 @@ def main() -> int:
     args = parser.parse_args()
     if not re.fullmatch(r"(?:user|shared):[A-Za-z0-9._-]+", args.scope):
         parser.error("--scope must be a valid user: or shared: scope")
+    if not re.fullmatch(r"[0-9a-f]{40}", args.expected_commit):
+        parser.error("--expected-commit must be a full lowercase Git commit")
     try:
         evidence = run(args)
         _write_json(args.output, evidence)

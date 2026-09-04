@@ -12,6 +12,7 @@ import time
 import unittest
 import urllib.request
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -192,6 +193,58 @@ class MockNodeContractTests(unittest.TestCase):
             runner.scenario_for_suite(
                 "unknown", "PIXIU-" + "C" * 32, Path("/tmp/unused-marker.txt")
             )
+
+    def test_release_identity_binds_manifest_commit_and_backend_version(self) -> None:
+        runner = load_runner()
+        commit = "d" * 40
+        manifest = {
+            "build": {
+                "git_commit": commit,
+                "architecture": "amd64",
+                "profile": "kylin-v11-native-x86_64",
+                "install_strict": True,
+            },
+            "product": {"version": "0.1.7", "debian_version": "0.1.7-1"},
+            "interfaces": {
+                "http_api": "0.4.0",
+                "agent_memory_api": 1,
+                "database_schema": 12,
+            },
+        }
+        version = {
+            "product_version": "0.1.7",
+            "component": "pixiu-memory-backend",
+            "api_version": "0.4.0",
+            "agent_memory_api": 1,
+            "schema_version": 12,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "release-manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            with patch.object(runner, "_request_json", return_value=version):
+                identity = runner._release_identity(path, commit, "http://127.0.0.1:8765")
+                self.assertEqual(identity["git_commit"], commit)
+                with self.assertRaisesRegex(runner.AcceptanceError, "release commit"):
+                    runner._release_identity(path, "e" * 40, "http://127.0.0.1:8765")
+
+    def test_release_identity_rejects_backend_version_drift(self) -> None:
+        runner = load_runner()
+        commit = "f" * 40
+        manifest = {
+            "build": {"git_commit": commit},
+            "product": {"version": "0.1.7"},
+            "interfaces": {
+                "http_api": "0.4.0",
+                "agent_memory_api": 1,
+                "database_schema": 12,
+            },
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "release-manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            with patch.object(runner, "_request_json", return_value={}):
+                with self.assertRaisesRegex(runner.AcceptanceError, "backend version"):
+                    runner._release_identity(path, commit, "http://127.0.0.1:8765")
 
 
 if __name__ == "__main__":
