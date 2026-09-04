@@ -27,6 +27,10 @@ Provider、`.env`、Runtime 配置及迁移 unit 建立事务快照。写入配�
 receipt 管理亦已实现。当前未完成：配置真实模型后的宿主多轮端到端取证和生命周期
 长期化策略。因此本目录通过契约测试不等于完整 Agent 验收通过。
 
+发布测试已用确定性、无推理的 OpenAI-compatible 节点，经真实 Runtime/Gateway 验证
+Provider 的本地/共享记忆写入、检索、更新和同步状态工具链，以及系统提示和逐轮增长的
+会话历史；该结果仅证明集成接线，不证明模型自主规划，也不属于正式 D-07 证据。
+
 源码只维护 `plugin.yaml.in`，其中版本为 `@VERSION@` 占位符；开发态兼容检查读取
 仓库根 `VERSION`，发布打包时才生成 Agent 可发现的合法 `plugin.yaml`。禁止在
 Module E 中另行维护静态产品版本。

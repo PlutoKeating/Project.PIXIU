@@ -41,6 +41,12 @@
 三设备同步、安装/升级和 D-01～D-10 全部以同一 commit 通过并审核后，才可填写最终
 commit、把各门设置为 `passed`，并运行：
 
+截至当前，仓库能够自行维护和生成 D-02、D-03、D-04、D-06、D-07、D-08、D-09、
+D-10 及 R-01 相关安装资产；在全部正式门关闭前只能生成带水印审阅稿。团队负责人
+最终需要提供的外部材料严格收敛为 D-01 项目报告 PPT、D-05 ≤7 分钟演示视频、盖章
+报名表，并对自动生成文档签字审核。确定性 Mock 只服务工程调试，不能作为缺失的
+`agent_lifecycle` 正式主记录放入原始证据 ZIP。
+
 ```bash
 python3 submission/render_documents.py --check
 python3 submission/render_documents.py --draft-output DRAFT_DIRECTORY

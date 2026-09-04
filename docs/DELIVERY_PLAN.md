@@ -185,6 +185,11 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 提供材料映射到最终文件名。当前 `release_ready=false`，全部门通过前打包器拒绝生成
 最终 ZIP。`docs/delivery/` 继续作为可审查工作源，不直接充当对外最终文件。
 
+当前自动化已经能够生成 D-02/D-03/D-04/D-06～D-10 的带“不得提交”水印审阅稿，
+并在最终冻结后生成 D-03 源码归档；`submission/README.md` 是文件路径和命令的唯一入口。
+负责人最终仅需提供 D-01 PPT、D-05 不超过 7 分钟的视频和盖章报名表，并审核自动生成
+文档。工程 Mock 输出不属于七类正式 D-07 主记录，不得放宽 `release_ready`。
+
 | 编号 | 交付物 | 仓库维护源 | 最终格式 | 当前状态 |
 |------|--------|------------|----------|----------|
 | D-01 | 项目报告 PPT | `delivery/PRESENTATION_AND_VIDEO.md` | `.pptx` | 内容骨架完成，最终证据待补 |
@@ -192,9 +197,9 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 | D-03 | 源代码 | `delivery/SOURCE_AND_LICENSES.md` | 源码包/仓库快照 | Agent SBOM/NOTICE/源码实物通过；最终 commit 冻结后生成 |
 | D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | V11 strict 单包命令行安装/覆盖升级/离线 Runtime 已验；图形路径待验 |
 | D-05 | 演示视频 | `delivery/PRESENTATION_AND_VIDEO.md` | `.mp4` 优先，≤7 分钟 | 脚本完成，录制待完成 |
-| D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，Agent UI 待补 |
+| D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，新 UI 与多轮路径已实走；最终同版截图矩阵待补 |
 | D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV + `three-device-final-suite.json` | portable 已有，最终 V11 待补；总报告已列为打包硬门 |
-| D-08 | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Agent 实证待补 |
+| D-08 | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Mock 工程链路已跑通，官方云端 Agent 实证待补 |
 | D-09 | 实际应用案例 | `delivery/APPLICATION_CASES.md` | `.pdf`/报告章节 | 流程完成，最终取证待补 |
 | D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | strict 单包与双 SDK 产品链已验；完整 Agent/三设备待补 |
 

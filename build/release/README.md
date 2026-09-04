@@ -181,6 +181,12 @@ Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定
 保护且不得放入 D-07；最终 JSON 只保留哈希、计数、工具名和通过项。工具的通过只说明
 采集程序契约已验证，最终状态仍取决于同一候选包在 V11 上的真实输出。
 
+开发阶段可用 `build/release/testing/openai-compatible-mock.py` 启动确定性、无推理的
+OpenAI-compatible 节点，再用 `run-agent-mock-acceptance.py` 经真实 Gateway 验证系统
+提示、多轮历史、SSE、审批、Shell、真实联网搜索及 PIXIU 记忆工具链。节点不保留原始
+提示、工具结果或密钥；输出固定带 `mock_only=true` 和 `not_release_evidence=true`。
+它不能替代官方云端模型运行，也不得作为 D-07 七类正式主记录之一。
+
 ## 最终性能证据汇总
 
 先在最终 V11 候选的桌面用户会话中，用已安装组件生成逐样本报告：
