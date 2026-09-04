@@ -25,7 +25,7 @@ import sys
 root = Path(sys.argv[1])
 gateway = root / "src/services/gatewayservice.cpp"
 content = gateway.read_text(encoding="utf-8")
-pattern = re.compile(r"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@[^\"\s]+")
+pattern = re.compile(r"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@[^\\\"\s]+")
 content, count = pattern.subn("https://gitee.com/openkylin/kylin-cua.git", content)
 test_count = count == 1
 if not test_count:
