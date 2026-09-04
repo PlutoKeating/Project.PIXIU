@@ -26,6 +26,7 @@ else
     warn "backend pytest skipped（PIXIU_BACKEND_TESTS=1 启用，需已安装 backend/requirements.txt）"
 fi
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
+bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-lock.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-update-helper.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-release-key-rotation.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-release-manifest.sh"
