@@ -15,7 +15,7 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 按 UID 隔离，历史专用系统账户因此失败关闭。提交 `1751dd6` 后改用桌面用户的
 systemd user service 与 XDG 私有目录；目标 V11 复验确认 MainPID/UID、产品
 `0.1.7`、schema 12、Embedding/Vector native compliant 和 `contest_ready=true`。
-`829d944` 候选进一步把可重建 Agent 宿主、锁定 Runtime wheelhouse、Provider 与双 SDK
+`2faf3a3` 候选进一步把可重建 Agent 宿主、锁定 Runtime wheelhouse、Provider 与双 SDK
 装入同一 `.deb`，覆盖安装和用户 gateway 迁移通过；正式 D-07 仍须绑定文档冻结后的
 最终 commit，且完整 Agent 模型行为未出证前不得宣称赛事总门通过。
 
@@ -24,9 +24,9 @@ systemd user service 与 XDG 私有目录；目标 V11 复验确认 MainPID/UID�
 | 项目 | x86_64 | arm64 | 必须证据 |
 |------|--------|-------|----------|
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
-| openKylin Agent + Module E | `829d944` 同包宿主/Runtime/Provider、离线供应链、Gateway 与会话 API 通过；模型 run 未完成 | 未完成 | 已有可重建/离线证据；待完整 run |
-| Embedding SDK | `829d944` strict 同包 native compliant，产品链使用 runtime 1.3.0/gte-base 768 维向量 | 技术门通过 | 最终冻结 commit 的正式归档 |
-| Vector Engine SDK | `829d944` strict 同包 native compliant，direct SDK 和产品写入/检索/遗忘/隐藏通过 | 技术门通过 | 最终冻结 commit 的正式归档 |
+| openKylin Agent + Module E | `2faf3a3` 同包宿主/Runtime/Provider、离线供应链、Gateway 与会话 API 通过；Mock 工程链通过，官方云端模型 run 未完成 | 未完成 | 已有可重建/离线/工程链证据；待官方云端完整 run |
+| Embedding SDK | `2faf3a3` strict 同包 native compliant，产品链使用 runtime 1.3.0/gte-base 768 维向量 | 技术门通过 | 最终冻结 commit 的正式归档 |
+| Vector Engine SDK | `2faf3a3` strict 同包 native compliant，direct SDK 和产品写入/检索/遗忘/隐藏通过 | 技术门通过 | 最终冻结 commit 的正式归档 |
 | UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |

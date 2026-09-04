@@ -33,11 +33,11 @@ API 仍被实际调用；测试节点只按可观察状态返回固定 tool call
 替代 DeepSeek 官方云端的自主规划实测或写入正式 D-07。
 
 2026-09-04 的目标 V11 严格候选已越过此前的用户会话和 Agent 供应链阻断。提交
-`829d944` 的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
+`2faf3a3` 的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
 生命周期和产品写入/检索/遗忘均通过；`/capabilities` 返回 Embedding/Vector
 `runtime=kylin`、两者 compliant 且 `contest_ready=true`。该候选 SHA-256 为
-`43780c6a8460d8a518811d1968ff20bb6eceeae0c6da6344b5f18b4339e3f180`。包内同时包含
-可重建 `kylin-agent`、54 个哈希锁定 Runtime wheels、PIXIU Provider、SBOM、NOTICE
+`2ac6f507094742896da5bf676ff12963e6d2243aa01d7ad39921c37e905efd2e`。包内同时包含
+可重建 `kylin-agent`、58 个哈希锁定 Runtime wheels、PIXIU Provider、SBOM、NOTICE
 和对应源码/构建证据。最终文档冻结后仍须对新 commit 重建并重新绑定证据。
 
 严格原生画像现带分阶段 fail-closed 门禁：`preinst` 在 dpkg 写入文件前核对麒麟
@@ -246,8 +246,8 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 | 门槛 | 赛方要求 | 当前状态 | 最终通过证据 |
 |------|----------|----------|--------------|
 | H-01 | 软件部署在银河麒麟桌面操作系统 V11；不满足计 0 分 | **产品安装/启动已通过，赛事总门仍待闭环**：strict 单包已在 V11 安装、升级并运行；完整 Agent/三设备/视频仍待最终同版取证 | V11 安装、启动、全链路视频与机器信息 |
-| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：`829d944` 同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
-| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：`829d944` 同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
+| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：`2faf3a3` 同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
+| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：`2faf3a3` 同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
 
 现有 portable 基线（偏好 100%、召回 100%、冲突 96%、P95 115ms）只证明通用软件路径可回归，**不代表 H-01～H-03 或最终比赛性能验收通过**。详见 [验收证据说明](docs/acceptance/README.md)。
 
@@ -256,6 +256,29 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 初评总分 100：技术创新性 30、方案可行性 30、性能指标 25、实用性 10、文档规范性 5。性能基础线为偏好提取准确率 ≥85%、知识检索召回率 ≥85%、检索响应时间 ≤500ms、知识冲突处理正确率 ≥88%。完整逐项清单、复评分值、PPT 交付格式和证据要求见 [验收测试规范](docs/AcceptanceTestSpecification.md)。
 
 PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化后的比例，并非新的原始分值；完整评分表仍按 30/30/25/10/5 计 100 分。
+
+### 已准备的交付实物
+
+仓库根目录的 `submission/` 是唯一赛事交付区。当前可直接审阅的生成物统一放在
+`submission/review/`，全部带“草稿预览，不得提交”标识或 `review` 文件名；正式门全部
+关闭后，同一生成器才会写入 `submission/final/`。当前准备范围如下：
+
+| 类别 | 已准备文件 |
+|------|------------|
+| 软件候选 | `submission/review/00-软件候选/pixiu_0.1.7-1_amd64.deb`、SHA-256、原生 SDK/供应链/Mock 工程记录和 GUI 截图 |
+| D-02 | `submission/review/02-技术方案/PIXIU技术方案及测试结果.docx` 与 `.pdf` |
+| D-03 | `submission/review/03-源代码及规范/Project.PIXIU-source-review.tar.gz`、`源码规范与许可证.pdf` |
+| D-04 | `submission/review/04-部署文档/PIXIU部署指南.pdf` |
+| D-06 | `submission/review/06-用户手册/PIXIU用户手册.pdf` |
+| D-07 | `submission/review/07-效果与测试/PIXIU效果与测试报告.pdf`；正式七类原始证据 ZIP 尚被门禁阻止 |
+| D-08 | `submission/review/08-记忆流转/PIXIU记忆流转说明.pdf` |
+| D-09 | `submission/review/09-应用案例/PIXIU实际应用案例.pdf` |
+| D-10 | `submission/review/10-V11适配/PIXIU银河麒麟V11适配报告.pdf` |
+
+负责人最终只需补充 D-01 项目报告 PPT、D-05 不超过 7 分钟的演示视频和盖章报名表，
+并审核自动生成文档；发布时还需在安全环境提供与仓库公钥匹配的 Ed25519 私钥完成签名。
+不要把 API Key 或签名私钥提交到仓库。当前仍缺官方云端 Agent、三台真实设备、最终
+性能及完整安装/GUI 升级矩阵，所以 `submission/final/` 不得提前装入上述审阅稿。
 
 团队追加的发布硬门是：最终提供一个可在银河麒麟 V11 图形安装器打开的一体化
 `.deb`，内含 PIXIU 记忆服务、控制台和 Module E；软件内可检查版本并一键完成
@@ -277,8 +300,10 @@ PPT 中的饼图显示 32%/32%/26%/11%，是把前四项 95 分自动归一化�
 画像、本次 `.deb` SHA-256 与已装 PIXIU、双 SDK 包版本、Agent runtime、`/version`、
 `/health`、`/capabilities` 绑定；另以独立临时数据库和隔离集合直接执行 SDK 的
 LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 API 写入/
-召回/遗忘。首次目标 V11 严格候选证据仍待
-生成，未生成前不得将 H-02/H-03 标为通过。
+召回/遗忘。`2faf3a3` 目标 V11 strict 候选已生成同版原生证据：安装包 SHA-256 为
+`2ac6f507094742896da5bf676ff12963e6d2243aa01d7ad39921c37e905efd2e`，Embedding
+实际使用 runtime 1.3.0/gte-base 768 维向量，Vector direct SDK 与产品写入、召回、
+遗忘链均通过，`contest_ready=true`。正式 D-07 仍须在最终冻结 commit 重跑并归档。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按
 调用进程 UID 隔离；后端现已改为桌面用户 systemd user service，从而复用该用户会话中的
 runtime；strict 后端因此按设计失败关闭。ADR-0002 获批后，安装包已切换为 root

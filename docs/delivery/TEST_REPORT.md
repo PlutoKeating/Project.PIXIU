@@ -5,15 +5,15 @@
 
 ## 2026-09-04 当前候选事实
 
-- `829d944` strict amd64 候选 SHA-256：
-  `43780c6a8460d8a518811d1968ff20bb6eceeae0c6da6344b5f18b4339e3f180`；
-- 包内 Agent 宿主、54 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
+- `2faf3a3` strict amd64 候选 SHA-256：
+  `2ac6f507094742896da5bf676ff12963e6d2243aa01d7ad39921c37e905efd2e`；
+- 包内 Agent 宿主、58 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
   SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
 - 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自
   软件包，命令行进入 `/usr/lib/pixiu/venv`；
 - 前端 38/38、后端/Module E 809/809；原生 direct SDK 及产品写入、检索、遗忘、
   删除隐藏全部通过，双 runtime 均为 `kylin`/compliant；
-- 推理请求因未配置模型提供商/API key 明确失败，因此 Agent 自主工具生命周期未出证；
+- 官方 DeepSeek 推理请求因未配置 API key 明确失败，因此 Agent 自主工具生命周期未出证；
   三台独立 V11 设备、最终性能和六类安装/升级矩阵亦未出证。
 - 旧 KylinAgent 截图暴露主题冲突和内部路径后已判定失效；ADR-0004 下游 UI 补丁、
   补丁应用测试与关键配色对比度测试已经纳入代码，最终 V11 双主题/缩放/键盘/状态

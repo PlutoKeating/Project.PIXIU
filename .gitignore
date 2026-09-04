@@ -102,3 +102,7 @@ docker-compose.override.yml
 
 # AI agent session/tooling data (never commit)
 .mimocode/
+
+# Generated submission review artifacts (never confuse with gated final output)
+submission/review/*
+!submission/review/.gitignore
