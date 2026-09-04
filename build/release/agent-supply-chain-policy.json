@@ -53,6 +53,18 @@
     "build/release/agent-runtime"
   ],
   "wheel_authenticated_url_exceptions": {
+    "ddgs==9.16.0": {
+      "sha256": "175d9198c958a263f51a06a54368ba0b41294942c0cd29f4aa71be03dbcd5f4a",
+      "members": [
+        "ddgs/http_client.py",
+        "ddgs-9.16.0.dist-info/METADATA"
+      ],
+      "member_sha256": {
+        "ddgs/http_client.py": "f47f9b973dcfd7ee195f34e95bd78f76b8b7a9bced0f14095c66a906a4f3c5de",
+        "ddgs-9.16.0.dist-info/METADATA": "c056cbb64e058022e1441e5c17d051c1029160b744ad7db920bd2769b499fcbd"
+      },
+      "reason": "Static authenticated-proxy documentation example; not an operational endpoint or credential"
+    },
     "httpx==0.28.1": {
       "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad",
       "members": [
