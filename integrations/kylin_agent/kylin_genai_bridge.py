@@ -43,6 +43,29 @@ def select_cloud_models(models: Iterable[ModelInfo]) -> list[ModelInfo]:
     ]
 
 
+def openai_model_catalog(models: Iterable[ModelInfo]) -> list[dict[str, str]]:
+    """Expose the system-selected alias alongside concrete Kylin models."""
+
+    data = [
+        {
+            "id": "kylin-default",
+            "object": "model",
+            "owned_by": "kylin-genai",
+            "display_name": "麒灵系统当前模型",
+        }
+    ]
+    data.extend(
+        {
+            "id": model.name,
+            "object": "model",
+            "owned_by": "kylin-genai",
+            "display_name": model.display_name,
+        }
+        for model in models
+    )
+    return data
+
+
 def _compact_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
@@ -521,20 +544,7 @@ def create_app(bridge: KylinCloudBridge):
     async def models(_request):
         try:
             available = await asyncio.to_thread(bridge.models)
-            return web.json_response(
-                {
-                    "object": "list",
-                    "data": [
-                        {
-                            "id": model.name,
-                            "object": "model",
-                            "owned_by": "kylin-genai",
-                            "display_name": model.display_name,
-                        }
-                        for model in available
-                    ],
-                }
-            )
+            return web.json_response({"object": "list", "data": openai_model_catalog(available)})
         except Exception as exc:
             return web.json_response({"error": {"message": str(exc), "type": "sdk_unavailable"}}, status=503)
 

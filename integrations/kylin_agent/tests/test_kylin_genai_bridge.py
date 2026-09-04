@@ -5,6 +5,7 @@ from integrations.kylin_agent.kylin_genai_bridge import (
     ModelInfo,
     extract_tool_results,
     initialize_model_session,
+    openai_model_catalog,
     openai_tool_calls,
     sdk_chat_prompt,
     sdk_tool_schema,
@@ -58,12 +59,17 @@ def test_only_tool_capable_public_cloud_models_are_agent_candidates():
         ModelInfo("deepseek-v3", "DeepSeek V3", 1, True),
         ModelInfo("qwen-plus", "Qwen Plus", 1, True),
     ]
-
     assert [model.name for model in select_cloud_models(models)] == [
         "deepseek-v3",
         "qwen-plus",
     ]
 
+
+def test_model_catalog_includes_system_selected_alias():
+    catalog = openai_model_catalog([ModelInfo("qwen", "Qwen", 1, True)])
+
+    assert [model["id"] for model in catalog] == ["kylin-default", "qwen"]
+    assert catalog[0]["display_name"] == "麒灵系统当前模型"
 
 def test_sdk_tool_callback_is_translated_to_openai_tool_calls():
     payload = json.dumps(
