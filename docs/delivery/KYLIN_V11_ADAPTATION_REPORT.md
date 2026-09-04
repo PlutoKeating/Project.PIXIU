@@ -27,7 +27,7 @@ systemd user service 与 XDG 私有目录；目标 V11 复验确认 MainPID/UID�
 | openKylin Agent + Module E | `2faf3a3` 同包宿主/Runtime/Provider、离线供应链、Gateway 与会话 API 通过；Mock 工程链通过，官方云端模型 run 未完成 | 未完成 | 已有可重建/离线/工程链证据；待官方云端完整 run |
 | Embedding SDK | `2faf3a3` strict 同包 native compliant，产品链使用 runtime 1.3.0/gte-base 768 维向量 | 技术门通过 | 最终冻结 commit 的正式归档 |
 | Vector Engine SDK | `2faf3a3` strict 同包 native compliant，direct SDK 和产品写入/检索/遗忘/隐藏通过 | 技术门通过 | 最终冻结 commit 的正式归档 |
-| UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
+| UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；深色主题真实桌面已验证居中消息流、长标题、输入区和连接状态 | 部分通过 | 仍待浅色、三档缩放、键盘、快捷键、通知和多屏矩阵 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |
 
