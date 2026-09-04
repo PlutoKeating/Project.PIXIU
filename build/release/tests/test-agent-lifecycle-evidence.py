@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 
@@ -131,7 +132,59 @@ class FakeAfterClient:
         }
 
 
+class _SseResponse:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def __iter__(self):
+        event = {"event": "run.completed", "output": "done"}
+        return iter([(f"data: {json.dumps(event)}\n").encode("utf-8")])
+
+
+class RecordingAgentClient(MODULE.AgentClient):
+    def __init__(self) -> None:
+        super().__init__("http://127.0.0.1:8642")
+        self.started_payload = None
+
+    def messages(self, session_id: str):
+        return [
+            {"role": "user", "content": "first"},
+            {"role": "assistant", "content": "answer"},
+            {"role": "tool", "content": "must not be flattened"},
+        ]
+
+    def json(self, method: str, path: str, payload=None):
+        if method == "POST" and path == "/v1/runs":
+            self.started_payload = payload
+            return {"run_id": "run_" + "a" * 32}
+        if method == "GET" and path.startswith("/v1/runs/"):
+            return {"status": "completed"}
+        raise AssertionError((method, path))
+
+    def _request(self, method: str, path: str, payload=None):
+        return _SseResponse()
+
+
 class AgentLifecycleEvidenceTest(unittest.TestCase):
+    def test_run_forwards_persisted_conversation_history(self) -> None:
+        client = RecordingAgentClient()
+        result = client.run("session-one", "second", lambda _: True)
+        self.assertEqual(result["output"], "done")
+        self.assertEqual(
+            client.started_payload,
+            {
+                "input": "second",
+                "session_id": "session-one",
+                "conversation_history": [
+                    {"role": "user", "content": "first"},
+                    {"role": "assistant", "content": "answer"},
+                ],
+            },
+        )
+
     def test_shipped_scenario_is_valid_and_does_not_name_tools(self) -> None:
         shipped = MODULE._read_json(ROOT / "agent-lifecycle-scenario.json")
         self.assertEqual(MODULE.validate_scenario(shipped), shipped)

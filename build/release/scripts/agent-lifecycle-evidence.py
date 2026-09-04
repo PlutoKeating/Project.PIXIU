@@ -253,7 +253,22 @@ class AgentClient:
         return value
 
     def run(self, session_id: str, prompt: str, approve: Callable[[str], bool]) -> dict[str, Any]:
-        started = self.json("POST", "/v1/runs", {"input": prompt, "session_id": session_id})
+        persisted = self.messages(session_id)
+        conversation_history = [
+            {"role": item["role"], "content": item["content"]}
+            for item in persisted
+            if item.get("role") in {"user", "assistant"}
+            and isinstance(item.get("content"), str)
+        ]
+        started = self.json(
+            "POST",
+            "/v1/runs",
+            {
+                "input": prompt,
+                "session_id": session_id,
+                "conversation_history": conversation_history,
+            },
+        )
         run_id = started.get("run_id") if isinstance(started, dict) else None
         if not isinstance(run_id, str) or not re.fullmatch(r"run_[0-9a-f]{32}", run_id):
             raise EvidenceError("Agent Gateway did not return a valid run id")
