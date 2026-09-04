@@ -29,6 +29,7 @@ CONFIG_DIR="${XDG_CONFIG_HOME}/pixiu"
 STATE_DIR="${XDG_STATE_HOME}/pixiu"
 CONFIG="${CONFIG_DIR}/pixiu.env"
 DEFAULT_CONFIG=${PIXIU_DEFAULT_CONFIG:-/usr/share/pixiu/pixiu.env.default}
+STRICT_FILE=${PIXIU_STRICT_FILE:-/usr/share/pixiu/install-strict}
 
 umask 077
 mkdir -p "${DATA_DIR}/data" "${CONFIG_DIR}" "${STATE_DIR}"
@@ -59,6 +60,27 @@ if grep -q '^PIXIU_SYNC_KEY_PASSPHRASE=change-me-before-production$' "${CONFIG}"
     PASSPHRASE=$(openssl rand -hex 32)
     sed -i "s/^PIXIU_SYNC_KEY_PASSPHRASE=change-me-before-production$/PIXIU_SYNC_KEY_PASSPHRASE=${PASSPHRASE}/" "${CONFIG}"
 fi
+
+STRICT=0
+if [ -f "${STRICT_FILE}" ]; then
+    STRICT=$(tr -d '\r\n' <"${STRICT_FILE}")
+fi
+case "${STRICT}" in
+    0) ;;
+    1)
+        for setting in PIXIU_EMBEDDING PIXIU_VECTOR_STORE; do
+            if grep -q "^${setting}=" "${CONFIG}"; then
+                sed -i "s/^${setting}=.*/${setting}=kylin/" "${CONFIG}"
+            else
+                printf '%s\n' "${setting}=kylin" >>"${CONFIG}"
+            fi
+        done
+        ;;
+    *)
+        echo "pixiu-user-setup: packaged strict marker is invalid" >&2
+        exit 2
+        ;;
+esac
 chmod 0600 "${CONFIG}"
 
 if [ "${MODE}" = "--start" ]; then

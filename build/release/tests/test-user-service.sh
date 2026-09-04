@@ -60,4 +60,15 @@ if grep -q 'change-me-before-production' "${TMP}/config/pixiu/pixiu.env"; then
     exit 1
 fi
 
+printf '1\n' >"${TMP}/strict"
+HOME="${TMP}/home" \
+XDG_DATA_HOME="${TMP}/strict-data" \
+XDG_CONFIG_HOME="${TMP}/strict-config" \
+XDG_STATE_HOME="${TMP}/strict-state" \
+PIXIU_DEFAULT_CONFIG="${ROOT}/build/release/debian/pixiu.env" \
+PIXIU_STRICT_FILE="${TMP}/strict" \
+    sh "${SETUP}" --prepare-only
+grep -qx 'PIXIU_EMBEDDING=kylin' "${TMP}/strict-config/pixiu/pixiu.env"
+grep -qx 'PIXIU_VECTOR_STORE=kylin' "${TMP}/strict-config/pixiu/pixiu.env"
+
 echo "user service packaging tests: OK"
