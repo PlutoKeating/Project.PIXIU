@@ -13,6 +13,8 @@ grep -q -- '--require-hashes -r "${committed_lock}"' "${SCRIPT}"
 grep -q 'cmp "${committed_lock}" "${generated_lock}"' "${SCRIPT}"
 grep -q 'dpkg --print-architecture' "${SCRIPT}"
 grep -q 'cpython-312' "${SCRIPT}"
+grep -q '^ddgs==' "${RUNTIME_LOCK}"
+grep -q 'import ddgs' "${SCRIPT}"
 
 python3 - "${RUNTIME_LOCK}" "${TOOLS_LOCK}" <<'PY'
 from pathlib import Path

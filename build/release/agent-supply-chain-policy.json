@@ -41,7 +41,8 @@
   },
   "runtime_required_packages": [
     "kylin-agent-runtime",
-    "aiohttp"
+    "aiohttp",
+    "ddgs"
   ],
   "upstream_reference_scan_paths": [
     "third_party/kylin-agent/scripts",

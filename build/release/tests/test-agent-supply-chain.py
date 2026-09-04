@@ -203,6 +203,8 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
             runtime_wheel.write_bytes(b"locked runtime wheel")
             aiohttp_wheel = wheelhouse / "aiohttp-3.13.3-cp311-manylinux.whl"
             aiohttp_wheel.write_bytes(b"locked aiohttp wheel")
+            ddgs_wheel = wheelhouse / "ddgs-9.16.0-py3-none-any.whl"
+            ddgs_wheel.write_bytes(b"locked ddgs wheel")
             lockfile = evidence_dir / "runtime.lock"
             lockfile.write_text("fully locked runtime dependencies\n", encoding="utf-8")
             install_log = evidence_dir / "offline-install.log"
@@ -249,6 +251,12 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                             "filename": f"wheelhouse/{aiohttp_wheel.name}",
                             "sha256": AUDIT.sha256_file(aiohttp_wheel),
                         },
+                        {
+                            "name": "ddgs",
+                            "version": "9.16.0",
+                            "filename": f"wheelhouse/{ddgs_wheel.name}",
+                            "sha256": AUDIT.sha256_file(ddgs_wheel),
+                        },
                     ],
                 },
                 "agent-components.spdx.json": {
@@ -292,6 +300,17 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                                 {
                                     "algorithm": "SHA256",
                                     "checksumValue": AUDIT.sha256_file(aiohttp_wheel),
+                                }
+                            ],
+                        },
+                        {
+                            "name": "ddgs",
+                            "SPDXID": "SPDXRef-Package-ddgs",
+                            "versionInfo": "9.16.0",
+                            "checksums": [
+                                {
+                                    "algorithm": "SHA256",
+                                    "checksumValue": AUDIT.sha256_file(ddgs_wheel),
                                 }
                             ],
                         },

@@ -95,10 +95,12 @@ verify-offline)
         --require-hashes -r "${lockfile}"
     "${verify_root}/venv/bin/python" - <<'PY'
 import aiohttp
+import ddgs
 import kylin_agent_runtime_cli
 from gateway.platforms.api_server import APIServerAdapter
 print(f"kylin-agent-runtime-cli={kylin_agent_runtime_cli.__version__}")
 print(f"aiohttp={aiohttp.__version__}")
+print(f"ddgs={ddgs.__version__}")
 print(f"gateway-adapter={APIServerAdapter.__name__}")
 PY
     "${verify_root}/venv/bin/kylin-agent-runtime" --version

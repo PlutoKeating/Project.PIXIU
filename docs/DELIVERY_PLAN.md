@@ -77,6 +77,8 @@ wheel、锁文件和离线安装日志均须提供路径与匹配摘要；目标
 显式记录。SPDX 2.3 覆盖固定宿主、Runtime 及 wheelhouse 全部包，NOTICE 复述固定
 来源、commit 和许可证边界；当前强制报告为 `ready=true`、零 blocker。上游原始仓库
 中被识别的认证式 URL 不进入发行源码或入包范围，实际发行范围复扫通过。
+Runtime 离线闭包必须包含免密 `ddgs` 搜索后端；验收要求 `web_search` 返回真实结果，
+不能只以工具注册或“未配置搜索 provider”的错误响应计为成功。
 
 ## 2. 版本管理唯一真相源
 
