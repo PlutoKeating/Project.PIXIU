@@ -21,5 +21,7 @@ grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 ! grep -q 'src/ui/modelsettingswidget.cpp' "${fixture}/source/CMakeLists.txt"
 grep -q '/v1/chat/completions' "${fixture}/source/src/services/pixiu_host_compat.cpp"
 grep -q 'chatCompletionFinished' "${fixture}/source/src/services/pixiu_host_compat.cpp"
+grep -q -- '--hide' "${repo_root}/build/release/agent-host/build-agent-host.sh"
+! grep -q -- 'kylin-agent.*--version' "${repo_root}/build/release/agent-host/build-agent-host.sh"
 
 echo "agent host adaptation tests: OK"

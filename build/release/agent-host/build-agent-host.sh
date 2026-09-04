@@ -34,4 +34,13 @@ cmake -S "${output_dir}/source" -B "${output_dir}/build" -G Ninja \
     -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build "${output_dir}/build" --parallel
 DESTDIR="${output_dir}/install" cmake --install "${output_dir}/build"
-QT_QPA_PLATFORM=offscreen "${output_dir}/install/usr/bin/kylin-agent" --version
+host_binary="${output_dir}/install/usr/bin/kylin-agent"
+file "${host_binary}"
+if ldd "${host_binary}" | grep -q 'not found'; then
+    echo "Agent host has unresolved dynamic dependencies" >&2
+    exit 3
+fi
+# The pinned upstream host has no CLI version action.  Its documented --hide
+# activation path initializes the QApplication/single-instance boundary and
+# exits without opening a window, making it a deterministic headless smoke test.
+QT_QPA_PLATFORM=offscreen "${host_binary}" --hide
