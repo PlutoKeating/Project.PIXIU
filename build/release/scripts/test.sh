@@ -44,6 +44,8 @@ bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
     "${PIXIU_ROOT}/build/release/tests/test-native-sdk-smoke.py"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-agent-lifecycle-evidence.py"
+"${PIXIU_PYTHON:-python3}" \
+    "${PIXIU_ROOT}/build/release/tests/test-openai-compatible-mock.py"
 "${PIXIU_PYTHON:-python3}" -m pytest -q \
     "${PIXIU_ROOT}/build/release/tests/test-agent-memory-ablation.py"
 "${PIXIU_PYTHON:-python3}" \
