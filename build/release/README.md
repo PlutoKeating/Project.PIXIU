@@ -97,6 +97,17 @@ python3 build/release/scripts/audit-agent-supply-chain.py \
   --require-ready
 ```
 
+严格 KylinSDK 产品级冒烟脚本会在已安装 `/usr/lib/pixiu/venv/bin/python`
+时自动切换到该隔离解释器，确保直接 SDK 调用与实际后端使用同一份锁定依赖：
+
+```bash
+python3 build/release/scripts/native-sdk-smoke.py \
+  --base-url http://127.0.0.1:8765 \
+  --deb build/release/out/pixiu_0.1.7-1_amd64.deb \
+  --expected-commit "$(git rev-parse HEAD)" \
+  --output build/release/out/native-sdk-smoke.json
+```
+
 目标环境取得真实实物后，按顺序记录。`--network-isolated` 是对该次构建/安装环境的
 明确声明，并不代替日志；生成器还会拒绝日志/锁文件中的认证式 URL，自动读取每个
 wheel 的 `METADATA`，不接受手填包名和版本：

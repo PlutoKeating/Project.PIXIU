@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -16,6 +17,21 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
+
+
+PRODUCT_PYTHON = Path("/usr/lib/pixiu/venv/bin/python")
+
+
+def ensure_product_interpreter() -> None:
+    """Run installed-release probes with the product's locked dependencies."""
+    if not PRODUCT_PYTHON.is_file():
+        return
+    if Path(sys.executable).resolve() == PRODUCT_PYTHON.resolve():
+        return
+    os.execv(
+        str(PRODUCT_PYTHON),
+        [str(PRODUCT_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]],
+    )
 
 
 def request_json(url: str, *, payload: dict | None = None) -> dict:
@@ -485,6 +501,7 @@ def validate_evidence(evidence: dict) -> None:
 
 
 def main() -> int:
+    ensure_product_interpreter()
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default="http://127.0.0.1:8765")
     parser.add_argument("--deb", type=Path, required=True)

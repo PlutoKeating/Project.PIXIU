@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -22,6 +23,26 @@ SPEC.loader.exec_module(MODULE)
 
 
 class NativeSdkSmokeTest(unittest.TestCase):
+    def test_product_interpreter_reexec_preserves_arguments(self) -> None:
+        with (
+            patch.object(MODULE, "PRODUCT_PYTHON", Path("/opt/pixiu/bin/python")),
+            patch.object(Path, "is_file", return_value=True),
+            patch.object(sys, "executable", "/usr/bin/python3"),
+            patch.object(sys, "argv", [str(SCRIPT), "--output", "/tmp/evidence.json"]),
+            patch.object(os, "execv") as execv,
+        ):
+            MODULE.ensure_product_interpreter()
+
+        execv.assert_called_once_with(
+            "/opt/pixiu/bin/python",
+            [
+                "/opt/pixiu/bin/python",
+                str(SCRIPT.resolve()),
+                "--output",
+                "/tmp/evidence.json",
+            ],
+        )
+
     def test_main_binds_runtime_operations_to_installed_release(self) -> None:
         manifest = {
             "manifest_schema": 1,
