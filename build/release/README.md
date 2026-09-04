@@ -62,6 +62,11 @@ build/release/
         └── pixiu-agent-integrate # Provider 幂等安装/激活；不覆盖非受管同名插件
 ```
 
+从旧系统账户版升级时，首次桌面启动通过系统授权运行包内
+`migrate-system-data`：先验证源 SQLite，再以 backup API 复制，复核 schema、全表计数
+与同步身份摘要，并复制 Vector 数据和去路径化的用户配置。迁移有可恢复 journal，目标
+非空时拒绝覆盖，成功后保留 `/var/lib/pixiu` 源数据，直至完整升级/回滚矩阵确认。
+
 打包时还会将 `frontend/scripts/install-update` 安装到
 `/usr/lib/pixiu/install-update`，作为 root-only 副本二次校验后调用 `dpkg`
 的 `pkexec` 特权边界；`frontend/scripts/restart-client` 安装到同目录，以当前桌面

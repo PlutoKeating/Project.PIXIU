@@ -309,6 +309,8 @@ install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backe
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-user-setup" "${STAGE}/usr/bin/pixiu-user-setup"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
     "${STAGE}/usr/bin/pixiu-agent-integrate"
+install -m 0755 "${PIXIU_RELEASE_DIR}/scripts/migrate-system-data.py" \
+    "${STAGE}/usr/lib/pixiu/migrate-system-data"
 install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
     "${STAGE}/usr/lib/pixiu/install-update"
 install -m 0755 "${PIXIU_ROOT}/frontend/scripts/restart-client" \

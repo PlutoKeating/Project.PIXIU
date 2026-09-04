@@ -240,7 +240,9 @@ LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 AP
 runtime；strict 后端因此按设计失败关闭。ADR-0002 获批后，安装包已切换为 root
 所有的 systemd user unit，启动器在桌面用户上下文创建 XDG 私有配置/数据/状态目录
 并启动服务；启动完成还必须同时通过 user manager MainPID/UID 与后端组件/版本握手，
-端口上的无关或错误版本进程不能冒充就绪。旧系统数据的校验迁移和升级事务仍在实施。完成后须以同一候选包重跑
+端口上的无关或错误版本进程不能冒充就绪。旧系统数据库与 Vector 数据采用授权的一次性
+迁移，复制前后核对 SQLite 完整性、schema、全表计数与同步身份摘要，源数据在成功后仍
+保留；升级事务仍在实施。完成后须以同一候选包重跑
 直接 SDK 与产品 API 生命周期。完整 AI 子系统属于系统级前置
 能力，不作为 PIXIU 安装包的整套强依赖；最终仅声明经实测确认的最小运行依赖。
 同次检查还发现 Vector 客户端误用了官方标注“for test”的 host/port 构造；生产路径

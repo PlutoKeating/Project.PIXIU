@@ -65,6 +65,11 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 目录；启动器要求 unit 的 MainPID 属于当前 UID，并核对 loopback `/version` 的组件与
 包版本，拒绝端口伪服务。旧数据迁移、升级事务和最终 strict 复验完成前，仍不得声明
 H-02/H-03 通过。
+
+旧系统账户版存在 `/var/lib/pixiu/pixiu.db` 时，首次用户启动会请求系统授权执行一次性
+迁移。工具拒绝非空目标，使用 SQLite backup API 并在提交前后核对 integrity、schema、
+全表逻辑计数和同步身份摘要；Vector 数据及去除旧绝对路径后的配置一并复制。中断由
+journal 恢复，成功标记明确记录源数据仍保留，不在安装脚本中直接删除。
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净 strict amd64 包已再次完成构建、
 安装和失败关闭复验：保留 portable 配置时服务健康，切换 strict 后稳定暴露上述用户
 会话边界，恢复配置后服务、配置和数据库摘要保持。该切片不代表已交付 user service，

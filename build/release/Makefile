@@ -16,6 +16,7 @@ governance:
 	bash $(ROOT)/build/release/tests/test-native-profile.sh
 	bash $(ROOT)/build/release/tests/test-config-upgrade-policy.sh
 	bash $(ROOT)/build/release/tests/test-user-service.sh
+	python3 $(ROOT)/build/release/tests/test-system-data-migration.py
 	bash $(ROOT)/build/release/tests/test-agent-integration.sh
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain.py
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain-record.py

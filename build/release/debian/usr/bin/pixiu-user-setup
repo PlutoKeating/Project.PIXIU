@@ -33,6 +33,17 @@ DEFAULT_CONFIG=${PIXIU_DEFAULT_CONFIG:-/usr/share/pixiu/pixiu.env.default}
 umask 077
 mkdir -p "${DATA_DIR}/data" "${CONFIG_DIR}" "${STATE_DIR}"
 chmod 0700 "${DATA_DIR}" "${DATA_DIR}/data" "${CONFIG_DIR}" "${STATE_DIR}"
+
+MIGRATION_MARKER="${STATE_DIR}/migration-v1.json"
+if [ -f /var/lib/pixiu/pixiu.db ] && [ ! -e "${MIGRATION_MARKER}" ]; then
+    command -v pkexec >/dev/null 2>&1 || {
+        echo "pixiu-user-setup: system authorization is required to migrate legacy memory" >&2
+        exit 3
+    }
+    pkexec /usr/lib/pixiu/migrate-system-data \
+        --uid "$(id -u)" --data-dir "${DATA_DIR}" \
+        --config-dir "${CONFIG_DIR}" --state-dir "${STATE_DIR}"
+fi
 if [ ! -e "${CONFIG}" ]; then
     [ -f "${DEFAULT_CONFIG}" ] || {
         echo "pixiu-user-setup: packaged default configuration is missing" >&2
