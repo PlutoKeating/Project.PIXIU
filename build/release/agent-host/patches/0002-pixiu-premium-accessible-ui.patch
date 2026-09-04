@@ -67,10 +67,18 @@ index 7c8319a..2b19fb5 100644
                     QStringLiteral("anthropic"), QStringLiteral("claude-sonnet-4-20250514"),
                     QString(), 0),
 diff --git a/src/ui/chatwidget.cpp b/src/ui/chatwidget.cpp
-index 496e400..37b7b57 100644
+index 496e400..e89c81b 100644
 --- a/src/ui/chatwidget.cpp
 +++ b/src/ui/chatwidget.cpp
-@@ -42,23 +42,30 @@ ChatWidget::~ChatWidget() = default;
+@@ -16,6 +16,7 @@
+ #include <QPushButton>
+ #include <QScrollArea>
+ #include <QScrollBar>
++#include <QSizePolicy>
+ #include <QTextEdit>
+ #include <QToolTip>
+ #include <QVBoxLayout>
+@@ -42,23 +43,30 @@ ChatWidget::~ChatWidget() = default;
 
  void ChatWidget::setupUi()
  {
@@ -108,15 +116,15 @@ index 496e400..37b7b57 100644
      connect(m_modelCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
          if (index >= 0) {
              ConfigService::instance().setSelectedModelId(m_modelCombo->itemData(index).toString());
-@@ -72,30 +79,34 @@ void ChatWidget::setupUi()
+@@ -72,33 +80,47 @@ void ChatWidget::setupUi()
      m_messagesArea->setFrameShape(QFrame::NoFrame);
      m_messagesContainer = new QWidget(m_messagesArea);
      m_messagesLayout = new QVBoxLayout(m_messagesContainer);
 -    m_messagesLayout->setContentsMargins(24, 24, 24, 24);
 -    m_messagesLayout->setSpacing(12);
 +    m_messagesContainer->setObjectName(QStringLiteral("conversationCanvas"));
-+    m_messagesLayout->setContentsMargins(40, 34, 40, 34);
-+    m_messagesLayout->setSpacing(16);
++    m_messagesLayout->setContentsMargins(28, 28, 28, 28);
++    m_messagesLayout->setSpacing(10);
      m_messagesLayout->addStretch();
      m_messagesArea->setWidget(m_messagesContainer);
      root->addWidget(m_messagesArea, 1);
@@ -127,34 +135,53 @@ index 496e400..37b7b57 100644
      QHBoxLayout *inputLayout = new QHBoxLayout(inputBar);
 -    inputLayout->setContentsMargins(16, 12, 16, 12);
 -    inputLayout->setSpacing(10);
-+    inputLayout->setContentsMargins(28, 18, 28, 22);
-+    inputLayout->setSpacing(12);
-
-     m_inputEdit = new QTextEdit(inputBar);
+-
+-    m_inputEdit = new QTextEdit(inputBar);
 -    m_inputEdit->setFixedHeight(72);
 -    m_inputEdit->setPlaceholderText(QStringLiteral("Type a message..."));
-+    m_inputEdit->setFixedHeight(82);
-+    m_inputEdit->setObjectName(QStringLiteral("messageComposer"));
-+    m_inputEdit->setPlaceholderText(QStringLiteral("输入任务，让 Agent 使用工具与跨设备记忆协助你…"));
-     inputLayout->addWidget(m_inputEdit, 1);
-
+-    inputLayout->addWidget(m_inputEdit, 1);
+-
 -    m_sendButton = new QPushButton(QStringLiteral("Send"), inputBar);
 -    m_sendButton->setFixedSize(88, 40);
-+    m_sendButton = new QPushButton(QStringLiteral("发送"), inputBar);
++    inputLayout->setContentsMargins(24, 16, 24, 20);
++    inputLayout->setSpacing(0);
++
++    QWidget *composerShell = new QWidget(inputBar);
++    composerShell->setObjectName(QStringLiteral("composerShell"));
++    composerShell->setMaximumWidth(960);
++    QHBoxLayout *composerLayout = new QHBoxLayout(composerShell);
++    composerLayout->setContentsMargins(10, 10, 10, 10);
++    composerLayout->setSpacing(10);
++
++    m_inputEdit = new QTextEdit(composerShell);
++    m_inputEdit->setFixedHeight(64);
++    m_inputEdit->setObjectName(QStringLiteral("messageComposer"));
++    m_inputEdit->setPlaceholderText(QStringLiteral("输入任务，让 Agent 使用工具与跨设备记忆协助你…"));
++    composerLayout->addWidget(m_inputEdit, 1);
++
++    m_sendButton = new QPushButton(QStringLiteral("发送"), composerShell);
 +    m_sendButton->setObjectName(QStringLiteral("sendButton"));
 +    m_sendButton->setFixedSize(92, 44);
      connect(m_sendButton, &QPushButton::clicked, this, &ChatWidget::sendMessage);
-     inputLayout->addWidget(m_sendButton);
+-    inputLayout->addWidget(m_sendButton);
++    composerLayout->addWidget(m_sendButton);
 
 -    m_stopButton = new QPushButton(QStringLiteral("Stop"), inputBar);
 -    m_stopButton->setFixedSize(88, 40);
-+    m_stopButton = new QPushButton(QStringLiteral("停止"), inputBar);
++    m_stopButton = new QPushButton(QStringLiteral("停止"), composerShell);
 +    m_stopButton->setObjectName(QStringLiteral("secondaryButton"));
 +    m_stopButton->setFixedSize(76, 44);
      m_stopButton->setEnabled(false);
      connect(m_stopButton, &QPushButton::clicked, this, &ChatWidget::cancelGeneration);
-     inputLayout->addWidget(m_stopButton);
-@@ -117,12 +128,22 @@ void ChatWidget::loadModels()
+-    inputLayout->addWidget(m_stopButton);
++    composerLayout->addWidget(m_stopButton);
++    inputLayout->addStretch();
++    inputLayout->addWidget(composerShell, 1);
++    inputLayout->addStretch();
+     root->addWidget(inputBar);
+
+     loadModels();
+@@ -117,12 +139,22 @@ void ChatWidget::loadModels()
 
      int selectedIndex = -1;
      const QVector<SavedModel> models = ModelService::instance().listModels();
@@ -183,7 +210,7 @@ index 496e400..37b7b57 100644
          }
      }
 
-@@ -151,7 +172,7 @@ QString ChatWidget::selectedModelName() const
+@@ -151,7 +183,7 @@ QString ChatWidget::selectedModelName() const
  void ChatWidget::loadSession(const QString &sessionId)
  {
      m_currentSessionId = sessionId;
@@ -192,7 +219,7 @@ index 496e400..37b7b57 100644
      updateRequestButtons();
      refreshMessages();
  }
-@@ -159,8 +180,13 @@ void ChatWidget::loadSession(const QString &sessionId)
+@@ -159,8 +191,13 @@ void ChatWidget::loadSession(const QString &sessionId)
  void ChatWidget::showStatus(const QString &text)
  {
      clearMessages();
@@ -208,8 +235,7 @@ index 496e400..37b7b57 100644
  }
 
  void ChatWidget::clearMessages()
-@@ -167,10 +193,10 @@ void ChatWidget::clearMessages()
- {
+@@ -168,7 +205,7 @@ void ChatWidget::clearMessages()
      m_streamBubbles.clear();
      while (QLayoutItem *item = m_messagesLayout->takeAt(0)) {
          if (item->widget()) {
@@ -218,9 +244,7 @@ index 496e400..37b7b57 100644
          }
          delete item;
      }
-     m_messagesLayout->addStretch();
- }
-@@ -180,7 +206,8 @@ void ChatWidget::refreshMessages()
+@@ -180,12 +217,19 @@ void ChatWidget::refreshMessages()
      clearMessages();
      const QVector<SessionMessage> messages = SessionService::instance().getSessionMessages(m_currentSessionId);
      if (messages.isEmpty()) {
@@ -230,7 +254,6 @@ index 496e400..37b7b57 100644
          return;
      }
 
-@@ -187,3 +214,9 @@ void ChatWidget::refreshMessages()
 +    const QString legacyFallback = QStringLiteral(
 +        "已保存到本机会话。agent-rt 接入后，这里将显示后端回复。");
      for (const SessionMessage &message : messages) {
@@ -241,12 +264,16 @@ index 496e400..37b7b57 100644
 +        }
 +        addMessageBubble(message.role(), renderedContent);
      }
-@@ -197,39 +230,35 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+     scrollToBottom();
+ }
+@@ -196,47 +240,64 @@ QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content
+     bubble->setWordWrap(true);
      bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
      bubble->setContextMenuPolicy(Qt::CustomContextMenu);
-     bubble->setContentsMargins(12, 10, 12, 10);
-+    bubble->setMaximumWidth(760);
-+    bubble->setMinimumWidth(role == QStringLiteral("system") ? 420 : 180);
+-    bubble->setContentsMargins(12, 10, 12, 10);
++    bubble->setContentsMargins(16, 12, 16, 12);
++    bubble->setMaximumWidth(role == QStringLiteral("user") ? 620 : 760);
++    bubble->setMinimumWidth(120);
 
      const bool isUser = role == QStringLiteral("user");
 -    const QString background = isUser ? QStringLiteral("#dff6e8") : QStringLiteral("#eef3fb");
@@ -273,31 +300,58 @@ index 496e400..37b7b57 100644
      });
 
 -    QHBoxLayout *row = new QHBoxLayout;
+-    row->setContentsMargins(0, 0, 0, 0);
 +    QWidget *rowWidget = new QWidget(m_messagesContainer);
 +    rowWidget->setObjectName(QStringLiteral("messageRow"));
 +    QHBoxLayout *row = new QHBoxLayout(rowWidget);
-     row->setContentsMargins(0, 0, 0, 0);
++    row->setContentsMargins(0, 6, 0, 6);
++    row->setSpacing(0);
++    row->addStretch(1);
++
++    QWidget *messageColumn = new QWidget(rowWidget);
++    messageColumn->setObjectName(QStringLiteral("messageColumn"));
++    messageColumn->setMaximumWidth(920);
++    messageColumn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
++    QHBoxLayout *columnLayout = new QHBoxLayout(messageColumn);
++    columnLayout->setContentsMargins(0, 0, 0, 0);
      if (isUser) {
-         row->addStretch();
-         row->addWidget(bubble, 0);
+-        row->addStretch();
+-        row->addWidget(bubble, 0);
++        columnLayout->addStretch();
++        columnLayout->addWidget(bubble, 0);
      } else {
-         row->addWidget(bubble, 0);
-         row->addStretch();
+-        row->addWidget(bubble, 0);
+-        row->addStretch();
++        QWidget *messageStack = new QWidget(messageColumn);
++        messageStack->setObjectName(QStringLiteral("assistantMessage"));
++        messageStack->setMaximumWidth(780);
++        QVBoxLayout *messageLayout = new QVBoxLayout(messageStack);
++        messageLayout->setContentsMargins(0, 0, 0, 0);
++        messageLayout->setSpacing(6);
++        QLabel *author = new QLabel(QStringLiteral("PIXIU"), messageStack);
++        author->setObjectName(QStringLiteral("messageAuthor"));
++        messageLayout->addWidget(author);
++        messageLayout->addWidget(bubble);
++        columnLayout->addWidget(messageStack, 0);
++        columnLayout->addStretch();
      }
++    row->addWidget(messageColumn, 20);
++    row->addStretch(1);
 
 -    m_messagesLayout->insertLayout(qMax(0, m_messagesLayout->count() - 1), row);
 +    m_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), rowWidget);
      return bubble;
  }
 
-@@ -237,5 +266,5 @@ QString ChatWidget::localAssistantReply(const QString &userText) const
+ QString ChatWidget::localAssistantReply(const QString &userText) const
  {
      Q_UNUSED(userText)
 -    return QStringLiteral("已保存到本机会话。agent-rt 接入后，这里将显示后端回复。");
 +    return QStringLiteral("云端模型暂未响应。请确认已完成凭据配置，然后重试。");
  }
 
-@@ -275,7 +304,7 @@ void ChatWidget::sendMessage()
+ void ChatWidget::updateRequestButtons()
+@@ -275,7 +336,7 @@ void ChatWidget::sendMessage()
              showStatus(QStringLiteral("Failed to create a local session."));
              return;
          }
@@ -463,7 +517,7 @@ index 27a450b..8a90b39 100644
                 SessionService::instance().getSession(m_chatWidget->currentSessionId()).id().isEmpty()) {
          loadSession(sessions.first().id());
 diff --git a/src/ui/sessionlistwidget.cpp b/src/ui/sessionlistwidget.cpp
-index cff9044..8964e19 100644
+index cff9044..959fab2 100644
 --- a/src/ui/sessionlistwidget.cpp
 +++ b/src/ui/sessionlistwidget.cpp
 @@ -10,25 +10,12 @@ SessionListWidget::SessionListWidget(QWidget *parent)
@@ -498,7 +552,7 @@ index cff9044..8964e19 100644
 
      connect(this, &QListWidget::itemClicked, this, [this](QListWidgetItem *item) {
          if (item) {
-@@ -81,8 +64,8 @@ void SessionListWidget::contextMenuEvent(QContextMenuEvent *event)
+@@ -81,8 +68,8 @@ void SessionListWidget::contextMenuEvent(QContextMenuEvent *event)
 
      const QString sessionId = entry->data(Qt::UserRole).toString();
      QMenu menu(this);
@@ -509,7 +563,7 @@ index cff9044..8964e19 100644
 
      QAction *selected = menu.exec(event->globalPos());
      if (selected == renameAction) {
-@@ -98,5 +81,5 @@ QString SessionListWidget::fallbackTitle(const QString &title, const QString &id
+@@ -98,5 +85,5 @@ QString SessionListWidget::fallbackTitle(const QString &title, const QString &id
          return title.trimmed();
      }
 
@@ -577,10 +631,10 @@ index fdacbf8..ba3e406 100644
 
  void Sidebar::setSessions(const QVector<SessionSummary> &sessions)
 diff --git a/src/utils/thememanager.cpp b/src/utils/thememanager.cpp
-index 449efbd..8e7d5e3 100644
+index 449efbd..ad5d6f4 100644
 --- a/src/utils/thememanager.cpp
 +++ b/src/utils/thememanager.cpp
-@@ -273,135 +273,201 @@ void ThemeManager::apply()
+@@ -273,135 +273,220 @@ void ThemeManager::apply()
 
      QPalette palette;
      if (m_dark) {
@@ -683,7 +737,6 @@ index 449efbd..8e7d5e3 100644
 -        QLabel {
 -            background-color: transparent;
 -            color: palette(window-text);
--        }
 +            color: %4;
 +            font-family: "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
 +            font-size: 14px;
@@ -697,6 +750,11 @@ index 449efbd..8e7d5e3 100644
 +        }
 +        QWidget#titleBar, QWidget#chatHeader { border-bottom: 1px solid %6; }
 +        QWidget#composerArea { border-top: 1px solid %6; }
++        QWidget#composerShell {
++            background-color: %2;
++            border: 1px solid %6;
++            border-radius: 14px;
++        }
 +        QWidget#sidebar {
 +            background-color: %2;
 +            border-right: 1px solid %6;
@@ -713,6 +771,12 @@ index 449efbd..8e7d5e3 100644
 +        QLabel#brandTitle { color: %4; font-size: 15px; font-weight: 800; letter-spacing: 1px; }
 +        QLabel#brandSubtitle, QLabel#mutedLabel { color: %5; font-size: 12px; }
 +        QLabel#sectionTitle, QLabel#conversationTitle { color: %4; font-size: 16px; font-weight: 700; }
++        QLabel#messageAuthor {
++            color: %7;
++            font-size: 12px;
++            font-weight: 800;
++            letter-spacing: 1px;
+         }
          QPushButton {
 -            background-color: palette(button);
 -            color: palette(button-text);
@@ -792,7 +856,14 @@ index 449efbd..8e7d5e3 100644
 +            selection-background-color: %7;
 +            selection-color: #ffffff;
 +        }
-+        QTextEdit#messageComposer { background-color: %3; font-size: 15px; padding: 12px 14px; }
++        QTextEdit#messageComposer {
++            background-color: transparent;
++            border: 0;
++            border-radius: 8px;
++            font-size: 15px;
++            padding: 8px 10px;
++        }
++        QTextEdit#messageComposer:focus { border: 0; }
 +        QComboBox#modelSelector { padding-left: 12px; }
 +        QComboBox::drop-down { width: 30px; border: 0; }
          QComboBox QAbstractItemView {
@@ -847,18 +918,19 @@ index 449efbd..8e7d5e3 100644
 +        }
 +        QLabel[messageRole="assistant"] {
 +            color: %4;
-+            background-color: %2;
-+            border: 1px solid %6;
-+            border-radius: 14px;
-+            padding: 4px;
++            background-color: transparent;
++            border: 0;
++            border-radius: 0;
++            padding: 0;
++            font-size: 15px;
 +        }
 +        QLabel[messageRole="system"] {
 +            color: %4;
-+            background-color: %2;
++            background-color: %3;
 +            border: 1px solid %6;
-+            border-left: 4px solid %7;
-+            border-radius: 14px;
-+            padding: 12px;
++            border-left: 3px solid %7;
++            border-radius: 12px;
++            padding: 4px;
 +            font-size: 15px;
 +        }
 +        QStatusBar#connectionBar { color: %5; background-color: %2; border-top: 1px solid %6; }
