@@ -94,7 +94,7 @@ W0 基线与计划
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；809 项组合回归通过，V11 新包待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
-| W1.6 | V11 | 🟡 revision 8 已以同用户 strict 服务完成产品写入/检索/遗忘/隐藏；最终 user service、可交付组件依赖和 Agent 宿主仍待 W2.6/W5 | H-02、F4-03 通过 |
+| W1.6 | V11 | 🟡 `1751dd6` strict user service 已在目标 V11 返回 Vector `runtime=kylin`/compliant、`contest_ready=true`，并完成产品写入/检索/遗忘/隐藏；最终 Agent 同版归档仍待 W5 | H-02 获得部分通过实证；最终门随 G2/G5 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite
 映射、FTS/关系/缓存；SDK int64 主键与知识 ULID 的映射必须持久化并检测碰撞。
@@ -108,7 +108,7 @@ W0 基线与计划
 | W2.3 | `KYSDK=OFF` Debian CI 与 `KYSDK=ON` V11 构建画像独立运行 | 流水线已拆分；提交 `ea92b28` 的 V11 strict 双扩展构建及前端 38/38 已通过，自动安装/真实写查仍待 Agent/runtime 与服务 |
 | W2.4 | V11 最终包真实向量化并留存版本、链接、调用和故障证据 | H-01、H-03、F4-01/F4-02 通过 |
 | W2.5 | 在双 SDK 路径运行质量、延迟、资源和冷热压测 | P-01～P-04、F4-04/F4-05 原始报告生成 |
-| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | 🟡 user unit、XDG 私有目录、进程/版本握手、可恢复旧数据迁移及 GUI 升级 user-service 事务已实现；前端 38/38 与发布契约通过，strict 候选实测待完成 |
+| W2.6 | 设计并实现桌面用户会话 SDK 边界，使服务安全使用按 UID 隔离的 AI runtime；补鉴权、生命周期和失败恢复 | ✅ `1751dd6` user unit、XDG 私有目录、MainPID/UID 与版本握手、可恢复旧数据迁移及 GUI 升级事务已实现；目标 V11 strict 安装后双 SDK compliant、`contest_ready=true`，前端 38/38 |
 
 当前 V11 x86_64 软件源已确认并安装双 SDK、桌面 KylinSDK 及开发包；提交 `ea92b28`
 已生成 `KYSDK=ON`/strict amd64 包，包内包含两个 cp312 原生扩展，前端 ctest 38/38。

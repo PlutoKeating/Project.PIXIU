@@ -1,7 +1,7 @@
 # D-10 银河麒麟 V11 适配报告工作稿
 
 - 更新日期：2026-09-04
-- 状态：V11 双 SDK 产品链与无模型 Agent 宿主链已有强实证；最终供应链、模型运行和安装升级取证未完成
+- 状态：V11 strict user-service 双 SDK 已返回 compliant/`contest_ready=true`；最终 Agent 供应链、模型运行和安装升级取证未完成
 
 ## 已确认基线
 
@@ -11,11 +11,11 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 
 脱敏平台探测确认 x86_64 目标使用 `VERSION_ID=V11` 格式；能力端点和原生 CI 已兼容
 `11`、`V11`、`v11`。2026-09-04 软件源已提供并安装双 SDK、桌面 KylinSDK 及开发包；
-提交 `ea92b28` 完成 strict 原生编译。首次 strict 安装运行进一步确认 AI runtime
-socket 按 UID 隔离，当前专用系统服务账户无法复用桌面用户会话 runtime，后端因此
-按 strict 规则拒绝就绪；恢复 portable 配置后服务重新健康。该结果只证明失败关闭，
-该旧结果已被 revision 8 同用户双 SDK 产品链实证推进，但最终依赖仍未交付化，
-不得宣称 H-02/H-03 通过。
+提交 `ea92b28` 完成 strict 原生编译。首次 strict 安装运行确认 AI runtime socket
+按 UID 隔离，历史专用系统账户因此失败关闭。提交 `1751dd6` 后改用桌面用户的
+systemd user service 与 XDG 私有目录；目标 V11 复验确认 MainPID/UID、产品
+`0.1.7`、schema 12、Embedding/Vector native compliant 和 `contest_ready=true`。
+这使 H-02/H-03 获得部分通过实证；完整 Agent 同版正式归档前仍不得宣称最终通过。
 
 ## 最终适配矩阵
 
@@ -23,8 +23,8 @@ socket 按 UID 隔离，当前专用系统服务账户无法复用桌面用户�
 |------|--------|-------|----------|
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
 | openKylin Agent + Module E | 官方 0.9.6 宿主、固定 Runtime、Gateway 与 Provider 无模型探针通过；供应链/模型 run 未完成 | 未完成 | 可重建源码、版本、provider 加载、完整 run |
-| Embedding SDK | revision 8 产品链已使用真实 gte-base 768 维向量；最终依赖/Agent 待验 | 待真机 | runtime、调用日志、严格失败 |
-| Vector Engine SDK | revision 8 产品写入/检索/遗忘/隐藏通过；最终 user service 待实现 | H-02 未通过 | 建库/写入/查询/删除与进程证据 |
+| Embedding SDK | `1751dd6` strict user service 返回 native compliant/`contest_ready=true`，产品链使用真实 gte-base 768 维向量 | H-03 部分通过 | 同一最终 Agent 候选的正式归档 |
+| Vector Engine SDK | `1751dd6` strict user service 返回 native compliant/`contest_ready=true`，产品写入/检索/遗忘/隐藏通过 | H-02 部分通过 | 同一最终 Agent 候选的正式归档 |
 | UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |
@@ -33,8 +33,8 @@ socket 按 UID 隔离，当前专用系统服务账户无法复用桌面用户�
 降级行为及解决记录。任何 `KYSDK=OFF`/portable 结论单独成表，不标为原生验收。
 原生工作流已接入脱敏取证器：在隔离 Agent profile 中激活 Provider，绑定严格候选包
 摘要/commit、已装 manifest、dpkg 架构与 PIXIU/双 SDK 版本、Agent runtime 和三个
-运行端点，再以唯一临时集合直测 SDK 全生命周期并清理。当前仅完成脚本及隔离测试，
-尚无最终候选的目标 V11 输出。
+运行端点，再以唯一临时集合直测 SDK 全生命周期并清理。`1751dd6` 已取得 strict
+user-service 运行输出，但它尚未包含完整 Agent，故还不是最终候选证据。
 取证生命周期已补齐官方 demo 的 `LoadDBFile` 与 `Disconnect`，数据库放在独立临时
 目录并在断开后清理，避免验收数据污染用户的生产向量库。
 严格画像的目标构建发现桌面 KylinSDK 与 gsettings-qt 运行包不提供 `pkg-config` 开发

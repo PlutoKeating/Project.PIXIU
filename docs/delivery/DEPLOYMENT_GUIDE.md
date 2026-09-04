@@ -1,8 +1,9 @@
 # D-04 银河麒麟 V11 部署指南工作稿
 
 - 适用版本：0.1.7 功能基线；最终候选号待定
-- 状态：Kylin V11 portable 包构建/跨 revision 安装/健康检查已通过；strict 原生包
-  已构建安装，但用户会话 AI runtime 边界和双 SDK 最终运行尚未闭环
+- 状态：Kylin V11 portable 包构建/跨 revision 安装/健康检查已通过；提交 `1751dd6`
+  的 strict user-service 包已构建安装并返回双 SDK compliant、`contest_ready=true`；
+  完整 Agent、最终图形安装和同版 D-07 证据仍未闭环
 
 ## 安装目标
 
@@ -63,8 +64,9 @@ V11 双 SDK 候选包使用 `kylin-v11-native-x86_64` profile。该画像令
 历史系统级 `pixiu-backend.service` 使用专用账户，不能直接访问桌面用户会话 socket。
 当前安装结构已改为 systemd user service，并把配置、数据和状态置于当前用户 XDG
 目录；启动器要求 unit 的 MainPID 属于当前 UID，并核对 loopback `/version` 的组件与
-包版本，拒绝端口伪服务。旧数据迁移、升级事务和最终 strict 复验完成前，仍不得声明
-H-02/H-03 通过。
+包版本，拒绝端口伪服务。旧数据迁移、升级事务和 strict user-service 复验现已完成；
+在完整 Agent 与同版正式 D-07 归档完成前，H-02/H-03 只能登记“部分通过”，不得声明
+最终通过。
 
 旧系统账户版存在 `/var/lib/pixiu/pixiu.db` 时，首次用户启动会请求系统授权执行一次性
 迁移。工具拒绝非空目标，使用 SQLite backup API 并在提交前后核对 integrity、schema、
@@ -72,8 +74,10 @@ H-02/H-03 通过。
 journal 恢复，成功标记明确记录源数据仍保留，不在安装脚本中直接删除。
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 的洁净 strict amd64 包已再次完成构建、
 安装和失败关闭复验：保留 portable 配置时服务健康，切换 strict 后稳定暴露上述用户
-会话边界，恢复配置后服务、配置和数据库摘要保持。该切片不代表已交付 user service，
-也不是最终安装矩阵证据。
+会话边界，恢复配置后服务、配置和数据库摘要保持。后续提交 `1751dd6` 已完成该边界：
+目标 V11 安装后旧数据迁移校验通过，user unit active，MainPID 属于桌面用户，
+`/version` 返回产品 `0.1.7`/schema 12，`/capabilities` 返回两个 native runtime
+compliant 与 `contest_ready=true`。该新证据仍不是完整 Agent 或最终安装矩阵证据。
 Vector Engine 无需配置 TCP host/port：生产使用系统 SDK 的 `ConnectParam(appId)`
 本地连接。旧配置中可能残留的 `PIXIU_VECTOR_HOST`/`PIXIU_VECTOR_PORT` 已被忽略；
 新装模板不再生成它们，`PIXIU_VECTOR_APP_ID` 仍用于隔离应用数据库。

@@ -22,6 +22,14 @@ PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团�
 > [!CAUTION]
 > **当前仓库尚不能宣称完整赛题验收通过。** 现有代码主体是记忆业务引擎、基础设施和专用记忆控制台；它没有完成真实宿主中的多轮 Agent、模型规划、工具自主选择、Shell/联网搜索与审批取证。portable 画像仍使用 SQLite INT8；strict 画像已接入指定 Vector Engine，但最终候选的产品全链路与性能证据尚未生成。
 
+2026-09-04 的目标 V11 严格画像复验已越过此前的用户会话阻断：提交 `1751dd6`
+构建的 amd64 包含两个 cp312 原生 SDK 扩展，前端 CTest 38/38；旧系统域数据库经
+SQLite backup、完整性/表计数/schema/同步身份校验迁入当前桌面用户 XDG 数据域后，
+systemd user service 的 MainPID/UID 与 `/version` 均通过，`/capabilities` 实际返回
+Embedding/Vector runtime 为 `kylin`、两者 compliant 且 `contest_ready=true`。该包
+SHA-256 为 `f5044957c77af63476322d3c32d7627223fb6d44776a3dd148f7f6a491625f00`。
+这证明用户会话双 SDK 产品路径，仍不证明完整 Agent、三设备、性能和最终交付门。
+
 严格原生画像现带分阶段 fail-closed 门禁：`preinst` 在 dpkg 写入文件前核对麒麟
 V11 与架构；双 SDK 由包依赖解析，并由后端严格启动预检验证实际可用性；桌面用户
 激活 Provider 时再检查 `kylin-agent` 与唯一、成功返回的 0.9.x runtime。通用 Debian
@@ -47,7 +55,7 @@ Runtime 必须提供全量 wheel、锁文件和离线安装日志；SPDX 2.3 必
 上游及全部 wheel 包；NOTICE 必须记录来源、固定 commit 与精确许可证边界。宿主官方
 仓库元数据的 `AGPL-3.0` 已按 SPDX 3.0 规范化为 `AGPL-3.0-only`，但对应源码和 NOTICE
 义务仍未免除。当前上游
-认证式 URL 和真实 V11 构建证据仍未闭环，因此门禁按事实保持失败，不能把现有
+认证式 URL、宿主 V11 可重建证据与 Runtime 离线证据仍未闭环，因此门禁按事实保持失败，不能把现有
 `.deb` 描述为已内置可分发完整 Agent。
 
 同步控制台现只呈现真实动作：设备发现/确认式配对、自动 Gossip/反熵状态、暂停、
@@ -202,8 +210,8 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 | 门槛 | 赛方要求 | 当前状态 | 最终通过证据 |
 |------|----------|----------|--------------|
 | H-01 | 软件部署在银河麒麟桌面操作系统 V11；不满足计 0 分 | 部分具备 V11 构建/桌面记录，仍需按最终版本重验 | V11 安装、启动、全链路视频与机器信息 |
-| H-02 | 使用系统向量数据库 SDK | **未通过（已有强实证）**：strict revision 8 已在同用户会话完成产品写入/检索/遗忘/删除后隐藏；最终服务拓扑与组件依赖尚未交付化 | SDK 建库、写入、查询日志与端到端测试 |
-| H-03 | 使用系统 Embedding 接口 | **未通过（已有强实证）**：官方 demo、PIXIU 绑定及 revision 8 产品链均返回真实 768 维向量；组件兼容修复尚未成为最终可安装依赖 | `runtime=kylin` 报告、调用日志与故障即失败验证 |
+| H-02 | 使用系统向量数据库 SDK | **部分通过，最终门未过**：`1751dd6` strict user service 已返回 Vector `runtime=kylin`/compliant、产品写查遗忘链通过；仍缺同一最终候选的 Agent/性能归档 | SDK 建库、写入、查询日志与端到端测试 |
+| H-03 | 使用系统 Embedding 接口 | **部分通过，最终门未过**：`1751dd6` strict user service 已返回 Embedding `runtime=kylin`/compliant 和真实 768 维向量；仍缺同一最终候选的 Agent/性能归档 | `runtime=kylin` 报告、调用日志与故障即失败验证 |
 
 现有 portable 基线（偏好 100%、召回 100%、冲突 96%、P95 115ms）只证明通用软件路径可回归，**不代表 H-01～H-03 或最终比赛性能验收通过**。详见 [验收证据说明](docs/acceptance/README.md)。
 
@@ -236,7 +244,7 @@ LoadDBFile/create/load/upsert/search/delete/drop/disconnect，再验证产品 AP
 召回/遗忘。首次目标 V11 严格候选证据仍待
 生成，未生成前不得将 H-02/H-03 标为通过。
 2026-09-04 的首次严格安装运行检查进一步确认：麒麟 AI runtime 的 Unix socket 按
-调用进程 UID 隔离，而当前后端以专用系统账户运行，不能直接复用桌面用户会话中的
+调用进程 UID 隔离；后端现已改为桌面用户 systemd user service，从而复用该用户会话中的
 runtime；strict 后端因此按设计失败关闭。ADR-0002 获批后，安装包已切换为 root
 所有的 systemd user unit，启动器在桌面用户上下文创建 XDG 私有配置/数据/状态目录
 并启动服务；启动完成还必须同时通过 user manager MainPID/UID 与后端组件/版本握手，
@@ -275,7 +283,7 @@ AI runtime 边界失败关闭，恢复后配置和数据库摘要保持。该复
 版本事实，扫描认证式 URL 时只报告文件名；正式候选还必须同时提交宿主 V11 重建、
 Runtime 离线 wheelhouse、SPDX 和 NOTICE 证据。当前强制审计按事实失败，不能把
 普通报告命令成功或无模型探针成功解释为可发布。
-最终 V11 双 SDK 与全新机/图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
+最终 Agent/三设备/性能与全新机图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
 [最终交付与版本管理计划](docs/DELIVERY_PLAN.md)。

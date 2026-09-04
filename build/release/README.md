@@ -11,7 +11,8 @@
 > [!CAUTION]
 > 当前 `.deb` 已包含 PIXIU 原创 Module E，并由桌面用户启动器安装/升级到当前
 > openKylin Agent profile；它仍不打包或冒充未修改的上游 Agent。真实宿主多轮闭环、
-> 支持版本矩阵和最终 V11 双 SDK 证据尚未完成，因此不能据包结构宣称完整验收通过。
+> `1751dd6` 已取得 V11 strict user-service 双 SDK compliant/`contest_ready=true` 证据；
+> 完整 Agent、三设备、性能和最终安装矩阵尚未完成，因此不能据包结构宣称完整验收通过。
 
 ## 交付治理预检
 
@@ -636,7 +637,7 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 - 同版本重装、旧版升级、断网、坏签名、权限取消、安装失败与数据保留矩阵；
 - `.deb` 已包含 Module E，只读源位于 `/usr/lib/pixiu/integrations/kylin_agent/pixiu`；
   `pixiu` 启动时更新当前用户 Agent profile，但当前仍不打包上游 Agent 宿主/Runtime。
-  官方 0.9.6 宿主虽可在 V11 启动，其公开标签不可重建；0.9.7 又与目标 C++ ABI
+  官方 0.9.6 宿主二进制虽可在 V11 启动，其公开源码标签当前链接失败；0.9.7 又与目标 C++ ABI
   不兼容。最终单包方案须先通过 ADR-0003 的对应源码、离线依赖、敏感扫描与许可证门。
 
 这些是团队发布门；逐项状态与赛事 D-01～D-10 文档台账见

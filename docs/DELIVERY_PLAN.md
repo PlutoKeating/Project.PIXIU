@@ -33,7 +33,7 @@
 |------|----------|----------|
 | 记忆服务 + 控制台 `.deb` | 已切换 root-owned 安装 + systemd user service + XDG 私有目录；旧库迁移和 GUI 升级事务已实现，最终包待实测 | 部分通过 |
 | Module E 随包安装 | `.deb` 携带只读 Provider；用户启动时幂等安装并激活，保留端点/scope 等配置、严格画像强制 strict=1；拒绝覆盖非受管同名插件 | **结构通过，最终宿主重验** |
-| V11 双 SDK 严格画像 | strict revision 8 同用户产品写入/检索/遗忘/隐藏已通过；兼容组件和用户服务尚未形成最终安装方案，Agent 宿主/runtime 也未安装 | 阻断 |
+| V11 双 SDK 严格画像 | `1751dd6` 已将 user service、XDG 数据、旧数据迁移与强制 native 配置纳入安装包；目标 V11 返回双 SDK compliant、`contest_ready=true` | 部分通过；最终 Agent 同版归档仍阻断 |
 | 图形安装器双击安装 | 尚无最终版本取证 | 阻断 |
 | 离线/全新机安装 | 现有 wheels 路径可用，需最终包重验 | 待重验 |
 
