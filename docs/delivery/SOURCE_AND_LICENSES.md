@@ -1,7 +1,7 @@
 # D-03 源代码、依赖与许可证清单
 
 - 更新日期：2026-09-03
-- 状态：边界已冻结；最终 commit、SBOM 和分发审查待补
+- 状态：边界、Agent SBOM/NOTICE/对应源码和离线依赖审查已通过；最终 commit 冻结待补
 
 ## 团队原创范围
 
@@ -13,7 +13,7 @@
 
 | 依赖 | 角色 | 当前已知许可证/边界 |
 |------|------|---------------------|
-| `third_party/kylin-agent` | 桌面宿主参考/依赖 | 官方 Gitee 仓库元数据声明 `AGPL-3.0`，按 SPDX 3.0 规范化为 `AGPL-3.0-only`；官方 0.9.6 二进制可在 V11 启动，但公开标签不可重建，0.9.7 与目标 ABI 不兼容；不得在对应源码闭环前纳入最终包 |
+| `third_party/kylin-agent` | 桌面宿主基座 | 官方 Gitee 元数据声明 `AGPL-3.0`，按 SPDX 规范化为 `AGPL-3.0-only`；固定源码经可审计最小适配后已在 V11 隔离重建，strict 包附对应源码、补丁、构建证据与许可证 |
 | `third_party/kylin-agent-runtime` | Agent runtime/MemoryProvider | MIT；固定 commit，适配代码另存 Module E |
 | `third_party/kylin-coreai-embedding` | 指定 Embedding SDK | GPL-3.0-or-later；按系统分发规则继续审查 |
 | `third_party/libkysdk-vector-engine-client` | 指定 Vector Engine 客户端 | Apache-2.0；按系统分发规则继续审查 |

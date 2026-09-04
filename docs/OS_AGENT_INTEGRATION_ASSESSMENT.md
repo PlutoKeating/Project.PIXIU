@@ -29,10 +29,11 @@
 集成、双 SDK 合规、多设备记忆创新和量化效果。若需要零争议的“正式允许”结论，
 仍应向赛题答疑联系人取得书面确认。
 
-当前仓库不能把 `frontend/` 的聊天外观等同于完整 Agent。普通输入仍直接调用
-`/memory/query`；完整 Agent 循环由选定的 openKylin 宿主提供。仓库现已新增原创
-`integrations/kylin_agent/` MemoryProvider，但尚未完成安装包部署和真实宿主端到端
-取证，不能据适配器契约测试宣称完整 Agent 已验收。
+当前仓库不能把 `frontend/` 的聊天外观等同于完整 Agent。完整 Agent 循环由选定的
+openKylin 宿主提供，strict 单包现已部署可重建宿主、锁定 Runtime 与原创
+`integrations/kylin_agent/` MemoryProvider。无模型 Gateway/会话 API/Provider 和包内
+用户服务已经实测；仍不能在未配置推理提供商、未产生自主工具事件前宣称完整 Agent
+生命周期已验收。
 
 ## 2. 权威材料、角色与源码依据
 
@@ -122,11 +123,11 @@ PPT 将 OS Agent 定义为系统级智能助手：能够理解复杂指令、规
 
 | 领域 | 已有事实 | 结论/缺口 |
 |------|----------|-----------|
-| Agent 主体 | `frontend/` 是记忆控制台；官方 0.9.6 宿主二进制与固定 Runtime 已在 V11 完成无模型启动/Gateway/Provider 探针 | 复用路线可行，但公开源码不可重建宿主，供应链仍是 P0 |
+| Agent 主体 | `frontend/` 是记忆控制台；上游固定源码经最小适配后已在 V11 网络隔离构建并随 strict 单包部署，Runtime wheelhouse 离线安装通过 | 供应链门 `ready=true`；真实模型 run 仍是 P0 |
 | 会话 | PIXIU 已保存 session/run/turn provenance；会话主体由上游宿主管理；两阶段真实取证器已落地 | 待最终 V11 候选完成三轮、宿主/Runtime 重启和会话摘要恢复实测 |
 | 自主规划/工具 | Module E 已注册查询、记住、更新、遗忘、同步状态五个记忆工具；规划、审批、Shell、联网搜索来自上游；取证器读取 `/v1/runs` SSE，不直调 PIXIU 冒充 Agent | 待最终模型实际自主选择并完成工具结果跨会话召回，不计为团队原创 |
-| Embedding | revision 8 同用户产品链经 runtime 1.3.0 使用 gte-base 768 维真实向量 | H-03 仍未通过：兼容修复尚未形成最终依赖，完整 Agent/性能待验 |
-| 向量数据库 | revision 8 已完成系统 SDK 产品写入/检索/遗忘/隐藏 | H-02 仍未通过：同用户临时运行尚未落实为最终 user service/安装升级方案 |
+| Embedding | `f2a25f4` strict 单包同版原生证据经 runtime 1.3.0 使用 gte-base 768 维真实向量 | 技术门通过；最终冻结 commit 需重跑并进入 D-07 |
+| 向量数据库 | `f2a25f4` strict 单包完成 direct SDK 和产品写入/检索/遗忘/隐藏 | 技术门通过；最终冻结 commit 需重跑并进入 D-07 |
 | 记忆引擎 | 多源接入、偏好、知识、冲突、安全、遗忘及 Module E 调用已有实现 | 契约测试已触发，仍需真实 Agent 生命周期实证 |
 | 记忆流转 | 六类事件已由 Module E 映射到短/中期 API | 长期化策略及真实 session/压缩/结束证据待补 |
 | 分布式同步 | CRDT、Gossip、反熵、配对、签名、mTLS、墓碑 | 是主要创新项，需做多机收敛实证 |

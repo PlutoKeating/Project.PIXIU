@@ -18,14 +18,14 @@
 |------|--------|----------|------|
 | D-01 | `PRESENTATION_AND_VIDEO.md` | 项目报告 `.pptx` | 内容骨架完成，最终证据待补 |
 | D-02 | `TECHNICAL_SOLUTION.md` | 技术方案 `.docx` + `.pdf` | 工作稿已建立，最终数据待补 |
-| D-03 | `SOURCE_AND_LICENSES.md` | 源码包/仓库快照 + 清单 | 边界已定义，SBOM/最终 commit 待补 |
+| D-03 | `SOURCE_AND_LICENSES.md` | 源码包/仓库快照 + 清单 | Agent SBOM/NOTICE/源码证据已通过；最终 commit 冻结后生成 |
 | D-04 | `DEPLOYMENT_GUIDE.md` | 部署文档 `.pdf` | 工作稿已建立，最终包待重验 |
 | D-05 | `PRESENTATION_AND_VIDEO.md` | ≤7 分钟演示视频 | 脚本已建立，最终录制待完成 |
 | D-06 | `USER_MANUAL.md` | 用户手册 `.pdf` | Module E 契约已写，真实宿主截图待补 |
 | D-07 | `TEST_REPORT.md` | 效果/测试报告 `.pdf` + 原始数据 + 三设备最终 JSON | portable 证据及 Agent 两阶段采集器已有；总 JSON 已纳入打包硬门，真实 V11 待补 |
 | D-08 | `MEMORY_LIFECYCLE.md` | 记忆流转说明 `.pdf` | Module E 映射已写，宿主/长期化实证待补 |
 | D-09 | `APPLICATION_CASES.md` | 实际应用案例章节/附件 | 流程已写，最终截图/日志待补 |
-| D-10 | `KYLIN_V11_ADAPTATION_REPORT.md` | V11 适配报告 `.pdf` | 历史基线已有，最终双 SDK 待补 |
+| D-10 | `KYLIN_V11_ADAPTATION_REPORT.md` | V11 适配报告 `.pdf` | strict 单包与双 SDK 产品链已实测；完整 Agent/三设备待补 |
 
 维护规则：每份文档首页记录产品版本、Git commit、日期、作者/审核人和状态；所有
 数值、截图与视频时间戳链接同一候选 release 的原始证据。导出 PDF/PPT 前必须执行

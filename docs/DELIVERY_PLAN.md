@@ -31,9 +31,9 @@
 
 | 能力 | 当前事实 | 发布判定 |
 |------|----------|----------|
-| 记忆服务 + 控制台 `.deb` | 已切换 root-owned 安装 + systemd user service + XDG 私有目录；旧库迁移和 GUI 升级事务已实现，最终包待实测 | 部分通过 |
-| Module E 随包安装 | `.deb` 携带只读 Provider；用户启动时幂等安装并激活，保留端点/scope 等配置、严格画像强制 strict=1；拒绝覆盖非受管同名插件 | **结构通过，最终宿主重验** |
-| V11 双 SDK 严格画像 | `1751dd6` 已将 user service、XDG 数据、旧数据迁移与强制 native 配置纳入安装包；目标 V11 返回双 SDK compliant、`contest_ready=true` | 部分通过；最终 Agent 同版归档仍阻断 |
+| 记忆服务 + 控制台 `.deb` | root-owned 单包 + systemd user service + XDG 私有目录；旧库迁移、覆盖安装、健康检查和 GUI 升级事务均已实现 | 命令行安装/覆盖升级通过；完整矩阵待补 |
+| Module E 随包安装 | `.deb` 携带只读 Provider；用户启动时幂等安装并激活；旧用户 Runtime unit 会先备份再迁移到包内网关 | **安装与激活通过；模型 run 待补** |
+| V11 双 SDK 严格画像 | `f2a25f4` 同包原生证据完成 direct SDK 和产品写查遗忘，双 SDK compliant、`contest_ready=true` | 技术门通过；最终冻结 commit 重跑归档 |
 | 图形安装器双击安装 | 尚无最终版本取证 | 阻断 |
 | 离线/全新机安装 | 现有 wheels 路径可用，需最终包重验 | 待重验 |
 
@@ -42,7 +42,7 @@
 桌面 Agent 与允许位于用户目录的 runtime 由用户态 Provider 激活器验证。严格启动器
 不会吞掉激活失败，generic/portable 才保留独立控制台降级。构建器强制
 `KYSDK=ON`/`install_strict=1` 成对，组件清单记录最终模式。首次目标运行已证明严格失败
-关闭有效，也暴露用户会话 SDK 边界尚未交付化；该边界闭环后才可生成最终证据。
+关闭有效；用户会话 SDK 边界现已交付化并取得同包原生证据。
 推荐边界已于 2026-09-04 获负责人批准，见
 [`ADR-0002`](decisions/0002-run-native-backend-in-user-session.md)：`.deb` 仍为一次
 系统安装，后端改由登录用户的 systemd user manager 运行，数据进入 XDG 用户域，升级
@@ -63,19 +63,18 @@ amd64 构建、38/38 前端测试和安装；保留 portable 配置时服务健�
 `Depends`；发布前以同版实测确定 Embedding、Vector Engine 及其 runtime 的最小包集，
 并在安装器中对缺失能力给出可操作提示。
 
-Agent 宿主供应链另有独立发布门：官方 0.9.6 二进制可在 V11 启动并连接固定 Runtime，
-Gateway 与 PIXIU Provider 无模型探针通过；但公开源码标签不能重建该宿主，0.9.7
-发布二进制与目标 V11 ABI 不兼容，Runtime 缓存也不是可复现构建。处理方案与禁止项
-见已批准的 [ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md)。在对应
-源码、敏感地址清理、离线锁定和许可证审查完成前，不能把宿主纳入最终单包。
+Agent 宿主供应链另有独立发布门：官方公开源码原状不可完整链接，仓库依据
+[ADR-0003](decisions/0003-package-openkylin-agent-supply-chain.md) 保留可审计最小补丁，移除未完成且
+未使用的 UI 单元、补全 Gateway/stream/cancel/model 适配，并在净化后的隔离源码副本
+上完成 V11 网络隔离重建。Runtime 以完整 hash lock wheelhouse 网络隔离安装。
 `build/release/scripts/audit-agent-supply-chain.py` 已把该边界变成机器门禁：固定双上游
 commit 与 Runtime 三套版本事实，扫描时只披露命中文件名；正式候选以
 `--require-ready` 要求 V11 宿主重建、Runtime 离线 wheelhouse、SPDX SBOM 和 NOTICE
 同时有效。证据不能仅靠布尔声明：宿主产物、完整对应源码和构建日志，Runtime 全量
 wheel、锁文件和离线安装日志均须提供路径与匹配摘要；目标 OS/架构/Python ABI 必须
-显式记录。SPDX 2.3 必须覆盖固定宿主、Runtime 及 wheelhouse 全部包，NOTICE 必须
-复述固定来源、commit 和许可证边界。当前缺证据且上游扫描有命中，报告必须保持
-`ready=false`。
+显式记录。SPDX 2.3 覆盖固定宿主、Runtime 及 wheelhouse 全部包，NOTICE 复述固定
+来源、commit 和许可证边界；当前强制报告为 `ready=true`、零 blocker。上游原始仓库
+中被识别的认证式 URL 不进入发行源码或入包范围，实际发行范围复扫通过。
 
 ## 2. 版本管理唯一真相源
 
@@ -108,8 +107,8 @@ commit/版本/架构从包内组件清单与 dpkg control 交叉核对，且 JSO
 还须在目标银河麒麟 V11 环境记录 Embedding/Vector SDK 的实际安装包版本、运行时
 探测结果及 `/capabilities` 一致性。原生取证器已自动化绑定候选包摘要/commit、已装
 manifest、dpkg 版本、Agent runtime 和三个端点，并以独立临时数据库和隔离集合直接
-执行 SDK 的装载、集合、向量及断开生命周期；首次真实输出仍待生成，源码 gitlink
-不能代替该项实装证据。
+执行 SDK 的装载、集合、向量及断开生命周期。`f2a25f4` 已生成真实通过输出并绑定
+候选 SHA；文档冻结后仍需对最终 commit 重跑，源码 gitlink不能代替实装证据。
 
 三设备证据采用两级门禁：`three-device-evidence.py capture` 必须在各节点本地复用
 已经通过的 strict 原生证据并读取 loopback 同步 API，只导出加盐身份/域摘要和版本、
@@ -171,14 +170,14 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 |------|--------|------------|----------|----------|
 | D-01 | 项目报告 PPT | `delivery/PRESENTATION_AND_VIDEO.md` | `.pptx` | 内容骨架完成，最终证据待补 |
 | D-02 | 技术方案 | `delivery/TECHNICAL_SOLUTION.md` | `.docx` + `.pdf` + Markdown | 工作稿完成，最终数据待补 |
-| D-03 | 源代码 | `delivery/SOURCE_AND_LICENSES.md` | 源码包/仓库快照 | 边界完成，SBOM/最终 commit 待补 |
-| D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | V11 portable 跨 revision、离线依赖、健康/配置保留已重验；图形、原生最终包待验 |
+| D-03 | 源代码 | `delivery/SOURCE_AND_LICENSES.md` | 源码包/仓库快照 | Agent SBOM/NOTICE/源码实物通过；最终 commit 冻结后生成 |
+| D-04 | 部署文档 | `delivery/DEPLOYMENT_GUIDE.md` | `.pdf` + Markdown | V11 strict 单包命令行安装/覆盖升级/离线 Runtime 已验；图形路径待验 |
 | D-05 | 演示视频 | `delivery/PRESENTATION_AND_VIDEO.md` | `.mp4` 优先，≤7 分钟 | 脚本完成，录制待完成 |
 | D-06 | 用户手册 | `delivery/USER_MANUAL.md` | `.pdf` + Markdown | 工作稿完成，Agent UI 待补 |
 | D-07 | 效果/测试报告 | `delivery/TEST_REPORT.md` + `acceptance/` | `.pdf` + 原始 JSON/CSV + `three-device-final-suite.json` | portable 已有，最终 V11 待补；总报告已列为打包硬门 |
 | D-08 | 记忆流转说明 | `delivery/MEMORY_LIFECYCLE.md` | `.pdf` + Markdown | 设计完成，Agent 实证待补 |
 | D-09 | 实际应用案例 | `delivery/APPLICATION_CASES.md` | `.pdf`/报告章节 | 流程完成，最终取证待补 |
-| D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | V11 portable 升级基线已刷新，最终双 SDK 待补 |
+| D-10 | V11 适配报告 | `delivery/KYLIN_V11_ADAPTATION_REPORT.md` | `.pdf` + 日志/截图 | strict 单包与双 SDK 产品链已验；完整 Agent/三设备待补 |
 
 “部分完成”不等于可提交。每份最终文档必须包含版本、日期、作者/审核人、适用提交、
 环境、证据链接和已知限制；数据和截图必须能追溯到同一个 release commit。

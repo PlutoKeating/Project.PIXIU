@@ -27,9 +27,9 @@
 
 | 编号 | 验收项 | 测试方法 | 通过标准 | PIXIU 当前状态 |
 |------|--------|----------|----------|----------------|
-| H-01 `[GATE]` | 部署于银河麒麟桌面操作系统 V11 | 记录系统版本、架构；安装最终包并完成全链路演示 | 最终版本在 V11 可安装、启动、操作；PPT 明示不满足计 0 分 | **部分通过，须对最终版本重验** |
-| H-02 `[GATE]` | 数据库使用系统向量数据库 SDK | 跟踪建库、索引、写入、删除、查询调用；检查链接/进程与运行日志 | 生产向量存储和检索实际调用 `kylin-ai-vector-engine`/官方客户端；严格模式缺失即失败 | **部分通过，最终门未过：`1751dd6` strict user service 返回 `runtime=kylin`/compliant，产品写入/检索/遗忘/隐藏已过；同一最终候选 Agent/性能归档待补** |
-| H-03 `[GATE]` | 文本向量使用系统 Embedding 接口 | 运行 `runtime=kylin` 端到端用例；检查调用日志和缺失 SDK 失败行为 | 实际调用 `kylin-coreai-embedding`；不能由 portable/hash/stub 顶替 | **部分通过，最终门未过：`1751dd6` strict user service 返回 `runtime=kylin`/compliant，并使用真实 gte-base 768 维向量；同一最终候选 Agent/性能归档待补** |
+| H-01 `[GATE]` | 部署于银河麒麟桌面操作系统 V11 | 记录系统版本、架构；安装最终包并完成全链路演示 | 最终版本在 V11 可安装、启动、操作；PPT 明示不满足计 0 分 | **安装/启动已通过；最终同版 Agent、三设备和视频待补** |
+| H-02 `[GATE]` | 数据库使用系统向量数据库 SDK | 跟踪建库、索引、写入、删除、查询调用；检查链接/进程与运行日志 | 生产向量存储和检索实际调用 `kylin-ai-vector-engine`/官方客户端；严格模式缺失即失败 | **技术门通过、最终归档待重跑：`f2a25f4` strict 同包 direct SDK 与产品写入/检索/遗忘/隐藏通过，`runtime=kylin`/compliant** |
+| H-03 `[GATE]` | 文本向量使用系统 Embedding 接口 | 运行 `runtime=kylin` 端到端用例；检查调用日志和缺失 SDK 失败行为 | 实际调用 `kylin-coreai-embedding`；不能由 portable/hash/stub 顶替 | **技术门通过、最终归档待重跑：`f2a25f4` strict 同包使用 runtime 1.3.0/gte-base 768 维真实向量，`runtime=kylin`/compliant** |
 
 H-02 允许 SQLite 保存结构化元数据、关系和审计，但向量的生产存储/检索必须经过指定系统向量数据库。BGE-M3 等模型只能作为对比实验，不能替代 H-03。
 
@@ -75,13 +75,12 @@ compare-and-swap 校验 `expected_version`，更新产生独立 evidence、重�
 并让 shared 更新进入同一 CRDT 实体。双连接并发回归证明同一基线版本只有一个本地
 更新可提交；Module E 工具接线和三台真实设备的并发收敛仍未取证，故 A-08 不升级。
 
-无模型宿主探针进一步证明复用路线可行：官方 0.9.6 发布二进制在 V11 可启动，固定
-Runtime 的 Gateway `/health`、`/api/sessions` 通过，且 Module E 被发现并选中为
-`memory.provider=pixiu`。但官方源码标签不可重建宿主，0.9.7 二进制又与 V11 C++ ABI
-不兼容；宿主/Runtime 的固定、离线和许可证供应链仍未闭环，故 A-01～A-10 不升级。
-供应链验收器已经拒绝仅凭 `rebuild_verified`/`offline_install_verified` 自述或占位
-SBOM/NOTICE 过门：正式 A-11/A-12 证据还必须绑定宿主产物、对应源码、构建日志、
-Runtime wheels/锁文件/离线安装日志的摘要，并由 SPDX 2.3 覆盖固定组件和所有 wheel。
+无模型宿主探针和最终供应链构建已证明复用路线可行：固定源码经审计适配后在 V11
+网络隔离环境可重建，strict 包携带宿主、54 个锁定 wheels、对应源码/日志、SPDX 与
+NOTICE，离线安装和供应链审计均为 `ready=true`；Gateway、会话 API 与
+`memory.provider=pixiu` 通过。因此 A-11/A-12 供应链部分已满足。A-01～A-10 的模型
+行为仍不升级：当前环境没有推理提供商/API key，真实 run 明确失败，不能以无模型
+探针代替自主规划、Shell、联网搜索、审批和跨会话记忆证据。
 
 ## 2. OS Agent 产品集成检查（项目派生项，非官方独立评分表）
 

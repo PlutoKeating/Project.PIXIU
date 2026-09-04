@@ -329,8 +329,9 @@ Security detector，`user:*` 敏感 evidence 本地隔离，`shared:*` 敏感写
 不得直接修改 `third_party/` 工作树；不得把上游通用 Agent 功能计为团队原创。
 vNext Agent 记忆契约已先在 `docs/API.md` 冻结并由 Module E 消费。当前 19 项测试覆盖
 固定上游 ABC/插件发现、strict 能力预检、缓存召回、异步写入/背压、生命周期、工具、
-遗忘确认和错误脱敏；安装包已携带并安全激活 Provider，无模型真实 Runtime 发现
-探针已通过，宿主供应链与 W5 模型驱动 Agent 场景仍未完成。
+遗忘确认和错误脱敏；strict 安装包已携带并安全激活 Provider、可重建宿主及离线
+Runtime，供应链门 `ready=true`，无模型 Gateway/会话探针通过；W5 模型驱动 Agent
+场景仍因未配置推理提供商而未完成。
 
 ---
 

@@ -1,7 +1,7 @@
 # D-10 银河麒麟 V11 适配报告工作稿
 
 - 更新日期：2026-09-04
-- 状态：V11 strict user-service 双 SDK 已返回 compliant/`contest_ready=true`；最终 Agent 供应链、模型运行和安装升级取证未完成
+- 状态：V11 strict 单包、双 SDK 与 Agent 供应链已通过；模型运行、三设备和完整安装升级取证未完成
 
 ## 已确认基线
 
@@ -15,16 +15,18 @@ KYSDK 开关和 Debian 降级路径记录。历史环境为 Python 3.12.3、Qt 5
 按 UID 隔离，历史专用系统账户因此失败关闭。提交 `1751dd6` 后改用桌面用户的
 systemd user service 与 XDG 私有目录；目标 V11 复验确认 MainPID/UID、产品
 `0.1.7`、schema 12、Embedding/Vector native compliant 和 `contest_ready=true`。
-这使 H-02/H-03 获得部分通过实证；完整 Agent 同版正式归档前仍不得宣称最终通过。
+`f2a25f4` 候选进一步把可重建 Agent 宿主、锁定 Runtime wheelhouse、Provider 与双 SDK
+装入同一 `.deb`，覆盖安装和用户 gateway 迁移通过；正式 D-07 仍须绑定文档冻结后的
+最终 commit，且完整 Agent 模型行为未出证前不得宣称赛事总门通过。
 
 ## 最终适配矩阵
 
 | 项目 | x86_64 | arm64 | 必须证据 |
 |------|--------|-------|----------|
 | V11 图形安装/卸载 | portable 跨 revision、离线依赖、helper 健康已重验；图形/卸载待验 | 待真机 | 系统/架构、安装器、包日志 |
-| openKylin Agent + Module E | 官方 0.9.6 宿主、固定 Runtime、Gateway 与 Provider 无模型探针通过；供应链/模型 run 未完成 | 未完成 | 可重建源码、版本、provider 加载、完整 run |
-| Embedding SDK | `1751dd6` strict user service 返回 native compliant/`contest_ready=true`，产品链使用真实 gte-base 768 维向量 | H-03 部分通过 | 同一最终 Agent 候选的正式归档 |
-| Vector Engine SDK | `1751dd6` strict user service 返回 native compliant/`contest_ready=true`，产品写入/检索/遗忘/隐藏通过 | H-02 部分通过 | 同一最终 Agent 候选的正式归档 |
+| openKylin Agent + Module E | `f2a25f4` 同包宿主/Runtime/Provider、离线供应链、Gateway 与会话 API 通过；模型 run 未完成 | 未完成 | 已有可重建/离线证据；待完整 run |
+| Embedding SDK | `f2a25f4` strict 同包 native compliant，产品链使用 runtime 1.3.0/gte-base 768 维向量 | 技术门通过 | 最终冻结 commit 的正式归档 |
+| Vector Engine SDK | `f2a25f4` strict 同包 native compliant，direct SDK 和产品写入/检索/遗忘/隐藏通过 | 技术门通过 | 最终冻结 commit 的正式归档 |
 | UKUI/KYSDK | `KYSDK=ON` 构建及 ctest 38/38；桌面实操待验 | 待真机 | 快捷键、通知、主题、DPI/多屏 |
 | GUI 一键升级 | 签名/健康及跨 revision 事务回滚已验；受控重启源码/包结构已测；完整门禁待验 | 待真机 | 图形授权、最终候选回滚与重启后全链路 |
 | 资源与性能 | 待双 SDK | 待双 SDK | CPU/RSS/磁盘/带宽/P50/P95 |

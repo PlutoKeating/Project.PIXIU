@@ -1,7 +1,23 @@
 # D-07 效果与测试报告工作稿
 
 - 更新日期：2026-09-04
-- 状态：portable 开发基线已有；最终 V11 双 SDK/Agent/三设备报告未完成
+- 状态：V11 strict 单包、双 SDK 产品链、Agent 供应链已通过；模型 Agent、三设备、最终性能与安装升级矩阵未完成
+
+## 2026-09-04 当前候选事实
+
+- `f2a25f4` strict amd64 候选 SHA-256：
+  `576f2044958daffd05855ccc4f8f43ccc0166b02ec9c434a9e795ffe51569d8c`；
+- 包内 Agent 宿主、54 个锁定 Runtime wheels、Provider、双 SDK 原生扩展和许可证/
+  SBOM/供应链证据齐全，离线供应链审计 `ready=true`；
+- 安装后 PIXIU backend 与 Agent gateway 均为桌面用户服务，gateway 的生效 unit 来自
+  软件包，命令行进入 `/usr/lib/pixiu/venv`；
+- 前端 38/38、后端/Module E 809/809；原生 direct SDK 及产品写入、检索、遗忘、
+  删除隐藏全部通过，双 runtime 均为 `kylin`/compliant；
+- 推理请求因未配置模型提供商/API key 明确失败，因此 Agent 自主工具生命周期未出证；
+  三台独立 V11 设备、最终性能和六类安装/升级矩阵亦未出证。
+
+上述 commit/SHA 是文档冻结前候选记录；最终 D-07 必须绑定冻结后的新 commit 与新包，
+不得直接复用本段摘要冒充最终证据。
 
 ## 测试口径
 
@@ -164,9 +180,10 @@ amd64 候选，两个 cp312 原生扩展入包且前端 ctest 38/38。保留 por
 
 无模型 Agent 集成探针随后通过：官方 0.9.6 宿主在 V11 启动，固定 Runtime Gateway
 返回健康，空会话 API 返回列表，Module E 被发现并配置为 `memory.provider=pixiu`。
-该探针同时发现官方 0.9.7 ABI 不兼容、公开标签不可重建宿主、Runtime `web` extra
-漏装 `aiohttp` 及三重版本元数据漂移；故只证明 ADR-0001 架构可行，不计完整 Agent、
-安装或发布通过。
+该探针同时发现官方 0.9.7 ABI 不兼容、公开源码原状不可完整链接、Runtime `web`
+extra 漏装 `aiohttp` 及三重版本元数据漂移；这些供应链问题现已由固定最小宿主适配、
+hash lock 全量 wheelhouse、隔离构建/安装及 SPDX/NOTICE 闭环解决。无模型探针本身
+仍不计模型 Agent 生命周期通过。
 
 同日 V11 amd64 portable 包完成非交互跨 revision 升级，配置文件摘要保持一致、
 后端恢复 active、能力端点识别 V11 且如实返回双后端 `portable` 和

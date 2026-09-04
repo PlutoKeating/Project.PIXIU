@@ -33,8 +33,9 @@
 
 - **实现路线**：执行 ADR-0001；不从零重造 OS Agent，以固定版本的
   `kylin-agent`/`agent-runtime` 为宿主，PIXIU 保持作品主体和记忆创新边界。
-- **供应链门**：官方宿主/Runtime 尚未形成 V11 可重建、离线、无认证地址的发行
-  组合；按已批准 ADR-0003 完成前，不得把阶段性宿主探针当作最终单包。
+- **供应链门**：ADR-0003 的 V11 可重建宿主、离线 Runtime、认证地址净化、SBOM 与
+  NOTICE 已形成互相绑定的发行证据并通过 `ready=true`；后续每个最终 commit 仍须重建
+  和复验，不得把旧候选证据跨版本复用。
 - **模块边界**：A 仅改 `frontend/`；B 仅改 `backend/engine/` 与必要的 core 公共
   契约；C 仅改 `backend/foundation/`；E 仅改 `integrations/kylin_agent/`；跨模块
   装配只在公开 API、core 契约和 DI 组合根发生。
@@ -94,7 +95,7 @@ W0 基线与计划
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
 | W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；809 项组合回归通过，V11 新包待 W1.6 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
-| W1.6 | V11 | 🟡 `1751dd6` strict user service 已在目标 V11 返回 Vector `runtime=kylin`/compliant、`contest_ready=true`，并完成产品写入/检索/遗忘/隐藏；最终 Agent 同版归档仍待 W5 | H-02 获得部分通过实证；最终门随 G2/G5 |
+| W1.6 | V11 | ✅ `f2a25f4` strict 同包证据返回 Vector `runtime=kylin`/compliant、`contest_ready=true`，并完成 direct SDK 与产品写入/检索/遗忘/隐藏 | H-02 技术门通过；最终冻结 commit 随 G2/G5 重跑归档 |
 
 **设计约束**：生产 `kylin` 模式不得静默回退；遗忘必须同时清理 SDK 向量、SQLite
 映射、FTS/关系/缓存；SDK int64 主键与知识 ULID 的映射必须持久化并检测碰撞。
@@ -219,15 +220,15 @@ F7-02 冻结链已补 `final-dataset-manifest.py`：从 release commit 的确定
 
 | 切片 | 实施内容 | 完成标准 |
 |------|----------|----------|
-| W7.1 | 🟡 根 `VERSION` 已成为唯一产品版本输入；包内组件 manifest 与包外签名 asset manifest 已接线；原生取证器会绑定候选包摘要/commit、已装 manifest、dpkg 版本/架构、Agent runtime 和三个能力端点，并输出稳定证据类型/真实设备/通过状态字段 | 最终候选六件套归档复验及首次目标 V11 严格取证文件待补 |
-| W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、桌面入口及安全激活工具；官方 0.9.6 宿主 + 固定 Runtime + Provider 无模型探针已通过 | 当前公开宿主源码不可重建、0.9.7 ABI 不兼容；按 ADR-0003 完成供应链后再做全新 V11 图形安装 |
+| W7.1 | 🟡 根 `VERSION` 已成为唯一产品版本输入；包内组件 manifest 与包外签名 asset manifest 已接线；`f2a25f4` 原生证据已绑定候选包摘要/commit、已装 manifest、dpkg 版本/架构、Agent runtime 和三个能力端点 | 文档冻结后重建最终候选六件套并归档复验 |
+| W7.2 | 🟡 `.deb` 已纳入服务、控制台、Module E、可重建宿主、54 个锁定 Runtime wheels、桌面入口及安全激活工具；覆盖安装、旧 gateway 迁移和 Provider 激活通过 | 命令行安装已实测；全新 V11 图形安装与模型 run 待补 |
 | W7.3 | 🟡 strict `preinst` 解包前探测 V11/架构；SDK 依赖交由 Debian 排序并由 strict 后端验证，用户态激活器验证 Agent 与单一 0.9.x runtime；构建强制 KYSDK/strict 不变量，generic/portable 明确降级 | 各阶段隔离成功/拒绝测试已过；最终目标 V11 真实严格包各路径待取证 |
 | W7.4 | ✅ Ed25519 发布 Secret、双架构签名资产、固定公钥及 dpkg 前验签已验证；两个临时 `.deb` 已完成旧钥签过渡包、部署新公钥、新钥签下一包及旧钥拒绝演练 | 摘要和签名任一失败均拒绝安装；生产私钥不入库 |
 | W7.5 | GUI 展示当前/最新版本、通道、兼容性、发行说明和进度 | 用户一次点击触发受控升级 |
 | W7.6 | 🟡 已完成 `pkexec`、包身份/已装版本校验、schema 迁移、后端/Provider 健康判定及成功后的受控前端重启；源码/包结构已测，最终 V11 图形实证待补 | 当前仅健康通过才开放“立即重启”；最终须证明重启后全链路可用 |
 | W7.7 | ✅ `dpkg-repack` 旧包、SQLite/配置快照、安装/健康失败自动恢复和退出码已实现；提交 `ca35117` 的双架构 CI 与 Kylin V11 amd64 跨 revision 故障注入均恢复成功 | 故障注入后回到上一可用版本，记忆、配置和服务不丢失；最终候选仍随 W7.8 重验 |
 | W7.8 | 🟡 已实现首装、重装、旧版升级、故障回滚、GUI 升级、卸载的 V11 状态采集/汇总器及 D-07 附件深验；amd64 最终矩阵与 arm64 兼容矩阵仍待实测 | R-01～R-05 通过 |
-| W7.9 | 🟡 已落地 Agent 供应链策略、实物记录器与机器审计：固定双上游 commit，保留 Runtime CLI/包/版本文件三项事实，认证式 URL 只报文件不泄值；记录器从 wheel `METADATA` 取包事实并生成 SPDX/NOTICE，强制模式把宿主产物/源码归档/构建日志、Runtime wheels/锁文件/离线安装日志、精确覆盖组件与 wheels 的 SPDX 2.3、含来源/commit/许可证边界的 NOTICE 互相绑定，拒绝只有布尔声明或占位证据 | 当前报告按事实为 `ready=false`；取得/修复可重建宿主并补齐可核验发行实物后，强制门通过且完整单包可审计 |
+| W7.9 | ✅ Agent 供应链策略、实物记录器与机器审计已把固定双上游、宿主产物/源码/日志、Runtime wheels/锁/离线日志、SPDX/NOTICE 和敏感扫描互相绑定 | V11 隔离重建及离线安装通过，报告 `ready=true`；每次 release 重跑 |
 
 ### W8：赛事 D-01～D-10 最终材料
 
@@ -235,7 +236,7 @@ F7-02 冻结链已补 `final-dataset-manifest.py`：从 release commit 的确定
 |------|------|--------------------|
 | D-01 | 项目报告 PPT | 问题、架构、原创边界、创新、双 SDK、Agent/三设备实证、指标与价值 |
 | D-02 | 技术方案 Word/PDF | 🟡 DOCX/PDF 可复现渲染器已接线并完成草稿实物检查；最终模式受 release commit、其他发布门和源文档状态行约束，仍待最终数据后生成审核 |
-| D-03 | 源代码 | 🟡 已提供 fail-closed 专用归档器，纳入四个 submodule 实体、Agent 供应链证据和逐文件摘要，最终打包器会反向复算；仍待供应链门通过后按最终 commit 生成，并补齐构建说明、依赖/许可证、SBOM、原创/上游清单 |
+| D-03 | 源代码 | 🟡 fail-closed 专用归档器已纳入四个 submodule 实体、通过状态的 Agent 供应链证据和逐文件摘要；构建说明、依赖/许可证、SBOM、原创/上游清单已维护，待最终 commit 冻结后生成实物 |
 | D-04 | 部署文档 | 🟡 A4 PDF 渲染与格式门已接线；仍待最终包完成后更新图形/CLI 安装、依赖、配置、升级、恢复、卸载、排障实证 |
 | D-05 | ≤7 分钟视频 | V11 安装→Agent 工具/记忆→三设备同步→遗忘→GUI 升级 |
 | D-06 | 用户手册 | 🟡 A4 PDF 渲染与格式门已接线；仍待 Agent 与记忆控制台完整操作、安全确认、错误恢复截图/证据 |

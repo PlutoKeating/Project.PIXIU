@@ -20,15 +20,18 @@
 PIXIU 参加麒麟软件“OS Agent 记忆能力优化与应用”赛题。团队的核心创新是一个面向多台设备的、去中心化的全连接记忆网络：可信设备通过 CRDT、Gossip 与反熵对账共享长期记忆，离线可用，重连后收敛，并保留来源、冲突和遗忘审计。
 
 > [!CAUTION]
-> **当前仓库尚不能宣称完整赛题验收通过。** 现有代码主体是记忆业务引擎、基础设施和专用记忆控制台；它没有完成真实宿主中的多轮 Agent、模型规划、工具自主选择、Shell/联网搜索与审批取证。portable 画像仍使用 SQLite INT8；strict 画像已接入指定 Vector Engine，但最终候选的产品全链路与性能证据尚未生成。
+> **当前仓库尚不能宣称完整赛题验收通过。** strict 单包、完整 Agent 宿主/Runtime、
+> Module E、用户服务和双麒麟 SDK 产品链已经落地并在 V11 候选上实测；尚缺的是配置
+> 推理提供商后的真实 Agent 自主工具生命周期、三台独立 V11 设备同步、最终性能与完整
+> 安装/GUI 升级矩阵。这些缺口继续由交付门禁失败关闭，不能用 mock 或协议模拟代替。
 
-2026-09-04 的目标 V11 严格画像复验已越过此前的用户会话阻断：提交 `1751dd6`
-构建的 amd64 包含两个 cp312 原生 SDK 扩展，前端 CTest 38/38；旧系统域数据库经
-SQLite backup、完整性/表计数/schema/同步身份校验迁入当前桌面用户 XDG 数据域后，
-systemd user service 的 MainPID/UID 与 `/version` 均通过，`/capabilities` 实际返回
-Embedding/Vector runtime 为 `kylin`、两者 compliant 且 `contest_ready=true`。该包
-SHA-256 为 `f5044957c77af63476322d3c32d7627223fb6d44776a3dd148f7f6a491625f00`。
-这证明用户会话双 SDK 产品路径，仍不证明完整 Agent、三设备、性能和最终交付门。
+2026-09-04 的目标 V11 严格候选已越过此前的用户会话和 Agent 供应链阻断。提交
+`f2a25f4` 的 amd64 单包安装后，systemd user service、`/version`、双 SDK direct
+生命周期和产品写入/检索/遗忘均通过；`/capabilities` 返回 Embedding/Vector
+`runtime=kylin`、两者 compliant 且 `contest_ready=true`。该候选 SHA-256 为
+`576f2044958daffd05855ccc4f8f43ccc0166b02ec9c434a9e795ffe51569d8c`。包内同时包含
+可重建 `kylin-agent`、54 个哈希锁定 Runtime wheels、PIXIU Provider、SBOM、NOTICE
+和对应源码/构建证据。最终文档冻结后仍须对新 commit 重建并重新绑定证据。
 
 严格原生画像现带分阶段 fail-closed 门禁：`preinst` 在 dpkg 写入文件前核对麒麟
 V11 与架构；双 SDK 由包依赖解析，并由后端严格启动预检验证实际可用性；桌面用户
@@ -54,9 +57,10 @@ Agent 供应链候选门现采用互相绑定的实物证据，而不是接受�
 Runtime 必须提供全量 wheel、锁文件和离线安装日志；SPDX 2.3 必须精确覆盖两个固定
 上游及全部 wheel 包；NOTICE 必须记录来源、固定 commit 与精确许可证边界。宿主官方
 仓库元数据的 `AGPL-3.0` 已按 SPDX 3.0 规范化为 `AGPL-3.0-only`，但对应源码和 NOTICE
-义务仍未免除。当前上游
-认证式 URL、宿主 V11 可重建证据与 Runtime 离线证据仍未闭环，因此门禁按事实保持失败，不能把现有
-`.deb` 描述为已内置可分发完整 Agent。
+义务仍未免除。当前发布适配会在隔离副本中删除未使用的在线引导脚本、净化上游认证式
+URL，并对实际入包范围复扫；宿主 V11 重建、Runtime 网络隔离离线安装、SPDX/NOTICE
+交叉校验均已通过 `ready=true`。因此 strict `.deb` 已内置可分发完整 Agent；但没有
+模型提供商配置时，真实推理与自主工具生命周期仍按设计阻断。
 
 同步控制台现只呈现真实动作：设备发现/确认式配对、自动 Gossip/反熵状态、暂停、
 状态刷新和整网退出。旧“立即同步”按钮实际只刷新状态、没有触发后端同步动作，现已
@@ -209,9 +213,9 @@ frontend/：现阶段是 PIXIU 记忆控制台和独立演示客户端，不等�
 
 | 门槛 | 赛方要求 | 当前状态 | 最终通过证据 |
 |------|----------|----------|--------------|
-| H-01 | 软件部署在银河麒麟桌面操作系统 V11；不满足计 0 分 | 部分具备 V11 构建/桌面记录，仍需按最终版本重验 | V11 安装、启动、全链路视频与机器信息 |
-| H-02 | 使用系统向量数据库 SDK | **部分通过，最终门未过**：`1751dd6` strict user service 已返回 Vector `runtime=kylin`/compliant、产品写查遗忘链通过；仍缺同一最终候选的 Agent/性能归档 | SDK 建库、写入、查询日志与端到端测试 |
-| H-03 | 使用系统 Embedding 接口 | **部分通过，最终门未过**：`1751dd6` strict user service 已返回 Embedding `runtime=kylin`/compliant 和真实 768 维向量；仍缺同一最终候选的 Agent/性能归档 | `runtime=kylin` 报告、调用日志与故障即失败验证 |
+| H-01 | 软件部署在银河麒麟桌面操作系统 V11；不满足计 0 分 | **产品安装/启动已通过，赛事总门仍待闭环**：strict 单包已在 V11 安装、升级并运行；完整 Agent/三设备/视频仍待最终同版取证 | V11 安装、启动、全链路视频与机器信息 |
+| H-02 | 使用系统向量数据库 SDK | **技术门已通过、最终归档待重跑**：`f2a25f4` 同包 direct SDK 与产品写查遗忘链均通过，Vector `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
+| H-03 | 使用系统 Embedding 接口 | **技术门已通过、最终归档待重跑**：`f2a25f4` 同包实际调用 runtime 1.3.0/gte-base 768 维向量，Embedding `runtime=kylin`/compliant | 最终冻结 commit 的同版原始 JSON 与 D-07 归档 |
 
 现有 portable 基线（偏好 100%、召回 100%、冲突 96%、P95 115ms）只证明通用软件路径可回归，**不代表 H-01～H-03 或最终比赛性能验收通过**。详见 [验收证据说明](docs/acceptance/README.md)。
 
@@ -274,15 +278,11 @@ revision 8 已在 V11 同用户会话通过写入、向量检索、遗忘和删�
 重建、38/38 前端测试与安装；portable 配置可健康运行，strict 系统服务则再次因用户级
 AI runtime 边界失败关闭，恢复后配置和数据库摘要保持。该复验排除了构建漂移，但未
 实现 user service 之前的历史证据，也没有完整 Agent，故不改变验收状态。
-随后无模型 Agent 探针完成了另一条关键验证：官方 0.9.6 宿主二进制可在 V11 启动，
-固定 Runtime 的 Gateway 健康与会话 API 可用，且 Module E 被发现并配置为
-`memory.provider=pixiu`。但公开宿主源码标签无法重建该二进制，官方 0.9.7 包又与
-目标 V11 C++ ABI 不兼容；Runtime 还存在版本元数据漂移和不可复现缓存问题。因此
-“复用完整 Agent”的架构已证实可行，宿主/Runtime 的安全合规单包供应链仍是 P0。
-仓库现已提供 Agent 供应链机器门禁：它固定两个上游 commit，保留 Runtime 三项不同
-版本事实，扫描认证式 URL 时只报告文件名；正式候选还必须同时提交宿主 V11 重建、
-Runtime 离线 wheelhouse、SPDX 和 NOTICE 证据。当前强制审计按事实失败，不能把
-普通报告命令成功或无模型探针成功解释为可发布。
+随后 Agent 供应链闭环解决了无模型探针发现的问题：固定上游源码经最小适配后在 V11
+网络隔离环境成功重建，Runtime 全量 wheelhouse 通过网络隔离安装，认证式 URL 不进入
+发行范围，SPDX/NOTICE/源码/构建日志和产物摘要交叉核对为 `ready=true`。strict 单包
+已实际安装宿主、Runtime 和 Provider。剩余 P0 是配置推理提供商后的模型自主行为，
+不能把 Gateway 健康或无模型探针解释为该生命周期已通过。
 最终 Agent/三设备/性能与全新机图形升级取证尚未闭环。Kylin V11 amd64 目标环境已完成
 `KYSDK=OFF` 的跨 revision 安装、离线依赖与健康检查回归，但该结果明确不计双 SDK，
 因此状态仍是“部分完成”。完整门禁和 D-01～D-10 台账见
@@ -320,5 +320,5 @@ git clone --recurse-submodules <repository-url>
 ```
 
 平台策略与启动方法见 [快速启动](docs/QUICK_START.md)。任何 `KYSDK=OFF` 或 portable 结果都必须与银河麒麟 V11、`KYSDK=ON` 的最终验收结果分开汇报。
-仓库已提供独立 `kylin-v11-native-x86_64` 严格画像和手动原生 CI 工作流；首次
-双 SDK 真实写入/检索证据生成前，H-02/H-03 状态仍保持未通过/待最终证据。
+仓库已提供独立 `kylin-v11-native-x86_64` 严格画像和手动原生 CI 工作流；双 SDK
+技术门已有同包真实证据，最终冻结 commit 仍须重新生成并进入 D-07 归档。
