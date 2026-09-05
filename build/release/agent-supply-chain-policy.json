@@ -54,7 +54,8 @@
     "build/release/agent-runtime/build-runtime-wheelhouse.sh",
     "build/release/agent-runtime/runtime-wheel-MANIFEST.in",
     "build/release/agent-runtime/patches/0001-secure-model-management.patch",
-    "build/release/agent-runtime/patches/0002-pixiu-model-context.patch"
+    "build/release/agent-runtime/patches/0002-pixiu-model-context.patch",
+    "build/release/agent-runtime/patches/0003-pixiu-gateway-branding.patch"
   ],
   "components": {
     "kylin_agent": {

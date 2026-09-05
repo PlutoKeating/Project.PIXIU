@@ -1,0 +1,49 @@
+--- a/gateway/platforms/api_server.py
++++ b/gateway/platforms/api_server.py
+@@ -1039,7 +1039,7 @@
+                 return profile
+         except Exception:
+             pass
+-        return "hermes-agent"
++        return "pixiu"
+ 
+     def _cors_headers_for_origin(self, origin: str) -> Optional[Dict[str, str]]:
+         """Return CORS headers for an allowed browser origin."""
+@@ -1297,7 +1297,7 @@
+ 
+     async def _handle_health(self, request: "web.Request") -> "web.Response":
+         """GET /health — simple health check."""
+-        return web.json_response({"status": "ok", "platform": "hermes-agent"})
++        return web.json_response({"status": "ok", "platform": "pixiu"})
+ 
+     async def _handle_health_detailed(self, request: "web.Request") -> "web.Response":
+         """GET /health/detailed — rich status for cross-container dashboard probing.
+@@ -1311,7 +1311,7 @@
+         runtime = read_runtime_status() or {}
+         return web.json_response({
+             "status": "ok",
+-            "platform": "hermes-agent",
++            "platform": "pixiu",
+             "gateway_state": runtime.get("gateway_state"),
+             "platforms": runtime.get("platforms", {}),
+             "active_agents": runtime.get("active_agents", 0),
+@@ -1335,7 +1335,7 @@
+                     "id": self._model_name,
+                     "object": "model",
+                     "created": int(time.time()),
+-                    "owned_by": "hermes",
++                    "owned_by": "pixiu",
+                     "permission": [],
+                     "root": self._model_name,
+                     "parent": None,
+@@ -1353,8 +1353,8 @@
+             return auth_err
+ 
+         return web.json_response({
+-            "object": "hermes.api_server.capabilities",
+-            "platform": "hermes-agent",
++            "object": "pixiu.api_server.capabilities",
++            "platform": "pixiu",
+             "model": self._model_name,
+             "auth": {
+                 "type": "bearer",

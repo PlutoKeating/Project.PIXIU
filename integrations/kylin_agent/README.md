@@ -45,6 +45,7 @@ markdown-it 负责 Markdown 与表格，markdown-it-texmath + KaTeX 负责公式
 
 用户可从宿主 GUI 导入官方直连 API Key。管理接口只返回是否已配置的布尔状态，空白
 输入保留原凭据，显式清除才删除；探测拒绝非 HTTPS 远端地址和重定向。
+Gateway 的健康检查、能力发现和模型目录统一以 `pixiu` 标识平台与所有者。
 
 发布测试已用确定性、无推理的 OpenAI-compatible 节点，经真实 Runtime/Gateway 验证
 Provider 的本地/共享记忆写入、检索、更新和同步状态工具链，以及系统提示和逐轮增长的
