@@ -40,6 +40,7 @@ for token in (
     "breaks: true",
     "'mermaid', 'mindmap', 'flowchart', 'gantt'",
     "securityLevel: 'strict'",
+    "window.structuredClone",
     "markdown.use(window.texmath",
     "delimiters: ['dollars', 'brackets', 'beg_end']",
     "throwOnError: false",

@@ -7,6 +7,11 @@
   <script src="markdown-it.min.js"></script>
   <script src="katex.min.js"></script>
   <script src="markdown-it-texmath.js"></script>
+  <script>
+    if (!window.structuredClone) {
+      window.structuredClone = (value) => JSON.parse(JSON.stringify(value));
+    }
+  </script>
   <script src="mermaid.min.js"></script>
   <style>
     :root {
