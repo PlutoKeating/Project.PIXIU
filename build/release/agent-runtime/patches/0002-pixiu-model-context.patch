@@ -147,3 +147,23 @@
                          "and print your final result to stdout."
                      ),
                  },
+--- a/kylin_agent_runtime_cli/config.py
++++ b/kylin_agent_runtime_cli/config.py
+@@ -246,13 +246,13 @@
+     if method == "nixos":
+         return _NIX_UPDATE_MSG
+     if method == "homebrew":
+-        return "brew upgrade hermes-agent"
++        return "Use the PIXIU installer to update the Runtime"
+     if method == "docker":
+-        return "docker pull nousresearch/hermes-agent:latest"
++        return "Use the PIXIU installer to update the Runtime"
+     if method == "pip":
+         import shutil
+         uv = shutil.which("uv")
+         if uv:
+-            return "uv pip install --upgrade hermes-agent"
+-        return "pip install --upgrade hermes-agent"
++            return "uv pip install --upgrade kylin-agent-runtime"
++        return "pip install --upgrade kylin-agent-runtime"
+     return "kylin-agent-runtime update"

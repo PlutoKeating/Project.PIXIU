@@ -16,6 +16,7 @@ grep -q '_pixiu_model_facing_text' "${FIXTURE}/source/agent/system_prompt.py"
 grep -q 'visible_skill_lines' "${FIXTURE}/source/agent/system_prompt.py"
 grep -q '_pixiu_model_facing_schema' "${FIXTURE}/source/model_tools.py"
 grep -q 'pixiu_tools.py' "${FIXTURE}/source/tools/code_execution_tool.py"
+grep -q 'pip install --upgrade kylin-agent-runtime' "${FIXTURE}/source/kylin_agent_runtime_cli/config.py"
 grep -q '你的产品身份、助手署名和对外名称统一为 PIXIU' "${ROOT}/integrations/kylin_agent/SOUL.md"
 ! grep -qi 'hermes' "${ROOT}/integrations/kylin_agent/SOUL.md"
 
