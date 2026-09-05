@@ -192,6 +192,40 @@ def extract_tool_results(
     return [item["id"] for item in results], results
 
 
+def pending_tool_result_ids(messages: Iterable[dict[str, Any]]) -> set[str]:
+    """Return tool results belonging to the most recent assistant tool batch.
+
+    OpenAI-wire requests contain the full conversation, so collecting every
+    historical ``role=tool`` message incorrectly mixes completed calls from
+    earlier turns with the SDK conversation that is currently awaiting a
+    result.
+    """
+
+    rows = [item for item in messages if isinstance(item, dict)]
+    suffix: list[dict[str, Any]] = []
+    while rows and rows[-1].get("role") == "tool":
+        suffix.append(rows.pop())
+    if not suffix or not rows or rows[-1].get("role") != "assistant":
+        return set()
+    calls = rows[-1].get("tool_calls")
+    if not isinstance(calls, list) or not calls:
+        return set()
+    expected = {
+        str(call.get("id") or "").strip()
+        for call in calls
+        if isinstance(call, dict)
+    }
+    expected.discard("")
+    returned = {
+        str(item.get("tool_call_id") or item.get("id") or "").strip()
+        for item in suffix
+    }
+    returned.discard("")
+    if returned and returned <= expected:
+        return returned
+    return set()
+
+
 @dataclass
 class CompletionOutput:
     model: str
@@ -473,12 +507,7 @@ class KylinCloudBridge:
         messages = body.get("messages")
         if not isinstance(messages, list) or not messages:
             raise ValueError("messages array is required")
-        tool_ids = {
-            str(item.get("tool_call_id") or item.get("id") or "").strip()
-            for item in messages
-            if isinstance(item, dict) and item.get("role") == "tool"
-        }
-        tool_ids.discard("")
+        tool_ids = pending_tool_result_ids(messages)
         conversation: NativeConversation
         if tool_ids:
             with self._lock:
@@ -489,7 +518,13 @@ class KylinCloudBridge:
             pending_ids = {
                 item["id"] for item in conversation.output.tool_calls or []
             }
-            _, results = extract_tool_results(messages, pending_ids)
+            current_results: list[dict[str, Any]] = []
+            for item in reversed(messages):
+                if not isinstance(item, dict) or item.get("role") != "tool":
+                    break
+                current_results.append(item)
+            current_results.reverse()
+            _, results = extract_tool_results(current_results, pending_ids)
             conversation.continue_with(conversation.output.tool_calls or [], results)
         else:
             conversation = NativeConversation(

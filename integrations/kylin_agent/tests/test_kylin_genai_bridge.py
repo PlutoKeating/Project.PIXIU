@@ -7,6 +7,7 @@ from integrations.kylin_agent.kylin_genai_bridge import (
     initialize_model_session,
     openai_model_catalog,
     openai_tool_calls,
+    pending_tool_result_ids,
     sdk_chat_prompt,
     sdk_tool_schema,
     select_cloud_models,
@@ -180,6 +181,55 @@ def test_tool_results_reject_unknown_or_duplicate_call_ids():
             pass
         else:
             raise AssertionError("invalid tool results must fail closed")
+
+
+def test_only_latest_tool_result_batch_is_used_for_sdk_continuation():
+    messages = [
+        {"role": "assistant", "tool_calls": [{"id": "old-call"}]},
+        {"role": "tool", "tool_call_id": "old-call", "content": "old"},
+        {"role": "assistant", "content": "continuing"},
+        {"role": "assistant", "tool_calls": [{"id": "current-call"}]},
+        {"role": "tool", "tool_call_id": "current-call", "content": "current"},
+    ]
+
+    assert pending_tool_result_ids(messages) == {"current-call"}
+
+
+def test_latest_tool_result_batch_requires_matching_assistant_call():
+    messages = [{"role": "tool", "tool_call_id": "orphan", "content": "x"}]
+
+    assert pending_tool_result_ids(messages) == set()
+
+
+def test_completed_historical_tool_batch_is_not_resubmitted_on_next_user_turn():
+    messages = [
+        {"role": "assistant", "tool_calls": [{"id": "old-call"}]},
+        {"role": "tool", "tool_call_id": "old-call", "content": "old"},
+        {"role": "assistant", "content": "first turn complete"},
+        {"role": "user", "content": "start another turn"},
+    ]
+
+    assert pending_tool_result_ids(messages) == set()
+
+
+def test_current_suffix_can_be_validated_without_historical_tool_results():
+    messages = [
+        {"role": "tool", "tool_call_id": "old-call", "content": "old"},
+        {"role": "assistant", "content": "first turn complete"},
+        {"role": "assistant", "tool_calls": [{"id": "current-call"}]},
+        {"role": "tool", "tool_call_id": "current-call", "content": "current"},
+    ]
+    suffix = []
+    for item in reversed(messages):
+        if item.get("role") != "tool":
+            break
+        suffix.append(item)
+    suffix.reverse()
+
+    assert extract_tool_results(suffix, {"current-call"}) == (
+        ["current-call"],
+        [{"id": "current-call", "content": "current"}],
+    )
 
 
 def test_abandoned_tool_conversation_is_closed_at_deadline():

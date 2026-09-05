@@ -28,6 +28,9 @@ receipt 管理亦已实现。V11 安装包同时启用回环 Kylin GenAI 适配�
 `kylin-default` 跟随系统 AI 模块管理；Runtime 的会话、工具、审批和记忆循环保持不变。
 适配服务先配置模型再初始化 SDK 会话，使用 SDK 原生聊天、工具回调和结果续传接口；
 先前轮次按角色封装为系统上下文，因此多轮语义与自主工具执行可同时保持。
+OpenAI-wire 请求携带完整会话历史时，适配器只把最近一条 assistant tool_calls 之后的
+当前工具结果批次提交给同一个 Kylin GenAI 原生会话；历史已完成工具结果不会混入
+当前 pending call，连续工具调用可完成 running、completed 与下一轮模型回复闭环。
 
 用户可从宿主 GUI 导入官方直连 API Key。管理接口只返回是否已配置的布尔状态，空白
 输入保留原凭据，显式清除才删除；探测拒绝非 HTTPS 远端地址和重定向。
