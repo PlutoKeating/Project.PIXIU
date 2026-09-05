@@ -112,6 +112,7 @@ grep -q 'updateDefaultSoulMd' "${fixture}/source/src/services/gatewayservice.cpp
 grep -q 'class RichMessageView' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'QWebEngineView' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'renderMarkdown' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'pixiu-wheel:' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'markdown-it.min.js' "${fixture}/source/res/message-renderer/index.html"
 grep -q 'markdown-it-texmath.js' "${fixture}/source/res/message-renderer/index.html"
 grep -q 'katex.min.js' "${fixture}/source/res/message-renderer/index.html"

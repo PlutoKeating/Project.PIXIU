@@ -48,6 +48,7 @@ for token in (
     "delimiters: ['dollars', 'brackets', 'beg_end']",
     "throwOnError: false",
     "ResizeObserver",
+    "pixiu-wheel:",
     "PIXIU Color Emoji",
 ):
     require(token in html, f"renderer contract missing: {token}")

@@ -59,7 +59,7 @@
  #include <QJsonObject>
  #include <QKeyEvent>
  #include <QLabel>
-@@ -23,9 +26,133 @@
+@@ -23,9 +26,148 @@
  #include <QToolButton>
  #include <QToolTip>
  #include <QVBoxLayout>
@@ -108,6 +108,21 @@
 +            }
 +        });
 +        connect(this, &QWebEngineView::titleChanged, this, [this](const QString &title) {
++            if (title.startsWith(QStringLiteral("pixiu-wheel:"))) {
++                const QStringList parts = title.split(QLatin1Char(':'));
++                bool ok = false;
++                const int delta = parts.size() >= 2 ? parts.at(1).toInt(&ok) : 0;
++                QWidget *ancestor = parentWidget();
++                while (ok && ancestor) {
++                    if (auto *area = qobject_cast<QScrollArea *>(ancestor)) {
++                        QScrollBar *bar = area->verticalScrollBar();
++                        bar->setValue(bar->value() + delta);
++                        break;
++                    }
++                    ancestor = ancestor->parentWidget();
++                }
++                return;
++            }
 +            if (!title.startsWith(QStringLiteral("pixiu-height:"))) return;
 +            const QStringList parts = title.split(QLatin1Char(':'));
 +            if (parts.size() < 2) return;
