@@ -112,9 +112,18 @@ verify-offline)
 import aiohttp
 import ddgs
 import kylin_agent_runtime_cli
+from agent.system_prompt import _pixiu_model_facing_text
 from agent.web_search_registry import get_active_search_provider
 from gateway.platforms.api_server import APIServerAdapter
 from kylin_agent_runtime_cli.plugins import discover_plugins, get_bundled_plugins_dir
+from model_tools import _pixiu_model_facing_schema
+
+prompt_sample = _pixiu_model_facing_text("Hermes Agent uses HERMES_HOME")
+schema_sample = _pixiu_model_facing_schema({"description": "Import hermes_tools for Hermes."})
+if "hermes" in prompt_sample.lower() or "hermes" in str(schema_sample).lower():
+    raise SystemExit("legacy Runtime identity leaked into model-facing context")
+if "PIXIU" not in prompt_sample or "pixiu_tools" not in str(schema_sample):
+    raise SystemExit("PIXIU Runtime identity normalization is inactive")
 
 manifest = get_bundled_plugins_dir() / "web" / "ddgs" / "plugin.yaml"
 if not manifest.is_file():

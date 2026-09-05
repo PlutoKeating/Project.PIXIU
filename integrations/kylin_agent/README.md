@@ -32,12 +32,16 @@ receipt 管理亦已实现。V11 安装包同时启用回环 Kylin GenAI 适配�
 OpenAI-wire 请求携带完整会话历史时，适配器只把最近一条 assistant tool_calls 之后的
 当前工具结果批次提交给同一个 Kylin GenAI 原生会话；历史已完成工具结果不会混入
 当前 pending call，连续工具调用可完成 running、completed 与下一轮模型回复闭环。
+Runtime 发行适配会在系统提示、动态上下文、技能目录与工具 schema 进入模型前统一使用
+PIXIU 产品名称和公共工具术语；宿主向模型回灌历史时同步规范助手消息身份。该处理只作用于
+模型输入，不改写用户原文和本地会话记录。
 
 宿主消息资源位于 `message_renderer/`，随固定上游补丁构建为 `qrc:` 离线页面：
 markdown-it 负责 Markdown 与表格，markdown-it-texmath + KaTeX 负责公式，Mermaid
 负责思维导图、框图、甘特图和流程图，Noto Color Emoji 负责彩色 emoji。工具生命周期
 事件独立保存为默认折叠工作卡片；会话历史组装会过滤该 UI 角色，仅将用户与模型消息
-发送给 Runtime。
+发送给 Runtime。渲染页显式使用自然词距和起始方向对齐；消息发送、流式分段、工作事件
+以及 WebEngine 异步高度变化都会触发会话跟随到底部。工作卡片与助手消息共享左侧内容列。
 
 用户可从宿主 GUI 导入官方直连 API Key。管理接口只返回是否已配置的布尔状态，空白
 输入保留原凭据，显式清除才删除；探测拒绝非 HTTPS 远端地址和重定向。

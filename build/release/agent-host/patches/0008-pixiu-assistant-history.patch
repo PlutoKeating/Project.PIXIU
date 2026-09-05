@@ -1,0 +1,34 @@
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -11,6 +11,7 @@
+ #include <QJsonObject>
+ #include <QLabel>
+ #include <QMenu>
++#include <QRegularExpression>
+ #include <QPushButton>
+ #include <QScrollArea>
+ #include <QScrollBar>
+@@ -249,5 +250,14 @@
+ static QJsonArray buildChatMessages(const QVector<SessionMessage> &history)
+ {
++    static const QRegularExpression legacyIdentity(
++        QStringLiteral("\\bHermes(?:[ -]+Agent)?\\b"),
++        QRegularExpression::CaseInsensitiveOption);
++    const auto modelFacingContent = [](const SessionMessage &message) {
++        QString content = message.content();
++        if (message.role() == QStringLiteral("assistant"))
++            content.replace(legacyIdentity, QStringLiteral("PIXIU"));
++        return content;
++    };
+     QJsonArray messages;
+     for (const SessionMessage &message : history) {
+         if (message.content().trimmed().isEmpty()) {
+@@ -258,7 +268,7 @@
+ 
+         QJsonObject item;
+         item.insert(QStringLiteral("role"), message.role());
+-        item.insert(QStringLiteral("content"), message.content());
++        item.insert(QStringLiteral("content"), modelFacingContent(message));
+         messages.append(item);
+     }
+     return messages;

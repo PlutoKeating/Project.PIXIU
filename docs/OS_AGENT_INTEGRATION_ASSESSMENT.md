@@ -174,6 +174,9 @@ agent-runtime ── MemoryProvider adapter ── PIXIU REST API
 [ADR-0005](decisions/0005-use-kylin-system-cloud-models.md)，V11 默认通过回环适配
 调用麒灵系统云模型；备用选择面仅保留 DeepSeek、Anthropic、OpenAI 官方直连服务，
 OpenRouter 与本地推理入口被明确过滤。
+同包 `SOUL.md`、Runtime 模型上下文适配与宿主历史组装共同形成产品身份边界：系统提示、
+动态上下文、技能说明、工具 schema 和助手历史进入推理前统一使用 PIXIU 名称与公共工具术语；
+用户原始输入和本地会话记录保持原样，便于审计与准确执行。
 
 ## 6. 实施优先级
 

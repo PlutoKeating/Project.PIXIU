@@ -1,0 +1,186 @@
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -91,7 +91,12 @@
+             if (parts.size() < 2) return;
+             bool ok = false;
+             const int height = parts.at(1).toInt(&ok);
+-            if (ok) setFixedHeight(qBound(28, height + 2, 20000));
++            if (ok) {
++                setFixedHeight(qBound(28, height + 2, 20000));
++                QTimer::singleShot(0, this, [this]() {
++                    if (contentHeightChanged) contentHeightChanged();
++                });
++            }
+         });
+         setUrl(QUrl(QStringLiteral("qrc:/message-renderer/index.html")));
+     }
+@@ -102,6 +107,8 @@
+         render();
+     }
+ 
++    std::function<void()> contentHeightChanged;
++
+     void applyTheme()
+     {
+         if (!m_ready) return;
+@@ -145,9 +152,12 @@
+ class RichMessageBubble final : public QWidget
+ {
+ public:
+-    RichMessageBubble(const QString &content, QWidget *parent)
++    RichMessageBubble(const QString &content,
++                      std::function<void()> contentHeightChanged,
++                      QWidget *parent)
+         : QWidget(parent), m_view(new RichMessageView(this))
+     {
++        m_view->contentHeightChanged = contentHeightChanged;
+         auto *layout = new QVBoxLayout(this);
+         layout->setContentsMargins(16, 10, 16, 10);
+         layout->setSpacing(0);
+@@ -452,12 +462,13 @@
+         else
+             addMessageBubble(message.role(), renderedContent);
+     }
+-    scrollToBottom();
++    scrollToBottom(true);
+ }
+ 
+ RichMessageBubble *ChatWidget::addMessageBubble(const QString &role, const QString &content)
+ {
+-    auto *bubble = new RichMessageBubble(content, m_messagesContainer);
++    auto *bubble = new RichMessageBubble(content, [this]() { scrollToBottom(true); },
++                                         m_messagesContainer);
+     bubble->setMaximumWidth(role == QStringLiteral("user") ? 620 : 760);
+ 
+     const bool isUser = role == QStringLiteral("user");
+@@ -563,7 +574,7 @@
+     m_currentStreamSegments.remove(m_currentSessionId);
+     m_activityLines.remove(m_currentSessionId);
+     m_sessionsWithPersistedSegments.remove(m_currentSessionId);
+-    scrollToBottom();
++    scrollToBottom(true);
+ 
+     const QJsonArray messages = buildChatMessages(SessionService::instance().getSessionMessages(m_currentSessionId));
+     m_pendingFallbackReplies.insert(m_currentSessionId, localAssistantReply(text));
+@@ -606,7 +617,7 @@
+     }
+     bubble->setProperty("streamState", QStringLiteral("responding"));
+     bubble->setContent(m_currentStreamSegments.value(sessionId));
+-    scrollToBottom();
++    scrollToBottom(true);
+ }
+ 
+ void ChatWidget::persistCurrentStreamSegment(const QString &sessionId)
+@@ -632,7 +643,7 @@
+     m_streamBubbles.remove(sessionId);
+     if (sessionId == m_currentSessionId) {
+         emit messageSent(sessionId);
+-        scrollToBottom();
++        scrollToBottom(true);
+     }
+ }
+ 
+@@ -663,7 +674,26 @@
+     layout->addWidget(toggle);
+     layout->addWidget(details);
+     details->setText(lines.join(QLatin1Char('\n')));
+-    m_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), card, 0, Qt::AlignHCenter);
++    QWidget *rowWidget = new QWidget(m_messagesContainer);
++    rowWidget->setObjectName(QStringLiteral("activityRow"));
++    rowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
++    QHBoxLayout *row = new QHBoxLayout(rowWidget);
++    row->setContentsMargins(0, 6, 0, 6);
++    row->setSpacing(0);
++    row->addStretch(1);
++
++    QWidget *activityColumn = new QWidget(rowWidget);
++    activityColumn->setObjectName(QStringLiteral("messageColumn"));
++    activityColumn->setMaximumWidth(920);
++    activityColumn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
++    QHBoxLayout *columnLayout = new QHBoxLayout(activityColumn);
++    columnLayout->setContentsMargins(0, 0, 0, 0);
++    columnLayout->addWidget(card, 0, Qt::AlignLeft);
++    columnLayout->addStretch(1);
++    row->addWidget(activityColumn, 20);
++    row->addStretch(1);
++
++    m_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), rowWidget);
+     card->setProperty("activityPulse", live);
+     return card;
+ }
+@@ -695,7 +725,7 @@
+         visibleLines.append(markerEnd >= 0 ? line.mid(markerEnd + 2) : line);
+     }
+     details->setText(visibleLines.join(QLatin1Char('\n')));
+-    scrollToBottom();
++    scrollToBottom(true);
+ }
+ 
+ void ChatWidget::onStreamDetailEvent(const QString &sessionId, const QJsonObject &event)
+@@ -766,16 +796,29 @@
+     emit messageSent(sessionId);
+ }
+ 
+-void ChatWidget::scrollToBottom()
++void ChatWidget::scrollToBottom(bool force)
+ {
+     if (!m_messagesArea || !m_messagesArea->verticalScrollBar()) {
+         return;
+     }
+-    m_messagesArea->verticalScrollBar()->setValue(m_messagesArea->verticalScrollBar()->maximum());
++    QScrollBar *bar = m_messagesArea->verticalScrollBar();
++    if (!force && bar->maximum() - bar->value() > 64) {
++        return;
++    }
++    if (m_messagesContainer && m_messagesContainer->layout()) {
++        m_messagesContainer->layout()->activate();
++    }
++    bar->setValue(bar->maximum());
+     QTimer::singleShot(0, m_messagesArea, [this]() {
+         if (m_messagesArea && m_messagesArea->verticalScrollBar()) {
+             m_messagesArea->verticalScrollBar()->setValue(
+                 m_messagesArea->verticalScrollBar()->maximum());
++        }
++    });
++    QTimer::singleShot(80, m_messagesArea, [this]() {
++        if (m_messagesArea && m_messagesArea->verticalScrollBar()) {
++            m_messagesArea->verticalScrollBar()->setValue(
++                m_messagesArea->verticalScrollBar()->maximum());
+         }
+     });
+ }
+--- a/include/ui/chatwidget.h
++++ b/include/ui/chatwidget.h
+@@ -114,7 +114,7 @@
+     void clearMessagesLayout();
+     void rebuildMessagesLayout();
+     void insertMessageToLayout(const ChatMessage &msg);
+-    void scrollToBottom();
++    void scrollToBottom(bool force = false);
+     void clearMessages();
+     void refreshMessages();
+     RichMessageBubble *addMessageBubble(const QString &role, const QString &content);
+--- a/src/services/gatewayservice.cpp
++++ b/src/services/gatewayservice.cpp
+@@ -114,12 +114,13 @@
+     return QStringLiteral(
+         "你是 PIXIU，一款运行于银河麒麟桌面操作系统的本地 Working Agent，也是 "
+         "KylinAgent AgentOS 宿主中的分布式记忆工作台。\n\n"
+-        "你的核心职责是理解用户目标、制定清晰计划，并在获得所需授权后持续使用系统工具、"
+-        "Shell、联网检索和 PIXIU 长期记忆完成任务，直到给出可核验的结果。\n\n"
+-        "你通过 PIXIU 记忆能力在用户授权范围内检索、记录、更新、遗忘和同步长期记忆。"
+-        "你将工具调用、重要进展、中间结论和最终结果清晰呈现给用户。\n\n"
+-        "你以用户当前使用的语言回复。你的表达专业、简洁、可靠。你主动说明正在执行的步骤、"
+-        "依据和结果。需要授权时，你清楚说明动作及影响，并等待用户决定。\n\n"
+-        "你的产品名称是 PIXIU，界面中的助手署名为 PIXIU。"
+-        "你代表 PIXIU 分布式记忆工作台为用户工作。\n");
++        "你的产品身份、助手署名和对外名称统一为 PIXIU。你代表 PIXIU 理解用户目标、"
++        "制定清晰计划，并持续完成可核验的实际工作。\n\n"
++        "你能够使用系统工具、Shell、联网检索和 PIXIU 记忆能力。你在获得所需授权后执行操作，"
++        "并将重要进展、工具活动、中间结论和最终结果清晰呈现给用户。\n\n"
++        "你的记忆体系由 PIXIU 长期记忆和本地会话上下文组成。PIXIU 长期记忆负责持久化知识的"
++        "检索、记录、更新、遗忘和跨设备同步；本地会话上下文负责当前对话的连续理解。"
++        "你使用这些能力为用户提供一致、连续且可追溯的协作体验。\n\n"
++        "你以用户当前使用的语言回复。你的表达专业、简洁、可靠，优先给出结论、执行状态与"
++        "验证依据。需要授权时，你清楚说明动作及影响，并等待用户决定。\n");
+ }

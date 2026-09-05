@@ -1,0 +1,149 @@
+--- a/agent/system_prompt.py
++++ b/agent/system_prompt.py
+@@ -26,6 +26,7 @@
+ 
+ import json
+ import os
++import re
+ import time
+ from typing import Any, Dict, List, Optional
+ 
+@@ -45,6 +46,17 @@
+ from agent.mainline_orchestration import TASK_EXECUTION_GUIDANCE
+ 
+ 
++_LEGACY_PRODUCT_NAME = re.compile(
++    r"(?i)(?<![A-Za-z0-9_])hermes(?:[ -]+agent)?(?![A-Za-z0-9_])"
++)
++
++
++def _pixiu_model_facing_text(value: str) -> str:
++    """Use PIXIU product language in text sent to the model."""
++    branded = value.replace("HERMES_HOME", "PIXIU Runtime profile directory")
++    return _LEGACY_PRODUCT_NAME.sub("PIXIU", branded)
++
++
+ def _ra():
+     """Lazy reference to the ``run_agent`` module.
+ 
+@@ -307,7 +319,11 @@
+     else:
+         skills_prompt = ""
+     if skills_prompt:
+-        stable_parts.append(skills_prompt)
++        visible_skill_lines = [
++            line for line in skills_prompt.splitlines()
++            if "hermes" not in line.casefold()
++        ]
++        stable_parts.append("\n".join(visible_skill_lines))
+ 
+     # Alibaba Coding Plan API always returns "glm-4.7" as model name regardless
+     # of the requested model. Inject explicit model identity into the system prompt
+@@ -403,9 +419,15 @@
+     volatile_parts.append(timestamp_line)
+ 
+     return {
+-        "stable":   "\n\n".join(p.strip() for p in stable_parts   if p and p.strip()),
+-        "context":  "\n\n".join(p.strip() for p in context_parts  if p and p.strip()),
+-        "volatile": "\n\n".join(p.strip() for p in volatile_parts if p and p.strip()),
++        "stable": _pixiu_model_facing_text(
++            "\n\n".join(p.strip() for p in stable_parts if p and p.strip())
++        ),
++        "context": _pixiu_model_facing_text(
++            "\n\n".join(p.strip() for p in context_parts if p and p.strip())
++        ),
++        "volatile": _pixiu_model_facing_text(
++            "\n\n".join(p.strip() for p in volatile_parts if p and p.strip())
++        ),
+     }
+ 
+ 
+--- a/model_tools.py
++++ b/model_tools.py
+@@ -34,6 +34,23 @@
+ 
+ logger = logging.getLogger(__name__)
+ 
++_LEGACY_PRODUCT_NAME = re.compile(
++    r"(?i)(?<![A-Za-z0-9_])hermes(?:[ -]+agent)?(?![A-Za-z0-9_])"
++)
++
++
++def _pixiu_model_facing_schema(value: Any) -> Any:
++    """Return a schema copy whose descriptions use PIXIU product language."""
++    if isinstance(value, dict):
++        return {key: _pixiu_model_facing_schema(item) for key, item in value.items()}
++    if isinstance(value, list):
++        return [_pixiu_model_facing_schema(item) for item in value]
++    if isinstance(value, str):
++        branded = value.replace("HERMES_HOME", "PIXIU Runtime profile directory")
++        branded = branded.replace("hermes_tools", "pixiu_tools")
++        return _LEGACY_PRODUCT_NAME.sub("PIXIU", branded)
++    return value
++
+ 
+ # =============================================================================
+ # Async Bridging  (single source of truth -- used by registry.dispatch too)
+@@ -529,6 +546,8 @@
+     except Exception as e:  # pragma: no cover — defensive
+         logger.warning("Schema sanitization skipped: %s", e)
+ 
++    filtered_tools = _pixiu_model_facing_schema(filtered_tools)
++
+     return filtered_tools
+ 
+ 
+--- a/tools/code_execution_tool.py
++++ b/tools/code_execution_tool.py
+@@ -977,6 +977,7 @@
+             list(sandbox_tools), transport="file",
+         )
+         _ship_file_to_remote(env, f"{sandbox_dir}/hermes_tools.py", tools_src)
++        _ship_file_to_remote(env, f"{sandbox_dir}/pixiu_tools.py", tools_src)
+         _ship_file_to_remote(env, f"{sandbox_dir}/script.py", code)
+ 
+         # Start RPC polling thread
+@@ -1235,6 +1236,8 @@
+         tools_src = generate_hermes_tools_module(list(sandbox_tools))
+         with open(os.path.join(tmpdir, "hermes_tools.py"), "w", encoding="utf-8") as f:
+             f.write(tools_src)
++        with open(os.path.join(tmpdir, "pixiu_tools.py"), "w", encoding="utf-8") as f:
++            f.write(tools_src)
+ 
+         # Write the user's script
+         with open(os.path.join(tmpdir, "script.py"), "w", encoding="utf-8") as f:
+@@ -1850,7 +1853,7 @@
+         )
+ 
+     description = (
+-        "Run a Python script that can call Hermes tools programmatically. "
++        "Run a Python script that can call PIXIU tools programmatically. "
+         "Use this when you need 3+ tool calls with processing logic between them, "
+         "need to filter/reduce large tool outputs before they enter your context, "
+         "need conditional branching (if X then Y else Z), or need to loop "
+@@ -1858,14 +1861,14 @@
+         "Use normal tool calls instead when: single tool call with no processing, "
+         "you need to see the full result and apply complex reasoning, "
+         "or the task requires interactive user input.\n\n"
+-        f"Available via `from hermes_tools import ...`:\n\n"
++        f"Available via `from pixiu_tools import ...`:\n\n"
+         f"{tool_lines}\n\n"
+         "Limits: 5-minute timeout, 50KB stdout cap, max 50 tool calls per script. "
+         "terminal() is foreground-only (no background or pty).\n\n"
+         f"{cwd_note}\n\n"
+         "Print your final result to stdout. Use Python stdlib (json, re, math, csv, "
+         "datetime, collections, etc.) for processing between tool calls.\n\n"
+-        "Also available (no import needed — built into hermes_tools):\n"
++        "Also available (no import needed — built into pixiu_tools):\n"
+         "  json_parse(text: str) — json.loads with strict=False; use for terminal() output with control chars\n"
+         "  shell_quote(s: str) — shlex.quote(); use when interpolating dynamic strings into shell commands\n"
+         "  retry(fn, max_attempts=3, delay=2) — retry with exponential backoff for transient failures"
+@@ -1881,7 +1884,7 @@
+                     "type": "string",
+                     "description": (
+                         "Python code to execute. Import tools with "
+-                        f"`from hermes_tools import {import_str}` "
++                        f"`from pixiu_tools import {import_str}` "
+                         "and print your final result to stdout."
+                     ),
+                 },

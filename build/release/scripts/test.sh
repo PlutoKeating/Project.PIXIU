@@ -27,6 +27,7 @@ else
 fi
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-lock.sh"
+bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-branding.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-host-adaptation.sh"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-message-renderer-assets.py"

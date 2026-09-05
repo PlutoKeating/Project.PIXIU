@@ -36,6 +36,10 @@ patch -d "${output_dir}/source" -p1 --forward --batch \
     < "${script_dir}/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
 patch -d "${output_dir}/source" -p1 --forward --batch \
     < "${script_dir}/patches/0006-rich-message-rendering.patch"
+patch -d "${output_dir}/source" -p1 --forward --batch --no-backup-if-mismatch \
+    < "${script_dir}/patches/0007-chat-layout-follow.patch"
+patch -d "${output_dir}/source" -p1 --forward --batch --no-backup-if-mismatch \
+    < "${script_dir}/patches/0008-pixiu-assistant-history.patch"
 cp -a "${repo_root}/integrations/kylin_agent/message_renderer" \
     "${output_dir}/source/res/message-renderer"
 install -D -m 0644 "${script_dir}/compat/pixiu_host_compat.cpp" \

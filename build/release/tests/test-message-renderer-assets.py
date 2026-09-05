@@ -50,6 +50,9 @@ for token in (
     "ResizeObserver",
     "pixiu-wheel:",
     "PIXIU Color Emoji",
+    "text-align: start",
+    "word-spacing: normal",
+    "white-space: normal",
 ):
     require(token in html, f"renderer contract missing: {token}")
 

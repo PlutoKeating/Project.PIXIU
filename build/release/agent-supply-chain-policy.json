@@ -13,6 +13,8 @@
     "build/release/agent-host/patches/0004-working-agent-experience.patch",
     "build/release/agent-host/patches/0005-blue-theme-settings-and-pixiu-soul.patch",
     "build/release/agent-host/patches/0006-rich-message-rendering.patch",
+    "build/release/agent-host/patches/0007-chat-layout-follow.patch",
+    "build/release/agent-host/patches/0008-pixiu-assistant-history.patch",
     "integrations/kylin_agent/message_renderer/README.md",
     "integrations/kylin_agent/message_renderer/fonts/KaTeX_AMS-Regular.woff2",
     "integrations/kylin_agent/message_renderer/fonts/KaTeX_Caligraphic-Bold.woff2",
@@ -51,7 +53,8 @@
   "runtime_adaptation_inputs": [
     "build/release/agent-runtime/build-runtime-wheelhouse.sh",
     "build/release/agent-runtime/runtime-wheel-MANIFEST.in",
-    "build/release/agent-runtime/patches/0001-secure-model-management.patch"
+    "build/release/agent-runtime/patches/0001-secure-model-management.patch",
+    "build/release/agent-runtime/patches/0002-pixiu-model-context.patch"
   ],
   "components": {
     "kylin_agent": {
