@@ -20,10 +20,10 @@
 
 ## V11 与双 SDK 验证
 
-审阅包 `pixiu_0.1.7-1_amd64.deb` 的 SHA-256 为：
+审阅包 `pixiu_0.1.7-2_amd64.deb` 的 SHA-256 为：
 
 ```text
-cf95e13ae406ffe393f6efbdb6944f2518701c675b64a409fb3b3289e1f99e8a
+c990990ba760e6efd831fb21679238028afddf93fe572fbc3c4243685dff8d5f
 ```
 
 银河麒麟 V11 原生探针验证了产品写入、向量检索、向量删除、自然语言遗忘和删除后不可见。能力端点返回 Embedding 与 Vector Engine 均使用 `kylin` runtime，并满足 strict 画像要求。

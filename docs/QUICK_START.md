@@ -6,8 +6,8 @@
 
 ```bash
 cd submission/04-部署文档/01-可安装软件
-sha256sum -c pixiu_0.1.7-1_amd64.deb.sha256
-sudo apt install ./pixiu_0.1.7-1_amd64.deb
+sha256sum -c pixiu_0.1.7-2_amd64.deb.sha256
+sudo apt install ./pixiu_0.1.7-2_amd64.deb
 pixiu
 ```
 
