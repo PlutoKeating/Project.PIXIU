@@ -9,7 +9,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
-PATCH = ROOT / "build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch"
+PATCHES = (
+    ROOT / "build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch",
+    ROOT / "build/release/agent-host/patches/0004-working-agent-experience.patch",
+)
 
 
 def relative_luminance(color: str) -> float:
@@ -35,27 +38,26 @@ def require_pair(name: str, foreground: str, background: str, minimum: float = 4
         )
 
 
-source = PATCH.read_text(encoding="utf-8")
+source = "\n".join(path.read_text(encoding="utf-8") for path in PATCHES)
 colors = set(re.findall(r"#[0-9a-fA-F]{6}", source))
 required_colors = {
-    "#132238", "#526477", "#627587", "#ffffff", "#f4f7fb", "#066a75", "#087f8c",
-    "#edf5f7", "#a9bbc5", "#93a8b3", "#111a23", "#0b1117", "#167d80", "#41d3c4",
+    "#172033", "#5b6474", "#ffffff", "#f6f7f9", "#147d78", "#e3f4f1",
+    "#f3f6f8", "#abb6c3", "#96a3b2", "#171c22", "#101418", "#1d5f5b", "#55c8be",
 }
 missing = required_colors - colors
 if missing:
     raise AssertionError(f"expected palette colors missing from UI patch: {sorted(missing)}")
 
 for args in (
-    ("light primary text", "#132238", "#ffffff"),
-    ("light secondary text", "#526477", "#ffffff"),
-    ("light placeholder", "#627587", "#ffffff"),
-    ("light primary button", "#ffffff", "#066a75"),
-    ("light user bubble", "#ffffff", "#087f8c"),
-    ("dark primary text", "#edf5f7", "#111a23"),
-    ("dark secondary text", "#a9bbc5", "#111a23"),
-    ("dark placeholder", "#93a8b3", "#111a23"),
-    ("dark user bubble", "#ffffff", "#167d80"),
-    ("dark accent", "#41d3c4", "#0b1117"),
+    ("light primary text", "#172033", "#ffffff"),
+    ("light secondary text", "#5b6474", "#ffffff"),
+    ("light primary button", "#ffffff", "#147d78"),
+    ("light user bubble", "#172033", "#e3f4f1"),
+    ("dark primary text", "#f3f6f8", "#171c22"),
+    ("dark secondary text", "#abb6c3", "#171c22"),
+    ("dark placeholder", "#96a3b2", "#171c22"),
+    ("dark user bubble", "#f3f6f8", "#1d5f5b"),
+    ("dark accent", "#55c8be", "#101418"),
 ):
     require_pair(*args)
 

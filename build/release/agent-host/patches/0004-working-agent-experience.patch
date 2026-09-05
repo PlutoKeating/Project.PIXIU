@@ -1,0 +1,555 @@
+--- a/include/services/apiservice.h
++++ b/include/services/apiservice.h
+@@ -130,6 +130,7 @@
+     struct StreamState {
+         QNetworkReply *reply = nullptr;
+         QString partialData;
++        QString eventName;
+         bool inCustomEvent = false;
+         bool completionEmitted = false;
+         bool receivedContent = false;
+--- a/include/ui/chatwidget.h
++++ b/include/ui/chatwidget.h
+@@ -8,6 +8,7 @@
+ #include <QStringList>
+ #include <QMap>
+ #include <QPointer>
++#include <QSet>
+ #include "models/session.h"
+ 
+ class QVBoxLayout;
+@@ -19,6 +20,7 @@
+ class QComboBox;
+ class QSplitter;
+ class QTimer;
++class QToolButton;
+ class QDialog;
+ class QTreeWidget;
+ class QFileSystemWatcher;
+@@ -118,6 +120,11 @@
+     QString selectedModelName() const;
+     QString localAssistantReply(const QString &userText) const;
+     void updateRequestButtons();
++    void onStreamDetailEvent(const QString &sessionId, const QJsonObject &event);
++    void onSegmentBoundary(const QString &sessionId);
++    void ensureActivityCard(const QString &sessionId);
++    void updateActivityCard(const QString &sessionId);
++    void persistCurrentStreamSegment(const QString &sessionId);
+     void scheduleScrollToBottom(bool force = false);
+     bool shouldAutoScrollToBottom() const;
+ 
+@@ -197,7 +204,14 @@
+     QStringList m_pendingAttachmentPaths;
+     QMap<QString, QString> m_pendingFallbackReplies;
+     QMap<QString, QString> m_streamedReplies;
++    QMap<QString, QString> m_currentStreamSegments;
+     QMap<QString, QLabel *> m_streamBubbles;
++    QMap<QString, QWidget *> m_activityCards;
++    QMap<QString, QToolButton *> m_activityToggles;
++    QMap<QString, QLabel *> m_activityDetails;
++    QMap<QString, QStringList> m_activityLines;
++    QSet<QString> m_sessionsWithPersistedSegments;
++    QTimer *m_waitingTimer;
+     bool m_isStreaming;
+     bool m_needsNewAssistantBubble;
+     ApiService *m_apiService;
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -11,6 +11,7 @@
+ #include <QHBoxLayout>
+ #include <QJsonArray>
+ #include <QJsonObject>
++#include <QKeyEvent>
+ #include <QLabel>
+ #include <QMenu>
+ #include <QPushButton>
+@@ -19,9 +20,54 @@
+ #include <QSizePolicy>
+ #include <QTextEdit>
+ #include <QTimer>
++#include <QToolButton>
+ #include <QToolTip>
+ #include <QVBoxLayout>
+ 
++#include <functional>
++
++namespace {
++
++class ChatInputEdit final : public QTextEdit
++{
++public:
++    explicit ChatInputEdit(QWidget *parent = nullptr) : QTextEdit(parent) {}
++
++    std::function<void()> submit;
++
++protected:
++    void keyPressEvent(QKeyEvent *event) override
++    {
++        const bool enter = event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter;
++        const bool newline = event->modifiers().testFlag(Qt::ShiftModifier) ||
++                             event->modifiers().testFlag(Qt::ControlModifier);
++        if (enter && !newline && submit) {
++            submit();
++            event->accept();
++            return;
++        }
++        if (enter && newline) {
++            insertPlainText(QStringLiteral("\n"));
++            event->accept();
++            return;
++        }
++        QTextEdit::keyPressEvent(event);
++    }
++};
++
++QString activityName(const QString &tool)
++{
++    if (tool == QStringLiteral("terminal")) return QStringLiteral("运行命令");
++    if (tool == QStringLiteral("web_search")) return QStringLiteral("联网检索");
++    if (tool.startsWith(QStringLiteral("pixiu_memory_")) || tool == QStringLiteral("memory"))
++        return QStringLiteral("访问长期记忆");
++    if (tool == QStringLiteral("todo")) return QStringLiteral("更新任务计划");
++    if (tool == QStringLiteral("skill_view")) return QStringLiteral("加载专业能力");
++    return tool.isEmpty() ? QStringLiteral("处理任务") : tool;
++}
++
++} // namespace
++
+ ChatWidget::ChatWidget(QWidget *parent)
+     : QWidget(parent)
+     , m_titleLabel(nullptr)
+@@ -32,12 +78,28 @@
+     , m_inputEdit(nullptr)
+     , m_sendButton(nullptr)
+     , m_stopButton(nullptr)
++    , m_waitingTimer(new QTimer(this))
+ {
+     setupUi();
+     connect(&ApiService::instance(), &ApiService::chatCompletionFinished,
+             this, &ChatWidget::onChatCompletionFinished);
+     connect(&ApiService::instance(), &ApiService::chatCompletionDelta,
+             this, &ChatWidget::onChatCompletionDelta);
++    connect(&ApiService::instance(), &ApiService::streamDetailEvent,
++            this, &ChatWidget::onStreamDetailEvent);
++    connect(&ApiService::instance(), &ApiService::segmentBoundary,
++            this, &ChatWidget::onSegmentBoundary);
++    m_waitingTimer->setInterval(420);
++    connect(m_waitingTimer, &QTimer::timeout, this, [this]() {
++        static int dotCount = 0;
++        dotCount = dotCount % 3 + 1;
++        for (auto it = m_streamBubbles.begin(); it != m_streamBubbles.end(); ++it) {
++            if (it.value() && m_currentStreamSegments.value(it.key()).isEmpty()) {
++                it.value()->setText(QStringLiteral("正在思考%1").arg(QString(dotCount, QChar(0x00b7))));
++            }
++        }
++    });
++    m_waitingTimer->start();
+ }
+ 
+ ChatWidget::~ChatWidget() = default;
+@@ -101,10 +163,13 @@
+     composerLayout->setContentsMargins(10, 10, 10, 10);
+     composerLayout->setSpacing(10);
+ 
+-    m_inputEdit = new QTextEdit(composerShell);
++    auto *chatInput = new ChatInputEdit(composerShell);
++    m_inputEdit = chatInput;
+     m_inputEdit->setFixedHeight(64);
+     m_inputEdit->setObjectName(QStringLiteral("messageComposer"));
+     m_inputEdit->setPlaceholderText(QStringLiteral("输入任务，让 Agent 使用工具与跨设备记忆协助你…"));
++    m_inputEdit->setToolTip(QStringLiteral("Enter 发送；Shift+Enter 或 Ctrl+Enter 换行"));
++    chatInput->submit = [this]() { sendMessage(); };
+     composerLayout->addWidget(m_inputEdit, 1);
+ 
+     m_sendButton = new QPushButton(QStringLiteral("发送"), composerShell);
+@@ -205,6 +270,9 @@
+ void ChatWidget::clearMessages()
+ {
+     m_streamBubbles.clear();
++    m_activityCards.clear();
++    m_activityToggles.clear();
++    m_activityDetails.clear();
+     while (QLayoutItem *item = m_messagesLayout->takeAt(0)) {
+         if (item->widget()) {
+             delete item->widget();
+@@ -352,6 +420,14 @@
+     m_inputEdit->clear();
+     refreshMessages();
+ 
++    QLabel *waitingBubble = addMessageBubble(QStringLiteral("assistant"), QStringLiteral("正在思考·"));
++    waitingBubble->setProperty("streamState", QStringLiteral("waiting"));
++    m_streamBubbles.insert(m_currentSessionId, waitingBubble);
++    m_currentStreamSegments.remove(m_currentSessionId);
++    m_activityLines.remove(m_currentSessionId);
++    m_sessionsWithPersistedSegments.remove(m_currentSessionId);
++    scrollToBottom();
++
+     const QJsonArray messages = buildChatMessages(SessionService::instance().getSessionMessages(m_currentSessionId));
+     m_pendingFallbackReplies.insert(m_currentSessionId, localAssistantReply(text));
+     updateRequestButtons();
+@@ -367,6 +443,7 @@
+ 
+     m_pendingFallbackReplies.insert(m_currentSessionId, QStringLiteral("生成已停止。"));
+     m_streamedReplies.remove(m_currentSessionId);
++    m_currentStreamSegments.remove(m_currentSessionId);
+     m_streamBubbles.remove(m_currentSessionId);
+     ApiService::instance().cancelChatCompletion(m_currentSessionId);
+ }
+@@ -378,6 +455,7 @@
+     }
+ 
+     m_streamedReplies[sessionId].append(delta);
++    m_currentStreamSegments[sessionId].append(delta);
+     m_pendingFallbackReplies.insert(sessionId, m_streamedReplies.value(sessionId));
+ 
+     if (sessionId != m_currentSessionId) {
+@@ -389,28 +467,141 @@
+         bubble = addMessageBubble(QStringLiteral("assistant"), QString());
+         m_streamBubbles.insert(sessionId, bubble);
+     }
+-    bubble->setText(m_streamedReplies.value(sessionId));
++    bubble->setProperty("streamState", QStringLiteral("responding"));
++    bubble->setText(m_currentStreamSegments.value(sessionId));
+     scrollToBottom();
+ }
+ 
+-void ChatWidget::onChatCompletionFinished(const QString &sessionId, const QString &content, bool ok)
++void ChatWidget::persistCurrentStreamSegment(const QString &sessionId)
+ {
+-    if (!m_pendingFallbackReplies.contains(sessionId)) {
++    const QString segment = m_currentStreamSegments.value(sessionId).trimmed();
++    if (segment.isEmpty()) {
++        return;
++    }
++    SessionService::instance().addMessage(sessionId, QStringLiteral("assistant"), segment);
++    m_sessionsWithPersistedSegments.insert(sessionId);
++    m_currentStreamSegments.remove(sessionId);
++}
++
++void ChatWidget::onSegmentBoundary(const QString &sessionId)
++{
++    if (!m_pendingFallbackReplies.contains(sessionId)) return;
++    if (!m_currentStreamSegments.value(sessionId).trimmed().isEmpty()) {
++        persistCurrentStreamSegment(sessionId);
++    } else if (QLabel *waiting = m_streamBubbles.value(sessionId, nullptr)) {
++        waiting->setText(QStringLiteral("已开始执行任务"));
++        waiting->setProperty("streamState", QStringLiteral("responding"));
++    }
++    m_streamBubbles.remove(sessionId);
++    if (sessionId == m_currentSessionId) {
++        emit messageSent(sessionId);
++        scrollToBottom();
++    }
++}
++
++void ChatWidget::ensureActivityCard(const QString &sessionId)
++{
++    if (sessionId != m_currentSessionId || m_activityCards.contains(sessionId)) {
+         return;
+     }
++    QWidget *card = new QWidget(m_messagesContainer);
++    card->setObjectName(QStringLiteral("activityCard"));
++    card->setMaximumWidth(760);
++    QVBoxLayout *layout = new QVBoxLayout(card);
++    layout->setContentsMargins(14, 10, 14, 10);
++    layout->setSpacing(7);
++    auto *toggle = new QToolButton(card);
++    toggle->setObjectName(QStringLiteral("activityToggle"));
++    toggle->setCheckable(true);
++    toggle->setChecked(false);
++    toggle->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
++    toggle->setArrowType(Qt::RightArrow);
++    toggle->setText(QStringLiteral("工作进度"));
++    auto *details = new QLabel(card);
++    details->setObjectName(QStringLiteral("activityDetails"));
++    details->setWordWrap(true);
++    details->setVisible(false);
++    connect(toggle, &QToolButton::toggled, card, [toggle, details](bool shown) {
++        toggle->setArrowType(shown ? Qt::DownArrow : Qt::RightArrow);
++        details->setVisible(shown);
++    });
++    layout->addWidget(toggle);
++    layout->addWidget(details);
++    m_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), card, 0, Qt::AlignHCenter);
++    m_activityCards.insert(sessionId, card);
++    m_activityToggles.insert(sessionId, toggle);
++    m_activityDetails.insert(sessionId, details);
++}
++
++void ChatWidget::updateActivityCard(const QString &sessionId)
++{
++    ensureActivityCard(sessionId);
++    QToolButton *toggle = m_activityToggles.value(sessionId, nullptr);
++    QLabel *details = m_activityDetails.value(sessionId, nullptr);
++    if (!toggle || !details) return;
++    const QStringList lines = m_activityLines.value(sessionId);
++    toggle->setText(QStringLiteral("工作进度 · %1 项").arg(lines.size()));
++    QStringList visibleLines;
++    for (const QString &line : lines) {
++        const int markerEnd = line.indexOf(QStringLiteral("] "));
++        visibleLines.append(markerEnd >= 0 ? line.mid(markerEnd + 2) : line);
++    }
++    details->setText(visibleLines.join(QLatin1Char('\n')));
++    scrollToBottom();
++}
+ 
+-    QString assistantReply = ok ? content.trimmed() : QString();
+-    if (assistantReply.isEmpty()) {
+-        assistantReply = m_streamedReplies.value(sessionId).trimmed();
++void ChatWidget::onStreamDetailEvent(const QString &sessionId, const QJsonObject &event)
++{
++    if (!m_pendingFallbackReplies.contains(sessionId)) return;
++    const QString type = event.value(QStringLiteral("_event")).toString();
++    if (type == QStringLiteral("hermes.tool.progress")) {
++        const QString callId = event.value(QStringLiteral("toolCallId")).toString();
++        const QString status = event.value(QStringLiteral("status")).toString();
++        const QString tool = activityName(event.value(QStringLiteral("tool")).toString());
++        const QString label = event.value(QStringLiteral("label")).toString().trimmed();
++        const QString marker = callId.isEmpty() ? tool : callId;
++        const QString line = QStringLiteral("%1 %2%3")
++            .arg(status == QStringLiteral("completed") ? QStringLiteral("完成") : QStringLiteral("进行中"),
++                 tool,
++                 label.isEmpty() ? QString() : QStringLiteral(" · %1").arg(label));
++        QStringList &lines = m_activityLines[sessionId];
++        int index = -1;
++        for (int i = 0; i < lines.size(); ++i) {
++            if (lines.at(i).startsWith(QStringLiteral("[%1]").arg(marker))) { index = i; break; }
++        }
++        const QString stored = QStringLiteral("[%1] %2").arg(marker, line);
++        if (index >= 0) lines[index] = stored; else lines.append(stored);
++    } else {
++        const QString text = event.value(QStringLiteral("text")).toString().trimmed();
++        m_activityLines[sessionId].append(text.isEmpty() ? QStringLiteral("分支任务正在处理") : text);
+     }
+-    if (assistantReply.isEmpty()) {
+-        assistantReply = m_pendingFallbackReplies.value(sessionId);
++    updateActivityCard(sessionId);
++}
++
++void ChatWidget::onChatCompletionFinished(const QString &sessionId, const QString &content, bool ok)
++{
++    if (!m_pendingFallbackReplies.contains(sessionId)) {
++        return;
+     }
++
++    QString assistantReply = m_currentStreamSegments.value(sessionId).trimmed();
++    if (assistantReply.isEmpty() && !m_sessionsWithPersistedSegments.contains(sessionId))
++        assistantReply = ok ? content.trimmed() : QString();
++    if (assistantReply.isEmpty() && !m_sessionsWithPersistedSegments.contains(sessionId))
++        assistantReply = ok ? m_pendingFallbackReplies.value(sessionId)
++                            : QStringLiteral("任务执行中断。请检查模型服务后重试。");
+     m_pendingFallbackReplies.remove(sessionId);
+     m_streamedReplies.remove(sessionId);
++    m_currentStreamSegments.remove(sessionId);
+     m_streamBubbles.remove(sessionId);
++    m_activityCards.remove(sessionId);
++    m_activityToggles.remove(sessionId);
++    m_activityDetails.remove(sessionId);
++    m_activityLines.remove(sessionId);
++    m_sessionsWithPersistedSegments.remove(sessionId);
+ 
+-    SessionService::instance().addMessage(sessionId, QStringLiteral("assistant"), assistantReply);
++    if (!assistantReply.isEmpty())
++        SessionService::instance().addMessage(sessionId, QStringLiteral("assistant"), assistantReply);
+     if (sessionId == m_currentSessionId) {
+         refreshMessages();
+         updateRequestButtons();
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -44,7 +44,7 @@
+     rootLayout->setSpacing(0);
+ 
+     QWidget *titleBar = new QWidget(central);
+-    titleBar->setFixedHeight(64);
++    titleBar->setFixedHeight(56);
+     titleBar->setObjectName(QStringLiteral("titleBar"));
+ 
+     QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
+@@ -79,15 +79,6 @@
+     connect(settingsButton, &QPushButton::clicked, this, &MainWindow::openSettings);
+     titleLayout->addWidget(settingsButton);
+ 
+-    QPushButton *minimizeButton = createTitleButton(QStringLiteral("—"), QStringLiteral("最小化"));
+-    connect(minimizeButton, &QPushButton::clicked, this, &QMainWindow::showMinimized);
+-    titleLayout->addWidget(minimizeButton);
+-
+-    QPushButton *closeButton = createTitleButton(QStringLiteral("×"), QStringLiteral("关闭"));
+-    closeButton->setProperty("danger", true);
+-    connect(closeButton, &QPushButton::clicked, this, &QMainWindow::close);
+-    titleLayout->addWidget(closeButton);
+-
+     rootLayout->addWidget(titleBar);
+ 
+     QSplitter *splitter = new QSplitter(Qt::Horizontal, central);
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -174,8 +174,14 @@
+         m_systemThemeTimer->start();
+     }
+     QSettings settings;
+-    const int mode = settings.value(QStringLiteral("General/Theme"), FollowSystem).toInt();
+-    m_mode = mode >= FollowSystem && mode <= Dark ? static_cast<ThemeMode>(mode) : FollowSystem;
++    const int mode = settings.value(QStringLiteral("General/Theme"), Light).toInt();
++    m_mode = mode >= FollowSystem && mode <= Dark ? static_cast<ThemeMode>(mode) : Light;
++    if (!settings.value(QStringLiteral("General/ProductThemeV2"), false).toBool()) {
++        if (m_mode == FollowSystem) m_mode = Light;
++        settings.setValue(QStringLiteral("General/Theme"), static_cast<int>(m_mode));
++        settings.setValue(QStringLiteral("General/ProductThemeV2"), true);
++        settings.sync();
++    }
+     apply();
+ }
+ 
+@@ -273,41 +279,41 @@
+ 
+     QPalette palette;
+     if (m_dark) {
+-        palette.setColor(QPalette::Window, QColor(QStringLiteral("#0b1117")));
+-        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#edf5f7")));
+-        palette.setColor(QPalette::Base, QColor(QStringLiteral("#111a23")));
+-        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#17232e")));
++        palette.setColor(QPalette::Window, QColor(QStringLiteral("#101418")));
++        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#f3f6f8")));
++        palette.setColor(QPalette::Base, QColor(QStringLiteral("#171c22")));
++        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#1c232b")));
+         palette.setColor(QPalette::ToolTipBase, QColor(QStringLiteral("#17232e")));
+         palette.setColor(QPalette::ToolTipText, QColor(QStringLiteral("#edf5f7")));
+         palette.setColor(QPalette::Text, QColor(QStringLiteral("#edf5f7")));
+         palette.setColor(QPalette::Button, QColor(QStringLiteral("#17232e")));
+         palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#edf5f7")));
+         palette.setColor(QPalette::BrightText, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#167d80")));
++        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#2b8f88")));
+         palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::Link, QColor(QStringLiteral("#62e4d6")));
+-        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#283946")));
+-        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#20303c")));
++        palette.setColor(QPalette::Link, QColor(QStringLiteral("#6bd3ca")));
++        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#303944")));
++        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#242c35")));
+         palette.setColor(QPalette::Dark, QColor(QStringLiteral("#070b10")));
+-        palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#93a8b3")));
++        palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#96a3b2")));
+         palette.setColor(QPalette::Disabled, QPalette::Text, QColor(QStringLiteral("#71848f")));
+         palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(QStringLiteral("#71848f")));
+     } else {
+         palette = m_app->style()->standardPalette();
+-        palette.setColor(QPalette::Window, QColor(QStringLiteral("#f4f7fb")));
+-        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#132238")));
++        palette.setColor(QPalette::Window, QColor(QStringLiteral("#f6f7f9")));
++        palette.setColor(QPalette::WindowText, QColor(QStringLiteral("#172033")));
+         palette.setColor(QPalette::Base, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#f8fafc")));
++        palette.setColor(QPalette::AlternateBase, QColor(QStringLiteral("#f8fafb")));
+         palette.setColor(QPalette::ToolTipBase, QColor(QStringLiteral("#ffffff")));
+         palette.setColor(QPalette::ToolTipText, QColor(QStringLiteral("#132238")));
+         palette.setColor(QPalette::Text, QColor(QStringLiteral("#132238")));
+         palette.setColor(QPalette::Button, QColor(QStringLiteral("#ffffff")));
+         palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#132238")));
+-        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#087f8c")));
++        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#147d78")));
+         palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
+-        palette.setColor(QPalette::Link, QColor(QStringLiteral("#08727e")));
+-        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#dce5ee")));
+-        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#edf3f7")));
++        palette.setColor(QPalette::Link, QColor(QStringLiteral("#116b67")));
++        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#dce2ea")));
++        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#edf1f5")));
+         palette.setColor(QPalette::Dark, QColor(QStringLiteral("#b8c7d4")));
+         palette.setColor(QPalette::PlaceholderText, QColor(QStringLiteral("#627587")));
+         palette.setColor(QPalette::Disabled, QPalette::Text, QColor(QStringLiteral("#7d8c9c")));
+@@ -315,16 +321,16 @@
+     }
+ 
+     m_app->setPalette(palette);
+-    const QString background = m_dark ? QStringLiteral("#0b1117") : QStringLiteral("#f4f7fb");
+-    const QString surface = m_dark ? QStringLiteral("#111a23") : QStringLiteral("#ffffff");
+-    const QString elevated = m_dark ? QStringLiteral("#17232e") : QStringLiteral("#f8fafc");
+-    const QString text = m_dark ? QStringLiteral("#edf5f7") : QStringLiteral("#132238");
+-    const QString muted = m_dark ? QStringLiteral("#a9bbc5") : QStringLiteral("#526477");
+-    const QString border = m_dark ? QStringLiteral("#283946") : QStringLiteral("#dce5ee");
+-    const QString accent = m_dark ? QStringLiteral("#41d3c4") : QStringLiteral("#066a75");
+-    const QString accentHover = m_dark ? QStringLiteral("#62e4d6") : QStringLiteral("#055560");
+-    const QString selection = m_dark ? QStringLiteral("#174c50") : QStringLiteral("#e0f4f5");
+-    const QString userBubble = m_dark ? QStringLiteral("#167d80") : QStringLiteral("#087f8c");
++    const QString background = m_dark ? QStringLiteral("#101418") : QStringLiteral("#f6f7f9");
++    const QString surface = m_dark ? QStringLiteral("#171c22") : QStringLiteral("#ffffff");
++    const QString elevated = m_dark ? QStringLiteral("#1c232b") : QStringLiteral("#f8fafb");
++    const QString text = m_dark ? QStringLiteral("#f3f6f8") : QStringLiteral("#172033");
++    const QString muted = m_dark ? QStringLiteral("#abb6c3") : QStringLiteral("#5b6474");
++    const QString border = m_dark ? QStringLiteral("#303944") : QStringLiteral("#dce2ea");
++    const QString accent = m_dark ? QStringLiteral("#55c8be") : QStringLiteral("#147d78");
++    const QString accentHover = m_dark ? QStringLiteral("#6bd3ca") : QStringLiteral("#106b67");
++    const QString selection = m_dark ? QStringLiteral("#173a38") : QStringLiteral("#e8f5f3");
++    const QString userBubble = m_dark ? QStringLiteral("#1d5f5b") : QStringLiteral("#e3f4f1");
+     const QString disabled = m_dark ? QStringLiteral("#71848f") : QStringLiteral("#7d8c9c");
+ 
+     QString globalStyleSheet = QStringLiteral(R"(
+@@ -345,7 +351,7 @@
+         QWidget#composerShell {
+             background-color: %2;
+             border: 1px solid %6;
+-            border-radius: 14px;
++            border-radius: 12px;
+         }
+         QWidget#sidebar {
+             background-color: %2;
+@@ -356,7 +362,7 @@
+         QLabel#brandMark {
+             color: #ffffff;
+             background-color: %7;
+-            border-radius: 10px;
++            border-radius: 9px;
+             font-size: 18px;
+             font-weight: 800;
+         }
+@@ -367,13 +373,13 @@
+             color: %7;
+             font-size: 12px;
+             font-weight: 800;
+-            letter-spacing: 1px;
++            letter-spacing: 0.4px;
+         }
+         QPushButton {
+             color: %4;
+             background-color: %2;
+             border: 1px solid %6;
+-            border-radius: 9px;
++            border-radius: 8px;
+             padding: 7px 14px;
+             font-weight: 600;
+         }
+@@ -436,10 +442,10 @@
+         QListWidget#sessionList::item:hover { background-color: %3; }
+         QListWidget#sessionList::item:selected { color: %7; background-color: %9; font-weight: 700; }
+         QLabel[messageRole="user"] {
+-            color: #ffffff;
++            color: %4;
+             background-color: %10;
+             border: 1px solid %10;
+-            border-radius: 14px;
++            border-radius: 12px;
+             padding: 4px;
+         }
+         QLabel[messageRole="assistant"] {
+@@ -450,6 +456,20 @@
+             padding: 0;
+             font-size: 15px;
+         }
++        QLabel[messageRole="assistant"][streamState="waiting"] { color: %5; }
++        QWidget#activityCard {
++            background-color: %3;
++            border: 1px solid %6;
++            border-radius: 10px;
++        }
++        QToolButton#activityToggle {
++            color: %5;
++            background: transparent;
++            border: 0;
++            padding: 2px;
++            font-weight: 600;
++        }
++        QLabel#activityDetails { color: %5; font-size: 12px; padding: 2px 6px 5px 22px; }
+         QLabel[messageRole="system"] {
+             color: %4;
+             background-color: %3;

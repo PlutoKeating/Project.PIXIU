@@ -99,13 +99,37 @@ void ApiService::sendChatCompletion(const QString &sessionId,
         it->partialData.append(QString::fromUtf8(reply->readAll()));
         int newline = it->partialData.indexOf(QLatin1Char('\n'));
         while (newline >= 0) {
-            QString line = it->partialData.left(newline).trimmed();
-            it->partialData.remove(0, newline + 1);
-            if (line.startsWith(QStringLiteral("data:"))) {
-                line = line.mid(5).trimmed();
+            QString line = it->partialData.left(newline);
+            if (line.endsWith(QLatin1Char('\r'))) {
+                line.chop(1);
             }
-            if (!line.isEmpty() && line != QStringLiteral("[DONE]")) {
-                const QString delta = streamText(line.toUtf8());
+            it->partialData.remove(0, newline + 1);
+            if (line.isEmpty()) {
+                it->eventName.clear();
+            } else if (line.startsWith(QStringLiteral("event:"))) {
+                it->eventName = line.mid(6).trimmed();
+            } else if (line.startsWith(QStringLiteral("data:"))) {
+                const QString payload = line.mid(5).trimmed();
+                if (!it->eventName.isEmpty()) {
+                    QJsonObject event = QJsonDocument::fromJson(payload.toUtf8()).object();
+                    event.insert(QStringLiteral("_event"), it->eventName);
+                    if (it->eventName == QStringLiteral("hermes.tool.progress") &&
+                        event.value(QStringLiteral("status")).toString() == QStringLiteral("running")) {
+                        emit segmentBoundary(sessionId);
+                        it->receivedContent = false;
+                    }
+                    emit streamDetailEvent(sessionId, event);
+                } else if (!payload.isEmpty() && payload != QStringLiteral("[DONE]")) {
+                    const QString delta = streamText(payload.toUtf8());
+                    if (!delta.isEmpty()) {
+                        reply->setProperty("pixiu-stream-text",
+                                           reply->property("pixiu-stream-text").toString() + delta);
+                        it->receivedContent = true;
+                        emit chatCompletionDelta(sessionId, delta);
+                    }
+                }
+            } else if (!line.startsWith(QLatin1Char(':'))) {
+                const QString delta = streamText(line.trimmed().toUtf8());
                 if (!delta.isEmpty()) {
                     reply->setProperty("pixiu-stream-text",
                                        reply->property("pixiu-stream-text").toString() + delta);

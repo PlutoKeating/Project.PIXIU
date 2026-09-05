@@ -73,7 +73,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
 | Agent 集成 | 多会话/多轮、规划与工具、记忆生命周期闭环 | E integrations/kylin_agent + openKylin 宿主 | A-01~A-10、F1-01、F1-02、F6-05 |
-| Agent 宿主 UI | 双主题可读性、焦点/缩放、状态与空状态隐私；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
+| Agent 宿主 UI | 默认浅色与双主题可读性、焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息及折叠式工具进度；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
 
 ### 1.3 关键约束
 
