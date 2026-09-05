@@ -21,6 +21,10 @@ patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0004-working-agent-experience.patch"
 patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
+patch -d "${fixture}/source" -p1 --forward --batch \
+    < "${repo_root}/build/release/agent-host/patches/0006-rich-message-rendering.patch"
+cp -a "${repo_root}/integrations/kylin_agent/message_renderer" \
+    "${fixture}/source/res/message-renderer"
 install -D -m 0644 "${repo_root}/build/release/agent-host/compat/pixiu_host_compat.cpp" \
     "${fixture}/source/src/services/pixiu_host_compat.cpp"
 
@@ -105,6 +109,15 @@ grep -q 'ThemeManager::Light' "${fixture}/source/src/ui/settingsdialog.cpp"
 grep -q 'ThemeManager::Dark' "${fixture}/source/src/ui/settingsdialog.cpp"
 grep -q '你是 PIXIU' "${fixture}/source/src/services/gatewayservice.cpp"
 grep -q 'updateDefaultSoulMd' "${fixture}/source/src/services/gatewayservice.cpp"
+grep -q 'class RichMessageView' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'QWebEngineView' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'renderMarkdown' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'markdown-it.min.js' "${fixture}/source/res/message-renderer/index.html"
+grep -q 'markdown-it-texmath.js' "${fixture}/source/res/message-renderer/index.html"
+grep -q 'katex.min.js' "${fixture}/source/res/message-renderer/index.html"
+grep -q 'mermaid.min.js' "${fixture}/source/res/message-renderer/index.html"
+grep -q 'QStringLiteral("tool")' "${fixture}/source/src/ui/chatwidget.cpp"
+grep -q 'activityPulse' "${fixture}/source/src/ui/chatwidget.cpp"
 ! grep -q 'Database:' "${fixture}/source/src/ui/mainwindow.cpp"
 ! grep -q 'setStyleSheet' "${fixture}/source/src/ui/mainwindow.cpp"
 ! grep -q 'setStyleSheet' "${fixture}/source/src/ui/sidebar.cpp"

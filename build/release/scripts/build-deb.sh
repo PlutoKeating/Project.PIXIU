@@ -231,6 +231,9 @@ if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
         "${AGENT_DOC}/LICENSE.kylin-agent"
     install -m 0644 "${PIXIU_ROOT}/third_party/kylin-agent-runtime/LICENSE" \
         "${AGENT_DOC}/LICENSE.kylin-agent-runtime"
+    install -d -m 0755 "${AGENT_DOC}/message-renderer"
+    install -m 0644 "${PIXIU_ROOT}/integrations/kylin_agent/message_renderer/licenses/"* \
+        "${AGENT_DOC}/message-renderer/"
 fi
 
 if [ "${PIXIU_KYSDK}" = "ON" ]; then
@@ -309,8 +312,8 @@ PIXIU_PYTHON_VERSION="${PIXIU_PYTHON_VERSION}" \
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
     PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, openssl, dpkg-repack, pkexec, \
-libqt5widgets5, libqt5network5, libqt5websockets5, libqt5svg5, \
-libkysdk-shortcut, libkysdk-notification, libkysdk-qtwidgets, libgsettings-qt1"
+libqt5widgets5, libqt5network5, libqt5webenginewidgets5, libqt5websockets5, libqt5svg5, libqt5multimedia5, \
+fonts-noto-color-emoji, libkysdk-shortcut, libkysdk-notification, libkysdk-qtwidgets, libgsettings-qt1"
 fi
 sed -e "s/@VERSION@/${PIXIU_VERSION}-${PIXIU_REVISION}/" \
     -e "s/@ARCH@/${PIXIU_ARCH}/" \

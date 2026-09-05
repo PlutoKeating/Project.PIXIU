@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src qrc: 'unsafe-inline'; style-src qrc: 'unsafe-inline'; font-src qrc:; img-src data: qrc:;">
+  <link rel="stylesheet" href="katex.min.css">
+  <script src="markdown-it.min.js"></script>
+  <script src="katex.min.js"></script>
+  <script src="markdown-it-texmath.js"></script>
+  <script src="mermaid.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #172033;
+      --muted: #5b6474;
+      --border: #dce2ea;
+      --surface: #ffffff;
+      --soft: #f3f6fa;
+      --accent: #1456b8;
+      --code: #f5f7fa;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+    body {
+      color: var(--text);
+      font: 14px/1.68 "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", "Noto Color Emoji", sans-serif;
+      overflow-wrap: anywhere;
+    }
+    #content > :first-child { margin-top: 0; }
+    #content > :last-child { margin-bottom: 0; }
+    h1, h2, h3, h4, h5, h6 { margin: 1.1em 0 .45em; line-height: 1.35; color: var(--text); }
+    h1 { font-size: 1.45em; } h2 { font-size: 1.3em; } h3 { font-size: 1.16em; }
+    p, ul, ol, blockquote, pre, table { margin: .55em 0; }
+    ul, ol { padding-left: 1.6em; }
+    li + li { margin-top: .18em; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    blockquote { margin-left: 0; padding: .2em .85em; color: var(--muted); border-left: 3px solid var(--accent); background: var(--soft); }
+    code { padding: .12em .35em; border-radius: 5px; background: var(--code); font-family: "Noto Sans Mono CJK SC", "Noto Sans Mono", monospace; font-size: .92em; }
+    pre { overflow-x: auto; padding: 12px 14px; border: 1px solid var(--border); border-radius: 9px; background: var(--code); }
+    pre code { padding: 0; background: transparent; }
+    table { width: 100%; border-spacing: 0; border-collapse: separate; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+    th, td { padding: 8px 10px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--soft); font-weight: 650; }
+    tr:last-child td { border-bottom: 0; } th:last-child, td:last-child { border-right: 0; }
+    hr { height: 1px; margin: 1em 0; border: 0; background: var(--border); }
+    img, svg { max-width: 100%; height: auto; }
+    .katex-display { margin: .8em 0; overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+    .diagram { margin: .8em 0; padding: 12px; overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); text-align: center; }
+    .diagram-error { color: var(--muted); text-align: left; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <main id="content" aria-live="polite"></main>
+  <script>
+    const content = document.getElementById('content');
+    const markdown = window.markdownit({ html: false, linkify: true, breaks: true, typographer: true });
+    markdown.use(window.texmath, {
+      engine: window.katex,
+      delimiters: ['dollars', 'brackets', 'beg_end'],
+      katexOptions: { throwOnError: false, strict: 'warn', trust: false }
+    });
+    const defaultFence = markdown.renderer.rules.fence.bind(markdown.renderer.rules);
+    let renderSequence = 0;
+
+    markdown.renderer.rules.fence = (tokens, index, options, env, self) => {
+      const language = (tokens[index].info || '').trim().toLowerCase().split(/\s+/)[0];
+      if (['mermaid', 'mindmap', 'flowchart', 'gantt'].includes(language)) {
+        let source = tokens[index].content.trim();
+        if (language !== 'mermaid' && !source.toLowerCase().startsWith(language)) {
+          source = language === 'flowchart' ? `flowchart TD\n${source}` : `${language}\n${source}`;
+        }
+        return `<div class="diagram mermaid">${markdown.utils.escapeHtml(source)}</div>`;
+      }
+      return defaultFence(tokens, index, options, env, self);
+    };
+
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      suppressErrorRendering: true,
+      theme: 'base',
+      fontFamily: 'Noto Sans CJK SC, Noto Sans SC, sans-serif'
+    });
+
+    function publishHeight() {
+      const height = Math.max(28, Math.ceil(document.documentElement.scrollHeight));
+      document.title = `pixiu-height:${height}:${renderSequence}`;
+    }
+
+    window.applyTheme = (theme) => {
+      for (const [name, value] of Object.entries(theme)) {
+        document.documentElement.style.setProperty(`--${name}`, value);
+      }
+      document.documentElement.style.colorScheme = theme.scheme;
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        suppressErrorRendering: true,
+        theme: theme.scheme === 'dark' ? 'dark' : 'base',
+        fontFamily: 'Noto Sans CJK SC, Noto Sans SC, sans-serif'
+      });
+      publishHeight();
+    };
+
+    window.renderMarkdown = async (source) => {
+      renderSequence += 1;
+      const currentSequence = renderSequence;
+      content.innerHTML = markdown.render(String(source || ''));
+      const diagrams = [...content.querySelectorAll('.mermaid')];
+      if (diagrams.length) {
+        try {
+          diagrams.forEach((node, index) => { node.id = `pixiu-diagram-${currentSequence}-${index}`; });
+          await mermaid.run({ nodes: diagrams });
+        } catch (error) {
+          diagrams.forEach((node) => {
+            if (!node.querySelector('svg')) {
+              node.classList.add('diagram-error');
+              node.textContent = `图表语法：${node.textContent}`;
+            }
+          });
+        }
+      }
+      if (currentSequence === renderSequence) publishHeight();
+    };
+
+    new ResizeObserver(publishHeight).observe(content);
+    publishHeight();
+  </script>
+</body>
+</html>

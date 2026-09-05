@@ -63,6 +63,7 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 - **安全与精准遗忘** — 敏感信息识别过滤，自然语言指令驱动级联遗忘。
 - **端侧极致轻量** — 调用麒麟 Embedding 与 Vector Engine SDK，检索 P95 ≤ 500ms。
 - **UKUI 原生体验** — Qt5 桌面悬浮球 + 聊天框，全局快捷键唤起，系统通知与主题深度融合。
+- **专业工作型 Agent 界面** — 默认浅色与科技蓝双主题；消息离线渲染 Markdown、表格、KaTeX、Mermaid 与彩色 emoji；工具、记忆、Shell、Web 搜索以可持久化的折叠动态卡片呈现。
 
 ## 系统架构
 
@@ -93,7 +94,7 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 
 | 层面 | 选型 |
 |------|------|
-| 前端 (Module A) | C++17 · Qt5 Widgets · UKUI · KylinSDK（快捷键/通知/主题/Qt 扩展控件） |
+| 前端与 Agent 宿主 | C++17 · Qt5 Widgets/WebEngine · UKUI · KylinSDK（快捷键/通知/主题/Qt 扩展控件）· markdown-it · KaTeX · Mermaid |
 | 引擎 (Module B) | Python 3.10 · C++（KylinEmbedding shim） |
 | 基础设施 (Module C) | Python 3.10 · FastAPI · asyncio · SQLite(WAL) · FTS5 · hnswlib · CRDT |
 | 存储 | Kylin Vector Engine · SQLite (WAL) · FTS5 · 邻接表图 |

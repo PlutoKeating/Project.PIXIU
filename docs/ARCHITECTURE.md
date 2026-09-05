@@ -34,7 +34,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 ┌──────────────────────────────┐
 │ openKylin Agent 宿主          │
 │ 会话/规划/工具/审批/搜索       │
-│ + PIXIU 双主题表现层补丁       │
+│ + 双主题/离线富消息表现层       │
 └──────────────┬───────────────┘
                │ MemoryProvider
 ┌──────────────▼───────────────┐   ┌──────────────────────────────┐
@@ -73,7 +73,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
 | Agent 集成 | 多会话/多轮、规划与工具、记忆生命周期闭环 | E integrations/kylin_agent + openKylin 宿主 | A-01~A-10、F1-01、F1-02、F6-05 |
-| Agent 宿主 UI | 默认浅色；Ant Design 风格科技蓝浅/暗主题与设置页即时切换；焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息及折叠式工具进度；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
+| Agent 宿主 UI | 默认浅色；Ant Design 风格科技蓝浅/暗主题与设置页即时切换；焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息；离线 Markdown/GFM 表格/KaTeX/Mermaid/emoji 渲染；工具、记忆、Shell、Web 搜索使用可持久化的默认折叠动态卡片；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 + integrations/kylin_agent/message_renderer | A-10a/A-10b（团队质量门） |
 
 ### 1.3 关键约束
 
@@ -82,6 +82,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 - **国产化硬门槛**：embedding 必须经麒麟 `coreai/embedding` C 接口；生产向量存储/检索必须经系统 Vector Engine SDK；最终软件必须在银河麒麟桌面操作系统 V11 验证
 - **Agent 完整性**：项目工程上选择由 openKylin Agent 基座提供多轮会话、规划、工具、Shell/联网搜索和审批，PIXIU 通过原创记忆适配层接入；赛方材料未指定必须使用该基座，也未要求从零重写 Agent
 - **推理接入**：V11 通过回环适配服务调用系统 Kylin GenAI PublicCloud 模型，Runtime 继续掌管工具与审批；通用 Debian 画像使用 GUI 配置的官方直连服务
+- **消息渲染隔离**：模型文本只进入包内 `qrc:` 富文本页面；页面禁用任意 HTML、远端脚本、远端样式和网络读取。实际工具事件进入独立 UI 历史角色并在组装模型请求时过滤
 - **集成隔离**：Module E 只能消费 `docs/API.md` 的公共契约；上游 submodule 默认只读，最小补丁须独立记录来源、理由、许可证和维护方式
 
 ---

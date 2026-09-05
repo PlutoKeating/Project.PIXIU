@@ -33,6 +33,12 @@ OpenAI-wire 请求携带完整会话历史时，适配器只把最近一条 assi
 当前工具结果批次提交给同一个 Kylin GenAI 原生会话；历史已完成工具结果不会混入
 当前 pending call，连续工具调用可完成 running、completed 与下一轮模型回复闭环。
 
+宿主消息资源位于 `message_renderer/`，随固定上游补丁构建为 `qrc:` 离线页面：
+markdown-it 负责 Markdown 与表格，markdown-it-texmath + KaTeX 负责公式，Mermaid
+负责思维导图、框图、甘特图和流程图，Noto Color Emoji 负责彩色 emoji。工具生命周期
+事件独立保存为默认折叠工作卡片；会话历史组装会过滤该 UI 角色，仅将用户与模型消息
+发送给 Runtime。
+
 用户可从宿主 GUI 导入官方直连 API Key。管理接口只返回是否已配置的布尔状态，空白
 输入保留原凭据，显式清除才删除；探测拒绝非 HTTPS 远端地址和重定向。
 

@@ -1,0 +1,450 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,6 +22,7 @@
+     Svg
+     WebSockets
+     Multimedia
++    WebEngineWidgets
+ )
+ find_package(ZLIB REQUIRED)
+ find_package(PkgConfig REQUIRED)
+@@ -120,6 +121,7 @@
+     Qt5::Svg
+     Qt5::WebSockets
+     Qt5::Multimedia
++    Qt5::WebEngineWidgets
+     ZLIB::ZLIB
+     ${KYSDKQTWIDGETS_LIBRARIES}
+ )
+--- a/include/ui/chatwidget.h
++++ b/include/ui/chatwidget.h
+@@ -15,6 +15,7 @@
+ class QHBoxLayout;
+ class QScrollArea;
+ class QLabel;
++class RichMessageBubble;
+ class QTextEdit;
+ class QPushButton;
+ class QComboBox;
+@@ -116,7 +117,8 @@
+     void scrollToBottom();
+     void clearMessages();
+     void refreshMessages();
+-    QLabel *addMessageBubble(const QString &role, const QString &content);
++    RichMessageBubble *addMessageBubble(const QString &role, const QString &content);
++    QWidget *addActivityCard(const QStringList &lines, bool live);
+     QString selectedModelName() const;
+     QString localAssistantReply(const QString &userText) const;
+     void updateRequestButtons();
+@@ -205,7 +207,7 @@
+     QMap<QString, QString> m_pendingFallbackReplies;
+     QMap<QString, QString> m_streamedReplies;
+     QMap<QString, QString> m_currentStreamSegments;
+-    QMap<QString, QLabel *> m_streamBubbles;
++    QMap<QString, RichMessageBubble *> m_streamBubbles;
+     QMap<QString, QWidget *> m_activityCards;
+     QMap<QString, QToolButton *> m_activityToggles;
+     QMap<QString, QLabel *> m_activityDetails;
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -8,8 +8,11 @@
+ #include <QApplication>
+ #include <QClipboard>
+ #include <QComboBox>
++#include <QDesktopServices>
++#include <QEvent>
+ #include <QHBoxLayout>
+ #include <QJsonArray>
++#include <QJsonDocument>
+ #include <QJsonObject>
+ #include <QKeyEvent>
+ #include <QLabel>
+@@ -23,9 +26,133 @@
+ #include <QToolButton>
+ #include <QToolTip>
+ #include <QVBoxLayout>
++#include <QWebEnginePage>
++#include <QWebEngineSettings>
++#include <QWebEngineView>
+ 
+ #include <functional>
+ 
++class MessagePage final : public QWebEnginePage
++{
++public:
++    explicit MessagePage(QObject *parent = nullptr) : QWebEnginePage(parent) {}
++
++protected:
++    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override
++    {
++        if (type == QWebEnginePage::NavigationTypeLinkClicked && isMainFrame) {
++            if (url.scheme() == QStringLiteral("https") || url.scheme() == QStringLiteral("http"))
++                QDesktopServices::openUrl(url);
++            return false;
++        }
++        return url.scheme() == QStringLiteral("qrc") || url.scheme() == QStringLiteral("about");
++    }
++};
++
++class RichMessageView final : public QWebEngineView
++{
++public:
++    explicit RichMessageView(QWidget *parent = nullptr)
++        : QWebEngineView(parent)
++    {
++        setPage(new MessagePage(this));
++        page()->setBackgroundColor(Qt::transparent);
++        settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, false);
++        settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, false);
++        settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, false);
++        setContextMenuPolicy(Qt::DefaultContextMenu);
++        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
++        setMinimumHeight(28);
++        connect(this, &QWebEngineView::loadFinished, this, [this](bool ok) {
++            m_ready = ok;
++            if (ok) {
++                applyTheme();
++                render();
++            }
++        });
++        connect(this, &QWebEngineView::titleChanged, this, [this](const QString &title) {
++            if (!title.startsWith(QStringLiteral("pixiu-height:"))) return;
++            const QStringList parts = title.split(QLatin1Char(':'));
++            if (parts.size() < 2) return;
++            bool ok = false;
++            const int height = parts.at(1).toInt(&ok);
++            if (ok) setFixedHeight(qBound(28, height + 2, 20000));
++        });
++        setUrl(QUrl(QStringLiteral("qrc:/message-renderer/index.html")));
++    }
++
++    void setMarkdown(const QString &markdown)
++    {
++        m_markdown = markdown;
++        render();
++    }
++
++    void applyTheme()
++    {
++        if (!m_ready) return;
++        const QPalette colors = palette();
++        const bool dark = colors.color(QPalette::Window).lightness() < 128;
++        QJsonObject theme{
++            {QStringLiteral("scheme"), dark ? QStringLiteral("dark") : QStringLiteral("light")},
++            {QStringLiteral("text"), colors.color(QPalette::WindowText).name()},
++            {QStringLiteral("muted"), colors.color(QPalette::PlaceholderText).name()},
++            {QStringLiteral("border"), colors.color(QPalette::Mid).name()},
++            {QStringLiteral("surface"), colors.color(QPalette::Base).name()},
++            {QStringLiteral("soft"), colors.color(QPalette::AlternateBase).name()},
++            {QStringLiteral("accent"), colors.color(QPalette::Link).name()},
++            {QStringLiteral("code"), colors.color(QPalette::AlternateBase).name()},
++        };
++        const QString payload = QString::fromUtf8(QJsonDocument(theme).toJson(QJsonDocument::Compact));
++        page()->runJavaScript(QStringLiteral("window.applyTheme(%1);").arg(payload));
++    }
++
++protected:
++    void changeEvent(QEvent *event) override
++    {
++        QWebEngineView::changeEvent(event);
++        if (event && (event->type() == QEvent::PaletteChange || event->type() == QEvent::StyleChange))
++            applyTheme();
++    }
++
++private:
++    void render()
++    {
++        if (!m_ready) return;
++        const QJsonArray argument{m_markdown};
++        const QString payload = QString::fromUtf8(QJsonDocument(argument).toJson(QJsonDocument::Compact));
++        page()->runJavaScript(QStringLiteral("window.renderMarkdown(%1[0]);").arg(payload));
++    }
++
++    QString m_markdown;
++    bool m_ready = false;
++};
++
++class RichMessageBubble final : public QWidget
++{
++public:
++    RichMessageBubble(const QString &content, QWidget *parent)
++        : QWidget(parent), m_view(new RichMessageView(this))
++    {
++        auto *layout = new QVBoxLayout(this);
++        layout->setContentsMargins(16, 10, 16, 10);
++        layout->setSpacing(0);
++        layout->addWidget(m_view);
++        setContent(content);
++    }
++
++    void setContent(const QString &content)
++    {
++        m_content = content;
++        m_view->setMarkdown(content);
++    }
++
++    QString content() const { return m_content; }
++
++private:
++    RichMessageView *m_view;
++    QString m_content;
++};
++
+ namespace {
+ 
+ class ChatInputEdit final : public QTextEdit
+@@ -95,9 +222,15 @@
+         dotCount = dotCount % 3 + 1;
+         for (auto it = m_streamBubbles.begin(); it != m_streamBubbles.end(); ++it) {
+             if (it.value() && m_currentStreamSegments.value(it.key()).isEmpty()) {
+-                it.value()->setText(QStringLiteral("正在思考%1").arg(QString(dotCount, QChar(0x00b7))));
++                it.value()->setContent(QStringLiteral("正在思考%1").arg(QString(dotCount, QChar(0x00b7))));
+             }
+         }
++        for (auto it = m_activityToggles.begin(); it != m_activityToggles.end(); ++it) {
++            if (!it.value()) continue;
++            const int count = m_activityLines.value(it.key()).size();
++            it.value()->setText(QStringLiteral("正在工作%1 · %2 项")
++                .arg(QString(dotCount, QChar(0x00b7))).arg(count));
++        }
+     });
+     m_waitingTimer->start();
+ }
+@@ -299,35 +432,24 @@
+         if (message.role() == QStringLiteral("assistant") && renderedContent == legacyFallback) {
+             renderedContent = QStringLiteral("云端模型暂未响应。请确认已完成凭据配置，然后重试。");
+         }
+-        addMessageBubble(message.role(), renderedContent);
++        if (message.role() == QStringLiteral("tool"))
++            addActivityCard(renderedContent.split(QLatin1Char('\n'), Qt::SkipEmptyParts), false);
++        else
++            addMessageBubble(message.role(), renderedContent);
+     }
+     scrollToBottom();
+ }
+ 
+-QLabel *ChatWidget::addMessageBubble(const QString &role, const QString &content)
++RichMessageBubble *ChatWidget::addMessageBubble(const QString &role, const QString &content)
+ {
+-    QLabel *bubble = new QLabel(content, m_messagesContainer);
+-    bubble->setWordWrap(true);
+-    bubble->setTextInteractionFlags(Qt::TextSelectableByMouse);
+-    bubble->setContextMenuPolicy(Qt::CustomContextMenu);
+-    bubble->setContentsMargins(16, 12, 16, 12);
++    auto *bubble = new RichMessageBubble(content, m_messagesContainer);
+     bubble->setMaximumWidth(role == QStringLiteral("user") ? 620 : 760);
+ 
+     const bool isUser = role == QStringLiteral("user");
+-    const int userWidth = qBound(160, bubble->fontMetrics().horizontalAdvance(content.simplified()) + 44,
++    const int userWidth = qBound(160, fontMetrics().horizontalAdvance(content.simplified()) + 44,
+                                  560);
+     bubble->setMinimumWidth(isUser ? userWidth : 120);
+     bubble->setProperty("messageRole", role);
+-    connect(bubble, &QLabel::customContextMenuRequested, this, [this, bubble](const QPoint &pos) {
+-        QMenu menu(bubble);
+-        QAction *copyAction = menu.addAction(QStringLiteral("复制"));
+-        copyAction->setEnabled(!bubble->text().isEmpty());
+-        QAction *selected = menu.exec(bubble->mapToGlobal(pos));
+-        if (selected == copyAction) {
+-            QApplication::clipboard()->setText(bubble->text());
+-            QToolTip::showText(bubble->mapToGlobal(pos), QStringLiteral("已复制"));
+-        }
+-    });
+ 
+     QWidget *rowWidget = new QWidget(m_messagesContainer);
+     rowWidget->setObjectName(QStringLiteral("messageRow"));
+@@ -385,7 +507,7 @@
+ {
+     QJsonArray messages;
+     for (const SessionMessage &message : history) {
+-        if (message.content().trimmed().isEmpty()) {
++        if (message.content().trimmed().isEmpty() || message.role() == QStringLiteral("tool")) {
+             continue;
+         }
+ 
+@@ -420,7 +542,7 @@
+     m_inputEdit->clear();
+     refreshMessages();
+ 
+-    QLabel *waitingBubble = addMessageBubble(QStringLiteral("assistant"), QStringLiteral("正在思考·"));
++    RichMessageBubble *waitingBubble = addMessageBubble(QStringLiteral("assistant"), QStringLiteral("正在思考·"));
+     waitingBubble->setProperty("streamState", QStringLiteral("waiting"));
+     m_streamBubbles.insert(m_currentSessionId, waitingBubble);
+     m_currentStreamSegments.remove(m_currentSessionId);
+@@ -462,13 +584,13 @@
+         return;
+     }
+ 
+-    QLabel *bubble = m_streamBubbles.value(sessionId, nullptr);
++    RichMessageBubble *bubble = m_streamBubbles.value(sessionId, nullptr);
+     if (!bubble) {
+         bubble = addMessageBubble(QStringLiteral("assistant"), QString());
+         m_streamBubbles.insert(sessionId, bubble);
+     }
+     bubble->setProperty("streamState", QStringLiteral("responding"));
+-    bubble->setText(m_currentStreamSegments.value(sessionId));
++    bubble->setContent(m_currentStreamSegments.value(sessionId));
+     scrollToBottom();
+ }
+ 
+@@ -488,8 +610,8 @@
+     if (!m_pendingFallbackReplies.contains(sessionId)) return;
+     if (!m_currentStreamSegments.value(sessionId).trimmed().isEmpty()) {
+         persistCurrentStreamSegment(sessionId);
+-    } else if (QLabel *waiting = m_streamBubbles.value(sessionId, nullptr)) {
+-        waiting->setText(QStringLiteral("已开始执行任务"));
++    } else if (RichMessageBubble *waiting = m_streamBubbles.value(sessionId, nullptr)) {
++        waiting->setContent(QStringLiteral("已开始执行任务"));
+         waiting->setProperty("streamState", QStringLiteral("responding"));
+     }
+     m_streamBubbles.remove(sessionId);
+@@ -499,11 +621,8 @@
+     }
+ }
+ 
+-void ChatWidget::ensureActivityCard(const QString &sessionId)
++QWidget *ChatWidget::addActivityCard(const QStringList &lines, bool live)
+ {
+-    if (sessionId != m_currentSessionId || m_activityCards.contains(sessionId)) {
+-        return;
+-    }
+     QWidget *card = new QWidget(m_messagesContainer);
+     card->setObjectName(QStringLiteral("activityCard"));
+     card->setMaximumWidth(760);
+@@ -516,7 +635,8 @@
+     toggle->setChecked(false);
+     toggle->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+     toggle->setArrowType(Qt::RightArrow);
+-    toggle->setText(QStringLiteral("工作进度"));
++    toggle->setText(live ? QStringLiteral("正在工作· · 0 项")
++                         : QStringLiteral("已完成工作 · %1 项").arg(lines.size()));
+     auto *details = new QLabel(card);
+     details->setObjectName(QStringLiteral("activityDetails"));
+     details->setWordWrap(true);
+@@ -527,7 +647,20 @@
+     });
+     layout->addWidget(toggle);
+     layout->addWidget(details);
++    details->setText(lines.join(QLatin1Char('\n')));
+     m_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), card, 0, Qt::AlignHCenter);
++    card->setProperty("activityPulse", live);
++    return card;
++}
++
++void ChatWidget::ensureActivityCard(const QString &sessionId)
++{
++    if (sessionId != m_currentSessionId || m_activityCards.contains(sessionId)) {
++        return;
++    }
++    QWidget *card = addActivityCard(QStringList(), true);
++    QToolButton *toggle = card->findChild<QToolButton *>(QStringLiteral("activityToggle"));
++    QLabel *details = card->findChild<QLabel *>(QStringLiteral("activityDetails"));
+     m_activityCards.insert(sessionId, card);
+     m_activityToggles.insert(sessionId, toggle);
+     m_activityDetails.insert(sessionId, details);
+@@ -540,7 +673,7 @@
+     QLabel *details = m_activityDetails.value(sessionId, nullptr);
+     if (!toggle || !details) return;
+     const QStringList lines = m_activityLines.value(sessionId);
+-    toggle->setText(QStringLiteral("工作进度 · %1 项").arg(lines.size()));
++    toggle->setText(QStringLiteral("正在工作· · %1 项").arg(lines.size()));
+     QStringList visibleLines;
+     for (const QString &line : lines) {
+         const int markerEnd = line.indexOf(QStringLiteral("] "));
+@@ -597,9 +730,18 @@
+     m_activityCards.remove(sessionId);
+     m_activityToggles.remove(sessionId);
+     m_activityDetails.remove(sessionId);
+-    m_activityLines.remove(sessionId);
++    const QStringList activityLines = m_activityLines.take(sessionId);
+     m_sessionsWithPersistedSegments.remove(sessionId);
+ 
++    if (!activityLines.isEmpty()) {
++        QStringList persistedLines;
++        for (const QString &line : activityLines) {
++            const int markerEnd = line.indexOf(QStringLiteral("] "));
++            persistedLines.append(markerEnd >= 0 ? line.mid(markerEnd + 2) : line);
++        }
++        SessionService::instance().addMessage(sessionId, QStringLiteral("tool"),
++                                              persistedLines.join(QLatin1Char('\n')));
++    }
+     if (!assistantReply.isEmpty())
+         SessionService::instance().addMessage(sessionId, QStringLiteral("assistant"), assistantReply);
+     if (sessionId == m_currentSessionId) {
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -455,14 +455,14 @@
+         QListWidget#sessionList::item { color: %4; padding: 11px 12px; border-radius: 8px; }
+         QListWidget#sessionList::item:hover { background-color: %3; }
+         QListWidget#sessionList::item:selected { color: %7; background-color: %9; font-weight: 700; }
+-        QLabel[messageRole="user"] {
++        QWidget[messageRole="user"] {
+             color: %4;
+             background-color: %10;
+             border: 1px solid %10;
+             border-radius: 12px;
+             padding: 4px;
+         }
+-        QLabel[messageRole="assistant"] {
++        QWidget[messageRole="assistant"] {
+             color: %4;
+             background-color: transparent;
+             border: 0;
+@@ -470,12 +470,13 @@
+             padding: 0;
+             font-size: 15px;
+         }
+-        QLabel[messageRole="assistant"][streamState="waiting"] { color: %5; }
++        QWidget[messageRole="assistant"][streamState="waiting"] { color: %5; }
+         QWidget#activityCard {
+             background-color: %3;
+             border: 1px solid %6;
+             border-radius: 10px;
+         }
++        QWidget#activityCard[activityPulse="true"] { border-color: %7; }
+         QToolButton#activityToggle {
+             color: %5;
+             background: transparent;
+@@ -484,7 +485,7 @@
+             font-weight: 600;
+         }
+         QLabel#activityDetails { color: %5; font-size: 12px; padding: 2px 6px 5px 22px; }
+-        QLabel[messageRole="system"] {
++        QWidget[messageRole="system"] {
+             color: %4;
+             background-color: %3;
+             border: 1px solid %6;
+--- a/res/res.qrc
++++ b/res/res.qrc
+@@ -30,5 +30,31 @@
+         <file alias="check.svg">check.svg</file>
+         <file alias="copy-success.svg">copy-success.svg</file>
+         <file alias="edit.svg">edit.svg</file>
++        <file alias="message-renderer/index.html">message-renderer/index.html</file>
++        <file alias="message-renderer/markdown-it.min.js">message-renderer/markdown-it.min.js</file>
++        <file alias="message-renderer/markdown-it-texmath.js">message-renderer/markdown-it-texmath.js</file>
++        <file alias="message-renderer/katex.min.js">message-renderer/katex.min.js</file>
++        <file alias="message-renderer/katex.min.css">message-renderer/katex.min.css</file>
++        <file alias="message-renderer/mermaid.min.js">message-renderer/mermaid.min.js</file>
++        <file alias="message-renderer/fonts/KaTeX_AMS-Regular.woff2">message-renderer/fonts/KaTeX_AMS-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Caligraphic-Bold.woff2">message-renderer/fonts/KaTeX_Caligraphic-Bold.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Caligraphic-Regular.woff2">message-renderer/fonts/KaTeX_Caligraphic-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Fraktur-Bold.woff2">message-renderer/fonts/KaTeX_Fraktur-Bold.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Fraktur-Regular.woff2">message-renderer/fonts/KaTeX_Fraktur-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Main-Bold.woff2">message-renderer/fonts/KaTeX_Main-Bold.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Main-BoldItalic.woff2">message-renderer/fonts/KaTeX_Main-BoldItalic.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Main-Italic.woff2">message-renderer/fonts/KaTeX_Main-Italic.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Main-Regular.woff2">message-renderer/fonts/KaTeX_Main-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Math-BoldItalic.woff2">message-renderer/fonts/KaTeX_Math-BoldItalic.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Math-Italic.woff2">message-renderer/fonts/KaTeX_Math-Italic.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_SansSerif-Bold.woff2">message-renderer/fonts/KaTeX_SansSerif-Bold.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_SansSerif-Italic.woff2">message-renderer/fonts/KaTeX_SansSerif-Italic.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_SansSerif-Regular.woff2">message-renderer/fonts/KaTeX_SansSerif-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Script-Regular.woff2">message-renderer/fonts/KaTeX_Script-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Size1-Regular.woff2">message-renderer/fonts/KaTeX_Size1-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Size2-Regular.woff2">message-renderer/fonts/KaTeX_Size2-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Size3-Regular.woff2">message-renderer/fonts/KaTeX_Size3-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Size4-Regular.woff2">message-renderer/fonts/KaTeX_Size4-Regular.woff2</file>
++        <file alias="message-renderer/fonts/KaTeX_Typewriter-Regular.woff2">message-renderer/fonts/KaTeX_Typewriter-Regular.woff2</file>
+     </qresource>
+ </RCC>
