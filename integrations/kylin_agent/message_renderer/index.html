@@ -11,9 +11,19 @@
     if (!window.structuredClone) {
       window.structuredClone = (value) => JSON.parse(JSON.stringify(value));
     }
+    if (!Object.hasOwn) {
+      Object.hasOwn = (value, property) => Object.prototype.hasOwnProperty.call(value, property);
+    }
   </script>
   <script src="mermaid.min.js"></script>
   <style>
+    @font-face {
+      font-family: "PIXIU Color Emoji";
+      src: url("fonts/NotoColorEmoji.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
     :root {
       color-scheme: light;
       --text: #172033;
@@ -28,7 +38,7 @@
     html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
     body {
       color: var(--text);
-      font: 14px/1.68 "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", "Noto Color Emoji", sans-serif;
+      font: 14px/1.68 "PIXIU Color Emoji", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
       overflow-wrap: anywhere;
     }
     #content > :first-child { margin-top: 0; }

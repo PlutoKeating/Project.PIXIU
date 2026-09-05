@@ -25,10 +25,12 @@ for asset in (
     "markdown-it-texmath.js",
     "mermaid.min.js",
     "fonts/KaTeX_Main-Regular.woff2",
+    "fonts/NotoColorEmoji.ttf",
     "licenses/LICENSE.markdown-it",
     "licenses/LICENSE.katex",
     "licenses/LICENSE.markdown-it-texmath",
     "licenses/LICENSE.mermaid",
+    "licenses/LICENSE.noto-color-emoji",
 ):
     path = RENDERER / asset
     require(path.is_file() and path.stat().st_size > 0, f"renderer asset missing: {asset}")
@@ -41,11 +43,12 @@ for token in (
     "'mermaid', 'mindmap', 'flowchart', 'gantt'",
     "securityLevel: 'strict'",
     "window.structuredClone",
+    "Object.hasOwn",
     "markdown.use(window.texmath",
     "delimiters: ['dollars', 'brackets', 'beg_end']",
     "throwOnError: false",
     "ResizeObserver",
-    "Noto Color Emoji",
+    "PIXIU Color Emoji",
 ):
     require(token in html, f"renderer contract missing: {token}")
 
@@ -58,4 +61,8 @@ for version in (
     require(version in readme, f"renderer dependency version missing: {version}")
 
 require("http://" not in html and "https://" not in html, "renderer must not load network resources")
+require(
+    (RENDERER / "fonts/NotoColorEmoji.ttf").stat().st_size > 10_000_000,
+    "complete color emoji font is required",
+)
 print("message renderer asset tests: OK")

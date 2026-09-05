@@ -43,7 +43,7 @@ PIXIU 品牌栏、云端模型入口、消息、输入区和状态反馈，并�
 `patches/0006-rich-message-rendering.patch` 将消息气泡升级为 Qt WebEngine 离线富文本
 视图。页面内嵌 markdown-it、markdown-it-texmath、KaTeX、Mermaid 及公式字体，覆盖
 标准 Markdown、GFM 表格、代码块、复杂公式、思维导图、流程图、甘特图和通用 Mermaid
-图表；系统 Noto Color Emoji 提供完整 Unicode emoji 字形。渲染页以 CSP 禁止联网、
+图表；包内 Noto Color Emoji 提供完整 Unicode emoji 字形。渲染页以 CSP 禁止联网、
 任意 HTML 与远端资源。Shell、Web 搜索、记忆、技能和其他工具事件使用默认折叠的动态
 工作卡片；运行时显示呼吸式省略号与进行项数，完成后以专用历史记录持久化，重新进入
 会话仍保持折叠卡片。工作卡片记录不会进入后续模型上下文。

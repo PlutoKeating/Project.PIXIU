@@ -416,7 +416,7 @@
              border: 1px solid %6;
 --- a/res/res.qrc
 +++ b/res/res.qrc
-@@ -30,5 +30,31 @@
+@@ -30,5 +30,32 @@
          <file alias="check.svg">check.svg</file>
          <file alias="copy-success.svg">copy-success.svg</file>
          <file alias="edit.svg">edit.svg</file>
@@ -446,5 +446,6 @@
 +        <file alias="message-renderer/fonts/KaTeX_Size3-Regular.woff2">message-renderer/fonts/KaTeX_Size3-Regular.woff2</file>
 +        <file alias="message-renderer/fonts/KaTeX_Size4-Regular.woff2">message-renderer/fonts/KaTeX_Size4-Regular.woff2</file>
 +        <file alias="message-renderer/fonts/KaTeX_Typewriter-Regular.woff2">message-renderer/fonts/KaTeX_Typewriter-Regular.woff2</file>
++        <file alias="message-renderer/fonts/NotoColorEmoji.ttf">message-renderer/fonts/NotoColorEmoji.ttf</file>
      </qresource>
  </RCC>
