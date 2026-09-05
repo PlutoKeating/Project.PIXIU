@@ -16,8 +16,4 @@
 
 官方赛题原文与官方 PPTX 保持只读。交付文档只引用其要求，不改写权威原件。
 
-渲染入口：
-
-```bash
-python3 build/release/submission_tools/render_documents.py --check
-```
+对应 PDF 由团队审核 Markdown 后手工导出；Markdown 与 PDF 使用相同文件名并放在同一目录。

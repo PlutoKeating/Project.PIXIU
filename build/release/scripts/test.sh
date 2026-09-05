@@ -62,14 +62,4 @@ bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
     "${PIXIU_ROOT}/build/release/tests/test-agent-supply-chain.py"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-agent-supply-chain-record.py"
-"${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/submission_tools/tests/test_build_submission.py"
-"${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/submission_tools/tests/test_build_source_archive.py"
-"${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/submission_tools/tests/test_render_documents.py"
-"${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/submission_tools/tests/test_build_evidence_archive.py"
-"${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/submission_tools/build_submission.py" --check
 log "tests OK"

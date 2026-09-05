@@ -1,7 +1,7 @@
 # PIXIU 发布流水线脚手架（build/release）
 
-赛事五类交付物直接位于仓库根目录 `submission/`；机器清单、渲染、证据归档、源码
-归档、最终 ZIP 校验和相关测试集中在 `submission_tools/`，不与交付实物混放。
+赛事五类交付物直接位于仓库根目录 `submission/`，由团队手工维护、逐项复核并提交。
+工程构建和测试位于本目录，不写入或改造 `submission/`。
 
 > 目标：把**整个 PIXIU 软件**（UKUI 前端 + FastAPI 后端 + 本地 SQLite 记忆/同步
 > 存储）打包成一个 `.deb`，让一台全新安装的麒麟 OS 机器能够 `dpkg -i` 直接安装
