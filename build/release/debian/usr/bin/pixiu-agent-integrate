@@ -4,6 +4,7 @@
 set -eu
 
 SOURCE="${PIXIU_AGENT_PLUGIN_SOURCE:-/usr/lib/pixiu/integrations/kylin_agent/pixiu}"
+SOUL_SOURCE="${PIXIU_AGENT_SOUL_SOURCE:-${SOURCE}/../SOUL.md}"
 AGENT_HOME="${HERMES_HOME:-${HOME:-}/.kylin-agent-runtime}"
 PLUGIN_ROOT="${AGENT_HOME}/plugins"
 DEST="${PLUGIN_ROOT}/pixiu"
@@ -44,6 +45,8 @@ esac
 [ -f "${SOURCE}/__init__.py" ] || fail "packaged provider is missing" 2
 [ -f "${SOURCE}/plugin.yaml" ] || [ -f "${SOURCE}/plugin.yaml.in" ] \
     || fail "provider manifest is missing" 2
+[ -f "${SOUL_SOURCE}" ] && [ ! -L "${SOUL_SOURCE}" ] \
+    || fail "packaged PIXIU SOUL.md is missing or unsafe" 2
 
 DEFAULT_STRICT=0
 if [ -f "${STRICT_FILE}" ]; then
@@ -146,11 +149,13 @@ BACKUP="${PLUGIN_ROOT}/.pixiu.backup.$$"
 TX_ROOT="${AGENT_HOME}/.pixiu.transaction.$$"
 ENV_FILE="${AGENT_HOME}/.env"
 CONFIG_FILE="${AGENT_HOME}/config.yaml"
+SOUL_FILE="${AGENT_HOME}/SOUL.md"
 NATIVE_SEED="${AGENT_HOME}/.pixiu-kylin-model-seeded"
 TX_ACTIVE=0
 HAD_DEST=0
 HAD_ENV=0
 HAD_CONFIG=0
+HAD_SOUL=0
 HAD_NATIVE_SEED=0
 cleanup() {
     STATUS=$?
@@ -168,6 +173,11 @@ cleanup() {
             cp "${TX_ROOT}/config.yaml" "${CONFIG_FILE}" || true
         else
             rm -f -- "${CONFIG_FILE}"
+        fi
+        if [ "${HAD_SOUL}" = "1" ]; then
+            cp "${TX_ROOT}/SOUL.md" "${SOUL_FILE}" || true
+        else
+            rm -f -- "${SOUL_FILE}"
         fi
         if [ "${HAD_NATIVE_SEED}" != "1" ]; then
             rm -f -- "${NATIVE_SEED}"
@@ -238,6 +248,12 @@ if [ -f "${CONFIG_FILE}" ]; then
     HAD_CONFIG=1
     cp "${CONFIG_FILE}" "${TX_ROOT}/config.yaml"
 fi
+if [ -f "${SOUL_FILE}" ] && [ ! -L "${SOUL_FILE}" ]; then
+    HAD_SOUL=1
+    cp "${SOUL_FILE}" "${TX_ROOT}/SOUL.md"
+elif [ -L "${SOUL_FILE}" ]; then
+    fail "refusing symlinked Agent identity file: ${SOUL_FILE}" 3
+fi
 if [ -f "${NATIVE_SEED}" ]; then
     HAD_NATIVE_SEED=1
 fi
@@ -256,6 +272,9 @@ if [ "${DEFAULT_STRICT}" = "1" ]; then
     done
 fi
 TX_ACTIVE=1
+
+cp "${SOUL_SOURCE}" "${SOUL_FILE}"
+chmod 0600 "${SOUL_FILE}"
 
 if [ -d "${DEST}" ]; then
     mv "${DEST}" "${BACKUP}"

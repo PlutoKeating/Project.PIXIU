@@ -73,7 +73,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
 | Agent 集成 | 多会话/多轮、规划与工具、记忆生命周期闭环 | E integrations/kylin_agent + openKylin 宿主 | A-01~A-10、F1-01、F1-02、F6-05 |
-| Agent 宿主 UI | 默认浅色与双主题可读性、焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息及折叠式工具进度；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
+| Agent 宿主 UI | 默认浅色；Ant Design 风格科技蓝浅/暗主题与设置页即时切换；焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息及折叠式工具进度；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 | A-10a/A-10b（团队质量门） |
 
 ### 1.3 关键约束
 
@@ -293,6 +293,7 @@ query + context_hint
 | 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为 QShortcut |
 | 主题 | 8.5 Theme | 跟随 UKUI 明暗主题 | frontend | ✅ 已实现（含运行时换肤修复） |
 | Agent 宿主主题 | Qt 调色板 + UKUI/GNOME/KDE 主题探测 | KylinAgent 双主题语义令牌与状态可读性 | build/release/agent-host | 🟡 代码与对比度门已实现，最终 V11 视觉矩阵待复核 |
+| Agent 产品身份 | 同包 `SOUL.md` + 宿主启动写入 | PIXIU 本地 Working Agent、工具工作流与分布式记忆工作台 | integrations/kylin_agent + build/release/agent-host | 启动前事务部署并由 Gateway 读取 |
 | Qt 扩展控件 | 应用支撑 SDK 4.1.x | 聊天框 UI 组件 | frontend | 🟡 代码已兼容，降级路径使用标准 QWidget |
 
 > 官方 SDK 仓库以 submodule 纳入 `third_party/`（openkylin/nile-sp2），绑定构建见

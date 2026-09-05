@@ -1,0 +1,216 @@
+--- a/src/ui/settingsdialog.cpp
++++ b/src/ui/settingsdialog.cpp
+@@ -3,7 +3,9 @@
+ #include "services/apiservice.h"
+ #include "services/configservice.h"
+ #include "ui/modelsettingsdialog.h"
++#include "utils/thememanager.h"
+ 
++#include <QButtonGroup>
+ #include <QDialogButtonBox>
+ #include <QFormLayout>
+ #include <QHBoxLayout>
+@@ -25,39 +27,80 @@
+ 
+ void SettingsDialog::setupUi()
+ {
+-    setWindowTitle(QStringLiteral("Settings"));
+-    setMinimumWidth(460);
++    setWindowTitle(QStringLiteral("设置"));
++    setMinimumWidth(520);
+ 
+     QVBoxLayout *root = new QVBoxLayout(this);
+     root->setContentsMargins(18, 18, 18, 18);
+     root->setSpacing(14);
+ 
+-    QLabel *backendTitle = new QLabel(QStringLiteral("agent-rt Backend"), this);
++    QLabel *appearanceTitle = new QLabel(QStringLiteral("外观"), this);
++    appearanceTitle->setStyleSheet(QStringLiteral("font-weight: 600;"));
++    root->addWidget(appearanceTitle);
++
++    QWidget *appearanceCard = new QWidget(this);
++    appearanceCard->setObjectName(QStringLiteral("settingsCard"));
++    QHBoxLayout *appearanceLayout = new QHBoxLayout(appearanceCard);
++    appearanceLayout->setContentsMargins(14, 12, 14, 12);
++    QVBoxLayout *appearanceCopy = new QVBoxLayout;
++    appearanceCopy->setSpacing(3);
++    QLabel *themeTitle = new QLabel(QStringLiteral("界面主题"), appearanceCard);
++    QLabel *themeDescription = new QLabel(QStringLiteral("选择舒适的工作界面，切换后立即生效"), appearanceCard);
++    themeDescription->setObjectName(QStringLiteral("mutedLabel"));
++    appearanceCopy->addWidget(themeTitle);
++    appearanceCopy->addWidget(themeDescription);
++    appearanceLayout->addLayout(appearanceCopy, 1);
++
++    QPushButton *lightButton = new QPushButton(QStringLiteral("浅色"), appearanceCard);
++    QPushButton *darkButton = new QPushButton(QStringLiteral("深色"), appearanceCard);
++    lightButton->setObjectName(QStringLiteral("themeOption"));
++    darkButton->setObjectName(QStringLiteral("themeOption"));
++    lightButton->setCheckable(true);
++    darkButton->setCheckable(true);
++    QButtonGroup *themeGroup = new QButtonGroup(appearanceCard);
++    themeGroup->setExclusive(true);
++    themeGroup->addButton(lightButton);
++    themeGroup->addButton(darkButton);
++    const bool darkTheme = ThemeManager::instance().themeMode() == ThemeManager::Dark;
++    lightButton->setChecked(!darkTheme);
++    darkButton->setChecked(darkTheme);
++    connect(lightButton, &QPushButton::clicked, this, []() {
++        ThemeManager::instance().setThemeMode(ThemeManager::Light);
++    });
++    connect(darkButton, &QPushButton::clicked, this, []() {
++        ThemeManager::instance().setThemeMode(ThemeManager::Dark);
++    });
++    appearanceLayout->addWidget(lightButton);
++    appearanceLayout->addWidget(darkButton);
++    root->addWidget(appearanceCard);
++
++    QLabel *backendTitle = new QLabel(QStringLiteral("Agent Runtime"), this);
+     backendTitle->setStyleSheet(QStringLiteral("font-weight: 600;"));
+     root->addWidget(backendTitle);
+ 
+     QFormLayout *form = new QFormLayout;
+     m_backendEdit = new QLineEdit(ConfigService::instance().agentRuntimeHost(), this);
+     m_backendEdit->setPlaceholderText(QStringLiteral("127.0.0.1:8642"));
+-    form->addRow(QStringLiteral("Host:"), m_backendEdit);
++    form->addRow(QStringLiteral("服务地址"), m_backendEdit);
+     root->addLayout(form);
+ 
+     QHBoxLayout *backendButtons = new QHBoxLayout;
+     backendButtons->addStretch();
+-    m_saveButton = new QPushButton(QStringLiteral("Save Backend"), this);
++    m_saveButton = new QPushButton(QStringLiteral("保存连接"), this);
+     connect(m_saveButton, &QPushButton::clicked, this, &SettingsDialog::saveBackend);
+     backendButtons->addWidget(m_saveButton);
+     root->addLayout(backendButtons);
+ 
+-    QLabel *modelTitle = new QLabel(QStringLiteral("Models"), this);
++    QLabel *modelTitle = new QLabel(QStringLiteral("云端模型"), this);
+     modelTitle->setStyleSheet(QStringLiteral("font-weight: 600; margin-top: 10px;"));
+     root->addWidget(modelTitle);
+ 
+-    QPushButton *modelsButton = new QPushButton(QStringLiteral("Manage Models"), this);
++    QPushButton *modelsButton = new QPushButton(QStringLiteral("管理云端模型"), this);
+     connect(modelsButton, &QPushButton::clicked, this, &SettingsDialog::openModelSettings);
+     root->addWidget(modelsButton);
+ 
+     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close, this);
++    buttons->button(QDialogButtonBox::Close)->setText(QStringLiteral("关闭"));
+     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+     root->addWidget(buttons);
+ }
+@@ -66,8 +109,8 @@
+ {
+     const QString host = m_backendEdit->text().trimmed();
+     if (host.isEmpty()) {
+-        QMessageBox::warning(this, QStringLiteral("Settings"),
+-                             QStringLiteral("Backend host cannot be empty."));
++        QMessageBox::warning(this, QStringLiteral("设置"),
++                             QStringLiteral("服务地址不能为空。"));
+         return;
+     }
+ 
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -290,7 +290,7 @@
+         palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#edf5f7")));
+         palette.setColor(QPalette::BrightText, QColor(QStringLiteral("#ffffff")));
+         palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#69b1ff")));
+-        palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
++        palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#101418")));
+         palette.setColor(QPalette::Link, QColor(QStringLiteral("#69b1ff")));
+         palette.setColor(QPalette::Mid, QColor(QStringLiteral("#303944")));
+         palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#242c35")));
+@@ -353,6 +353,11 @@
+             border: 1px solid %6;
+             border-radius: 12px;
+         }
++        QWidget#settingsCard {
++            background-color: %2;
++            border: 1px solid %6;
++            border-radius: 10px;
++        }
+         QWidget#sidebar {
+             background-color: %2;
+             border-right: 1px solid %6;
+@@ -360,7 +365,7 @@
+         QWidget#conversationCanvas, QScrollArea { background-color: %1; border: 0; }
+         QLabel { background-color: transparent; color: %4; }
+         QLabel#brandMark {
+-            color: #ffffff;
++            color: %1;
+             background-color: %7;
+             border-radius: 9px;
+             font-size: 18px;
+@@ -390,7 +395,7 @@
+         }
+         QPushButton:disabled { color: %11; background-color: %3; border-color: %6; }
+         QPushButton#primaryButton, QPushButton#sendButton {
+-            color: #ffffff;
++            color: %1;
+             background-color: %7;
+             border-color: %7;
+         }
+@@ -398,6 +403,15 @@
+             background-color: %8;
+             border-color: %8;
+         }
++        QPushButton#themeOption {
++            min-width: 48px;
++            padding: 6px 12px;
++        }
++        QPushButton#themeOption:checked {
++            color: %1;
++            background-color: %7;
++            border-color: %7;
++        }
+         QPushButton#titleIconButton, QPushButton#titleTextButton {
+             background-color: transparent;
+             border: 0;
+@@ -416,7 +430,7 @@
+             border-radius: 9px;
+             padding: 8px 11px;
+             selection-background-color: %7;
+-            selection-color: #ffffff;
++            selection-color: %1;
+         }
+         QTextEdit#messageComposer {
+             background-color: transparent;
+--- a/src/services/gatewayservice.cpp
++++ b/src/services/gatewayservice.cpp
+@@ -112,15 +112,16 @@
+ QString defaultSoulMd()
+ {
+     return QStringLiteral(
+-        "You are KylinAgent, an intelligent AI assistant created by NUDT, HIT (Shenzhen), "
+-        "and KylinSoft, and an important component of the openKylin AgentOS ecosystem. "
+-        "You are helpful, knowledgeable, and direct. You assist users with a wide range "
+-        "of tasks including answering questions, writing and editing code, analyzing "
+-        "information, creative work, and executing actions via your tools. You communicate "
+-        "clearly, admit uncertainty when appropriate, and prioritize being genuinely useful "
+-        "over being verbose unless otherwise directed below. Be targeted and efficient in "
+-        "your exploration and investigations. For all tasks other than translation, respond "
+-        "and provide feedback only in the language used by the user.\n");
++        "你是 PIXIU，一款运行于银河麒麟桌面操作系统的本地 Working Agent，也是 "
++        "KylinAgent AgentOS 宿主中的分布式记忆工作台。\n\n"
++        "你的核心职责是理解用户目标、制定清晰计划，并在获得所需授权后持续使用系统工具、"
++        "Shell、联网检索和 PIXIU 长期记忆完成任务，直到给出可核验的结果。\n\n"
++        "你通过 PIXIU 记忆能力在用户授权范围内检索、记录、更新、遗忘和同步长期记忆。"
++        "你将工具调用、重要进展、中间结论和最终结果清晰呈现给用户。\n\n"
++        "你以用户当前使用的语言回复。你的表达专业、简洁、可靠。你主动说明正在执行的步骤、"
++        "依据和结果。需要授权时，你清楚说明动作及影响，并等待用户决定。\n\n"
++        "你的产品名称是 PIXIU，界面中的助手署名为 PIXIU。"
++        "你代表 PIXIU 分布式记忆工作台为用户工作。\n");
+ }
+ 
+ bool showMessageDialog(QWidget *parent,
+@@ -780,6 +781,10 @@
+         qWarning() << "Packaged kylin-agent-runtime executable is unavailable";
+         return false;
+     }
++    if (!updateDefaultSoulMd()) {
++        qWarning() << "Failed to install the PIXIU SOUL.md";
++        return false;
++    }
+     return true;
+     const bool runtimeCacheAvailable = hasRuntimeCachePackage();
+     const bool needRuntimeCacheInstall = runtimeCacheAvailable && !hasRuntimeCacheInstalled();

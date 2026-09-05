@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[3]
 PATCHES = (
     ROOT / "build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch",
     ROOT / "build/release/agent-host/patches/0004-working-agent-experience.patch",
+    ROOT / "build/release/agent-host/patches/0005-blue-theme-settings-and-pixiu-soul.patch",
 )
 
 
@@ -41,8 +42,8 @@ def require_pair(name: str, foreground: str, background: str, minimum: float = 4
 source = "\n".join(path.read_text(encoding="utf-8") for path in PATCHES)
 colors = set(re.findall(r"#[0-9a-fA-F]{6}", source))
 required_colors = {
-    "#172033", "#5b6474", "#ffffff", "#f6f7f9", "#147d78", "#e3f4f1",
-    "#f3f6f8", "#abb6c3", "#96a3b2", "#171c22", "#101418", "#1d5f5b", "#55c8be",
+    "#172033", "#5b6474", "#ffffff", "#f6f7f9", "#1456b8", "#e6f4ff",
+    "#f3f6f8", "#abb6c3", "#96a3b2", "#171c22", "#101418", "#15325b", "#69b1ff",
 }
 missing = required_colors - colors
 if missing:
@@ -51,13 +52,14 @@ if missing:
 for args in (
     ("light primary text", "#172033", "#ffffff"),
     ("light secondary text", "#5b6474", "#ffffff"),
-    ("light primary button", "#ffffff", "#147d78"),
-    ("light user bubble", "#172033", "#e3f4f1"),
+    ("light primary button", "#f6f7f9", "#1456b8"),
+    ("light user bubble", "#172033", "#e6f4ff"),
     ("dark primary text", "#f3f6f8", "#171c22"),
     ("dark secondary text", "#abb6c3", "#171c22"),
     ("dark placeholder", "#96a3b2", "#171c22"),
-    ("dark user bubble", "#f3f6f8", "#1d5f5b"),
-    ("dark accent", "#55c8be", "#101418"),
+    ("dark primary button", "#101418", "#69b1ff"),
+    ("dark user bubble", "#f3f6f8", "#15325b"),
+    ("dark accent", "#69b1ff", "#101418"),
 ):
     require_pair(*args)
 

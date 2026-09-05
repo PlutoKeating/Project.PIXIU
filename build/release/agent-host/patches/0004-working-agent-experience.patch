@@ -419,12 +419,12 @@
          palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#edf5f7")));
          palette.setColor(QPalette::BrightText, QColor(QStringLiteral("#ffffff")));
 -        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#167d80")));
-+        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#2b8f88")));
++        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#69b1ff")));
          palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
 -        palette.setColor(QPalette::Link, QColor(QStringLiteral("#62e4d6")));
 -        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#283946")));
 -        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#20303c")));
-+        palette.setColor(QPalette::Link, QColor(QStringLiteral("#6bd3ca")));
++        palette.setColor(QPalette::Link, QColor(QStringLiteral("#69b1ff")));
 +        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#303944")));
 +        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#242c35")));
          palette.setColor(QPalette::Dark, QColor(QStringLiteral("#070b10")));
@@ -447,12 +447,12 @@
          palette.setColor(QPalette::Button, QColor(QStringLiteral("#ffffff")));
          palette.setColor(QPalette::ButtonText, QColor(QStringLiteral("#132238")));
 -        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#087f8c")));
-+        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#147d78")));
++        palette.setColor(QPalette::Highlight, QColor(QStringLiteral("#1456b8")));
          palette.setColor(QPalette::HighlightedText, QColor(QStringLiteral("#ffffff")));
 -        palette.setColor(QPalette::Link, QColor(QStringLiteral("#08727e")));
 -        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#dce5ee")));
 -        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#edf3f7")));
-+        palette.setColor(QPalette::Link, QColor(QStringLiteral("#116b67")));
++        palette.setColor(QPalette::Link, QColor(QStringLiteral("#1456b8")));
 +        palette.setColor(QPalette::Mid, QColor(QStringLiteral("#dce2ea")));
 +        palette.setColor(QPalette::Midlight, QColor(QStringLiteral("#edf1f5")));
          palette.setColor(QPalette::Dark, QColor(QStringLiteral("#b8c7d4")));
@@ -478,10 +478,10 @@
 +    const QString text = m_dark ? QStringLiteral("#f3f6f8") : QStringLiteral("#172033");
 +    const QString muted = m_dark ? QStringLiteral("#abb6c3") : QStringLiteral("#5b6474");
 +    const QString border = m_dark ? QStringLiteral("#303944") : QStringLiteral("#dce2ea");
-+    const QString accent = m_dark ? QStringLiteral("#55c8be") : QStringLiteral("#147d78");
-+    const QString accentHover = m_dark ? QStringLiteral("#6bd3ca") : QStringLiteral("#106b67");
-+    const QString selection = m_dark ? QStringLiteral("#173a38") : QStringLiteral("#e8f5f3");
-+    const QString userBubble = m_dark ? QStringLiteral("#1d5f5b") : QStringLiteral("#e3f4f1");
++    const QString accent = m_dark ? QStringLiteral("#69b1ff") : QStringLiteral("#1456b8");
++    const QString accentHover = m_dark ? QStringLiteral("#8ac5ff") : QStringLiteral("#0f438f");
++    const QString selection = m_dark ? QStringLiteral("#111d2c") : QStringLiteral("#e6f4ff");
++    const QString userBubble = m_dark ? QStringLiteral("#15325b") : QStringLiteral("#e6f4ff");
      const QString disabled = m_dark ? QStringLiteral("#71848f") : QStringLiteral("#7d8c9c");
  
      QString globalStyleSheet = QStringLiteral(R"(

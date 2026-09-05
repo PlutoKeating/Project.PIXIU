@@ -32,6 +32,8 @@ patch -d "${output_dir}/source" -p1 --forward --batch \
     < "${script_dir}/patches/0003-kylin-cloud-model-settings.patch"
 patch -d "${output_dir}/source" -p1 --forward --batch \
     < "${script_dir}/patches/0004-working-agent-experience.patch"
+patch -d "${output_dir}/source" -p1 --forward --batch \
+    < "${script_dir}/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
 install -D -m 0644 "${script_dir}/compat/pixiu_host_compat.cpp" \
     "${output_dir}/source/src/services/pixiu_host_compat.cpp"
 # The public upstream tree contains one credential-bearing clone URL and two

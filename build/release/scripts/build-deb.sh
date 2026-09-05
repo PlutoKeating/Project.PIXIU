@@ -192,6 +192,8 @@ find "${BK}" -name '*.pyc' -delete
 INTEGRATION_ROOT="${STAGE}/usr/lib/pixiu/integrations/kylin_agent"
 mkdir -p "${INTEGRATION_ROOT}"
 cp -a "${PIXIU_ROOT}/integrations/kylin_agent/pixiu" "${INTEGRATION_ROOT}/"
+install -m 0644 "${PIXIU_ROOT}/integrations/kylin_agent/SOUL.md" \
+    "${INTEGRATION_ROOT}/SOUL.md"
 sed "s/@VERSION@/${PIXIU_VERSION}/g" \
     "${INTEGRATION_ROOT}/pixiu/plugin.yaml.in" \
     > "${INTEGRATION_ROOT}/pixiu/plugin.yaml"

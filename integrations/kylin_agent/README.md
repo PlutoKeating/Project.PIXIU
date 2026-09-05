@@ -21,7 +21,8 @@ HTTP 契约连接记忆服务。它不包含、不复制 Agent 的会话、模�
 
 `.deb` 已携带只读 Provider，并由 PIXIU 桌面启动器幂等部署/升级到当前用户 Agent
 profile；激活器会在变更前拒绝不受管插件、符号链接或非 Gateway 用户 unit，并为
-Provider、`.env`、Runtime 配置及迁移 unit 建立事务快照。写入配置或启动包内 Gateway
+Provider、`SOUL.md`、`.env`、Runtime 配置及迁移 unit 建立事务快照。`SOUL.md` 使用
+纯正向身份定义，将助手定位为 PIXIU 本地 Working Agent 与分布式记忆工作台。写入配置或启动包内 Gateway
 任一步失败会恢复原状态；成功激活会显式重启已运行的包管 Gateway，使新 Runtime 和
 配置立即生效；每版被迁移 unit 另按内容哈希保留可恢复副本。服务端失败
 receipt 管理亦已实现。V11 安装包同时启用回环 Kylin GenAI 适配服务，默认

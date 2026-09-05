@@ -89,6 +89,8 @@ grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \
     "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
+cmp "${ROOT}/integrations/kylin_agent/SOUL.md" \
+    "${TMP}/home/.kylin-agent-runtime/SOUL.md"
 
 # Managed upgrades are idempotent and preserve explicit user configuration.
 sed -i 's/^PIXIU_AGENT_SCOPE=.*/PIXIU_AGENT_SCOPE=user:tester/' \
@@ -197,6 +199,7 @@ printf '%s\n' 'old-provider' > "${ROLLBACK_AGENT}/plugins/pixiu/.pixiu-managed"
 printf '%s\n' 'old-provider-data' > "${ROLLBACK_AGENT}/plugins/pixiu/old.txt"
 printf '%s\n' 'EXISTING=value' > "${ROLLBACK_AGENT}/.env"
 printf '%s\n' 'memory: old' > "${ROLLBACK_AGENT}/config.yaml"
+printf '%s\n' 'old identity' > "${ROLLBACK_AGENT}/SOUL.md"
 if HOME="${ROLLBACK_HOME}" PIXIU_RUNTIME_FAIL_CONFIG=1 \
    PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
@@ -209,6 +212,7 @@ fi
 grep -qx 'old-provider-data' "${ROLLBACK_AGENT}/plugins/pixiu/old.txt"
 grep -qx 'EXISTING=value' "${ROLLBACK_AGENT}/.env"
 grep -qx 'memory: old' "${ROLLBACK_AGENT}/config.yaml"
+grep -qx 'old identity' "${ROLLBACK_AGENT}/SOUL.md"
 test ! -e "${ROLLBACK_AGENT}/plugins/pixiu/provider.py"
 
 # A gateway activation failure restores both profile data and migrated units.

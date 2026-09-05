@@ -11,3 +11,6 @@ submission/**/*.pptx filter=lfs diff=lfs merge=lfs -text
 submission/**/*.tar.gz filter=lfs diff=lfs merge=lfs -text
 submission/**/*.wmv filter=lfs diff=lfs merge=lfs -text
 submission/**/*.zip filter=lfs diff=lfs merge=lfs -text
+
+# Unified diffs require a single context marker on otherwise blank lines.
+*.patch whitespace=-blank-at-eol

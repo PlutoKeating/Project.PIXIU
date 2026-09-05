@@ -19,6 +19,8 @@ patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0003-kylin-cloud-model-settings.patch"
 patch -d "${fixture}/source" -p1 --forward --batch \
     < "${repo_root}/build/release/agent-host/patches/0004-working-agent-experience.patch"
+patch -d "${fixture}/source" -p1 --forward --batch \
+    < "${repo_root}/build/release/agent-host/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
 install -D -m 0644 "${repo_root}/build/release/agent-host/compat/pixiu_host_compat.cpp" \
     "${fixture}/source/src/services/pixiu_host_compat.cpp"
 
@@ -96,8 +98,13 @@ grep -q '云端模型暂未响应' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'legacyFallback' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff)' "${fixture}/source/src/ui/sessionlistwidget.cpp"
 grep -q 'setTextElideMode(Qt::ElideRight)' "${fixture}/source/src/ui/sessionlistwidget.cpp"
-grep -q '#147d78' "${fixture}/source/src/utils/thememanager.cpp"
-grep -q '#55c8be' "${fixture}/source/src/utils/thememanager.cpp"
+grep -q '#1456b8' "${fixture}/source/src/utils/thememanager.cpp"
+grep -q '#69b1ff' "${fixture}/source/src/utils/thememanager.cpp"
+grep -q 'themeOption' "${fixture}/source/src/ui/settingsdialog.cpp"
+grep -q 'ThemeManager::Light' "${fixture}/source/src/ui/settingsdialog.cpp"
+grep -q 'ThemeManager::Dark' "${fixture}/source/src/ui/settingsdialog.cpp"
+grep -q '你是 PIXIU' "${fixture}/source/src/services/gatewayservice.cpp"
+grep -q 'updateDefaultSoulMd' "${fixture}/source/src/services/gatewayservice.cpp"
 ! grep -q 'Database:' "${fixture}/source/src/ui/mainwindow.cpp"
 ! grep -q 'setStyleSheet' "${fixture}/source/src/ui/mainwindow.cpp"
 ! grep -q 'setStyleSheet' "${fixture}/source/src/ui/sidebar.cpp"
