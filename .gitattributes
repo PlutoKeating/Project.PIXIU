@@ -14,5 +14,5 @@ submission/**/*.zip filter=lfs diff=lfs merge=lfs -text
 
 # Unified diffs require a single context marker on otherwise blank lines.
 *.patch whitespace=-blank-at-eol
-integrations/kylin_agent/message_renderer/*.js whitespace=-trailing-space,-blank-at-eof
+integrations/kylin_agent/message_renderer/*.js whitespace=-trailing-space,-blank-at-eof,-space-before-tab
 integrations/kylin_agent/message_renderer/licenses/* whitespace=-blank-at-eof

@@ -52,7 +52,7 @@ for version in (
     "markdown-it 14.1.0",
     "markdown-it-texmath 1.0.0",
     "KaTeX 0.16.22",
-    "Mermaid 11.12.0",
+    "Mermaid 10.9.5",
 ):
     require(version in readme, f"renderer dependency version missing: {version}")
 
