@@ -2,52 +2,57 @@ name: pixiu-kylin-v11-native
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
 
+concurrency:
+  group: kylin-native-package
+  cancel-in-progress: false
+
 jobs:
   native-sdk-package:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: [self-hosted, linux, x64, kylin-v11]
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
-
-      - name: Verify immutable sources and clean checkout
-        run: make -C build/release governance
-
-      - name: Verify Kylin V11 platform
+          submodules: false
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/submodules
+      - name: Validate source and target
         shell: bash
         run: |
-          os_id="$(. /etc/os-release; printf '%s %s' "${ID:-}" "${NAME:-}")"
-          os_major="$(. /etc/os-release; printf '%s' "${VERSION_ID%%.*}")"
-          os_major="${os_major#[vV]}"
-          [[ "${os_id,,}" == *kylin* ]]
-          test "${os_major}" = "11"
-
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          . /etc/os-release
+          [[ "${ID,,} ${NAME,,}" == *kylin* ]]
+          test "${VERSION_ID#[vV]}" = 11
+          test "$(dpkg --print-architecture)" = amd64
+          test "$(python3 -c 'import sys; print(sys.implementation.cache_tag)')" = cpython-312
+          echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+          echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$GITHUB_ENV"
+          echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus" >> "$GITHUB_ENV"
       - name: Provision native build dependencies
-        run: >-
-          sudo bash build/release/scripts/provision-target.sh
-          kylin-v11-native-x86_64 --with-build-deps
-
-      - name: Create isolated Python build environment
+        run: sudo bash build/release/scripts/provision-target.sh kylin-v11-native-x86_64 --with-build-deps
+      - name: Create isolated build environment
         run: |
-          python3 -m venv "${RUNNER_TEMP}/pixiu-native-venv"
-          "${RUNNER_TEMP}/pixiu-native-venv/bin/python" -m pip install \
-            -r backend/requirements.txt \
-            -r backend/foundation/requirements-sync.txt \
+          python3 -m venv "$RUNNER_TEMP/pixiu-native-venv"
+          "$RUNNER_TEMP/pixiu-native-venv/bin/python" -m pip install \
+            -r backend/requirements.txt -r backend/foundation/requirements-sync.txt \
             -r backend/requirements-build.txt
-
-      - name: Run deterministic backend regression
+          echo "$RUNNER_TEMP/pixiu-native-venv/bin" >> "$GITHUB_PATH"
+      - name: Governance and deterministic regression
         env:
           PIXIU_EMBEDDING: portable
           PIXIU_VECTOR_STORE: portable
-        run: >-
-          "${RUNNER_TEMP}/pixiu-native-venv/bin/python" -m pytest
-          backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
-
+        run: |
+          make -C build/release governance
+          python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
+      - name: Rebuild Agent and verify offline supply chain
+        run: bash build/release/scripts/prepare-native-supply-chain.sh
       - name: Build strict native package
         env:
           PIXIU_PROFILE: kylin-v11-native-x86_64
@@ -55,35 +60,24 @@ jobs:
           PIXIU_BUNDLE_WHEELS: "1"
           PIXIU_SKIP_TESTS: "0"
         run: make -C build/release build-deb
-
-      - name: Install package and enable strict SDK runtime
+      - name: Install and activate user services
         shell: bash
         run: |
           deb="$(realpath build/release/out/pixiu_*.deb)"
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${deb}"
-          sudo sed -i \
-            -e 's/^PIXIU_EMBEDDING=.*/PIXIU_EMBEDDING=kylin/' \
-            -e 's/^PIXIU_VECTOR_STORE=.*/PIXIU_VECTOR_STORE=kylin/' \
-            /etc/pixiu/pixiu.env
-          sudo systemctl restart pixiu-backend.service
-
-      - name: Activate PIXIU in the desktop Agent profile
-        env:
-          HERMES_HOME: ${{ runner.temp }}/pixiu-agent-profile
-        run: pixiu-agent-integrate --quiet
-
-      - name: Verify native identity and true SDK lifecycle
-        shell: bash
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$deb"
+          pixiu-user-setup --prepare-only
+          systemctl --user daemon-reload
+          systemctl --user restart pixiu-backend.service
+          pixiu-agent-integrate --quiet
+          test "$(stat -c '%a' "${XDG_CONFIG_HOME:-$HOME/.config}/pixiu/pixiu.env")" = 600
+          test "$(systemctl --user is-active pixiu-backend.service)" = active
+      - name: Verify installed identity and true SDK lifecycle
         run: |
-          deb="$(realpath build/release/out/pixiu_*.deb)"
-          "${RUNNER_TEMP}/pixiu-native-venv/bin/python" \
-            build/release/scripts/native-sdk-smoke.py \
-            --deb "${deb}" \
-            --expected-commit "${GITHUB_SHA}" \
+          python build/release/scripts/native-sdk-smoke.py \
+            --deb "$(realpath build/release/out/pixiu_*.deb)" \
+            --expected-commit "$GITHUB_SHA" \
             --output build/release/out/kylin-native-evidence.json
-
-      - name: Upload native package and sanitized evidence
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         with:
           name: pixiu-kylin-v11-native-${{ github.sha }}
           path: |

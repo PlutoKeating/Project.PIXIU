@@ -71,7 +71,7 @@ PY
 cmake -S "${output_dir}/source" -B "${output_dir}/build" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr
-cmake --build "${output_dir}/build" --parallel
+cmake --build "${output_dir}/build" --parallel "${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 DESTDIR="${output_dir}/install" cmake --install "${output_dir}/build"
 host_binary="${output_dir}/install/usr/bin/kylin-agent"
 file "${host_binary}"

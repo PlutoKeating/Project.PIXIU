@@ -109,6 +109,13 @@ Python 3.12（后端另测 3.13），与 cp312 打包目标一致。官方 Gitee
 恢复后版本校验；仅允许维护者手动在 main 上通过麒麟 runner 的只读镜像预热缓存。
 PR 不进入自托管 runner。后续发布必须由同一候选提交自动重建，不能把旧包改名发布。
 
+原生工作流提供可复用构建：在 V11/amd64/cp312 检查后，使用网络命名空间隔离
+宿主构建和 Runtime 离线安装验证，先保存供应链实物，再打包严格画像；安装后运行
+用户级服务、provider 激活和真实双 SDK 生命周期取证。标签发布同时要求通用 CI
+与原生作业成功，再在 GitHub 托管执行器验证原生证据并生成 Ed25519 六件套。
+签名密钥不传给自托管构建作业。手动 main 执行只归档候选，不创建生产 Release。
+该产品发布门与下文赛事最终三机/性能验收门分别记录，不能混称全部验收完成。
+
 采用 SemVer `MAJOR.MINOR.PATCH`，Debian 包版本为 `MAJOR.MINOR.PATCH-REVISION`。
 发布标签、CMake `applicationVersion`、Debian control、Release 资产与更新清单必须
 由一个发布版本输入派生；CI 在不一致时失败。

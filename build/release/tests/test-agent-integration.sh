@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# The fixtures intentionally vary HOME. Runner-wide XDG/Agent paths must not
+# redirect their units, backups or profiles outside the temporary fixture.
+unset XDG_CONFIG_HOME XDG_STATE_HOME HERMES_HOME
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 PRODUCT_VERSION="$(tr -d '\r\n' < "${ROOT}/VERSION")"
+export PIXIU_PRODUCT_VERSION_FILE="${ROOT}/VERSION"
 SCRIPT="${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
 TMP="$(mktemp -d)"
 trap 'rm -rf "${TMP}"' EXIT
