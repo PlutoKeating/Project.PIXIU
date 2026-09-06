@@ -64,6 +64,9 @@ jobs:
           assert hashlib.sha256(deb.read_bytes()).hexdigest() == package["sha256"]
           assert report["release"]["git_commit"] == os.environ["GITHUB_SHA"]
           PY
+          dpkg-deb --fsys-tarfile build/release/out/*.deb \
+            | tar -xOf - ./usr/share/pixiu/release-manifest.json \
+            | python3 -c 'import json,os,sys; m=json.load(sys.stdin); assert m["build"]["git_commit"] == os.environ["GITHUB_SHA"]; assert m["build"]["install_strict"] is True'
       - name: Sign release checksum
         env:
           PIXIU_RELEASE_SIGNING_KEY: ${{ secrets.PIXIU_RELEASE_SIGNING_KEY }}
@@ -123,4 +126,6 @@ jobs:
             build/release/out/*.sha256
             build/release/out/*.sha256.sig
             build/release/out/*.assets.json
+            build/release/out/*.assets.json.sha256
+            build/release/out/*.assets.json.sha256.sig
             build/release/out/kylin-native-evidence.json

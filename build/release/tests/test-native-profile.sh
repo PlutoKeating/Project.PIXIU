@@ -36,15 +36,18 @@ for package in libgsettings-qt-dev libkysdk-shortcut-dev \
     esac
 done
 grep -q 'PIXIU_VECTOR_STORE: portable' "${ROOT}/.github/workflows/ci.yml"
-grep -q 'profile: generic-ubuntu' "${ROOT}/.github/workflows/release.yml"
+grep -q 'PIXIU_PROFILE: generic-ubuntu' "${ROOT}/.github/workflows/ci.yml"
+grep -q 'uses: ./.github/workflows/ci.yml' "${ROOT}/.github/workflows/release.yml"
+grep -q 'uses: ./.github/workflows/kylin-native.yml' "${ROOT}/.github/workflows/release.yml"
 grep -q 'runs-on: \[self-hosted, linux, x64, kylin-v11\]' \
     "${ROOT}/.github/workflows/kylin-native.yml"
-grep -q 'PIXIU_VECTOR_STORE=kylin' \
+grep -q 'PIXIU_PROFILE: kylin-v11-native-x86_64' \
     "${ROOT}/.github/workflows/kylin-native.yml"
 grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/.github/workflows/kylin-native.yml"
-grep -q 'HERMES_HOME:.*runner.temp.*pixiu-agent-profile' \
+grep -q 'systemctl --user restart pixiu-backend.service' \
     "${ROOT}/.github/workflows/kylin-native.yml"
+grep -q 'prepare-native-supply-chain.sh' "${ROOT}/.github/workflows/kylin-native.yml"
 grep -q 'native-sdk-smoke.py' "${ROOT}/.github/workflows/kylin-native.yml"
 
 if PIXIU_PROFILE=kylin-v11-native-x86_64 PIXIU_KYSDK=ON \
