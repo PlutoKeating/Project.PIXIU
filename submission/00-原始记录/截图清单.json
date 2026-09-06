@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "captured_on": "2026-09-06",
+  "timezone": "Asia/Shanghai",
+  "product_version": "0.1.8",
+  "package_version": "0.1.8-1",
+  "release_commit": "08cc691c5c9c2572c0093ad01018eb38ef5c0186",
+  "environment": "银河麒麟桌面操作系统 V11 / amd64 / Wayland / 实际已安装正式包",
+  "scope_document": "截图素材索引.md",
+  "images": [
+    {
+      "file": "01-图片记录/01-使用deb文件安装.png",
+      "sha256": "c42b2ccfd4e1b634d5ac3f207d0715c4f21b7e825efc5853a61cea2d0194c160",
+      "width": 1236,
+      "height": 582
+    },
+    {
+      "file": "01-图片记录/02-使用pixiu命令运行软件.png",
+      "sha256": "6be308abda18fff23f6b2d94144254fce7f6d36c4ec52e17f7174ed5e27652a1",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "01-图片记录/03-使用开始菜单的软件快捷方式运行软件.png",
+      "sha256": "31466c95def3ecced382ccba105f4e1b812ff3567d3d72fc847c0f3a72ef89c6",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "01-图片记录/04-Agent记忆任务执行中.png",
+      "sha256": "4da897cbc175672ca2672a9bb1018170e53ef9e4f62c752586a8910c3836f461",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/05-Agent记忆写入与表格回答.png",
+      "sha256": "7d4312c6de5eef4650325ac67e455df1b1f69ae1641f56278cff797461b08e81",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/06-Agent展开工作过程.png",
+      "sha256": "5f1feac6b15ae6496dc2b5c7e49beb1b8346260b2c209d635ab843efa9ded245",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/07-Agent跨会话记忆检索.png",
+      "sha256": "0f9c5c9202c6238d2344b1dbcc66ebed1d05daed031f41711518aa2083cc6303",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/08-Agent设置与浅色主题.png",
+      "sha256": "eacfb29b98d80a32b145965cad5a221d28b2571ba202ede1ad97efabe139c87b",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/09-Agent深色主题即时切换.png",
+      "sha256": "bc744e24a9afe136b44c08b6fb6120675b61398cdf7a8896e549fb4dbb8497a5",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/10-系统云模型与官方直连配置.png",
+      "sha256": "2d462e7200abe763bdfcc9c74fa3e828faa0de9a098fd720237b7d2e30e721ec",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/11-官方API密钥配置入口.png",
+      "sha256": "2ca365eca3a79e4583dbfedb11236e5c4730e8f851fd3999e2f783ce6d02e12d",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/12-Agent流程图公式与代码渲染.png",
+      "sha256": "430a0e29a92dc60676b2534aa2edbe4a7ecfa159f370fb9a9541baf77cecd11c",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/13-系统通知授权提示.png",
+      "sha256": "91fba974aa24cf2d29a52a328fcf747ad477f71a5fef78bc02791d5ddcf0895a",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/14-Agent系统命令与联网工具过程.png",
+      "sha256": "78375af143c582fc2b58b02a975013787908ecb2229f1a0b08152b5a31986b46",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/15-麒麟图形安装器打开当前安装包.png",
+      "sha256": "9bbfc49bd04d2d814629c26e7eed9776184db69ea9f068d287e1d8f401d9ce87",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/16-记忆控制台与悬浮球.png",
+      "sha256": "2eb4f55c98f517bdf15b5f3ce16bb0695f3799b0e710b12897fc8b5210e4ea63",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/17-监控中心数据源与隐私开关.png",
+      "sha256": "42bbcd0fa1635600b0163639e96b8f05958393fbddc0df3c1f93335c2185092f",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/18-手动录入合成演示记忆.png",
+      "sha256": "9982288898b3d2333d2648c70860dd01a9ba55a276c17ae2660ebef8ff8e7312",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/19-记忆沉淀系统通知与悬浮球角标.png",
+      "sha256": "5c650d88995442a9cab511c3250e2ab3b1abdcf989682e43ec944581258d76e1",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/20-检索结果打开原始证据.png",
+      "sha256": "2ea8875764df9eb672141094f288d3b34d3a8828d02fd683efa9f4ad238a4777",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/21-关于页面与当前产品版本.png",
+      "sha256": "76f19fde0c1fce86abc2831d9f35710dff11ceec0756b539be3009a1e30fdd39",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "01-图片记录/22-检查更新确认当前最新版本.png",
+      "sha256": "2ddf04af1201f91c7b6387ad204047be8d425c5862edf3d2f30efe14ca83bce8",
+      "width": 1920,
+      "height": 1080
+    }
+  ]
+}

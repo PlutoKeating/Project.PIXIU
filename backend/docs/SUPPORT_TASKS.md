@@ -74,11 +74,19 @@ git submodule update --init --recursive
 | 文件 | 说明 |
 |------|------|
 | `scripts/init_db.py` | 数据库初始化（建表 + 索引） |
+| `scripts/capture_desktop.py` | 对现有 libvirt 桌面发送真实输入、采集 PNG；依赖宿主 virsh，区域截图需来宾 SSH/ImageMagick，X11 粘贴需 GTK 3 Python 绑定；不属于产品运行依赖 |
 | `scripts/run.sh` | 一键启动脚本 |
 | `scripts/eval.py` | 评测脚本（foundation/eval 已提供 CLI `python -m backend.foundation.eval`，可复用） |
 
 > Module C 已交付 `foundation/scripts/phase7_pressure.py`（1000 次压测证据生成器，
 > 产出 `foundation/evidence/` 报告），本岗位无需重复实现。
+
+2026-09-06 已采集 v0.1.8 的 22 张 V11 同版实拍图，见
+[截图素材索引](../../submission/00-原始记录/截图素材索引.md)。工具安全检查运行
+`python3 -m unittest discover -s backend/scripts/tests -v`（7 项）。
+全屏截图使用 libvirt 原始帧，区域截图只限定真实采集范围；不拼接、重绘或伪造结果。
+原生 Wayland 的文本输入须检查实际字段，不能假定 X11 剪贴板已经跨协议同步。
+本次只补充图文素材，不代表三设备、OCR、全部缩放或 GUI 升级矩阵完成。
 
 ### 2. 测试数据集
 

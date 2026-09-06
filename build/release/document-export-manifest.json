@@ -3,11 +3,11 @@
   "documents": [
     {
       "source": "submission/02-技术方案及测试结果/01-用户手册/PIXIU用户手册.md",
-      "sha256": "932c31644dfa5a83f787e78210d04a0757c79a23e09292a5d289b100fce7ecbe",
+      "sha256": "75a4f12bf5cdc89f4c4e8fbc00421a04f578dc9192f0b5e1f2d407217f65d213",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/01-用户手册/PIXIU用户手册.pdf",
-          "sha256": "274204300106ddd66747b9d48835b169cf181ec0d49c7a53e5d15218d1ca6eec"
+          "sha256": "fb25730e14122926e055a724db4d32e9310a39d6969f3e76f5e03cbbbbd67f00"
         }
       ]
     },
