@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           deb="$(realpath build/release/out/pixiu_*.deb)"
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$deb"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install --reinstall -y "$deb"
           pixiu-user-setup --prepare-only
           systemctl --user daemon-reload
           systemctl --user restart pixiu-backend.service

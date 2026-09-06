@@ -113,6 +113,8 @@ PR 不进入自托管 runner。后续发布必须由同一候选提交自动重�
 用户级服务、provider 激活和真实双 SDK 生命周期取证。标签发布同时要求通用 CI
 与原生作业成功，再在 GitHub 托管执行器验证原生证据并生成 Ed25519 六件套。
 签名密钥不传给自托管构建作业。手动 main 执行只归档候选，不创建生产 Release。
+原生安装门对候选执行 `apt-get install --reinstall`：同产品版本重跑也必须替换实物，
+避免 APT 以“已是最新版本”为由跳过安装后误验旧 commit；仍不自动允许版本降级。
 该产品发布门与下文赛事最终三机/性能验收门分别记录，不能混称全部验收完成。
 
 采用 SemVer `MAJOR.MINOR.PATCH`，Debian 包版本为 `MAJOR.MINOR.PATCH-REVISION`。
