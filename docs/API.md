@@ -82,7 +82,8 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 
-> 状态说明（当前）：30 个 REST 端点已按本文档契约真实实现；
+> 状态说明（2026-09-06 代码核对）：32 个 REST 端点已按本文档契约真实实现
+> （`http_app.py` 30 个，`delivery.py` 2 个；不含 OpenAPI 文档路由和 WebSocket）；
 > 六类 WebSocket 事件（memory_ready / conflict_detected / forget_confirmation /
 > sync_event / capture_event / pair_request）均已广播。
 > 监控三端点 + capture_event 事件自 frontend/docs/MONITOR_API_REQUIREMENTS.md
@@ -101,7 +102,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 
 ```json
 {
-  "product_version": "0.1.7",
+  "product_version": "0.1.8",
   "component": "pixiu-memory-backend",
   "api_version": "0.4.0",
   "agent_memory_api": 1,
@@ -116,7 +117,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 ```json
 {
   "status": "ready",
-  "product_version": "0.1.7",
+  "product_version": "0.1.8",
   "component": "pixiu-memory-backend",
   "database": "ok",
   "schema_version": 12
@@ -577,10 +578,15 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 ```jsonc
 {
   "status": "forgotten",
-  "forgotten_ids": ["knw_02K...", "evd_01H..."],
+  "forgotten_ids": ["knw_02K..."],
   "latency_ms": 85
 }
 ```
+
+遗忘实现边界：`cascade` 仅表示关联数量预览；确认会标记知识 FORGOTTEN、
+删除其向量，并为共享知识记录同步墓碑，不物理清除 evidence、实体关系或 FTS
+原始载荷。`/forget` 当前不接收作用域字段，匹配当前用户服务数据库的 ACTIVE
+知识；不能把它描述为强制 scope 隔离或全部数据擦除。
 
 ### 3.9 GET /conflicts
 

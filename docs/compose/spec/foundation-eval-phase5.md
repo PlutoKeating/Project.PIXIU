@@ -8,6 +8,9 @@ commits: 300ec0d..d6adeb9
 
 # Phase 5 — 量化评测框架扩展
 
+> 2026-09-06 代码复核：历史 stub/portable 数值保留原画像；最终性能由 capture_final_eval.py 和 final-performance-evidence.py 绑定安装组件、真实双 SDK、数据集及候选包，不能直接采用本阶段结果。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 ## Report
 
 **What was built** — Phase 5 评测扩展完成两大部分：

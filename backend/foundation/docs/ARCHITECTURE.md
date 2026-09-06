@@ -229,7 +229,7 @@ CREATE TABLE sync_oplog (op_id TEXT PRIMARY KEY, entity TEXT, payload JSON,
 | 语义（当前降级） | `ann.py` | query embedding → SQLite INT8 扫描 | 并行；不满足 H-02 |
 | 图 | `graph_search.py` | 从命中实体沿 BELONG_TO 遍历 | 并行 |
 | 融合 | `fuse.py` | RRF + context_hint 加权 | ~10ms |
-| 重排 | `rerank.py` | INT8 reranker 细粒度 relevance | ~150ms |
+| 重排 | `rerank.py` | 词面重叠与业务年月匹配，无神经网络模型 | 以实测日志为准 |
 | 组装 | `assembler.py` | 结构化过滤 + 聚合计算 + evidence_ids 回溯 | ~30ms |
 
 **当前机制**：规则路由；FTS5 trigram（含 CJK 回退）；INT8 向量线性扫描；

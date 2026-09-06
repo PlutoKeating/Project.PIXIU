@@ -1,5 +1,8 @@
 # 监控掌控层 MVP（批次①）Implementation Plan
 
+> 2026-09-06 代码复核：监控配置、目录/行为采集和 HTTP/WS/UI 已接通；图片 OCR 需要另行可用的原生扩展，剪贴板/截图开关不等于采集器已实现。当前服务为 systemd --user。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 为 PIXIU 前端建立「被动监控」的掌控层：监控中心面板（数据源开关矩阵 + 目录清单 + 活动记录）、全局暂停开关（托盘/悬浮球/设置三入口）、连接状态旁的监控状态徽标，全部状态本地持久化；同时产出批次②所需的跨模块 `/monitor/*` API 契约需求单。

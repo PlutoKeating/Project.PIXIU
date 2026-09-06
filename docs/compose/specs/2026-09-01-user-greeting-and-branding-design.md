@@ -1,5 +1,8 @@
 # 问候语动态化 + 产品名统一 Design Spec
 
+> 2026-09-06 代码复核：UserIdentity.cpp、ChatWindow 动态问候、t_user_identity.cpp 与翻译已实现；GECOS 首段 → USER → 用户回退。旧待规划/未勾选项不再代表代码缺口。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > 日期：2026-09-01 · 状态：待规划
 > 定位：①所有问候语从系统账户动态获取用户姓名（全名→login username 兜底）；②产品名统一为 PIXIU（貔貅只是其中文名/文化意象，不把用户称作貔貅）；③核对文档表述正确统一。
 

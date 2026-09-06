@@ -1,5 +1,8 @@
 # 同步网络图形化管理 Implementation Plan
 
+> 2026-09-06 代码复核：发现/请求/确认、同步开关和退出网络 UI 已实现；退出复用逐节点 revoke，无 /sync/leave 或 /sync/now 端点。三逻辑节点协议回归不等于三台物理 V11 场景全部通过。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 将 PIXIU 去中心化网状同步升级为默认开启、GUI 可管理的多人场景功能：mDNS 发现未配对设备、确认式配对入网、main 主干 + 快进检测 + 分叉人工仲裁、运行时开关（enabled/paused）、同步 Tab 全量管理控件。

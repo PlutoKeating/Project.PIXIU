@@ -1,5 +1,8 @@
 # 批次③ · 行为采集 + 自动偏好 + 冲突分级 Implementation Plan
 
+> 2026-09-06 代码复核：行为采集与冲突 severity 已实现；focus_seconds 自动偏好规则和生产 collector→extract 闭环仍不能由 15 例评测标签达标代替，保持原收窄边界。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 行为采集器（窗口焦点+应用活跃时长）供数 → 偏好提取规则补齐使 `preference_accuracy` 从 0.33 达 0.85 → 冲突打扰按 Arbiter 三态分级（MERGE 静默 / NEW_WINS 通知 / MANUAL 角标+切 Tab）。

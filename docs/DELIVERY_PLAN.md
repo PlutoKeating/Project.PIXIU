@@ -20,12 +20,11 @@
 - 解包前探测 V11 与架构；由包依赖/严格后端预检验证双 SDK，并在桌面用户激活时
   验证 openKylin Agent 宿主和 0.9.x runtime；
 - 安装/升级/卸载脚本幂等，保留用户记忆、配置、设备身份和数据库迁移状态；
-- 运行配置由 `postinst` 从只读默认模板首装创建、升级保留并补字段，不作为 dpkg
-  conffile；非交互升级不得因每机随机口令产生配置冲突提示；
+- `postinst` 部署只读默认模板，`pixiu-user-setup` 在当前用户 XDG 域首装创建配置、升级保留并补字段；用户配置不是 dpkg conffile；
 - 注册服务、桌面入口、图标、日志轮转、权限和故障诊断；
 - 依赖可由系统包解析或随包离线提供，安装后可直接启动；
-- 上游 Agent 作为已安装宿主依赖，不把未修改的 submodule 冒充 PIXIU 产物；
-- amd64/arm64 分别构建与验证，文件名、包元数据和运行架构一致。
+- 严格包内含从固定上游及批准补丁重建的 Agent 宿主与 Runtime，不把上游通用能力冒充原创；
+- 文件名、包元数据和运行架构一致。当前严格发行闭包仅覆盖 amd64/cp312；arm64 须先补对应 Runtime 锁与目标机验证，不能复用 amd64 包。
 
 ### 当前判定
 
@@ -39,7 +38,7 @@
 
 严格画像采用分阶段门禁：`preinst` 在解包前拒绝错误 OS/架构；双 SDK 是普通
 `Depends`，由 apt/dpkg 正常排序安装，再由后端 strict 启动预检拒绝不可用 runtime；
-桌面 Agent 与允许位于用户目录的 runtime 由用户态 Provider 激活器验证。严格启动器
+桌面 Agent 与包内只读 runtime 由用户态 Provider 激活器验证；严格画像不回退到用户可变 Runtime。严格启动器
 不会吞掉激活失败，generic/portable 才保留独立控制台降级。构建器强制
 `KYSDK=ON`/`install_strict=1` 成对，组件清单记录最终模式。首次目标运行已证明严格失败
 关闭有效；用户会话 SDK 边界现已交付化并取得同包原生证据。
@@ -50,7 +49,7 @@
 service 不删除，H-02/H-03 状态不变。
 
 当前源码新增 `PIXIU_VECTOR_DB_PATH`，strict 启动必须实际装载应用数据库，store 按
-进程复用并在退出时断开。当前组合回归 809 项通过；提交 `6f6002e` 的 revision 8
+进程复用并在退出时断开。2026-09-06 CI 在 Python 3.12/3.13 各 823 项通过；历史提交 `6f6002e` 的 revision 8
 又完成 V11 同用户写入、召回、遗忘和隐藏检查。正式取证器因缺少 Agent 宿主/runtime
 而拒绝出证，且该同用户运行方式尚未落实为安装包 user service，因此状态仍为阻断。
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 随后从洁净固定源码再次完成 strict
@@ -129,7 +128,7 @@ PR 不进入自托管 runner。后续发布必须由同一候选提交自动重�
 - 每个资产的大小、SHA-256、独立数字签名和发布通道。
 
 图形“关于/更新”页必须展示当前版本、可用版本、通道、组件兼容状态和发行说明。
-不得只在多个源码文件手工重复版本号。当前 `0.1.7` 发布预检已同步校验根
+不得只在多个源码文件手工重复版本号。当前 `0.1.8` 发布预检已同步校验根
 `VERSION`、CMake/前端宏及 Module E manifest。构建现生成包内只读
 `/usr/share/pixiu/release-manifest.json`，从源码和构建输入记录产品/Debian、Git、
 构建时间、架构/profile/KYSDK/Python ABI、API/schema/provider、Agent 上游及双 SDK

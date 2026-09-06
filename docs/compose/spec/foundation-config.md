@@ -8,6 +8,9 @@ commits: c36d0f3..3fa106a
 
 # core/config.py — 配置单例
 
+> 2026-09-06 代码复核：当前 Settings 与 backend/.env.example 覆盖 API、XDG 数据、同步及 SDK 选择；Embedding/Vector 均支持 auto/kylin/portable，旧“仅 kylin”约束已被可移植基线取代。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付；2026-08-07 起 `PIXIU_EMBEDDING`
 > 仅支持 `kylin`（无 mock）。最新状态以 `docs/DEVELOPMENT_PLAN.md` 为准。
 

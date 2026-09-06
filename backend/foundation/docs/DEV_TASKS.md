@@ -9,7 +9,7 @@
 
 > [!IMPORTANT]
 > 2026-09-04 按完整 PPT 复核后，Vector Engine 接线与 Module E 已实现并取得阶段性
-> 实证；最终 user service/依赖、V11 双 SDK 性能和模型驱动 Agent 闭环仍是 P0；不得继续使用“功能冻结后不新增”
+> 实证；user service/依赖已随包实现，最终 V11 双 SDK 性能和模型驱动 Agent 场景仍是 P0；不得继续使用“功能冻结后不新增”
 > 阻止这些必需整改。以下完成项仅描述旧记忆子系统范围。
 
 ### ✅ 已完成（Phase 0～Phase 7）
@@ -40,16 +40,14 @@
   基准框架（CRDT 收敛率/同步耗时/DB/内存/CPU，runtime=stub|kylin 双结果）、CLI 与报告
 - **Phase 7 验收**：四条端到端故事全通过；WAL 并发/并发 embedding/错误契约/脱敏/迁移/
   崩溃恢复/资源边界硬化测试；1000 次查询压测 P95=19.18ms（≤500ms PASS）
-- 2026-09-04 最新组合回归：pytest 809 passed（Foundation 636 + Engine 154 +
-  Module E 19；完整组合回归 10 条既有依赖弃用告警，无失败）；Foundation 356 + Engine 21
-  = 377 仅保留为 2026-08-11 阶段快照
+- 2026-09-06 最新通用 CI：Python 3.12/3.13 各 823 项 pytest 通过；历史分模块统计不作为当前数量。Foundation 356 + Engine 21 = 377 仅为 2026-08-11 快照。
 
 ### 🔴 赛题 P0 待完成
 
 - `retrieval/` + `eval/` 环境验收：麒麟机器上真实 embedding 跑 reference-v1（50 组数据集、
   90 查询、1000 压测），验证召回≥85%、P95≤500ms，产出 runtime="kylin" 报告
-- 双 SDK 原生绑定和产品链已完成阶段性 V11 实证；固化为最终 user service、组件依赖与 reference-v1 报告
-- openKylin Agent/Runtime 可重建离线供应链与模型驱动多轮/工具结果闭环
+- 双 SDK 原生绑定、user service 与组件依赖已随包落地；最终候选仍需原生性能报告。
+- openKylin Agent/Runtime 可重建离线供应链已有实现与审阅证据；最终模型驱动多轮/工具结果场景需归档。
 
 其中 Agent 接入的 Module C 责任已由团队批准并冻结为：
 
@@ -147,10 +145,10 @@ git submodule update --init --recursive
 | `retrieval/__init__.py` | ★★★ | 导出 `RetrievalService` |
 | `retrieval/router.py` | ★★★ | 意图分类 + 实体抽取 + 通道选择 |
 | `retrieval/bm25.py` | ★★★ | FTS5 BM25 全文检索 |
-| `retrieval/ann.py` | ★★★ | INT8 ANN 语义检索（sqlite-vec/hnswlib） |
+| `retrieval/ann.py` | ★★★ | 委托注入的 VectorStore；strict 为系统 SDK，portable 为 SQLite INT8 |
 | `retrieval/graph_search.py` | ★★★ | 实体关系图遍历（BELONG_TO 沿边聚合） |
 | `retrieval/fuse.py` | ★★★ | RRF 融合 + context_hint 加权 |
-| `retrieval/rerank.py` | ★★ | INT8 reranker 细粒度重排 |
+| `retrieval/rerank.py` | ★★ | 词面重叠 + 业务年月匹配重排，无神经网络依赖 |
 | `retrieval/assembler.py` | ★★★ | 结构化过滤 + 聚合计算 + evidence 回溯 |
 
 ---

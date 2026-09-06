@@ -152,7 +152,7 @@ patterns = {
 forget("忘记那张4月支出清单")
   → 解析意图 + 构造匹配条件（title~"4月" AND source_type=OCR）
   → 定位目标 knowledge + evidence + entities/relations
-  → 级联清理（标记 FORGOTTEN + VectorStore 删除；其余物理清理由基础设施处理）
+  → 标记 FORGOTTEN + VectorStore 删除（其余原始载荷未物理清理）
   → 生成 tombstone → Sync CRDT 传播（由 Module C 执行）
 ```
 

@@ -32,8 +32,9 @@
 当前仓库不能把 `frontend/` 的聊天外观等同于完整 Agent。完整 Agent 循环由选定的
 openKylin 宿主提供，strict 单包现已部署可重建宿主、锁定 Runtime 与原创
 `integrations/kylin_agent/` MemoryProvider。无模型 Gateway/会话 API/Provider 和包内
-用户服务已经实测；仍不能在未配置推理提供商、未产生自主工具事件前宣称完整 Agent
-生命周期已验收。
+用户服务已经实测；ADR-0005 及发行补丁已接入系统云模型和官方直连配置。
+仍须为最终候选归档自主工具、多轮审批和跨会话复用事件，不能仅凭提供商已配置
+宣称完整 Agent 生命周期已验收。
 
 ## 2. 权威材料、角色与源码依据
 

@@ -8,6 +8,9 @@ commits: fde244b..10f5650
 
 # Foundation Bootstrap — Module C Phase 1
 
+> 2026-09-06 代码复核：当前 schema v12 有 20 张基础表，公共 REST 32 个，D-Bus 与 WS 均已实现；下文 11 个占位端点和未接线 DI 仅是初始设计，不能当成现有 API。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付，部分内容（如 API 占位响应、
 > config 未实现等）已被后续集成工作（integration/backend-v0.2 → main，2026-08-07）取代。
 > 最新状态以 `docs/DEVELOPMENT_PLAN.md`、`docs/API.md` 及各模块 `DEV_TASKS.md` 为准。

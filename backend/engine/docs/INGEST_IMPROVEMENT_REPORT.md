@@ -1,5 +1,7 @@
 # Ingest P3 Improvement Report
 
+> 2026-09-06 复核：本文保留原日期对应的测试/审计快照，不将历史数量、环境或待办状态当作当前结论。现行 API 为 32 个 REST 端点、六类 WS 事件，schema v12；2026-09-06 CI（`fd1a6d7`）在 Python 3.12/3.13 各通过 823 项测试。默认 auto 可降级至 portable，严格 V11 则必须使用双 SDK。原生产品链、完整 Agent 场景和三物理设备验收分别取证，最新发布规则见 `docs/DELIVERY_PLAN.md`。
+
 > **范围**：`backend/engine/ingest/` + `backend/engine/tests/test_ingest.py`  
 > **日期**：2026-08-19  
 > **对照**：`INGEST_AUDIT_REPORT.md`（ING-E1 / ING-E2；ING-E3 评估后保持不动）  
@@ -83,7 +85,7 @@ PYTHONPATH 仓库根目录
 | ING-E4 | Quality 权重与来源置信度硬编码 |
 | ING-E5 | TOOL_RESULT `tool_name` 进入 title 后不再单独保留；ingest 仍由调用方传 sensitivity。2026-09-03：Foundation `/memory/write` 已完成前置 Security 调用 |
 | 跨条去重 | 相同 payload 仍生成两个 Evidence id |
-| 麒麟 OCR SDK | 当前仍是结构化文本适配器 |
+| 麒麟 OCR SDK | 后续已实现 `engine/kylin/ocr.py` 和 C++ 绑定；需要独立构建 `_kylin_ocr`，当前严格整包脚本仅构建 Embedding/Vector 扩展，不能把结构化文本输入等同于图片识别 |
 | hash 时机 | 指纹仍在 Cleaner 之后、Normalizer 之前计算；归一后的 vendor 不进入指纹 |
 
 ### Foundation 协同事项

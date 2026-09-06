@@ -38,9 +38,22 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 
 ## 可重建性
 
-源码归档包含主仓库文件、四个固定 submodule 实体、供应链证据和 `SOURCE_MANIFEST.json`。清单记录 release commit、文件类型与逐文件 SHA-256。
+完整源码应从同一标签的洁净 checkout 和四个固定 gitlink 重建；GitHub 自动生成的
+Source code 压缩包不包含 submodule 实体，不能作为完整离线源码交付。
+`submission` 当前人工维护，仓库已无旧文档所称的源码/总提交 ZIP 自动归档器。
+严格安装包内的宿主对应源码、适配补丁、许可证、SPDX 与 Runtime 锁由供应链脚本
+生成和校验；最终赛事源码归档仍须核对完整文件集合、许可证、摘要和候选 commit。
 
-归档校验会把路径集合、文件类型和摘要反向核对到洁净 release checkout，避免遗漏 submodule、混入本机文件或替换源码后沿用旧清单。
+`submission/03-源代码及规范/Project.PIXIU-source.tar.gz` 是既有历史归档，不能代表
+新 Release 的源码。当前版本请 checkout 对应标签并初始化 submodule，再通过
+`.github/workflows/release.yml` 的通用 CI 与 V11 原生构建门重建。
+
+文档导出使用独立可选依赖 `build/release/requirements-docs.txt`（Markdown）和
+LibreOffice；它们不进入产品运行依赖。原目录中的 Markdown 更新后执行
+`python build/release/scripts/export-documentation.py`，重导出已有 PDF/DOCX，
+并仅更新项目 PPT 的版本与已复核文本，保留幻灯片、形状和媒体。
+`--check` 校验 `build/release/document-export-manifest.json` 的源稿/导出物摘要；
+该校验不代替人工排版复核或赛事交付验收。官方原件和 README 不参与导出。
 
 ## 软件物料清单
 

@@ -4,7 +4,7 @@
 > **目录**：`frontend/`
 > **技术栈**：C++17 · Qt5 Widgets · KylinSDK
 > **开发人员**：1人（Qt/C++ 桌面开发）
-> **与后端契约**：`docs/API.md` 定义的 30 个 REST 端点 + WS
+> **与后端契约**：`docs/API.md` 定义的 32 个 REST 端点 + WS
 
 > [!IMPORTANT]
 > 2026-09-03 赛题复核后，Module A 已完成状态仅指 PIXIU 记忆控制台范围，
@@ -67,7 +67,7 @@
   双路径（KYSDK OFF/ON）ctest 31/31 全绿（含契约一致性测试
   `t_contract_fixtures`）；`.deb` 打包产物已在麒麟 V11 真机安装验证。
 - 后端契约历史基线（2026-08-10 合入 main）：当时 12 个 REST 端点已实现，当前
-  为 30 个（以 `docs/API.md` 为准），前端
+  为 32 个（以 `docs/API.md` 为准），前端
   传输层与解析已按真实响应形状对齐；2026-08-11 起后端经 request_id 中间件统一
   返回 `{error, message, request_id}`，前端两种形状（`error`/`detail`）均兼容。
 - 上述历史后端契约缺口均已关闭；剩余为最终 Kylin V11 图形会话、双架构、完整
@@ -372,7 +372,7 @@ PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。�
 | `src/widgets/MessageList.{h,cpp}` | ★★★ | 对话气泡列表（用户气泡右对齐、答案气泡左对齐+证据卡） |
 | `src/widgets/InputBar.{h,cpp}` | ★★★ | 输入框 + 发送按钮 + 图片拖入 |
 | `src/widgets/EvidenceCard.{h,cpp}` | ★★★ | 检索结果证据卡（置信度+延迟+查看原文） |
-| `src/services/MemoryClient.{h,cpp}` | ★★★ | 后端 IPC 通信（优先 D-Bus，回退 HTTP/WS） |
+| `src/services/BackendTransport.h`、`HttpBackendTransport.*` | ★★★ | 当前 HTTP/WS 通信；无前端 D-Bus 实现 |
 
 ### 第三阶段：管理面板
 
@@ -381,7 +381,7 @@ PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。�
 | `src/widgets/MemoryPanel.{h,cpp}` | ★★ | 记忆管理面板（偏好/冲突/同步三 Tab） |
 | `src/widgets/ForgetDialog.{h,cpp}` | ★★ | 遗忘二次确认对话框 |
 | `src/widgets/PairDialog.{h,cpp}` | ★★ | 设备配对对话框（二维码/PIN 输入） |
-| `src/services/SyncClient.{h,cpp}` | ★★ | 同步管理客户端（配对/节点/状态/解绑） |
+| `src/app/SyncController.{h,cpp}` | ★★ | 通过 BackendTransport 管理配对/节点/状态/解绑 |
 
 ### 第四阶段：完善
 
@@ -487,7 +487,7 @@ signals:
 2. 降级表现：`FloatingBall` 用普通 `QWidget` + `QShortcut` 替代 kysdk 组件；`NotifyService` 用 `QSystemTrayIcon::showMessage` 替代 kysdk-notification
 3. 后端：生产代码无 mock 降级，需要麒麟 SDK 绑定（见 `backend/engine/kylin/cpp/README.md`）；
    无 SDK 环境可先用后端测试桩数据联调 UI 布局
-4. API 层自动回退：`MemoryClient` 检测无 D-Bus 时自动使用 `http://127.0.0.1:8765`
+4. API 层：当前 `HttpBackendTransport` 使用 `http://127.0.0.1:8765`；尚无 D-Bus transport，不存在 D-Bus 自动回退链。
 
 ---
 

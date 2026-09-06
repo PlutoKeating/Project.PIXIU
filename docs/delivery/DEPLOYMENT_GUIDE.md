@@ -4,7 +4,7 @@
 
 - 操作系统：银河麒麟桌面操作系统 V11
 - 架构：amd64
-- 软件包：`pixiu_0.1.7-3_amd64.deb`
+- 软件包：`pixiu_0.1.8-1_amd64.deb`
 - 安装方式：图形软件安装器或 APT
 - 运行方式：桌面用户 systemd 服务
 
@@ -13,22 +13,21 @@
 ## 校验安装包
 
 ```bash
-cd submission/04-部署文档/01-可安装软件
-sha256sum -c pixiu_0.1.7-3_amd64.deb.sha256
+# 在同版 Release 六件套的下载目录运行
+sha256sum -c pixiu_0.1.8-1_amd64.deb.sha256
 ```
 
-预期 SHA-256：
-
-```text
-24f393982ba227bb8d9feb58f1bfcd26ce83122bfa36fa505a1f3c80ffe6ec02
-```
+下载入口：[v0.1.8 自动化发布](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.8)。
+摘要以同版 `.sha256` 与已签名 `.assets.json` 为准，不复用历史包的固定值。
+同时使用仓库固定发布公钥校验 Ed25519 签名；摘要匹配本身不证明发布者身份。
+`submission` 中原有安装包是历史归档，不随文档版本自动升级。
 
 ## 安装
 
 双击 `.deb` 并在图形安装器中确认，或运行：
 
 ```bash
-sudo apt install ./pixiu_0.1.7-3_amd64.deb
+sudo apt install ./pixiu_0.1.8-1_amd64.deb
 ```
 
 安装完成后，从应用菜单打开“PIXIU”，或运行：
@@ -51,10 +50,10 @@ curl -s http://127.0.0.1:8765/capabilities
 验收时应确认：
 
 - 服务为 `active (running)`，MainPID 属于当前桌面用户；
-- `/version` 返回产品版本 `0.1.7` 与 schema 版本；
+- `/version` 返回产品版本 `0.1.8` 与 schema 版本；
 - `/health` 返回数据库就绪；
 - `/capabilities` 中 Embedding 与 Vector Engine 为 `runtime=kylin`；
-- `contest_ready=true`。
+- `contest_ready=true`（仅当前运行时能力判断，不代表全部赛事场景验收通过）。
 
 ## 数据与配置
 
@@ -67,6 +66,9 @@ $XDG_STATE_HOME/pixiu/
 ```
 
 配置文件权限为 0600。模型密钥由 Agent Runtime 的隐藏认证入口保存，不应写入 `pixiu.env`、终端命令或交付日志。
+
+XDG 变量未设置时，分别回退到 `~/.config`、`~/.local/share`、`~/.local/state`。
+安装包不以 `/etc/pixiu/pixiu.env` 或专用 pixiu 系统账户作为当前运行配置。
 
 ## 多设备部署
 

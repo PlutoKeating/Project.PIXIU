@@ -1,5 +1,7 @@
 # Module C · Phase 4 评测框架实现报告
 
+> 2026-09-06 复核：本文保留原日期对应的测试/审计快照，不将历史数量、环境或待办状态当作当前结论。现行 API 为 32 个 REST 端点、六类 WS 事件，schema v12；2026-09-06 CI（`fd1a6d7`）在 Python 3.12/3.13 各通过 823 项测试。默认 auto 可降级至 portable，严格 V11 则必须使用双 SDK。原生产品链、完整 Agent 场景和三物理设备验收分别取证，最新发布规则见 `docs/DELIVERY_PLAN.md`。
+
 > 日期：2026-08-10 ｜ 分支：feat/foundation ｜ 状态：✅ 已交付并合入 main
 > 对应规格：`docs/compose/spec/foundation-eval-phase5.md`（Phase 5 扩展）
 

@@ -8,6 +8,9 @@ commits: 3fa106a..0b6f480
 
 # core/idgen.py — 测试与清理
 
+> 2026-09-06 代码复核：当前生成器位于 backend/foundation/core/idgen.py，测试位于 backend/foundation/tests/test_idgen.py；长度为各前缀长度加 26，不统一为 30。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付，内容与当前代码一致。
 
 ## Report

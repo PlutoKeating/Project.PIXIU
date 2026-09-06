@@ -16,14 +16,17 @@
 
 ## 自动化回归
 
-当前代码基线完成前端 38 项 CTest，以及后端与 Module E 809 项 pytest。测试覆盖记忆写入、三通道检索、偏好版本、冲突仲裁、精准遗忘、同步协议、Agent 适配、版本治理、签名校验和升级恢复。
+2026-09-04 历史基线记录前端 38 项 CTest，以及后端与 Module E 809 项 pytest。
+2026-09-06 提交 `fd1a6d7` 的 GitHub CI 已通过 Python 3.12/3.13 各 823 项 pytest 和 38 项 CTest；最终发布以标签对应作业为准。
+证据：[CI 34007103888](https://github.com/PlutoKeating/Project.PIXIU/actions/runs/34007103888)。
+测试覆盖写入、检索、偏好、冲突、遗忘、同步、Agent 适配及发布升级工具。
 
 ## V11 与双 SDK 验证
 
-审阅包 `pixiu_0.1.7-1_amd64.deb` 的 SHA-256 为：
+以下为历史审阅包 `pixiu_0.1.7-3_amd64.deb` 的记录，不是新 Release 的摘要：
 
 ```text
-cf95e13ae406ffe393f6efbdb6944f2518701c675b64a409fb3b3289e1f99e8a
+24f393982ba227bb8d9feb58f1bfcd26ce83122bfa36fa505a1f3c80ffe6ec02
 ```
 
 银河麒麟 V11 原生探针验证了产品写入、向量检索、向量删除、自然语言遗忘和删除后不可见。能力端点返回 Embedding 与 Vector Engine 均使用 `kylin` runtime，并满足 strict 画像要求。
@@ -49,12 +52,12 @@ cf95e13ae406ffe393f6efbdb6944f2518701c675b64a409fb3b3289e1f99e8a
 
 | 能力 | 验证结论 |
 |------|----------|
-| 多源接入 | 支持对话、工具结果、用户行为、手动配置与 OCR |
+| 多源接入 | 对话、工具结果、用户行为、配置、OCR 结构化文本；单包未包含图片 OCR 扩展 |
 | 偏好记忆 | 支持三类偏好提取、置信度、版本历史与回溯 |
 | 知识记忆 | 支持事实、工作流、案例、模板与来源关联 |
 | 混合检索 | BM25、向量与关系图并行召回并进行 RRF 融合 |
 | 冲突处理 | 支持 NEW_WINS、MERGE、MANUAL 与完整审计 |
-| 精准遗忘 | 两阶段确认、级联清理、共享墓碑与防复活 |
+| 精准遗忘 | 两阶段确认、知识不可见、向量删除和共享墓碑；原始证据/关系未物理擦除 |
 | 记忆流转 | 支持短期、中期、长期记忆的保存、召回和晋升 |
 | 多设备同步 | 支持配对、签名、mTLS、Gossip、反熵与 CRDT 收敛 |
 
@@ -66,7 +69,7 @@ cf95e13ae406ffe393f6efbdb6944f2518701c675b64a409fb3b3289e1f99e8a
 
 安装包包含固定版本的 KylinAgent 宿主、58 个哈希锁定 Runtime wheels、PIXIU Provider、双 SDK 原生扩展、SBOM、NOTICE、对应源码与构建记录。
 
-供应链审计报告为 `status=pass`、`ready=true`。宿主产物、源码、构建日志、Runtime wheelhouse、锁文件和离线安装日志均以 SHA-256 互相绑定。
+历史审阅包供应链审计报告为 `status=pass`、`ready=true`；新候选必须在自动流水线重新通过，不能沿用历史记录。宿主产物、源码、构建日志、Runtime wheelhouse、锁文件和离线安装日志均以 SHA-256 互相绑定。
 
 ## 可复核材料
 

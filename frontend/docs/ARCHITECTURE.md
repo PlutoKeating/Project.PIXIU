@@ -2,7 +2,7 @@
 
 > **角色**：运行于银河麒麟桌面环境（UKUI）的 PIXIU 记忆控制台——桌面悬浮球 + 检索框 + 记忆管理面板。
 > **技术栈**：C++17 + Qt5 Widgets + KylinSDK（kysdk）。
-> **后端通信**：通过 `docs/API.md` 定义的 30 个 REST API 端点 + WS 事件推送（JSON over HTTP/D-Bus）。
+> **后端通信**：通过 `docs/API.md` 定义的 32 个 REST API 端点 + WS 事件推送（JSON over HTTP/D-Bus）。
 > **总体架构见**：`docs/ARCHITECTURE.md`；通俗介绍见同目录 `README.md`；开发任务见 `DEV_TASKS.md`。
 >
 > **与后端的隔离**：前端是**独立的 C++ Qt5 项目**，与后端（backend/）的代码零交叉、零引用。
@@ -438,7 +438,7 @@ frontend/
 ## 11. 与后端通信
 
 ```cpp
-// MemoryClient：优先 DBus，回退 localhost HTTP+WS
+// 早期接口草图：当前由 BackendTransport / HttpBackendTransport 和控制器实现。
 class MemoryClient : public QObject {
 public:
     void query(const QString &text, const QJsonObject &contextHint);  // -> /memory/query
@@ -463,8 +463,10 @@ signals:
 };
 ```
 
-- **首选 D-Bus**：`com.kylin.pixiu.Memory`，贴合桌面生态、随会话总线生命周期管理。
-- **回退 HTTP/WS**：`http://127.0.0.1:<port>`，便于跨语言与调试。
+- **当前传输 HTTP/WS**：`HttpBackendTransport` + `WebSocketClient`，地址为
+  `http://127.0.0.1:<port>`；`QueryController`、`WriteController`、`ForgetController`
+  和 `SyncController` 承担上面草图的业务协调，源码中没有 MemoryClient/SyncClient 类。
+- **可选 D-Bus**：后端已实现 `com.kylin.pixiu.Memory`；前端尚未实现 D-Bus transport。
 - 事件推送（写入完成/冲突/遗忘确认/**节点上下线/同步状态**）经 `NotifyService` 转 `kysdk-notification` 弹窗。
 - UI 层永不阻塞：所有后端调用异步，UI 用骨架屏/进度态过渡。
 
@@ -476,13 +478,13 @@ signals:
 版本宏和前端独立 Debian control 均在配置/打包时派生，禁止在本模块重复硬编码。
 
 ```cmake
-cmake_minimum_required(VERSION 3.5)
-find_package(Qt5 COMPONENTS Widgets Network WebSockets DBus REQUIRED)
+cmake_minimum_required(VERSION 3.10)
+find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network WebSockets Test)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(KYSDK_NOTIFY  kysdk-notification)
 pkg_check_modules(KYSDK_SHORTCUT kysdk-shortcut)
 target_link_libraries(pixiu-frontend
-  Qt5::Widgets Qt5::Network Qt5::WebSockets Qt5::DBus
+  Qt5::Widgets Qt5::Network Qt5::WebSockets
   ${KYSDK_NOTIFY_LIBRARIES} ${KYSDK_SHORTCUT_LIBRARIES})
 ```
 
@@ -498,6 +500,8 @@ target_link_libraries(pixiu-frontend
 
 非麒麟开发机上：
 - `kysdk` 调用通过编译开关 `PIXIU_HAVE_KYSDK` 切换为本地桩实现（Qt 原生托盘通知 + `QShortcut`），保证 UI 可在普通 Linux/Windows 开发联调。
-- 后端无 mock 降级（`PIXIU_EMBEDDING` 仅支持 `kylin`）；开发机无后端时可运行
+- 后端支持 `PIXIU_EMBEDDING=auto|kylin|portable` 与同名三选的
+  `PIXIU_VECTOR_STORE`；auto 优先 SDK、缺失时明确告警降级，kylin 严格失败，
+  portable 提供实际软件写入/检索而非假数据。开发机无后端时也可显式运行
   `frontend/scripts/demo_stub_server.py` 演示桩，完整演示端到端 UI 流程
   （见 `DEMO_GUIDE.md` §5）。

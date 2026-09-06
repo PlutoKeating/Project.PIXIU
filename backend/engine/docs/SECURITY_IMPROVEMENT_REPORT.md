@@ -180,6 +180,13 @@ Foundation/API 侧 `forget` 仍调用旧签名（无 scope）——属 **Module 
 
 ## 7. Security 当前状态
 
+2026-09-06 对照当前实现补充：本报告前六节保留 2026-08-19 阶段记录。
+当前 `SecurityService.forget(..., scope=None)` 的 scope 已改为可选；显式传空串
+仍拒绝，省略时匹配当前数据库全部 ACTIVE 条目。公共 `/forget` 不传 scope，
+所以不能继续宣称该 HTTP 入口强制作用域隔离。确认后标记 FORGOTTEN，并调用
+注入的 VectorStore 删除向量；evidence、实体/关系和 FTS 原始载荷没有物理级联删除。
+共享条目由 Foundation 记录删除操作及墓碑。API 写入前敏感检测已完成。
+
 ### Detector（Engine 可交付）
 
 - 身份证：regex + 日期 + checksum
@@ -189,10 +196,10 @@ Foundation/API 侧 `forget` 仍调用旧签名（无 scope）——属 **Module 
 
 ### Forget（Engine 可交付 — 目标识别层）
 
-- **scope 强制隔离**
+- **显式 scope 过滤**；省略 scope 时搜索当前用户服务数据库中的全部 ACTIVE 条目
 - score 排序 + title/body 权重 + token 归一
 - pending / confirm 两段式
-- confirm 后 **仅 Knowledge FORGOTTEN**
+- confirm 后 **Knowledge FORGOTTEN + VectorStore 删除**，不物理删除原始证据/关系
 - cascade_preview 仅为关联数量**预估**
 
 ### 模块职责（明确）

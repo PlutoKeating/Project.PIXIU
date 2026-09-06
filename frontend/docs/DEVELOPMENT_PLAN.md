@@ -102,7 +102,7 @@
   Qt 5.15.19）。
 - 后端联调发现的 2 项问题（`/events` 未注册、`ws.py` WebSocket 导入缺失）已记录于
   `frontend/docs/BACKEND_ISSUES.md` 交接 Module C；WebSocketClient 的真实环境
-  验收依赖其修复。
+  验收已在 2026-08-20 修复后完成，详见该记录。
 - 已实现 `memory_ready` 事件映射：WebSocketClient 接入应用生命周期，业务事件驱动
   悬浮球未读角标；新增 QtTest 测试基础设施（`tests/t_websocket_client`、
   `tests/t_floating_ball`）。
@@ -237,7 +237,7 @@
 
 ### 1.2 当前剩余
 
-截至当前契约版本，30 个 REST 端点、六类 WS 事件、偏好/证据、配对令牌、真实配对、
+截至当前契约版本，32 个 REST 端点、六类 WS 事件、偏好/证据、配对令牌、真实配对、
 节点数据和 `/memory/flow/promote` 上下文均已落地。前端不再保留“等待后端实现”的
 当前状态声明；`not_implemented` 只用于兼容旧后端，并显示为版本不兼容。
 
@@ -350,18 +350,18 @@ git submodule update --init --recursive
 ### 3.1 REST 实现状态
 
 路径与契约以 `docs/API.md` 为准。下表是 2026-08-10 的 **12 端点历史基线**；
-当前 30 个 REST 端点见 `docs/API.md`，不得用此表判定完整 Agent 能力：
+当前 32 个 REST 端点见 `docs/API.md`，不得用此表判定完整 Agent 能力：
 
 | 接口 | 当前状态 | 前端计划影响 |
 |---|---|---|
 | `POST /memory/write` | 已接入真实 ingest → knowledge → preference → conflict，并广播 `memory_ready` | 可在写入 UI 完成后真实联调；不得依赖未声明的处理时序 |
-| `POST /memory/query` | 已实现（BM25+ANN+Graph 三通道混合检索） | 可真实联调；无麒麟 embedding 环境返回 `KylinSDKUnavailableError` |
+| `POST /memory/query` | 已实现（BM25+ANN+Graph 三通道混合检索） | 支持 auto/kylin/portable；仅严格 kylin 模式在 SDK 缺失时失败 |
 | `POST /preference/extract` | 已实现 | 可按契约解析提取结果 |
-| `GET /preference/{id}/history` | 已实现 | 可实现单项历史；偏好列表接口仍缺失 |
+| `GET /preference/{id}/history` | 已实现 | `/preferences` 列表选择后读取版本历史 |
 | `POST /forget` | 已实现 `confirm=false/true` 两段式流程 | 前端必须二次确认，取消时不得发确认请求 |
 | `GET /conflicts` | 已实现 | 可展示现有冲突审计列表 |
-| `POST /memory/flow/promote` | 已实现（幂等 promote，复用引擎链路） | 可契约联调；ctx 上下文来源端点仍缺失 |
-| `POST /sync/pair` | 已实现（QR/PIN + 签名令牌，token 必填） | PIN 模式需粘贴令牌；QR 令牌生成端点未暴露 |
+| `POST /memory/flow/promote` | 已实现（幂等 promote，复用引擎链路） | 上下文可由 `/agent/lifecycle` 创建；控制台未开放任意上下文晋升入口 |
+| `POST /sync/pair` | 已实现（QR/PIN + 签名令牌，token 必填） | `/sync/token` 提供令牌；主流程使用发现、请求、确认配对 |
 | `GET /sync/peers` | 已实现（含本机/在线状态/待同步数） | 可真实联调 |
 | `GET /sync/status` | 已实现（域/在线数/待同步/对账时间） | 可真实联调 |
 | `POST /sync/peers/{id}/revoke` | 已实现 | 可真实联调 |
@@ -379,8 +379,8 @@ git submodule update --init --recursive
 | `connected` | 连接建立后由当前实现发送；属于协议控制事件 |
 | `ping` | 当前实现每 30 秒发送；属于心跳控制事件 |
 | `memory_ready` | 已从 `/memory/write` 链路广播 |
-| `conflict_detected` | 契约已定义，尚未广播 |
-| `forget_confirmation` | 契约已定义，尚未广播 |
+| `conflict_detected` | 写入冲突已广播，包含严重程度 |
+| `forget_confirmation` | 遗忘链路已广播 |
 | `sync_event` | 已从 `/sync/pair`、`/sync/peers/{id}/revoke` 链路广播 |
 
 WebSocket 客户端必须：
@@ -389,10 +389,8 @@ WebSocket 客户端必须：
 - 依据顶层 `event` 分发，`data` 缺失或类型错误时记录可脱敏诊断并安全忽略。
 - 对未知事件保持前向兼容：不得崩溃、断开连接或弹出错误，只记录并忽略。
 - 实现退避重连，避免断线后高频重试；心跳/ACK 语义在后端确认前不自行发明。
-- WebSocketClient 已实现并完成本地编译/链接验收；但真实连接冒烟验证
-  仍被后端阻塞——`/events` 未被实际启动入口注册、`ws.py` 的 `WebSocket`
-  标注缺少导入：
-  详见 `frontend/docs/BACKEND_ISSUES.md`，修复后由 Module C 负责人确认并复测。
+- WebSocketClient 已完成编译/链接和真实连接验证；历史注册/导入阻塞已关闭。
+  另外已有 `capture_event`、`pair_request`，共六类业务事件，详见 `docs/API.md`。
 
 ### 3.3 D-Bus 状态
 
@@ -507,8 +505,8 @@ WebSocket 客户端必须：
 6. retrieval 落地后接通真实 `/memory/query`：
    `feat(frontend): connect memory query flow`
 
-> ✅ 真实 `/memory/query` 已接通（后端 2026-08-10 合入 main）；无麒麟 embedding
-> 环境返回 `KylinSDKUnavailableError`，前端如实呈现错误与"重试"。
+> ✅ 真实 `/memory/query` 已接通；当前 auto 模式可降级 portable，严格 kylin
+> 模式缺少 SDK 时返回错误，前端如实呈现失败与“重试”。
 
 ### Phase 4：写入、WebSocket、通知和遗忘
 
@@ -548,8 +546,8 @@ WebSocket 客户端必须：
 3. [x] 冲突审计：`feat(frontend): add conflict audit view`
    - 本地验收通过（2026-08-08：编译通过；ctest 7/7 通过；offscreen 冒烟正常；
      后端不可达时降级为日志，不崩溃）。
-4. 偏好列表：等待列表契约后独立实现。
-5. 证据原文：等待详情契约后独立实现。
+4. [x] 偏好列表：`GET /preferences` 与列表选择已实现。
+5. [x] 证据原文：`GET /evidence/{id}` 与详情窗口已实现。
 
 ### Phase 6：设备同步管理
 
@@ -662,7 +660,8 @@ clang++=MISSING
 cl=MISSING
 ```
 
-因此目前只有目录、源码和 CMake 文件的静态检查；没有成功的 configure/build/run 结果。
+以上仅为 2026-08-07 Windows 历史环境记录。此后已完成 Qt5 OFF/ON 编译、
+CTest 和麒麟桌面验证（见 §6.3）；最新候选以 GitHub CI / native 作业结果为准。
 
 ### 6.2 工具链补齐后的最小验证
 
@@ -1009,25 +1008,24 @@ WS 通知链路             scripts/ws_smoke_server.py 桩驱动 memory_ready：
 
 所有工作遵循根目录 `AGENTS.md` 和 `HUMANS.md`：
 
-1. 开工前确认分支必须是 `feature/frontend`，否则停止。
+1. 开工前确认任务与分支；默认在个人特性分支，已获授权的集成维护可在当前本地分支进行。
 2. 同步前确认工作区干净；只使用不会产生额外 merge commit 的安全同步方式。
 3. 一个 feature 对应一个逻辑 commit，只精确暂存该 feature 的文件。
 4. commit 前后都检查 diff/status，禁止提交 build、缓存、密钥、`.env` 和 IDE 文件。
 5. 使用 `feat(frontend):`、`fix(frontend):`、`docs(frontend):`、
    `build(frontend):` 等清晰前缀。
-6. Agent 只完成本地 commit；`push`、PR、合并、发布由 Human 执行。
+6. 默认只完成本地 commit；push、合并和发布由 Human 决定，获当次明确授权后可自动执行。
 7. 不修改 `backend/`、`third_party` submodule 源码或根 API 契约。
 
 ## 8. 当前风险与依赖
 
 | 风险/依赖 | 当前影响 | 处理方式 |
 |---|---|---|
-| Windows 缺少 Qt5/CMake/C++ 工具链 | scaffold 和后续 feature 无真实编译证据 | 尽快准备 Qt5.9+ 与 CMake，或在目标麒麟环境验证 |
-| `/memory/query` 仍占位 | 查询 MVP 无真实结果 | 客户端与 UI 可用测试 fixture 验证；不在生产路径假成功 |
-| `/sync/*` 和 flow 仍占位 | 同步/流转 UI 无法真实联调 | 延后真实集成，不猜测实现 |
-| D-Bus 只有占位 | 暂不可作为主 transport | 先抽象接口并走 HTTP/WS，等待后端契约 |
-| WS 启动级可用性未冒烟确认（`/events` 未注册 + `ws.py` WebSocket 导入缺失） | 实时事件联调有风险 | 已记录于 `BACKEND_ISSUES.md`，待 Module C 修复后共同复测 |
-| 证据详情、偏好列表接口缺失 | 对应页面无法闭环 | 提交接口需求，由双方确认后再实现 |
+| 非目标机工具链差异 | 本机失败不能替代目标平台判定 | CI 验证通用 Qt5，V11 runner 单独验证 KYSDK=ON |
+| 检索、同步、flow | 实现已接通，最终场景证据仍需绑定候选 | 不再使用“端点占位”作为当前结论 |
+| D-Bus | 后端已实现，前端无客户端 | 当前生产 UI 使用 HTTP/WS |
+| WS | 历史注册和导入缺陷已关闭 | 持续回归握手、心跳、六类事件及重连 |
+| 证据详情、偏好列表 | API 与 UI 已完成 | 持续回归离线、空、失败和列表选择路径 |
 | SDK/UKUI 版本与目标机差异 | Kylin 集成可能编译或行为不一致 | 使用适配层，并在真实 x86/ARM UKUI 环境留证 |
 | 根/模块部分状态文档仍可能写“前端未开始” | 进度认知不一致 | 本文件以提交 `9cebaa8` 为事实基线；其他文档由对应负责人另行对齐 |
 

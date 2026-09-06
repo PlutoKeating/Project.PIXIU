@@ -111,7 +111,7 @@
 | A · frontend | 团队负责人 | ✅ 代码范围完成（最终环境验收待办） | Qt5/CMake 桌面应用：悬浮球/聊天框/记忆面板/遗忘/设置/配对/同步 Tab；监控中心双 Tab 面板 + 三处暂停入口 + 徽标；确认式配对（发现+弹窗确认）+ 同步 Tab 管理（自动 Gossip/反熵、状态刷新、整网退出）；洞察卡/「今日简报」/相关主题提醒；i18n 328 条 0 未完成；ctest 38/38 | 最终 Kylin V11 图形会话、HiDPI/多屏、双架构与完整 Agent 联调取证 |
 | B · engine | @Ø是铯 | ✅ 核心管线 + 行为采集/冲突分级/递送层完成 | ingest/knowledge/conflict/security/preference 全部 Service；BehaviorCollector（USER_BEHAVIOR 证据，敏感标题 fail-closed）；冲突 severity 三态映射；DeliveryInsights/DeliveryDigest；麒麟 SDK 绑定（embedding/OCR）本机构建成功 | 麒麟环境端到端验证（embedding/OCR 真机调用）；离线文本生成（麒麟 apt 源无对应 SDK 包，持续缺口） |
 | C · foundation | @17% | 🟡 旧范围完成，Agent 公共契约已供 E 消费 | core/storage/api（含 `/version`/`/health`）、retrieval、六类生命周期 context、失败 receipt 一次性恢复授权、flow、sync P2P CRDT、eval、monitor、D-Bus | 长期化策略/日志贯通；麒麟真实 SDK 性能与局域网互操作 |
-| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | 2026-09-04 组合回归 809 passed（Foundation 636 + Engine 154 + Module E 19）；前端最近 ctest 38/38；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
+| D · tests/support | @捌嘎君 | 🟡 portable 回归完成，赛题验收未完成 | 2026-09-06 CI 在 Python 3.12/3.13 各 823 passed；前端最近 ctest 38/38；portable 基线 100%/100%/96%/115ms | H-01～H-03、完整 Agent、V11 双 SDK 和多设备最终验收 |
 | E · Agent integration | 团队负责人 | 🟡 完整宿主已交付，模型场景待验 | 19 项契约测试；strict 单包内置 V11 可重建宿主、由提交锁和逐包哈希驱动的离线 Runtime、Provider；激活前检查 unit 所有权，失败恢复 Provider/配置/unit；无模型 Gateway 探针通过 | 配置推理提供商后完成模型驱动多轮/工具/记忆生命周期与最终同版取证 |
 
 ### 1.7 2026-08-10 分支同步摘要
@@ -129,7 +129,7 @@
 | `backend/foundation/sync/` | P2P CRDT 同步 Phase 3 全部组件：Ed25519 身份、QR/PIN 配对、mDNS 信任过滤、TLS 1.3 mTLS、签名协议、Gossip、反熵、LWW+版本向量、墓碑回收、物化器、运行时与调度；`/sync/*` 4 个端点真实接入 |
 | `backend/foundation/eval/` | 评测框架 Phase 4/5：6 项验收指标 + recall@1/3/5、P50/P95/P99、scope 隔离；同步收敛与系统资源基准；stub 自检：收敛率 1.0、同步 P95 55ms |
 | `backend/foundation/api/` | D-Bus 服务 `com.kylin.pixiu.Memory` 实现（Write/Query/Forget/SyncStatus 镜像 HTTP）；桌面传输与共享服务对齐；`/events` 广播扩展至 sync/conflict 事件 |
-| `backend/foundation/storage/` `core/` | schema 扩至 16 张表（sync_identity/peers/state/acks/meta）；仓储持久化 knowledge↔entity 链接；核心契约加固 |
+| `backend/foundation/storage/` `core/` | schema v12，20 张基础表（含同步、监控、Agent receipt 和向量 ID 映射）；仓储持久化 knowledge↔entity 链接；核心契约加固 |
 | 测试与文档 | foundation+engine 测试全绿（麒麟 V11 真机 pytest 377 passed）；PHASE0~4、BASELINE、ACCEPTANCE、任务书/架构更新；`docs/compose/spec/` 阶段规格 6 份 |
 
 **未完成 / 遗留**：麒麟真实 embedding + 正式数据集的召回率/P95 验收（当前为 stub
@@ -236,7 +236,7 @@
 | 与其他模块 | **零代码依赖** — 仅通过 HTTP REST / WebSocket / D-Bus 调用后端 API |
 | 自身完整 | 含完整 src/（widgets/services/models/app）+ CMakeLists.txt + resources/ |
 
-**对外契约**：`docs/API.md` 中定义的全部端点（当前 30 个 REST + WS）及其请求/响应 JSON 结构。
+**对外契约**：`docs/API.md` 中定义的全部端点（当前 32 个 REST + WS）及其请求/响应 JSON 结构。
 
 **状态（2026-08-11）**：独立功能与 UI/UX polish 全部完成（双路径 ctest 31/31、
 i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与后端契约阻塞，
@@ -279,7 +279,7 @@ i18n 180 条、`.deb` 打包）；剩余项为真实麒麟会话人工复测与�
 | 属性 | 说明 |
 |------|------|
 | 目录 | `backend/foundation/` |
-| 技术栈 | Python 3.10, SQLite (WAL+FTS5), hnswlib/sqlite-vec, asyncio |
+| 技术栈 | Python 3.12（CI 另测 3.13）, SQLite (WAL+FTS5), 系统 Vector Engine / portable INT8, asyncio |
 | 开发人员 | 1人（Python 后端，偏检索/存储/分布式系统） |
 | 子包 | `core/`, `api/`, `storage/`, `retrieval/`, `flow/`, `sync/`, `eval/` |
 | 提供的契约 | `core/` 中的数据模型和 Repository 接口（ABC） |
@@ -350,7 +350,7 @@ Runtime，供应链门 `ready=true`，无模型 Gateway/会话探针通过；W5 
 
 唯一定义在 `docs/API.md`。包含：
 
-- 全部 REST 端点（当前 30 个）的路径、方法、请求体/响应体 JSON Schema
+- 全部 REST 端点（当前 32 个）的路径、方法、请求体/响应体 JSON Schema
 - WebSocket 事件名称与 payload 格式
 - 错误码枚举
 
@@ -605,7 +605,7 @@ Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契�
 | 已批准决策 | `docs/decisions/0001-use-openkylin-agent-host.md` | 宿主、原创与修改边界 |
 | 已批准决策 | `docs/decisions/0003-package-openkylin-agent-supply-chain.md` | 可重建宿主、离线 Runtime 与上游补丁门 |
 | 接入评估 | `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` | 代码事实、生命周期与差距 |
-| API 契约 | `docs/API.md` | 当前端点与尚未实现的 vNext 目标 |
+| API 契约 | `docs/API.md` | 当前 32 个 REST 端点、六类 WS 事件与契约边界 |
 | Agent runtime | `third_party/kylin-agent-runtime/` | 固定版本 MemoryProvider/生命周期源码 |
 | Agent desktop | `third_party/kylin-agent/` | 固定版本 run/SSE/设置集成源码 |
 

@@ -3,16 +3,16 @@
 > 本文档从后端整体视角阐述系统设计，详细设计分别见 engine/ 和 foundation/ 的子架构文档。
 > 这是两端开发者之间的"接口层"文档。
 >
-> **状态（2026-09-04）**：引擎核心管线 + foundation 赛题整改持续推进；27 个 REST 端点
+> **状态（2026-09-06）**：引擎核心管线 + foundation 赛题整改持续推进；32 个 REST 端点
 > 与六类 WS 事件（memory_ready / conflict_detected / forget_confirmation / sync_event /
 > capture_event / pair_request）真实实现；WS `/events` 注册已于 2026-08-20 修复；
 > Embedding/Vector Engine 严格绑定已构建并取得 revision 8 产品链阶段性实证；同步网络
-> （默认开启）与被动监控四批次（掌控层/目录监视/行为偏好/递送层）已全部落地。
-> 最近组合回归 809 passed（Engine 154 + Foundation 636 + Module E 19），前端 ctest
+> （默认开启）、监控配置、目录监视、行为采集和递送端点已落地；行为到 focus 偏好规则、剪贴板/截图采集尚未实现。
+> 2026-09-06 CI 在 Python 3.12/3.13 各 823 passed，前端 ctest
 > 38/38；这些数字仍不替代最终 V11/Agent/三设备验收。
 > Agent 公共契约已含 provenance、schema v12 幂等/失败恢复与预算化安全上下文；
 > 六类生命周期事件已有幂等短/中期 context 入口，Module E 适配已实现。真实宿主
-> 触发与长期化策略仍待完成。
+> 接线、长期化策略和包内默认激活已有实现；完整多轮任务与三物理设备最终验收仍待归档。
 >
 > 团队已批准由外部 Module E (`integrations/kylin_agent/`) 通过公共 HTTP/WS 契约
 > 接入 openKylin Agent。本后端仍只负责记忆能力，不承载会话、规划或工具循环。
@@ -46,7 +46,7 @@
 ### 2.1 写入路径（引擎主导）
 
 ```
-来源(Tool/Behavior/Config/OCR；vNext 增加 Conversation)
+来源(Conversation/Tool/Behavior/Config/OCR 结构化文本)
   → engine/security:detector 敏感预检
   → engine/ingest: Cleaner → Normalizer → Quality
   → 落 evidence（通过 Repository 接口）<50ms → ACK

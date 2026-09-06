@@ -8,6 +8,9 @@ commits: 748636b..6de438d
 
 # Phase 2 — 混合检索管线 (retrieval/)
 
+> 2026-09-06 代码复核：当前 ANN 由 DI 注入 VectorStore：严格画像使用系统 Vector Engine，portable 使用 SQLite INT8；图关联、scope/time_range 硬过滤已实现，重排为词面与年月规则。历史延迟不作为当前 V11 数据。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 ## Report
 
 **What was built** — 七步混合检索管线全部实现并接通 `/memory/query`：router（规则意图分类 + 实体抽取）→ bm25（FTS5 trigram + 长句滑动窗口回退）∥ ann（INT8 线性扫描，`asyncio.to_thread` 防阻塞）∥ graph（文本子串匹配 + BELONG_TO 加权）→ fuse（RRF + scope 加权）→ rerank（词面重叠微调）→ assembler（items.amount 聚合 + 证据回溯）→ `MemoryAtom`。新增契约 `KnowledgeRepository.list_vectors()`（含 SQLite 实现与 Fake 补全）。FORGOTTEN/SUPERSEDED 不参与检索。

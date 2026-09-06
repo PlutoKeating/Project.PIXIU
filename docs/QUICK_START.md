@@ -4,10 +4,13 @@
 
 适用环境：银河麒麟桌面操作系统 V11 amd64。
 
+先从 [v0.1.8 Release](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.8)
+下载同版安装包和校验/签名资产，并按部署指南验证。仓库 submission 中旧包仅为历史归档。
+
 ```bash
-cd submission/04-部署文档/01-可安装软件
-sha256sum -c pixiu_0.1.7-3_amd64.deb.sha256
-sudo apt install ./pixiu_0.1.7-3_amd64.deb
+# 在 Release 资产的下载目录运行
+sha256sum -c pixiu_0.1.8-1_amd64.deb.sha256
+sudo apt install ./pixiu_0.1.8-1_amd64.deb
 pixiu
 ```
 
@@ -37,7 +40,7 @@ curl -X POST http://127.0.0.1:8765/memory/write \
 ```bash
 curl -X POST http://127.0.0.1:8765/memory/query \
   -H 'Content-Type: application/json' \
-  -d '{"text":"我的报告偏好是什么","context_hint":{"top_k":5},"scope":"user:demo"}'
+  -d '{"text":"我的报告偏好是什么","context_hint":{"top_k":5,"scope":"user:demo"}}'
 ```
 
 ## 使用 Agent
@@ -57,7 +60,9 @@ curl -X POST http://127.0.0.1:8765/memory/query \
 
 ```bash
 git submodule update --init --recursive
-pip install -r backend/requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt -r backend/foundation/requirements-sync.txt
 python -m backend.foundation.api.http_app
 ```
 
@@ -76,8 +81,14 @@ PIXIU_BACKEND_URL=http://127.0.0.1:8765 ./build/frontend/pixiu-frontend
 ```bash
 sudo bash build/release/scripts/provision-target.sh \
   kylin-v11-native-x86_64 --with-build-deps
+pip install -r backend/requirements-build.txt
+bash build/release/scripts/prepare-native-supply-chain.sh
 PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ```
+
+严格构建使用洁净 checkout、V11 amd64 和 CPython 3.12；供应链准备需要 sudo
+网络命名空间隔离权限。正式发布由 GitHub `pixiu-release` 标签工作流执行，
+手动 `pixiu-kylin-v11-native` 只产生经过安装验证的候选 Artifact。
 
 ## 测试
 

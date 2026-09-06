@@ -1,5 +1,8 @@
 # 批次④ · 递送层 Implementation Plan
 
+> 2026-09-06 代码复核：洞察实际只返回 recent 类，简报按请求计算，不存在每日后台自动推送；偏好型洞察仍未实现。两项 REST 由 foundation/api/delivery.py 提供。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 让「一次配置、永久监控」沉淀的记忆转化为主动递上——洞察流（聊天窗欢迎页动态建议）、定时简报（按日汇总）、相关性提醒（目录事件/偏好变更的轻提醒），兑现产品愿景「主动服务」半句。

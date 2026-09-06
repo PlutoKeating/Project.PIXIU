@@ -81,8 +81,9 @@ compare-and-swap 校验 `expected_version`，更新产生独立 evidence、重�
 网络隔离环境可重建，strict 包携带宿主、全量哈希锁定 wheels、对应源码/日志、SPDX 与
 NOTICE，离线安装和供应链审计均为 `ready=true`；Gateway、会话 API 与
 `memory.provider=pixiu` 通过。因此 A-11/A-12 供应链部分已满足。A-01～A-10 的模型
-行为仍不升级：当前环境没有推理提供商/API key，真实 run 明确失败，不能以无模型
-探针代替自主规划、Shell、联网搜索、审批和跨会话记忆证据。
+行为仍须单独取证：以上“没有推理提供商”的结果属于历史无模型探针。
+ADR-0005 现已提供系统云模型桥接、默认选择和官方直连配置；不能以模型可配置
+或局部工具回调测试代替最终候选的规划、Shell、联网搜索、审批与跨会话记忆证据。
 
 新增免密 DDGS 后端时发现固定上游 wheel 会遗漏 bundled plugin 的 `plugin.yaml`，造成
 代码存在但 Runtime 无法发现 provider。发布构建现以仓库内可审计的 distribution

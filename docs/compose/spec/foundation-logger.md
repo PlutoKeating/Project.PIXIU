@@ -8,6 +8,9 @@ commits: 52694a2..3ac58c6
 
 # core/logger.py — 结构化日志与安全过滤
 
+> 2026-09-06 代码复核：当前实现与 SensitiveFilter 仅处理 record.msg 的边界一致；测试位于 backend/foundation/tests/test_logger.py。不得因存在过滤器就在 record.args 中传入机密。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > ⚠️ **历史交付记录**：本文记录 2026-07 的阶段性交付，内容与当前代码一致。
 
 ## Report

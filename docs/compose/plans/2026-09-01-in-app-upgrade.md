@@ -1,5 +1,8 @@
 # 应用内一键升级 Implementation Plan
 
+> 2026-09-06 代码复核：当前升级要求 SHA-256 + Ed25519，校验 root-only 副本，执行安装与失败回滚；用户配置和服务已迁移到 XDG/systemd --user，不再由 postinst 创建 /etc 运行配置。严格包从标签经原生 GitHub Actions 重建。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > 状态更新（2026-09-03）：U-1～U-4 与 U-5 已勾选项均已由当前代码/测试实现；
 > 原计划未及时勾选的方框不是当前缺口。最终发布仍缺 U-5 真机门禁，以及
 > `docs/DELIVERY_PLAN.md` 新增的签名、兼容矩阵、回滚和健康检查。受控重启已于

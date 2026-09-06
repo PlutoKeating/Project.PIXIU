@@ -17,13 +17,14 @@
 
 1. 已安装 `pixiu-frontend`（构建或安装 `.deb`，见 `QUICK_START.md`）：
    ```bash
-   sudo apt install ./build/dist/pixiu-frontend_0.1.0-1_amd64.deb
+   # 下载对应 Release 的严格原生包并完成摘要/签名校验后安装
+   sudo apt install ./pixiu_0.1.8-1_amd64.deb
    ```
-2. 后端已启动（30 个 REST 端点全部真实实现，含 `/memory/query`、`/sync/*`、
+2. 后端已启动（32 个 REST 端点全部真实实现，含 `/memory/query`、`/sync/*`、
    `/monitor/*`、`/delivery/*`、`/memory/flow/promote`；六类 WS 事件
    （memory_ready / conflict_detected / forget_confirmation / sync_event /
    capture_event / pair_request）均已真实广播（`/events` 注册 2026-08-20 修复）；
-   真实检索依赖麒麟 embedding，需在麒麟环境运行）：
+   麒麟验收使用严格双 SDK；Debian 可使用 portable 真后端完成基础检索）：
    ```bash
    python -m backend.foundation.api.http_app   # 默认 127.0.0.1:8765
    ```
@@ -36,7 +37,7 @@
 1. 单击右下角悬浮球展开聊天框（左键按住可自由拖拽位置）。
 2. 输入问题或点击“📎”打开录入对话框（支持拖入本地图片预览；
    OCR 识别已接入（`POST /memory/ocr`，2026-08-24，无 SDK 环境返回
-   OCR_UNAVAILABLE 并如实提示）。
+   OCR_UNAVAILABLE 并如实提示）。当前单包只构建 Embedding/Vector 扩展，未包含 `_kylin_ocr`，不能把图片预览计为 OCR 成功。
 3. 填写标题与内容，确认“录入记忆”。
 4. 预期：收到“记忆已沉淀”通知（`memory_ready`，KYSDK 路径为系统通知）；
    聊天框出现写入确认气泡。
@@ -68,8 +69,7 @@
 
 ### 2.5 检索与同步（后端已实现，联调依赖真实环境）
 
-- `/memory/query`：后端已实现混合检索（BM25+ANN+图），真实环境验证需麒麟
-  embedding；开发机可用演示桩（见 §5）走通前端全流程。
+- `/memory/query`：后端已实现混合检索（BM25+ANN+图）；原生验收需麒麟双 SDK，开发机可显式设 `PIXIU_EMBEDDING=portable PIXIU_VECTOR_STORE=portable` 使用真实软件后端。演示桩只用于 UI。
 - `/sync/*`：后端已实现配对/节点/状态/解绑；同步 Tab（2026-08-29）已接
   确认式配对主路径——`GET /sync/discover` 发现附近设备（含未配对）→ 对
   目标机发起 `POST /sync/pair/request`（6 位 PIN）→ 目标机弹「配对请求」
@@ -120,13 +120,13 @@ python -m backend.foundation.api.http_app        # 127.0.0.1:8765
 
 | 项 | 状态 | 说明 |
 |----|------|------|
-| `/memory/query` 检索 | ✅ 后端已实现 | 真实检索需麒麟 embedding；开发机用演示桩走通 UI |
+| `/memory/query` 检索 | ✅ 后端已实现 | 原生验收需麒麟双 SDK；开发机可使用 portable 真实后端 |
 | `/sync/*` 设备同步 | ✅ 后端已实现 | 同步 Tab 已接确认式配对（发现→请求→目标机确认，2026-08-29）；QR/PIN 令牌流程保留为备选 |
-| `/memory/flow/promote` | ✅ 后端已实现 | 前端已具备 transport 契约；ctx 上下文来源无端点，UI 暂不开放 |
+| `/memory/flow/promote` | ✅ 后端已实现 | 前端已具备 transport 契约；ctx 可由 `/agent/lifecycle` 创建；控制台晋升 UI 暂不开放 |
 | WS `/events` 真实事件 | ✅ 已实现（2026-08-20 修复注册） | 六类事件（memory_ready / conflict_detected / forget_confirmation / sync_event / capture_event / pair_request）均带广播路径 |
 | 证据原文/详情 | ✅ 已实现（2026-08-24） | `GET /evidence/{id}` 返回证据详情，证据卡点击查看原文 |
 | 偏好列表 | ✅ 已实现（2026-08-24） | `GET /preferences` 支持 scope 过滤；面板已接列表选择 |
-| 自定义图标 | ⬜ 轻量限制 | desktop 入口暂用系统主题图标 |
+| 自定义图标 | ✅ 已实现 | desktop/托盘使用包内 `pixiu.svg` |
 | 真实按键触发 | ⬜ 人工 | 当前会话未加载 grab，需全新登录会话复测（见第 4/5 节） |
 | 通知点击行为/多屏/x86/ARM | ⬜ 人工 | 通知弹窗已用 WS 桩截图留证；清单见 `UKUI_ADAPTATION_REPORT.md` 第 4 节 |
 

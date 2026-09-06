@@ -3,7 +3,8 @@
 > 模块：Module A · UKUI 桌面客户端（`frontend/`）
 > 分支：`feature/frontend`（提交基线见下文「验证记录」）
 > 日期：2026-08-08
-> 本报告对应验收规范 `docs/AcceptanceTestSpecification.md` 的 **D-08 银河麒麟桌面操作系统适配兼容**。
+> 标题中的 D-08 为早期内部编号；现归属 D-02 下的 A-05 V11 适配附件。
+> 以下是 2026-08-08 阶段证据，不代表当前完整 Agent 包的最终适配矩阵。
 
 ---
 
@@ -137,9 +138,9 @@ build/dist/pixiu-frontend_0.1.0-1_amd64.deb
 - 本机会话经 XWayland 运行，日志出现 `MESA: error: ZINK: failed to choose
   pdev` / `glx: failed to create drisw screen`（软件 GL 降级提示），不影响
   应用启动与功能，真机硬件 GL 环境应无此提示。
-- `resources/` 尚无自定义图标资源，desktop 入口暂用系统主题图标。
-- `WebSocketClient` 真实事件联调依赖 Module C 修复 `/events` 注册与
-  WebSocket 导入（见 `frontend/docs/BACKEND_ISSUES.md`）。
+- 后续已加入 `resources/pixiu.svg` 自定义图标；旧“无图标”限制关闭。
+- `/events` 注册与 WebSocket 导入已于 2026-08-20 修复并复测，
+  见 `frontend/docs/BACKEND_ISSUES.md`，不再列为当前阻塞。
 
 ## 6. 验证记录（提交基线）
 

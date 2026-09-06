@@ -2,11 +2,11 @@
 
 > 模块 A · UKUI 桌面客户端
 
-> **状态（2026-08-11）**：独立功能与 UI/UX polish 已完成，双路径 ctest 31/31
-> 全绿；已随整包 .deb 在麒麟 V11 真机安装验证。本文为当前可用的构建/运行说明。
+> **状态（2026-09-06）**：控制台功能与 UI/UX polish 已实现；最新通用 CI ctest 38/38
+> 全绿。V11 原生画像独立构建/安装取证，不将 OFF 结果混称 ON 验收。
 >
 > 本指南仅验证 Module A 记忆控制台。团队批准的完整 Agent 宿主与 Module E 适配
-> 尚需另行实现和验收，不能由前端进程启动或 ctest 结果代替。
+> 已经实现并随严格包分发；最终场景仍需独立验收，不能由前端进程启动或 ctest 结果代替。
 
 ---
 
@@ -27,7 +27,7 @@ cmake -S frontend -B build/frontend \
   -DPIXIU_HAVE_KYSDK=OFF -DCMAKE_BUILD_TYPE=Release -G Ninja
 cmake --build build/frontend -j
 
-# 全部 QtTest（31 项，offscreen）
+# 全部 QtTest（当前 38 项，offscreen）
 QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure
 ```
 
@@ -56,8 +56,7 @@ PIXIU_BACKEND_URL=http://127.0.0.1:8877 ./build/frontend/pixiu-frontend
 
 - 后端 WS `/events` 已修复（2026-08-20），六类事件真实广播；前端事件路由
   已全部接线（见 `frontend/docs/BACKEND_ISSUES.md` 的闭环记录）。
-- 引擎麒麟 SDK 绑定未构建/未运行时：写入/检索/OCR 按 `PIXIU_EMBEDDING` 降级
-  （portable 特征哈希 / OCR_UNAVAILABLE），前端如实呈现错误与重试。
+- 引擎 SDK 不可用时：写入/检索由 `PIXIU_EMBEDDING`、`PIXIU_VECTOR_STORE` 的 auto/portable 路径降级；严格 kylin 模式失败关闭。图片 OCR 独立受 `PIXIU_OCR` 控制，当前单包未包含 `_kylin_ocr`，不可用时返回 OCR_UNAVAILABLE。
 - 证据原文详情（`GET /evidence/{id}`）、偏好列表（`GET /preferences`）、
   QR 配对令牌（`POST /sync/token`）均已落地（2026-08-24）；剩余为真机人工
   复测项（全局快捷键真机按键、xprop 方言、麒麟 AI 运行时端到端）。

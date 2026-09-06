@@ -2,8 +2,8 @@
 
 > 当前命令验证五类 Connector，包括 `CONVERSATION` 与增强 `TOOL_RESULT`
 > provenance 基础契约；Foundation 的完成态持久化幂等、失败恢复和生命周期已实现，
-> Module E 已有独立适配，但真实宿主与长期化尚未完成。测试通过不等于完整 Agent
-> 闭环通过。
+> Module E 生命周期适配、长期化和严格包内宿主/Runtime 已实现；默认接入系统云模型。
+> 单元测试通过不等于最终真实 Agent 自主工具、多会话与三设备场景全部验收通过。
 
 ---
 

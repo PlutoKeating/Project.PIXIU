@@ -1,5 +1,8 @@
 # 问候语动态化 + 品牌一致性 Implementation Plan
 
+> 2026-09-06 代码复核：UserIdentity.cpp、ChatWindow 动态问候、t_user_identity.cpp 与翻译已实现；GECOS 首段 → USER → 用户回退。旧待规划/未勾选项不再代表代码缺口。
+> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 所有问候语动态取系统用户姓名（全名→login username 兜底），产品名统一为 PIXIU（不把用户称貔貅），文档表述一致。

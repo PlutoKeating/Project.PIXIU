@@ -1,0 +1,2 @@
+# Optional documentation export tooling; not a product runtime dependency.
+Markdown==3.10.3

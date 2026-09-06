@@ -1,5 +1,7 @@
 # Module C · Phase 2 记忆流转验收报告
 
+> 2026-09-06 复核：本文保留原日期对应的测试/审计快照，不将历史数量、环境或待办状态当作当前结论。现行 API 为 32 个 REST 端点、六类 WS 事件，schema v12；2026-09-06 CI（`fd1a6d7`）在 Python 3.12/3.13 各通过 823 项测试。默认 auto 可降级至 portable，严格 V11 则必须使用双 SDK。原生产品链、完整 Agent 场景和三物理设备验收分别取证，最新发布规则见 `docs/DELIVERY_PLAN.md`。
+
 > 日期：2026-08-09（后续状态：sync Phase 3、eval Phase 4/5、D-Bus 已在此后补齐，
 > 见 `PHASE3.md`/`PHASE4.md` 与 `ARCHITECTURE.md`；本文为 Phase 2 交付记录）
 > 范围：`backend/foundation/flow/`、必要的 Foundation 存储/API 接入、测试与模块文档。  

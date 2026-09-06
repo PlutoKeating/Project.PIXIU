@@ -9,6 +9,12 @@
 > 权威边界：`OriginProblemDescription.md` 与 `完整赛题要求.pptx` 是共同适用且
 > 禁止修改的赛事原件；本计划只负责落实要求，不改写官方原文。
 
+2026-09-06 更新：产品版本推进至 0.1.8；通用 CI 使用 Ubuntu 24.04/Python 3.12，
+后端另测 3.13，各 823 项通过，前端 38 项。用户服务、包内 Agent、58-wheel 离线
+闭包及双 SDK 扩展已有实现，不能再把历史“缺少宿主/user service”当作当前代码状态。
+标签发布必须复用通用与 V11 原生自动门并签名；本文件 W5/W6/W8/W9 的最终赛事
+场景、三物理设备、视频与性能材料仍按原阶段门判定，不能以产品 Release 代替。
+
 ## 1. 完成定义
 
 只有下列条件全部满足，项目才可标记“完整稳定可交付”。任一项未通过时，README、
@@ -93,7 +99,7 @@ W0 基线与计划
 | W1.1 | `backend/engine/kylin/` | 扩展官方 C++ 客户端绑定：数据库装载/断开、集合装载、upsert、delete、search；统一错误和运行时标识 | ✅ fake-native 契约及提交 `4011d0d` V11 revision 7 direct SDK 全生命周期通过 |
 | W1.2 | `backend/foundation/core/` | 定义最小 `VectorStore` 公共契约、结果和能力状态，不泄漏 SDK 类型 | seam、结果类型及生产依赖注入已完成 |
 | W1.3 | `backend/foundation/storage/` | 实现 portable SQLite 向量存储与 Kylin SDK 主键映射 | portable 生命周期及持久化双向 ID 映射通过，并由 Kylin 适配消费 |
-| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；809 项组合回归通过，V11 新包待 W1.6 |
+| W1.4 | B/C 组合根 | 实现 Kylin VectorStore 适配并注入写入/检索/遗忘链；保留原始 float 向量到 SDK | 当前源码已补生产 `LoadDBFile`、进程级复用与 `Disconnect`；历史 809 项回归通过；2026-09-06 CI 已达 823 项，最终 V11 同版包仍由 W1.6 取证 |
 | W1.5 | config/API/docs | 增加 `PIXIU_VECTOR_STORE=auto|kylin|portable`、集合/连接/数据库配置、能力与健康报告 | strict 预检现实际装载 `PIXIU_VECTOR_DB_PATH`，避免仅构造客户端产生假绿；待 V11 复验 |
 | W1.6 | V11 | ✅ 当前审阅候选 strict 同包证据返回 Vector `runtime=kylin`/compliant、`contest_ready=true`，并完成 direct SDK 与产品写入/检索/遗忘/隐藏 | H-02 技术门通过；最终冻结 commit 随 G2/G5 重跑归档 |
 
@@ -127,7 +133,7 @@ API 和 Embedding 闭环。
 2026-09-04 的同用户产品探针还揭示：旧组合根只创建 Vector 客户端，未执行官方要求
 的 `LoadDBFile`，所以 `/capabilities` 可误报 ready，而 `/memory/write` 返回 local
 storage not found。当前源码已加入独立数据库路径、启动装载、单例复用与关机断开，
-并以当前 809 项测试回归。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
+并以当时 809 项测试回归（2026-09-06 CI 为 823 项）。提交 `6f6002e` 的 strict revision 8 已重建并通过写入、查询、
 遗忘与隐藏检查；正式取证器因目标系统缺少 Agent 宿主/runtime 可执行文件而拒绝出证。
 
 提交 `c643b1b699ba34650fdf913dd58f0cccd8168191` 又从洁净检出和四个固定 submodule

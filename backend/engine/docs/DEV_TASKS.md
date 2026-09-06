@@ -9,7 +9,7 @@
 
 > **赛题状态纠偏（2026-09-03）**：下列“已完成”仅表示适配代码和记忆引擎模块
 > 已实现，不表示 H-02/H-03 通过。revision 8 已取得系统 Vector Engine 与 Embedding
-> 产品链强实证，但最终 user service、组件依赖和同版正式证据仍是 P0。
+> 产品链强实证；用户态服务、组件依赖与原生取证已进入包体，最终候选仍须同版复验。
 > 团队批准的 Agent 路线同时重新打开 ingest 契约。`CONVERSATION` Connector 与
 > `TOOL_RESULT`/对话 provenance 基础契约已经实现；Foundation 已提供完成态持久化
 > 幂等与失败恢复已由 Foundation 公共契约实现；专用抽取策略和端到端验收仍未完成。
@@ -36,10 +36,10 @@
   SDK 结果维度漂移 fail closed、共享 session 互斥、阻塞调用释放 Python GIL；V11
   真运行时并发证据仍按 H-03 待验。
 - 🟡 **麒麟 SDK 绑定已本机构建成功**（2026-08-24，`backend/engine/kylin/cpp/` pybind11
-  编译导入通过）；麒麟环境 AI 运行时 / 向量引擎在线后的真实端到端调用仍待验证。
+  编译导入通过）；后续 V11 已完成写查删产品链，当前标签由原生流水线复验。
 - 🟡 **OCR（kysdk-ocr / libkyocr）已接入**（2026-08-24）：pybind11 绑定
   `_kylin_ocr` + `engine/kylin/ocr.py` 适配层 + REST `POST /memory/ocr`
-  （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）。
+  （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）；当前单包未捆绑 `_kylin_ocr`。
 - 🔴 **向量数据库硬门槛未通过**：生产 DI 已可严格选择系统 Vector Engine，并完成
   写入/检索/遗忘接线；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
   生命周期封装和 `KylinVectorStore` 契约测试。真机检查已纠正把 SDK 测试专用
@@ -51,8 +51,7 @@
   仍须按 H-02 重验。
 - ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
   带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-04 当前 Engine 154 项、Foundation 636 项、Module E 19 项通过
-  （组合回归 809 passed，10 条既有依赖弃用告警，无失败）；新增反向到达测试证明
+- 测试：2026-09-06 CI 在 Python 3.12/3.13 各 823 项组合回归通过；不沿用旧模块数量分拆。新增反向到达测试证明
   同一对远端矛盾知识按稳定全序选择相同胜者并沿用其时间戳，MERGE 在较新项为字段
   子集时仍保留扩展；`KnowledgeService.materialize/forget` 现作为生产同步物化接缝，
   远端快进、更新和自动仲裁重建图/向量，远端墓碑删除 VectorStore 条目；

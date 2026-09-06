@@ -2,7 +2,8 @@
 
 > 本指南启动的是当前记忆基础设施。capability、evidence Agent provenance、完成态
 > 幂等、context 生命周期和审计式失败 receipt 恢复已实现；Module E 已有独立适配，
-> 但真实宿主与长期化尚未完成，不得把 API 启动成功解释成 Agent 接入完成。
+> 严格包已交付宿主、Runtime 和用户级服务。API 启动成功仍不能代替真实 Agent
+> 自主工具与跨会话复用的场景证据。
 
 ---
 
@@ -10,7 +11,8 @@
 
 ```bash
 cd /path/to/Project.PIXIU
-conda activate pixiu
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r backend/requirements.txt
 pip install -r backend/foundation/requirements-sync.txt
 ```
@@ -25,7 +27,7 @@ python -c "import sqlite3; from backend.foundation.storage.migrations import app
 ## 启动 API 网关
 
 ```bash
-# 开发模式（hot reload，仓库根目录运行；embedding 需已构建麒麟 SDK 绑定）
+# 开发模式（hot reload；auto 优先 SDK，缺失时采用 portable，严格模式不降级）
 uvicorn backend.foundation.api.http_app:app \
   --host 127.0.0.1 --port 8765 --reload
 

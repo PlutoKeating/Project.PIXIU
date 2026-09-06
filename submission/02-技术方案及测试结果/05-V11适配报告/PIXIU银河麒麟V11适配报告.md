@@ -47,6 +47,10 @@ PIXIU 采用 `kylin-v11-native-x86_64` 严格画像构建，在银河麒麟桌�
 
 ## 原生验证结果
 
+下表为历史审阅候选的阶段性结果。每个新标签必须在 V11 runner 安装同版包后重跑
+`native-sdk-smoke.py`，以 Release 的 `kylin-native-evidence.json` 绑定包摘要与 commit。
+`contest_ready=true` 仅表示运行时能力就绪，不代表三物理设备、全部模型任务或性能验收完成。
+
 | 项目 | 结果 |
 |------|------|
 | V11 amd64 strict 单包安装 | 通过 |

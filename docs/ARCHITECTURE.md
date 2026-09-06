@@ -5,11 +5,11 @@
 > **定位**：面向居家/办公多用户协作环境的**去中心化分布式 Agent 记忆共享系统**
 
 > [!CAUTION]
-> 2026-09-03 赛题复核：当前实现是记忆子系统和记忆控制台，不是完整 OS Agent；
-> portable 路径仍由 SQLite/INT8 扫描承担；strict 路径已接入系统 Vector Engine，
-> 但最终候选的产品全链路尚未通过，仍不满足 PPT 硬门槛。团队已批准新增
-> openKylin `kylin-agent`/`agent-runtime` 宿主与
-> Module E MemoryProvider 适配层；这是一项团队工程决策，并非赛方指定技术栈。
+> 2026-09-06 代码复核：记忆子系统和控制台通过 Module E 接入已打包的
+> openKylin `kylin-agent`/`agent-runtime`；宿主不是控制台本身。strict 路径使用
+> 系统 Vector Engine 与 Embedding，portable 路径使用软件向量器与 SQLite/INT8。
+> 用户级服务、系统云模型桥接和生命周期长期化已实现，但最终三设备、完整 Agent
+> 场景和同版性能证据仍须单独完成。这是团队工程决策，并非赛方指定 Agent 技术栈。
 > 完整差距、决策和验收状态见
 > `OS_AGENT_INTEGRATION_ASSESSMENT.md` 与 `AcceptanceTestSpecification.md`。
 
@@ -47,12 +47,12 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 ┌──────────────────────────────────────────────────────────┐
 │  后端 (backend/)                                           │
 │                                                           │
-│  Module B: 记忆业务引擎 (engine/)                          │  Python 3.10 + C++
+│  Module B: 记忆业务引擎 (engine/)                          │  Python 3.12 + C++
 │  多源接入 · 偏好捕捉 · 知识结构化 · 冲突仲裁 · 安全遗忘     │
 │  行为采集 · 主动递送(insights/digest)                       │
 │  ★ 通过 Repository ABC 接口消费存储层                      │
 │                                                           │
-│  Module C: 后台基础设施 (foundation/)                      │  Python 3.10 + SQLite
+│  Module C: 后台基础设施 (foundation/)                      │  Python 3.12 + SQLite
 │  API 网关 · 存储层 · 混合检索 · 记忆流转 · P2P 同步 · 评测  │
 │  监控引擎(目录监视/行为采集/配置热生效)                     │
 │  ★ 提供 core/ 契约 + 在 api/ 注入引擎 Service              │
@@ -121,14 +121,14 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 ### 3.1 写入路径：把"零散信息"变成"结构化记忆"
 
 ```
-事件源(工具结果/用户行为/手动配置/OCR)
+事件源(对话/工具结果/用户行为/手动配置/OCR 结构化文本)
   → 敏感前置（engine/security:detector）：sensitivity 评分
   → 接入处理（engine/ingest）：Connector → Cleaner → Normalizer → Quality
   → 同步落 evidence(<50ms) → 立即 ACK
   → 异步：
       engine/knowledge:structurer → 结构化（FACT/WORKFLOW/CASE/TEMPLATE）
       engine/knowledge:graph → 实体关系建图
-      engine/knowledge:embed_writer → 麒麟 coreai/embedding（真实 SDK）→ INT8 量化 → 写 knowledge_vec + knowledge_fts
+      engine/knowledge → 配置的 embedding → VectorStore（原生保留 float；portable SQLite/INT8）+ FTS
       engine/preference:extractor → 偏好提取
       engine/conflict:arbiter → 与既有知识比对仲裁
   → foundation/sync:CRDT 广播（✅ 已实现，Phase 3）
@@ -145,14 +145,14 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 > 两个离线节点由同一基线产生的并发版本继续交由 CRDT 与确定性冲突仲裁收敛。
 
 **三索引齐写**：一条知识同时进 FTS5（关键词）、向量表（语义）、图（实体关系），这是混合检索的前提。
-当前 FTS 写入、INT8 向量写入与图（`knowledge_entities`/`relations`）均已实现；
+当前 FTS 写入、VectorStore 向量写入与图（`knowledge_entities`/`relations`）均已实现；
 ANN/图召回由 retrieval 阶段（Phase 2）消费。
 
 ### 3.2 在线检索路径：500ms 内给出可信答案
 
 > ✅ 该路径已由 foundation/retrieval 实现（Phase 2 交付，2026-08-10 合入 main），
 > `/memory/query` 为真实链路。当前机制：规则路由；FTS5 trigram（含 CJK 回退）；
-> INT8 向量线性扫描；持久化图召回；三通道 `asyncio.gather` 并发；scope/time_range
+> 注入式 VectorStore（Kylin SDK 或 portable SQLite/INT8）；持久化图召回；三通道 `asyncio.gather` 并发；scope/time_range
 > 硬过滤；RRF 融合；词法重排；查询类别聚合与证据回溯。
 > `/agent/context` 在相同召回之上组装多候选上下文，强制 scope 和敏感 evidence
 > fail-closed，并输出字符预算、freshness、冲突状态及 knowledge/evidence 引用；
@@ -165,10 +165,10 @@ query + context_hint
   → 路由（foundation/retrieval:router, ~15ms）：意图分类 + 实体抽取 + 通道选择
   → 三通道并行（asyncio.gather）：
       BM25(FTS5)  关键词/标题命中
-      ANN(向量)    query embedding → INT8 近邻
+      ANN(向量)    query embedding → VectorStore.search
       Graph        从命中实体沿 BELONG_TO 遍历聚合
   → 融合（fuse, ~10ms）：RRF 排名融合 + context_hint 加权
-  → 重排（rerank, ~150ms）：INT8 reranker 细粒度 relevance
+  → 重排（rerank）：词面重叠 + 业务年月匹配；未加载神经网络 reranker
   → 组装（assembler, ~30ms）：结构化过滤 + 聚合计算 + 附 evidence_ids
   → 返回 MemoryAtom{answer, source_evidence, confidence, latency_ms}
 ```
@@ -198,7 +198,8 @@ query + context_hint
 ✅ 已实现：`POST /forget`（confirm 两段式）。
 
 - 敏感识别：写入入口前置 detector（正则 + 规则识别身份证/银行卡等），sensitivity 评分
-- 自然语言遗忘：解析指令 → 构造匹配条件 → 级联清理 knowledge + evidence + 实体关系
+- 自然语言遗忘：解析指令 → 预览确认 → 标记知识 FORGOTTEN、删除向量、传播共享墓碑；
+  evidence、实体关系和 FTS 原始载荷未物理清除，关联计数不是删除完成证明。
 
 ### 3.6 记忆流转（foundation/flow）
 
@@ -274,11 +275,12 @@ query + context_hint
 
 详见 `backend/foundation/docs/ARCHITECTURE.md` 第 1.3 节。
 
-基础表 16 张（由 `storage/schema.py` 创建）：记忆/流转类（`evidence`,
+schema v12 基础表 20 张（由 `storage/schema.py` 创建）：记忆/流转类（`evidence`,
 `knowledge_items`, `knowledge_evidence`, `knowledge_entities`, `preferences`,
 `preference_history`, `entities`, `relations`, `conflict_records`,
 `memory_contexts`）+ 同步类（`sync_identity`, `sync_peers`, `sync_state`,
-`sync_peer_acks`, `sync_meta`, `sync_oplog`）。
+`sync_peer_acks`, `sync_meta`, `sync_oplog`），以及 `agent_ingest_receipts`、
+`vector_id_map`、`monitor_config`、`monitor_log`。
 `knowledge_fts`（FTS5 trigram）与 `knowledge_vec`（INT8）由仓储首次使用时惰性创建。
 建表/迁移统一走 `storage/migrations.py` 的版本化迁移。
 
@@ -286,9 +288,9 @@ query + context_hint
 
 | 能力 | SDK | 用途 | 调用者 | 状态 |
 |------|-----|------|--------|------|
-| 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 本机构建成功（麒麟运行时验收待真机） |
-| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin 适配 + foundation `VectorStore` seam | 🟡 生产选择/严格失败已接线；V11 真 SDK 全链路证据未完成，H-02 仍未通过 |
-| OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | ✅ 已接入（2026-08-24，`POST /memory/ocr`） |
+| 文本向量化 | `coreai/embedding`（9.4.3，`libkysdk-coreai-embedding`） | ANN 通道、知识 embedding | engine/kylin（pybind11 绑定） | ✅ 原生包构建与 V11 产品链已有阶段实证；最终标签自动复测 |
+| 向量数据库 | `libkysdk-vector-engine-client` | ANN 检索存储 | engine/kylin 适配 + foundation `VectorStore` seam | ✅ LoadDBFile/集合/写查删/断开与产品链已有 V11 实证；最终赛事 H-02 独立验收 |
+| OCR | AI SDK 9.4.1 | 图片支出清单接入 | engine/ingest | 🟡 API/适配源码已接入；单包未捆绑 `_kylin_ocr`，图片识别不可用时明确报错 |
 | 文本生成 | AI SDK 9.5.1 | 离线偏好/知识抽取 | engine/preference | ⬜ 待接入 |
 | 桌面通知 | `kysdk-notification`（8.2） | 记忆事件、冲突提醒 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为系统托盘通知 |
 | 全局快捷键 | `kysdk-shortcut`（8.3） | 唤起聊天框 | frontend | 🟡 前端已实现（KYSDK=ON 路径），KYSDK=OFF 降级为 QShortcut |
