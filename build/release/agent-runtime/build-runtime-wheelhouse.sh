@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# The reviewed wheel lock includes Unix mode bits from the original 0002 build.
+# Pin the mask before extracting/building so runner service defaults (0022) do
+# not change wheel hashes while leaving every payload byte identical.
+umask 0002
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../../.." && pwd)"
