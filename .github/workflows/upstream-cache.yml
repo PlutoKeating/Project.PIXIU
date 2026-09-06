@@ -1,0 +1,33 @@
+name: pixiu-upstream-cache
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  seed:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, x64, kylin-v11]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          persist-credentials: false
+      - name: Resolve exact upstream commits from runner mirror
+        env:
+          MIRROR: ${{ vars.PIXIU_SUBMODULE_MIRROR }}
+        shell: bash
+        run: |
+          test -d "$MIRROR/third_party"
+          while read -r key path; do
+            name="${key#submodule.}"
+            name="${name%.path}"
+            git config "submodule.${name}.url" "$MIRROR/$path"
+          done < <(git config -f .gitmodules --get-regexp '^submodule\..*\.path$')
+          git -c protocol.file.allow=always submodule update --init --recursive
+          git submodule sync --recursive
+          if git submodule status --recursive | grep -Eq '^[+U-]'; then exit 1; fi
+      - uses: ./.github/actions/submodules

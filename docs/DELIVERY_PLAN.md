@@ -102,6 +102,13 @@ Runtime 离线闭包必须包含免密 `ddgs` 搜索后端；验收要求 `web_s
 
 ## 2. 版本管理唯一真相源
 
+2026-09-06 流水线审计：远程 `v0.1.7` 仍是 `0.1.7-1` 通用画像资产，
+不能代表本地 `0.1.7-3` 严格原生 Agent 包。CI 基线调整为 Ubuntu 24.04 /
+Python 3.12（后端另测 3.13），与 cp312 打包目标一致。官方 Gitee 子模块继续
+使用已提交 gitlink，增加按四个固定提交生成缓存键的 Git 对象缓存、有限重试和
+恢复后版本校验；仅允许维护者手动在 main 上通过麒麟 runner 的只读镜像预热缓存。
+PR 不进入自托管 runner。后续发布必须由同一候选提交自动重建，不能把旧包改名发布。
+
 采用 SemVer `MAJOR.MINOR.PATCH`，Debian 包版本为 `MAJOR.MINOR.PATCH-REVISION`。
 发布标签、CMake `applicationVersion`、Debian control、Release 资产与更新清单必须
 由一个发布版本输入派生；CI 在不一致时失败。

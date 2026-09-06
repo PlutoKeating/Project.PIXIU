@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,17 +15,28 @@ concurrency:
 
 jobs:
   governance:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
           submodules: false
 
+      - uses: ./.github/actions/submodules
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install governance dependencies
+        run: python -m pip install -r backend/requirements.txt -r backend/foundation/requirements-sync.txt
+
       - name: Verify immutable sources and repository state
-        run: make -C build/release governance
+        run: |
+          bash -x build/release/tests/test-agent-integration.sh
+          make -C build/release governance
 
   backend-tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -32,7 +44,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
+          submodules: false
+
+      - uses: ./.github/actions/submodules
 
       - uses: actions/setup-python@v7
         with:
@@ -86,11 +100,13 @@ jobs:
           if-no-files-found: error
 
   build-deb:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
-          submodules: recursive
+          submodules: false
+
+      - uses: ./.github/actions/submodules
 
       - name: Install build dependencies
         env:

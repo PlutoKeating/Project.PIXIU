@@ -1,0 +1,24 @@
+name: Pinned upstream sources
+description: Restore verified upstream Git objects, with bounded Gitee retries on cache miss
+runs:
+  using: composite
+  steps:
+    - id: pins
+      shell: bash
+      run: echo "key=$(git ls-tree HEAD third_party/ | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+    - uses: actions/cache@v4
+      with:
+        path: .git/modules
+        key: upstream-git-v1-${{ steps.pins.outputs.key }}
+    - shell: bash
+      run: |
+        git submodule sync --recursive
+        for attempt in 1 2 3; do
+          if git submodule update --init --recursive; then break; fi
+          if [ "$attempt" = 3 ]; then exit 1; fi
+          sleep "$((attempt * 10))"
+        done
+        if git submodule status --recursive | grep -Eq '^[+U-]'; then
+          echo "Submodules do not match the committed gitlinks" >&2
+          exit 1
+        fi
