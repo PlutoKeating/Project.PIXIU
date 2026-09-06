@@ -11,6 +11,7 @@
 
 四项依赖均使用 MIT License，许可证原文保存在 `licenses/`。运行时页面通过 CSP
 关闭网络、远端脚本和任意 HTML 输入，仅允许同包 `qrc:` 资源与受限的 `data:` 图片。
-Unicode emoji 由 Chromium 字形整形与包内 `Noto Color Emoji` 字体完成，不依赖目标机
-fontconfig 是否接纳彩色位图字体。字体遵循 SIL Open Font License 1.1。
+正文优先使用 Noto Sans CJK 文本字体，普通空格保持正文的自然字宽；Unicode emoji
+再由 Chromium 字形回退到包内 `Noto Color Emoji`，不依赖目标机 fontconfig 是否接纳
+彩色位图字体。字体遵循 SIL Open Font License 1.1。
 Mermaid 固定在 10.9.5，以兼容银河麒麟 V11 所带 Qt 5.15 WebEngine 的 JavaScript 引擎。

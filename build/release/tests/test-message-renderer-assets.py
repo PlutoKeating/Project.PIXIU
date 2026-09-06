@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -68,5 +69,16 @@ require("http://" not in html and "https://" not in html, "renderer must not loa
 require(
     (RENDERER / "fonts/NotoColorEmoji.ttf").stat().st_size > 10_000_000,
     "complete color emoji font is required",
+)
+
+body_rule = re.search(r"^\s*body\s*\{(?P<declarations>.*?)\}", html, re.DOTALL | re.MULTILINE)
+require(body_rule is not None, "renderer body style is required")
+body_style = body_rule.group("declarations")
+text_font = body_style.find('"Noto Sans CJK SC"')
+emoji_font = body_style.find('"PIXIU Color Emoji"')
+require(text_font >= 0 and emoji_font >= 0, "renderer text and emoji fonts are required")
+require(
+    text_font < emoji_font,
+    "text font must precede the color emoji fallback so ordinary spaces keep text metrics",
 )
 print("message renderer asset tests: OK")
