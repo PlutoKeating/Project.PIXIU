@@ -109,7 +109,7 @@ python3 build/release/scripts/audit-agent-supply-chain.py \
 ```bash
 python3 build/release/scripts/native-sdk-smoke.py \
   --base-url http://127.0.0.1:8765 \
-  --deb build/release/out/pixiu_0.1.7-2_amd64.deb \
+  --deb build/release/out/pixiu_0.1.7-3_amd64.deb \
   --expected-commit "$(git rev-parse HEAD)" \
   --output build/release/out/native-sdk-smoke.json
 ```
@@ -633,7 +633,7 @@ PIXIU_PUBLISH_URI=user@host:/srv/releases make -C build/release publish-producti
 ```bash
 # 在目标系统本地构建或取得匹配架构的正式资产后安装
 sudo bash build/release/scripts/provision-target.sh kylin-v11-x86_64   # 1) 系统依赖
-sudo apt-get install -y ./build/release/out/pixiu_0.1.7-2_amd64.deb    # 2) 安装
+sudo apt-get install -y ./build/release/out/pixiu_0.1.7-3_amd64.deb    # 2) 安装
 ```
 
 `provision-target.sh` 与 deb 的 `postinst` 覆盖了麒麟 V11 的全部已知坑：
@@ -694,7 +694,7 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
 ## 安装产物（全新麒麟机）
 
 ```bash
-sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-2_amd64.deb
+sudo apt-get install -y ./build/release/dist/production/pixiu_0.1.7-3_amd64.deb
 # apt 自动解析并安装依赖（python3、Qt5 运行时等；kysdk 组件为建议项）
 ```
 

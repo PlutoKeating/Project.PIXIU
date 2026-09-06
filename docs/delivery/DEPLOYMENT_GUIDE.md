@@ -4,7 +4,7 @@
 
 - 操作系统：银河麒麟桌面操作系统 V11
 - 架构：amd64
-- 软件包：`pixiu_0.1.7-2_amd64.deb`
+- 软件包：`pixiu_0.1.7-3_amd64.deb`
 - 安装方式：图形软件安装器或 APT
 - 运行方式：桌面用户 systemd 服务
 
@@ -14,13 +14,13 @@
 
 ```bash
 cd submission/04-部署文档/01-可安装软件
-sha256sum -c pixiu_0.1.7-2_amd64.deb.sha256
+sha256sum -c pixiu_0.1.7-3_amd64.deb.sha256
 ```
 
 预期 SHA-256：
 
 ```text
-bdd37caf339daaf1e8c77a8c24f224098e23a575ddb37b100625906f73d21521
+24f393982ba227bb8d9feb58f1bfcd26ce83122bfa36fa505a1f3c80ffe6ec02
 ```
 
 ## 安装
@@ -28,7 +28,7 @@ bdd37caf339daaf1e8c77a8c24f224098e23a575ddb37b100625906f73d21521
 双击 `.deb` 并在图形安装器中确认，或运行：
 
 ```bash
-sudo apt install ./pixiu_0.1.7-2_amd64.deb
+sudo apt install ./pixiu_0.1.7-3_amd64.deb
 ```
 
 安装完成后，从应用菜单打开“PIXIU”，或运行：
