@@ -350,6 +350,31 @@ def run_direct_sdk_lifecycle(
     }
 
 
+def forget_probe_memory(base_url: str, marker: str, expected_id: str | None = None) -> dict:
+    payload = {"command": f"forget {marker}", "confirm": False, "scope": "user:acceptance"}
+    preview = request_json(f"{base_url}/forget", payload=payload)
+    targets = preview.get("targets")
+    if not isinstance(targets, list) or any(
+        not isinstance(target, dict) or target.get("title") != marker
+        or target.get("scope") != "user:acceptance" or not target.get("id")
+        for target in targets
+    ):
+        raise RuntimeError("probe cleanup preview contains unowned or invalid targets")
+    ids = {target["id"] for target in targets}
+    if expected_id is not None and ids != {expected_id}:
+        raise RuntimeError("forget preview did not resolve exactly the retrieved knowledge")
+    if not ids:
+        return {"status": "forgotten", "forgotten_ids": []}
+    token = preview.get("confirmation_token")
+    if not isinstance(token, str) or not token:
+        raise RuntimeError("probe cleanup preview has no confirmation receipt")
+    payload.update(confirm=True, confirmation_token=token)
+    result = request_json(f"{base_url}/forget", payload=payload)
+    if result.get("status") != "forgotten" or set(result.get("forgotten_ids", [])) != ids:
+        raise RuntimeError("probe cleanup result does not match reviewed targets")
+    return result
+
+
 def run_memory_lifecycle(base_url: str) -> tuple[dict, dict]:
     marker = f"PIXIU-NATIVE-{time.time_ns()}"
     written: dict = {}
@@ -371,23 +396,13 @@ def run_memory_lifecycle(base_url: str) -> tuple[dict, dict]:
 
         queried = request_json(
             f"{base_url}/memory/query",
-            payload={"text": marker, "context_hint": {"top_k": 1}},
+            payload={"text": marker, "context_hint": {"top_k": 1, "scope": "user:acceptance"}},
         )
         knowledge_id = queried.get("source_knowledge")
         if not knowledge_id:
             raise RuntimeError("strict SDK retrieval did not find the written memory")
 
-        preview = request_json(
-            f"{base_url}/forget",
-            payload={"command": f"forget {marker}", "confirm": False},
-        )
-        target_ids = {target.get("id") for target in preview.get("targets", [])}
-        if knowledge_id not in target_ids:
-            raise RuntimeError("forget preview did not resolve the retrieved knowledge")
-        forgotten = request_json(
-            f"{base_url}/forget",
-            payload={"command": f"forget {marker}", "confirm": True},
-        )
+        forgotten = forget_probe_memory(base_url, marker, knowledge_id)
         if (
             forgotten.get("status") != "forgotten"
             or knowledge_id not in forgotten.get("forgotten_ids", [])
@@ -396,7 +411,7 @@ def run_memory_lifecycle(base_url: str) -> tuple[dict, dict]:
         deleted = True
         after_delete = request_json(
             f"{base_url}/memory/query",
-            payload={"text": marker, "context_hint": {"top_k": 1}},
+            payload={"text": marker, "context_hint": {"top_k": 1, "scope": "user:acceptance"}},
         )
         if after_delete.get("source_knowledge") == knowledge_id:
             raise RuntimeError("forgotten memory remained retrievable")
@@ -405,10 +420,7 @@ def run_memory_lifecycle(base_url: str) -> tuple[dict, dict]:
     finally:
         if not deleted:
             try:
-                cleanup = request_json(
-                    f"{base_url}/forget",
-                    payload={"command": f"forget {marker}", "confirm": True},
-                )
+                cleanup = forget_probe_memory(base_url, marker)
                 if cleanup.get("status") != "forgotten":
                     raise RuntimeError("memory cleanup did not report forgotten")
             except Exception as exc:

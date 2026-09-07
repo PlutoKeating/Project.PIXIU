@@ -89,7 +89,8 @@ class NativeSdkSmokeTest(unittest.TestCase):
             {"status": "ready", "product_version": "0.1.7", "component": "pixiu-memory-backend", "database": "ok", "schema_version": 12},
             {"evidence_id": "evd_native", "status": "accepted"},
             {"source_knowledge": "knw_native"},
-            {"targets": [{"id": "knw_native"}], "irreversible": True},
+            {"targets": [{"id": "knw_native", "title": "PIXIU-NATIVE-123", "scope": "user:acceptance"}],
+             "irreversible": True, "confirmation_token": "receipt"},
             {"status": "forgotten", "forgotten_ids": ["knw_native"]},
             {"source_knowledge": ""},
         ]
@@ -115,6 +116,7 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 patch.object(MODULE, "ensure_product_interpreter"),
                 patch.object(MODULE, "wait_for_capabilities", return_value=capabilities),
                 patch.object(MODULE, "request_json", side_effect=responses),
+                patch.object(MODULE.time, "time_ns", return_value=123),
                 patch.object(
                     MODULE,
                     "verify_candidate_package",
@@ -305,13 +307,26 @@ class NativeSdkSmokeTest(unittest.TestCase):
                 return {"status": "accepted", "evidence_id": "evd_cleanup"}
             if url.endswith("/memory/query"):
                 raise RuntimeError("query failed")
-            return {"status": "forgotten", "forgotten_ids": []}
+            if not payload["confirm"]:
+                return {"targets": [{"id": "probe", "title": payload["command"].removeprefix("forget "),
+                    "scope": "user:acceptance"}], "confirmation_token": "receipt"}
+            return {"status": "forgotten", "forgotten_ids": ["probe"]}
 
         with patch.object(MODULE, "request_json", side_effect=request):
             with self.assertRaisesRegex(RuntimeError, "query failed"):
                 MODULE.run_memory_lifecycle("http://127.0.0.1:8765")
         self.assertEqual(calls[-1][0], "http://127.0.0.1:8765/forget")
         self.assertTrue(calls[-1][1]["confirm"])
+        self.assertEqual(calls[-1][1]["confirmation_token"], "receipt")
+        self.assertEqual(calls[-1][1]["scope"], "user:acceptance")
+
+    def test_probe_cleanup_rejects_unowned_targets(self) -> None:
+        for title, scope in [("unrelated", "user:acceptance"), ("probe", "shared:home")]:
+            with patch.object(MODULE, "request_json", return_value={"targets": [
+                {"id": "k1", "title": title, "scope": scope}], "confirmation_token": "receipt"}) as request:
+                with self.assertRaisesRegex(RuntimeError, "unowned"):
+                    MODULE.forget_probe_memory("http://127.0.0.1:8765", "probe")
+                self.assertEqual(request.call_count, 1)
 
     def test_candidate_package_binds_checksum_commit_and_installed_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
