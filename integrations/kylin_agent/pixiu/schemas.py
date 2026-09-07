@@ -50,16 +50,17 @@ UPDATE = {
 FORGET = {
     "name": "pixiu_memory_forget",
     "description": (
-        "Preview a forget request. Execute only after the user explicitly confirms, "
-        "by repeating the call with the returned one-time confirmation_token."
+        "Preview a forget request without deleting anything. The user must open "
+        "PIXIU desktop Memory > Safe forgetting, review a fresh preview and confirm there. "
+        "This tool never executes deletion or accepts confirmation tokens."
     ),
     "parameters": {
         "type": "object",
         "properties": {
             "command": {"type": "string"},
-            "confirmation_token": {"type": "string"},
         },
         "required": ["command"],
+        "additionalProperties": False,
     },
 }
 

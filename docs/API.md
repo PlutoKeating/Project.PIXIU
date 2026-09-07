@@ -23,7 +23,7 @@
 | `prefetch(query, session_id)` | `POST /agent/context`（已实现） | Module E 已后台预取并只同步读取缓存；真实时序/命中取证待补 |
 | `sync_turn(user, assistant, session_id)` | `POST /memory/write` + `CONVERSATION`（provenance + 持久化幂等已实现） | Module E 已有有界异步队列、重试/背压；失败 receipt 可人工核验后授权一次重试 |
 | 工具结果沉淀 | `POST /memory/write` + `TOOL_RESULT`（provenance + 持久化幂等已实现） | 显式 remember 已接入；任意 Shell/搜索结果的自动价值判断仍待 W5 |
-| 显式记忆工具 | query/write/update/forget/sync 现有端点 | 五个 schema/稳定 JSON 映射已实现；update 消费召回版本，forget 另加一次性确认 token |
+| 显式记忆工具 | query/write/update/forget/sync 现有端点 | 五个 schema/稳定 JSON 映射已实现；update 消费召回版本，forget 工具仅预览，执行须由桌面重新预览确认 |
 | `on_pre_compress`/会话结束或切换/委派 | `POST /agent/lifecycle` 创建短中期 context（已实现） | Module E 已触发六类事件；长期化策略与端到端证据待补 |
 | 运行审计 | evidence provenance + `/agent/context` 回显 session/turn | 日志与 memory_id 跨端点链路仍待贯通 |
 
@@ -613,8 +613,12 @@ D-Bus 同等入口为 `ReviewedForget(payload_json: s) → s`，JSON 字段及�
 一致，复用同一预览凭证、执行和墓碑广播逻辑。旧 `Forget(command: s, confirm: b)`
 只允许 `confirm=false` 预览；`true` 返回 `FORGET_PREVIEW_REQUIRED`，不再绕过确认。
 
-Module E 的遗忘工具固定传 Provider scope，私下保存后端凭证，向模型只暴露绑定
-会话的本地一次性引用；确认时转交原后端凭证。该映射不等同于已验证宿主人工审批。
+Module E 的 `pixiu_memory_forget` 工具固定传 Provider scope，只允许 `command` 参数，
+始终调用 `confirm=false`。它返回 `human_review_required` 与目标/级联预览，不向模型
+返回、缓存或转交确认凭证；任何额外确认参数均返回 `HUMAN_REVIEW_REQUIRED`。
+用户需在桌面「记忆 → 安全遗忘」重新预览并确认。HTTP/D-Bus 的正式确认接口不变。
+此限制只约束该 Provider 工具，不是任意代码执行环境的访问隔离；宿主自动交接与
+不可绕过的真人审批链路仍待实现，不能以只读工具限制宣称完整安全验收通过。
 
 ### 3.9 GET /conflicts
 

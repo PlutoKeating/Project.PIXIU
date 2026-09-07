@@ -212,7 +212,7 @@ def test_lifecycle_hooks_map_without_writing_full_unbounded_transcripts():
     item.shutdown()
 
 
-def test_tools_return_stable_json_and_forget_requires_preview_token():
+def test_tools_return_stable_json_and_forget_never_exposes_execution_token():
     client = FakeClient()
     item = provider(client)
     item.initialize("session", platform="cli")
@@ -222,37 +222,35 @@ def test_tools_return_stable_json_and_forget_requires_preview_token():
         "pixiu_memory_update", "pixiu_memory_forget", "pixiu_sync_status",
     }
     preview = json.loads(item.handle_tool_call("pixiu_memory_forget", {"command": "forget x"}))
-    assert preview["status"] == "confirmation_required"
+    assert preview["status"] == "human_review_required"
+    assert "confirmation_token" not in preview
     assert "confirmation_token" not in preview["preview"]
     denied = json.loads(item.handle_tool_call(
-        "pixiu_memory_forget", {"command": "forget y", "confirmation_token": preview["confirmation_token"]}
+        "pixiu_memory_forget", {"command": "forget y", "confirmation_token": "invented"}
     ))
-    assert denied["error"] == "CONFIRMATION_MISMATCH"
+    assert denied["error"] == "HUMAN_REVIEW_REQUIRED"
     preview = json.loads(item.handle_tool_call("pixiu_memory_forget", {"command": "forget x"}))
     done = json.loads(item.handle_tool_call(
-        "pixiu_memory_forget", {"command": "forget x", "confirmation_token": preview["confirmation_token"]}
+        "pixiu_memory_forget", {"command": "forget x", "confirmation_token": "backend-receipt"}
     ))
-    assert done["status"] == "forgotten"
+    assert done["error"] == "HUMAN_REVIEW_REQUIRED"
     sent = [payload for method, path, payload in client.calls if path == "/forget" and payload["confirm"]]
-    assert sent[-1]["confirmation_token"] == "backend-receipt"
-    assert sent[-1]["scope"] == item._scope
+    assert not sent
+    schema = next(s for s in item.get_tool_schemas() if s["name"] == "pixiu_memory_forget")
+    assert "confirmation_token" not in schema["parameters"]["properties"]
     assert json.loads(item.handle_tool_call("pixiu_sync_status", {}))["peer_count"] == 2
     item.shutdown()
 
 
-def test_forget_receipt_cannot_cross_sessions_or_survive_expiry():
+def test_forget_rejects_claimed_confirmation_after_session_switch():
     client = FakeClient()
     item = provider(client)
     item.initialize("session", platform="cli")
     try:
-        preview = item._forget({"command": "forget x"})
+        item._forget({"command": "forget x"})
         item.on_session_switch("another-session")
-        assert item._forget({"command": "forget x", "confirmation_token": preview["confirmation_token"]})["error"] == "CONFIRMATION_MISMATCH"
-        preview = item._forget({"command": "forget x"})
-        token = preview["confirmation_token"]
-        command, _, backend_token, session = item._pending_forget[token]
-        item._pending_forget[token] = (command, 0, backend_token, session)
-        assert item._forget({"command": "forget x", "confirmation_token": token})["error"] == "CONFIRMATION_MISMATCH"
+        for claim in ({"confirmation_token": "backend-receipt"}, {"confirm": True}, {"approved": True}):
+            assert item._forget({"command": "forget x", **claim})["error"] == "HUMAN_REVIEW_REQUIRED"
         assert not any(path == "/forget" and payload["confirm"] for _, path, payload in client.calls)
     finally:
         item.shutdown()
@@ -267,7 +265,6 @@ def test_forget_rejects_backend_preview_without_receipt():
     item = provider(InvalidPreviewClient())
     try:
         assert item._forget({"command": "forget x"}) == {"error": "INVALID_FORGET_PREVIEW"}
-        assert not item._pending_forget
     finally:
         item.shutdown()
 
