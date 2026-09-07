@@ -72,9 +72,10 @@ public:
     QJsonObject savedConfig;
     int configReads = 0, configWrites = 0;
     int logOffset = -1;
+    int logReads = 0;
     void monitorConfig() override { ++configReads; }
     void updateMonitorConfig(const QJsonObject &payload) override { savedConfig = payload; ++configWrites; }
-    void monitorLog(int, int offset) override { logOffset = offset; }
+    void monitorLog(int, int offset) override { logOffset = offset; ++logReads; }
     void preferencesList(const QString &scope) override { auditScope = scope; ++preferenceRequests; }
     void preferenceHistory(const QString &id) override { historyId = id; }
     void extractPreferences(const QJsonObject &payload) override { extraction = payload; ++extractionRequests; }
@@ -1089,6 +1090,52 @@ private slots:
         QCOMPARE(records->count(), 1);
         QVERIFY(records->item(0)->text().contains("尚无本地信任"));
         QVERIFY(status->text().contains("不代表"));
+    }
+    void privacyEventsRefreshOnlyVisibleFirstPageAndPreserveDraft()
+    {
+        Transport transport;
+        pixiu::PrivacyPage page(nullptr, &transport);
+        auto *paths = page.findChild<QPlainTextEdit *>("privacyDirectories");
+        page.findChild<QPushButton *>("privacyLoad")->click();
+        const QJsonObject sources{{"directory", false}, {"behavior", false}, {"clipboard", false}, {"screenshot", false}};
+        emit transport.configResult({{"enabled", false}, {"sources", sources}, {"directories", QJsonArray{}}});
+        paths->setPlainText("/draft");
+        for (int i = 0; i < 20; ++i) page.notifyDataChanged();
+        QTest::qWait(600);
+        QCOMPARE(transport.logReads, 0);
+        page.show();
+        QTRY_COMPARE(transport.logReads, 1);
+        QVERIFY(paths->isEnabled());
+        paths->setPlainText("/still-editing");
+        page.notifyDataChanged();
+        QTest::qWait(600);
+        QCOMPARE(transport.logReads, 1);
+        emit transport.monitorLogResult({});
+        QVERIFY(page.findChild<QLabel *>("privacyStatus")->text().contains("未保存"));
+        QTRY_COMPARE(transport.logReads, 2);
+        QJsonArray firstPage;
+        for (int i = 0; i < 50; ++i) firstPage.append(QJsonObject{{"summary", QString::number(i)}});
+        emit transport.monitorLogResult(firstPage);
+        QPushButton *next = nullptr;
+        for (auto *button : page.findChildren<QPushButton *>())
+            if (button->text() == QStringLiteral("下一页")) next = button;
+        QVERIFY(next);
+        next->click();
+        QCOMPARE(transport.logOffset, 50);
+        emit transport.monitorLogResult({QJsonObject{{"summary", "historical"}}});
+        page.notifyDataChanged();
+        QTest::qWait(600);
+        QCOMPARE(transport.logReads, 3);
+        QCOMPARE(transport.logOffset, 50);
+        QCOMPARE(paths->toPlainText(), QStringLiteral("/still-editing"));
+        QVERIFY(page.hasUnsavedChanges());
+        QCOMPARE(transport.configReads, 1);
+        QCOMPARE(transport.configWrites, 0);
+        page.findChild<QPushButton *>("privacyLogs")->click();
+        QCOMPARE(transport.logOffset, 0);
+        emit transport.monitorLogResult({});
+        QTest::qWait(600);
+        QCOMPARE(transport.logReads, 4);
     }
     void privacyPreservesUnavailableSourcesAndFailedEdits()
     {

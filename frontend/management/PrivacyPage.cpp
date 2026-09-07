@@ -8,12 +8,20 @@
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QShowEvent>
+#include <QTimer>
 #include <QVBoxLayout>
 
 namespace pixiu {
 PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     : QWidget(parent), m_transport(transport ? transport : new HttpBackendTransport(this))
 {
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setSingleShot(true);
+    m_refreshTimer->setInterval(500);
+    connect(m_refreshTimer, &QTimer::timeout, this, [this]() {
+        if (m_refreshNeeded && isVisible() && m_pending == Pending::None && m_offset == 0) loadLogs(0);
+    });
     auto *layout = new QVBoxLayout(this);
     m_enabled = new QCheckBox(tr("启用自动采集（关闭后暂停采集，不删除已有记忆）"), this);
     m_enabled->setObjectName(QStringLiteral("privacyEnabled"));
@@ -137,6 +145,7 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
                 event.value("status").toString(), event.value("summary").toString()));
         }
         m_status->setText(events.isEmpty() ? tr("本页没有采集日志。") : tr("采集日志第 %1 页").arg(m_offset / 50 + 1));
+        if (hasUnsavedChanges()) m_status->setText(m_status->text() + tr(" 配置有未保存的修改，日志刷新不会保存配置。"));
         controls();
     });
     connect(m_transport, &BackendTransport::errorOccurred, this, [this](const QString &, const QString &message, const QString &) {
@@ -150,13 +159,30 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
 void PrivacyPage::controls()
 {
     const bool idle = m_pending == Pending::None;
-    for (auto *check : {m_enabled, m_directory, m_behavior}) check->setEnabled(idle && m_loaded);
-    m_directories->setEnabled(idle && m_loaded);
+    const bool editable = (idle || m_pending == Pending::Logs) && m_loaded;
+    for (auto *check : {m_enabled, m_directory, m_behavior}) check->setEnabled(editable);
+    m_directories->setEnabled(editable);
     m_save->setEnabled(idle && m_loaded);
     m_load->setEnabled(idle);
     m_logs->setEnabled(idle);
     m_previous->setEnabled(idle && m_offset > 0);
     m_next->setEnabled(idle && m_more);
+    scheduleRefresh();
+}
+void PrivacyPage::notifyDataChanged()
+{
+    m_refreshNeeded = true;
+    scheduleRefresh();
+}
+void PrivacyPage::scheduleRefresh()
+{
+    if (m_refreshNeeded && isVisible() && m_pending == Pending::None && m_offset == 0
+        && !m_refreshTimer->isActive()) m_refreshTimer->start();
+}
+void PrivacyPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    scheduleRefresh();
 }
 bool PrivacyPage::hasUnsavedChanges() const
 {
@@ -173,6 +199,8 @@ bool PrivacyPage::hasUnsavedChanges() const
 void PrivacyPage::loadLogs(int offset)
 {
     if (m_pending != Pending::None) return;
+    if (offset == 0) m_refreshNeeded = false;
+    m_refreshTimer->stop();
     m_requestedOffset = offset;
     m_pending = Pending::Logs;
     m_status->setText(tr("正在读取采集日志…"));

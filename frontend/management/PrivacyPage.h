@@ -7,6 +7,7 @@ class QPlainTextEdit;
 class QPushButton;
 class QLabel;
 class QListWidget;
+class QTimer;
 namespace pixiu {
 class PrivacyPage : public QWidget
 {
@@ -15,10 +16,14 @@ public:
     explicit PrivacyPage(QWidget *parent, BackendTransport *transport = nullptr);
     bool hasPendingOperation() const { return m_pending != Pending::None; }
     bool hasUnsavedChanges() const;
+    void notifyDataChanged();
+protected:
+    void showEvent(QShowEvent *event) override;
 private:
     enum class Pending { None, Load, Save, Logs };
     void controls();
     void loadLogs(int offset);
+    void scheduleRefresh();
     BackendTransport *m_transport;
     QCheckBox *m_enabled, *m_directory, *m_behavior;
     QPlainTextEdit *m_directories;
@@ -29,5 +34,7 @@ private:
     Pending m_pending = Pending::None;
     bool m_loaded = false, m_more = false;
     int m_offset = 0, m_requestedOffset = 0;
+    QTimer *m_refreshTimer;
+    bool m_refreshNeeded = false;
 };
 }
