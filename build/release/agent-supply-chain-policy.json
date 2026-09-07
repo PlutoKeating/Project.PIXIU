@@ -14,6 +14,8 @@
     "frontend/management/CMakeLists.txt",
     "frontend/management/MemoryWorkspace.h",
     "frontend/management/MemoryWorkspace.cpp",
+    "frontend/management/MemoryWriteDialog.h",
+    "frontend/management/MemoryWriteDialog.cpp",
     "frontend/src/services/BackendTransport.h",
     "frontend/src/services/BackendTransport.cpp",
     "frontend/src/services/HttpBackendTransport.h",

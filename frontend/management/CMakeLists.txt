@@ -6,6 +6,7 @@ find_package(Qt5 REQUIRED COMPONENTS Widgets Network)
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1)
 add_library(pixiu-management STATIC
     MemoryWorkspace.h MemoryWorkspace.cpp
+    MemoryWriteDialog.h MemoryWriteDialog.cpp
     ../src/services/BackendTransport.h ../src/services/BackendTransport.cpp
     ../src/services/HttpBackendTransport.h ../src/services/HttpBackendTransport.cpp)
 target_include_directories(pixiu-management PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"

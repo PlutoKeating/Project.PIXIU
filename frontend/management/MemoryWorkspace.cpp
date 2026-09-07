@@ -1,4 +1,5 @@
 #include "MemoryWorkspace.h"
+#include "MemoryWriteDialog.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -39,6 +40,11 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     row->addWidget(m_query, 1);
     row->addWidget(m_scope);
     row->addWidget(m_search);
+    auto *write = new QPushButton(tr("录入记忆"), this);
+    write->setObjectName(QStringLiteral("memoryWrite"));
+    row->addWidget(write);
+    auto *writeDialog = new MemoryWriteDialog(this);
+    connect(write, &QPushButton::clicked, writeDialog, &QDialog::show);
     layout->addLayout(row);
     m_status = new QLabel(tr("输入关键词开始检索。"), this);
     m_status->setObjectName(QStringLiteral("memoryStatus"));
@@ -117,7 +123,10 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
             return;
         }
         const QJsonObject raw = evidence.value(QStringLiteral("raw")).toObject();
-        const QString body = raw.value(QStringLiteral("body")).toString(raw.value(QStringLiteral("text")).toString());
+        const QJsonValue rawBody = raw.value(QStringLiteral("body"));
+        const QString body = rawBody.isObject()
+            ? rawBody.toObject().value(QStringLiteral("text")).toString()
+            : rawBody.toString(raw.value(QStringLiteral("text")).toString());
         m_detailMeta->setText(tr("%1\n来源：%2 · 范围：%3 · 质量：%4")
             .arg(raw.value(QStringLiteral("title")).toString(tr("原始证据")),
                  evidence.value(QStringLiteral("source_type")).toString(),
