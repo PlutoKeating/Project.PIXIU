@@ -11,6 +11,7 @@ export PIXIU_PRODUCT_VERSION_FILE="${ROOT}/VERSION"
 SCRIPT="${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
 TMP="$(mktemp -d)"
 trap 'rm -rf "${TMP}"' EXIT
+export PIXIU_AGENT_BUNDLED_FILE="${TMP}/absent-bundled-marker"
 
 FAKE_BIN="${TMP}/kylin-agent-runtime"
 printf '%s\n' '#!/bin/sh' \
@@ -271,6 +272,61 @@ fi
 grep -qx 'old-provider-data' "${RESTART_AGENT}/plugins/pixiu/old.txt"
 grep -qx 'memory: old' "${RESTART_AGENT}/config.yaml"
 test ! -e "${RESTART_AGENT}/plugins/pixiu/provider.py"
+
+# Generic bundled packages own the same gateway without enabling native SDK
+# requirements or seeding a Kylin model, even if bridge files remain on disk.
+printf '1\n' > "${TMP}/bundled"
+printf '0\n' > "${TMP}/generic"
+for OUTCOME in success restart-failure; do
+    GENERIC_HOME="${TMP}/generic-${OUTCOME}"
+    GENERIC_AGENT="${GENERIC_HOME}/.kylin-agent-runtime"
+    mkdir -p "${GENERIC_AGENT}"
+    printf '%s\n' 'memory: existing' > "${GENERIC_AGENT}/config.yaml"
+    FAIL_RESTART=0
+    [ "${OUTCOME}" != restart-failure ] || FAIL_RESTART=1
+    if HOME="${GENERIC_HOME}" \
+       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+       PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
+       PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
+       PIXIU_AGENT_DEFAULT_STRICT_FILE="${TMP}/generic" \
+       PIXIU_AGENT_BUNDLED_FILE="${TMP}/bundled" \
+       PIXIU_SYSTEMCTL_BIN="${FAKE_SYSTEMCTL}" \
+       PIXIU_SYSTEMCTL_LOG="${TMP}/generic-${OUTCOME}.log" \
+       PIXIU_SYSTEMCTL_FAIL_RESTART="${FAIL_RESTART}" \
+       PIXIU_AGENT_GATEWAY_UNIT="${FAKE_UNIT}" \
+       PIXIU_KYLIN_BRIDGE_SOURCE="${FAKE_BRIDGE}" \
+       PIXIU_KYLIN_BRIDGE_UNIT="${FAKE_BRIDGE_UNIT}" \
+       "${SCRIPT}" --quiet; then
+        test "${OUTCOME}" = success
+        grep -qx 'PIXIU_AGENT_STRICT=0' "${GENERIC_AGENT}/.env"
+        test -f "${GENERIC_AGENT}/plugins/pixiu/provider.py"
+    else
+        test "${OUTCOME}" = restart-failure
+        grep -qx 'memory: existing' "${GENERIC_AGENT}/config.yaml"
+        test ! -e "${GENERIC_AGENT}/plugins/pixiu"
+        test ! -e "${GENERIC_AGENT}/.env"
+    fi
+    grep -qx -- '--user restart kylin-agent-runtime-gateway.service' \
+        "${TMP}/generic-${OUTCOME}.log"
+    ! grep -q 'pixiu-kylin-genai-bridge' "${TMP}/generic-${OUTCOME}.log"
+    ! grep -q 'config set model\.' "${GENERIC_AGENT}/runtime-call"
+    test ! -e "${GENERIC_AGENT}/.pixiu-kylin-model-seeded"
+done
+
+# Invalid markers and a strict package denying Runtime ownership fail before
+# any profile mutation, regardless of installed host/runtime availability.
+for OWNERSHIP in invalid 0; do
+    printf '%s\n' "${OWNERSHIP}" > "${TMP}/invalid-ownership"
+    if HOME="${TMP}/invalid-${OWNERSHIP}" \
+       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+       PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
+       PIXIU_AGENT_BUNDLED_FILE="${TMP}/invalid-ownership" \
+       "${SCRIPT}" --quiet >/dev/null 2>&1; then
+        echo "invalid ownership must be rejected" >&2
+        exit 1
+    fi
+    test ! -e "${TMP}/invalid-${OWNERSHIP}"
+done
 
 grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"

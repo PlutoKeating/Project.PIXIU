@@ -11,6 +11,7 @@ DEST="${PLUGIN_ROOT}/pixiu"
 MARKER="${DEST}/.pixiu-managed"
 QUIET=0
 STRICT_FILE="${PIXIU_AGENT_DEFAULT_STRICT_FILE:-/usr/share/pixiu/install-strict}"
+BUNDLED_FILE="${PIXIU_AGENT_BUNDLED_FILE:-/usr/share/pixiu/agent-bundled}"
 USER_SETUP="${PIXIU_USER_SETUP_BIN:-/usr/bin/pixiu-user-setup}"
 SYSTEMCTL="${PIXIU_SYSTEMCTL_BIN:-systemctl}"
 GATEWAY_UNIT="kylin-agent-runtime-gateway.service"
@@ -57,12 +58,25 @@ case "${DEFAULT_STRICT}" in
     *) fail "packaged strict-mode marker is invalid" 2 ;;
 esac
 
+# Package ownership is independent of native SDK requirements. Older packages
+# without this marker retain their previous strict-mode ownership semantics.
+BUNDLED="${DEFAULT_STRICT}"
+if [ -f "${BUNDLED_FILE}" ]; then
+    BUNDLED="$(tr -d '\r\n' < "${BUNDLED_FILE}")"
+fi
+case "${BUNDLED}" in
+    0|1) ;;
+    *) fail "packaged Agent ownership marker is invalid" 2 ;;
+esac
+[ "${DEFAULT_STRICT}:${BUNDLED}" != "1:0" ] \
+    || fail "native strict mode requires the packaged Agent runtime" 2
+
 # The Agent runtime is owned by the desktop user and may legitimately live in
 # ~/.local/bin. Validate it in this user-context activation step, before any
 # profile mutation, rather than in root's Debian preinst environment.
 HOST="${PIXIU_AGENT_HOST_BIN:-}"
 if [ -z "${HOST}" ]; then
-    if [ "${DEFAULT_STRICT}" = "1" ] && [ -x /usr/bin/kylin-agent ]; then
+    if [ "${BUNDLED}" = "1" ]; then
         HOST=/usr/bin/kylin-agent
     else
         HOST="$(command -v kylin-agent 2>/dev/null || true)"
@@ -73,8 +87,7 @@ fi
 
 RUNTIME="${PIXIU_AGENT_RUNTIME_BIN:-}"
 if [ -z "${RUNTIME}" ]; then
-    if [ "${DEFAULT_STRICT}" = "1" ] \
-       && [ -x /usr/bin/kylin-agent-runtime ]; then
+    if [ "${BUNDLED}" = "1" ]; then
         RUNTIME=/usr/bin/kylin-agent-runtime
     elif command -v kylin-agent-runtime >/dev/null 2>&1; then
         RUNTIME="$(command -v kylin-agent-runtime)"
@@ -117,10 +130,10 @@ managed_gateway_unit() {
 }
 
 # Reject every unsafe collision before changing the profile or user units.
-if [ "${DEFAULT_STRICT}" = "1" ]; then
+if [ "${BUNDLED}" = "1" ]; then
     [ -f "${PACKAGED_UNIT}" ] && [ ! -L "${PACKAGED_UNIT}" ] \
         || fail "packaged Agent gateway unit is missing or unsafe" 2
-    if [ -f "${BRIDGE_SOURCE}" ]; then
+    if [ "${DEFAULT_STRICT}" = "1" ] && [ -f "${BRIDGE_SOURCE}" ]; then
         [ -f "${PACKAGED_BRIDGE_UNIT}" ] && [ ! -L "${PACKAGED_BRIDGE_UNIT}" ] \
             || fail "packaged Kylin GenAI bridge unit is missing or unsafe" 2
         BRIDGE_ENABLED=1
@@ -182,7 +195,7 @@ cleanup() {
         if [ "${HAD_NATIVE_SEED}" != "1" ]; then
             rm -f -- "${NATIVE_SEED}"
         fi
-        if [ "${DEFAULT_STRICT}" = "1" ] && [ -d "${TX_ROOT}/units" ]; then
+        if [ "${BUNDLED}" = "1" ] && [ -d "${TX_ROOT}/units" ]; then
             mkdir -p "${USER_UNIT_DIR}"
             for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
                 UNIT_PATH="${USER_UNIT_DIR}/${UNIT_NAME}"
@@ -257,7 +270,7 @@ fi
 if [ -f "${NATIVE_SEED}" ]; then
     HAD_NATIVE_SEED=1
 fi
-if [ "${DEFAULT_STRICT}" = "1" ]; then
+if [ "${BUNDLED}" = "1" ]; then
     mkdir -p "${TX_ROOT}/units" "${BACKUP_DIR}"
     for UNIT_NAME in hermes-gateway.service hermes.service "${GATEWAY_UNIT}"; do
         UNIT_PATH="${USER_UNIT_DIR}/${UNIT_NAME}"
@@ -324,10 +337,10 @@ if [ "${BRIDGE_ENABLED}" = "1" ] && [ ! -f "${NATIVE_SEED}" ]; then
     chmod 0600 "${NATIVE_SEED}"
 fi
 
-# A strict release owns the complete Agent runtime. Migrate an older generated
+# A bundled release owns the complete Agent runtime. Migrate an older generated
 # per-user override out of systemd's precedence path, but retain a recoverable
 # copy under PIXIU state before activating the package-owned unit.
-if [ "${DEFAULT_STRICT}" = "1" ]; then
+if [ "${BUNDLED}" = "1" ]; then
     for LEGACY_UNIT in hermes-gateway.service hermes.service; do
         LEGACY_PATH="${USER_UNIT_DIR}/${LEGACY_UNIT}"
         [ -f "${LEGACY_PATH}" ] || continue
