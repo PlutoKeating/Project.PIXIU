@@ -47,6 +47,10 @@ patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     < "${script_dir}/patches/0007-chat-layout-follow.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     < "${script_dir}/patches/0008-pixiu-assistant-history.patch"
+patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
+    < "${script_dir}/patches/0009-optional-kylin-desktop.patch"
+install -D -m 0644 "${script_dir}/compat/pixiu_desktop.h" \
+    "${target_source}/include/utils/pixiu_desktop.h"
 cp -a "${repo_root}/integrations/kylin_agent/message_renderer" \
     "${target_source}/res/message-renderer"
 install -D -m 0644 "${script_dir}/compat/pixiu_host_compat.cpp" \

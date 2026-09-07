@@ -62,6 +62,13 @@ WebEngine 内的滚轮事件会转交外层会话滚动区，长消息中的表�
 SHA-256。任一适配输入或提交变化都会使旧宿主证据失效，严格打包必须重新构建并记录，
 不能在新候选中复用旧二进制。
 
+`patches/0009-optional-kylin-desktop.patch` 按 ADR-0006 将实际编译路径中的对话框
+接入 `compat/pixiu_desktop.h`。默认 `PIXIU_HAVE_KYSDK=ON`，使用官方 KDialog、
+KInputDialog、KMessageBox；`build-agent-host.sh` 接收 `PIXIU_KYSDK=OFF` 时，
+同一宿主改用 Qt 对话框，保留内容、输入、确认与取消语义，不提供麒麟专有标题栏样式。
+SDK 专有按钮提示仅在原生路径编译。通用 CI 编译完整宿主并测试对话框交互；这不是
+Runtime、管理模块或原生 SDK 验收，也尚未替代通用安装包中的旧前端入口。
+
 源码准备统一由 `prepare-agent-host.sh <已存在的空目录>` 执行，构建器与
 `test-agent-host-adaptation.sh` 调用同一入口。该入口验证固定提交和 submodule 洁净状态，
 拒绝非空目录或符号链接目标，不删除目标已有内容。它统一导出、应用补丁、复制自有资源

@@ -119,7 +119,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             cmake ninja-build dpkg-dev python3 \
-            qtbase5-dev libqt5websockets5-dev libqt5svg5 libqrencode-dev
+            qtbase5-dev libqt5websockets5-dev libqt5svg5-dev libqrencode-dev \
+            qtwebengine5-dev qtmultimedia5-dev zlib1g-dev pkg-config
+
+      - name: Build the same Agent host without Kylin SDK
+        env:
+          PIXIU_KYSDK: "OFF"
+        run: |
+          bash build/release/tests/test-desktop-adapter.sh
+          bash build/release/agent-host/build-agent-host.sh
 
       - uses: actions/setup-python@v7
         with:

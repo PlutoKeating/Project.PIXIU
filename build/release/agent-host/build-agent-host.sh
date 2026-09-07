@@ -16,6 +16,7 @@ bash "${script_dir}/prepare-agent-host.sh" "${output_dir}/source"
 
 cmake -S "${output_dir}/source" -B "${output_dir}/build" -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
+    -DPIXIU_HAVE_KYSDK="${PIXIU_KYSDK:-ON}" \
     -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build "${output_dir}/build" --parallel "${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 DESTDIR="${output_dir}/install" cmake --install "${output_dir}/build"
