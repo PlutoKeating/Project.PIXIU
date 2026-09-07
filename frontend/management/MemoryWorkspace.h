@@ -10,6 +10,7 @@ class QPlainTextEdit;
 class QListWidget;
 
 namespace pixiu {
+class MemoryAudit;
 // An embedded workspace: no application, tray, window lifecycle or Agent loop.
 class MemoryWorkspace : public QWidget
 {
@@ -20,6 +21,7 @@ private:
     void search();
     void clearResult();
     BackendTransport *m_transport;
+    MemoryAudit *m_audit;
     QLineEdit *m_query;
     QComboBox *m_scope;
     QPushButton *m_search;

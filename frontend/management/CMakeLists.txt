@@ -7,6 +7,7 @@ file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSIO
 add_library(pixiu-management STATIC
     MemoryWorkspace.h MemoryWorkspace.cpp
     MemoryWriteDialog.h MemoryWriteDialog.cpp
+    MemoryAudit.h MemoryAudit.cpp
     ../src/services/BackendTransport.h ../src/services/BackendTransport.cpp
     ../src/services/HttpBackendTransport.h ../src/services/HttpBackendTransport.cpp)
 target_include_directories(pixiu-management PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"

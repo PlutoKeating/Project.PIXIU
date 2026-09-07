@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
+#include "MemoryAudit.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -10,13 +11,22 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QTabWidget>
 
 namespace pixiu {
 MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     : QWidget(parent), m_transport(transport ? transport : new HttpBackendTransport(this))
 {
     setObjectName(QStringLiteral("memoryWorkspace"));
-    auto *layout = new QVBoxLayout(this);
+    auto *outer = new QVBoxLayout(this);
+    outer->setContentsMargins(0, 0, 0, 0);
+    auto *tabs = new QTabWidget(this);
+    outer->addWidget(tabs);
+    auto *queryPage = new QWidget(tabs);
+    auto *layout = new QVBoxLayout(queryPage);
+    tabs->addTab(queryPage, tr("检索与录入"));
+    m_audit = new MemoryAudit(tabs);
+    tabs->addTab(m_audit, tr("偏好与审计"));
     layout->setContentsMargins(20, 16, 20, 16);
     auto *title = new QLabel(tr("记忆工作区"), this);
     title->setObjectName(QStringLiteral("brandTitle"));
@@ -45,6 +55,8 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     row->addWidget(write);
     auto *writeDialog = new MemoryWriteDialog(this);
     connect(write, &QPushButton::clicked, writeDialog, &QDialog::show);
+    connect(writeDialog, &MemoryWriteDialog::memoryAccepted, m_audit,
+            [this](const QString &id) { m_audit->setEvidenceIds({id}); });
     layout->addLayout(row);
     m_status = new QLabel(tr("输入关键词开始检索。"), this);
     m_status->setObjectName(QStringLiteral("memoryStatus"));
@@ -90,6 +102,9 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
             auto *item = new QListWidgetItem(tr("查看来源 %1").arg(m_sources->count() + 1), m_sources);
             item->setData(Qt::UserRole, source);
         }
+        QStringList ids;
+        for (int i = 0; i < m_sources->count(); ++i) ids << m_sources->item(i)->data(Qt::UserRole).toString();
+        m_audit->setEvidenceIds(ids);
     });
     connect(m_transport, &BackendTransport::queryFailed, this,
             [this](quint64 id, const QString &, const QString &message) {
@@ -150,6 +165,7 @@ void MemoryWorkspace::clearResult()
 {
     m_request = 0;
     m_evidence.clear();
+    m_audit->setEvidenceIds({});
     m_answer->clear();
     m_sources->clear();
     m_detail->clear();

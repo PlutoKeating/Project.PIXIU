@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
+#include "MemoryAudit.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QLabel>
@@ -18,6 +19,13 @@ public:
     void evidenceDetail(const QString &id) override { evidence = id; }
     void writeMemory(const QJsonObject &payload) override { written = payload; ++writes; }
     QJsonObject written;
+    QString auditScope, historyId;
+    QJsonObject extraction;
+    int conflictRequests = 0;
+    void preferencesList(const QString &scope) override { auditScope = scope; }
+    void preferenceHistory(const QString &id) override { historyId = id; }
+    void extractPreferences(const QJsonObject &payload) override { extraction = payload; }
+    void listConflicts() override { ++conflictRequests; }
     int writes = 0;
     quint64 sequence = 0;
     QString query, evidence;
@@ -28,6 +36,39 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void auditHistoryExtractionAndErrors()
+    {
+        Transport transport;
+        pixiu::MemoryAudit audit(nullptr, &transport);
+        auto *refresh = audit.findChild<QPushButton *>("auditRefresh");
+        auto *extract = audit.findChild<QPushButton *>("auditExtract");
+        auto *records = audit.findChild<QListWidget *>("auditRecords");
+        QVERIFY(!extract->isEnabled());
+        refresh->click();
+        QVERIFY(!refresh->isEnabled());
+        emit transport.preferencesListResult({QJsonObject{{"id", "p1"}, {"key", "color"}, {"value", "blue"}}});
+        QCOMPARE(records->count(), 1);
+        records->setCurrentRow(0);
+        QCOMPARE(transport.historyId, QStringLiteral("p1"));
+        emit transport.preferenceHistoryResult({{"id", "p1"}, {"key", "color"}, {"current_version", 2},
+            {"history", QJsonArray{QJsonObject{{"version", 1}, {"value", "green"}, {"updated_at", 1700000000}}}}});
+        QVERIFY(audit.findChild<QPlainTextEdit *>("auditDetails")->toPlainText().contains("green"));
+        audit.setEvidenceIds({"e1", "e1", ""});
+        extract->click();
+        QCOMPARE(transport.extraction.value("evidence_ids").toArray(), QJsonArray{"e1"});
+        emit transport.preferenceExtractResult({{"extracted_preferences", QJsonArray{}}});
+        QVERIFY(extract->isEnabled());
+        audit.findChild<QComboBox *>("auditMode")->setCurrentIndex(1);
+        QCOMPARE(transport.conflictRequests, 1);
+        emit transport.errorOccurred("NETWORK_ERROR", "offline", "");
+        QVERIFY(audit.findChild<QLabel *>("auditStatus")->text().contains("offline"));
+        QVERIFY(refresh->isEnabled());
+        refresh->click();
+        emit transport.conflictsResult({QJsonObject{{"field", "name"}, {"old_value", "old"}, {"new_value", "new"}, {"resolution", "kept"}}});
+        records->setCurrentRow(0);
+        QVERIFY(audit.findChild<QPlainTextEdit *>("auditDetails")->toPlainText().contains("old"));
+        QVERIFY(!extract->isEnabled());
+    }
     void writeRetainsInputAndRetriesIdempotently()
     {
         Transport transport;
