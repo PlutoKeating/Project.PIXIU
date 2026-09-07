@@ -46,6 +46,7 @@ from pathlib import Path
 import sys
 source = Path(sys.argv[1]).read_text()
 assert 'app.setApplicationDisplayName("PIXIU")' in source, 'product display name is overwritten'
+assert 'app.setWindowIcon(QIcon(":/pixiu.svg"))' in source, 'host icon differs from installed product icon'
 assert 'window.setWindowTitle("KylinAgent")' not in source, 'startup overrides the product window title'
 assert 'app.setApplicationName("KylinAgent")' in source, 'persistent application identity must be preserved'
 assert 'app.setOrganizationName("KylinAgent")' in source, 'persistent organization identity must be preserved'
@@ -86,7 +87,9 @@ grep -q 'event: hermes.tool.progress' "${fixture}/source/src/services/pixiu_host
     grep -q 'hermes.tool.progress' "${fixture}/source/src/services/pixiu_host_compat.cpp"
 grep -q 'emit streamDetailEvent' "${fixture}/source/src/services/pixiu_host_compat.cpp"
 grep -q 'emit segmentBoundary' "${fixture}/source/src/services/pixiu_host_compat.cpp"
-grep -q 'PIXIU · KylinAgent' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q 'setWindowTitle(QStringLiteral("PIXIU"))' "${fixture}/source/src/ui/mainwindow.cpp"
+cmp "${repo_root}/frontend/resources/icons/pixiu.svg" "${fixture}/source/res/pixiu.svg"
+grep -q '<file alias="pixiu.svg">pixiu.svg</file>' "${fixture}/source/res/res.qrc"
 grep -q '分布式记忆工作台' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q '选择云端模型' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q '麒灵系统云模型' "${fixture}/source/src/services/modelservice.cpp"

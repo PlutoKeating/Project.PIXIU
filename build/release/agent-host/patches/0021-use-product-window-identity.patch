@@ -1,0 +1,16 @@
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -84,1 +84,1 @@
+-    app.setWindowIcon(QIcon(":/ai-agent.png"));
++    app.setWindowIcon(QIcon(":/pixiu.svg"));
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -34,1 +34,1 @@
+-    setWindowTitle(QStringLiteral("PIXIU · KylinAgent"));
++    setWindowTitle(QStringLiteral("PIXIU"));
+--- a/res/res.qrc
++++ b/res/res.qrc
+@@ -3,2 +3,3 @@
+     <qresource prefix="/">
++        <file alias="pixiu.svg">pixiu.svg</file>
+         <!-- PNG icons -->

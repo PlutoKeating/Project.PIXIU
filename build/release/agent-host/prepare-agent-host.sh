@@ -71,6 +71,10 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
     < "${script_dir}/patches/0019-own-active-control-theme.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${script_dir}/patches/0020-guard-deferred-theme-repaint.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0021-use-product-window-identity.patch"
+install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
+    "${target_source}/res/pixiu.svg"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
     management/MemoryScopes.h \
     management/HostCloseGuard.h management/HostCloseGuard.cpp \
