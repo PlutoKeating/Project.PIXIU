@@ -125,4 +125,19 @@ grep -q 'QRegularExpression' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q -- '--hide' "${repo_root}/build/release/agent-host/build-agent-host.sh"
 ! grep -q -- 'kylin-agent.*--version' "${repo_root}/build/release/agent-host/build-agent-host.sh"
 
+python3 - "${fixture}/source/src/ui/mainwindow.cpp" <<'PY'
+import pathlib
+import sys
+
+source = pathlib.Path(sys.argv[1]).read_text()
+assert source.count('workspaces->addTab(') == 4
+assert 'new pixiu::DevicePage(workspaces)' in source
+assert 'new pixiu::SettingsWorkspace(workspaces)' in source
+settings = source.split('void MainWindow::openSettings()', 1)[1].split('\n}', 1)[0]
+assert 'workspaces->setCurrentIndex(3)' in settings
+assert 'dialog.exec()' not in settings
+session = source.split('void MainWindow::loadSession(', 1)[1].split('\n}', 1)[0]
+assert 'workspaces->setCurrentIndex(0)' in session
+PY
+
 echo "agent host adaptation tests: OK"

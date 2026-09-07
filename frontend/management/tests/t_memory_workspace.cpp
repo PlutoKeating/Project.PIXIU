@@ -5,6 +5,8 @@
 #include "DevicePage.h"
 #include "DeliveryPage.h"
 #include "ForgetPage.h"
+#include "SettingsWorkspace.h"
+#include <QTabWidget>
 #include "PairingDialog.h"
 #include <QMessageBox>
 #include <QTimer>
@@ -69,6 +71,21 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void settingsOwnPrivacyAndUpgradeOutsideMemory()
+    {
+        QWidget host;
+        pixiu::SettingsWorkspace settings(&host);
+        pixiu::MemoryWorkspace memory(&host);
+        QVERIFY(!settings.isWindow());
+        QVERIFY(settings.findChild<pixiu::PrivacyPage *>());
+        QVERIFY(settings.findChild<QPushButton *>("productUpdates"));
+        QVERIFY(!memory.findChild<pixiu::PrivacyPage *>());
+        QVERIFY(!memory.findChild<pixiu::DevicePage *>());
+        QVERIFY(!memory.findChild<QPushButton *>("productUpdates"));
+        QSignalSpy requested(&settings, &pixiu::SettingsWorkspace::agentSettingsRequested);
+        settings.findChild<QPushButton *>("agentSettings")->click();
+        QCOMPARE(requested.count(), 1);
+    }
     void forgettingRequiresFreshScopedPreview()
     {
         Transport transport;

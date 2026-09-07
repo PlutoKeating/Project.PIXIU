@@ -1,12 +1,8 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryAudit.h"
-#include "PrivacyPage.h"
-#include "DevicePage.h"
 #include "DeliveryPage.h"
 #include "ForgetPage.h"
-#include "widgets/CheckUpdateDialog.h"
-#include <QCoreApplication>
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -42,28 +38,9 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     });
     m_audit = new MemoryAudit(tabs);
     tabs->addTab(m_audit, tr("偏好与审计"));
-    tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
-    tabs->addTab(new DevicePage(tabs), tr("设备与同步"));
     auto *forget = new ForgetPage(tabs);
     tabs->addTab(forget, tr("安全遗忘"));
     connect(forget, &ForgetPage::memoryForgotten, this, &MemoryWorkspace::clearResult);
-    auto *about = new QWidget(tabs);
-    auto *aboutLayout = new QVBoxLayout(about);
-    auto *version = new QLabel(tr("PIXIU %1").arg(QStringLiteral(PIXIU_VERSION)), about);
-    version->setObjectName(QStringLiteral("productVersion"));
-    aboutLayout->addWidget(version);
-    auto *description = new QLabel(tr("PIXIU 记忆系统与 openKylin Agent 集成。升级前请保存正在进行的工作；安装和健康检查成功后，由您选择重启整个应用。"), about);
-    description->setWordWrap(true);
-    aboutLayout->addWidget(description);
-    auto *updates = new QPushButton(tr("检查更新"), about);
-    updates->setObjectName(QStringLiteral("productUpdates"));
-    aboutLayout->addWidget(updates);
-    aboutLayout->addStretch();
-    auto *upgrade = new UpgradeController(this);
-    auto *updateDialog = new CheckUpdateDialog(upgrade, this);
-    connect(updates, &QPushButton::clicked, updateDialog, &CheckUpdateDialog::showAndCheck);
-    connect(upgrade, &UpgradeController::restartScheduled, QCoreApplication::instance(), &QCoreApplication::quit);
-    tabs->addTab(about, tr("版本与升级"));
     layout->setContentsMargins(20, 16, 20, 16);
     auto *title = new QLabel(tr("记忆工作区"), this);
     title->setObjectName(QStringLiteral("brandTitle"));

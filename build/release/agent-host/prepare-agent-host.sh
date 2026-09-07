@@ -53,6 +53,8 @@ patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     --fuzz=0 < "${script_dir}/patches/0010-embedded-memory-workspace.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${script_dir}/patches/0011-product-application-version.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0012-unified-workspace-navigation.patch"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
     management/MemoryAudit.h management/MemoryAudit.cpp \
@@ -61,6 +63,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/PairingDialog.h management/PairingDialog.cpp \
     management/DeliveryPage.h management/DeliveryPage.cpp \
     management/ForgetPage.h management/ForgetPage.cpp \
+    management/SettingsWorkspace.h management/SettingsWorkspace.cpp \
     src/app/UpgradeController.h src/app/UpgradeController.cpp src/app/UpgradeUtils.h src/app/UpgradeUtils.cpp \
     src/widgets/CheckUpdateDialog.h src/widgets/CheckUpdateDialog.cpp src/app/UiTokens.h \
     src/services/BackendTransport.h src/services/BackendTransport.cpp \

@@ -1,0 +1,22 @@
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -9,1 +9,3 @@
+-#include "MemoryWorkspace.h"
++#include "MemoryWorkspace.h"
++#include "DevicePage.h"
++#include "SettingsWorkspace.h"
+@@ -109,1 +111,8 @@
+-    workspaces->addTab(new pixiu::MemoryWorkspace(workspaces), tr("记忆"));
++    workspaces->addTab(new pixiu::MemoryWorkspace(workspaces), tr("记忆"));
++    workspaces->addTab(new pixiu::DevicePage(workspaces), tr("设备"));
++    auto *settings = new pixiu::SettingsWorkspace(workspaces);
++    workspaces->addTab(settings, tr("设置"));
++    connect(settings, &pixiu::SettingsWorkspace::agentSettingsRequested, this, [this]() {
++        SettingsDialog dialog(this);
++        dialog.exec();
++    });
+@@ -140,2 +149,2 @@
+-    SettingsDialog dialog(this);
+-    dialog.exec();
++    if (auto *workspaces = findChild<QTabWidget *>(QStringLiteral("pixiuWorkspaces")))
++        workspaces->setCurrentIndex(3);
