@@ -25,6 +25,8 @@
     "build/release/agent-host/patches/0020-guard-deferred-theme-repaint.patch",
     "build/release/agent-host/patches/0021-use-product-window-identity.patch",
     "frontend/resources/icons/pixiu.svg",
+    "frontend/management/AgentEvidence.h",
+    "frontend/management/AgentEvidence.cpp",
     "frontend/management/MemoryWorkspace.h",
     "frontend/management/MemoryWorkspace.cpp",
     "frontend/management/MemoryWriteDialog.h",

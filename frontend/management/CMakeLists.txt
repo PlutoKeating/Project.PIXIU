@@ -10,6 +10,7 @@ if(NOT PIXIU_QRENCODE_INCLUDE_DIR OR NOT PIXIU_QRENCODE_LIBRARY)
 endif()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1)
 add_library(pixiu-management STATIC
+    AgentEvidence.h AgentEvidence.cpp
     MemoryScopes.h
     HostCloseGuard.h HostCloseGuard.cpp
     MemoryWorkspace.h MemoryWorkspace.cpp
@@ -38,6 +39,9 @@ option(PIXIU_MANAGEMENT_TESTS "Build embedded management tests" OFF)
 if(PIXIU_MANAGEMENT_TESTS)
     enable_testing()
     find_package(Qt5 REQUIRED COMPONENTS Test)
+    add_executable(t_agent_evidence tests/t_agent_evidence.cpp)
+    target_link_libraries(t_agent_evidence PRIVATE pixiu-management Qt5::Test)
+    add_test(NAME agent_evidence COMMAND t_agent_evidence)
     # Run through the Python harness, which owns the backend and temporary data.
     add_executable(t_memory_edit_live tests/t_memory_edit_live.cpp)
     target_link_libraries(t_memory_edit_live PRIVATE pixiu-management Qt5::Test)
