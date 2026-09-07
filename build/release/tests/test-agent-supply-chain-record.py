@@ -44,6 +44,12 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
         )
 
     def test_records_artifact_backed_documents_accepted_by_auditor(self) -> None:
+        self.check_target("kylin-v11")
+
+    def test_generic_evidence_cannot_satisfy_native_audit(self) -> None:
+        self.check_target("generic-debian")
+
+    def check_target(self, target_os: str) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             work = Path(temporary)
             evidence, inputs = work / "evidence", work / "inputs"
@@ -58,6 +64,7 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
             result = self.run_record(
                 evidence,
                 "host-build",
+                "--target-os", target_os,
                 "--target-arch", "amd64",
                 "--artifact", str(artifact),
                 "--source-archive", str(source),
@@ -101,6 +108,7 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
             result = self.run_record(
                 evidence,
                 "runtime-wheelhouse",
+                "--target-os", target_os,
                 "--target-arch", "amd64",
                 "--python-abi", "cp311",
                 "--wheelhouse", str(wheels),
@@ -132,7 +140,7 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
 
             audit = work / "audit.json"
             subprocess.run(
-                ["python3", str(AUDITOR), "--root", str(ROOT), "--evidence-dir", str(evidence), "--output", str(audit)],
+                ["python3", str(AUDITOR), "--root", str(ROOT), "--evidence-dir", str(evidence), "--output", str(audit), "--expected-os", target_os],
                 check=True,
             )
             report = json.loads(audit.read_text(encoding="utf-8"))
@@ -145,6 +153,28 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
                 or blocker == "empty-agent-notice"
             }
             self.assertEqual(evidence_blockers, set())
+            self.assertEqual(report["expected_os"], target_os)
+            if target_os == "generic-debian":
+                subprocess.run(
+                    ["python3", str(AUDITOR), "--root", str(ROOT), "--evidence-dir", str(evidence), "--output", str(audit)],
+                    check=True,
+                )
+                native = json.loads(audit.read_text(encoding="utf-8"))
+                self.assertFalse(native["ready"])
+                self.assertFalse(native["evidence"]["host_build"]["valid"])
+                self.assertFalse(native["evidence"]["runtime_wheelhouse"]["valid"])
+                host_path = evidence / "agent-host-build.json"
+                mixed_host = json.loads(host_path.read_text(encoding="utf-8"))
+                mixed_host["target_os"] = "kylin-v11"
+                host_path.write_text(json.dumps(mixed_host), encoding="utf-8")
+                subprocess.run(
+                    ["python3", str(AUDITOR), "--root", str(ROOT), "--evidence-dir", str(evidence),
+                     "--output", str(audit), "--expected-os", "generic-debian"], check=True,
+                )
+                mixed = json.loads(audit.read_text(encoding="utf-8"))
+                self.assertFalse(mixed["evidence"]["host_build"]["valid"])
+                self.assertTrue(mixed["evidence"]["runtime_wheelhouse"]["valid"])
+                self.assertFalse(mixed["ready"])
 
     def test_rejects_authenticated_url_in_log(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

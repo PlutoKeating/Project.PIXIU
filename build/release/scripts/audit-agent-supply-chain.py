@@ -167,10 +167,12 @@ def valid_target(
     document: dict[str, Any],
     policy: dict[str, Any],
     expected_arch: str | None = None,
+    expected_os: str | None = None,
 ) -> bool:
     architecture = str(document.get("target_arch", ""))
     return (
-        document.get("target_os") == policy["target_os"]
+        document.get("target_os") == (expected_os or policy["target_os"])
+        and document.get("target_os") in policy.get("supported_target_os", [policy["target_os"]])
         and bool(ARCHITECTURE.fullmatch(architecture))
         and architecture in policy["target_architectures"]
         and (expected_arch is None or architecture == expected_arch)
@@ -211,6 +213,7 @@ def validate_evidence(
     policy: dict[str, Any],
     expected_arch: str | None = None,
     root: Path | None = None,
+    expected_os: str | None = None,
 ) -> list[str]:
     blockers: list[str] = []
     host_item = evidence["host_build"]
@@ -226,7 +229,7 @@ def validate_evidence(
                 and host.get("adaptation_inputs") == host_adaptation_inputs(root, policy)
                 and host.get("source_commit")
                 == policy["components"]["kylin_agent"]["source_commit"]
-                and valid_target(host, policy, expected_arch)
+                and valid_target(host, policy, expected_arch, expected_os)
                 and host.get("rebuild_verified") is True
                 and host.get("network_access_during_build") is False
                 and verified_file(
@@ -284,7 +287,7 @@ def validate_evidence(
                 == runtime_adaptation_inputs(root, policy)
                 and wheelhouse.get("source_commit")
                 == policy["components"]["agent_runtime"]["source_commit"]
-                and valid_target(wheelhouse, policy, expected_arch)
+                and valid_target(wheelhouse, policy, expected_arch, expected_os)
                 and bool(str(wheelhouse.get("python_abi", "")).strip())
                 and wheelhouse.get("offline_install_verified") is True
                 and wheelhouse.get("network_access_during_install") is False
@@ -466,6 +469,7 @@ def audit(
     policy_path: Path,
     evidence_dir: Path,
     expected_arch: str | None = None,
+    expected_os: str | None = None,
 ) -> dict[str, Any]:
     policy = read_json(policy_path)
     components = {
@@ -501,7 +505,7 @@ def audit(
 
     evidence = load_evidence(evidence_dir, policy["evidence"])
     blockers.extend(validate_evidence(
-        evidence_dir, evidence, policy, expected_arch, root=root
+        evidence_dir, evidence, policy, expected_arch, root=root, expected_os=expected_os
     ))
     blockers = sorted(set(blockers))
     try:
@@ -516,6 +520,7 @@ def audit(
         "evidence_class": "agent-supply-chain-audit",
         "release_commit": release_commit,
         "expected_arch": expected_arch,
+        "expected_os": expected_os or policy["target_os"],
         "status": "pass" if not blockers else "fail",
         "ready": not blockers,
         "policy": policy_path.relative_to(root).as_posix(),
@@ -550,6 +555,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--require-ready", action="store_true")
     parser.add_argument("--expected-arch", choices=("amd64", "arm64"))
+    parser.add_argument("--expected-os", choices=("kylin-v11", "generic-debian"))
     args = parser.parse_args()
     root = args.root.resolve()
     policy = (args.policy or root / "build/release/agent-supply-chain-policy.json").resolve()
@@ -557,7 +563,7 @@ def main() -> int:
         args.evidence_dir
         or root / "build/release/evidence/agent-supply-chain"
     ).resolve()
-    report = audit(root, policy, evidence, args.expected_arch)
+    report = audit(root, policy, evidence, args.expected_arch, args.expected_os)
     rendered = json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if args.output:
         output = args.output.resolve()

@@ -135,7 +135,7 @@ def timestamp() -> str:
 
 
 def target(args: argparse.Namespace, policy: dict[str, Any]) -> dict[str, str]:
-    if args.target_os != policy["target_os"]:
+    if args.target_os not in policy.get("supported_target_os", [policy["target_os"]]):
         raise ValueError("target OS does not match policy")
     if args.target_arch not in policy["target_architectures"]:
         raise ValueError("target architecture does not match policy")
