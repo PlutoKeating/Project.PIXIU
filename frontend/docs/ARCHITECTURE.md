@@ -259,6 +259,10 @@ PIXIU 前端
 
 ### 6.6 应用内安全升级
 
+升级与重启辅助脚本归属 `build/release/debian/usr/lib/pixiu/`，随整包安装到
+`/usr/lib/pixiu/install-update` 和 `/usr/lib/pixiu/restart-client`。前端只调用安装后的
+固定接口，不再在 `frontend/scripts/` 持有副本；移除旧应用外壳不得删除这些整包能力。
+
 > 当前实现提供一键下载安装、Ed25519 独立签名校验和安装后健康判定；最终交付还必须按
 > `docs/DELIVERY_PLAN.md` 增加完整组件兼容矩阵。可信备份/失败回滚已通过双架构 CI
 > 与 Kylin V11 amd64 跨 revision 故障注入；成功后的受控客户端重启也已实现并经

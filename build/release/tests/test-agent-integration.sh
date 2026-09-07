@@ -305,6 +305,6 @@ grep -q 'usr/share/pixiu/install-strict' "${ROOT}/build/release/scripts/build-de
 grep -q 's/@PRODUCT_VERSION@/' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'backend=runtime-injected' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'backend.foundation.api.install_health' \
-    "${ROOT}/frontend/scripts/install-update"
+    "${ROOT}/build/release/debian/usr/lib/pixiu/install-update"
 
 echo "agent integration packaging tests: OK"

@@ -1,4 +1,5 @@
 #!/bin/sh
+# Maintained with the complete PIXIU package, independent of the UI shell.
 # Privileged upgrade boundary: copy the unprivileged download into a root-only
 # file, verify that immutable copy, and only then pass it to dpkg.
 set -eu

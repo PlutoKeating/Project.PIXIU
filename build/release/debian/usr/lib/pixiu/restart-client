@@ -1,4 +1,5 @@
 #!/bin/sh
+# Maintained with the complete PIXIU package, independent of the UI shell.
 # Wait for the upgraded PIXIU client to release its single-instance socket,
 # then start the newly installed client. This helper always runs unprivileged.
 set -eu

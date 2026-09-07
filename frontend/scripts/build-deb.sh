@@ -59,7 +59,7 @@ sed -e "s/@VERSION@/${product_version}/g" \
     "${control_template}" > "${stage}/DEBIAN/control"
 install -m 0755 "${postinst}" "${stage}/DEBIAN/postinst"
 mkdir -p "${stage}/usr/lib/pixiu"
-install -m 0755 "${ROOT}/scripts/install-update" \
+install -m 0755 "${ROOT}/../build/release/debian/usr/lib/pixiu/install-update" \
     "${stage}/usr/lib/pixiu/install-update"
 
 mkdir -p "${DIST_DIR}"

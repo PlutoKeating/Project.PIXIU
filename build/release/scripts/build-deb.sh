@@ -360,9 +360,9 @@ if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
 fi
 install -m 0755 "${PIXIU_RELEASE_DIR}/scripts/migrate-system-data.py" \
     "${STAGE}/usr/lib/pixiu/migrate-system-data"
-install -m 0755 "${PIXIU_ROOT}/frontend/scripts/install-update" \
+install -m 0755 "${DEB_SRC}/usr/lib/pixiu/install-update" \
     "${STAGE}/usr/lib/pixiu/install-update"
-install -m 0755 "${PIXIU_ROOT}/frontend/scripts/restart-client" \
+install -m 0755 "${DEB_SRC}/usr/lib/pixiu/restart-client" \
     "${STAGE}/usr/lib/pixiu/restart-client"
 
 # ── 5/5 dpkg 打包 ──────────────────────────────────────────────
