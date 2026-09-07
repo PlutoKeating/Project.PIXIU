@@ -65,26 +65,14 @@
 > 聊天框按住空白区域拖动，位置经 `keyWindowGeometry` 持久化并在启动时
 > 恢复（屏幕可用区域钳制）；`t_chat_window` 新增 1 例，套件 27 例全绿
 > （OFF/ON 双路径）。
-> 统一 UI/UX Polish 基线（2026-08-09）已完成：设计令牌（UiTokens：语义色/
-> 14-11-9pt 字号/间距/圆角/统一危险按钮）、全局 QSS 控件状态、主题感知
-> 图标（悬浮球网络标记/设置齿轮）、角标弹入呼吸与思考骨架屏、聊天框可
-> 拉伸与记忆面板尺寸复核；OFF/ON 双路径回归通过，离屏渲染核对截图见
-> `docs/screenshots/ui-polish-2026-08-09/`，逐项状态与剩余人工复测/后端
-> 阻塞项见 `UI_UX_POLISH.md`。
+> 视觉验收以唯一 Agent 宿主及内嵌管理工作区为对象；旧图库已删除，不能作为
+> 当前产品基线。主题、图标、焦点及布局的实际状态和待验收项见 `UI_UX_POLISH.md`。
 > 周期健康探测（2026-08-09，健壮性收尾）已完成：`HttpBackendTransport`
 > 独立静默周期探测（GET /conflicts，默认 10s），后端中途挂掉/事后启动时
 > 顶栏状态与离线引导无需用户操作即自动刷新；新增 `t_http_backend`，
 > 套件 28 例 OFF/ON 全绿，本机真实 UKUI 桌面验证通过（详见 §6.3）。
-> 侧边浮窗主视觉统一（2026-08-10）已完成：聊天主窗口改为窄高侧边 AI 助手
-> 形态（默认 380×640、最小 320×480），顶栏 Logo + 状态胶囊，消息区欢迎
-> 空态（三个快捷动作，消息到达/清空自动切换），输入区圆角卡片 + 高亮色
-> 胶囊发送；`ThemeService` 浅/深双套设计系统调色（浅色白/极浅灰，深色
-> 深灰蓝，Highlight 跟随 UKUI），`styles.qss` 全面弱边框化，圆角令牌更新
-> （窗口 16 / 卡片 10 / 气泡 12）；记忆面板留白 12px。新增 `t_chat_window`
-> 3 例并更新记忆面板断言，套件 28 例 OFF/ON 双路径全绿，i18n 162 条
-> 0 未完成；离屏渲染核对截图 `docs/screenshots/ui-sidebar-2026-08-10/`。
-> 参考截图未随需求进入工作区，按需求文字执行视觉方向，待参考图补充后可
-> 逐项微调（详见 `UI_UX_POLISH.md` 2026-08-10 Round 5）。
+> 独立侧边浮窗不再作为产品方向；正式导航为会话、记忆、设备、设置。旧侧边窗
+> 截图已删除，新的完整操作图库尚待真实安装包重拍，不宣称已经交付。
 
 ## 1. 当前进度摘要
 
@@ -787,7 +775,7 @@ ON 冒烟                  offscreen 启动：PIXIU application started；
                           （radius 12）、全局快捷键注册/更新日志正常
 主题实时跟随              ukui-dark -> ukui-light：restored system palette
                           (light theme)；切回 ukui-dark：applied UKUI dark
-                          palette；桌面截图留存（/tmp/pixiu-verified-*.png）
+                          palette；旧临时截图不作为现行验收证据
 回归确认                  OFF/ON 双路径 configure/build 通过；ctest 20/20
 ```
 
@@ -804,11 +792,11 @@ t_import_dialog           新增 5 例：OK 按钮门控、确认载荷与清空
 第二实例激活              第二实例 exit=1；主实例日志 "activation requested
                           by secondary instance"；wmctrl 出现两个 PIXIU
                           窗口（悬浮球 + 聊天框）
-                          （截图 /tmp/pixiu-phase8-04-second-activation.png）
+                          （旧截图不作为现行唯一宿主证据）
 通知弹窗                  测试专用 WS 桩（scripts/ws_smoke_server.py）驱动
                           memory_ready："memory ready: knw_smoke_001" +
                           "kysdk notification sent, id: 5"
-                          （截图 /tmp/pixiu-phase8-05-notification.png）
+                          （旧截图不作为现行通知验收证据）
 窗口阴影                  "UKUI window shadow applied, radius: 12" +
                           聊天框截图供人工确认视觉效果
 快捷键按键触发            注册 API 成功、dconf 配置正确（custom0 的
@@ -1048,8 +1036,7 @@ HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉�
 测试                    OFF/ON 双路径 ctest 28/28 通过（t_chat_window /
                         t_memory_panel / t_forget_dialog / t_revoke_dialog
                         扩展）；offscreen 冒烟无回归
-截图                    离屏核对截图 frontend/docs/screenshots/
-                        ui-polish-round2-2026-08-10/（12 张，offscreen）
+截图                    旧图已撤下；正式宿主需重新截图验收
 提交                    feat(frontend): unify pointer/focus states and
                         stabilize chat top bar
                         feat(frontend): focus cancel on danger dialogs and
@@ -1078,8 +1065,7 @@ HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉�
                         名省略 1 例；t_settings_dialog / t_pair_dialog /
                         t_forget_dialog / t_revoke_dialog 指针光标断言）；
                         offscreen 冒烟无回归，cursor QSS 警告清零
-截图                    离屏核对截图 frontend/docs/screenshots/
-                        ui-polish-round3-2026-08-10/（4 张，offscreen）
+截图                    旧图已撤下；正式宿主需重新截图验收
 桌面复验                 本机实时 UKUI 会话 xcb 启动：主题/托盘/阴影/英文
                         i18n/离线引导/健康探测无回归；会话为 Wayland 合成器，
                         wmctrl 不可枚举窗口（真实桌面截图按 offscreen 记录）
@@ -1098,7 +1084,7 @@ HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉�
 覆盖        悬浮球/角标/右键菜单、聊天（空/思考/答案+证据/失败重试/输入区）、
             MemoryPanel（偏好/冲突/同步 的加载/已加载/空/失败重试）、配对/解绑/
             遗忘/录入/设置对话框、系统通知（冲突检测/记忆已沉淀）、浅色+深色主题
-截图        真实桌面截图 frontend/docs/screenshots/ui-demo-2026-08-10/（36 张）
+截图        旧演示图库已撤下；不得作为当前产品展示
 限制        Wayland 合成器下 UKUI 面板不渲染托盘图标，托盘菜单以悬浮球右键
             菜单等价展示；其余人工复测/后端契约阻塞项维持原记录
 提交        feat(frontend): add demo stub server for visual UI demos
