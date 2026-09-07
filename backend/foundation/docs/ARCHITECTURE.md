@@ -104,6 +104,11 @@ class ConflictRepository(ABC): ...
 
 ### 1.2 api/ —— API 网关
 
+`GET /memory/items/{knowledge_id}` 为管理编辑返回完整 ACTIVE 快照，强制显式 scope
+精确匹配；不存在、范围错误、已替代或遗忘均返回 404。只调用仓储读取，不生成证据、
+不访问向量或同步服务；返回版本用于既有 `/memory/update` 的乐观锁，不能充当锁定。
+无新增依赖、数据迁移或原生 SDK 调用，接口沿用现有本机 HTTP 访问边界。
+
 `/forget` 确认必须使用预览生成的一次性凭证，绑定 command、scope、目标 ID/版本；
 该不兼容变更由 HTTP API 0.5.0 标识，Agent Memory 生命周期接口仍为 v1。
 凭证在异步执行前消费，过期/缺失/不匹配拒绝，目标漂移映射为 409。进程内凭证

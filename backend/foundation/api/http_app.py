@@ -563,6 +563,27 @@ async def memory_write(
         raise
 
 
+@app.get("/memory/items/{knowledge_id}", tags=["Memory"], summary="读取待编辑记忆")
+async def memory_item(
+    knowledge_id: str = Path(pattern=r"^knw_[A-Za-z0-9_-]{8,128}$"),
+    scope: str = Query(pattern=r"^(user|shared):[A-Za-z0-9._-]+$", max_length=256),
+    knowledge_repo=Depends(get_knowledge_repo),
+):
+    """Read a complete active snapshot; callers must use its version for updates."""
+    item = await knowledge_repo.get(knowledge_id)
+    if item is None or item.scope != scope or item.status != KnowledgeStatus.ACTIVE:
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    return {
+        "knowledge_id": item.id,
+        "scope": item.scope,
+        "version": item.version,
+        "title": item.title,
+        "body": item.body,
+        "evidence_ids": item.evidence_ids,
+        "updated_at": item.updated_at,
+    }
+
+
 @app.post("/memory/update", tags=["Memory"], summary="更新既有记忆")
 async def memory_update(
     body: MemoryUpdateRequest,

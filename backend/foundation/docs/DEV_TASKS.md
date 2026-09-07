@@ -113,6 +113,10 @@ git submodule update --init --recursive
 
 ### api/ —— API 网关
 
+管理编辑新增 `GET /memory/items/{knowledge_id}?scope=...` 完整快照读取。
+API 回归覆盖长正文/嵌套数据不截断、读取不改变数据库、范围必填与非 ACTIVE 隐藏，
+以及读取后被另一更新抢先提交时拒绝陈旧版本。此接口不代表桌面编辑交互已接入。
+
 HTTP API 当前为 0.5.0：遗忘确认强制预览凭证，与旧无凭证调用不兼容；Provider
 握手只接受 0.5.x。此版本不同于根产品 VERSION 和 Agent Memory API v1，不得在
 发布探针或兼容夹具中混用。无新增依赖或数据库迁移。

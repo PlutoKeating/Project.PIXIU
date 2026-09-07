@@ -1325,6 +1325,70 @@ def _write_knowledge_id(client, *, title: str, scope: str) -> str:
     return knowledge_id
 
 
+def test_memory_item_reads_complete_versioned_snapshot_without_writes(client):
+    knowledge_id = _write_knowledge_id(
+        client, title="editable full snapshot", scope="user:alice"
+    )
+    complete_body = {"text": "完整正文" * 5000, "nested": {"items": [1, False, None]}}
+    with sqlite3.connect(di_module.settings.db_path) as connection:
+        connection.execute(
+            "UPDATE knowledge_items SET body = ? WHERE id = ?",
+            (json.dumps(complete_body), knowledge_id),
+        )
+        before = list(connection.iterdump())
+    response = client.get(f"/memory/items/{knowledge_id}", params={"scope": "user:alice"})
+    assert response.status_code == 200
+    assert response.json() == {
+        "knowledge_id": knowledge_id,
+        "scope": "user:alice",
+        "version": 1,
+        "title": "editable full snapshot",
+        "body": complete_body,
+        "evidence_ids": response.json()["evidence_ids"],
+        "updated_at": response.json()["updated_at"],
+    }
+    assert response.json()["evidence_ids"]
+    with sqlite3.connect(di_module.settings.db_path) as connection:
+        assert list(connection.iterdump()) == before
+
+
+def test_memory_item_requires_scope_and_hides_unavailable_records(client):
+    knowledge_id = _write_knowledge_id(
+        client, title="scoped edit target", scope="user:alice"
+    )
+    url = f"/memory/items/{knowledge_id}"
+    assert client.get(url).status_code == 400
+    assert client.get(url, params={"scope": "all"}).status_code == 400
+    for scope in ("user:bob", "shared:home"):
+        response = client.get(url, params={"scope": scope})
+        assert response.status_code == 404
+        assert response.json()["error"] == "NOT_FOUND"
+    assert client.get("/memory/items/knw_nonexistent", params={"scope": "user:alice"}).status_code == 404
+    assert client.get("/memory/items/not-a-knowledge-id", params={"scope": "user:alice"}).status_code == 400
+    for status in ("SUPERSEDED", "FORGOTTEN"):
+        with sqlite3.connect(di_module.settings.db_path) as connection:
+            connection.execute("UPDATE knowledge_items SET status = ? WHERE id = ?", (status, knowledge_id))
+        response = client.get(url, params={"scope": "user:alice"})
+        assert response.status_code == 404
+        assert response.json()["error"] == "NOT_FOUND"
+
+
+def test_memory_item_snapshot_version_rejects_intervening_update(client):
+    knowledge_id = _write_knowledge_id(client, title="snapshot race target", scope="user:alice")
+    url = f"/memory/items/{knowledge_id}"
+    snapshot = client.get(url, params={"scope": "user:alice"}).json()
+    payload = {"knowledge_id": knowledge_id, "scope": snapshot["scope"],
+               "expected_version": snapshot["version"], "title": "first editor",
+               "idempotency_key": "snapshot-first"}
+    assert client.post("/memory/update", json=payload).status_code == 200
+    stale = client.post("/memory/update", json={**payload, "title": "stale editor", "idempotency_key": "snapshot-stale"})
+    assert stale.status_code == 409
+    assert stale.json()["error"] == "VERSION_CONFLICT"
+    current = client.get(url, params={"scope": "user:alice"}).json()
+    assert current["version"] == snapshot["version"] + 1
+    assert current["title"] == "first editor"
+
+
 def test_memory_update_reindexes_and_replays_completed_request(client):
     knowledge_id = _write_knowledge_id(
         client, title="update target alpha", scope="user:alice"

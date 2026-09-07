@@ -53,6 +53,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 | GET | `/capabilities` | 平台与双 SDK 的配置/实际运行能力 | ✅ 已实现（不含主机、网络、路径信息） |
 | POST | `/memory/write` | 写入一条记忆 | ✅ 已实现 |
 | POST | `/memory/update` | 原子乐观锁更新既有记忆并重建图/向量 | ✅ 已实现（HTTP API 0.3.0） |
+| GET | `/memory/items/{knowledge_id}?scope=...` | 按明确范围读取完整 ACTIVE 记忆及编辑版本 | ✅ 已实现 |
 | POST | `/memory/query` | 混合检索（BM25+ANN+Graph） | ✅ 已实现（2026-08-10） |
 | POST | `/agent/context` | Agent 轮次的预算化、可追溯安全上下文 | ✅ 已实现（scope/敏感过滤/freshness/冲突状态） |
 | POST | `/agent/lifecycle` | 持久化 Agent 生命周期短/中期上下文 | ✅ 基础事件接入（六类事件、幂等、服务端选层） |
@@ -231,6 +232,14 @@ Agent 对话轮次使用独立来源，关联信息不得混入 `raw`：
 ```
 
 ### 3.1a POST /memory/update
+
+编辑前使用 `GET /memory/items/{knowledge_id}?scope=user:local` 读取完整快照。
+`scope` 必填，格式为 `user:...` 或 `shared:...`，必须与记录完全相同；不存在、范围
+不匹配及非 ACTIVE 均返回 `404 NOT_FOUND`，参数非法返回 `400 INVALID_REQUEST`。
+成功返回 `knowledge_id`、`scope`、`version`、`title`、完整结构化 `body`、
+`evidence_ids` 和 `updated_at`；不截断正文、不产生写入、向量或同步副作用。
+此接口沿用本机 HTTP 服务边界，scope 校验不是独立身份认证。读取后仍可能发生并发
+更新，必须将快照 `version` 作为下述 `expected_version`，不得用召回 context 代替正文。
 
 保持同一 `knowledge_id` 更新既有 ACTIVE 记忆，同时重建实体关系与向量，并为更新
 新增一条可追溯 evidence。`expected_version` 由存储层单条条件更新原子校验：两个离线节点可从同一版本
