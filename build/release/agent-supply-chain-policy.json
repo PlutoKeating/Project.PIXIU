@@ -29,6 +29,8 @@
     "build/release/agent-host/patches/0024-single-host-tray.patch",
     "frontend/management/HostTray.h",
     "frontend/management/HostTray.cpp",
+    "frontend/src/app/ShortcutManager.h",
+    "frontend/src/app/ShortcutManager.cpp",
     "frontend/management/BackendEventStatus.h",
     "frontend/management/BackendEventStatus.cpp",
     "frontend/src/services/WebSocketClient.h",

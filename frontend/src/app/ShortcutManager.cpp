@@ -14,7 +14,7 @@ Q_LOGGING_CATEGORY(lcShortcut, "pixiu.shortcut")
 namespace {
 #ifdef PIXIU_HAVE_KYSDK
 // 系统级全局快捷键名称：全局唯一，用于创建/更新/删除。
-const char kToggleShortcutName[] = "pixiu-frontend.toggle-chat";
+const char kToggleShortcutName[] = "pixiu.activate";
 #endif
 
 } // namespace
@@ -32,6 +32,7 @@ ShortcutManager::~ShortcutManager()
 
 bool ShortcutManager::registerToggleShortcut(const QKeySequence &sequence)
 {
+    releaseToggleShortcut();
     m_sequence = sequence.isEmpty()
                      ? QKeySequence(QStringLiteral("Ctrl+Alt+P"))
                      : sequence;
@@ -67,7 +68,9 @@ QKeySequence ShortcutManager::currentSequence() const
 void ShortcutManager::releaseToggleShortcut()
 {
 #ifdef PIXIU_HAVE_KYSDK
-    const int result = kdk_shortcut_delete_global_shortcut(kToggleShortcutName);
+    const int result = m_globalRegistered ? kdk_shortcut_delete_global_shortcut(kToggleShortcutName)
+                                          : KYSDK_SHORTCUT_NOT_EXISTS;
+    m_globalRegistered = false;
     if (result == KYSDK_SUCCESS) {
         qCInfo(lcShortcut) << "removed Kylin global shortcut" << kToggleShortcutName;
     } else if (result != KYSDK_SHORTCUT_NOT_EXISTS && result != KYSDK_SHORTCUT_NAME_ERROR) {
@@ -95,6 +98,7 @@ bool ShortcutManager::registerKylinGlobalShortcut()
                                                      key.constData(),
                                                      action.constData());
     if (result == KYSDK_SUCCESS) {
+        m_globalRegistered = true;
         qCInfo(lcShortcut) << "registered Kylin global shortcut" << key.constData()
                            << "->" << action.constData();
         return true;
@@ -106,6 +110,7 @@ bool ShortcutManager::registerKylinGlobalShortcut()
                                                   key.constData(),
                                                   action.constData());
         if (result == KYSDK_SUCCESS) {
+            m_globalRegistered = true;
             qCInfo(lcShortcut) << "updated existing Kylin global shortcut" << key.constData();
             return true;
         }

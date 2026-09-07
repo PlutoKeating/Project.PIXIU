@@ -22,6 +22,7 @@ private slots:
     void activationEmitsToggleRequested();
     void releaseDisablesActivation();
     void releaseIsIdempotent();
+    void reregisterReplacesOldBinding();
 };
 
 void TestShortcutManager::registerToggleShortcutSucceeds()
@@ -109,6 +110,25 @@ void TestShortcutManager::releaseIsIdempotent()
     manager.releaseToggleShortcut();
     manager.releaseToggleShortcut();
     QVERIFY(true);
+}
+
+void TestShortcutManager::reregisterReplacesOldBinding()
+{
+    QWidget context;
+    context.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&context));
+    ShortcutManager manager(&context);
+    QVERIFY(manager.registerToggleShortcut());
+    QVERIFY(manager.registerToggleShortcut(QKeySequence(QStringLiteral("Ctrl+Alt+K"))));
+    QVERIFY(!manager.isGlobal());
+    QSignalSpy spy(&manager, &ShortcutManager::toggleRequested);
+    QTest::keyClick(&context, Qt::Key_P, Qt::ControlModifier | Qt::AltModifier);
+    QCOMPARE(spy.count(), 0);
+    QTest::keyClick(&context, Qt::Key_K, Qt::ControlModifier | Qt::AltModifier);
+    QCOMPARE(spy.count(), 1);
+    manager.releaseToggleShortcut();
+    QTest::keyClick(&context, Qt::Key_K, Qt::ControlModifier | Qt::AltModifier);
+    QCOMPARE(spy.count(), 1);
 }
 
 QTEST_MAIN(TestShortcutManager)

@@ -1,4 +1,5 @@
 #include "HostTray.h"
+#include "app/ShortcutManager.h"
 #include <QAction>
 #include <QMenu>
 #include <QSystemTrayIcon>
@@ -21,6 +22,11 @@ HostTray::HostTray(QWidget *host) : QObject(host)
         host->activateWindow();
     };
     connect(show, &QAction::triggered, this, restore);
+    auto *shortcut = new ShortcutManager(host, this);
+    connect(shortcut, &ShortcutManager::toggleRequested, this, restore);
+    shortcut->registerToggleShortcut();
+    show->setText(shortcut->isGlobal() ? tr("显示 PIXIU（Ctrl+Alt+P，全局）")
+                                    : tr("显示 PIXIU（Ctrl+Alt+P，仅应用内）"));
     connect(quit, &QAction::triggered, this, [host, restore]() {
         restore();
         host->close(); // HostCloseGuard owns pending work and unsaved draft checks.

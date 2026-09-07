@@ -11,6 +11,7 @@ endif()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1)
 add_library(pixiu-management STATIC
     HostTray.h HostTray.cpp
+    ../src/app/ShortcutManager.h ../src/app/ShortcutManager.cpp
     BackendEventStatus.h BackendEventStatus.cpp
     ../src/services/WebSocketClient.h ../src/services/WebSocketClient.cpp
     AgentEvidence.h AgentEvidence.cpp
@@ -39,10 +40,29 @@ target_compile_definitions(pixiu-management PRIVATE PIXIU_VERSION="${PIXIU_MANAG
 target_link_libraries(pixiu-management PUBLIC Qt5::Widgets Qt5::Network Qt5::WebSockets)
 target_include_directories(pixiu-management PRIVATE "${PIXIU_QRENCODE_INCLUDE_DIR}")
 target_link_libraries(pixiu-management PRIVATE "${PIXIU_QRENCODE_LIBRARY}")
+if(PIXIU_HAVE_KYSDK)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(PIXIU_SHORTCUT REQUIRED IMPORTED_TARGET kysdk-shortcut)
+    target_compile_definitions(pixiu-management PRIVATE PIXIU_HAVE_KYSDK=1)
+    target_link_libraries(pixiu-management PRIVATE PkgConfig::PIXIU_SHORTCUT)
+endif()
 option(PIXIU_MANAGEMENT_TESTS "Build embedded management tests" OFF)
 if(PIXIU_MANAGEMENT_TESTS)
     enable_testing()
     find_package(Qt5 REQUIRED COMPONENTS Test)
+    # Deterministic fallback tests must not register desktop-global bindings.
+    add_executable(t_shortcut_manager ../tests/t_shortcut_manager.cpp ../src/app/ShortcutManager.cpp)
+    target_include_directories(t_shortcut_manager PRIVATE ../src)
+    target_link_libraries(t_shortcut_manager PRIVATE Qt5::Widgets Qt5::Test)
+    target_compile_options(t_shortcut_manager PRIVATE -UPIXIU_HAVE_KYSDK)
+    add_test(NAME shortcut_manager COMMAND t_shortcut_manager)
+    set_tests_properties(shortcut_manager PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(t_shortcut_kylin ../tests/t_shortcut_kylin.cpp ../src/app/ShortcutManager.cpp)
+    target_include_directories(t_shortcut_kylin PRIVATE ../tests/fixtures ../src)
+    target_compile_definitions(t_shortcut_kylin PRIVATE PIXIU_HAVE_KYSDK=1)
+    target_link_libraries(t_shortcut_kylin PRIVATE Qt5::Widgets Qt5::Test)
+    add_test(NAME shortcut_kylin_fixture COMMAND t_shortcut_kylin)
+    set_tests_properties(shortcut_kylin_fixture PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     add_executable(t_backend_events tests/t_backend_events.cpp)
     target_link_libraries(t_backend_events PRIVATE pixiu-management Qt5::Test)
     add_test(NAME backend_events COMMAND t_backend_events)
