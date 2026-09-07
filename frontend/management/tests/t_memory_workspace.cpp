@@ -2,6 +2,9 @@
 #include "MemoryWriteDialog.h"
 #include "MemoryAudit.h"
 #include "PrivacyPage.h"
+#include "DevicePage.h"
+#include <QMessageBox>
+#include <QTimer>
 #include <QCheckBox>
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
@@ -24,6 +27,15 @@ public:
     QString auditScope, historyId;
     QJsonObject extraction;
     int conflictRequests = 0;
+    int statusReads = 0, peerReads = 0, discoveries = 0;
+    QJsonObject syncSettings;
+    QString revoked;
+    void syncStatus() override { ++statusReads; }
+    void listPeers() override { ++peerReads; }
+    void discoverDevices() override { ++discoveries; }
+    void updateSyncSettings(bool enabled, bool paused) override
+    { syncSettings = {{"enabled", enabled}, {"paused", paused}}; }
+    void revokePeer(const QString &id) override { revoked = id; }
     QJsonObject savedConfig;
     int configReads = 0, configWrites = 0;
     int logOffset = -1;
@@ -44,6 +56,80 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void deviceSettingsAndTrustRequireEvidence()
+    {
+        Transport transport;
+        pixiu::DevicePage page(nullptr, &transport);
+        auto *save = page.findChild<QPushButton *>("deviceSave");
+        auto *refresh = page.findChild<QPushButton *>("deviceRefresh");
+        auto *revoke = page.findChild<QPushButton *>("deviceRevoke");
+        auto *peers = page.findChild<QListWidget *>("devicePeers");
+        auto *status = page.findChild<QLabel *>("deviceStatus");
+        QVERIFY(!save->isEnabled());
+        refresh->click();
+        QCOMPARE(transport.statusReads, 1);
+        emit transport.syncStatusResult({{"enabled", true}});
+        QVERIFY(!save->isEnabled());
+        QVERIFY(status->text().contains("不完整"));
+        refresh->click();
+        emit transport.syncStatusResult({{"enabled", true}, {"paused", false}, {"domain", "shared:home"},
+            {"peers_total", 2}, {"pending_outgoing_ops", 1}, {"total_ops_synced", 3}});
+        QCOMPARE(transport.peerReads, 1);
+        QVERIFY(!save->isEnabled());
+        emit transport.peersResult({{"peers", QJsonArray{
+            QJsonObject{{"id", "self"}, {"name", "This device"}, {"is_self", true}, {"status", "ONLINE"}},
+            QJsonObject{{"id", "peer"}, {"name", "Example peer"}, {"is_self", false}, {"status", "OFFLINE"}}}}});
+        QCOMPARE(peers->count(), 2);
+        QVERIFY(save->isEnabled());
+        peers->setCurrentRow(0);
+        QVERIFY(!revoke->isEnabled());
+        peers->setCurrentRow(1);
+        QVERIFY(revoke->isEnabled());
+        QTimer::singleShot(0, &page, [&page]() {
+            auto *box = page.findChild<QMessageBox *>();
+            QVERIFY(box);
+            QCOMPARE(box->defaultButton(), box->button(QMessageBox::No));
+            box->done(QMessageBox::No);
+        });
+        revoke->click();
+        QVERIFY(transport.revoked.isEmpty());
+        QTimer::singleShot(0, &page, [&page]() { page.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        revoke->click();
+        QCOMPARE(transport.revoked, QStringLiteral("peer"));
+        QVERIFY(!revoke->isEnabled());
+        emit transport.revokeResult({{"status", "revoked"}, {"peer_id", "wrong-peer"}});
+        QVERIFY(status->text().contains("不匹配"));
+        QCOMPARE(peers->count(), 2);
+        page.findChild<QCheckBox *>("devicePaused")->setChecked(true);
+        save->click();
+        QVERIFY(transport.syncSettings.value("paused").toBool());
+        emit transport.errorOccurred("TIMEOUT", "offline", "");
+        QVERIFY(!save->isEnabled());
+        QVERIFY(page.findChild<QCheckBox *>("devicePaused")->isChecked());
+        QVERIFY(refresh->isEnabled());
+    }
+    void deviceDiscoveryDistinguishesEmptyAndInvalid()
+    {
+        Transport transport;
+        pixiu::DevicePage page(nullptr, &transport);
+        auto *discover = page.findChild<QPushButton *>("deviceDiscover");
+        auto *records = page.findChild<QListWidget *>("deviceDiscovered");
+        auto *status = page.findChild<QLabel *>("deviceStatus");
+        discover->click();
+        QCOMPARE(transport.discoveries, 1);
+        QVERIFY(!discover->isEnabled());
+        emit transport.devicesLoaded({{"devices", QJsonArray{}}});
+        QVERIFY(status->text().contains("服务也可能未运行"));
+        discover->click();
+        emit transport.devicesLoaded({{"status", "not_implemented"}});
+        QVERIFY(status->text().contains("不完整"));
+        discover->click();
+        emit transport.devicesLoaded({{"devices", QJsonArray{QJsonObject{
+            {"device_id", "example"}, {"device_name", "Example"}, {"paired", false}}}}});
+        QCOMPARE(records->count(), 1);
+        QVERIFY(records->item(0)->text().contains("尚无本地信任"));
+        QVERIFY(status->text().contains("不代表"));
+    }
     void privacyPreservesUnavailableSourcesAndFailedEdits()
     {
         Transport transport;

@@ -57,6 +57,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
     management/MemoryAudit.h management/MemoryAudit.cpp \
     management/PrivacyPage.h management/PrivacyPage.cpp \
+    management/DevicePage.h management/DevicePage.cpp \
     src/app/UpgradeController.h src/app/UpgradeController.cpp src/app/UpgradeUtils.h src/app/UpgradeUtils.cpp \
     src/widgets/CheckUpdateDialog.h src/widgets/CheckUpdateDialog.cpp src/app/UiTokens.h \
     src/services/BackendTransport.h src/services/BackendTransport.cpp \

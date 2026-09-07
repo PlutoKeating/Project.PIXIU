@@ -20,6 +20,8 @@
     "frontend/management/MemoryAudit.cpp",
     "frontend/management/PrivacyPage.h",
     "frontend/management/PrivacyPage.cpp",
+    "frontend/management/DevicePage.h",
+    "frontend/management/DevicePage.cpp",
     "build/release/agent-host/patches/0011-product-application-version.patch",
     "frontend/src/app/UpgradeController.h",
     "frontend/src/app/UpgradeController.cpp",

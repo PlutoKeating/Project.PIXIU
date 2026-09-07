@@ -2,6 +2,7 @@
 #include "MemoryWriteDialog.h"
 #include "MemoryAudit.h"
 #include "PrivacyPage.h"
+#include "DevicePage.h"
 #include "widgets/CheckUpdateDialog.h"
 #include <QCoreApplication>
 #include "services/HttpBackendTransport.h"
@@ -31,6 +32,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_audit = new MemoryAudit(tabs);
     tabs->addTab(m_audit, tr("偏好与审计"));
     tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
+    tabs->addTab(new DevicePage(tabs), tr("设备与同步"));
     auto *about = new QWidget(tabs);
     auto *aboutLayout = new QVBoxLayout(about);
     auto *version = new QLabel(tr("PIXIU %1").arg(QStringLiteral(PIXIU_VERSION)), about);
