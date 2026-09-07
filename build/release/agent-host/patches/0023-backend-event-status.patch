@@ -1,13 +1,14 @@
 --- a/src/ui/mainwindow.cpp
 +++ b/src/ui/mainwindow.cpp
-@@ -9,1 +9,5 @@
+@@ -9,1 +9,6 @@
 -#include "MemoryWorkspace.h"
 +#include "MemoryWorkspace.h"
 +#include "BackendEventStatus.h"
 +#include "MemoryAudit.h"
 +#include "PrivacyPage.h"
++#include "DeliveryPage.h"
 +#include "services/HttpBackendTransport.h"
-@@ -102,1 +106,17 @@
+@@ -102,1 +107,21 @@
 -    auto *workspaces = new QTabWidget(central);
 +    auto *workspaces = new QTabWidget(central);
 +    HttpBackendTransport eventConfiguration;
@@ -24,5 +25,9 @@
 +        }
 +        if (name == "reconnected" || name == "capture_event") {
 +            for (auto *privacy : central->findChildren<pixiu::PrivacyPage *>()) privacy->notifyDataChanged();
++        }
++        if (name == "reconnected" || name == "memory_ready" || name == "forget_confirmation"
++            || name == "sync_event" || name == "capture_event" || name == "conflict_detected") {
++            for (auto *delivery : central->findChildren<pixiu::DeliveryPage *>()) delivery->notifyDataChanged();
 +        }
 +    });

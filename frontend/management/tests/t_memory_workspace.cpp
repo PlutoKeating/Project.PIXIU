@@ -775,6 +775,40 @@ private slots:
         emit transport.forgetResult({{"status", "forgotten"}, {"forgotten_ids", QJsonArray{"k1"}}});
         QCOMPARE(forgotten.count(), 1);
     }
+    void deliveryEventsDiscardPendingContentAndKeepHistoricalDate()
+    {
+        Transport transport;
+        pixiu::DeliveryPage page(nullptr, &transport);
+        auto *date = page.findChild<QDateEdit *>("deliveryDate");
+        auto *digest = page.findChild<QPushButton *>("deliveryDigest");
+        auto *insights = page.findChild<QPushButton *>("deliveryInsights");
+        auto *body = page.findChild<QPlainTextEdit *>("deliveryBody");
+        auto *items = page.findChild<QListWidget *>("deliveryItems");
+        date->setDate(QDate(2024, 2, 29));
+        digest->click();
+        page.notifyDataChanged();
+        QVERIFY(page.hasPendingOperation());
+        QVERIFY(!digest->isEnabled());
+        emit transport.digestResult({{"date", "2024-02-29"}, {"summary", "obsolete"}});
+        QVERIFY(!page.hasPendingOperation());
+        QVERIFY(body->toPlainText().isEmpty());
+        QCOMPARE(date->date(), QDate(2024, 2, 29));
+        QCOMPARE(transport.digestReads, 1);
+        digest->click();
+        emit transport.digestResult({{"date", "2024-02-29"}, {"summary", "fresh"}});
+        QVERIFY(body->toPlainText().contains("fresh"));
+        insights->click();
+        page.notifyDataChanged();
+        emit transport.insightsResult({QJsonObject{{"title", "old"}, {"summary", "old"},
+            {"knowledge_id", "knw_old"}, {"score", 0.9}}});
+        QCOMPARE(items->count(), 0);
+        QVERIFY(body->toPlainText().isEmpty());
+        QVERIFY(!page.findChild<QPushButton *>("deliverySearch")->isEnabled());
+        QCOMPARE(transport.insightReads, 1);
+        QCOMPARE(transport.digestReads, 2);
+        QCOMPARE(transport.writes, 0);
+        QCOMPARE(date->date(), QDate(2024, 2, 29));
+    }
     void deliveryDistinguishesErrorsAndSupportsSearch()
     {
         Transport transport;

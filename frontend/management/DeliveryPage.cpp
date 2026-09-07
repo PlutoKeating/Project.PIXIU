@@ -21,6 +21,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     insights->setObjectName(QStringLiteral("deliveryInsights"));
     layout->addWidget(insights);
     auto *items = new QListWidget(this);
+    m_items = items;
     items->setObjectName(QStringLiteral("deliveryItems"));
     items->setWordWrap(true);
     items->setAccessibleName(tr("记忆洞察候选"));
@@ -41,10 +42,12 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     digest->setObjectName(QStringLiteral("deliveryDigest"));
     layout->addWidget(digest);
     auto *body = new QPlainTextEdit(this);
+    m_body = body;
     body->setObjectName(QStringLiteral("deliveryBody"));
     body->setReadOnly(true);
     layout->addWidget(body, 1);
     auto *status = new QLabel(tr("请选择读取洞察或简报。"), this);
+    m_status = status;
     status->setObjectName(QStringLiteral("deliveryStatus"));
     status->setTextFormat(Qt::PlainText);
     status->setWordWrap(true);
@@ -68,6 +71,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     connect(insights, &QPushButton::clicked, this, [=]() {
         if (m_pending != None) return;
         m_pending = Insights;
+        m_invalidated = false;
         items->clear();
         status->setText(tr("正在读取洞察…"));
         controls();
@@ -76,6 +80,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     connect(digest, &QPushButton::clicked, this, [=]() {
         if (m_pending != None) return;
         m_pending = Digest;
+        m_invalidated = false;
         m_digestDate = datePicker->date().toString(Qt::ISODate);
         body->clear();
         status->setText(tr("正在读取简报…"));
@@ -85,6 +90,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     connect(http, &BackendTransport::insightsResult, this, [=](const QJsonArray &result) {
         if (m_pending != Insights) return;
         m_pending = None;
+        if (m_invalidated) { controls(); return; }
         for (const auto &value : result) {
             const auto item = value.toObject();
             if (item.value("title").toString().isEmpty() || !item.value("summary").isString()
@@ -105,6 +111,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     connect(http, &BackendTransport::digestResult, this, [=](const QJsonObject &result) {
         if (m_pending != Digest) return;
         m_pending = None;
+        if (m_invalidated) { controls(); return; }
         const auto date = result.value("date").toString();
         if (!QDate::fromString(date, Qt::ISODate).isValid() || !result.value("summary").isString()) {
             status->setText(tr("简报响应不完整，请重试。"));
@@ -119,9 +126,18 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     connect(http, &BackendTransport::errorOccurred, this, [=](const QString &, const QString &message, const QString &) {
         if (m_pending == None) return;
         m_pending = None;
+        if (m_invalidated) { controls(); return; }
         status->setText(tr("读取失败：%1。可重试。未将错误显示为空数据。").arg(message));
         controls();
     });
     controls();
+}
+void DeliveryPage::notifyDataChanged()
+{
+    if (m_pending == None && m_items->count() == 0 && m_body->toPlainText().isEmpty()) return;
+    m_invalidated = true;
+    m_items->clear();
+    m_body->clear();
+    m_status->setText(tr("记忆或采集数据已变化，旧洞察与简报已清除。请重新读取；所选日期已保留。"));
 }
 }

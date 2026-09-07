@@ -189,6 +189,7 @@ assert 'audit->notifyDataChanged()' in source
 assert 'devices->notifyDataChanged()' in source
 assert 'privacy->notifyDataChanged()' in source
 assert 'memory->notifyDataChanged()' in source
+assert 'delivery->notifyDataChanged()' in source
 assert 'new pixiu::SettingsWorkspace(workspaces)' in source
 settings = source.split('void MainWindow::openSettings()', 1)[1].split('\n}', 1)[0]
 assert 'workspaces->setCurrentIndex(3)' in settings
