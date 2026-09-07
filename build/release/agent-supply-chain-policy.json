@@ -19,6 +19,7 @@
     "build/release/agent-host/patches/0014-guard-host-close.patch",
     "build/release/agent-host/patches/0015-protect-agent-work-on-close.patch",
     "build/release/agent-host/patches/0016-preserve-product-display-name.patch",
+    "build/release/agent-host/patches/0017-own-workspace-theme-background.patch",
     "frontend/management/MemoryWorkspace.h",
     "frontend/management/MemoryWorkspace.cpp",
     "frontend/management/MemoryWriteDialog.h",

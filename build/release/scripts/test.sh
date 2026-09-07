@@ -30,6 +30,7 @@ PYTHONDONTWRITEBYTECODE=1 "${PIXIU_PYTHON:-python3}" "${PIXIU_ROOT}/build/releas
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-lock.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-branding.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-host-adaptation.sh"
+bash "${PIXIU_ROOT}/build/release/tests/test-agent-host-theme.sh"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-message-renderer-assets.py"
 "${PIXIU_PYTHON:-python3}" \

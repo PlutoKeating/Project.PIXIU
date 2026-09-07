@@ -10,3 +10,4 @@ c++ -std=c++17 -fPIC \
     "${qt_flags[@]}" -o "${fixture}/desktop-adapter-test"
 QT_QPA_PLATFORM=offscreen "${fixture}/desktop-adapter-test"
 echo "portable desktop adapter interactions: OK"
+bash "${repo_root}/build/release/tests/test-agent-host-theme.sh"

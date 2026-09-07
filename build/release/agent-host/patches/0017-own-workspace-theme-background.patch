@@ -1,0 +1,10 @@
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -337,6 +337,7 @@
+     QString globalStyleSheet = QStringLiteral(R"(
+         QWidget {
+             color: %4;
++            background-color: %1;
+             font-family: "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+             font-size: 14px;
+         }
