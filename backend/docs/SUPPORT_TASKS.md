@@ -89,12 +89,12 @@ git submodule update --init --recursive
 > Module C 已交付 `foundation/scripts/phase7_pressure.py`（1000 次压测证据生成器，
 > 产出 `foundation/evidence/` 报告），本岗位无需重复实现。
 
-2026-09-06 已采集 v0.1.8 的 22 张 V11 同版实拍图，见
-[截图素材索引](../../submission/00-原始记录/截图素材索引.md)。工具安全检查运行
+正式截图当前待重新采集，失效素材已从交付目录移除，见
+[截图素材索引](../../submission/00-原始记录/截图素材索引.md)。空清单不是交付通过；工具安全检查运行
 `python3 -m unittest discover -s backend/scripts/tests -v`（7 项）。
 全屏截图使用 libvirt 原始帧，区域截图只限定真实采集范围；不拼接、重绘或伪造结果。
 原生 Wayland 的文本输入须检查实际字段，不能假定 X11 剪贴板已经跨协议同步。
-本次只补充图文素材，不代表三设备、OCR、全部缩放或 GUI 升级矩阵完成。
+采集工具测试不代表三设备、OCR、全部缩放或 GUI 升级矩阵完成。
 
 ### 2. 测试数据集
 
