@@ -10,6 +10,7 @@ add_library(pixiu-management STATIC
     MemoryAudit.h MemoryAudit.cpp
     PrivacyPage.h PrivacyPage.cpp
     DevicePage.h DevicePage.cpp
+    PairingDialog.h PairingDialog.cpp
     ../src/app/UpgradeController.h ../src/app/UpgradeController.cpp
     ../src/app/UpgradeUtils.h ../src/app/UpgradeUtils.cpp
     ../src/widgets/CheckUpdateDialog.h ../src/widgets/CheckUpdateDialog.cpp

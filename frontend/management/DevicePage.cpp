@@ -1,4 +1,5 @@
 #include "DevicePage.h"
+#include "PairingDialog.h"
 #include "services/HttpBackendTransport.h"
 #include <QCheckBox>
 #include <QHBoxLayout>
@@ -45,6 +46,18 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     m_revoke = new QPushButton(tr("解除所选设备的本地信任…"), this);
     m_revoke->setObjectName(QStringLiteral("deviceRevoke"));
     layout->addWidget(m_revoke);
+    auto *pair = new QPushButton(tr("交换配对令牌…"), this);
+    pair->setObjectName(QStringLiteral("devicePair"));
+    layout->addWidget(pair);
+    auto *pairing = new PairingDialog(this);
+    connect(pair, &QPushButton::clicked, this, [pairing]() {
+        pairing->show();
+        pairing->raise();
+        pairing->activateWindow();
+    });
+    connect(pairing, &PairingDialog::localTrustEstablished, this, [this]() {
+        m_status->setText(tr("配对页已建立本地信任，请刷新节点；对端信任及实际传输仍须核对。"));
+    });
     m_discover = new QPushButton(tr("读取附近设备广播"), this);
     m_discover->setObjectName(QStringLiteral("deviceDiscover"));
     layout->addWidget(m_discover);

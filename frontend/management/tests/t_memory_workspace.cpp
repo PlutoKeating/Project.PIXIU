@@ -3,6 +3,7 @@
 #include "MemoryAudit.h"
 #include "PrivacyPage.h"
 #include "DevicePage.h"
+#include "PairingDialog.h"
 #include <QMessageBox>
 #include <QTimer>
 #include <QCheckBox>
@@ -30,6 +31,10 @@ public:
     int statusReads = 0, peerReads = 0, discoveries = 0;
     QJsonObject syncSettings;
     QString revoked;
+    QJsonObject tokenRequest, pairRequest;
+    int pairCalls = 0;
+    void createPairingToken(const QJsonObject &payload) override { tokenRequest = payload; }
+    void pairDevice(const QJsonObject &payload) override { pairRequest = payload; ++pairCalls; }
     void syncStatus() override { ++statusReads; }
     void listPeers() override { ++peerReads; }
     void discoverDevices() override { ++discoveries; }
@@ -56,6 +61,66 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void pairingMatchesMethodsAndPreservesFailedInput()
+    {
+        Transport transport;
+        pixiu::PairingDialog dialog(nullptr, &transport);
+        auto *method = dialog.findChild<QComboBox *>("pairingMethod");
+        auto *localPin = dialog.findChild<QLineEdit *>("pairingLocalPin");
+        auto *remotePin = dialog.findChild<QLineEdit *>("pairingRemotePin");
+        auto *localToken = dialog.findChild<QPlainTextEdit *>("pairingLocalToken");
+        auto *remoteToken = dialog.findChild<QPlainTextEdit *>("pairingRemoteToken");
+        auto *generate = dialog.findChild<QPushButton *>("pairingGenerate");
+        auto *submit = dialog.findChild<QPushButton *>("pairingSubmit");
+        QVERIFY(!generate->isEnabled());
+        localPin->setText("012345");
+        generate->click();
+        QCOMPARE(transport.tokenRequest.value("method").toString(), QStringLiteral("PIN"));
+        QCOMPARE(transport.tokenRequest.value("pin").toString(), QStringLiteral("012345"));
+        QVERIFY(!method->isEnabled());
+        emit transport.pairingTokenResult({{"token", "local-token"}, {"method", "PIN"}, {"ttl_seconds", 300}});
+        QCOMPARE(localToken->toPlainText(), QStringLiteral("local-token"));
+        auto *expiry = dialog.findChild<QTimer *>("pairingExpiry");
+        QVERIFY(expiry->isActive());
+        QVERIFY(QMetaObject::invokeMethod(expiry, "timeout", Qt::DirectConnection));
+        QVERIFY(localToken->toPlainText().isEmpty());
+        remoteToken->setPlainText("remote-token");
+        QVERIFY(!submit->isEnabled());
+        remotePin->setText("654321");
+        submit->click();
+        QCOMPARE(transport.pairCalls, 1);
+        QCOMPARE(transport.pairRequest.value("pin").toString(), QStringLiteral("654321"));
+        submit->click();
+        QCOMPARE(transport.pairCalls, 1);
+        dialog.reject();
+        QCOMPARE(remoteToken->toPlainText(), QStringLiteral("remote-token"));
+        emit transport.errorOccurred("PAIRING_FAILED", "expired", "");
+        QCOMPARE(remoteToken->toPlainText(), QStringLiteral("remote-token"));
+        QVERIFY(submit->isEnabled());
+        method->setCurrentIndex(1);
+        QVERIFY(!remotePin->isEnabled());
+        generate->click();
+        QCOMPARE(transport.tokenRequest.value("method").toString(), QStringLiteral("QR"));
+        QVERIFY(!transport.tokenRequest.contains("pin"));
+        emit transport.pairingTokenResult({{"token", "wrong-method"}, {"method", "PIN"}, {"ttl_seconds", 300}});
+        QVERIFY(localToken->toPlainText().isEmpty());
+        submit->click();
+        QCOMPARE(transport.pairRequest.value("method").toString(), QStringLiteral("QR"));
+        QVERIFY(!transport.pairRequest.contains("pin"));
+        QSignalSpy trusted(&dialog, &pixiu::PairingDialog::localTrustEstablished);
+        emit transport.pairResult({{"status", "paired"}});
+        QCOMPARE(trusted.count(), 0);
+        QCOMPARE(remoteToken->toPlainText(), QStringLiteral("remote-token"));
+        submit->click();
+        emit transport.pairResult({{"status", "paired"}, {"peer_id", "example"}, {"domain", "shared:home"}});
+        QCOMPARE(trusted.count(), 1);
+        QVERIFY(remoteToken->toPlainText().isEmpty());
+        QVERIFY(dialog.findChild<QLabel *>("pairingStatus")->text().contains("实际传输尚未验证"));
+        localPin->setText("123456");
+        dialog.reject();
+        QVERIFY(localPin->text().isEmpty());
+        QVERIFY(remotePin->text().isEmpty());
+    }
     void deviceSettingsAndTrustRequireEvidence()
     {
         Transport transport;
