@@ -112,6 +112,12 @@ void HttpBackendTransport::listConflicts()
             });
 }
 
+void HttpBackendTransport::reviewedForget(const QJsonObject &payload)
+{
+    postJson(QStringLiteral("/forget"), payload,
+             [this](quint64, const QJsonObject &obj) { emit forgetResult(obj); });
+}
+
 void HttpBackendTransport::preferenceHistory(const QString &preferenceId)
 {
     getJson(QStringLiteral("/preference/") + preferenceId + QStringLiteral("/history"),

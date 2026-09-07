@@ -4,6 +4,7 @@
 #include "PrivacyPage.h"
 #include "DevicePage.h"
 #include "DeliveryPage.h"
+#include "ForgetPage.h"
 #include "PairingDialog.h"
 #include <QMessageBox>
 #include <QTimer>
@@ -35,6 +36,9 @@ public:
     QJsonObject tokenRequest, pairRequest;
     int pairCalls = 0;
     int insightReads = 0, digestReads = 0;
+    QJsonObject forgetPayload;
+    int forgetCalls = 0;
+    void reviewedForget(const QJsonObject &payload) override { forgetPayload = payload; ++forgetCalls; }
     void deliveryInsights() override { ++insightReads; }
     void deliveryDigest() override { ++digestReads; }
     void createPairingToken(const QJsonObject &payload) override { tokenRequest = payload; }
@@ -65,6 +69,49 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void forgettingRequiresFreshScopedPreview()
+    {
+        Transport transport;
+        pixiu::ForgetPage page(nullptr, &transport);
+        auto *command = page.findChild<QLineEdit *>("forgetCommand");
+        auto *preview = page.findChild<QPushButton *>("forgetPreview");
+        auto *confirm = page.findChild<QPushButton *>("forgetConfirm");
+        QVERIFY(!confirm->isEnabled());
+        command->setText("forget example");
+        preview->click();
+        QVERIFY(!transport.forgetPayload.value("confirm").toBool());
+        QCOMPARE(transport.forgetPayload.value("scope").toString(), QStringLiteral("user:local"));
+        const QJsonObject response{{"targets", QJsonArray{QJsonObject{{"id", "k1"}, {"version", 1},
+            {"title", "Example"}, {"scope", "user:local"}}}}, {"confirmation_token", "token"}, {"expires_in_seconds", 120}};
+        emit transport.forgetResult(response);
+        QVERIFY(confirm->isEnabled());
+        command->setText("changed");
+        QVERIFY(!confirm->isEnabled());
+        preview->click();
+        emit transport.forgetResult(response);
+        QVERIFY(QMetaObject::invokeMethod(page.findChild<QTimer *>("forgetExpiry"), "timeout", Qt::DirectConnection));
+        QVERIFY(!confirm->isEnabled());
+        preview->click();
+        emit transport.forgetResult(response);
+        page.findChild<QPushButton *>("forgetCancel")->click();
+        QVERIFY(!confirm->isEnabled());
+        QCOMPARE(transport.forgetCalls, 3);
+        preview->click();
+        emit transport.forgetResult(response);
+        confirm->click();
+        QVERIFY(transport.forgetPayload.value("confirm").toBool());
+        QCOMPARE(transport.forgetPayload.value("confirmation_token").toString(), QStringLiteral("token"));
+        QVERIFY(!confirm->isEnabled());
+        emit transport.errorOccurred("TIMEOUT", "offline", "");
+        QVERIFY(!confirm->isEnabled());
+        QVERIFY(preview->isEnabled());
+        preview->click();
+        emit transport.forgetResult(response);
+        confirm->click();
+        QSignalSpy forgotten(&page, &pixiu::ForgetPage::memoryForgotten);
+        emit transport.forgetResult({{"status", "forgotten"}, {"forgotten_ids", QJsonArray{"k1"}}});
+        QCOMPARE(forgotten.count(), 1);
+    }
     void deliveryDistinguishesErrorsAndSupportsSearch()
     {
         Transport transport;

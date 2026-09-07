@@ -7,6 +7,11 @@ BackendTransport::BackendTransport(QObject *parent)
 
 BackendTransport::~BackendTransport() = default;
 
+void BackendTransport::reviewedForget(const QJsonObject &)
+{
+    emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持安全遗忘"), QString());
+}
+
 void BackendTransport::extractPreferences(const QJsonObject &)
 {
     // 默认空实现：未实现偏好提取的传输忽略调用（测试桩友好）。

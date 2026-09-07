@@ -60,6 +60,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/DevicePage.h management/DevicePage.cpp \
     management/PairingDialog.h management/PairingDialog.cpp \
     management/DeliveryPage.h management/DeliveryPage.cpp \
+    management/ForgetPage.h management/ForgetPage.cpp \
     src/app/UpgradeController.h src/app/UpgradeController.cpp src/app/UpgradeUtils.h src/app/UpgradeUtils.cpp \
     src/widgets/CheckUpdateDialog.h src/widgets/CheckUpdateDialog.cpp src/app/UiTokens.h \
     src/services/BackendTransport.h src/services/BackendTransport.cpp \

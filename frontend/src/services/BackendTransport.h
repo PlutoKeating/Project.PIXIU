@@ -28,6 +28,7 @@ public:
     virtual quint64 queryMemory(const QString &text, const QJsonObject &contextHint) = 0;
     virtual void writeMemory(const QJsonObject &payload) = 0;
     virtual void forget(const QString &command, bool confirm) = 0;
+    virtual void reviewedForget(const QJsonObject &payload);
     virtual void listConflicts() = 0;
     virtual void preferenceHistory(const QString &preferenceId) = 0;
     // 偏好提取（POST /preference/extract，evidence_ids 由上层提供）。

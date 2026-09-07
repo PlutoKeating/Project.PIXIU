@@ -12,6 +12,7 @@ add_library(pixiu-management STATIC
     DevicePage.h DevicePage.cpp
     PairingDialog.h PairingDialog.cpp
     DeliveryPage.h DeliveryPage.cpp
+    ForgetPage.h ForgetPage.cpp
     ../src/app/UpgradeController.h ../src/app/UpgradeController.cpp
     ../src/app/UpgradeUtils.h ../src/app/UpgradeUtils.cpp
     ../src/widgets/CheckUpdateDialog.h ../src/widgets/CheckUpdateDialog.cpp

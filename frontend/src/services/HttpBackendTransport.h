@@ -34,6 +34,7 @@ public:
     quint64 queryMemory(const QString &text, const QJsonObject &contextHint) override;
     void writeMemory(const QJsonObject &payload) override;
     void forget(const QString &command, bool confirm) override;
+    void reviewedForget(const QJsonObject &payload) override;
     void listConflicts() override;
     void preferenceHistory(const QString &preferenceId) override;
     void extractPreferences(const QJsonObject &payload) override;

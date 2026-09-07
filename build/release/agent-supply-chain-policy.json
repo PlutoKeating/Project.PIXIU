@@ -26,6 +26,8 @@
     "frontend/management/PairingDialog.cpp",
     "frontend/management/DeliveryPage.h",
     "frontend/management/DeliveryPage.cpp",
+    "frontend/management/ForgetPage.h",
+    "frontend/management/ForgetPage.cpp",
     "build/release/agent-host/patches/0011-product-application-version.patch",
     "frontend/src/app/UpgradeController.h",
     "frontend/src/app/UpgradeController.cpp",
