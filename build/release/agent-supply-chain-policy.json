@@ -27,6 +27,8 @@
     "frontend/resources/icons/pixiu.svg",
     "frontend/management/AgentEvidence.h",
     "frontend/management/AgentEvidence.cpp",
+    "frontend/management/AgentEvidenceClient.h",
+    "frontend/management/AgentEvidenceClient.cpp",
     "frontend/management/MemoryWorkspace.h",
     "frontend/management/MemoryWorkspace.cpp",
     "frontend/management/MemoryWriteDialog.h",

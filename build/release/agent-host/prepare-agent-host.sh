@@ -77,6 +77,7 @@ install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
     "${target_source}/res/pixiu.svg"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
     management/AgentEvidence.h management/AgentEvidence.cpp \
+    management/AgentEvidenceClient.h management/AgentEvidenceClient.cpp \
     management/MemoryScopes.h \
     management/HostCloseGuard.h management/HostCloseGuard.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \

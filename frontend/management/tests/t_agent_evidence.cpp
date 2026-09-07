@@ -1,8 +1,12 @@
 #include "AgentEvidence.h"
+#include "AgentEvidenceClient.h"
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTest>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QSignalSpy>
 
 class AgentEvidenceTest : public QObject {
     Q_OBJECT
@@ -23,6 +27,128 @@ class AgentEvidenceTest : public QObject {
         return QJsonDocument(QJsonObject{{"session_id", session}, {"content", content}}).toJson();
     }
 private slots:
+    void rejectsInvalidRequestBeforeNetworking_data() {
+        QTest::addColumn<QString>("url");
+        QTest::addColumn<QString>("session");
+        QTest::addColumn<QString>("scope");
+        QTest::newRow("credentials-in-url") << "http://secret:password@localhost" << "session-1" << "user:local";
+        QTest::newRow("query") << "http://localhost?token=secret" << "session-1" << "user:local";
+        QTest::newRow("fragment") << "http://localhost#fragment" << "session-1" << "user:local";
+        QTest::newRow("file") << "file:///etc/passwd" << "session-1" << "user:local";
+        QTest::newRow("session-path") << "http://localhost" << "../private" << "user:local";
+        QTest::newRow("scope") << "http://localhost" << "session-1" << "all";
+    }
+    void rejectsInvalidRequestBeforeNetworking() {
+        QFETCH(QString, url);
+        QFETCH(QString, session);
+        QFETCH(QString, scope);
+        pixiu::AgentEvidenceClient client;
+        QSignalSpy errors(&client, &pixiu::AgentEvidenceClient::failed);
+        client.load(QNetworkRequest(QUrl(url)), session, scope);
+        QCOMPARE(errors.count(), 1);
+        QVERIFY(!client.busy());
+        QVERIFY(!errors[0][1].toString().contains("secret"));
+        QVERIFY(!errors[0][1].toString().contains("password"));
+    }
+    void refusesRedirectAndHttpFailure_data() {
+        QTest::addColumn<int>("status");
+        QTest::newRow("redirect") << 302;
+        QTest::newRow("unauthorized") << 401;
+    }
+    void refusesRedirectAndHttpFailure() {
+        QFETCH(int, status);
+        QTcpServer server;
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        int requests = 0;
+        connect(&server, &QTcpServer::newConnection, this, [&] {
+            ++requests;
+            auto *socket = server.nextPendingConnection();
+            connect(socket, &QTcpSocket::readyRead, socket, [=] {
+                socket->readAll();
+                socket->write("HTTP/1.1 " + QByteArray::number(status) + " Rejected\r\nLocation: /elsewhere\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+                socket->disconnectFromHost();
+            });
+        });
+        pixiu::AgentEvidenceClient client;
+        QSignalSpy errors(&client, &pixiu::AgentEvidenceClient::failed);
+        client.load(QNetworkRequest(QUrl(QString("http://127.0.0.1:%1").arg(server.serverPort()))), "session-1", "user:local");
+        QTRY_COMPARE(errors.count(), 1);
+        QCOMPARE(requests, 1);
+        QVERIFY(!client.busy());
+    }
+    void asyncFetchAndSessionReplacement() {
+        QTcpServer server;
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        QStringList paths;
+        connect(&server, &QTcpServer::newConnection, this, [&] {
+            auto *socket = server.nextPendingConnection();
+            connect(socket, &QTcpSocket::readyRead, socket, [&, socket] {
+                if (!socket->canReadLine()) return;
+                paths << QString::fromUtf8(socket->readLine().split(' ').value(1));
+                socket->readAll();
+                if (paths.last().contains("session-1")) return; // old request hangs
+                const auto body = response({}, "session-2");
+                socket->write("HTTP/1.1 200 OK\r\nContent-Length: " + QByteArray::number(body.size()) + "\r\nConnection: close\r\n\r\n" + body);
+                socket->disconnectFromHost();
+            });
+        });
+        pixiu::AgentEvidenceClient client;
+        QSignalSpy errors(&client, &pixiu::AgentEvidenceClient::failed);
+        QStringList loaded;
+        connect(&client, &pixiu::AgentEvidenceClient::loaded, this, [&](const QString &session, const pixiu::AgentEvidenceResult &r) {
+            QCOMPARE(r.status, pixiu::AgentEvidenceResult::Ready);
+            loaded << session;
+        });
+        const QNetworkRequest request(QUrl(QString("http://127.0.0.1:%1").arg(server.serverPort())));
+        client.load(request, "session-1", "user:local");
+        QTRY_COMPARE(paths.size(), 1);
+        client.load(request, "session-2", "user:local");
+        QTRY_COMPARE(loaded, QStringList{"session-2"});
+        QCOMPARE(paths.last(), QString("/api/sessions/session-2/details"));
+        QCOMPARE(errors.count(), 0);
+        QVERIFY(!client.busy());
+    }
+    void timeoutAndCancellation() {
+        QTcpServer server;
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        pixiu::AgentEvidenceClient client(nullptr, 30);
+        QSignalSpy errors(&client, &pixiu::AgentEvidenceClient::failed);
+        const QNetworkRequest request(QUrl(QString("http://127.0.0.1:%1").arg(server.serverPort())));
+        client.load(request, "session-1", "user:local");
+        QTRY_COMPARE(errors.count(), 1);
+        QVERIFY(!client.busy());
+        client.load(request, "session-1", "user:local");
+        client.cancel();
+        QTest::qWait(60);
+        QCOMPARE(errors.count(), 1);
+    }
+    void rejectsLargeResponse_data() {
+        QTest::addColumn<bool>("declared");
+        QTest::newRow("content-length") << true;
+        QTest::newRow("streamed-without-length") << false;
+    }
+    void rejectsLargeResponse() {
+        QFETCH(bool, declared);
+        QTcpServer server;
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        connect(&server, &QTcpServer::newConnection, this, [&] {
+            auto *socket = server.nextPendingConnection();
+            connect(socket, &QTcpSocket::readyRead, socket, [=] {
+                socket->readAll();
+                socket->write("HTTP/1.1 200 OK\r\nConnection: close\r\n");
+                if (declared) socket->write("Content-Length: 2097153\r\n");
+                socket->write("\r\n");
+                if (!declared) socket->write(QByteArray(2*1024*1024+1, 'x'));
+                socket->disconnectFromHost();
+            });
+        });
+        pixiu::AgentEvidenceClient client;
+        QSignalSpy errors(&client, &pixiu::AgentEvidenceClient::failed);
+        client.load(QNetworkRequest(QUrl(QString("http://127.0.0.1:%1").arg(server.serverPort()))), "session-1", "user:local");
+        QTRY_COMPARE(errors.count(), 1);
+        QVERIFY(errors[0][1].toString().contains(QStringLiteral("过大")));
+        QVERIFY(!client.busy());
+    }
     void verifiedToolResult() {
         auto completed = event("gateway.tool.completed",
             QString::fromUtf8(QJsonDocument(result()).toJson(QJsonDocument::Compact)));
