@@ -23,11 +23,14 @@ grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${ROOT}/frontend/CMakeLists.txt"
 grep -qx 'version: @VERSION@' \
     "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in"
 test ! -e "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml"
+for removed in frontend/debian/control frontend/debian/rules frontend/debian/postinst frontend/scripts/build-deb.sh; do
+    test ! -e "${ROOT}/${removed}"
+done
+grep -qx 'Package: pixiu' "${ROOT}/build/release/debian/control.in"
 
 if grep -nF "${EXPECTED}" \
         "${ROOT}/frontend/CMakeLists.txt" \
-        "${ROOT}/frontend/debian/control" \
-        "${ROOT}/frontend/scripts/build-deb.sh" \
+        "${ROOT}/build/release/debian/control.in" \
         "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in" \
         "${ROOT}/build/release/scripts/functions.sh" \
         "${ROOT}/build/release/scripts/build-deb.sh" \

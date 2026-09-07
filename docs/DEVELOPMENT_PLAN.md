@@ -143,7 +143,7 @@
 | `frontend/tests/`（30 个文件 + 契约套件） | QtTest 双路径（KYSDK OFF/ON）31/31 全绿；端到端回归（首击、窗口恢复等）与后端契约一致性测试；自动回归脚本 `scripts/regression.sh` |
 | `frontend/resources/` | 设计令牌/全局 QSS/主题感知图标/内嵌 pixiu.svg/i18n（en_US 180 条 0 未完成） |
 | `frontend/docs/`（85 个文件） | 任务书/架构/执行计划/UI_UX_POLISH/适配报告更新 + 真实桌面截图（明暗主题、UI 演示 36 张） |
-| `frontend/debian/` `scripts/` | `.deb` 打包 + desktop 入口；WS 演示桩与桌面复验脚本 |
+| `build/release/`、`frontend/scripts/` | 整包 `.deb` 唯一构建入口；旧前端独立包元数据和打包脚本已移除，前端回归委托整包构建；演示桩与桌面复验脚本仍待迁移审查 |
 
 **未完成 / 阻塞**：真实麒麟会话人工复测（全局快捷键真实按键触发、HiDPI/多屏）；
 后端契约未落地部分（偏好列表、证据详情、二维码配对令牌、flow 上下文来源、真实

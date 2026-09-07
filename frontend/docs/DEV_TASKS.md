@@ -489,7 +489,8 @@ signals:
 宿主配置请求信号。真实缩放、长文案和桌面导航操作仍待验证。
 
 升级辅助脚本已迁入 `build/release/debian/usr/lib/pixiu/`，旧源码位置移除。
-整包和暂存的旧前端打包脚本均引用同一来源，安装后的路径及协议不变。
+整包引用该唯一来源，安装后的路径及协议不变；独立前端包脚本及 Debian 元数据已删除。
+`scripts/regression.sh` 的打包步骤委托根 `build/release`，版本测试检查旧包目标不可重现。
 升级辅助与 Agent 安装集成测试验证新路径；此迁移不是新版 GUI 升级矩阵验收。
 
 `memory_update_transport` 使用本地 TCP HTTP 服务验证版本召回与更新端点、完整载荷、

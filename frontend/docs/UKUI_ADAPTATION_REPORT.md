@@ -32,7 +32,7 @@
 | A-4 | 窗口装饰 | `UkuiWindow`（kysdk-qtwidgets `KShadowHelper` 圆角阴影） | 编译 + offscreen 冒烟 + 本机真实会话日志 `UKUI window shadow applied, radius: 12`；截图供人工确认视觉效果 | ✅ 通过（视觉人工复核） |
 | A-5 | 高 DPI / 多屏 | 入口 `AA_EnableHighDpiScaling` / `AA_UseHighDpiPixmaps`；定位按屏幕可用区域钳制 | 编译 + 代码审查；x86/ARM 目标机多屏待人工 | ✅ 通过（人工复测项） |
 | A-6 | 桌面入口 | `com.kylin.pixiu.desktop` + CMake 安装规则 | `desktop-file-validate` 通过；`cmake --install` 路径校验 | ✅ 通过 |
-| A-7 | `.deb` 打包 | `debian/`（control/rules/postinst）+ `scripts/build-deb.sh` | `dpkg-deb -I/-c` 校验产物结构与依赖声明 | ✅ 通过 |
+| A-7 | `.deb` 打包 | 唯一入口 `build/release/`，独立前端包目标已删除 | 对最终整包执行 `dpkg-deb -I/-c` 并核对画像依赖 | 待同版整包复验 |
 
 ## 3. 自动化回归（本机可复现）
 
@@ -106,10 +106,9 @@ QGSettings 实时 `styleName` 判定明暗（`dc7b0e3`）。
 ### 3.3 打包产物
 
 ```text
-build/dist/pixiu-frontend_0.1.0-1_amd64.deb
-  ├─ /usr/bin/pixiu-frontend
-  ├─ /usr/share/applications/com.kylin.pixiu.desktop
-  └─ DEBIAN/control + postinst
+构建入口：make -C build/release build-deb（从仓库根执行）
+产物：build/release/out/pixiu_<产品版本>-<revision>_<架构>.deb
+独立前端包已停止构建；完整宿主候选的包内容与依赖须重新验收。
 ```
 
 ## 4. 人工复测清单（带显示会话 / 目标机型）

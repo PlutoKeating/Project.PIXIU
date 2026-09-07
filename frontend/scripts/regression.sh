@@ -8,7 +8,7 @@ set -euo pipefail
 #   - ctest 全量（offscreen）
 #   - KYSDK 路径 offscreen 冒烟（应用成功启动并挂载主题/窗口/快捷键）
 #   - desktop-file-validate
-#   - .deb 打包 + dpkg-deb 内容校验
+#   - 委托 build/release 执行整包构建
 #
 # 用法：
 #   scripts/regression.sh
@@ -17,7 +17,6 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OFF_BUILD="${OFF_BUILD:-${ROOT}/build/regression-off}"
 ON_BUILD="${ON_BUILD:-${ROOT}/build/regression-on}"
-DIST_DIR="${ROOT}/build/dist"
 
 run_off() {
     echo "==> [OFF] configure + build"
@@ -61,13 +60,8 @@ validate_desktop() {
 }
 
 run_deb() {
-    echo "==> .deb 打包"
-    PIXIU_HAVE_KYSDK=ON "${ROOT}/scripts/build-deb.sh"
-    echo "==> dpkg-deb 内容校验"
-    local deb
-    deb="$(ls "${DIST_DIR}"/pixiu-frontend_*.deb | head -1)"
-    dpkg-deb -I "${deb}" | sed -n '1,20p'
-    dpkg-deb -c "${deb}" | rg "usr/bin/pixiu-frontend|applications/com.kylin.pixiu.desktop"
+    echo "==> PIXIU 完整安装包（画像由 PIXIU_PROFILE 选择）"
+    make -C "${ROOT}/../build/release" build-deb
 }
 
 run_off

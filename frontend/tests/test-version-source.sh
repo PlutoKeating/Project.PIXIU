@@ -17,10 +17,11 @@ ACTUAL="$(sed -n 's/^CMAKE_PROJECT_VERSION:STATIC=//p' \
     "${BUILD_DIR}/CMakeCache.txt")"
 test "${ACTUAL}" = "${EXPECTED}"
 
-grep -q '^Version: @VERSION@-@REVISION@$' "${SOURCE_DIR}/debian/control"
-grep -q 'ROOT}/../VERSION' "${SOURCE_DIR}/scripts/build-deb.sh"
+grep -q '^Version: @VERSION@$' "${ROOT}/build/release/debian/control.in"
+test ! -e "${SOURCE_DIR}/debian/control"
+test ! -e "${SOURCE_DIR}/scripts/build-deb.sh"
 if rg -n '0\.1\.7' "${SOURCE_DIR}/CMakeLists.txt" \
-        "${SOURCE_DIR}/debian/control" "${SOURCE_DIR}/scripts/build-deb.sh"; then
+        "${ROOT}/build/release/debian/control.in"; then
     echo "frontend build metadata must not duplicate the product version" >&2
     exit 1
 fi

@@ -203,9 +203,9 @@
 - 已实现桌面入口：`resources/com.kylin.pixiu.desktop`（名称/注释/Exec/图标），
   CMake 增加 `GNUInstallDirs` 安装规则（二进制 → `bin/`，desktop → 
   `share/applications/`），`desktop-file-validate` 校验通过。
-- 已实现 `.deb` 打包：`debian/`（control/rules/postinst）+ `scripts/build-deb.sh`
-  基于 `dpkg-deb --build` 产出 `pixiu-frontend_<version>_<arch>.deb`，包含
-  `/usr/bin/pixiu-frontend` 与桌面入口；`dpkg-buildpackage` 的 rules 委托同一脚本。
+- `.deb` 统一使用仓库根 `make -C build/release build-deb`；旧前端独立包的
+  Debian 元数据与打包脚本已移除。当前整包仍含迁移中的旧可执行程序，不能据此
+  宣称唯一前端已交付；版本、依赖和安装规则以 `build/release/` 为准。
 - 已实现 i18n：全部用户可见文案经 `tr()` 包装（提交
   `7a3eb07`/`33967de`），`resources/i18n/pixiu_en_US.ts`/`.qm` 内嵌进 qrc，
   入口按 `LANGUAGE`/系统语言加载英文翻译，其余环境保持中文源码文本；新增
@@ -621,11 +621,9 @@ WebSocket 客户端必须：
      验证 `bin/pixiu-frontend` 与 `share/applications/com.kylin.pixiu.desktop`
      路径正确；OFF 路径 ctest 11/11 通过。
 7. `.deb` 打包：`build(frontend): add Debian packaging`
-   - [x] 本地验收通过（2026-08-08，Kylin V11 本机）：
-     `scripts/build-deb.sh`（KYSDK=ON Release）产出
-     `build/dist/pixiu-frontend_0.1.0-1_amd64.deb`；`dpkg-deb -I/-c` 校验
-     control、postinst、`/usr/bin/pixiu-frontend` 与 desktop 路径正确；
-     `debian/rules binary` 委托路径可用。
+   - [ ] 使用整包入口重新验收：独立前端包目标已删除，统一执行
+     `make -C build/release build-deb`，核对最终整包 control、安装入口和组件清单。
+     原独立包结果不能证明唯一宿主候选已验收。
 
 每项需在目标银河麒麟/UKUI 环境验证；不得以 Windows 降级路径代替适配结论。
 
@@ -758,12 +756,10 @@ ON 路径                  configure/build 通过；ctest 11/11 通过
 2026-08-08 追加（Phase 7.7，本机银河麒麟 V11）：
 
 ```text
-打包方式                 dpkg-deb --build（本机无 debhelper）；rules 委托脚本
-产物                     build/dist/pixiu-frontend_0.1.0-1_amd64.deb（88 KB）
-内容校验                 dpkg-deb -I/-c：control/postinst/usr/bin/desktop 正确
-依赖声明                 libqt5widgets5t64/libqt5network5t64/libqt5websockets5/
-                         libkysdk-shortcut/libkysdk-notification/libkysdk-qtwidgets/
-                         libgsettings-qt1
+打包方式                 统一委托 build/release；独立前端包目标已删除
+产物                     整包 pixiu_<产品版本>-<revision>_<架构>.deb
+内容校验                 最终候选须重新检查，不能沿用独立包结果
+依赖声明                 由 build/release 画像与 control.in 生成
 ```
 
 2026-08-08 追加（i18n + Phase 8 本地自动化基线，本机银河麒麟 V11）：
@@ -777,8 +773,7 @@ OFF 路径                 configure/build 通过；ctest 20/20 通过（含新�
 ON 路径                  configure/build 通过；ctest 20/20 通过
 ON 冒烟                  offscreen 启动：PIXIU application started；
                          theme/ukui-window/shortcut 日志正常
-打包                     build/dist/pixiu-frontend_0.1.0-1_amd64.deb（93 KB）
-                         dpkg-deb -I/-c 校验通过
+打包                     独立包目标已删除，整包候选需重新构建和验收
 ```
 
 2026-08-08 追加（Phase 7.3 真实桌面验证 + Phase 8 真实桌面冒烟）：
