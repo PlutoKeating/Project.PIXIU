@@ -28,16 +28,21 @@ QString readableEvidence(const QJsonObject &raw)
 {
     QJsonObject fields = raw;
     const QJsonValue body = fields.value("body");
-    const QString text = body.isObject()
-        ? body.toObject().value("text").toString(raw.value("text").toString())
-        : body.toString(raw.value("text").toString());
+    QString text = body.toString();
+    if (body.isObject()) {
+        text = body.toObject().value("text").toString();
+        if (text.isEmpty()) text = body.toObject().value("content").toString();
+    }
+    if (text.isEmpty()) text = raw.value("text").toString();
     if (fields.value("title").isString()) fields.remove("title");
     if (fields.value("text").isString() && fields.value("text").toString() == text)
         fields.remove("text");
     if (body.isString()) fields.remove("body");
     else if (body.isObject()) {
         auto content = body.toObject();
-        if (content.value("text").isString()) content.remove("text");
+        for (const QString &key : {QStringLiteral("text"), QStringLiteral("content")})
+            if (content.value(key).isString() && content.value(key).toString() == text)
+                content.remove(key);
         if (content.isEmpty()) fields.remove("body");
         else fields.insert("body", content);
     }
@@ -295,6 +300,7 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
     clearResult();
     m_query->clear();
     m_agentSources = true;
+    m_answer->hide();
     m_tabs->setCurrentIndex(0);
     m_status->setText(result.references.isEmpty()
         ? tr("会话记录中没有可核验的记忆来源；这不代表会话未使用记忆。")
@@ -333,6 +339,7 @@ void MemoryWorkspace::clearEvidence()
 void MemoryWorkspace::clearResult()
 {
     m_agentSources = false;
+    m_answer->show();
     m_knowledge.clear();
     m_edit->setEnabled(false);
     m_request = 0;

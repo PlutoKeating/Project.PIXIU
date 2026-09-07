@@ -118,6 +118,7 @@ private slots:
         result.references.append(result.references.first());
         QVERIFY(page.showAgentSources(result, "user:local"));
         QCOMPARE(sources->count(), 1);
+        QVERIFY(page.findChild<QPlainTextEdit *>("memoryAnswer")->isHidden());
         QCOMPARE(sources->item(0)->text(), QString("<b>source</b>"));
         QVERIFY(detail->toPlainText().isEmpty());
         sources->setCurrentRow(0);
@@ -125,10 +126,13 @@ private slots:
         QVERIFY(page.hasPendingOperation());
         QVERIFY(!page.showAgentSources(result, "user:local"));
         const QJsonObject fresh{{"id", "evd_example01"}, {"scope", "user:local"},
-            {"sensitivity", 0}, {"raw", QJsonObject{{"body", "current database text"}}}};
+            {"sensitivity", 0}, {"raw", QJsonObject{{"body", QJsonObject{
+                {"content", "current database text"}, {"extra", "retained field"}}}}}};
         emit transport.evidenceDetailResult(fresh);
         QVERIFY(!page.hasPendingOperation());
         QVERIFY(detail->toPlainText().contains("current database text"));
+        QVERIFY(detail->toPlainText().startsWith("current database text"));
+        QVERIFY(detail->toPlainText().contains("retained field"));
         QVERIFY(raw->isEnabled());
         for (const QString &field : {QString("scope"), QString("sensitivity")}) {
             QVERIFY(page.showAgentSources(result, "user:local"));
@@ -161,6 +165,7 @@ private slots:
         page.clearAgentSources();
         QVERIFY(page.hasPendingOperation());
         emit transport.queryResult(transport.sequence, {{"answer", "independent result"}});
+        QVERIFY(!page.findChild<QPlainTextEdit *>("memoryAnswer")->isHidden());
         QCOMPARE(page.findChild<QPlainTextEdit *>("memoryAnswer")->toPlainText(), QString("independent result"));
     }
     void serviceDiagnosticsAreReadOnlyBoundedAndExplicit()

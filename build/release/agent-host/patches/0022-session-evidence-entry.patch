@@ -22,7 +22,7 @@
 +    auto *sources = new QPushButton(tr("本会话记忆来源"), titleBar);
 +    sources->setObjectName(QStringLiteral("sessionMemorySources"));
 +    sources->setAccessibleName(tr("读取本会话记忆来源，再选择查看当前证据"));
-+    titleLayout->insertWidget(2, sources);
++    titleLayout->insertWidget(titleLayout->count() - 1, sources);
 +    auto *evidenceClient = new pixiu::AgentEvidenceClient(this);
 +    auto resetSources = [this, sources, evidenceClient]() {
 +        evidenceClient->cancel();
