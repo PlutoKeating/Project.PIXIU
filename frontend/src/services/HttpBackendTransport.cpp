@@ -34,7 +34,8 @@ HttpBackendTransport::HttpBackendTransport(QObject *parent, int healthProbeInter
 
 void HttpBackendTransport::connectToBackend()
 {
-    if (m_state == ConnectionState::Connecting || m_state == ConnectionState::Connected) {
+    if (m_healthTimer->isActive()
+        && (m_state == ConnectionState::Connecting || m_state == ConnectionState::Connected)) {
         return;
     }
     setConnectionState(ConnectionState::Connecting);
@@ -47,24 +48,37 @@ void HttpBackendTransport::connectToBackend()
 void HttpBackendTransport::disconnectFromBackend()
 {
     m_healthTimer->stop();
+    ++m_connectionGeneration;
     setConnectionState(ConnectionState::Disconnected);
+    if (m_healthReply) {
+        auto *reply = m_healthReply.data();
+        m_healthReply.clear();
+        reply->abort();
+    }
 }
 
 void HttpBackendTransport::probeHealth()
 {
     // 显式断开后不探测；上一轮探测未返回（后端黑洞/慢响应）时不叠加请求。
-    if (m_state == ConnectionState::Disconnected || m_healthInFlight) {
+    if (m_state == ConnectionState::Disconnected || m_healthReply) {
         return;
     }
-    m_healthInFlight = true;
-    QNetworkRequest request(endpoint(QStringLiteral("/conflicts")));
+    QNetworkRequest request(endpoint(QStringLiteral("/health")));
     request.setTransferTimeout(kTransferTimeoutMs);
     QNetworkReply *reply = m_network->get(request);
+    m_healthReply = reply;
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         reply->deleteLater();
-        m_healthInFlight = false;
-        // HTTP 4xx/5xx 也说明后端可达（服务在跑），仅传输层失败才算离线。
-        if (reply->error() == QNetworkReply::NoError) {
+        if (m_healthReply != reply) return; // Disconnected/replaced probe.
+        m_healthReply.clear();
+        const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+        const auto health = document.object();
+        if (reply->error() == QNetworkReply::NoError
+            && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200
+            && document.isObject()
+            && health.value("component").toString() == QStringLiteral("pixiu-memory-backend")
+            && health.value("status").toString() == QStringLiteral("ready")
+            && health.value("database").toString() == QStringLiteral("ok")) {
             setConnectionState(ConnectionState::Connected);
         } else {
             setConnectionState(ConnectionState::Error);
@@ -365,8 +379,14 @@ void HttpBackendTransport::handleReply(
     const QString &fallbackErrorCode,
     quint64 tag)
 {
-    connect(reply, &QNetworkReply::finished, this, [this, reply, onSuccess, fallbackErrorCode, tag]() {
+    const quint64 generation = m_connectionGeneration;
+    connect(reply, &QNetworkReply::finished, this, [this, reply, onSuccess, fallbackErrorCode, tag, generation]() {
         reply->deleteLater();
+        const auto updateState = [this, generation](ConnectionState state) {
+            if (generation != m_connectionGeneration) return;
+            if (state == ConnectionState::Connected && m_healthTimer->isActive()) return;
+            setConnectionState(state);
+        };
 
         const QByteArray raw = reply->readAll();
         const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -377,7 +397,7 @@ void HttpBackendTransport::handleReply(
             const BackendError error = parseBackendError(obj);
             qCWarning(lcHttp) << "backend error:" << status
                               << error.code << error.message;
-            setConnectionState(ConnectionState::Connected); // HTTP 层可达
+            updateState(ConnectionState::Connected); // HTTP 可达不覆盖健康判定。
             if (tag != 0) {
                 emit queryFailed(tag,
                                  error.code.isEmpty() ? QStringLiteral("HTTP_%1").arg(status)
@@ -399,7 +419,7 @@ void HttpBackendTransport::handleReply(
                 && status == 0;
             const QString code = isTimeout ? QStringLiteral("TIMEOUT") : fallbackErrorCode;
             qCWarning(lcHttp) << "request failed:" << code << reply->errorString();
-            setConnectionState(ConnectionState::Error);
+            updateState(ConnectionState::Error);
             if (tag != 0) {
                 emit queryFailed(tag, code, reply->errorString());
             } else {
@@ -413,7 +433,7 @@ void HttpBackendTransport::handleReply(
         const QJsonDocument doc = QJsonDocument::fromJson(raw, &parseError);
         if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
             qCWarning(lcHttp) << "invalid JSON from backend:" << parseError.errorString();
-            setConnectionState(ConnectionState::Error);
+            updateState(ConnectionState::Error);
             if (tag != 0) {
                 emit queryFailed(tag, QStringLiteral("INVALID_RESPONSE"),
                                  tr("后端响应不是合法 JSON"));
@@ -425,7 +445,7 @@ void HttpBackendTransport::handleReply(
             return;
         }
 
-        setConnectionState(ConnectionState::Connected);
+        updateState(ConnectionState::Connected);
         onSuccess(tag, doc.object());
     });
 }

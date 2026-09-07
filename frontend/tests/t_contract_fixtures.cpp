@@ -160,6 +160,10 @@ private:
                 {QStringLiteral("irreversible"), true},
             };
         }
+        if (path == QStringLiteral("/health")) {
+            return QJsonObject{{"status", "ready"}, {"component", "pixiu-memory-backend"},
+                               {"database", "ok"}, {"schema_version", 12}};
+        }
         if (path == QStringLiteral("/conflicts")) {
             return QJsonObject{
                 {QStringLiteral("conflicts"),

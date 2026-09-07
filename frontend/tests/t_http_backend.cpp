@@ -6,6 +6,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTest>
+#include <QTimer>
 
 #include "services/BackendTypes.h"
 #include "services/BackendTransport.h"
@@ -30,6 +31,10 @@ private slots:
     void mapsFastApiDetailErrors();
     void mapsFastApiValidationErrors();
     void keepsLegacyErrorShape();
+    void rejectsUnreadyHealth_data();
+    void rejectsUnreadyHealth();
+    void disconnectRejectsPendingReplies();
+    void startsHealthAfterBusinessReachability();
 
 private:
     HttpBackendTransport *makeTransport(int intervalMs = 300);
@@ -38,6 +43,9 @@ private:
 
     QTcpServer *m_server = nullptr;
     HttpBackendTransport *m_transport = nullptr;
+    QByteArray m_healthBody;
+    int m_replyDelay = 0;
+    int m_requests = 0;
 };
 
 void TestHttpBackend::init()
@@ -45,6 +53,9 @@ void TestHttpBackend::init()
     qRegisterMetaType<ConnectionState>("ConnectionState");
     m_transport = nullptr;
     m_server = nullptr;
+    m_healthBody = R"({"status":"ready","component":"pixiu-memory-backend","database":"ok"})";
+    m_replyDelay = 0;
+    m_requests = 0;
 }
 
 void TestHttpBackend::cleanup()
@@ -61,20 +72,29 @@ void TestHttpBackend::startServer(quint16 port)
     connect(m_server, &QTcpServer::newConnection, this, [this]() {
         while (m_server->hasPendingConnections()) {
             QTcpSocket *socket = m_server->nextPendingConnection();
-            connect(socket, &QTcpSocket::readyRead, this, [socket]() {
+            connect(socket, &QTcpSocket::readyRead, this, [this, socket]() {
+                if (socket->property("handled").toBool()) {
+                    socket->readAll();
+                    return;
+                }
                 if (!socket->canReadLine()) {
                     return;
                 }
                 const QByteArray requestLine = socket->readLine().trimmed();
+                socket->setProperty("handled", true);
+                socket->readAll();
                 const QList<QByteArray> parts = requestLine.split(' ');
                 const QByteArray method =
                     parts.value(0).toUpper();
                 const QByteArray path = parts.value(1);
+                ++m_requests;
 
                 // 按请求路径返回不同响应，覆盖后端真实错误形状与旧契约形状。
                 QJsonObject body;
                 int status = 200;
-                if (method == "GET" && path == "/conflicts") {
+                if (method == "GET" && path == "/health") {
+                    body = QJsonDocument::fromJson(m_healthBody).object();
+                } else if (method == "GET" && path == "/conflicts") {
                     body = QJsonObject{
                         {QStringLiteral("conflicts"), QJsonArray()}};
                 } else if (method == "POST" && path == "/forget") {
@@ -111,8 +131,8 @@ void TestHttpBackend::startServer(quint16 port)
                          QStringLiteral("NOT_FOUND")}};
                 }
 
-                const QByteArray json =
-                    QJsonDocument(body).toJson(QJsonDocument::Compact);
+                const QByteArray json = path == "/health" ? m_healthBody
+                    : QJsonDocument(body).toJson(QJsonDocument::Compact);
                 const QByteArray response =
                     "HTTP/1.1 " +
                     QByteArray::number(status) +
@@ -124,9 +144,11 @@ void TestHttpBackend::startServer(quint16 port)
                     "Connection: close\r\n"
                     "\r\n" +
                     json;
-                socket->write(response);
-                socket->flush();
-                socket->disconnectFromHost();
+                QTimer::singleShot(m_replyDelay, socket, [socket, response]() {
+                    socket->write(response);
+                    socket->flush();
+                    socket->disconnectFromHost();
+                });
             });
             connect(socket, &QTcpSocket::disconnected,
                     socket, &QTcpSocket::deleteLater);
@@ -248,6 +270,62 @@ void TestHttpBackend::keepsLegacyErrorShape()
     QCOMPARE(args.at(0).toString(), QStringLiteral("INTERNAL_ERROR"));
     QCOMPARE(args.at(1).toString(), QStringLiteral("boom"));
     QCOMPARE(args.at(2).toString(), QStringLiteral("req_x"));
+}
+
+void TestHttpBackend::rejectsUnreadyHealth_data()
+{
+    QTest::addColumn<QByteArray>("body");
+    QTest::newRow("invalid-json") << QByteArray("not json");
+    QTest::newRow("wrong-service") << QByteArray(R"({"status":"ready","component":"other","database":"ok"})");
+    QTest::newRow("not-ready") << QByteArray(R"({"status":"starting","component":"pixiu-memory-backend","database":"ok"})");
+    QTest::newRow("bad-database") << QByteArray(R"({"status":"ready","component":"pixiu-memory-backend","database":"error"})");
+    QTest::newRow("missing-fields") << QByteArray("{}");
+}
+
+void TestHttpBackend::rejectsUnreadyHealth()
+{
+    QFETCH(QByteArray, body);
+    startServer();
+    m_healthBody = body;
+    auto *transport = makeTransport(10000);
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    transport->connectToBackend();
+    QTRY_COMPARE_WITH_TIMEOUT(transport->connectionState(), ConnectionState::Error, 3000);
+    QCOMPARE(errors.count(), 0);
+    transport->writeMemory({}); // A reachable HTTP 500 is not a ready backend.
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
+    QCOMPARE(transport->connectionState(), ConnectionState::Error);
+}
+
+void TestHttpBackend::disconnectRejectsPendingReplies()
+{
+    startServer();
+    m_replyDelay = 200;
+    auto *transport = makeTransport(10000);
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    transport->connectToBackend();
+    transport->forget("test", false);
+    QTRY_COMPARE_WITH_TIMEOUT(m_requests, 2, 3000);
+    transport->disconnectFromBackend();
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
+    QTest::qWait(300);
+    QCOMPARE(transport->connectionState(), ConnectionState::Disconnected);
+    m_replyDelay = 0;
+    transport->connectToBackend();
+    QTRY_COMPARE_WITH_TIMEOUT(transport->connectionState(), ConnectionState::Connected, 3000);
+}
+
+void TestHttpBackend::startsHealthAfterBusinessReachability()
+{
+    startServer();
+    m_healthBody = "{}";
+    auto *transport = makeTransport(10000);
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    transport->forget("test", false);
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
+    QCOMPARE(transport->connectionState(), ConnectionState::Connected);
+    transport->connectToBackend();
+    QTRY_COMPARE_WITH_TIMEOUT(transport->connectionState(), ConnectionState::Error, 3000);
 }
 
 QTEST_MAIN(TestHttpBackend)

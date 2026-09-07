@@ -3,6 +3,7 @@
 
 #include <QJsonObject>
 #include <QString>
+#include <QPointer>
 #include <functional>
 
 #include "services/BackendTransport.h"
@@ -18,7 +19,8 @@ class QUrl;
 //   - 异步请求，结果/错误经信号返回，UI 线程永不阻塞；
 //   - 后端地址取环境变量 PIXIU_BACKEND_URL，默认 http://127.0.0.1:8765；
 //   - JSON 解析容忍未知字段；错误按 API 错误码或 NETWORK_ERROR/TIMEOUT 上报；
-//   - 每次成功请求后连接状态置为 Connected，网络失败置为 Error。
+//   - 显式连接时由 /health 判定就绪；普通请求不覆盖该判定。
+//   - 未启用探测时 Connected 仅表示业务 HTTP 可达，不代表 SDK/版本兼容。
 class HttpBackendTransport : public BackendTransport
 {
     Q_OBJECT
@@ -67,7 +69,7 @@ public:
 private:
     QUrl endpoint(const QString &path) const;
 
-    // 周期健康探测：GET /conflicts，仅驱动连接状态，不广播业务信号。
+    // 周期健康探测：GET /health，校验组件与数据库就绪，不广播业务信号。
     // 用于后端中途挂掉/事后恢复时顶栏状态与离线引导能及时刷新。
     void probeHealth();
 
@@ -94,7 +96,8 @@ private:
     QString m_baseUrl;
     ConnectionState m_state = ConnectionState::Disconnected;
     QTimer *m_healthTimer = nullptr;
-    bool m_healthInFlight = false;
+    QPointer<QNetworkReply> m_healthReply;
+    quint64 m_connectionGeneration = 0;
     quint64 m_nextRequestId = 1;
 };
 

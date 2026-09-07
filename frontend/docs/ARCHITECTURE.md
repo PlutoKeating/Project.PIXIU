@@ -570,6 +570,11 @@ signals:
 - **当前传输 HTTP/WS**：`HttpBackendTransport` + `WebSocketClient`，地址为
   `http://127.0.0.1:<port>`；`QueryController`、`WriteController`、`ForgetController`
   和 `SyncController` 承担上面草图的业务协调，源码中没有 MemoryClient/SyncClient 类。
+- **健康状态**：显式调用 `connectToBackend()` 后，静默周期探测 `/health`，仅 HTTP 200
+  且组件为 `pixiu-memory-backend`、状态为 `ready`、数据库为 `ok` 时判定就绪。
+  普通业务成功或 HTTP 错误不会覆盖此探测结果；显式断开取消在途探测，断开前业务
+  响应仍交给调用者但不再改变连接状态。未启用探测的 transport 中，Connected 仍仅
+  表示业务 HTTP 可达。管理页统一订阅、版本和能力握手尚未完成，不据健康状态宣称 SDK 合规。
 - **可选 D-Bus**：后端已实现 `com.kylin.pixiu.Memory`；前端尚未实现 D-Bus transport。
 - 事件推送（写入完成/冲突/遗忘确认/**节点上下线/同步状态**）经 `NotifyService` 转 `kysdk-notification` 弹窗。
 - UI 层永不阻塞：所有后端调用异步，UI 用骨架屏/进度态过渡。
