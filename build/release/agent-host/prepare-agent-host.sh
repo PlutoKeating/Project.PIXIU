@@ -69,6 +69,8 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
     < "${script_dir}/patches/0018-match-installed-desktop-entry.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${script_dir}/patches/0019-own-active-control-theme.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0020-guard-deferred-theme-repaint.patch"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
     management/MemoryScopes.h \
     management/HostCloseGuard.h management/HostCloseGuard.cpp \

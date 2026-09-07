@@ -111,6 +111,12 @@ int main(int argc, char **argv)
         }
         date->calendarWidget()->hide();
     }
+    // Theme repaint is queued; a popup may disappear before it is delivered.
+    auto *transient = new QWidget;
+    transient->show();
+    theme.setThemeMode(ThemeManager::Dark);
+    delete transient;
+    QApplication::processEvents();
     if (failures) return 1;
     qInfo() << "Rendered host theme backgrounds and active controls: PASS";
 }

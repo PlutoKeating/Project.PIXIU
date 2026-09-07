@@ -1,0 +1,22 @@
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -10,5 +10,6 @@
+ #include <QList>
+ #include <QPalette>
++#include <QPointer>
+ #include <QProcess>
+ #include <QPair>
+ #include <QProxyStyle>
+@@ -410,2 +411,6 @@
+     const QList<QWidget *> widgets = m_app->allWidgets();
++    QList<QPointer<QWidget>> guardedWidgets;
++    for (QWidget *widget : widgets) {
++        guardedWidgets.append(QPointer<QWidget>(widget));
++    }
+     for (QWidget *widget : widgets) {
+@@ -430,3 +435,3 @@
+-    QTimer::singleShot(0, m_app, [widgets]() {
+-        for (QWidget *widget : widgets) {
++    QTimer::singleShot(0, m_app, [guardedWidgets]() {
++        for (const QPointer<QWidget> &widget : guardedWidgets) {
+             if (widget) {

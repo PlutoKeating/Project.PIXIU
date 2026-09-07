@@ -22,6 +22,7 @@
     "build/release/agent-host/patches/0017-own-workspace-theme-background.patch",
     "build/release/agent-host/patches/0018-match-installed-desktop-entry.patch",
     "build/release/agent-host/patches/0019-own-active-control-theme.patch",
+    "build/release/agent-host/patches/0020-guard-deferred-theme-repaint.patch",
     "frontend/management/MemoryWorkspace.h",
     "frontend/management/MemoryWorkspace.cpp",
     "frontend/management/MemoryWriteDialog.h",
