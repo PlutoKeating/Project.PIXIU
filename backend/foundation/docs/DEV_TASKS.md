@@ -128,6 +128,10 @@ git submodule update --init --recursive
 JSON 能力，无新增依赖或 schema 变更；HTTP 已接入一次性预览凭证，绑定指令、范围
 与目标版本，缺失/过期/重放拒绝。其余调用方及跨组件恢复仍待迁移。
 
+D-Bus 新增 `ReviewedForget(s)→s`，复用 HTTP 遗忘编排及显式 DI；旧无凭证确认
+拒绝执行。回归覆盖旧入口拒绝、预览后执行、重放拒绝、共享墓碑和五方法注册。
+测试不连接真实 session bus，真实总线与桌面客户端仍需验收。
+
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `storage/__init__.py` | ★★★ | 导出全部 Repository 类 |

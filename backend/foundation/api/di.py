@@ -674,4 +674,6 @@ async def get_dbus_handler(
         security=security,
         retrieval=retrieval,
         sync_status=sync.status if sync is not None else None,
+        knowledge_repo=SqliteKnowledgeRepo(db),
+        sync=sync,
     )

@@ -76,6 +76,8 @@ async def handler(tmp_path: Path) -> PixiuMemoryHandler:
         security=SecurityService(knw_repo=knw_repo, entity_repo=ent_repo),
         retrieval=RetrievalService(knw_repo, ent_repo, evd_repo, embedder),
         sync_status=sync_service.status,
+        knowledge_repo=knw_repo,
+        sync=sync_service,
     )
     yield h
     await db.close()
@@ -118,8 +120,17 @@ async def test_forget_two_phase(handler):
     pending = await handler.forget("忘记待遗忘清单", confirm=False)
     assert "targets" in pending
 
-    executed = await handler.forget("忘记待遗忘清单", confirm=True)
+    with pytest.raises(PixiuError, match="ReviewedForget"):
+        await handler.forget("忘记待遗忘清单", confirm=True)
+    payload = {"command": "忘记待遗忘清单", "confirm": True,
+               "confirmation_token": pending["confirmation_token"]}
+    executed = await handler.reviewed_forget(payload)
     assert executed["status"] == "forgotten"
+    with pytest.raises(PixiuError) as reused:
+        await handler.reviewed_forget(payload)
+    assert reused.value.error == "FORGET_PREVIEW_REQUIRED"
+    operations = await handler._sync._store.list_ops()
+    assert any(op.payload.get("deleted") for op in operations)
 
 
 @pytest.mark.asyncio
@@ -188,14 +199,15 @@ def test_bus_name_conflict_raises(monkeypatch):
 # dbus-next 接口方法注册（不连真实总线）
 # ═══════════════════════════════════════════════════════
 
-def test_interface_attaches_four_methods():
+def test_interface_attaches_reviewed_forget_method():
     from dbus_next.service import ServiceInterface
 
     interface = PixiuDBusInterface(PixiuMemoryHandler()).create()
     assert isinstance(interface, ServiceInterface)
     methods = interface._get_methods(interface)
     by_name = {m.name: m for m in methods}
-    assert set(by_name) == {"Write", "Query", "Forget", "SyncStatus"}
+    assert set(by_name) == {"Write", "Query", "Forget", "ReviewedForget", "SyncStatus"}
+    assert by_name["ReviewedForget"].in_signature == "s"
     # 签名：Write/Query (s,s,s)/(s,s)→s，Forget (s,b)→s，SyncStatus ()→s
     assert by_name["Write"].in_signature == "sss"
     assert by_name["Forget"].in_signature == "sb"

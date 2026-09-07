@@ -51,6 +51,8 @@ class PixiuMemoryHandler:
         security=None,
         retrieval=None,
         sync_status=None,
+        knowledge_repo=None,
+        sync=None,
     ) -> None:
         self._ingestion = ingestion
         self._knowledge = knowledge
@@ -59,6 +61,8 @@ class PixiuMemoryHandler:
         self._security = security
         self._retrieval = retrieval
         self._sync_status_fn = sync_status
+        self._knowledge_repo = knowledge_repo
+        self._sync = sync
 
     async def write(self, source_type: str, raw: dict, scope: str) -> dict:
         """镜像 POST /memory/write：落 evidence + 结构化 + 偏好 + 冲突仲裁。"""
@@ -90,20 +94,27 @@ class PixiuMemoryHandler:
         return atom.model_dump(mode="json")
 
     async def forget(self, command: str, confirm: bool = False) -> dict:
-        """镜像 POST /forget：自然语言遗忘（确认/执行两阶段）。"""
-        if self._security is None:
-            raise PixiuError("INTERNAL_ERROR", "security service not available")
-        result = await self._security.forget(command, confirm=confirm)
-        if result.status == "pending":
-            return {
-                "targets": result.targets,
-                "cascade": result.cascade,
-                "irreversible": result.irreversible,
-            }
-        return {
-            "status": "forgotten",
-            "forgotten_ids": result.forgotten_ids,
-        }
+        """Legacy signature supports preview only; never bypass review receipts."""
+        if confirm:
+            raise PixiuError("FORGET_PREVIEW_REQUIRED", "use ReviewedForget with the preview receipt")
+        return await self.reviewed_forget({"command": command, "confirm": False})
+
+    async def reviewed_forget(self, payload: dict) -> dict:
+        """Use the exact HTTP orchestration, including tombstones and events."""
+        from fastapi import HTTPException
+        from pydantic import ValidationError
+        from .http_app import ForgetRequest, forget
+
+        if self._security is None or self._knowledge_repo is None:
+            raise PixiuError("INTERNAL_ERROR", "reviewed forget services not available")
+        try:
+            body = ForgetRequest.model_validate(payload)
+            return await forget(body, security=self._security,
+                                knowledge_repo=self._knowledge_repo, sync=self._sync)
+        except ValidationError as exc:
+            raise PixiuError("INVALID_REQUEST", "invalid reviewed forget payload") from exc
+        except HTTPException as exc:
+            raise PixiuError(str(exc.detail), str(exc.detail)) from exc
 
     async def sync_status(self) -> dict:
         """镜像 GET /sync/status：同步状态。"""
@@ -150,6 +161,14 @@ class PixiuDBusInterface:
             @method()
             async def Forget(self, command: "s", confirm: "b") -> "s":  # type: ignore[no-untyped-def]
                 return _to_json_payload(await handler.forget(command, confirm))
+
+            @method()
+            async def ReviewedForget(self, payload_json: "s") -> "s":  # type: ignore[no-untyped-def]
+                try:
+                    payload = json.loads(payload_json)
+                except json.JSONDecodeError as exc:
+                    raise PixiuError("INVALID_REQUEST", "payload must be valid JSON") from exc
+                return _to_json_payload(await handler.reviewed_forget(payload))
 
             @method()
             async def SyncStatus(self) -> "s":  # type: ignore[no-untyped-def]

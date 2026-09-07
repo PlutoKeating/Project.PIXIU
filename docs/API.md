@@ -599,6 +599,10 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 ACTIVE 知识，调用界面应显式指定范围。数据库状态/版本整批原子更新，但向量与
 同步副作用不在该事务内，失败恢复仍需完善，不能描述成全部数据擦除。
 
+D-Bus 同等入口为 `ReviewedForget(payload_json: s) → s`，JSON 字段及响应与本节
+一致，复用同一预览凭证、执行和墓碑广播逻辑。旧 `Forget(command: s, confirm: b)`
+只允许 `confirm=false` 预览；`true` 返回 `FORGET_PREVIEW_REQUIRED`，不再绕过确认。
+
 ### 3.9 GET /conflicts
 
 冲突审计列表。
