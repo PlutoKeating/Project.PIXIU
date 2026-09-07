@@ -41,6 +41,16 @@ test -f "${fixture}/source/pixiu/frontend/management/MemoryWorkspace.cpp"
 test ! -e "${fixture}/source/pixiu/frontend/src/main.cpp"
 grep -q 'app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION))' "${fixture}/source/src/main.cpp"
 grep -q 'PIXIU_PRODUCT_VERSION' "${fixture}/source/CMakeLists.txt"
+python3 - "${fixture}/source/src/main.cpp" <<'PY'
+from pathlib import Path
+import sys
+source = Path(sys.argv[1]).read_text()
+assert 'app.setApplicationDisplayName("PIXIU")' in source, 'product display name is overwritten'
+assert 'window.setWindowTitle("KylinAgent")' not in source, 'startup overrides the product window title'
+assert 'app.setApplicationName("KylinAgent")' in source, 'persistent application identity must be preserved'
+assert 'app.setOrganizationName("KylinAgent")' in source, 'persistent organization identity must be preserved'
+assert 'app.setDesktopFileName("kylin-agent")' in source, 'desktop entry identity must be preserved'
+PY
 cmp "${repo_root}/VERSION" "${fixture}/source/pixiu/VERSION"
 grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 grep -q 'app.setQuitOnLastWindowClosed(true)' "${fixture}/source/src/main.cpp"

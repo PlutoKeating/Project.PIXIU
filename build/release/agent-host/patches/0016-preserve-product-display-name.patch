@@ -1,0 +1,8 @@
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -77,1 +77,1 @@
+-    app.setApplicationDisplayName("KylinAgent");
++    app.setApplicationDisplayName("PIXIU");
+@@ -93,1 +93,1 @@
+-    window.setWindowTitle("KylinAgent");
++    // Keep MainWindow's product title; persistent application identity is unchanged.
