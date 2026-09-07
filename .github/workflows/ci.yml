@@ -122,7 +122,7 @@ jobs:
             qtbase5-dev libqt5websockets5-dev libqt5svg5-dev libqrencode-dev \
             qtwebengine5-dev qtmultimedia5-dev zlib1g-dev pkg-config
 
-      - name: Build the same Agent host without Kylin SDK
+      - name: Verify portable desktop adapter and embedded management
         env:
           PIXIU_KYSDK: "OFF"
         run: |
@@ -130,7 +130,6 @@ jobs:
           cmake -S frontend/management -B build/release/out/management-tests -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
           cmake --build build/release/out/management-tests --parallel 2
           ctest --test-dir build/release/out/management-tests --output-on-failure
-          bash build/release/agent-host/build-agent-host.sh
 
       - uses: actions/setup-python@v7
         with:
@@ -141,6 +140,18 @@ jobs:
 
       - name: Verify Qt memory editing against the real portable backend
         run: python frontend/management/tests/run-memory-edit-live.py build/release/out/management-tests/t_memory_edit_live
+
+      - name: Build and audit the complete generic Agent distribution
+        env:
+          PIXIU_KYSDK: "OFF"
+        run: bash build/release/scripts/prepare-agent-supply-chain.sh
+
+      - name: Preserve audited generic Agent distribution
+        uses: actions/upload-artifact@v7
+        with:
+          name: pixiu-generic-agent-${{ github.sha }}
+          path: build/release/evidence/agent-supply-chain/
+          if-no-files-found: error
 
       - name: Compile, test, and package
         env:
