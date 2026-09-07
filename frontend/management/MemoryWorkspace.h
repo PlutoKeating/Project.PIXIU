@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include "AgentEvidence.h"
 
 class BackendTransport;
 class QLineEdit;
@@ -9,6 +10,7 @@ class QLabel;
 class QPlainTextEdit;
 class QListWidget;
 class QCheckBox;
+class QTabWidget;
 
 namespace pixiu {
 class MemoryAudit;
@@ -19,6 +21,8 @@ class MemoryWorkspace : public QWidget
 public:
     explicit MemoryWorkspace(QWidget *parent = nullptr, BackendTransport *transport = nullptr);
     bool hasPendingOperation() const { return m_request != 0 || m_evidenceBusy; }
+    // Only accepts parsed Runtime references, never IDs extracted from model text.
+    bool showAgentSources(const AgentEvidenceResult &result, const QString &scope);
 private:
     void search();
     void clearResult();
@@ -27,6 +31,7 @@ private:
     MemoryAudit *m_audit;
     QLineEdit *m_query;
     QComboBox *m_scope;
+    QTabWidget *m_tabs;
     QPushButton *m_search;
     QPushButton *m_edit;
     QString m_knowledge;
@@ -40,6 +45,7 @@ private:
     QString m_evidenceRaw;
     quint64 m_request = 0;
     QString m_evidence;
+    QString m_expectedEvidenceScope;
     bool m_evidenceBusy = false;
 };
 }

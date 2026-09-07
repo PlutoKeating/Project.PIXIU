@@ -86,6 +86,51 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void agentSourcesReuseReaderAndValidateFreshEvidence()
+    {
+        Transport transport;
+        pixiu::MemoryWorkspace page(nullptr, &transport);
+        auto *sources = page.findChild<QListWidget *>("memorySources");
+        auto *detail = page.findChild<QPlainTextEdit *>("memoryEvidence");
+        auto *raw = page.findChild<QCheckBox *>("memoryEvidenceRaw");
+        pixiu::AgentEvidenceResult result;
+        result.status = pixiu::AgentEvidenceResult::Ready;
+        result.references.append({"evd_example01", "knw_example01", "<b>source</b>", "user:local", "turn-1", "call-1"});
+        result.references.append(result.references.first());
+        QVERIFY(page.showAgentSources(result, "user:local"));
+        QCOMPARE(sources->count(), 1);
+        QCOMPARE(sources->item(0)->text(), QString("<b>source</b>"));
+        QVERIFY(detail->toPlainText().isEmpty());
+        sources->setCurrentRow(0);
+        QCOMPARE(transport.evidence, QString("evd_example01"));
+        QVERIFY(page.hasPendingOperation());
+        QVERIFY(!page.showAgentSources(result, "user:local"));
+        const QJsonObject fresh{{"id", "evd_example01"}, {"scope", "user:local"},
+            {"sensitivity", 0}, {"raw", QJsonObject{{"body", "current database text"}}}};
+        emit transport.evidenceDetailResult(fresh);
+        QVERIFY(!page.hasPendingOperation());
+        QVERIFY(detail->toPlainText().contains("current database text"));
+        QVERIFY(raw->isEnabled());
+        for (const QString &field : {QString("scope"), QString("sensitivity")}) {
+            QVERIFY(page.showAgentSources(result, "user:local"));
+            sources->setCurrentRow(0);
+            auto changed = fresh;
+            if (field == "scope") changed.insert(field, "shared:home");
+            else changed.insert(field, 1);
+            emit transport.evidenceDetailResult(changed);
+            QVERIFY(detail->toPlainText().isEmpty());
+            QVERIFY(!raw->isEnabled());
+            QCOMPARE(sources->currentRow(), -1);
+        }
+        QVERIFY(!page.showAgentSources(result, "shared:home"));
+        result.status = pixiu::AgentEvidenceResult::Invalid;
+        QVERIFY(!page.showAgentSources(result, "user:local"));
+        result.status = pixiu::AgentEvidenceResult::Ready;
+        result.references.clear();
+        QVERIFY(page.showAgentSources(result, "user:local"));
+        QCOMPARE(sources->count(), 0);
+        QVERIFY(page.findChild<QLabel *>("memoryStatus")->text().contains(QStringLiteral("不代表")));
+    }
     void serviceDiagnosticsAreReadOnlyBoundedAndExplicit()
     {
         Transport transport;

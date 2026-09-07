@@ -18,6 +18,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QTabWidget>
+#include <QSet>
+#include <QRegularExpression>
 #include <functional>
 
 namespace pixiu {
@@ -98,6 +100,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     auto *outer = new QVBoxLayout(this);
     outer->setContentsMargins(0, 0, 0, 0);
     auto *tabs = new QTabWidget(this);
+    m_tabs = tabs;
     outer->addWidget(tabs);
     auto *queryPage = new QWidget(tabs);
     auto *layout = new QVBoxLayout(queryPage);
@@ -231,6 +234,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_search->setEnabled(false);
         m_scope->setEnabled(false);
         m_evidence = item->data(Qt::UserRole).toString();
+        m_expectedEvidenceScope = item->data(Qt::UserRole + 1).toString();
         clearEvidence();
         m_detailMeta->setText(tr("正在加载证据…"));
         m_transport->evidenceDetail(m_evidence);
@@ -244,6 +248,14 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_scope->setEnabled(true);
         if (evidence.value(QStringLiteral("id")).toString() != m_evidence) {
             m_detailMeta->setText(tr("证据响应与所选来源不一致，请重新选择来源。"));
+            m_sources->setCurrentRow(-1);
+            return;
+        }
+        if (!m_expectedEvidenceScope.isEmpty() &&
+            (evidence.value("scope").toString() != m_expectedEvidenceScope ||
+             !evidence.value("sensitivity").isDouble() ||
+             evidence.value("sensitivity").toDouble() != 0)) {
+            m_detailMeta->setText(tr("此会话来源的范围或敏感级别已变化，不能按会话引用展示。"));
             m_sources->setCurrentRow(-1);
             return;
         }
@@ -268,6 +280,37 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_sources->setCurrentRow(-1);
         m_detailMeta->setText(tr("证据加载失败：%1。重新选择来源可重试。").arg(message));
     });
+}
+
+bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const QString &scope)
+{
+    if (hasPendingOperation() || result.status != AgentEvidenceResult::Ready ||
+        result.references.size() > 256 || scope.isEmpty() || m_scope->findData(scope) < 0)
+        return false;
+    const QRegularExpression validId(QStringLiteral("\\Aevd_[A-Za-z0-9_-]{8,128}\\z"));
+    for (const auto &source : result.references) {
+        if (source.scope != scope || !validId.match(source.evidenceId).hasMatch()) return false;
+    }
+    m_scope->setCurrentIndex(m_scope->findData(scope));
+    clearResult();
+    m_query->clear();
+    m_tabs->setCurrentIndex(0);
+    m_status->setText(result.references.isEmpty()
+        ? tr("会话记录中没有可核验的记忆来源；这不代表会话未使用记忆。")
+        : tr("本会话记忆来源：选择后读取当前证据。此列表不是每条回答的逐句引用。"));
+    QSet<QString> seen;
+    QStringList ids;
+    for (const auto &source : result.references) {
+        if (seen.contains(source.evidenceId)) continue;
+        seen.insert(source.evidenceId);
+        auto *item = new QListWidgetItem(source.title.isEmpty()
+            ? tr("查看来源 %1").arg(m_sources->count() + 1) : source.title.left(512), m_sources);
+        item->setData(Qt::UserRole, source.evidenceId);
+        item->setData(Qt::UserRole + 1, scope);
+        ids << source.evidenceId;
+    }
+    m_audit->setEvidenceIds(ids);
+    return true;
 }
 
 void MemoryWorkspace::clearEvidence()
