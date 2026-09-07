@@ -5,6 +5,7 @@
 #include <QDateEdit>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QPainter>
 #include <QProxyStyle>
 #include <QStyleOption>
@@ -20,6 +21,12 @@ public:
     void drawControl(ControlElement element, const QStyleOption *option,
                      QPainter *painter, const QWidget *widget = nullptr) const override
     {
+        if (element == CE_ItemViewItem && (option->state & State_Selected)) {
+            painter->fillRect(option->rect, QColor("#cccccc"));
+            painter->setPen(Qt::white);
+            painter->drawText(option->rect, QStringLiteral("Memory source"));
+            return;
+        }
         if (element == CE_TabBarTabShape && (option->state & State_Selected)) {
             painter->fillRect(option->rect, QColor("#1e1e1e"));
             return;
@@ -55,6 +62,12 @@ int main(int argc, char **argv)
     content->addWidget(new QLabel(QStringLiteral("Readable workspace"), page));
     auto *input = new QLineEdit(page);
     content->addWidget(input);
+    auto *sources = new QListWidget(page);
+    sources->setObjectName(QStringLiteral("memorySources"));
+    sources->setFixedHeight(64);
+    sources->addItem(QStringLiteral("Memory source"));
+    sources->setCurrentRow(0);
+    content->addWidget(sources);
     auto *date = new QDateEdit(QDate(2026, 9, 7), page);
     date->setCalendarPopup(true);
     content->addWidget(date);
@@ -104,6 +117,28 @@ int main(int argc, char **argv)
         date->calendarWidget()->show();
         QApplication::processEvents();
         const QColor text(mode == ThemeManager::Dark ? "#f3f6f8" : "#172033");
+        date->calendarWidget()->hide();
+        host.activateWindow();
+        for (bool focused : {true, false}) {
+            if (focused) sources->setFocus();
+            else input->setFocus();
+            QApplication::processEvents();
+            if (sources->hasFocus() != focused) {
+                qCritical() << "Source focus fixture did not reach requested state";
+                ++failures;
+            }
+            const auto row = sources->visualItemRect(sources->item(0));
+            const auto image = sources->viewport()->grab().toImage();
+            bool hasText = false;
+            for (int y = row.top(); y <= row.bottom(); ++y)
+                for (int x = row.left(); x < row.center().x(); ++x)
+                    hasText |= image.pixelColor(x, y) == text;
+            if (image.pixelColor(row.right()-10, row.center().y()) != selection || !hasText) {
+                qCritical() << "Selected source foreground/surface disagrees with theme" << focused
+                            << image.pixelColor(row.right()-10, row.center().y()) << selection << hasText;
+                ++failures;
+            }
+        }
         if (month->palette().color(QPalette::ButtonText) != text ||
             month->grab().toImage().pixelColor(3, month->height()/2) != surface) {
             qCritical() << "Calendar navigation foreground/surface disagrees with active theme";
