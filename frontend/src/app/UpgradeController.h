@@ -30,7 +30,7 @@ class QSaveFile;
 //   - 网络：默认用内部 QNetworkAccessManager 直连 GitHub；测试可通过注入
 //     release-latest 的 QUrl（指向本地 QTcpServer 假 HTTP）走真实网络栈，
 //     ReleaseInfo 的 debUrl/shaUrl 由响应 JSON 也指到同一本地 server。
-//   - 安装：默认 QProcess::start("pkexec", {"dpkg","-i",deb})；测试可注入
+//   - 安装：默认 pkexec 调用 /usr/lib/pixiu/install-update；测试可注入
 //     installRunner,发 argv + onFinished(exitCode)，避免真实 pkexec/polkit。
 class UpgradeController : public QObject
 {
@@ -69,7 +69,7 @@ public:
         Other,         // 其它失败（本地文件 / 进程异常等）
     };
 
-    // 安装执行器：接收 program（"pkexec"）、argv（["dpkg","-i",debPath]）与
+    // 安装执行器：接收 program（"pkexec"）、helper/包/摘要/签名/XDG 参数与
     // 完成后回调退出码。默认实现用 pkexec 启动；测试注入替身记录并自行回调。
     using InstallRunner = std::function<void(
         const QString &program, const QStringList &args,

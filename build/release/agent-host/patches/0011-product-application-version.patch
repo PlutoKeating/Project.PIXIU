@@ -1,0 +1,12 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -137,1 +137,3 @@
+-target_link_libraries(${APP_EXECUTABLE_NAME} PRIVATE pixiu-management)
++target_link_libraries(${APP_EXECUTABLE_NAME} PRIVATE pixiu-management)
++file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/pixiu/VERSION" PIXIU_PRODUCT_VERSION LIMIT_COUNT 1)
++target_compile_definitions(${APP_EXECUTABLE_NAME} PRIVATE PIXIU_PRODUCT_VERSION="${PIXIU_PRODUCT_VERSION}")
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -85,1 +85,1 @@
+-    app.setApplicationVersion(QStringLiteral(KYLIN_AGENT_VERSION));
++    app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION));

@@ -9,6 +9,9 @@ add_library(pixiu-management STATIC
     MemoryWriteDialog.h MemoryWriteDialog.cpp
     MemoryAudit.h MemoryAudit.cpp
     PrivacyPage.h PrivacyPage.cpp
+    ../src/app/UpgradeController.h ../src/app/UpgradeController.cpp
+    ../src/app/UpgradeUtils.h ../src/app/UpgradeUtils.cpp
+    ../src/widgets/CheckUpdateDialog.h ../src/widgets/CheckUpdateDialog.cpp
     ../src/services/BackendTransport.h ../src/services/BackendTransport.cpp
     ../src/services/HttpBackendTransport.h ../src/services/HttpBackendTransport.cpp)
 target_include_directories(pixiu-management PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -23,4 +26,12 @@ if(PIXIU_MANAGEMENT_TESTS)
     target_link_libraries(t_memory_workspace PRIVATE pixiu-management Qt5::Test)
     add_test(NAME memory_workspace COMMAND t_memory_workspace)
     set_tests_properties(memory_workspace PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    foreach(upgrade_test IN ITEMS upgrade_utils upgrade_controller check_update_dialog)
+        add_executable(t_${upgrade_test} ../tests/t_${upgrade_test}.cpp)
+        target_link_libraries(t_${upgrade_test} PRIVATE pixiu-management Qt5::Test)
+        add_test(NAME ${upgrade_test} COMMAND t_${upgrade_test})
+        set_tests_properties(${upgrade_test} PROPERTIES
+            ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+            RESOURCE_LOCK pixiu_upgrade_temp_files)
+    endforeach()
 endif()

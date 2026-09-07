@@ -51,10 +51,14 @@ patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     < "${script_dir}/patches/0009-optional-kylin-desktop.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     --fuzz=0 < "${script_dir}/patches/0010-embedded-memory-workspace.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0011-product-application-version.patch"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
     management/MemoryAudit.h management/MemoryAudit.cpp \
     management/PrivacyPage.h management/PrivacyPage.cpp \
+    src/app/UpgradeController.h src/app/UpgradeController.cpp src/app/UpgradeUtils.h src/app/UpgradeUtils.cpp \
+    src/widgets/CheckUpdateDialog.h src/widgets/CheckUpdateDialog.cpp src/app/UiTokens.h \
     src/services/BackendTransport.h src/services/BackendTransport.cpp \
     src/services/HttpBackendTransport.h src/services/HttpBackendTransport.cpp src/services/BackendTypes.h; do
     install -D -m 0644 "${repo_root}/frontend/${relative}" "${target_source}/pixiu/frontend/${relative}"

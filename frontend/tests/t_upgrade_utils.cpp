@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QTemporaryFile>
 
 #include "app/UpgradeUtils.h"
 
@@ -42,14 +43,12 @@ namespace {
 // 写一个临时文件并返回路径（调用方负责 remove）。
 QString writeTempFile(const QByteArray &content)
 {
-    static int counter = 0;
-    const QString path = QDir::tempPath()
-        + QStringLiteral("/pixiu_upgrade_utils_%1.bin").arg(++counter);
-    QFile file(path);
-    if (!file.open(QIODevice::WriteOnly)) {
+    QTemporaryFile file(QDir::tempPath() + QStringLiteral("/pixiu_upgrade_utils_XXXXXX.bin"));
+    if (!file.open() || file.write(content) != content.size() || !file.flush()) {
         return QString();
     }
-    file.write(content);
+    const QString path = file.fileName();
+    file.setAutoRemove(false);
     file.close();
     return path;
 }

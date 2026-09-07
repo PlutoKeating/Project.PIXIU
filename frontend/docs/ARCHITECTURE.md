@@ -378,6 +378,12 @@ Agent 宿主同窗口嵌入，当前提供记忆检索和正文优先的证据�
 
 ### 10.1 组件结构
 
+唯一宿主的版本与升级页复用 `UpgradeController`、`UpgradeUtils` 和
+`CheckUpdateDialog`，沿用签名、授权、安装与回滚协议，不创建旧客户端进程。
+`restartScheduled` 退出当前 Agent QApplication，原有无特权 helper 等待该进程退出
+后执行 `/usr/bin/pixiu`。宿主 applicationVersion 改从根 VERSION 派生，避免将上游
+Agent 版本误用于 PIXIU Release 比较；上游组件版本仍由供应链独立记录。
+
 `PrivacyPage` 嵌入同一工作区，提供采集总开关、目录与行为来源、绝对目录列表和分页
 采集日志。先读取有效配置才允许保存，全量提交时保留剪贴板/截图字段原值；这两种
 来源明确标为当前未实现。编辑与后端保存状态分别提示，不把配置落库当作采集运行

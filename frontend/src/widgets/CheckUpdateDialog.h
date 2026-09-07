@@ -11,7 +11,7 @@ class QPushButton;
 
 // 检查更新对话框：应用内一键升级（检查/下载/校验/安装）的用户掌控面。
 //
-// 注入的 UpgradeController 为共享状态机（PixiuApp 持有）；未注入时对话框
+// 注入的 UpgradeController 由所属应用模块持有；未注入时对话框
 // 自建为空（不触发网络），升级按钮保持禁用——选择「不注入则禁用升级」。
 //
 // 状态到 UI（signal → 控件）：

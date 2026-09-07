@@ -70,6 +70,10 @@ SHA-256。任一适配输入或提交变化都会使旧宿主证据失效，严�
 记录。实现文件 `MemoryAudit.*` 与其他自有模块源码一同进入源码归档和输入摘要。
 `PrivacyPage.*` 提供有效采集来源配置、目录校验、保存状态和日志分页；未实现来源
 只作说明，不提供误导性的可用开关，相关源码同样纳入宿主供应链输入。
+版本与升级页复用现有安全升级模块，源码及 UiTokens 依赖一同进入对应源码树。
+`0011-product-application-version.patch` 令宿主应用版本取根 VERSION，而非上游
+KYLIN_AGENT_VERSION；组件来源版本不变。受控重启退出当前宿主，由既有 helper
+重新启动产品入口，原生安装/回滚矩阵仍须对新宿主验证。
 
 `patches/0009-optional-kylin-desktop.patch` 按 ADR-0006 将实际编译路径中的对话框
 接入 `compat/pixiu_desktop.h`。默认 `PIXIU_HAVE_KYSDK=ON`，使用官方 KDialog、
