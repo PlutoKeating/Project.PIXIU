@@ -18,8 +18,79 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QTabWidget>
+#include <functional>
 
 namespace pixiu {
+namespace {
+QString readableEvidence(const QJsonObject &raw)
+{
+    QJsonObject fields = raw;
+    const QJsonValue body = fields.value("body");
+    const QString text = body.isObject()
+        ? body.toObject().value("text").toString(raw.value("text").toString())
+        : body.toString(raw.value("text").toString());
+    if (fields.value("title").isString()) fields.remove("title");
+    if (fields.value("text").isString() && fields.value("text").toString() == text)
+        fields.remove("text");
+    if (body.isString()) fields.remove("body");
+    else if (body.isObject()) {
+        auto content = body.toObject();
+        if (content.value("text").isString()) content.remove("text");
+        if (content.isEmpty()) fields.remove("body");
+        else fields.insert("body", content);
+    }
+    // Keep the normal reader selectable plain text, never HTML or executable
+    // content. Bound the expanded representation; the advanced view stays exact.
+    QString result = text.left(65536);
+    bool limited = text.size() > 65536;
+    int remaining = 256;
+    if (!fields.isEmpty() && !result.isEmpty())
+        result += QStringLiteral("\n\n") + MemoryWorkspace::tr("结构化内容") + QLatin1Char('\n');
+    std::function<void(const QString &, const QJsonValue &, int)> append;
+    append = [&](const QString &name, const QJsonValue &value, int depth) {
+        if (remaining == 0 || depth > 8 || result.size() >= 65536) {
+            limited = true;
+            return;
+        }
+        --remaining;
+        QString scalar;
+        if (value.isString()) scalar = value.toString();
+        else if (value.isBool()) scalar = value.toBool() ? QStringLiteral("true") : QStringLiteral("false");
+        else if (value.isDouble()) scalar = QString::number(value.toDouble(), 'g', 17);
+        else if (value.isNull()) scalar = QStringLiteral("null");
+        else if (value.isObject() && value.toObject().isEmpty()) scalar = MemoryWorkspace::tr("（空对象）");
+        else if (value.isArray() && value.toArray().isEmpty()) scalar = MemoryWorkspace::tr("（空列表）");
+        const QString indent(depth * 2, QLatin1Char(' '));
+        scalar.replace(QStringLiteral("\n"), QStringLiteral("\n") + indent + QStringLiteral("  "));
+        const QString line = indent + name + QStringLiteral("：") + scalar + QLatin1Char('\n');
+        const int room = qMax(0, 65536 - result.size());
+        result += line.left(room);
+        limited |= line.size() > room;
+        if (value.isObject()) {
+            const auto object = value.toObject();
+            for (auto it = object.begin(); it != object.end(); ++it) {
+                append(it.key(), it.value(), depth + 1);
+                if (!remaining || result.size() >= 65536) break;
+            }
+        } else if (value.isArray()) {
+            const auto array = value.toArray();
+            for (int i = 0; i < array.size(); ++i) {
+                append(QStringLiteral("[%1]").arg(i + 1), array.at(i), depth + 1);
+                if (!remaining || result.size() >= 65536) break;
+            }
+        }
+    };
+    for (auto it = fields.begin(); it != fields.end(); ++it) {
+        append(it.key(), it.value(), 0);
+        if (!remaining || result.size() >= 65536) break;
+    }
+    if (limited || remaining == 0 || result.size() >= 65536)
+        result += QStringLiteral("\n") + MemoryWorkspace::tr("内容较大，部分字段未展开；完整内容见高级原始数据。");
+    if (result.isEmpty()) return MemoryWorkspace::tr("此证据没有可展示的正文或结构化字段。");
+    if (!fields.isEmpty() && result.endsWith(QLatin1Char('\n'))) result.chop(1);
+    return result;
+}
+}
 MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     : QWidget(parent), m_transport(transport ? transport : new HttpBackendTransport(this))
 {
@@ -177,17 +248,12 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
             return;
         }
         const QJsonObject raw = evidence.value(QStringLiteral("raw")).toObject();
-        const QJsonValue rawBody = raw.value(QStringLiteral("body"));
-        const QString body = rawBody.isObject()
-            ? rawBody.toObject().value(QStringLiteral("text")).toString()
-            : rawBody.toString(raw.value(QStringLiteral("text")).toString());
         m_detailMeta->setText(tr("%1\n来源：%2 · 范围：%3 · 质量：%4")
             .arg(raw.value(QStringLiteral("title")).toString(tr("原始证据")),
                  evidence.value(QStringLiteral("source_type")).toString(),
                  evidence.value(QStringLiteral("scope")).toString())
             .arg(evidence.value(QStringLiteral("quality_score")).toDouble(), 0, 'f', 2));
-        m_evidenceText = body.isEmpty()
-            ? tr("此证据没有文本正文，可展开原始数据查看结构化内容。") : body;
+        m_evidenceText = readableEvidence(raw);
         m_evidenceRaw = QString::fromUtf8(QJsonDocument(raw).toJson(QJsonDocument::Indented));
         m_showRaw->setEnabled(!raw.isEmpty());
         m_detail->setPlainText(m_evidenceText);

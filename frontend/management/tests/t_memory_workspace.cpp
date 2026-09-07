@@ -954,12 +954,82 @@ private slots:
         QVERIFY(detail->toPlainText().isEmpty());
         emit transport.evidenceDetailResult({{"id", "e1"}, {"raw", QJsonObject{
             {"body", QJsonObject{{"amount", 42}, {"items", QJsonArray{"receipt"}}}}}}});
-        QVERIFY(!detail->toPlainText().contains("receipt"));
+        QVERIFY(detail->toPlainText().contains("receipt"));
+        QVERIFY(detail->toPlainText().contains(QStringLiteral("amount：42")));
+        QVERIFY(!rawToggle->isChecked());
         rawToggle->setChecked(true);
         QVERIFY(detail->toPlainText().contains("receipt"));
         workspace.findChild<QComboBox *>("memoryScope")->setCurrentIndex(2);
         QVERIFY(detail->toPlainText().isEmpty());
         QVERIFY(!rawToggle->isEnabled());
+    }
+    void structuredEvidenceKeepsTextAndAdditionalFields()
+    {
+        Transport transport;
+        pixiu::MemoryWorkspace workspace(nullptr, &transport);
+        workspace.findChild<QLineEdit *>("memoryQuery")->setText("test");
+        workspace.findChild<QPushButton *>("memorySearch")->click();
+        emit transport.queryResult(transport.sequence,
+            {{"answer", "test"}, {"source_evidence", QJsonArray{"e1"}}});
+        workspace.findChild<QListWidget *>("memorySources")->setCurrentRow(0);
+        emit transport.evidenceDetailResult({{"id", "e1"}, {"raw", QJsonObject{
+            {"body", QJsonObject{{"text", "<b>literal text</b>"}, {"amount", 0},
+                {"approved", false}, {"missing", QJsonValue::Null},
+                {"items", QJsonArray{QJsonObject{{"name", "receipt"}}}}}},
+            {"tool_name", "calculator"}}}});
+        auto *detail = workspace.findChild<QPlainTextEdit *>("memoryEvidence");
+        const QString content = detail->toPlainText();
+        QVERIFY(content.startsWith("<b>literal text</b>"));
+        QVERIFY(content.contains(QStringLiteral("amount：0")));
+        QVERIFY(content.contains("false"));
+        QVERIFY(content.contains("null"));
+        QVERIFY(content.contains("receipt"));
+        QVERIFY(content.contains("calculator"));
+        QVERIFY(detail->isReadOnly());
+        auto *raw = workspace.findChild<QCheckBox *>("memoryEvidenceRaw");
+        raw->setChecked(true);
+        QVERIFY(detail->toPlainText().contains("\"tool_name\""));
+        raw->setChecked(false);
+        QCOMPARE(detail->toPlainText(), content);
+    }
+    void structuredEvidenceBoundsExpansionAndKeepsCompleteRaw()
+    {
+        Transport transport;
+        pixiu::MemoryWorkspace workspace(nullptr, &transport);
+        workspace.findChild<QLineEdit *>("memoryQuery")->setText("test");
+        workspace.findChild<QPushButton *>("memorySearch")->click();
+        emit transport.queryResult(transport.sequence,
+            {{"answer", "test"}, {"source_evidence", QJsonArray{"e1"}}});
+        auto *sources = workspace.findChild<QListWidget *>("memorySources");
+        auto *detail = workspace.findChild<QPlainTextEdit *>("memoryEvidence");
+        auto *toggle = workspace.findChild<QCheckBox *>("memoryEvidenceRaw");
+        QJsonArray many;
+        for (int i = 0; i < 300; ++i) many.append(QString::number(i));
+        many.append("last-marker");
+        QJsonObject nested{{"leaf", "last-marker"}};
+        for (int i = 0; i < 12; ++i) nested = QJsonObject{{"child", nested}};
+        const QList<QJsonValue> largeValues{many, nested,
+            QString(70000, QLatin1Char('x')) + "last-marker"};
+        for (const auto &value : largeValues) {
+            sources->setCurrentRow(-1);
+            sources->setCurrentRow(0);
+            emit transport.evidenceDetailResult({{"id", "e1"},
+                {"raw", QJsonObject{{"body", value}}}});
+            QVERIFY(!toggle->isChecked());
+            QVERIFY(detail->toPlainText().contains(QStringLiteral("完整内容见高级原始数据")));
+            QVERIFY(detail->toPlainText().size() < 66000);
+            QVERIFY(!detail->toPlainText().contains("last-marker"));
+            toggle->setChecked(true);
+            QVERIFY(detail->toPlainText().contains("last-marker"));
+        }
+        sources->setCurrentRow(-1);
+        sources->setCurrentRow(0);
+        emit transport.evidenceDetailResult({{"id", "e1"}, {"raw", QJsonObject{
+            {"text", "  fallback text"}, {"body", QJsonArray{false, QJsonValue::Null, QJsonObject{}}}}}});
+        QVERIFY(detail->toPlainText().startsWith("  fallback text"));
+        QVERIFY(detail->toPlainText().contains("false"));
+        QVERIFY(detail->toPlainText().contains("null"));
+        QVERIFY(detail->toPlainText().contains(QStringLiteral("空对象")));
     }
     void scopeChangeRejectsOldResponse()
     {
