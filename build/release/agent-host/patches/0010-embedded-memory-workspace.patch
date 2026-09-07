@@ -1,0 +1,30 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -149,2 +149,5 @@
+ # Install targets
++add_subdirectory(pixiu/frontend/management)
++target_link_libraries(${APP_EXECUTABLE_NAME} PRIVATE pixiu-management)
++
+ install(TARGETS ${APP_EXECUTABLE_NAME} DESTINATION /usr/bin)
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -8,2 +8,4 @@
+ #include "ui/sidebar.h"
++#include "MemoryWorkspace.h"
++#include <QTabWidget>
+ 
+@@ -102,3 +104,8 @@
+ 
+-    rootLayout->addWidget(splitter, 1);
++    auto *workspaces = new QTabWidget(central);
++    workspaces->setObjectName(QStringLiteral("pixiuWorkspaces"));
++    workspaces->addTab(splitter, tr("会话"));
++    workspaces->addTab(new pixiu::MemoryWorkspace(workspaces), tr("记忆"));
++    rootLayout->addWidget(workspaces, 1);
++    workspaces->setCurrentIndex(0);
+ 
+@@ -165,1 +172,3 @@
+-    SessionService::instance().setCurrentSession(sessionId);
++    if (auto *workspaces = findChild<QTabWidget *>(QStringLiteral("pixiuWorkspaces")))
++        workspaces->setCurrentIndex(0);
++    SessionService::instance().setCurrentSession(sessionId);

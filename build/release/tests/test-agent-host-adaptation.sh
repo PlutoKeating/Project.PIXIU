@@ -35,6 +35,10 @@ for candidate in root.rglob("*"):
 PY
 
 grep -q 'src/services/pixiu_host_compat.cpp' "${fixture}/source/CMakeLists.txt"
+grep -q 'add_subdirectory(pixiu/frontend/management)' "${fixture}/source/CMakeLists.txt"
+grep -q 'new pixiu::MemoryWorkspace(workspaces)' "${fixture}/source/src/ui/mainwindow.cpp"
+test -f "${fixture}/source/pixiu/frontend/management/MemoryWorkspace.cpp"
+test ! -e "${fixture}/source/pixiu/frontend/src/main.cpp"
 grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 ! grep -q 'src/ui/modelsettingswidget.cpp' "${fixture}/source/CMakeLists.txt"
 grep -q '/v1/chat/completions' "${fixture}/source/src/services/pixiu_host_compat.cpp"

@@ -49,6 +49,14 @@ patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     < "${script_dir}/patches/0008-pixiu-assistant-history.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
     < "${script_dir}/patches/0009-optional-kylin-desktop.patch"
+patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
+    --fuzz=0 < "${script_dir}/patches/0010-embedded-memory-workspace.patch"
+for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
+    src/services/BackendTransport.h src/services/BackendTransport.cpp \
+    src/services/HttpBackendTransport.h src/services/HttpBackendTransport.cpp src/services/BackendTypes.h; do
+    install -D -m 0644 "${repo_root}/frontend/${relative}" "${target_source}/pixiu/frontend/${relative}"
+done
+install -D -m 0644 "${repo_root}/VERSION" "${target_source}/pixiu/VERSION"
 install -D -m 0644 "${script_dir}/compat/pixiu_desktop.h" \
     "${target_source}/include/utils/pixiu_desktop.h"
 cp -a "${repo_root}/integrations/kylin_agent/message_renderer" \

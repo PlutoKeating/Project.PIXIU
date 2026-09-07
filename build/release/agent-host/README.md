@@ -62,6 +62,11 @@ WebEngine 内的滚轮事件会转交外层会话滚动区，长消息中的表�
 SHA-256。任一适配输入或提交变化都会使旧宿主证据失效，严格打包必须重新构建并记录，
 不能在新候选中复用旧二进制。
 
+`patches/0010-embedded-memory-workspace.patch` 将 `frontend/management` 静态模块
+接入同一主窗口的“记忆”页签，会话页实例不会因页签切换销毁。自有界面和共用 HTTP
+源码复制进宿主对应源码树，并逐文件纳入供应链摘要；不编译旧 PixiuApp 或聊天外壳。
+此切片仅覆盖检索和证据正文查看，旧可执行程序尚未从统一包删除。
+
 `patches/0009-optional-kylin-desktop.patch` 按 ADR-0006 将实际编译路径中的对话框
 接入 `compat/pixiu_desktop.h`。默认 `PIXIU_HAVE_KYSDK=ON`，使用官方 KDialog、
 KInputDialog、KMessageBox；`build-agent-host.sh` 接收 `PIXIU_KYSDK=OFF` 时，

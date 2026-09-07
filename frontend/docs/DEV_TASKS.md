@@ -333,6 +333,12 @@ git submodule update --init --recursive
 
 ## 1. 模块概述
 
+当前执行 ADR-0006 的唯一前端迁移：`management/` 为嵌入 Agent 的自有 Qt 模块，
+检索与证据正文查看已接线，范围切换会清除旧结果并忽略旧查询响应。已有控制台描述
+属于待退役实现，不再是目标产品形态；设备、设置、写入、升级等仍须逐项迁移验证。
+独立模块回归：`cmake -S frontend/management -B <build> -DPIXIU_MANAGEMENT_TESTS=ON`，
+然后构建并运行 `ctest --test-dir <build> --output-on-failure`。
+
 PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。核心交互形态：
 
 - **悬浮球（FloatingBall）**：常驻桌面，左键拖拽可移动到任意位置并停留在

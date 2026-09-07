@@ -127,6 +127,9 @@ jobs:
           PIXIU_KYSDK: "OFF"
         run: |
           bash build/release/tests/test-desktop-adapter.sh
+          cmake -S frontend/management -B build/release/out/management-tests -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
+          cmake --build build/release/out/management-tests --parallel 2
+          ctest --test-dir build/release/out/management-tests --output-on-failure
           bash build/release/agent-host/build-agent-host.sh
 
       - uses: actions/setup-python@v7
