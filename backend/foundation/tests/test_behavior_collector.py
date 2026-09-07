@@ -14,6 +14,8 @@
 from __future__ import annotations
 
 import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -360,6 +362,16 @@ def test_parse_active_window_id():
 # di 接线：get_behavior_collector 惰性装配真实服务
 # ═══════════════════════════════════════════════════════
 
+def test_di_wiring_subprocess_exits_cleanly():
+    """Passing assertions must also release the real SQLite worker on exit."""
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest",
+         f"{__file__}::test_di_wiring_creates_collector_with_real_services", "-q"],
+        cwd=Path(__file__).resolve().parents[3],
+        capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
 
 @pytest.mark.asyncio
 async def test_di_wiring_creates_collector_with_real_services(tmp_path, monkeypatch):
@@ -388,6 +400,8 @@ async def test_di_wiring_creates_collector_with_real_services(tmp_path, monkeypa
         assert collector._security is not None
         assert await get_behavior_collector() is collector  # 单例
     finally:
-        di_module._db = None
-        di_module._monitor_config_store = None
-        di_module._behavior_collector = None
+        try:
+            await di_module.stop_db()
+        finally:
+            di_module._monitor_config_store = None
+            di_module._behavior_collector = None
