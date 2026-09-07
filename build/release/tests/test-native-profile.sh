@@ -3,6 +3,24 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 
+# Every complete distribution uses the committed cp312 Runtime closure, not
+# only the generic CI profile. Apt must reject incompatible system interpreters.
+for PROFILE in generic-ubuntu kylin-v11-x86_64 kylin-v11-native-x86_64; do
+    (
+        . "${ROOT}/build/release/profiles/${PROFILE}.env"
+        test "${PIXIU_PYTHON_VERSION}" = 312
+        for DEPENDENCY in 'python3 (>= 3.12)' 'python3 (<< 3.13)' \
+                python3-venv libqt5sql5-sqlite; do
+            printf '%s\n' "${PIXIU_DEBIAN_DEPENDS}" | grep -qF "${DEPENDENCY}"
+        done
+    )
+done
+if PIXIU_PROFILE=missing-unreviewed-profile \
+        "${ROOT}/build/release/scripts/build-deb.sh" >/dev/null 2>&1; then
+    echo "unknown distribution profiles must fail before building" >&2
+    exit 1
+fi
+
 (
     unset APT_BUILD_DEPS
     # shellcheck source=/dev/null

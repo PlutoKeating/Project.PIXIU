@@ -29,7 +29,7 @@ if [ -f "${PROFILE_FILE}" ]; then
     done < "${PROFILE_FILE}"
     log "profile loaded: ${PIXIU_PROFILE}"
 else
-    warn "profile not found: ${PROFILE_FILE}（使用默认 env 值）"
+    die "profile not found: ${PROFILE_FILE}; select a reviewed distribution profile"
 fi
 
 # 未由环境变量/profile 提供时才使用内置默认值
@@ -328,9 +328,7 @@ PIXIU_PYTHON_VERSION="${PIXIU_PYTHON_VERSION}" \
     --output "${STAGE}/usr/share/pixiu/release-manifest.json"
 
 if [ -z "${PIXIU_DEBIAN_DEPENDS}" ]; then
-    PIXIU_DEBIAN_DEPENDS="python3 (>= 3.10), curl, dbus, openssl, dpkg-repack, pkexec, \
-libqt5widgets5, libqt5network5, libqt5webenginewidgets5, libqt5websockets5, libqt5svg5, libqt5multimedia5, \
-fonts-noto-color-emoji, libkysdk-shortcut, libkysdk-notification, libkysdk-qtwidgets, libgsettings-qt1"
+    die "selected distribution profile must define runtime dependencies"
 fi
 sed -e "s/@VERSION@/${PIXIU_VERSION}-${PIXIU_REVISION}/" \
     -e "s/@ARCH@/${PIXIU_ARCH}/" \
