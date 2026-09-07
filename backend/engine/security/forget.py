@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from backend.foundation.core.models import KnowledgeItem, KnowledgeStatus
-from backend.foundation.core.repository import EntityRepository, KnowledgeRepository
+from backend.foundation.core.repository import EntityRepository, KnowledgeRepository, KnowledgeVersionConflict
 from backend.foundation.core.vector_store import VectorStore
 
 from backend.engine.security.models import ForgetResult
@@ -64,7 +64,7 @@ class _ScoredTarget:
     confidence: float
 
 
-class ForgetPreviewChanged(ValueError):
+class ForgetPreviewChanged(KnowledgeVersionConflict):
     """The current match set or versions differ from the reviewed snapshot."""
 
 

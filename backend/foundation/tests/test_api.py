@@ -917,6 +917,22 @@ def test_preference_history_404(client):
     assert resp.status_code == 404
 
 
+def test_forget_requires_scoped_single_use_preview(client):
+    command = "忘记那张4月支出清单"
+    assert client.post("/forget", json={"command": command, "confirm": True}).status_code == 409
+    client.post("/memory/write", json={"source_type": "OCR", "raw": OCR_RAW, "scope": "user:alice"})
+    preview = client.post("/forget", json={"command": command, "scope": "user:alice"}).json()
+    token = preview["confirmation_token"]
+    assert preview["targets"][0]["scope"] == "user:alice"
+    assert client.post("/forget", json={"command": command, "scope": "shared:home", "confirm": True,
+        "confirmation_token": token}).status_code == 409
+    preview = client.post("/forget", json={"command": command, "scope": "user:alice"}).json()
+    payload = {"command": command, "scope": "user:alice", "confirm": True,
+        "confirmation_token": preview["confirmation_token"]}
+    assert client.post("/forget", json=payload).status_code == 200
+    assert client.post("/forget", json=payload).status_code == 409
+
+
 def test_forget_pending_then_confirm(client):
     client.post(
         "/memory/write",
@@ -936,7 +952,8 @@ def test_forget_pending_then_confirm(client):
     assert pdata["irreversible"] is True
 
     done = client.post(
-        "/forget", json={"command": "忘记那张4月支出清单", "confirm": True}
+        "/forget", json={"command": "忘记那张4月支出清单", "confirm": True,
+                          "confirmation_token": pdata["confirmation_token"]}
     )
     assert done.status_code == 200
     ddata = done.json()
@@ -1456,8 +1473,10 @@ def test_shared_forget_queues_knowledge_tombstone(client):
         "/memory/write",
         json={"source_type": "OCR", "raw": OCR_RAW, "scope": "shared:home"},
     )
+    preview = client.post("/forget", json={"command": "忘记那张4月支出清单"}).json()
     response = client.post(
-        "/forget", json={"command": "\u5fd8\u8bb0\u90a3\u5f204\u6708\u652f\u51fa\u6e05\u5355", "confirm": True}
+        "/forget", json={"command": "忘记那张4月支出清单", "confirm": True,
+                          "confirmation_token": preview["confirmation_token"]}
     )
     assert response.status_code == 200
     tombstones = [
@@ -1495,7 +1514,8 @@ def test_sync_knowledge_state_exposes_tombstone_without_payload(client):
     assert "payload" not in active.json()
 
     forgotten = client.post(
-        "/forget", json={"command": "忘记shared state marker", "confirm": True}
+        "/forget", json={"command": "忘记shared state marker", "confirm": True,
+                          "confirmation_token": client.post("/forget", json={"command": "忘记shared state marker"}).json()["confirmation_token"]}
     )
     assert forgotten.status_code == 200
     deleted = client.get(f"/sync/state/knowledge/{knowledge_id}")

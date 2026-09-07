@@ -83,6 +83,7 @@ from .monitor_log import (
 )
 from .ws_manager import ws_manager
 from .version import API_VERSION, COMPONENT_NAME, version_report
+from .forget_preview import forget_previews
 
 _log = get_logger(__name__)
 
@@ -297,8 +298,10 @@ class MemoryUpdateRequest(BaseModel):
 
 
 class ForgetRequest(BaseModel):
-    command: str
+    command: str = Field(min_length=1, max_length=4096)
     confirm: bool = False
+    scope: str | None = Field(default=None, min_length=1, max_length=256)
+    confirmation_token: str | None = Field(default=None, max_length=128)
 
 
 class MemoryQueryRequest(BaseModel):
@@ -948,12 +951,29 @@ async def forget(
     sync=Depends(get_optional_sync_service),
 ):
     started = time.monotonic()
-    result = await security.forget(body.command, confirm=body.confirm)
+    expected = None
+    if body.confirm:
+        try:
+            expected = forget_previews.consume(body.confirmation_token, body.command, body.scope)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail="FORGET_PREVIEW_REQUIRED") from exc
+    try:
+        result = await security.forget(body.command, confirm=body.confirm,
+                                       scope=body.scope, expected_targets=expected)
+    except KnowledgeVersionConflict as exc:
+        raise HTTPException(status_code=409, detail="FORGET_PREVIEW_CHANGED") from exc
     if result.status == "pending":
+        try:
+            token = forget_previews.issue(body.command, body.scope,
+                {target["id"]: target["version"] for target in result.targets})
+        except ValueError as exc:
+            raise HTTPException(status_code=429, detail="FORGET_PREVIEW_CAPACITY") from exc
         return {
             "targets": result.targets,
             "cascade": result.cascade,
             "irreversible": result.irreversible,
+            "confirmation_token": token,
+            "expires_in_seconds": forget_previews.ttl,
         }
     if sync is not None:
         for forgotten_id in result.forgotten_ids:

@@ -554,7 +554,8 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 ```jsonc
 {
   "command": "忘记那张4月支出清单",
-  "confirm": false
+  "confirm": false,
+  "scope": "user:local"
 }
 ```
 
@@ -563,15 +564,24 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 ```jsonc
 {
   "targets": [
-    {"type": "knowledge", "id": "knw_02K...", "title": "2026年4月家庭支出清单"}
+    {"type": "knowledge", "id": "knw_02K...", "title": "2026年4月家庭支出清单", "version": 1, "scope": "user:local"}
   ],
   "cascade": {
     "evidence_count": 1,
     "relation_count": 3
   },
-  "irreversible": true
+  "irreversible": true,
+  "confirmation_token": "opaque-one-use-token",
+  "expires_in_seconds": 120
 }
 ```
+
+确认请求必须重传相同 `command`、`scope`，设置 `confirm=true` 并携带预览返回的
+`confirmation_token`。凭证绑定目标 ID/版本，执行前一次性消费；缺失、过期、已用
+或不匹配返回 409 `FORGET_PREVIEW_REQUIRED`，目标变化返回 409
+`FORGET_PREVIEW_CHANGED`。凭证容量上限 256，超过返回 429
+`FORGET_PREVIEW_CAPACITY`。当前凭证仅保存在单个服务进程，重启或切换 worker 后
+必须重新预览；取消无需发送确认，凭证自行到期。失败后不得盲目重放确认请求。
 
 **响应体（confirm=true，已执行）：**
 
@@ -585,8 +595,9 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 
 遗忘实现边界：`cascade` 仅表示关联数量预览；确认会标记知识 FORGOTTEN、
 删除其向量，并为共享知识记录同步墓碑，不物理清除 evidence、实体关系或 FTS
-原始载荷。`/forget` 当前不接收作用域字段，匹配当前用户服务数据库的 ACTIVE
-知识；不能把它描述为强制 scope 隔离或全部数据擦除。
+原始载荷。提供 `scope` 时仅匹配该范围；省略时仍匹配当前用户服务数据库的全部
+ACTIVE 知识，调用界面应显式指定范围。数据库状态/版本整批原子更新，但向量与
+同步副作用不在该事务内，失败恢复仍需完善，不能描述成全部数据擦除。
 
 ### 3.9 GET /conflicts
 
