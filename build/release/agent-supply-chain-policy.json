@@ -34,6 +34,7 @@
     "frontend/management/SettingsWorkspace.h",
     "frontend/management/SettingsWorkspace.cpp",
     "build/release/agent-host/patches/0012-unified-workspace-navigation.patch",
+    "build/release/agent-host/patches/0013-close-last-window-exits-host.patch",
     "build/release/agent-host/patches/0011-product-application-version.patch",
     "frontend/src/app/UpgradeController.h",
     "frontend/src/app/UpgradeController.cpp",
