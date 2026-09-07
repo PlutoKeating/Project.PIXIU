@@ -704,6 +704,32 @@ private slots:
         settings.findChild<QPushButton *>("agentSettings")->click();
         QCOMPARE(requested.count(), 1);
     }
+    void forgettingDoesNotInventMissingCascadeCounts()
+    {
+        Transport transport;
+        pixiu::ForgetPage page(nullptr, &transport);
+        page.findChild<QLineEdit *>("forgetCommand")->setText("forget example");
+        auto *preview = page.findChild<QPushButton *>("forgetPreview");
+        const QList<QJsonObject> cascades = {{}, {{"evidence_count", -1}, {"relation_count", "0"}},
+            {{"evidence_count", 1.5}, {"relation_count", QJsonValue::Null}}};
+        for (const auto &cascade : cascades) {
+            preview->click();
+            emit transport.forgetResult({{"targets", QJsonArray{QJsonObject{{"id", "knw_example"},
+                {"title", "Example"}, {"version", 1}, {"scope", "user:local"}}}},
+                {"confirmation_token", "token"}, {"expires_in_seconds", 120}, {"cascade", cascade}});
+            const auto text = page.findChild<QPlainTextEdit *>("forgetTargets")->toPlainText();
+            QVERIFY(text.contains(QStringLiteral("证据 未知 条，关系 未知 条")));
+            QVERIFY(!transport.forgetPayload.value("confirm").toBool());
+        }
+        preview->click();
+        emit transport.forgetResult({{"targets", QJsonArray{QJsonObject{{"id", "knw_example"},
+            {"title", "Example"}, {"version", 1}, {"scope", "user:local"}}}},
+            {"confirmation_token", "token"}, {"expires_in_seconds", 120},
+            {"cascade", QJsonObject{{"evidence_count", 0}, {"relation_count", 3}}}});
+        QVERIFY(page.findChild<QPlainTextEdit *>("forgetTargets")->toPlainText()
+            .contains(QStringLiteral("证据 0 条，关系 3 条")));
+    }
+
     void forgettingRequiresFreshScopedPreview()
     {
         Transport transport;

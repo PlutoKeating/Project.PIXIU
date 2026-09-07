@@ -104,8 +104,13 @@ ForgetPage::ForgetPage(QWidget *parent, BackendTransport *transport)
             else if (targets.isEmpty()) m_status->setText(tr("没有匹配目标，未执行遗忘。"));
             else {
                 const auto cascade = response.value("cascade").toObject();
+                const auto countText = [](const QJsonValue &value) {
+                    const int count = value.toInt(-1);
+                    return value.isDouble() && count >= 0
+                        ? QString::number(count) : QObject::tr("未知");
+                };
                 lines << tr("关联预估：证据 %1 条，关系 %2 条（不表示物理删除）")
-                    .arg(cascade.value("evidence_count").toInt()).arg(cascade.value("relation_count").toInt());
+                    .arg(countText(cascade.value("evidence_count")), countText(cascade.value("relation_count")));
                 m_targets->setPlainText(lines.join(QStringLiteral("\n\n")));
                 for (const auto &target : targets) m_targetIds << target.toObject().value("id").toString();
                 m_token = token;
