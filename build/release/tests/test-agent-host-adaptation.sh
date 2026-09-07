@@ -184,6 +184,7 @@ import sys
 source = pathlib.Path(sys.argv[1]).read_text()
 assert source.count('workspaces->addTab(') == 4
 assert 'new pixiu::DevicePage(workspaces)' in source
+assert source.count('new pixiu::BackendEventStatus(eventConfiguration.baseUrl(), central)') == 1
 assert 'new pixiu::SettingsWorkspace(workspaces)' in source
 settings = source.split('void MainWindow::openSettings()', 1)[1].split('\n}', 1)[0]
 assert 'workspaces->setCurrentIndex(3)' in settings

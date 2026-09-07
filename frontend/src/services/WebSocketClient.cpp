@@ -33,15 +33,20 @@ WebSocketClient::WebSocketClient(QObject *parent)
     , m_socket(new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this))
 {
     m_reconnectTimer.setSingleShot(true);
+    m_socket->setReadBufferSize(64 * 1024);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    m_socket->setMaxAllowedIncomingFrameSize(2 * 1024 * 1024);
+    m_socket->setMaxAllowedIncomingMessageSize(2 * 1024 * 1024);
+#endif
 
     connect(m_socket, &QWebSocket::connected, this, [this]() {
-        qCInfo(lcWs) << "connected to" << m_wsUrl;
+        qCInfo(lcWs) << "event channel connected";
         m_reconnectAttempts = 0;
         m_reconnectTimer.stop();
         emit connectionStateChanged(ConnectionState::Connected);
     });
     connect(m_socket, &QWebSocket::disconnected, this, [this]() {
-        qCInfo(lcWs) << "disconnected from" << m_wsUrl;
+        qCInfo(lcWs) << "event channel disconnected";
         emit connectionStateChanged(ConnectionState::Disconnected);
         if (!m_stopped) {
             scheduleReconnect();
@@ -51,7 +56,7 @@ WebSocketClient::WebSocketClient(QObject *parent)
             &WebSocketClient::onTextMessageReceived);
     connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
             this, [this](QAbstractSocket::SocketError error) {
-                qCWarning(lcWs) << "socket error:" << int(error) << m_socket->errorString();
+                qCWarning(lcWs) << "event channel socket error:" << int(error);
                 emit connectionStateChanged(ConnectionState::Error);
                 if (!m_stopped) {
                     scheduleReconnect();
@@ -130,6 +135,7 @@ void WebSocketClient::resetReconnect()
 
 void WebSocketClient::onTextMessageReceived(const QString &message)
 {
+    if (m_stopped || message.size() > 2 * 1024 * 1024) return;
     QJsonParseError parseError;
     const QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8(), &parseError);
     if (parseError.error != QJsonParseError::NoError || !doc.isObject()) {
@@ -152,7 +158,7 @@ void WebSocketClient::onTextMessageReceived(const QString &message)
 
     if (!isKnownBusinessEvent(name)) {
         // 未知事件：只记录事件名，不崩溃、不断开、不向上分发。
-        qCInfo(lcWs) << "ignoring unknown event:" << name;
+        qCInfo(lcWs) << "ignoring unknown event";
         return;
     }
 

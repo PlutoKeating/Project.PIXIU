@@ -1,0 +1,12 @@
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -9,1 +9,3 @@
+-#include "MemoryWorkspace.h"
++#include "MemoryWorkspace.h"
++#include "BackendEventStatus.h"
++#include "services/HttpBackendTransport.h"
+@@ -102,1 +104,3 @@
+-    auto *workspaces = new QTabWidget(central);
++    auto *workspaces = new QTabWidget(central);
++    HttpBackendTransport eventConfiguration;
++    rootLayout->addWidget(new pixiu::BackendEventStatus(eventConfiguration.baseUrl(), central));

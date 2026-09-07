@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(PixiuManagement LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
-find_package(Qt5 REQUIRED COMPONENTS Widgets Network)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Network WebSockets)
 find_path(PIXIU_QRENCODE_INCLUDE_DIR qrencode.h)
 find_library(PIXIU_QRENCODE_LIBRARY qrencode)
 if(NOT PIXIU_QRENCODE_INCLUDE_DIR OR NOT PIXIU_QRENCODE_LIBRARY)
@@ -10,6 +10,8 @@ if(NOT PIXIU_QRENCODE_INCLUDE_DIR OR NOT PIXIU_QRENCODE_LIBRARY)
 endif()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1)
 add_library(pixiu-management STATIC
+    BackendEventStatus.h BackendEventStatus.cpp
+    ../src/services/WebSocketClient.h ../src/services/WebSocketClient.cpp
     AgentEvidence.h AgentEvidence.cpp
     AgentEvidenceClient.h AgentEvidenceClient.cpp
     MemoryScopes.h
@@ -33,13 +35,21 @@ add_library(pixiu-management STATIC
 target_include_directories(pixiu-management PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../src")
 target_compile_definitions(pixiu-management PRIVATE PIXIU_VERSION="${PIXIU_MANAGEMENT_VERSION}")
-target_link_libraries(pixiu-management PUBLIC Qt5::Widgets Qt5::Network)
+target_link_libraries(pixiu-management PUBLIC Qt5::Widgets Qt5::Network Qt5::WebSockets)
 target_include_directories(pixiu-management PRIVATE "${PIXIU_QRENCODE_INCLUDE_DIR}")
 target_link_libraries(pixiu-management PRIVATE "${PIXIU_QRENCODE_LIBRARY}")
 option(PIXIU_MANAGEMENT_TESTS "Build embedded management tests" OFF)
 if(PIXIU_MANAGEMENT_TESTS)
     enable_testing()
     find_package(Qt5 REQUIRED COMPONENTS Test)
+    add_executable(t_backend_events tests/t_backend_events.cpp)
+    target_link_libraries(t_backend_events PRIVATE pixiu-management Qt5::Test)
+    add_test(NAME backend_events COMMAND t_backend_events)
+    set_tests_properties(backend_events PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(t_websocket_client ../tests/t_websocket_client.cpp)
+    target_link_libraries(t_websocket_client PRIVATE pixiu-management Qt5::Test)
+    add_test(NAME websocket_client COMMAND t_websocket_client)
+    set_tests_properties(websocket_client PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     add_executable(t_agent_evidence tests/t_agent_evidence.cpp)
     target_link_libraries(t_agent_evidence PRIVATE pixiu-management Qt5::Test)
     add_test(NAME agent_evidence COMMAND t_agent_evidence)

@@ -75,9 +75,13 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
     < "${script_dir}/patches/0021-use-product-window-identity.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${script_dir}/patches/0022-session-evidence-entry.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0023-backend-event-status.patch"
 install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
     "${target_source}/res/pixiu.svg"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
+    management/BackendEventStatus.h management/BackendEventStatus.cpp \
+    src/services/WebSocketClient.h src/services/WebSocketClient.cpp \
     management/AgentEvidence.h management/AgentEvidence.cpp \
     management/AgentEvidenceClient.h management/AgentEvidenceClient.cpp \
     management/MemoryScopes.h \
