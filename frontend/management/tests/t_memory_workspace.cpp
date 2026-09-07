@@ -45,7 +45,8 @@ public:
     void updateMemory(const QJsonObject &payload) override { edited = payload; ++edits; }
     QString auditScope, historyId;
     QJsonObject extraction;
-    int conflictRequests = 0;
+    int extractionRequests = 0;
+    int conflictRequests = 0, preferenceRequests = 0;
     int statusReads = 0, peerReads = 0, discoveries = 0;
     QJsonObject syncSettings;
     QString revoked;
@@ -74,9 +75,9 @@ public:
     void monitorConfig() override { ++configReads; }
     void updateMonitorConfig(const QJsonObject &payload) override { savedConfig = payload; ++configWrites; }
     void monitorLog(int, int offset) override { logOffset = offset; }
-    void preferencesList(const QString &scope) override { auditScope = scope; }
+    void preferencesList(const QString &scope) override { auditScope = scope; ++preferenceRequests; }
     void preferenceHistory(const QString &id) override { historyId = id; }
-    void extractPreferences(const QJsonObject &payload) override { extraction = payload; }
+    void extractPreferences(const QJsonObject &payload) override { extraction = payload; ++extractionRequests; }
     void listConflicts() override { ++conflictRequests; }
     int writes = 0;
     quint64 sequence = 0;
@@ -1065,6 +1066,57 @@ private slots:
         emit transport.monitorLogResult({QJsonObject{{"source", "directory"}, {"status", "ingested"}, {"summary", "example"}}});
         QCOMPARE(page.findChild<QListWidget *>("privacyEvents")->count(), 1);
     }
+    void auditEventsCoalesceAndWaitForPendingHistory()
+    {
+        Transport transport;
+        pixiu::MemoryAudit audit(nullptr, &transport);
+        for (int i = 0; i < 20; ++i) audit.notifyDataChanged();
+        QTest::qWait(550);
+        QCOMPARE(transport.preferenceRequests, 0); // hidden pages do not poll
+        audit.show();
+        QTRY_COMPARE(transport.preferenceRequests, 1);
+        const QJsonObject record{{"id", "p1"}, {"key", "color"}, {"value", "blue"}};
+        emit transport.preferencesListResult({record});
+        auto *records = audit.findChild<QListWidget *>("auditRecords");
+        records->setCurrentRow(0);
+        QVERIFY(audit.hasPendingOperation());
+        for (int i = 0; i < 20; ++i) audit.notifyDataChanged();
+        QTest::qWait(550);
+        QCOMPARE(transport.preferenceRequests, 1);
+        emit transport.preferenceHistoryResult({{"id", "p1"}, {"key", "color"},
+            {"current_version", 1}, {"history", QJsonArray{}}});
+        QTRY_COMPARE(transport.preferenceRequests, 2);
+        emit transport.preferencesListResult({record});
+        QCOMPARE(records->currentRow(), 0);
+        QVERIFY(audit.hasPendingOperation()); // selected history is re-read, not reused
+        emit transport.preferenceHistoryResult({{"id", "p1"}, {"history", QJsonArray{}}});
+        audit.notifyDataChanged();
+        QTRY_COMPARE(transport.preferenceRequests, 3);
+        emit transport.preferencesListResult({});
+        QCOMPARE(records->currentRow(), -1);
+        QVERIFY(audit.findChild<QPlainTextEdit *>("auditDetails")->toPlainText().isEmpty());
+        QCOMPARE(transport.writes, 0);
+        QCOMPARE(transport.forgetCalls, 0);
+        QVERIFY(transport.extraction.isEmpty());
+    }
+
+    void auditEventsDoNotRepeatExtraction()
+    {
+        Transport transport;
+        pixiu::MemoryAudit audit(nullptr, &transport);
+        audit.show();
+        audit.setEvidenceIds({"evd_example"});
+        audit.findChild<QPushButton *>("auditExtract")->click();
+        QCOMPARE(transport.extractionRequests, 1);
+        audit.notifyDataChanged();
+        QTest::qWait(550);
+        QCOMPARE(transport.preferenceRequests, 0);
+        emit transport.errorOccurred("TIMEOUT", "unknown outcome", "extract");
+        QTRY_COMPARE(transport.preferenceRequests, 1);
+        QCOMPARE(transport.extractionRequests, 1);
+        emit transport.preferencesListResult({});
+    }
+
     void conflictAuditShowsContextAndHonestResolution()
     {
         Transport transport;

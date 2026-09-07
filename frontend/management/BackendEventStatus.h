@@ -12,6 +12,9 @@ class BackendEventStatus : public QWidget
     Q_OBJECT
 public:
     explicit BackendEventStatus(const QString &baseUrl, QWidget *parent = nullptr);
+signals:
+    // Allowlisted event name, or "reconnected"; carries no command or credential.
+    void dataChanged(const QString &eventName);
 private:
     void updateNotice();
     QLabel *m_notice;

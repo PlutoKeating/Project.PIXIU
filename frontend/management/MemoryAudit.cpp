@@ -9,6 +9,8 @@
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QShowEvent>
+#include <QTimer>
 #include <QVBoxLayout>
 
 namespace {
@@ -46,6 +48,12 @@ namespace pixiu {
 MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     : QWidget(parent), m_transport(transport ? transport : new HttpBackendTransport(this))
 {
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setSingleShot(true);
+    m_refreshTimer->setInterval(500);
+    connect(m_refreshTimer, &QTimer::timeout, this, [this]() {
+        if (m_refreshNeeded && isVisible() && m_pending == Pending::None) refresh(true);
+    });
     auto *layout = new QVBoxLayout(this);
     m_mode = new QComboBox(this);
     m_mode->setObjectName(QStringLiteral("auditMode"));
@@ -102,6 +110,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
             item->setData(Qt::UserRole, record);
         }
         m_status->setText(records.isEmpty() ? tr("此范围暂无偏好。") : tr("选择偏好查看版本历史。"));
+        restoreSelection();
     });
     connect(m_transport, &BackendTransport::conflictsResult, this, [this](const QJsonArray &records) {
         if (m_pending != Pending::Conflicts) return;
@@ -117,6 +126,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
             item->setData(Qt::UserRole, record);
         }
         m_status->setText(records.isEmpty() ? tr("暂无冲突记录。") : tr("全部范围的只读审计记录；不提供人工裁决操作。"));
+        restoreSelection();
     });
     connect(m_records, &QListWidget::currentItemChanged, this, [this](QListWidgetItem *item) {
         if (!item || m_pending != Pending::None) return;
@@ -195,10 +205,42 @@ void MemoryAudit::updateControls()
     m_refresh->setEnabled(idle);
     m_records->setEnabled(idle);
     m_extract->setEnabled(idle && m_mode->currentIndex() == 0 && !m_evidenceIds.isEmpty());
+    scheduleRefresh();
 }
-void MemoryAudit::refresh()
+void MemoryAudit::notifyDataChanged()
+{
+    m_refreshNeeded = true;
+    scheduleRefresh();
+}
+void MemoryAudit::scheduleRefresh()
+{
+    if (m_refreshNeeded && isVisible() && m_pending == Pending::None && !m_refreshTimer->isActive())
+        m_refreshTimer->start();
+}
+void MemoryAudit::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    scheduleRefresh();
+}
+void MemoryAudit::restoreSelection()
+{
+    const QString wanted = m_restoreSelection;
+    m_restoreSelection.clear();
+    if (wanted.isEmpty()) return;
+    for (int row = 0; row < m_records->count(); ++row) {
+        if (m_records->item(row)->data(Qt::UserRole).toJsonObject().value("id").toString() == wanted) {
+            m_records->setCurrentRow(row);
+            return;
+        }
+    }
+}
+void MemoryAudit::refresh(bool preserveSelection)
 {
     if (m_pending != Pending::None) return;
+    m_restoreSelection = preserveSelection && m_records->currentItem()
+        ? m_records->currentItem()->data(Qt::UserRole).toJsonObject().value("id").toString() : QString();
+    m_refreshNeeded = false;
+    m_refreshTimer->stop();
     m_records->clear();
     m_details->clear();
     m_pending = m_mode->currentIndex() == 0 ? Pending::Preferences : Pending::Conflicts;

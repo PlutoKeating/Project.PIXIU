@@ -42,6 +42,7 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
             // The protocol has no replay cursor: reconnect cannot prove freshness.
             m_changed.insert(tr("连接恢复后的各页面"));
             updateNotice();
+            emit dataChanged(QStringLiteral("reconnected"));
         } else if (state == ConnectionState::Connecting) {
             connection->setText(tr("事件通道正在连接…"));
         } else {
@@ -58,6 +59,7 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
         if (page.isEmpty()) return;
         m_changed.insert(page);
         updateNotice();
+        emit dataChanged(name);
     });
     client->setBackendUrl(url.toString());
     client->connectToBackend();
