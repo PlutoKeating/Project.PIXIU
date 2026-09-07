@@ -3,6 +3,7 @@
 #include "MemoryAudit.h"
 #include "PrivacyPage.h"
 #include "DevicePage.h"
+#include "DeliveryPage.h"
 #include "PairingDialog.h"
 #include <QMessageBox>
 #include <QTimer>
@@ -33,6 +34,9 @@ public:
     QString revoked;
     QJsonObject tokenRequest, pairRequest;
     int pairCalls = 0;
+    int insightReads = 0, digestReads = 0;
+    void deliveryInsights() override { ++insightReads; }
+    void deliveryDigest() override { ++digestReads; }
     void createPairingToken(const QJsonObject &payload) override { tokenRequest = payload; }
     void pairDevice(const QJsonObject &payload) override { pairRequest = payload; ++pairCalls; }
     void syncStatus() override { ++statusReads; }
@@ -61,6 +65,37 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void deliveryDistinguishesErrorsAndSupportsSearch()
+    {
+        Transport transport;
+        pixiu::DeliveryPage page(nullptr, &transport);
+        auto *insights = page.findChild<QPushButton *>("deliveryInsights");
+        auto *digest = page.findChild<QPushButton *>("deliveryDigest");
+        auto *search = page.findChild<QPushButton *>("deliverySearch");
+        auto *items = page.findChild<QListWidget *>("deliveryItems");
+        auto *status = page.findChild<QLabel *>("deliveryStatus");
+        QVERIFY(!search->isEnabled());
+        insights->click();
+        QVERIFY(!digest->isEnabled());
+        emit transport.insightsResult({});
+        QVERIFY(status->text().contains("不代表记忆库为空"));
+        insights->click();
+        emit transport.insightsResult({QJsonObject{{"title", "Example"}, {"summary", "Summary"}, {"knowledge_id", "k1"}, {"score", 0.7}}});
+        items->setCurrentRow(0);
+        QSignalSpy requested(&page, &pixiu::DeliveryPage::searchRequested);
+        search->click();
+        QCOMPARE(requested.count(), 1);
+        QCOMPARE(requested.at(0).at(0).toString(), QStringLiteral("Example"));
+        digest->click();
+        emit transport.errorOccurred("TIMEOUT", "offline", "");
+        QVERIFY(status->text().contains("offline"));
+        digest->click();
+        emit transport.digestResult({{"date", "invalid"}, {"summary", "bad"}});
+        QVERIFY(page.findChild<QPlainTextEdit *>("deliveryBody")->toPlainText().isEmpty());
+        digest->click();
+        emit transport.digestResult({{"date", "2026-09-07"}, {"summary", "当日无新记忆"}});
+        QVERIFY(page.findChild<QPlainTextEdit *>("deliveryBody")->toPlainText().contains("当日无新记忆"));
+    }
     void leavingNetworkSerializesAndVerifies()
     {
         Transport transport;

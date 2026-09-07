@@ -260,6 +260,10 @@ void HttpBackendTransport::deliveryInsights()
     QString path = QStringLiteral("/delivery/insights?limit=3");
     getJson(path,
             [this](quint64, const QJsonObject &obj) {
+                if (!obj.value(QStringLiteral("insights")).isArray()) {
+                    emit errorOccurred(QStringLiteral("INVALID_RESPONSE"), tr("洞察响应缺少列表"), QString());
+                    return;
+                }
                 emit insightsResult(
                     obj.value(QStringLiteral("insights")).toArray());
             });

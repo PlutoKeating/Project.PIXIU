@@ -3,6 +3,7 @@
 #include "MemoryAudit.h"
 #include "PrivacyPage.h"
 #include "DevicePage.h"
+#include "DeliveryPage.h"
 #include "widgets/CheckUpdateDialog.h"
 #include <QCoreApplication>
 #include "services/HttpBackendTransport.h"
@@ -29,6 +30,15 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     auto *queryPage = new QWidget(tabs);
     auto *layout = new QVBoxLayout(queryPage);
     tabs->addTab(queryPage, tr("检索与录入"));
+    auto *delivery = new DeliveryPage(tabs);
+    tabs->addTab(delivery, tr("洞察与简报"));
+    connect(delivery, &DeliveryPage::searchRequested, this, [this, tabs, queryPage](const QString &text) {
+        if (m_request || m_evidenceBusy) return;
+        tabs->setCurrentWidget(queryPage);
+        m_scope->setCurrentIndex(1);
+        m_query->setText(text);
+        search();
+    });
     m_audit = new MemoryAudit(tabs);
     tabs->addTab(m_audit, tr("偏好与审计"));
     tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
