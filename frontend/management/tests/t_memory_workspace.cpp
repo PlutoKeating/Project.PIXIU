@@ -141,6 +141,13 @@ private slots:
             QVERIFY(!raw->isEnabled());
             QCOMPARE(sources->currentRow(), -1);
         }
+        QVERIFY(page.showAgentSources(result, "user:local"));
+        sources->setCurrentRow(0);
+        page.clearAgentSources();
+        QCOMPARE(sources->count(), 0);
+        emit transport.evidenceDetailResult(fresh);
+        QVERIFY(detail->toPlainText().isEmpty());
+        QVERIFY(!page.hasPendingOperation());
         QVERIFY(!page.showAgentSources(result, "shared:home"));
         result.status = pixiu::AgentEvidenceResult::Invalid;
         QVERIFY(!page.showAgentSources(result, "user:local"));
@@ -149,6 +156,12 @@ private slots:
         QVERIFY(page.showAgentSources(result, "user:local"));
         QCOMPARE(sources->count(), 0);
         QVERIFY(page.findChild<QLabel *>("memoryStatus")->text().contains(QStringLiteral("不代表")));
+        page.findChild<QLineEdit *>("memoryQuery")->setText("independent search");
+        page.findChild<QPushButton *>("memorySearch")->click();
+        page.clearAgentSources();
+        QVERIFY(page.hasPendingOperation());
+        emit transport.queryResult(transport.sequence, {{"answer", "independent result"}});
+        QCOMPARE(page.findChild<QPlainTextEdit *>("memoryAnswer")->toPlainText(), QString("independent result"));
     }
     void serviceDiagnosticsAreReadOnlyBoundedAndExplicit()
     {

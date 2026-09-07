@@ -294,6 +294,7 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
     m_scope->setCurrentIndex(m_scope->findData(scope));
     clearResult();
     m_query->clear();
+    m_agentSources = true;
     m_tabs->setCurrentIndex(0);
     m_status->setText(result.references.isEmpty()
         ? tr("会话记录中没有可核验的记忆来源；这不代表会话未使用记忆。")
@@ -313,6 +314,13 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
     return true;
 }
 
+void MemoryWorkspace::clearAgentSources()
+{
+    if (!m_agentSources) return;
+    clearResult();
+    m_status->setText(tr("会话或 Runtime 已切换，请重新读取本会话来源。"));
+}
+
 void MemoryWorkspace::clearEvidence()
 {
     m_evidenceText.clear();
@@ -324,6 +332,7 @@ void MemoryWorkspace::clearEvidence()
 
 void MemoryWorkspace::clearResult()
 {
+    m_agentSources = false;
     m_knowledge.clear();
     m_edit->setEnabled(false);
     m_request = 0;

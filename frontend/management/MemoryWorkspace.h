@@ -23,6 +23,7 @@ public:
     bool hasPendingOperation() const { return m_request != 0 || m_evidenceBusy; }
     // Only accepts parsed Runtime references, never IDs extracted from model text.
     bool showAgentSources(const AgentEvidenceResult &result, const QString &scope);
+    void clearAgentSources();
 private:
     void search();
     void clearResult();
@@ -47,5 +48,6 @@ private:
     QString m_evidence;
     QString m_expectedEvidenceScope;
     bool m_evidenceBusy = false;
+    bool m_agentSources = false;
 };
 }
