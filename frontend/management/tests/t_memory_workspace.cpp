@@ -108,6 +108,8 @@ private slots:
         emit transport.errorOccurred("VERSION_CONFLICT", "changed", "request");
         QVERIFY(!save->isEnabled());
         QCOMPARE(title->text(), QStringLiteral("revised"));
+        QCOMPARE(body->toPlainText(), QStringLiteral("full body"));
+        editor.findChild<QCheckBox *>("editStructured")->setChecked(true);
         QVERIFY(body->toPlainText().contains("nested"));
         title->setText("still cannot overwrite");
         QVERIFY(!save->isEnabled());
@@ -131,6 +133,7 @@ private slots:
         snapshot.insert("knowledge_id", "knw_example01");
         emit transport.memoryItemResult(snapshot);
         title->setText("revised");
+        editor.findChild<QCheckBox *>("editStructured")->setChecked(true);
         body->setPlainText("not json");
         QVERIFY(!save->isEnabled());
         body->setPlainText("[]");
@@ -146,6 +149,53 @@ private slots:
         emit transport.memoryUpdated({{"knowledge_id", "knw_example01"}, {"version", 2}, {"status", "updated"}, {"evidence_id", "evd_example01"}});
         QCOMPARE(updated.count(), 1);
         QVERIFY(!save->isEnabled());
+    }
+    void plainEditingPreservesFieldsAndProtectsUnsavedInput()
+    {
+        Transport transport;
+        pixiu::MemoryEditDialog editor(nullptr, &transport);
+        editor.openMemory("knw_example01", "user:local");
+        auto *body = editor.findChild<QPlainTextEdit *>("editBody");
+        auto *advanced = editor.findChild<QCheckBox *>("editStructured");
+        auto *save = editor.findChild<QPushButton *>("editSave");
+        emit transport.memoryItemResult({{"knowledge_id", "knw_example01"}, {"scope", "user:local"},
+            {"version", 3}, {"title", "example"}, {"body", QJsonObject{{"text", "before"},
+                {"metadata", QJsonObject{{"keep", true}}}}}});
+        QCOMPARE(body->toPlainText(), QStringLiteral("before"));
+        QVERIFY(!advanced->isChecked());
+        advanced->setChecked(true);
+        advanced->setChecked(false);
+        QVERIFY(!save->isEnabled()); // Merely switching view does not edit the record.
+        body->setPlainText("after {not JSON}\n第二行");
+        bool defaultCancel = false;
+        QTimer::singleShot(0, &editor, [&]() {
+            if (auto *question = editor.findChild<QMessageBox *>()) {
+                defaultCancel = question->defaultButton() == question->button(QMessageBox::No);
+                question->done(QMessageBox::No);
+            }
+        });
+        editor.reject();
+        QVERIFY(defaultCancel);
+        QVERIFY(editor.isVisible());
+        QCOMPARE(body->toPlainText(), QStringLiteral("after {not JSON}\n第二行"));
+        advanced->setChecked(true);
+        body->setPlainText("invalid JSON");
+        advanced->setChecked(false);
+        QVERIFY(advanced->isChecked());
+        QCOMPARE(body->toPlainText(), QStringLiteral("invalid JSON"));
+        QVERIFY(!save->isEnabled());
+        body->setPlainText("{\"text\":\"after\",\"metadata\":{\"keep\":true,\"added\":5}}");
+        advanced->setChecked(false);
+        QCOMPARE(body->toPlainText(), QStringLiteral("after"));
+        body->setPlainText("final");
+        save->click();
+        QCOMPARE(transport.edited.value("body").toObject(), QJsonObject({{"text", "final"},
+            {"metadata", QJsonObject{{"keep", true}, {"added", 5}}}}));
+        QVERIFY(!transport.edited.contains("title"));
+        emit transport.memoryUpdated({{"knowledge_id", "knw_example01"}, {"status", "updated"},
+            {"version", 4}, {"evidence_id", "evd_example01"}});
+        editor.reject(); // Confirmed saved input requires no discard prompt.
+        QVERIFY(!editor.isVisible());
     }
     void settingsOwnPrivacyAndUpgradeOutsideMemory()
     {

@@ -1,6 +1,7 @@
 #include "MemoryEditDialog.h"
 #include "services/HttpBackendTransport.h"
 #include <QFormLayout>
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QLabel>
@@ -8,6 +9,7 @@
 #include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QSignalBlocker>
 #include <QUuid>
 #include <QVBoxLayout>
 
@@ -30,8 +32,13 @@ MemoryEditDialog::MemoryEditDialog(QWidget *parent, BackendTransport *transport)
     m_body->setObjectName("editBody");
     auto *form = new QFormLayout;
     form->addRow(tr("标题"), m_title);
-    form->addRow(tr("完整正文（JSON 对象）"), m_body);
+    m_bodyLabel = new QLabel(tr("正文"), this);
+    m_bodyLabel->setBuddy(m_body);
+    form->addRow(m_bodyLabel, m_body);
     layout->addLayout(form, 1);
+    m_structured = new QCheckBox(tr("高级：编辑完整结构（JSON）"), this);
+    m_structured->setObjectName("editStructured");
+    layout->addWidget(m_structured);
     m_status = new QLabel(tr("请选择明确范围内的检索结果。"), this);
     m_status->setObjectName("editStatus");
     m_status->setTextFormat(Qt::PlainText);
@@ -54,9 +61,25 @@ MemoryEditDialog::MemoryEditDialog(QWidget *parent, BackendTransport *transport)
     connect(m_save, &QPushButton::clicked, this, &MemoryEditDialog::submit);
     connect(m_title, &QLineEdit::textChanged, this, &MemoryEditDialog::updateControls);
     connect(m_body, &QPlainTextEdit::textChanged, this, &MemoryEditDialog::updateControls);
+    connect(m_structured, &QCheckBox::toggled, this, [this](bool structured) {
+        bool valid = false;
+        const auto body = editedBody(&valid);
+        if (!valid || (!structured && !body.value("text").isString())) {
+            const QSignalBlocker blocker(m_structured);
+            m_structured->setChecked(!m_textMode);
+            m_status->setText(tr("请先填写有效 JSON 对象，且保留字符串 text 字段，才能切换回文本模式。"));
+            return;
+        }
+        m_draftBody = body;
+        m_textMode = !structured;
+        m_bodyLabel->setText(m_textMode ? tr("正文") : tr("完整正文（JSON 对象）"));
+        m_body->setPlainText(m_textMode ? body.value("text").toString()
+            : QString::fromUtf8(QJsonDocument(body).toJson(QJsonDocument::Indented)));
+        updateControls();
+    });
     connect(m_reload, &QPushButton::clicked, this, [this]() {
         if (m_pending != Pending::None) return;
-        if (!m_title->text().isEmpty() || !m_body->toPlainText().isEmpty()) {
+        if (hasChanges()) {
             if (QMessageBox::question(this, tr("重新读取记忆"),
                 tr("重新读取会替换当前编辑内容。请先复制需要保留的修改，是否继续？"),
                 QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes) return;
@@ -76,12 +99,23 @@ MemoryEditDialog::MemoryEditDialog(QWidget *parent, BackendTransport *transport)
             return;
         }
         m_original = result;
+        m_draftBody = result.value("body").toObject();
         m_version = version;
         m_stale = false;
+        m_textMode = m_draftBody.value("text").isString();
+        {
+            const QSignalBlocker blocker(m_structured);
+            m_structured->setChecked(!m_textMode);
+        }
+        m_structured->setVisible(m_textMode);
+        m_bodyLabel->setText(m_textMode ? tr("正文") : tr("完整正文（JSON 对象）"));
         m_title->setText(result.value("title").toString());
-        m_body->setPlainText(QString::fromUtf8(QJsonDocument(result.value("body").toObject()).toJson(QJsonDocument::Indented)));
+        m_body->setPlainText(m_textMode ? m_draftBody.value("text").toString()
+            : QString::fromUtf8(QJsonDocument(m_draftBody).toJson(QJsonDocument::Indented)));
         m_target->setText(tr("%1\n范围：%2 · 版本：%3").arg(m_id, m_scope).arg(version));
-        m_status->setText(tr("修改完整正文时请保留需要的字段。保存不会改变记忆范围；其他设备的同步结果需单独核对。"));
+        m_status->setText(m_textMode
+            ? tr("直接修改正文即可，其他字段会保留。保存不会改变记忆范围；同步送达需单独核对。")
+            : tr("此记忆包含结构化内容，请保留需要的字段并填写有效 JSON 对象。保存不会改变记忆范围。"));
         updateControls();
     });
     connect(m_transport, &BackendTransport::memoryUpdated, this, [this](const QJsonObject &result) {
@@ -93,6 +127,8 @@ MemoryEditDialog::MemoryEditDialog(QWidget *parent, BackendTransport *transport)
             updateControls();
             return;
         }
+        m_original.insert("title", m_title->text().trimmed());
+        m_original.insert("body", editedBody());
         m_version = 0;
         m_status->setText(tr("修改已保存。继续编辑前请重新读取最新版本。"));
         updateControls();
@@ -118,6 +154,8 @@ void MemoryEditDialog::openMemory(const QString &id, const QString &scope)
     if (isVisible()) { raise(); activateWindow(); return; }
     m_id = id;
     m_scope = scope;
+    m_original = {};
+    m_draftBody = {};
     m_title->clear();
     m_body->clear();
     show();
@@ -142,17 +180,37 @@ void MemoryEditDialog::updateControls()
     m_body->setReadOnly(!idle || m_version == 0);
     m_reload->setEnabled(idle && !m_id.isEmpty());
     m_close->setEnabled(idle);
-    const auto body = QJsonDocument::fromJson(m_body->toPlainText().toUtf8());
-    const bool changed = m_title->text().trimmed() != m_original.value("title").toString()
-        || body.object() != m_original.value("body").toObject();
-    m_save->setEnabled(idle && m_version > 0 && !m_stale && changed
-        && !m_title->text().trimmed().isEmpty() && body.isObject());
+    m_structured->setEnabled(idle && m_version > 0);
+    bool valid = false;
+    editedBody(&valid);
+    m_save->setEnabled(idle && m_version > 0 && !m_stale && hasChanges()
+        && !m_title->text().trimmed().isEmpty() && valid);
+}
+QJsonObject MemoryEditDialog::editedBody(bool *valid) const
+{
+    if (m_textMode) {
+        auto body = m_draftBody;
+        body.insert("text", m_body->toPlainText());
+        if (valid) *valid = true;
+        return body;
+    }
+    const auto document = QJsonDocument::fromJson(m_body->toPlainText().toUtf8());
+    if (valid) *valid = document.isObject();
+    return document.object();
+}
+bool MemoryEditDialog::hasChanges() const
+{
+    if (m_original.isEmpty()) return false;
+    bool valid = false;
+    const auto body = editedBody(&valid);
+    return !valid || m_title->text().trimmed() != m_original.value("title").toString()
+        || body != m_original.value("body").toObject();
 }
 void MemoryEditDialog::submit()
 {
     if (!m_save->isEnabled() || m_pending != Pending::None) return;
     QJsonObject payload{{"knowledge_id", m_id}, {"scope", m_scope}, {"expected_version", m_version}};
-    const auto body = QJsonDocument::fromJson(m_body->toPlainText().toUtf8()).object();
+    const auto body = editedBody();
     if (m_title->text().trimmed() != m_original.value("title").toString())
         payload.insert("title", m_title->text().trimmed());
     if (body != m_original.value("body").toObject()) payload.insert("body", body);
@@ -168,6 +226,10 @@ void MemoryEditDialog::submit()
 }
 void MemoryEditDialog::reject()
 {
-    if (m_pending == Pending::None) QDialog::reject();
+    if (m_pending != Pending::None) return;
+    if (hasChanges() && QMessageBox::question(this, tr("关闭编辑"),
+        tr("有尚未确认保存的修改。是否放弃这些修改并关闭？"),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::No) != QMessageBox::Yes) return;
+    QDialog::reject();
 }
 }
