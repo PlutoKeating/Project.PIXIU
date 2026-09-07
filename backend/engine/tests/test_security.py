@@ -49,6 +49,15 @@ class _FakeKnowledgeRepo(KnowledgeRepository):
     async def list_active(self) -> list[KnowledgeItem]:
         return [i for i in self.items.values() if i.status == KnowledgeStatus.ACTIVE]
 
+    async def forget_if_versions(self, expected: dict[str, int]) -> bool:
+        if any(key not in self.items or self.items[key].version != version
+               or self.items[key].status != KnowledgeStatus.ACTIVE for key, version in expected.items()):
+            return False
+        for key in expected:
+            self.items[key].status = KnowledgeStatus.FORGOTTEN
+            self.items[key].version += 1
+        return True
+
     async def list_vectors(self) -> list[tuple[str, int, bytes]]:
         return []
 

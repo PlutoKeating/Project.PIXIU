@@ -81,6 +81,14 @@ class KnowledgeRepository(ABC):
             "compare-and-swap is not implemented by this repository"
         )
 
+    async def forget_if_versions(self, expected: dict[str, int]) -> bool:
+        """Atomically forget the entire ACTIVE ID/version set, or change nothing.
+
+        Increment versions to invalidate concurrent stale editors. Vector cleanup
+        is a separate service responsibility. Unsupported stores must fail closed.
+        """
+        raise NotImplementedError("atomic forget is not implemented by this repository")
+
     async def link_evidence(self, knowledge_id: str, evidence_id: str) -> None:
         """Attach late-arriving evidence to an existing knowledge item."""
         raise NotImplementedError(

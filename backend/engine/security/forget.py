@@ -127,10 +127,13 @@ class ForgetEngine:
             actual = {entry.item.id: entry.item.version for entry in scored}
             if actual != expected_targets:
                 raise ForgetPreviewChanged("forget preview targets or versions changed")
+            if not await knw_repo.forget_if_versions(expected_targets):
+                raise ForgetPreviewChanged("forget targets changed during confirmation")
 
         forgotten_ids: list[str] = []
         for entry in scored:
-            await knw_repo.update_status(entry.item.id, KnowledgeStatus.FORGOTTEN)
+            if expected_targets is None:
+                await knw_repo.update_status(entry.item.id, KnowledgeStatus.FORGOTTEN)
             if vector_store is not None:
                 await vector_store.delete(entry.item.id)
             forgotten_ids.append(entry.item.id)

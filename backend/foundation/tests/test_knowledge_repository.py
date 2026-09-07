@@ -81,6 +81,36 @@ def _knw(**kwargs) -> KnowledgeItem:
 # ═══════════════════════════════════════════════════════
 
 @pytest.mark.asyncio
+async def test_atomic_forget_rejects_whole_batch_on_version_drift(repo):
+    kr, _, db_path = repo
+    first = _knw(id=_id("first"))
+    second = _knw(id=_id("second"))
+    await kr.save(first)
+    await kr.save(second)
+    async with aiosqlite.connect(db_path) as other:
+        await other.execute("UPDATE knowledge_items SET version = version + 1 WHERE id = ?", (second.id,))
+        await other.commit()
+    assert not await kr.forget_if_versions({first.id: 1, second.id: 1})
+    assert (await kr.get(first.id)).status == KnowledgeStatus.ACTIVE
+    assert (await kr.get(second.id)).status == KnowledgeStatus.ACTIVE
+    assert await kr.forget_if_versions({first.id: 1, second.id: 2})
+    assert (await kr.get(first.id)).status == KnowledgeStatus.FORGOTTEN
+    assert (await kr.get(first.id)).version == 2
+    assert (await kr.get(second.id)).version == 3
+    assert not await kr.save_if_version(first, 1)
+    assert not await kr.forget_if_versions({first.id: 2})
+
+
+@pytest.mark.asyncio
+async def test_atomic_forget_missing_target_changes_nothing(repo):
+    kr, _, _ = repo
+    item = _knw()
+    await kr.save(item)
+    assert not await kr.forget_if_versions({item.id: 1, _id("missing"): 1})
+    assert (await kr.get(item.id)).status == KnowledgeStatus.ACTIVE
+    assert await kr.forget_if_versions({})
+
+@pytest.mark.asyncio
 async def test_save_returns_id(repo):
     kr, _, _ = repo
     item = _knw()

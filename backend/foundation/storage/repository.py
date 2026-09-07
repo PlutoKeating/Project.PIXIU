@@ -501,6 +501,28 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
         )
         await self._db.commit()
 
+    async def forget_if_versions(self, expected: dict[str, int]) -> bool:
+        if not expected:
+            return True
+        if any(not key or type(version) is not int or version < 1 for key, version in expected.items()):
+            raise ValueError("forget requires nonempty IDs and positive integer versions")
+        snapshot = json.dumps(expected)
+        # A single conditional statement gives all-or-nothing semantics even
+        # when another coroutine uses this connection or another writer commits.
+        # JSON parameters avoid interpolating IDs or exceeding variable limits.
+        cursor = await self._db.execute(
+            """UPDATE knowledge_items SET status = ?, version = version + 1
+               WHERE id IN (SELECT key FROM json_each(?))
+                 AND (SELECT COUNT(*) FROM knowledge_items AS current
+                      JOIN json_each(?) AS expected ON current.id = expected.key
+                      WHERE current.version = expected.value AND current.status = ?) = ?""",
+            (KnowledgeStatus.FORGOTTEN.value, snapshot, snapshot,
+             KnowledgeStatus.ACTIVE.value, len(expected)),
+        )
+        changed = cursor.rowcount
+        await self._db.commit()
+        return changed == len(expected)
+
     async def link_evidence(self, knowledge_id: str, evidence_id: str) -> None:
         await self._db.execute(
             "INSERT OR IGNORE INTO knowledge_evidence (knowledge_id, evidence_id) VALUES (?, ?)",

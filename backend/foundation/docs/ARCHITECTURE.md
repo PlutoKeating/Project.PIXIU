@@ -153,6 +153,11 @@ async def get_security_service(db=Depends(get_db)) -> SecurityService:
 
 **SQLite 仓储模式**，实现 `core/repository.py` 中定义的所有接口。
 
+`forget_if_versions` 用单条条件 UPDATE 校验完整 ACTIVE ID/版本集合并批量标记
+FORGOTTEN，同时递增版本；任一目标缺失、状态或版本不匹配时整批不变。跨连接
+写入不能穿过该 SQL 原子边界。VectorStore 清理与同步墓碑不属于此数据库语句，
+仍需分别处理其失败和恢复，不能宣称整个跨组件遗忘事务原子化。
+
 **Schema**（由 `storage/migrations.py` 版本化迁移创建，`storage/schema.py` 定义）：
 
 基础表 20 张：原有记忆/流转表加 `sync_identity`、`sync_peers`、`sync_state`、

@@ -123,6 +123,10 @@ git submodule update --init --recursive
 
 ### storage/ —— 存储层
 
+安全遗忘新增 `forget_if_versions` 原子批量 ID/版本检查；测试覆盖另一连接更新
+版本、整批拒绝、缺失目标、成功版本递增和阻止旧版本 CAS 编辑。使用既有 SQLite
+JSON 能力，无新增依赖或 schema 变更；HTTP 预览凭证接入仍待完成。
+
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `storage/__init__.py` | ★★★ | 导出全部 Repository 类 |
