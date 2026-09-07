@@ -18,6 +18,9 @@ Embedding/Vector Engine SDK、端侧性能和可验证交付。两份官方材�
 
 ## 决策
 
+> 决策第 4 项的独立控制台定位已由 [ADR-0006](0006-unify-agent-desktop-frontend.md)
+> 替代：管理能力迁入唯一 Agent 应用，旧独立前端在替代验证后退役。其余约束继续有效。
+
 1. PIXIU **不从零实现另一套完整 OS Agent**。
 2. 首选系统已安装的 openKylin `kylin-agent` 作为桌面宿主，以 `agent-runtime`
    提供会话、规划、工具、Shell/浏览器、审批和运行控制。
