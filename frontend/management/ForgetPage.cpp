@@ -1,4 +1,5 @@
 #include "ForgetPage.h"
+#include "MemoryScopes.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QJsonArray>
@@ -19,8 +20,7 @@ ForgetPage::ForgetPage(QWidget *parent, BackendTransport *transport)
     layout->addWidget(notice);
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("forgetScope"));
-    m_scope->addItem(tr("本机个人记忆"), QStringLiteral("user:local"));
-    m_scope->addItem(tr("家庭共享记忆"), QStringLiteral("shared:home"));
+    populateMemoryScopes(m_scope, false);
     layout->addWidget(m_scope);
     m_command = new QLineEdit(this);
     m_command->setObjectName(QStringLiteral("forgetCommand"));

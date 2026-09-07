@@ -13,6 +13,7 @@
     "build/release/agent-host/compat/pixiu_desktop.h",
     "build/release/agent-host/patches/0010-embedded-memory-workspace.patch",
     "frontend/management/CMakeLists.txt",
+    "frontend/management/MemoryScopes.h",
     "frontend/management/HostCloseGuard.h",
     "frontend/management/HostCloseGuard.cpp",
     "build/release/agent-host/patches/0014-guard-host-close.patch",

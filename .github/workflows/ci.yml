@@ -175,6 +175,8 @@ jobs:
           test ! -e "${package_root}/usr/bin/pixiu-frontend"
           test -x "${package_root}/usr/bin/kylin-agent"
           test -x "${package_root}/usr/bin/kylin-agent-runtime"
+          test -s "${package_root}/usr/lib/pixiu/launch-agent.py"
+          grep -q 'exec /usr/lib/pixiu/venv/bin/python /usr/lib/pixiu/launch-agent.py' "${package_root}/usr/bin/pixiu"
           test -s "${package_root}/usr/lib/pixiu/agent-runtime/runtime-cp312.lock"
           test -s "${package_root}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service"
           grep -qx 1 "${package_root}/usr/share/pixiu/agent-bundled"
@@ -189,6 +191,7 @@ jobs:
             --find-links="${package_root}/usr/lib/pixiu/agent-runtime/wheelhouse" \
             --require-hashes -r "${package_root}/usr/lib/pixiu/agent-runtime/runtime-cp312.lock"
           "${package_root}/verify-venv/bin/pip" check
+          "${package_root}/verify-venv/bin/python" -c 'import runpy, sys; runpy.run_path(sys.argv[1], run_name="pixiu_launch_import_check")' "${package_root}/usr/lib/pixiu/launch-agent.py"
           python3 - "${manifest}" "${GITHUB_SHA}" \
             "$(dpkg-deb --field "${deb}" Version)" <<'PY'
           import json

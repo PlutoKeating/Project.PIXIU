@@ -1,4 +1,5 @@
 #include "MemoryWorkspace.h"
+#include "MemoryScopes.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryEditDialog.h"
 #include "MemoryAudit.h"
@@ -59,9 +60,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("memoryScope"));
     m_scope->setAccessibleName(tr("检索范围"));
-    m_scope->addItem(tr("全部范围"), QString());
-    m_scope->addItem(tr("个人"), QStringLiteral("user:local"));
-    m_scope->addItem(tr("家庭共享"), QStringLiteral("shared:home"));
+    populateMemoryScopes(m_scope, true);
     m_search = new QPushButton(tr("检索"), this);
     m_search->setObjectName(QStringLiteral("memorySearch"));
     row->addWidget(m_query, 1);

@@ -21,11 +21,11 @@
 
 | 消费入口 | 当前事实源 | 迁移约束 |
 |---|---|---|
-| 正式启动器 `build/release/debian/usr/bin/pixiu` | 准备用户服务、运行集成脚本后执行宿主；不向 Qt 转发 Agent 范围 | 同一进程入口不保证范围或连接配置一致 |
+| 正式启动器 `build/release/debian/usr/bin/pixiu` | 集成后由随包 `launch-agent.py` 只读解析当前 Agent profile，传递 scope 与一致的 endpoint，再 exec 唯一宿主 | 解析失败或显式 Qt endpoint 冲突拒绝启动；不执行 `.env`，不向 Qt 载入 profile 凭证 |
 | Agent 集成脚本 `pixiu-agent-integrate` | 在当前 Agent profile 的 `.env` 中缺省写入 `PIXIU_AGENT_SCOPE=user:default`，保留已有值 | 必须保留自定义 profile、范围和 endpoint；禁止直接 source 用户 `.env` 执行其中内容 |
 | `integrations/kylin_agent/pixiu/provider.py` | 显式构造参数或 `PIXIU_AGENT_SCOPE`，缺省 `user:default`；API 地址使用 `PIXIU_AGENT_ENDPOINT` | 轮次上下文、写入、更新与遗忘均绑定实际 Provider 范围；不能把模型提交的范围作为覆盖值 |
-| `frontend/src/services/HttpBackendTransport.cpp` | `PIXIU_BACKEND_URL`，缺省本机 8765；不读取 Agent profile 的 endpoint | 默认地址相同不证明显式配置一致；公共管理接口不应依赖模型可用 |
-| `MemoryWorkspace`、`MemoryWriteDialog`、`MemoryAudit`、`ForgetPage` | Qt 下拉框固定 `user:local` / `shared:home`；检索和偏好另有全部范围 | 应共用明确的范围选择与配置来源，覆盖已有 Agent 范围；查询“全部”不能自动变为跨范围编辑或遗忘 |
+| `frontend/src/services/HttpBackendTransport.cpp` | `PIXIU_BACKEND_URL`，正式启动时由引导器与有效 Agent endpoint 对齐；直接运行宿主仍使用进程环境或缺省本机 8765 | 不能将直接宿主启动当作 profile 已解析；公共管理接口不应依赖模型可用 |
+| `MemoryWorkspace`、`MemoryWriteDialog`、`MemoryAudit`、`ForgetPage` | 共用 `MemoryScopes.h`，保留 `user:local` / `shared:home` 并增加有效 Agent scope；检索和偏好另有全部范围 | 录入只自动选择私有 Agent 域；不隐式共享或跨域遗忘；其他历史自定义域尚须补可达性 |
 | `MemoryEditDialog` | 从查询页传入范围，读取完整快照并要求目标范围匹配 | 保留版本校验和精确范围，不为找不到记录而改用无范围请求 |
 | `backend/foundation/monitor/` | 目录采集默认 `user:local`；行为采集固定 `user:local` | 本机采集不应因 Agent 配置为 `shared:*` 而自动共享；与主动共享写入分别处理 |
 | `backend/foundation/api/delivery.py` | 洞察固定 `user:local`；简报聚合采集日志 | 不得宣称洞察已覆盖 Agent 记忆或全部范围；范围能力变更须先更新公共契约和后端测试 |
@@ -183,6 +183,7 @@ U03/U04/U10/U12 的范围统一必须共同覆盖：读取有效配置且不泄�
 
 ## 实施记录
 
+- U03/U04 配置接线：正式入口使用产品 venv 的只读 dotenv 引导器，保留 profile 中有效范围与 endpoint；不修改数据或用户配置，不传出 profile 凭证。共用 Qt 范围选项覆盖当前 Agent 域，保留本机采集与家庭共享域；共享 Agent 不自动改变录入默认范围。新增引导器与跨管理入口请求测试并接入治理、整包安装及宿主供应链；真实新包安装、历史自定义域发现、运行中 profile 切换和洞察范围扩展尚未验证或实现，不勾选整体完成。
 - U08 配对二维码：新配对对话框接入已有 libqrencode，QR 令牌可同时查看图形和复制文本，不新增生命周期；到期、方式切换、重新生成和关闭同步清除图形。超长编码失败明确使用文本，不宣称摄像头扫码；组件测试覆盖绘制、静区、清除及超长回退，真实扫码和双端传输仍待验证。
 - U16 测试资源收尾：将退出挂起缩小到行为采集 DI 接线用例，真实 SQLite 连接被直接清空引用而未关闭。先新增子进程退出回归并确认超时失败，再复用 stop_db 清理；原组合 67 项正常通过并退出，无需人工中断。未修改生产采集逻辑，仍需远程 CI 及真实桌面验收。
 - U09 采集状态复核：确认运行组件启动开关与持久化采集授权不同，默认配置总闸/来源均关闭；行为读取焦点前以及落库前均检查授权，目录事件处理也受 effective 门控。澄清安装配置注释与交付说明，不把启动日志误报为采集开启，不通过关闭组件破坏界面热生效。真实桌面开启/暂停与权限矩阵仍待验证。

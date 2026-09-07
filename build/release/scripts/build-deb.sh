@@ -366,6 +366,8 @@ install -m 0755 "${DEB_SRC}/usr/lib/pixiu/install-update" \
     "${STAGE}/usr/lib/pixiu/install-update"
 install -m 0755 "${DEB_SRC}/usr/lib/pixiu/restart-client" \
     "${STAGE}/usr/lib/pixiu/restart-client"
+install -m 0644 "${DEB_SRC}/usr/lib/pixiu/launch-agent.py" \
+    "${STAGE}/usr/lib/pixiu/launch-agent.py"
 
 # ── 5/5 dpkg 打包 ──────────────────────────────────────────────
 log "[5/5] dpkg-deb"

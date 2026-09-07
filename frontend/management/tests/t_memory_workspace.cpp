@@ -1,4 +1,5 @@
 #include "MemoryWorkspace.h"
+#include "MemoryScopes.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryEditDialog.h"
 #include "MemoryAudit.h"
@@ -80,6 +81,58 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void scopesPreserveLocalDomainsAndExposeAgentWithoutImplicitSharing()
+    {
+        QComboBox query, write, sharedWrite, existingShared, invalid;
+        pixiu::populateMemoryScopes(&query, true, false, "user:alice");
+        QCOMPARE(query.itemData(0).toString(), QString());
+        QCOMPARE(query.itemData(1).toString(), QStringLiteral("user:local"));
+        QCOMPARE(query.itemData(2).toString(), QStringLiteral("shared:home"));
+        QCOMPARE(query.itemData(3).toString(), QStringLiteral("user:alice"));
+        pixiu::populateMemoryScopes(&write, false, true, "user:default");
+        QCOMPARE(write.currentData().toString(), QStringLiteral("user:default"));
+        pixiu::populateMemoryScopes(&sharedWrite, false, true, "shared:team");
+        QCOMPARE(sharedWrite.currentData().toString(), QStringLiteral("user:local"));
+        QCOMPARE(sharedWrite.findData("shared:team"), 2);
+        pixiu::populateMemoryScopes(&existingShared, false, false, "shared:home");
+        QCOMPARE(existingShared.count(), 2);
+        QVERIFY(existingShared.itemText(1).contains("Agent"));
+        pixiu::populateMemoryScopes(&invalid, false, true, "user:alice\n");
+        QCOMPARE(invalid.count(), 2);
+        QCOMPARE(invalid.currentData().toString(), QStringLiteral("user:local"));
+    }
+    void agentScopeReachesEveryManagementRequest()
+    {
+        const bool hadScope = qEnvironmentVariableIsSet("PIXIU_AGENT_SCOPE");
+        const auto savedScope = qgetenv("PIXIU_AGENT_SCOPE");
+        qputenv("PIXIU_AGENT_SCOPE", "user:alice");
+        Transport queryTransport, writeTransport, auditTransport, forgetTransport;
+        QWidget host;
+        pixiu::MemoryWorkspace query(&host, &queryTransport);
+        pixiu::MemoryWriteDialog write(&host, &writeTransport);
+        pixiu::MemoryAudit audit(&host, &auditTransport);
+        pixiu::ForgetPage forget(&host, &forgetTransport);
+        if (hadScope) qputenv("PIXIU_AGENT_SCOPE", savedScope);
+        else qunsetenv("PIXIU_AGENT_SCOPE");
+        auto *queryScope = query.findChild<QComboBox *>("memoryScope");
+        queryScope->setCurrentIndex(queryScope->findData("user:alice"));
+        query.findChild<QLineEdit *>("memoryQuery")->setText("test");
+        query.findChild<QPushButton *>("memorySearch")->click();
+        QCOMPARE(queryTransport.scope.value("scope").toString(), QStringLiteral("user:alice"));
+        write.findChild<QLineEdit *>("writeTitle")->setText("test");
+        write.findChild<QPlainTextEdit *>("writeBody")->setPlainText("synthetic content");
+        write.findChild<QPushButton *>("writeSave")->click();
+        QCOMPARE(writeTransport.written.value("scope").toString(), QStringLiteral("user:alice"));
+        auto *auditScope = audit.findChild<QComboBox *>("auditScope");
+        auditScope->setCurrentIndex(auditScope->findData("user:alice"));
+        QCOMPARE(auditTransport.auditScope, QStringLiteral("user:alice"));
+        auto *forgetScope = forget.findChild<QComboBox *>("forgetScope");
+        forgetScope->setCurrentIndex(forgetScope->findData("user:alice"));
+        forget.findChild<QLineEdit *>("forgetCommand")->setText("forget test");
+        forget.findChild<QPushButton *>("forgetPreview")->click();
+        QCOMPARE(forgetTransport.forgetPayload.value("scope").toString(), QStringLiteral("user:alice"));
+        QVERIFY(!forgetTransport.forgetPayload.value("confirm").toBool());
+    }
     void hostCloseWaitsForMemoryReads()
     {
         Transport transport;

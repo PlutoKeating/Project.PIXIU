@@ -11,6 +11,7 @@ clean:
 	rm -rf $(ROOT)/build/release/out $(ROOT)/build/release/dist
 
 governance:
+	PYTHONDONTWRITEBYTECODE=1 python3 $(ROOT)/build/release/tests/test-launch-agent.py
 	$(SCRIPTS)/verify-governance.sh
 	bash $(ROOT)/build/release/tests/test-governance.sh
 	bash $(ROOT)/build/release/tests/test-native-profile.sh

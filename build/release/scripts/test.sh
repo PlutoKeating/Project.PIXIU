@@ -26,6 +26,7 @@ else
     warn "backend pytest skipped（PIXIU_BACKEND_TESTS=1 启用，需安装 backend/requirements.txt 与 backend/foundation/requirements-sync.txt）"
 fi
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
+PYTHONDONTWRITEBYTECODE=1 "${PIXIU_PYTHON:-python3}" "${PIXIU_ROOT}/build/release/tests/test-launch-agent.py"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-lock.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-branding.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-host-adaptation.sh"

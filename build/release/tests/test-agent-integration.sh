@@ -332,7 +332,7 @@ grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
-grep -q 'exec /usr/bin/kylin-agent' \
+grep -q 'exec /usr/lib/pixiu/venv/bin/python /usr/lib/pixiu/launch-agent.py' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"
 grep -q 'PATH=/usr/bin:/bin:/usr/sbin:/sbin' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"

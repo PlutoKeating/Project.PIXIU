@@ -1,4 +1,5 @@
 #include "MemoryWriteDialog.h"
+#include "MemoryScopes.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QFormLayout>
@@ -22,8 +23,7 @@ MemoryWriteDialog::MemoryWriteDialog(QWidget *parent, BackendTransport *transpor
     m_body->setObjectName(QStringLiteral("writeBody"));
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("writeScope"));
-    m_scope->addItem(tr("个人（本机）"), QStringLiteral("user:local"));
-    m_scope->addItem(tr("家庭共享"), QStringLiteral("shared:home"));
+    populateMemoryScopes(m_scope, false, true);
     auto *form = new QFormLayout;
     form->addRow(tr("标题"), m_title);
     form->addRow(tr("正文"), m_body);

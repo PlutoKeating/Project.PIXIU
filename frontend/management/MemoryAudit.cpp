@@ -1,4 +1,5 @@
 #include "MemoryAudit.h"
+#include "MemoryScopes.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QDateTime>
@@ -37,9 +38,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     m_mode->addItems({tr("偏好与历史"), tr("冲突审计")});
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("auditScope"));
-    m_scope->addItem(tr("全部范围"), QString());
-    m_scope->addItem(tr("个人"), QStringLiteral("user:local"));
-    m_scope->addItem(tr("家庭共享"), QStringLiteral("shared:home"));
+    populateMemoryScopes(m_scope, true);
     m_refresh = new QPushButton(tr("刷新"), this);
     m_refresh->setObjectName(QStringLiteral("auditRefresh"));
     m_extract = new QPushButton(tr("从当前证据提取偏好"), this);
