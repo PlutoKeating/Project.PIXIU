@@ -94,6 +94,18 @@ void HttpBackendTransport::writeMemory(const QJsonObject &payload)
              [this](quint64, const QJsonObject &obj) { emit writeAcknowledged(obj); });
 }
 
+void HttpBackendTransport::memoryContext(const QJsonObject &payload)
+{
+    postJson(QStringLiteral("/agent/context"), payload,
+             [this](quint64, const QJsonObject &obj) { emit memoryContextResult(obj); });
+}
+
+void HttpBackendTransport::updateMemory(const QJsonObject &payload)
+{
+    postJson(QStringLiteral("/memory/update"), payload,
+             [this](quint64, const QJsonObject &obj) { emit memoryUpdated(obj); });
+}
+
 void HttpBackendTransport::forget(const QString &command, bool confirm)
 {
     QJsonObject body;

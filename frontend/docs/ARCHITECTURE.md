@@ -374,9 +374,13 @@ ADR-0006 已替代独立控制台的产品定位。新增 `frontend/management/`
 Agent 宿主同窗口嵌入，当前提供记忆检索和正文优先的证据查看，复用现有 HTTP 实现。
 它不创建 QApplication、托盘或独立入口，不需要配置大模型。旧应用仍在迁移中，
 下方旧组件清单不代表应继续交付第二套前端；完整迁移与删除清单见
-`docs/UNIFIED_FRONTEND_PLAN.md`，其他管理功能尚未迁入。
+`docs/UNIFIED_FRONTEND_PLAN.md`；已迁入功能及待验收边界见下文。
 
 ### 10.1 组件结构
+
+公共 HTTP transport 已接入 `/agent/context` 版本化召回与 `/memory/update` 乐观锁更新，
+原样传送 scope、expected_version、结构化正文和幂等键，冲突走错误信号而不自动重试。
+这两个方法尚未接入编辑界面；召回 items 不含完整正文，不能将截断 context 当作正文回填。
 
 宿主顶级导航为会话、记忆、设备、设置。`MemoryWorkspace` 只承载检索/录入、洞察、
 审计和遗忘；`DevicePage` 为顶级页面；`SettingsWorkspace` 承载应用升级与采集隐私。

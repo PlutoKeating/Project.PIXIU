@@ -7,6 +7,16 @@ BackendTransport::BackendTransport(QObject *parent)
 
 BackendTransport::~BackendTransport() = default;
 
+void BackendTransport::memoryContext(const QJsonObject &)
+{
+    emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持版本化记忆召回"), QString());
+}
+
+void BackendTransport::updateMemory(const QJsonObject &)
+{
+    emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持记忆更新"), QString());
+}
+
 void BackendTransport::reviewedForget(const QJsonObject &)
 {
     emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持安全遗忘"), QString());

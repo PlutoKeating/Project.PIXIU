@@ -27,6 +27,10 @@ public:
     // 提交查询并返回请求 ID（用于取消/过期响应判定）。
     virtual quint64 queryMemory(const QString &text, const QJsonObject &contextHint) = 0;
     virtual void writeMemory(const QJsonObject &payload) = 0;
+    // 版本化召回与乐观锁更新。调用方负责 scope、版本和幂等键；
+    // 每个串行控制器使用自己的 transport，不与健康探测共享错误通道。
+    virtual void memoryContext(const QJsonObject &payload);
+    virtual void updateMemory(const QJsonObject &payload);
     virtual void forget(const QString &command, bool confirm) = 0;
     virtual void reviewedForget(const QJsonObject &payload);
     virtual void listConflicts() = 0;
@@ -81,6 +85,8 @@ signals:
     void queryResult(quint64 requestId, const QJsonObject &atom);
     // 写入响应（/memory/write）。
     void writeAcknowledged(const QJsonObject &response);
+    void memoryContextResult(const QJsonObject &response);
+    void memoryUpdated(const QJsonObject &response);
     // 遗忘响应（/forget，confirm=false 为待确认、confirm=true 为已执行）。
     void forgetResult(const QJsonObject &response);
     // 冲突审计列表（GET /conflicts → {"conflicts": [...]}）。

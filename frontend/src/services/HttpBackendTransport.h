@@ -12,7 +12,7 @@ class QNetworkReply;
 class QTimer;
 class QUrl;
 
-// HTTP/JSON 后端传输：对齐 docs/API.md 的 12 个 REST 端点。
+// HTTP/JSON 后端传输：对齐 docs/API.md 的公共 REST 契约。
 //
 // 行为约定：
 //   - 异步请求，结果/错误经信号返回，UI 线程永不阻塞；
@@ -33,6 +33,8 @@ public:
 
     quint64 queryMemory(const QString &text, const QJsonObject &contextHint) override;
     void writeMemory(const QJsonObject &payload) override;
+    void memoryContext(const QJsonObject &payload) override;
+    void updateMemory(const QJsonObject &payload) override;
     void forget(const QString &command, bool confirm) override;
     void reviewedForget(const QJsonObject &payload) override;
     void listConflicts() override;
