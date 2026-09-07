@@ -320,10 +320,11 @@ void HttpBackendTransport::deliveryInsights()
             });
 }
 
-void HttpBackendTransport::deliveryDigest()
+void HttpBackendTransport::deliveryDigest(const QString &date)
 {
-    // B4-2：今日简报（缺省日期 = 今天，本地时区日边界由服务端处理）。
-    getJson(QStringLiteral("/delivery/digest"),
+    const auto path = date.isEmpty() ? QStringLiteral("/delivery/digest")
+        : QStringLiteral("/delivery/digest?date=") + QString::fromLatin1(QUrl::toPercentEncoding(date));
+    getJson(path,
             [this](quint64, const QJsonObject &obj) {
                 emit digestResult(obj);
             });

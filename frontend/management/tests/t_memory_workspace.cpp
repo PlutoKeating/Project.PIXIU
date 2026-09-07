@@ -18,6 +18,7 @@
 #include <QCloseEvent>
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
+#include <QDateEdit>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
@@ -55,7 +56,8 @@ public:
     int forgetCalls = 0;
     void reviewedForget(const QJsonObject &payload) override { forgetPayload = payload; ++forgetCalls; }
     void deliveryInsights() override { ++insightReads; }
-    void deliveryDigest() override { ++digestReads; }
+    QString digestDate;
+    void deliveryDigest(const QString &date = QString()) override { ++digestReads; digestDate = date; }
     void createPairingToken(const QJsonObject &payload) override { tokenRequest = payload; }
     void pairDevice(const QJsonObject &payload) override { pairRequest = payload; ++pairCalls; }
     void syncStatus() override { ++statusReads; }
@@ -669,12 +671,17 @@ private slots:
         pixiu::DeliveryPage page(nullptr, &transport);
         auto *insights = page.findChild<QPushButton *>("deliveryInsights");
         auto *digest = page.findChild<QPushButton *>("deliveryDigest");
+        auto *date = page.findChild<QDateEdit *>("deliveryDate");
+        QVERIFY(date);
+        QCOMPARE(date->date(), QDate::currentDate());
+        date->setDate(QDate(2026, 9, 7));
         auto *search = page.findChild<QPushButton *>("deliverySearch");
         auto *items = page.findChild<QListWidget *>("deliveryItems");
         auto *status = page.findChild<QLabel *>("deliveryStatus");
         QVERIFY(!search->isEnabled());
         insights->click();
         QVERIFY(!digest->isEnabled());
+        QVERIFY(!date->isEnabled());
         emit transport.insightsResult({});
         QVERIFY(status->text().contains("不代表记忆库为空"));
         insights->click();
@@ -685,6 +692,8 @@ private slots:
         QCOMPARE(requested.count(), 1);
         QCOMPARE(requested.at(0).at(0).toString(), QStringLiteral("Example"));
         digest->click();
+        QCOMPARE(transport.digestDate, QStringLiteral("2026-09-07"));
+        QVERIFY(!date->isEnabled());
         emit transport.errorOccurred("TIMEOUT", "offline", "");
         QVERIFY(status->text().contains("offline"));
         digest->click();
@@ -693,6 +702,23 @@ private slots:
         digest->click();
         emit transport.digestResult({{"date", "2026-09-07"}, {"summary", "当日无新记忆"}});
         QVERIFY(page.findChild<QPlainTextEdit *>("deliveryBody")->toPlainText().contains("当日无新记忆"));
+        QVERIFY(date->isEnabled());
+        date->setDate(QDate(2024, 2, 29));
+        auto *body = page.findChild<QPlainTextEdit *>("deliveryBody");
+        QVERIFY(body->toPlainText().isEmpty());
+        digest->click();
+        QCOMPARE(transport.digestDate, QStringLiteral("2024-02-29"));
+        emit transport.digestResult({{"date", "2026-09-07"}, {"summary", "不应显示的旧日摘要"}});
+        QVERIFY(body->toPlainText().isEmpty());
+        QVERIFY(status->text().contains("不一致"));
+        digest->click();
+        emit transport.digestResult({{"date", "2024-02-29"}, {"summary", "历史采集简报"}});
+        QCOMPARE(body->toPlainText(), QStringLiteral("2024-02-29\n历史采集简报"));
+        digest->click();
+        QVERIFY(body->toPlainText().isEmpty());
+        emit transport.errorOccurred("TIMEOUT", "offline", "");
+        emit transport.digestResult({{"date", "2024-02-29"}, {"summary", "过期响应"}});
+        QVERIFY(body->toPlainText().isEmpty());
     }
     void leavingNetworkSerializesAndVerifies()
     {

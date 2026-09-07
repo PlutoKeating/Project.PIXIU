@@ -1,4 +1,5 @@
 #pragma once
+#include <QString>
 #include <QWidget>
 class BackendTransport;
 namespace pixiu {
@@ -13,5 +14,6 @@ signals:
 private:
     enum Pending { None, Insights, Digest };
     Pending m_pending = None;
+    QString m_digestDate;
 };
 }

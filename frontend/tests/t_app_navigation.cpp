@@ -218,7 +218,7 @@ public:
             emit insightsResult(insightsPayload);
         }
     }
-    void deliveryDigest() override
+    void deliveryDigest(const QString & = QString()) override
     {
         ++digestCalls;
         if (autoEchoDigest) {

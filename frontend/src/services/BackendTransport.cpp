@@ -81,6 +81,6 @@ void BackendTransport::deliveryInsights()
 {
 }
 
-void BackendTransport::deliveryDigest()
+void BackendTransport::deliveryDigest(const QString &)
 {
 }

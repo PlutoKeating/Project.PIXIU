@@ -37,6 +37,7 @@ private slots:
     void startsHealthAfterBusinessReachability();
     void diagnosticsStopOnFailedRead();
     void diagnosticsReadAllPublicEndpoints();
+    void digestPreservesSelectedDate();
 
 private:
     HttpBackendTransport *makeTransport(int intervalMs = 300);
@@ -350,6 +351,22 @@ void TestHttpBackend::diagnosticsStopOnFailedRead()
     QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
     QCOMPARE(results.count(), 0);
     QCOMPARE(m_paths, QList<QByteArray>({"/health", "/version"}));
+}
+
+void TestHttpBackend::digestPreservesSelectedDate()
+{
+    startServer();
+    auto *transport = makeTransport();
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    // The fixture returns 404; inspect the actual request target, not a mock call.
+    transport->deliveryDigest(QStringLiteral("2024-02-29"));
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
+    transport->deliveryDigest();
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 2, 3000);
+    transport->deliveryDigest(QStringLiteral("2024-02-29&extra=1"));
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 3, 3000);
+    QCOMPARE(m_paths, QList<QByteArray>({"/delivery/digest?date=2024-02-29",
+        "/delivery/digest", "/delivery/digest?date=2024-02-29%26extra%3D1"}));
 }
 
 void TestHttpBackend::diagnosticsReadAllPublicEndpoints()

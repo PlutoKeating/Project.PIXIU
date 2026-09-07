@@ -70,9 +70,9 @@ public:
     // 递送层洞察（GET /delivery/insights?limit=3，B4-1）：最近高质量记忆候选，
     // 供聊天窗欢迎页渲染动态建议卡。默认空实现，理由同上。
     virtual void deliveryInsights();
-    // 今日简报（GET /delivery/digest，B4-2）：当日记忆沉淀摘要。默认空实现，
-    // 理由同上。
-    virtual void deliveryDigest();
+    // 采集简报（GET /delivery/digest?date=YYYY-MM-DD）：按后端本地日期汇总。
+    // 空参数保持服务端今天的默认行为。默认空实现，理由同上。
+    virtual void deliveryDigest(const QString &date = QString());
     // Read-only health/version/capability snapshot; use a dedicated transport.
     virtual void backendDiagnostics();
 

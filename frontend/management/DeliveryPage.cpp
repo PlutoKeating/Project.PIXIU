@@ -1,6 +1,7 @@
 #include "DeliveryPage.h"
 #include "services/HttpBackendTransport.h"
 #include <QDate>
+#include <QDateEdit>
 #include <QJsonArray>
 #include <QLabel>
 #include <QListWidget>
@@ -27,7 +28,16 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     auto *search = new QPushButton(tr("按所选标题检索记忆"), this);
     search->setObjectName(QStringLiteral("deliverySearch"));
     layout->addWidget(search);
-    auto *digest = new QPushButton(tr("读取今日采集简报"), this);
+    auto *dateLabel = new QLabel(tr("简报日期（按后端本地时区；初始值为本机今天）"), this);
+    layout->addWidget(dateLabel);
+    auto *datePicker = new QDateEdit(QDate::currentDate(), this);
+    datePicker->setObjectName(QStringLiteral("deliveryDate"));
+    datePicker->setDisplayFormat(QStringLiteral("yyyy-MM-dd"));
+    datePicker->setCalendarPopup(true);
+    datePicker->setAccessibleName(tr("采集简报日期"));
+    dateLabel->setBuddy(datePicker);
+    layout->addWidget(datePicker);
+    auto *digest = new QPushButton(tr("读取所选日期采集简报"), this);
     digest->setObjectName(QStringLiteral("deliveryDigest"));
     layout->addWidget(digest);
     auto *body = new QPlainTextEdit(this);
@@ -42,9 +52,14 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     auto controls = [=]() {
         insights->setEnabled(m_pending == None);
         digest->setEnabled(m_pending == None);
+        datePicker->setEnabled(m_pending == None);
         items->setEnabled(m_pending == None);
         search->setEnabled(m_pending == None && items->currentItem());
     };
+    connect(datePicker, &QDateEdit::dateChanged, this, [=]() {
+        body->clear();
+        if (m_pending == None) status->setText(tr("日期已更改，请读取所选日期的简报。"));
+    });
     connect(items, &QListWidget::currentRowChanged, this, [=]() { controls(); });
     connect(search, &QPushButton::clicked, this, [=]() {
         if (m_pending == None && items->currentItem())
@@ -61,10 +76,11 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     connect(digest, &QPushButton::clicked, this, [=]() {
         if (m_pending != None) return;
         m_pending = Digest;
+        m_digestDate = datePicker->date().toString(Qt::ISODate);
         body->clear();
         status->setText(tr("正在读取简报…"));
         controls();
-        http->deliveryDigest();
+        http->deliveryDigest(m_digestDate);
     });
     connect(http, &BackendTransport::insightsResult, this, [=](const QJsonArray &result) {
         if (m_pending != Insights) return;
@@ -92,6 +108,8 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
         const auto date = result.value("date").toString();
         if (!QDate::fromString(date, Qt::ISODate).isValid() || !result.value("summary").isString()) {
             status->setText(tr("简报响应不完整，请重试。"));
+        } else if (date != m_digestDate || datePicker->date().toString(Qt::ISODate) != m_digestDate) {
+            status->setText(tr("简报返回日期与所选日期不一致，未显示内容，请重试。"));
         } else {
             body->setPlainText(date + QLatin1Char('\n') + result.value("summary").toString());
             status->setText(tr("已读取后端日期对应的采集简报。"));

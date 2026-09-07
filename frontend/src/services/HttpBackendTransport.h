@@ -59,7 +59,7 @@ public:
     void confirmPairing(const QString &requestId, bool accept) override;
     void updateSyncSettings(bool enabled, bool paused) override;
     void deliveryInsights() override;
-    void deliveryDigest() override;
+    void deliveryDigest(const QString &date = QString()) override;
     void backendDiagnostics() override;
 
     ConnectionState connectionState() const override;
