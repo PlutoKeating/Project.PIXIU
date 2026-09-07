@@ -1,5 +1,6 @@
 #include "SettingsWorkspace.h"
 #include "PrivacyPage.h"
+#include "HostCloseGuard.h"
 #include "widgets/CheckUpdateDialog.h"
 #include <QCoreApplication>
 #include <QLabel>
@@ -33,6 +34,10 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     generalLayout->addStretch();
     auto *upgrade = new UpgradeController(this);
     auto *updateDialog = new CheckUpdateDialog(upgrade, this);
+    updateDialog->setRestartConfirmation([this, updateDialog]() {
+        auto *guard = window()->findChild<HostCloseGuard *>(QString(), Qt::FindDirectChildrenOnly);
+        return guard && guard->confirmExit(updateDialog);
+    });
     connect(updates, &QPushButton::clicked, updateDialog, &CheckUpdateDialog::showAndCheck);
     connect(upgrade, &UpgradeController::restartScheduled, QCoreApplication::instance(), &QCoreApplication::quit);
     tabs->addTab(general, tr("应用与升级"));

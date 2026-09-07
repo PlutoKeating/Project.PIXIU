@@ -451,7 +451,17 @@ void TestCheckUpdateDialog::upgradeFinishedSuccessOffersControlledRestart()
         QStringLiteral("closeButton"));
     QVERIFY(close != nullptr);
     QCOMPARE(close->text(), QStringLiteral("立即重启"));
+    bool allowRestart = false;
+    int confirmations = 0;
+    dialog.setRestartConfirmation([&]() { ++confirmations; return allowRestart; });
     close->click();
+    QCOMPARE(confirmations, 1);
+    QCOMPARE(restartCalls, 0);
+    QCOMPARE(restartSpy.count(), 0);
+    QVERIFY(dialog.isVisible());
+    allowRestart = true;
+    close->click();
+    QCOMPARE(confirmations, 2);
     QCOMPARE(restartCalls, 1);
     QCOMPARE(restartSpy.count(), 1);
     QVERIFY(tempDebFiles().isEmpty());   // 安装后清理临时 deb

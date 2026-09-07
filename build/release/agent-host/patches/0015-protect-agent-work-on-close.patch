@@ -1,0 +1,46 @@
+--- a/include/ui/chatwidget.h
++++ b/include/ui/chatwidget.h
+@@ -89,1 +89,3 @@
+-    QString currentSessionId() const { return m_currentSessionId; }
++    QString currentSessionId() const { return m_currentSessionId; }
++    bool hasPendingRequests() const { return !m_pendingFallbackReplies.isEmpty(); }
++    bool hasUnsentDraft() const;
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -558,1 +558,6 @@
+-void ChatWidget::sendMessage()
++bool ChatWidget::hasUnsentDraft() const
++{
++    return !m_inputEdit->toPlainText().isEmpty();
++}
++
++void ChatWidget::sendMessage()
+--- a/include/ui/mainwindow.h
++++ b/include/ui/mainwindow.h
+@@ -37,1 +37,3 @@
+-    ~MainWindow();
++    ~MainWindow();
++    bool hasPendingAgentRequests() const;
++    bool hasUnsentAgentDraft() const;
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -34,1 +34,11 @@
+-MainWindow::~MainWindow() = default;
++MainWindow::~MainWindow() = default;
++
++bool MainWindow::hasPendingAgentRequests() const
++{
++    return m_chatWidget && m_chatWidget->hasPendingRequests();
++}
++
++bool MainWindow::hasUnsentAgentDraft() const
++{
++    return m_chatWidget && m_chatWidget->hasUnsentDraft();
++}
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -97,1 +97,3 @@
+-    pixiu::HostCloseGuard closeGuard(&window);
++    pixiu::HostCloseGuard closeGuard(&window,
++        [&window]() { return window.hasPendingAgentRequests(); },
++        [&window]() { return window.hasUnsentAgentDraft(); });

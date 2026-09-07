@@ -44,8 +44,13 @@ grep -q 'PIXIU_PRODUCT_VERSION' "${fixture}/source/CMakeLists.txt"
 cmp "${repo_root}/VERSION" "${fixture}/source/pixiu/VERSION"
 grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 grep -q 'app.setQuitOnLastWindowClosed(true)' "${fixture}/source/src/main.cpp"
-grep -q 'pixiu::HostCloseGuard closeGuard(&window)' "${fixture}/source/src/main.cpp"
+grep -q 'pixiu::HostCloseGuard closeGuard(&window,' "${fixture}/source/src/main.cpp"
+grep -q 'return window.hasPendingAgentRequests();' "${fixture}/source/src/main.cpp"
+grep -q 'return window.hasUnsentAgentDraft();' "${fixture}/source/src/main.cpp"
+grep -q 'return !m_pendingFallbackReplies.isEmpty();' "${fixture}/source/include/ui/chatwidget.h"
+grep -q 'return !m_inputEdit->toPlainText().isEmpty();' "${fixture}/source/src/ui/chatwidget.cpp"
 test -f "${fixture}/source/pixiu/frontend/management/HostCloseGuard.cpp"
+grep -q 'guard && guard->confirmExit(updateDialog)' "${fixture}/source/pixiu/frontend/management/SettingsWorkspace.cpp"
 python3 - "${fixture}/source/src/main.cpp" <<'PY'
 from pathlib import Path
 import sys
@@ -53,7 +58,7 @@ import sys
 source = Path(sys.argv[1]).read_text()
 quit_branch = source.split('message == QStringLiteral("quit")', 1)[1].split('\n        }', 1)[0]
 assert quit_branch.index('window.showFromTray();') < quit_branch.index('window.close();')
-assert source.count('pixiu::HostCloseGuard closeGuard(&window);') == 1
+assert source.count('pixiu::HostCloseGuard closeGuard(&window,') == 1
 PY
 ! grep -q 'setQuitOnLastWindowClosed(false)' "${fixture}/source/src/main.cpp"
 ! grep -q 'src/ui/modelsettingswidget.cpp' "${fixture}/source/CMakeLists.txt"

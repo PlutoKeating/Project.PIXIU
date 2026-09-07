@@ -80,6 +80,41 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void hostCloseUsesLiveAgentStateWithoutSubmittingOrCancelling()
+    {
+        QWidget host;
+        bool pending = true;
+        QString draft = "unsent input";
+        pixiu::HostCloseGuard guard(&host, [&]() { return pending; },
+            [&]() { return !draft.isEmpty(); });
+        host.show();
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
+        QVERIFY(!host.close());
+        QVERIFY(pending);
+        QCOMPARE(draft, QStringLiteral("unsent input"));
+        pending = false;
+        bool defaultCancel = false;
+        QTimer::singleShot(0, &host, [&]() {
+            auto *question = host.findChild<QMessageBox *>();
+            defaultCancel = question->defaultButton() == question->button(QMessageBox::No);
+            question->done(QMessageBox::No);
+        });
+        QVERIFY(!host.close());
+        QVERIFY(defaultCancel);
+        QCOMPARE(draft, QStringLiteral("unsent input"));
+        QTimer::singleShot(0, &host, [&]() {
+            pending = true; // State may change in the confirmation's event loop.
+            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+        });
+        QVERIFY(!host.close());
+        pending = false;
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        QVERIFY(host.close());
+        QCOMPARE(draft, QStringLiteral("unsent input")); // Guard only authorizes close, no state mutation.
+        draft.clear();
+        host.show();
+        QVERIFY(host.close());
+    }
     void hostClosePreservesPrivacyDraftAndWaitsForResult()
     {
         Transport transport;
@@ -171,6 +206,25 @@ private slots:
         QVERIFY(host.isVisible());
         dialog.reject();
         QVERIFY(host.close());
+    }
+    void restartPreflightExcludesOnlyItsInitiatingDialog()
+    {
+        QWidget host;
+        bool pending = true;
+        pixiu::HostCloseGuard guard(&host, [&]() { return pending; });
+        QDialog restartDialog(&host), otherDialog(&host);
+        host.show();
+        restartDialog.show();
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
+        QVERIFY(!guard.confirmExit(&restartDialog));
+        pending = false;
+        otherDialog.show();
+        QVERIFY(!guard.confirmExit(&restartDialog));
+        otherDialog.hide();
+        QVERIFY(guard.confirmExit(&restartDialog));
+        QVERIFY(host.isVisible()); // Preflight must not exit before the helper starts.
+        QVERIFY(restartDialog.isVisible());
+        QVERIFY(!host.close()); // Ordinary close still cannot bypass the same dialog.
     }
     void hostCloseWaitsForForgetAndPreferenceExtraction()
     {

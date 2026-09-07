@@ -2,6 +2,8 @@
 #define PIXIU_CHECK_UPDATE_DIALOG_H
 
 #include <QDialog>
+#include <functional>
+#include <utility>
 
 #include "app/UpgradeController.h"
 
@@ -39,6 +41,8 @@ public:
 
     // 注入的升级控制器（为 nullptr 表示未注入，升级按钮禁用）。
     UpgradeController *controller() const { return m_controller; }
+    void setRestartConfirmation(std::function<bool()> confirmation)
+    { m_restartConfirmation = std::move(confirmation); }
 
 public slots:
     void reject() override;
@@ -54,6 +58,7 @@ private:
     void onRestartFailed(const QString &message);
 
     UpgradeController *m_controller = nullptr;
+    std::function<bool()> m_restartConfirmation;
     QLabel *m_currentVersionLabel = nullptr;
     QLabel *m_remoteVersionLabel = nullptr;
     QLabel *m_updateStatusLabel = nullptr;

@@ -96,6 +96,7 @@ CheckUpdateDialog::CheckUpdateDialog(UpgradeController *controller,
     connect(m_closeButton, &QPushButton::clicked, this, [this]() {
         if (m_controller
             && m_controller->state() == UpgradeController::State::Success) {
+            if (m_restartConfirmation && !m_restartConfirmation()) return;
             m_controller->restartApplication();
             return;
         }
