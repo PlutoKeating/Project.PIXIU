@@ -6,6 +6,7 @@ class QCheckBox;
 class QLabel;
 class QListWidget;
 class QPushButton;
+class QTimer;
 namespace pixiu {
 class DevicePage : public QWidget
 {
@@ -14,11 +15,15 @@ public:
     explicit DevicePage(QWidget *parent, BackendTransport *transport = nullptr);
     bool hasPendingOperation() const { return m_pending != Pending::None; }
     bool hasUnsavedChanges() const;
+    void notifyDataChanged();
+protected:
+    void showEvent(QShowEvent *event) override;
 private:
-    enum class Pending { None, Status, Peers, Discover, Settings, Revoke, LeavePeers, LeaveRevoke, LeaveSettings, LeaveVerify };
+    enum class Pending { None, Status, Peers, Discover, Settings, ReviewRevoke, Revoke, LeavePeers, LeaveRevoke, LeaveSettings, LeaveVerify };
     void controls();
     void finish(const QString &message);
     void refresh();
+    void scheduleRefresh();
     void leaveNext();
     BackendTransport *m_transport;
     QCheckBox *m_enabled, *m_paused;
@@ -30,5 +35,8 @@ private:
     bool m_haveSnapshot = false, m_savedEnabled = false, m_savedPaused = false;
     QString m_revoking;
     QStringList m_leaveQueue;
+    QTimer *m_refreshTimer;
+    bool m_refreshNeeded = false;
+    QString m_restorePeer;
 };
 }

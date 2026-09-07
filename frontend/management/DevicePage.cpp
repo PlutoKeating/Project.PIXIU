@@ -8,12 +8,20 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QShowEvent>
+#include <QTimer>
 #include <QVBoxLayout>
 
 namespace pixiu {
 DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     : QWidget(parent), m_transport(transport ? transport : new HttpBackendTransport(this))
 {
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setSingleShot(true);
+    m_refreshTimer->setInterval(500);
+    connect(m_refreshTimer, &QTimer::timeout, this, [this]() {
+        if (m_refreshNeeded && isVisible() && m_pending == Pending::None && !hasUnsavedChanges()) refresh();
+    });
     auto *layout = new QVBoxLayout(this);
     auto *notice = new QLabel(tr("个人记忆不参与共享域同步。设备发现只表示收到广播，本地信任与节点记录状态不证明对端在线或数据已经送达。"), this);
     notice->setWordWrap(true);
@@ -89,6 +97,7 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
         connect(check, &QCheckBox::toggled, this, [this]() {
             if (m_pending == Pending::None && m_loaded)
                 m_status->setText(tr("同步开关有未保存的修改。"));
+            scheduleRefresh();
         });
     connect(m_save, &QPushButton::clicked, this, [this]() {
         if (!m_loaded || m_pending != Pending::None) return;
@@ -113,7 +122,9 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
             tr("设备：%1\n解除后本机不再信任此设备。此操作不会删除已有记忆，也不代表对端已移除本机。是否继续？").arg(id),
             QMessageBox::Yes | QMessageBox::No, this);
         confirmation.setDefaultButton(QMessageBox::No);
-        if (confirmation.exec() != QMessageBox::Yes) return;
+        m_pending = Pending::ReviewRevoke;
+        controls();
+        if (confirmation.exec() != QMessageBox::Yes) { finish(tr("已取消，未解除信任。")); return; }
         m_revoking = id;
         m_pending = Pending::Revoke;
         controls();
@@ -184,7 +195,9 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
                 .arg(peer.value("name").toString(), self ? tr("（本机）") : QString(),
                      peer.value("id").toString(), peer.value("status").toString()), m_peers);
             if (!self) item->setData(Qt::UserRole, peer.value("id").toString());
+            if (!self && peer.value("id").toString() == m_restorePeer) m_peers->setCurrentItem(item);
         }
+        m_restorePeer.clear();
         finish(peers.isEmpty() ? tr("后端没有返回节点记录。") : tr("节点记录已刷新。"));
     });
     connect(m_transport, &BackendTransport::devicesLoaded, this, [this](const QJsonObject &response) {
@@ -270,6 +283,9 @@ void DevicePage::leaveNext()
 void DevicePage::refresh()
 {
     if (m_pending != Pending::None) return;
+    m_refreshNeeded = false;
+    m_refreshTimer->stop();
+    m_restorePeer = m_peers->currentItem() ? m_peers->currentItem()->data(Qt::UserRole).toString() : QString();
     m_loaded = false;
     m_pending = Pending::Status;
     m_peers->clear();
@@ -282,6 +298,21 @@ bool DevicePage::hasUnsavedChanges() const
 {
     return m_haveSnapshot && (m_enabled->isChecked() != m_savedEnabled
         || m_paused->isChecked() != m_savedPaused);
+}
+void DevicePage::notifyDataChanged()
+{
+    m_refreshNeeded = true;
+    scheduleRefresh();
+}
+void DevicePage::scheduleRefresh()
+{
+    if (m_refreshNeeded && isVisible() && m_pending == Pending::None
+        && !hasUnsavedChanges() && !m_refreshTimer->isActive()) m_refreshTimer->start();
+}
+void DevicePage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    scheduleRefresh();
 }
 void DevicePage::finish(const QString &message)
 {
@@ -302,5 +333,6 @@ void DevicePage::controls()
     m_peers->setEnabled(idle);
     m_revoke->setEnabled(idle && m_peers->currentItem()
         && !m_peers->currentItem()->data(Qt::UserRole).toString().isEmpty());
+    scheduleRefresh();
 }
 }

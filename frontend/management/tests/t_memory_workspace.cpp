@@ -960,6 +960,62 @@ private slots:
         QVERIFY(localPin->text().isEmpty());
         QVERIFY(remotePin->text().isEmpty());
     }
+    void deviceEventsPreserveUnsavedSwitchesAndSelectedPeer()
+    {
+        Transport transport;
+        pixiu::DevicePage page(nullptr, &transport);
+        const QJsonObject state{{"enabled", false}, {"paused", false}, {"domain", "shared:home"},
+            {"peers_total", 1}, {"pending_outgoing_ops", 0}, {"total_ops_synced", 0}};
+        const QJsonObject peers{{"peers", QJsonArray{QJsonObject{{"id", "peer"},
+            {"name", "Peer"}, {"is_self", false}, {"status", "OFFLINE"}}}}};
+        for (int i = 0; i < 20; ++i) page.notifyDataChanged();
+        QTest::qWait(550);
+        QCOMPARE(transport.statusReads, 0);
+        page.show();
+        QTRY_COMPARE(transport.statusReads, 1);
+        emit transport.syncStatusResult(state);
+        emit transport.peersResult(peers);
+        auto *list = page.findChild<QListWidget *>("devicePeers");
+        list->setCurrentRow(0);
+        auto *enabled = page.findChild<QCheckBox *>("deviceEnabled");
+        enabled->setChecked(true);
+        QVERIFY(page.hasUnsavedChanges());
+        for (int i = 0; i < 20; ++i) page.notifyDataChanged();
+        QTest::qWait(550);
+        QCOMPARE(transport.statusReads, 1);
+        QVERIFY(enabled->isChecked());
+        enabled->setChecked(false); // explicit user undo makes refreshing safe
+        QTRY_COMPARE(transport.statusReads, 2);
+        page.notifyDataChanged(); // another event while the read is in flight
+        QTest::qWait(550);
+        QCOMPARE(transport.statusReads, 2);
+        emit transport.syncStatusResult(state);
+        emit transport.peersResult(peers);
+        QCOMPARE(list->currentRow(), 0);
+        QTRY_COMPARE(transport.statusReads, 3);
+        emit transport.syncStatusResult(state);
+        emit transport.peersResult(peers);
+        QTimer::singleShot(0, &page, [&page, &transport]() {
+            const bool reviewing = page.hasPendingOperation();
+            page.notifyDataChanged();
+            QTimer::singleShot(600, &page, [&page, &transport, reviewing]() {
+                const int reads = transport.statusReads;
+                page.findChild<QMessageBox *>()->done(QMessageBox::No);
+                QVERIFY(reviewing);
+                QCOMPARE(reads, 3);
+            });
+        });
+        page.findChild<QPushButton *>("deviceRevoke")->click();
+        QTRY_COMPARE(transport.statusReads, 4);
+        emit transport.syncStatusResult(state);
+        emit transport.peersResult({{"peers", QJsonArray{}}});
+        QCOMPARE(list->currentRow(), -1);
+        QVERIFY(!page.findChild<QPushButton *>("deviceRevoke")->isEnabled());
+        QVERIFY(transport.syncSettings.isEmpty());
+        QVERIFY(transport.revoked.isEmpty());
+        QCOMPARE(transport.pairCalls, 0);
+    }
+
     void deviceSettingsAndTrustRequireEvidence()
     {
         Transport transport;
