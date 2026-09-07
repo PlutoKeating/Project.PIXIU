@@ -620,10 +620,16 @@ Module E 的 `pixiu_memory_forget` 工具固定传 Provider scope，只允许 `c
 此限制只约束该 Provider 工具，不是任意代码执行环境的访问隔离；宿主自动交接与
 不可绕过的真人审批链路仍待实现，不能以只读工具限制宣称完整安全验收通过。
 
-Module E 的本地 `Outbox` 是尚待接线的生命周期可靠投递存储，不是新增 HTTP 接口，
-也不保存遗忘执行凭证。它保留原幂等请求并提供容量限制、分区和有效期领取；
-Provider 目前仍使用原内存队列。沿用 Python 标准库 sqlite3，安装脚本复制现有
-Provider 目录即可携带该模块，无新增系统依赖或额外可执行程序。
+Module E 的本地 `Outbox` 已用于后台 `/memory/write` 和 `/agent/lifecycle` 投递，
+不是新增 HTTP 接口，也不保存遗忘执行凭证。记录位于 Runtime 提供的 `hermes_home`
+下 `pixiu-outbox/delivery.sqlite3`；未显式传入时使用 Runtime 官方 `get_hermes_home()`。
+按端点/范围的摘要分区，原请求幂等键和来源会话在恢复时不改写。入盘为同步本地操作，
+网络投递异步；不能把此实现描述为所有回调零阻塞。暂时失败保留并延后重试，其他
+后端拒绝保留较长重试间隔，不静默删除。容量或入盘失败增加 dropped_jobs 并报告
+`OUTBOX_WRITE_FAILED`。诊断新增 pending_deliveries，queued_jobs 仅统计内存预取队列。
+退出保留未确认投递，仍存活的工作线程阻止重新初始化；只读预取缓存不持久化。
+沿用 Python 标准库 sqlite3，安装脚本复制现有 Provider 目录，无新增系统依赖。
+已测试受控重启重放；真实 Runtime 崩溃/断网恢复及用户可见失败处理仍待验收。
 
 ### 3.9 GET /conflicts
 

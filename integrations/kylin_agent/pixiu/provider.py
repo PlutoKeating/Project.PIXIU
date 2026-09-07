@@ -1,4 +1,4 @@
-"""Non-blocking openKylin MemoryProvider backed only by PIXIU public APIs."""
+"""openKylin MemoryProvider with durable writes and asynchronous public-API delivery."""
 
 from __future__ import annotations
 
@@ -6,7 +6,9 @@ import hashlib
 import json
 import logging
 import os
+from pathlib import Path
 import queue
+import sqlite3
 import re
 import threading
 import time
@@ -26,6 +28,7 @@ from .compat import (
     runtime_version_supported,
 )
 from .schemas import ALL as TOOL_SCHEMAS
+from .outbox import Outbox
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +62,7 @@ class PixiuMemoryProvider(MemoryProvider):
         max_chars: int = 4000,
         content_limit: int = 8000,
         runtime_version: str | None = None,
+        outbox_directory: Path | None = None,
     ) -> None:
         self._endpoint = endpoint or os.environ.get(
             "PIXIU_AGENT_ENDPOINT", "http://127.0.0.1:8765"
@@ -93,6 +97,9 @@ class PixiuMemoryProvider(MemoryProvider):
         self._provider_version = provider_version()
         self._runtime_version = runtime_version or detected_runtime_version()
         self._backend_version = ""
+        self._outbox_directory = outbox_directory
+        self._outbox: Outbox | None = None
+        self._pending_on_shutdown = 0
 
     @property
     def name(self) -> str:
@@ -157,6 +164,11 @@ class PixiuMemoryProvider(MemoryProvider):
         capabilities = self._client.request("GET", "/capabilities")
         if self._strict and not capabilities.get("contest_ready"):
             raise RuntimeError("PIXIU_CONTEST_CAPABILITY_REQUIRED")
+        from kylin_agent_runtime_constants import get_hermes_home
+        profile_home = Path(kwargs.get("hermes_home") or get_hermes_home())
+        partition = hashlib.sha256(json.dumps([self._endpoint, self._scope]).encode()).hexdigest()
+        self._outbox = Outbox(self._outbox_directory or profile_home / "pixiu-outbox", partition)
+        self._pending_on_shutdown = 0
         with self._lock:
             self._capabilities = capabilities
             self._backend_version = backend_version
@@ -336,6 +348,7 @@ class PixiuMemoryProvider(MemoryProvider):
             return {
                 "initialized": self._initialized,
                 "queued_jobs": self._queue.qsize(),
+                "pending_deliveries": self._outbox.pending() if self._outbox else self._pending_on_shutdown,
                 "completed_jobs": self._completed_jobs,
                 "failed_jobs": self._failed_jobs,
                 "dropped_jobs": self._dropped_jobs,
@@ -348,23 +361,35 @@ class PixiuMemoryProvider(MemoryProvider):
     def wait_for_idle(self, timeout: float) -> bool:
         deadline = time.monotonic() + max(0, timeout)
         while time.monotonic() < deadline:
-            if self._queue.unfinished_tasks == 0:
+            if self._queue.unfinished_tasks == 0 and self._pending_deliveries() == 0:
                 return True
             time.sleep(0.005)
-        return self._queue.unfinished_tasks == 0
+        return self._queue.unfinished_tasks == 0 and self._pending_deliveries() == 0
+
+    def _pending_deliveries(self) -> int:
+        return self._outbox.pending() if self._outbox else self._pending_on_shutdown
 
     def shutdown(self) -> None:
         if not self._worker:
             return
         self.wait_for_idle(5.0)
         self._stopping.set()
-        try:
-            self._queue.put_nowait(None)
-        except queue.Full:
-            pass
         self._worker.join(timeout=2.0)
+        if self._worker.is_alive():
+            raise RuntimeError("PIXIU_DELIVERY_WORKER_STILL_RUNNING")
         with self._lock:
             self._initialized = False
+            self._cache.clear()
+        while True:
+            try:
+                self._queue.get_nowait()
+                self._queue.task_done()
+            except queue.Empty:
+                break
+        if self._outbox:
+            self._pending_on_shutdown = self._outbox.pending()
+            self._outbox.close()
+            self._outbox = None
         self._worker = None
 
     def _search(self, args: dict[str, Any]) -> dict[str, Any]:
@@ -560,6 +585,15 @@ class PixiuMemoryProvider(MemoryProvider):
     def _enqueue(self, job: _Job) -> None:
         if not self._initialized or self._stopping.is_set():
             return
+        if job.method == "POST" and job.path in {"/agent/lifecycle", "/memory/write"}:
+            try:
+                self._outbox.enqueue(job.payload["idempotency_key"], {
+                    "method": job.method, "path": job.path, "payload": job.payload})
+            except (ValueError, OSError, sqlite3.Error, KeyError):
+                with self._lock:
+                    self._dropped_jobs += 1
+                    self._last_error = "OUTBOX_WRITE_FAILED"
+            return
         try:
             self._queue.put_nowait(job)
         except queue.Full:
@@ -568,12 +602,29 @@ class PixiuMemoryProvider(MemoryProvider):
                 self._last_error = "QUEUE_FULL"
 
     def _worker_loop(self) -> None:
-        while True:
-            job = self._queue.get()
+        while not self._stopping.is_set():
+            delivery = None
+            queued = False
             try:
-                if job is None:
-                    return
+                delivery = self._outbox.claim()
+                if delivery:
+                    key, record, lease = delivery
+                    if (record.get("method") != "POST" or record.get("path") not in {"/agent/lifecycle", "/memory/write"}
+                            or record.get("payload", {}).get("scope") != self._scope
+                            or record.get("payload", {}).get("idempotency_key") != key):
+                        raise PixiuApiError("INVALID_OUTBOX_RECORD")
+                    job = _Job(record["method"], record["path"], record["payload"])
+                else:
+                    try:
+                        job = self._queue.get(timeout=0.1)
+                    except queue.Empty:
+                        continue
+                    queued = True
+                    if job is None:
+                        return
                 result = self._request_with_retry(job)
+                if delivery and not self._outbox.acknowledge(key, lease):
+                    raise PixiuApiError("OUTBOX_LEASE_EXPIRED", retryable=True)
                 if job.cache_session:
                     context = str(result.get("context") or "").strip()
                     context = _FENCE.sub("[memory fence removed]", context)
@@ -582,6 +633,13 @@ class PixiuMemoryProvider(MemoryProvider):
                 with self._lock:
                     self._completed_jobs += 1
             except PixiuApiError as exc:
+                if delivery:
+                    try:
+                        self._outbox.retry(delivery[0], delivery[2], delay=30 if exc.retryable else 3600)
+                    except (sqlite3.Error, OSError):
+                        # The durable record remains leased and can recover on expiry.
+                        logger.warning("PIXIU delivery retry scheduling failed")
+                        self._stopping.wait(0.1)
                 with self._lock:
                     self._failed_jobs += 1
                     self._last_error = exc.code
@@ -590,9 +648,11 @@ class PixiuMemoryProvider(MemoryProvider):
                 with self._lock:
                     self._failed_jobs += 1
                     self._last_error = "INTERNAL_ADAPTER_ERROR"
-                logger.exception("PIXIU background memory adapter error")
+                logger.warning("PIXIU background memory adapter error")
+                self._stopping.wait(0.1)
             finally:
-                self._queue.task_done()
+                if queued:
+                    self._queue.task_done()
 
     def _request_with_retry(self, job: _Job) -> dict[str, Any]:
         for attempt in range(self._retries + 1):

@@ -17,6 +17,11 @@ from integrations.kylin_agent.pixiu.client import PixiuApiError  # noqa: E402
 from integrations.kylin_agent.pixiu.compat import provider_version  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def isolated_provider_storage(tmp_path, monkeypatch):
+    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "runtime"))
+
+
 def test_provider_version_uses_canonical_repository_version():
     assert not (ROOT / "integrations/kylin_agent/pixiu/plugin.yaml").exists()
     template = ROOT / "integrations/kylin_agent/pixiu/plugin.yaml.in"
@@ -309,10 +314,45 @@ def test_queue_backpressure_is_nonblocking_and_observable():
     item.initialize("session", platform="cli")
     started = time.monotonic()
     for index in range(20):
-        item.sync_turn(str(index), "answer", session_id="session")
+        item.queue_prefetch(str(index), session_id="session")
     assert time.monotonic() - started < 0.1
     assert item.diagnostics()["dropped_jobs"] > 0
     item.shutdown()
+
+
+def test_failed_lifecycle_is_replayed_unchanged_after_provider_restart(tmp_path):
+    class OfflineDelivery(FakeClient):
+        def request(self, method, path, payload=None):
+            if path == "/agent/lifecycle":
+                self.calls.append((method, path, payload))
+                raise PixiuApiError("BACKEND_UNAVAILABLE", retryable=True)
+            return super().request(method, path, payload)
+
+    path = tmp_path / "durable"
+    failed = OfflineDelivery()
+    first = provider(failed, outbox_directory=path, retries=0)
+    first.initialize("session")
+    first.on_session_end([{"role": "user", "content": "retained original"}])
+    deadline = time.monotonic() + 2
+    while first.diagnostics()["failed_jobs"] == 0 and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert first.diagnostics()["failed_jobs"] == 1
+    assert not first.wait_for_idle(0.01)
+    original = next(payload for _, route, payload in failed.calls if route == "/agent/lifecycle")
+    first.shutdown()
+    assert first.diagnostics()["pending_deliveries"] == 1
+
+    recovered = FakeClient()
+    second = provider(recovered, outbox_directory=path)
+    second.initialize("new-session")
+    try:
+        second._outbox.clock = lambda: time.time() + 31  # delivery becomes due; no payload rewrite
+        assert second.wait_for_idle(2)
+        delivered = [payload for _, route, payload in recovered.calls if route == "/agent/lifecycle"]
+        assert delivered == [original]
+        assert second.diagnostics()["pending_deliveries"] == 0
+    finally:
+        second.shutdown()
 
 
 def test_tool_errors_do_not_leak_endpoint_or_exception_details():
