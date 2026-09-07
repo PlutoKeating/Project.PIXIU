@@ -41,7 +41,7 @@ test -f "${fixture}/source/pixiu/frontend/management/MemoryWorkspace.cpp"
 test ! -e "${fixture}/source/pixiu/frontend/src/main.cpp"
 grep -q 'app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION))' "${fixture}/source/src/main.cpp"
 grep -q 'PIXIU_PRODUCT_VERSION' "${fixture}/source/CMakeLists.txt"
-python3 - "${fixture}/source/src/main.cpp" <<'PY'
+python3 - "${fixture}/source/src/main.cpp" "${repo_root}" <<'PY'
 from pathlib import Path
 import sys
 source = Path(sys.argv[1]).read_text()
@@ -49,7 +49,11 @@ assert 'app.setApplicationDisplayName("PIXIU")' in source, 'product display name
 assert 'window.setWindowTitle("KylinAgent")' not in source, 'startup overrides the product window title'
 assert 'app.setApplicationName("KylinAgent")' in source, 'persistent application identity must be preserved'
 assert 'app.setOrganizationName("KylinAgent")' in source, 'persistent organization identity must be preserved'
-assert 'app.setDesktopFileName("kylin-agent")' in source, 'desktop entry identity must be preserved'
+assert 'app.setDesktopFileName("com.kylin.pixiu")' in source, 'host must identify the installed product desktop entry'
+desktop = Path(sys.argv[2]) / 'frontend/resources/com.kylin.pixiu.desktop'
+assert desktop.is_file(), 'product desktop entry source is missing'
+packager = (Path(sys.argv[2]) / 'build/release/scripts/build-deb.sh').read_text()
+assert '${STAGE}/usr/share/applications/com.kylin.pixiu.desktop' in packager, 'declared desktop entry is not packaged'
 PY
 cmp "${repo_root}/VERSION" "${fixture}/source/pixiu/VERSION"
 grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
