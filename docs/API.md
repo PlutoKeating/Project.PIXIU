@@ -620,6 +620,11 @@ Module E 的 `pixiu_memory_forget` 工具固定传 Provider scope，只允许 `c
 此限制只约束该 Provider 工具，不是任意代码执行环境的访问隔离；宿主自动交接与
 不可绕过的真人审批链路仍待实现，不能以只读工具限制宣称完整安全验收通过。
 
+Module E 的本地 `Outbox` 是尚待接线的生命周期可靠投递存储，不是新增 HTTP 接口，
+也不保存遗忘执行凭证。它保留原幂等请求并提供容量限制、分区和有效期领取；
+Provider 目前仍使用原内存队列。沿用 Python 标准库 sqlite3，安装脚本复制现有
+Provider 目录即可携带该模块，无新增系统依赖或额外可执行程序。
+
 ### 3.9 GET /conflicts
 
 冲突审计列表。
