@@ -13,7 +13,7 @@
 
 // 契约一致性测试：以本地 TCP 服务模拟后端，响应形状逐项对齐
 // backend/foundation/api/http_app.py 与 backend/foundation/tests/test_api.py
-// 的真实实现（2026-08-10 feat/foundation 分支）。
+// 的实现。此替身仅验证传输契约，不替代真实后端验收。
 //
 // 覆盖：write / query / forget 两段式 / conflicts / preference history /
 // sync peers+status / sync pair+revoke / flow promote 的请求-响应契约。
@@ -141,17 +141,29 @@ private:
         }
         if (path == QStringLiteral("/forget")) {
             if (body.value(QStringLiteral("confirm")).toBool(false)) {
+                const bool receiptFound = m_forgetPreviewAvailable && body.value("confirmation_token") == m_forgetToken;
+                if (receiptFound) m_forgetPreviewAvailable = false; // consume before checking bound inputs
+                if (!receiptFound || body.value("command") != m_forgetCommand || body.value("scope") != m_forgetScope)
+                    return QJsonObject{{"detail", "FORGET_PREVIEW_REQUIRED"}};
+                m_forgetPreviewAvailable = false;
                 return QJsonObject{
                     {QStringLiteral("status"), QStringLiteral("forgotten")},
-                    {QStringLiteral("forgotten_ids"), QJsonArray{knw, evd}},
+                    {QStringLiteral("forgotten_ids"), QJsonArray{knw}},
                     {QStringLiteral("latency_ms"), 85},
                 };
             }
+            m_forgetPreviewAvailable = true;
+            m_forgetToken = QStringLiteral("fixture-review-%1").arg(++m_forgetSequence);
+            m_forgetCommand = body.value("command").toString();
+            m_forgetScope = body.value("scope").toString();
             return QJsonObject{
+                {QStringLiteral("confirmation_token"), m_forgetToken},
+                {QStringLiteral("expires_in_seconds"), 60},
                 {QStringLiteral("targets"),
                  QJsonArray{QJsonObject{
                      {QStringLiteral("type"), QStringLiteral("knowledge")},
                      {QStringLiteral("id"), knw},
+                     {QStringLiteral("version"), 1},
                      {QStringLiteral("title"),
                       QStringLiteral("2026年4月家庭支出清单")}}}},
                 {QStringLiteral("cascade"),
@@ -385,8 +397,9 @@ private:
     {
         const QByteArray json =
             QJsonDocument(body).toJson(QJsonDocument::Compact);
-        const QByteArray response =
-            "HTTP/1.1 200 OK\r\n"
+        const QByteArray status = body.value("detail") == QStringLiteral("FORGET_PREVIEW_REQUIRED")
+            ? QByteArray("HTTP/1.1 409 Conflict\r\n") : QByteArray("HTTP/1.1 200 OK\r\n");
+        const QByteArray response = status +
             "Content-Type: application/json\r\n"
             "Content-Length: " +
             QByteArray::number(json.size()) +
@@ -402,6 +415,11 @@ private:
     QTcpServer *m_server = nullptr;
     QHash<QTcpSocket *, QByteArray> m_buffers;
     QString m_lastMethod;
+    bool m_forgetPreviewAvailable = false;
+    QString m_forgetCommand;
+    QString m_forgetScope;
+    QString m_forgetToken;
+    int m_forgetSequence = 0;
 };
 
 class TestContractFixtures : public QObject
@@ -513,21 +531,51 @@ void TestContractFixtures::forgetTwoStageMatchesBackendContract()
 {
     HttpBackendTransport *transport = makeTransport();
     QSignalSpy spy(transport, &BackendTransport::forgetResult);
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    QJsonObject payload{{"command", "forget fixture record"}, {"scope", "user:fixture"}, {"confirm", true}};
+    transport->reviewedForget(payload);
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
+    QCOMPARE(spy.count(), 0);
 
-    transport->forget(QStringLiteral("忘记那张4月支出清单"), false);
+    payload.insert("confirm", false);
+    transport->reviewedForget(payload);
     QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
     const QJsonObject pending = spy.takeFirst().at(0).toJsonObject();
     QVERIFY(pending.value(QStringLiteral("targets")).toArray().size() >= 1);
     QVERIFY(pending.value(QStringLiteral("cascade")).toObject().contains(
         QStringLiteral("evidence_count")));
     QCOMPARE(pending.value(QStringLiteral("irreversible")).toBool(), true);
+    QVERIFY(!pending.value("confirmation_token").toString().isEmpty());
+    QVERIFY(pending.value("expires_in_seconds").toInt() > 0);
 
-    transport->forget(QStringLiteral("忘记那张4月支出清单"), true);
+    payload.insert("confirm", true);
+    payload.insert("confirmation_token", pending.value("confirmation_token"));
+    payload.insert("scope", "user:other");
+    transport->reviewedForget(payload);
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 2, 3000);
+    QCOMPARE(spy.count(), 0);
+    payload.insert("scope", "user:fixture");
+    transport->reviewedForget(payload);
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 3, 3000);
+    QCOMPARE(spy.count(), 0); // mismatch already consumed the receipt
+    payload.insert("confirm", false);
+    payload.remove("confirmation_token");
+    transport->reviewedForget(payload);
+    QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
+    const auto fresh = spy.takeFirst().at(0).toJsonObject();
+    QVERIFY(fresh.value("confirmation_token") != pending.value("confirmation_token"));
+    payload.insert("confirm", true);
+    payload.insert("confirmation_token", fresh.value("confirmation_token"));
+    transport->reviewedForget(payload);
     QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 3000);
     const QJsonObject done = spy.takeFirst().at(0).toJsonObject();
     QCOMPARE(done.value(QStringLiteral("status")).toString(),
              QStringLiteral("forgotten"));
-    QCOMPARE(done.value(QStringLiteral("forgotten_ids")).toArray().size(), 2);
+    QCOMPARE(done.value(QStringLiteral("forgotten_ids")).toArray(),
+             QJsonArray{QStringLiteral("knw_02KAAAAAAAAAAAAAAAAAAAAAA")});
+    transport->reviewedForget(payload);
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 4, 3000);
+    QCOMPARE(spy.count(), 0);
 }
 
 void TestContractFixtures::conflictsMatchBackendContract()
