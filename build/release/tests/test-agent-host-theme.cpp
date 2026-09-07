@@ -1,9 +1,11 @@
 #include "utils/thememanager.h"
 #include <QApplication>
 #include <QCalendarWidget>
+#include <QCheckBox>
 #include <QDebug>
 #include <QDateEdit>
 #include <QLabel>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPainter>
@@ -18,6 +20,13 @@
 // A stylesheet must own both foreground and surface for these controls.
 class ConflictingControlStyle : public QProxyStyle {
 public:
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
+                       QPainter *painter, const QWidget *widget = nullptr) const override
+    {
+        // Native unchecked indicators can disappear against the host surface.
+        if (element == PE_IndicatorCheckBox && (option->state & State_Off)) return;
+        QProxyStyle::drawPrimitive(element, option, painter, widget);
+    }
     void drawControl(ControlElement element, const QStyleOption *option,
                      QPainter *painter, const QWidget *widget = nullptr) const override
     {
@@ -62,6 +71,8 @@ int main(int argc, char **argv)
     content->addWidget(new QLabel(QStringLiteral("Readable workspace"), page));
     auto *input = new QLineEdit(page);
     content->addWidget(input);
+    auto *raw = new QCheckBox(QStringLiteral("Show original data"), page);
+    content->addWidget(raw);
     auto *sources = new QListWidget(page);
     sources->setObjectName(QStringLiteral("memorySources"));
     sources->setFixedHeight(64);
@@ -98,6 +109,48 @@ int main(int argc, char **argv)
             ++failures;
         }
         const QColor surface(mode == ThemeManager::Dark ? "#171c22" : "#ffffff");
+        for (bool focused : {true, false}) {
+            raw->setChecked(false);
+            if (focused) raw->setFocus();
+            else input->setFocus();
+            QApplication::processEvents();
+            QStyleOptionButton option;
+            option.initFrom(raw);
+            option.state |= QStyle::State_Off;
+            const auto indicator = raw->style()->subElementRect(QStyle::SE_CheckBoxIndicator, &option, raw);
+            const auto image = raw->grab().toImage();
+            int visible = 0;
+            for (int y = indicator.top(); y <= indicator.bottom(); ++y)
+                for (int x = indicator.left(); x <= indicator.right(); ++x) {
+                    const auto pixel = image.pixelColor(x, y);
+                    const int delta = qMax(qAbs(pixel.red()-expected.red()),
+                        qMax(qAbs(pixel.green()-expected.green()), qAbs(pixel.blue()-expected.blue())));
+                    visible += delta > 60;
+                }
+            if (visible < 20) {
+                qCritical() << "Unchecked checkbox indicator disappears" << mode << focused << visible;
+                ++failures;
+            }
+        }
+        raw->setFocus();
+        QApplication::processEvents();
+        const auto uncheckedPixels = raw->grab().toImage();
+        QKeyEvent press(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+        QKeyEvent release(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier);
+        QApplication::sendEvent(raw, &press);
+        QApplication::sendEvent(raw, &release);
+        QApplication::processEvents();
+        if (!raw->isChecked() || raw->grab().toImage() == uncheckedPixels) {
+            qCritical() << "Checkbox keyboard toggle or visible checked state lost";
+            ++failures;
+        }
+        raw->setEnabled(false);
+        raw->click();
+        if (!raw->isChecked()) {
+            qCritical() << "Disabled checkbox changed state";
+            ++failures;
+        }
+        raw->setEnabled(true);
         if (input->grab().toImage().pixelColor(input->width()/2, input->height()/2) != surface) {
             qCritical() << "Input surface lost its distinct theme background";
             ++failures;

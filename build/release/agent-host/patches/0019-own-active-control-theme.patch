@@ -1,6 +1,6 @@
 --- a/src/utils/thememanager.cpp
 +++ b/src/utils/thememanager.cpp
-@@ -343,5 +343,33 @@
+@@ -343,5 +343,38 @@
              font-size: 14px;
          }
 +        QTabWidget::pane { border: 0; background-color: %1; }
@@ -12,6 +12,11 @@
 +        QTabBar::tab:selected { color: %4; background-color: %9; border-color: %7; }
 +        QTabBar::tab:hover:!selected { background-color: %3; border-color: %6; }
 +        QTabBar::tab:disabled { color: %11; }
++        QCheckBox::indicator:unchecked {
++            background-color: %2; border: 1px solid %5; border-radius: 3px;
++        }
++        QCheckBox::indicator:unchecked:focus { border: 2px solid %7; }
++        QCheckBox::indicator:unchecked:disabled { background-color: %3; border-color: %11; }
 +        QListWidget#memorySources { color: %4; background-color: %2; outline: 0; }
 +        QListWidget#memorySources::item { padding: 6px 8px; border: 1px solid transparent; }
 +        QListWidget#memorySources::item:selected {
