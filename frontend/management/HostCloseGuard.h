@@ -17,6 +17,7 @@ public:
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 private:
+    bool hasPendingOperation() const;
     QWidget *m_host;
     std::function<bool()> m_agentPending, m_agentDraft;
     bool m_checking = false;

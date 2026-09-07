@@ -18,6 +18,7 @@ class MemoryWorkspace : public QWidget
     Q_OBJECT
 public:
     explicit MemoryWorkspace(QWidget *parent = nullptr, BackendTransport *transport = nullptr);
+    bool hasPendingOperation() const { return m_request != 0 || m_evidenceBusy; }
 private:
     void search();
     void clearResult();

@@ -80,6 +80,94 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void hostCloseWaitsForMemoryReads()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::MemoryWorkspace workspace(&host, &transport);
+        pixiu::HostCloseGuard guard(&host);
+        host.show();
+        workspace.findChild<QLineEdit *>("memoryQuery")->setText("test");
+        auto *search = workspace.findChild<QPushButton *>("memorySearch");
+        const auto closeWhileBusy = [&]() {
+            QTimer::singleShot(0, &host, [&]() {
+                if (auto *box = host.findChild<QMessageBox *>()) box->accept();
+            });
+            return host.close();
+        };
+        search->click();
+        QVERIFY(!closeWhileBusy());
+        emit transport.queryResult(transport.sequence + 1, {{"answer", "unrelated"}});
+        QVERIFY(!closeWhileBusy());
+        emit transport.queryFailed(transport.sequence, "TIMEOUT", "offline");
+        QVERIFY(host.close());
+        host.show();
+        search->click();
+        emit transport.queryResult(transport.sequence,
+            {{"answer", "test"}, {"source_evidence", QJsonArray{"e1"}}});
+        auto *sources = workspace.findChild<QListWidget *>("memorySources");
+        sources->setCurrentRow(0);
+        QVERIFY(!closeWhileBusy());
+        emit transport.errorOccurred("TIMEOUT", "offline", "test");
+        QVERIFY(host.close());
+        host.show();
+        sources->setCurrentRow(0);
+        QVERIFY(!closeWhileBusy());
+        emit transport.evidenceDetailResult({{"id", "e1"},
+            {"raw", QJsonObject{{"body", "test evidence"}}}});
+        QVERIFY(host.close());
+        QCOMPARE(transport.writes, 0);
+    }
+    void hostCloseWaitsForDeliveryReads()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::DeliveryPage page(&host, &transport);
+        pixiu::HostCloseGuard guard(&host);
+        host.show();
+        page.findChild<QPushButton *>("deliveryInsights")->click();
+        QTimer::singleShot(0, &host, [&]() {
+            if (auto *box = host.findChild<QMessageBox *>()) box->accept();
+        });
+        QVERIFY(!host.close());
+        emit transport.insightsResult({});
+        QVERIFY(host.close());
+        host.show();
+        page.findChild<QPushButton *>("deliveryDigest")->click();
+        QTimer::singleShot(0, &host, [&]() {
+            if (auto *box = host.findChild<QMessageBox *>()) box->accept();
+        });
+        QVERIFY(!host.close());
+        emit transport.errorOccurred("TIMEOUT", "offline", "test");
+        QVERIFY(host.close());
+        QCOMPARE(transport.insightReads, 1);
+        QCOMPARE(transport.digestReads, 1);
+    }
+    void restartRechecksManagementRequestsAfterDiscardConfirmation()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::MemoryWorkspace workspace(&host, &transport);
+        pixiu::HostCloseGuard guard(&host, {}, []() { return true; });
+        QDialog restartDialog(&host);
+        host.show();
+        restartDialog.show();
+        workspace.findChild<QLineEdit *>("memoryQuery")->setText("test");
+        QTimer::singleShot(0, &host, [&]() {
+            workspace.findChild<QPushButton *>("memorySearch")->click();
+            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+        });
+        QVERIFY(!guard.confirmExit(&restartDialog));
+        QVERIFY(host.isVisible());
+        QVERIFY(workspace.hasPendingOperation());
+        emit transport.queryResult(transport.sequence, {{"answer", "test"}});
+        QTimer::singleShot(0, &host, [&]() {
+            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+        });
+        QVERIFY(guard.confirmExit(&restartDialog));
+        QVERIFY(host.isVisible());
+        QCOMPARE(transport.writes, 0);
+    }
     void hostCloseUsesLiveAgentStateWithoutSubmittingOrCancelling()
     {
         QWidget host;

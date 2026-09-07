@@ -3,6 +3,8 @@
 #include "DevicePage.h"
 #include "ForgetPage.h"
 #include "MemoryAudit.h"
+#include "MemoryWorkspace.h"
+#include "DeliveryPage.h"
 #include <QCloseEvent>
 #include <QDialog>
 #include <QMessageBox>
@@ -30,6 +32,24 @@ bool HostCloseGuard::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
+bool HostCloseGuard::hasPendingOperation() const
+{
+    if (m_agentPending && m_agentPending()) return true;
+    for (auto *page : m_host->findChildren<PrivacyPage *>())
+        if (page->hasPendingOperation()) return true;
+    for (auto *page : m_host->findChildren<DevicePage *>())
+        if (page->hasPendingOperation()) return true;
+    for (auto *page : m_host->findChildren<ForgetPage *>())
+        if (page->hasPendingOperation()) return true;
+    for (auto *page : m_host->findChildren<MemoryAudit *>())
+        if (page->hasPendingOperation()) return true;
+    for (auto *page : m_host->findChildren<MemoryWorkspace *>())
+        if (page->hasPendingOperation()) return true;
+    for (auto *page : m_host->findChildren<DeliveryPage *>())
+        if (page->hasPendingOperation()) return true;
+    return false;
+}
+
 bool HostCloseGuard::confirmExit(const QDialog *initiatingDialog)
 {
     if (m_checking) return false;
@@ -41,21 +61,14 @@ bool HostCloseGuard::confirmExit(const QDialog *initiatingDialog)
         dialog->activateWindow();
         return false;
     }
-    bool pending = m_agentPending && m_agentPending();
     bool unsaved = m_agentDraft && m_agentDraft();
     for (auto *page : m_host->findChildren<PrivacyPage *>()) {
-        pending |= page->hasPendingOperation();
         unsaved |= page->hasUnsavedChanges();
     }
     for (auto *page : m_host->findChildren<DevicePage *>()) {
-        pending |= page->hasPendingOperation();
         unsaved |= page->hasUnsavedChanges();
     }
-    for (auto *page : m_host->findChildren<ForgetPage *>())
-        pending |= page->hasPendingOperation();
-    for (auto *page : m_host->findChildren<MemoryAudit *>())
-        pending |= page->hasPendingOperation();
-    if (pending) {
+    if (hasPendingOperation()) {
         QMessageBox::information(m_host, tr("暂不能退出"),
             tr("管理操作或 Agent 请求正在等待结果，请待操作完成或报告失败后再退出。关闭窗口不会取消已提交的后端操作。"));
         return false;
@@ -68,8 +81,7 @@ bool HostCloseGuard::confirmExit(const QDialog *initiatingDialog)
         question.setEscapeButton(QMessageBox::No);
         if (question.exec() != QMessageBox::Yes) return false;
     }
-    // A modal confirmation runs an event loop: consult live Agent state again.
-    if (m_agentPending && m_agentPending()) return false;
-    return true;
+    // A modal confirmation runs an event loop: consult all live request state again.
+    return !hasPendingOperation();
 }
 }

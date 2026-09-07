@@ -7,7 +7,6 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <memory>
 
 namespace pixiu {
 DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidget(parent)
@@ -40,38 +39,36 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     status->setTextFormat(Qt::PlainText);
     status->setWordWrap(true);
     layout->addWidget(status);
-    enum Pending { None, Insights, Digest };
-    auto pending = std::make_shared<Pending>(None);
     auto controls = [=]() {
-        insights->setEnabled(*pending == None);
-        digest->setEnabled(*pending == None);
-        items->setEnabled(*pending == None);
-        search->setEnabled(*pending == None && items->currentItem());
+        insights->setEnabled(m_pending == None);
+        digest->setEnabled(m_pending == None);
+        items->setEnabled(m_pending == None);
+        search->setEnabled(m_pending == None && items->currentItem());
     };
     connect(items, &QListWidget::currentRowChanged, this, [=]() { controls(); });
     connect(search, &QPushButton::clicked, this, [=]() {
-        if (*pending == None && items->currentItem())
+        if (m_pending == None && items->currentItem())
             emit searchRequested(items->currentItem()->data(Qt::UserRole).toString());
     });
     connect(insights, &QPushButton::clicked, this, [=]() {
-        if (*pending != None) return;
-        *pending = Insights;
+        if (m_pending != None) return;
+        m_pending = Insights;
         items->clear();
         status->setText(tr("正在读取洞察…"));
         controls();
         http->deliveryInsights();
     });
     connect(digest, &QPushButton::clicked, this, [=]() {
-        if (*pending != None) return;
-        *pending = Digest;
+        if (m_pending != None) return;
+        m_pending = Digest;
         body->clear();
         status->setText(tr("正在读取简报…"));
         controls();
         http->deliveryDigest();
     });
     connect(http, &BackendTransport::insightsResult, this, [=](const QJsonArray &result) {
-        if (*pending != Insights) return;
-        *pending = None;
+        if (m_pending != Insights) return;
+        m_pending = None;
         for (const auto &value : result) {
             const auto item = value.toObject();
             if (item.value("title").toString().isEmpty() || !item.value("summary").isString()
@@ -90,8 +87,8 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
         controls();
     });
     connect(http, &BackendTransport::digestResult, this, [=](const QJsonObject &result) {
-        if (*pending != Digest) return;
-        *pending = None;
+        if (m_pending != Digest) return;
+        m_pending = None;
         const auto date = result.value("date").toString();
         if (!QDate::fromString(date, Qt::ISODate).isValid() || !result.value("summary").isString()) {
             status->setText(tr("简报响应不完整，请重试。"));
@@ -102,8 +99,8 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
         controls();
     });
     connect(http, &BackendTransport::errorOccurred, this, [=](const QString &, const QString &message, const QString &) {
-        if (*pending == None) return;
-        *pending = None;
+        if (m_pending == None) return;
+        m_pending = None;
         status->setText(tr("读取失败：%1。可重试。未将错误显示为空数据。").arg(message));
         controls();
     });
