@@ -12,6 +12,20 @@
 #include <QVBoxLayout>
 
 namespace {
+QString resolutionText(const QString &value)
+{
+    if (value == QStringLiteral("NEW_WINS")) return QObject::tr("采用新内容（NEW_WINS）");
+    if (value == QStringLiteral("MERGE")) return QObject::tr("自动合并（MERGE）");
+    if (value == QStringLiteral("MANUAL")) return QObject::tr("待人工确认（MANUAL）");
+    return value.isEmpty() ? QObject::tr("未提供处理结果") : value;
+}
+QString severityText(const QString &value)
+{
+    if (value == QStringLiteral("low")) return QObject::tr("低（low）");
+    if (value == QStringLiteral("medium")) return QObject::tr("中（medium）");
+    if (value == QStringLiteral("high")) return QObject::tr("高（high）");
+    return value.isEmpty() ? QObject::tr("未提供严重程度") : value;
+}
 QString readable(const QJsonValue &value)
 {
     if (value.isString()) return value.toString();
@@ -95,8 +109,11 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
         updateControls();
         for (const auto &value : records) {
             const auto record = value.toObject();
-            auto *item = new QListWidgetItem(tr("%1 · %2\n处理结果：%3").arg(record.value("field").toString(),
-                record.value("severity").toString(), record.value("resolution").toString()), m_records);
+            const QString title = record.value("knowledge_title").toString();
+            auto *item = new QListWidgetItem(tr("%1\n%2 · %3\n处理结果：%4")
+                .arg(title.isEmpty() ? tr("未提供关联记忆标题") : title,
+                     record.value("field").toString(), severityText(record.value("severity").toString()),
+                     resolutionText(record.value("resolution").toString())), m_records);
             item->setData(Qt::UserRole, record);
         }
         m_status->setText(records.isEmpty() ? tr("暂无冲突记录。") : tr("全部范围的只读审计记录；不提供人工裁决操作。"));
@@ -106,9 +123,14 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
         const auto record = item->data(Qt::UserRole).toJsonObject();
         m_details->clear();
         if (m_mode->currentIndex() == 1) {
-            m_details->setPlainText(tr("字段：%1\n原内容：\n%2\n新内容：\n%3\n处理结果：%4\n严重程度：%5")
+            QString detail = tr("字段：%1\n原内容：\n%2\n新内容：\n%3\n处理结果：%4\n严重程度：%5")
                 .arg(record.value("field").toString(), readable(record.value("old_value")),
-                     readable(record.value("new_value")), record.value("resolution").toString(), record.value("severity").toString()));
+                     readable(record.value("new_value")), resolutionText(record.value("resolution").toString()),
+                     severityText(record.value("severity").toString()));
+            const QString title = record.value("knowledge_title").toString();
+            if (!title.isEmpty()) detail.prepend(tr("关联记忆：%1\n").arg(title));
+            detail += tr("\n\n此处仅展示后端审计记录，不提供裁决或回滚。待人工确认不表示已完成处理。");
+            m_details->setPlainText(detail);
             return;
         }
         m_historyId = record.value("id").toString();

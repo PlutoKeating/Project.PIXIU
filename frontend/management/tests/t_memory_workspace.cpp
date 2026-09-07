@@ -1039,6 +1039,38 @@ private slots:
         emit transport.monitorLogResult({QJsonObject{{"source", "directory"}, {"status", "ingested"}, {"summary", "example"}}});
         QCOMPARE(page.findChild<QListWidget *>("privacyEvents")->count(), 1);
     }
+    void conflictAuditShowsContextAndHonestResolution()
+    {
+        Transport transport;
+        pixiu::MemoryAudit audit(nullptr, &transport);
+        audit.findChild<QComboBox *>("auditMode")->setCurrentIndex(1);
+        emit transport.conflictsResult({QJsonObject{{"knowledge_title", "家庭支出"},
+            {"field", "amount"}, {"old_value", 156}, {"new_value", 186},
+            {"resolution", "MANUAL"}, {"severity", "high"}}});
+        auto *records = audit.findChild<QListWidget *>("auditRecords");
+        QCOMPARE(records->count(), 1);
+        QVERIFY(records->item(0)->text().contains(QStringLiteral("家庭支出")));
+        QVERIFY(records->item(0)->text().contains(QStringLiteral("高（high）")));
+        records->setCurrentRow(0);
+        const auto detail = audit.findChild<QPlainTextEdit *>("auditDetails")->toPlainText();
+        QVERIFY(detail.contains(QStringLiteral("待人工确认（MANUAL）")));
+        QVERIFY(detail.contains(QStringLiteral("不提供裁决或回滚")));
+        QVERIFY(detail.contains("156"));
+        QVERIFY(detail.contains("186"));
+        const QList<QPair<QString, QString>> outcomes = {
+            {QStringLiteral("NEW_WINS"), QStringLiteral("采用新内容（NEW_WINS）")},
+            {QStringLiteral("MERGE"), QStringLiteral("自动合并（MERGE）")},
+            {QStringLiteral("future-result"), QStringLiteral("future-result")},
+            {QString(), QStringLiteral("未提供处理结果")}};
+        for (const auto &outcome : outcomes) {
+            audit.findChild<QPushButton *>("auditRefresh")->click();
+            emit transport.conflictsResult({QJsonObject{{"resolution", outcome.first}}});
+            QVERIFY(records->item(0)->text().contains(outcome.second));
+            QVERIFY(records->item(0)->text().contains(QStringLiteral("未提供关联记忆标题")));
+            QVERIFY(records->item(0)->text().contains(QStringLiteral("未提供严重程度")));
+        }
+    }
+
     void auditHistoryExtractionAndErrors()
     {
         Transport transport;
