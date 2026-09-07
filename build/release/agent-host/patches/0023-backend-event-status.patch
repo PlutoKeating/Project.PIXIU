@@ -7,7 +7,7 @@
 +#include "MemoryAudit.h"
 +#include "PrivacyPage.h"
 +#include "services/HttpBackendTransport.h"
-@@ -102,1 +106,16 @@
+@@ -102,1 +106,17 @@
 -    auto *workspaces = new QTabWidget(central);
 +    auto *workspaces = new QTabWidget(central);
 +    HttpBackendTransport eventConfiguration;
@@ -15,8 +15,9 @@
 +    rootLayout->addWidget(events);
 +    connect(events, &pixiu::BackendEventStatus::dataChanged, this, [central](const QString &name) {
 +        if (name == "reconnected" || name == "memory_ready" || name == "conflict_detected"
-+            || name == "forget_confirmation") {
++            || name == "forget_confirmation" || name == "sync_event") {
 +            for (auto *audit : central->findChildren<pixiu::MemoryAudit *>()) audit->notifyDataChanged();
++            for (auto *memory : central->findChildren<pixiu::MemoryWorkspace *>()) memory->notifyDataChanged();
 +        }
 +        if (name == "reconnected" || name == "sync_event" || name == "pair_request") {
 +            for (auto *devices : central->findChildren<pixiu::DevicePage *>()) devices->notifyDataChanged();

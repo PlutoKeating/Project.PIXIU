@@ -251,6 +251,10 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_sources->setEnabled(true);
         m_search->setEnabled(true);
         m_scope->setEnabled(true);
+        if (m_evidence.isEmpty()) {
+            m_detailMeta->clear(); // invalidated while the uncorrelated read was pending
+            return;
+        }
         if (evidence.value(QStringLiteral("id")).toString() != m_evidence) {
             m_detailMeta->setText(tr("证据响应与所选来源不一致，请重新选择来源。"));
             m_sources->setCurrentRow(-1);
@@ -336,6 +340,14 @@ void MemoryWorkspace::clearEvidence()
     m_detail->clear();
 }
 
+void MemoryWorkspace::notifyDataChanged()
+{
+    if (!m_request && !m_evidenceBusy && m_sources->count() == 0 && m_knowledge.isEmpty()
+        && m_answer->toPlainText().isEmpty()) return;
+    clearResult();
+    m_status->setText(tr("记忆数据已变化或连接恢复，旧结果已清除。请重新检索或读取会话来源；编辑草稿不会被覆盖。"));
+}
+
 void MemoryWorkspace::clearResult()
 {
     m_agentSources = false;
@@ -349,7 +361,7 @@ void MemoryWorkspace::clearResult()
     m_sources->clear();
     clearEvidence();
     m_detailMeta->clear();
-    m_search->setEnabled(true);
+    m_search->setEnabled(!m_evidenceBusy);
 }
 
 void MemoryWorkspace::search()

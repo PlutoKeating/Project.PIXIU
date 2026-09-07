@@ -24,6 +24,7 @@ public:
     // Only accepts parsed Runtime references, never IDs extracted from model text.
     bool showAgentSources(const AgentEvidenceResult &result, const QString &scope);
     void clearAgentSources();
+    void notifyDataChanged();
 private:
     void search();
     void clearResult();

@@ -1317,6 +1317,45 @@ private slots:
         QVERIFY(body->toPlainText().isEmpty());
         QVERIFY(!save->isEnabled());
     }
+    void memoryEventsInvalidateResultsWithoutReplayingOrReplacingInput()
+    {
+        Transport transport;
+        pixiu::MemoryWorkspace workspace(nullptr, &transport);
+        auto *input = workspace.findChild<QLineEdit *>("memoryQuery");
+        auto *search = workspace.findChild<QPushButton *>("memorySearch");
+        auto *sources = workspace.findChild<QListWidget *>("memorySources");
+        auto *answer = workspace.findChild<QPlainTextEdit *>("memoryAnswer");
+        auto *detail = workspace.findChild<QPlainTextEdit *>("memoryEvidence");
+        input->setText("original query");
+        search->click();
+        const auto oldRequest = transport.sequence;
+        input->setText("unsent query draft");
+        workspace.notifyDataChanged();
+        emit transport.queryResult(oldRequest, {{"answer", "stale answer"}});
+        QVERIFY(answer->toPlainText().isEmpty());
+        QCOMPARE(input->text(), QStringLiteral("unsent query draft"));
+        QCOMPARE(transport.sequence, oldRequest);
+        search->click();
+        emit transport.queryResult(transport.sequence, {{"answer", "current"},
+            {"source_knowledge", "knw_current"}, {"source_evidence", QJsonArray{"evd_current"}}});
+        sources->setCurrentRow(0);
+        QVERIFY(workspace.hasPendingOperation());
+        workspace.notifyDataChanged();
+        QVERIFY(!search->isEnabled());
+        QVERIFY(answer->toPlainText().isEmpty());
+        QCOMPARE(sources->count(), 0);
+        emit transport.evidenceDetailResult({{"id", "evd_current"},
+            {"raw", QJsonObject{{"text", "invalidated sensitive content"}}}});
+        QVERIFY(detail->toPlainText().isEmpty());
+        QVERIFY(!workspace.hasPendingOperation());
+        QVERIFY(search->isEnabled());
+        QVERIFY(!workspace.findChild<QPushButton *>("memoryEdit")->isEnabled());
+        QCOMPARE(input->text(), QStringLiteral("unsent query draft"));
+        QCOMPARE(transport.sequence, oldRequest + 1);
+        QCOMPARE(transport.writes, 0);
+        QCOMPARE(transport.edits, 0);
+        QCOMPARE(transport.forgetCalls, 0);
+    }
     void searchAndEvidence()
     {
         Transport transport;
