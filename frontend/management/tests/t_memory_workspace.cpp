@@ -61,6 +61,43 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void leavingNetworkSerializesAndVerifies()
+    {
+        Transport transport;
+        pixiu::DevicePage page(nullptr, &transport);
+        auto *leave = page.findChild<QPushButton *>("deviceLeave");
+        auto *status = page.findChild<QLabel *>("deviceStatus");
+        const QJsonArray peers{QJsonObject{{"id", "self"}, {"is_self", true}},
+            QJsonObject{{"id", "a"}, {"is_self", false}}, QJsonObject{{"id", "b"}, {"is_self", false}}};
+        leave->click();
+        QVERIFY(transport.revoked.isEmpty());
+        QTimer::singleShot(0, &page, [&page]() { page.findChild<QMessageBox *>()->done(QMessageBox::No); });
+        emit transport.peersResult({{"peers", peers}});
+        QVERIFY(transport.revoked.isEmpty());
+        QVERIFY(transport.syncSettings.isEmpty());
+        leave->click();
+        QTimer::singleShot(0, &page, [&page]() { page.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        emit transport.peersResult({{"peers", peers}});
+        QCOMPARE(transport.revoked, QStringLiteral("a"));
+        QVERIFY(!leave->isEnabled());
+        emit transport.revokeResult({{"status", "revoked"}, {"peer_id", "a"}});
+        QCOMPARE(transport.revoked, QStringLiteral("b"));
+        QVERIFY(transport.syncSettings.isEmpty());
+        emit transport.errorOccurred("TIMEOUT", "offline", "");
+        QVERIFY(status->text().contains("退出未完成"));
+        QVERIFY(transport.syncSettings.isEmpty());
+        QVERIFY(leave->isEnabled());
+        leave->click();
+        QTimer::singleShot(0, &page, [&page]() { page.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        emit transport.peersResult({{"peers", QJsonArray{peers.at(0), peers.at(2)}}});
+        emit transport.revokeResult({{"status", "revoked"}, {"peer_id", "b"}});
+        QVERIFY(!transport.syncSettings.value("enabled").toBool(true));
+        emit transport.settingsResult({{"enabled", false}, {"paused", false}});
+        QVERIFY(!leave->isEnabled());
+        emit transport.peersResult({{"peers", QJsonArray{peers.at(0)}}});
+        QVERIFY(status->text().contains("无剩余信任节点"));
+        QVERIFY(leave->isEnabled());
+    }
     void pairingMatchesMethodsAndPreservesFailedInput()
     {
         Transport transport;

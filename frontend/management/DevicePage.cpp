@@ -46,10 +46,14 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     m_revoke = new QPushButton(tr("解除所选设备的本地信任…"), this);
     m_revoke->setObjectName(QStringLiteral("deviceRevoke"));
     layout->addWidget(m_revoke);
+    m_leave = new QPushButton(tr("解除全部本地信任并关闭网络…"), this);
+    m_leave->setObjectName(QStringLiteral("deviceLeave"));
+    layout->addWidget(m_leave);
     auto *pair = new QPushButton(tr("交换配对令牌…"), this);
     pair->setObjectName(QStringLiteral("devicePair"));
     layout->addWidget(pair);
     auto *pairing = new PairingDialog(this);
+    pairing->setWindowModality(Qt::WindowModal);
     connect(pair, &QPushButton::clicked, this, [pairing]() {
         pairing->show();
         pairing->raise();
@@ -72,6 +76,14 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     m_status->setWordWrap(true);
     layout->addWidget(m_status);
     connect(m_refresh, &QPushButton::clicked, this, &DevicePage::refresh);
+    connect(m_leave, &QPushButton::clicked, this, [this]() {
+        if (m_pending != Pending::None) return;
+        m_pending = Pending::LeavePeers;
+        m_leaveQueue.clear();
+        controls();
+        m_status->setText(tr("正在读取将解除的信任节点，尚未执行更改…"));
+        m_transport->listPeers();
+    });
     connect(m_peers, &QListWidget::currentRowChanged, this, [this]() { controls(); });
     for (auto *check : {m_enabled, m_paused})
         connect(check, &QCheckBox::toggled, this, [this]() {
@@ -127,7 +139,7 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
         m_transport->listPeers();
     });
     connect(m_transport, &BackendTransport::peersResult, this, [this](const QJsonObject &response) {
-        if (m_pending != Pending::Peers) return;
+        if (m_pending != Pending::Peers && m_pending != Pending::LeavePeers && m_pending != Pending::LeaveVerify) return;
         if (!response.value("peers").isArray()) { finish(tr("节点响应不完整，请刷新重试。")); return; }
         const auto peers = response.value("peers").toArray();
         for (const auto &value : peers) {
@@ -135,6 +147,31 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
             if (peer.value("id").toString().isEmpty() || !peer.value("is_self").isBool()) {
                 finish(tr("节点响应包含无效记录，请刷新重试。")); return;
             }
+        }
+        if (m_pending == Pending::LeavePeers || m_pending == Pending::LeaveVerify) {
+            QStringList ids;
+            for (const auto &value : peers) {
+                const auto peer = value.toObject();
+                const auto id = peer.value("id").toString();
+                if (!peer.value("is_self").toBool() && !ids.contains(id)) ids << id;
+            }
+            if (m_pending == Pending::LeaveVerify) {
+                m_peers->clear();
+                m_discovered->clear();
+                finish(ids.isEmpty() ? tr("已核对：本机无剩余信任节点，网络设置已关闭。已有记忆保留，对端状态未验证。")
+                    : tr("退出未完成：网络设置已关闭，但仍有信任节点（可能有并发配对）。请刷新核对。"));
+                return;
+            }
+            QMessageBox confirmation(QMessageBox::Warning, tr("退出本地同步网络"),
+                tr("将逐个解除以下 %1 个设备的本地信任，然后关闭网络。已有记忆不会删除；对端不会自动移除本机。操作不是原子事务，中途失败可能仅完成部分解除。\n\n%2\n\n是否继续？")
+                    .arg(ids.size()).arg(ids.isEmpty() ? tr("没有需要解除的节点，仅关闭网络。") : ids.join(QLatin1Char('\n'))),
+                QMessageBox::Yes | QMessageBox::No, this);
+            confirmation.setDefaultButton(QMessageBox::No);
+            if (confirmation.exec() != QMessageBox::Yes) { finish(tr("已取消，未提交退出操作。")); return; }
+            m_leaveQueue = ids;
+            m_loaded = false;
+            leaveNext();
+            return;
         }
         m_peers->clear();
         for (const auto &value : peers) {
@@ -163,29 +200,66 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
         finish(devices.isEmpty() ? tr("未读取到设备广播；不能据此判断附近没有设备，发现服务也可能未运行。") : tr("已读取设备广播，不代表已完成配对或同步。"));
     });
     connect(m_transport, &BackendTransport::settingsResult, this, [this](const QJsonObject &response) {
-        if (m_pending != Pending::Settings) return;
+        if (m_pending != Pending::Settings && m_pending != Pending::LeaveSettings) return;
         if (!response.value("enabled").isBool() || !response.value("paused").isBool()) {
             m_loaded = false;
             finish(tr("设置响应不完整，是否生效尚未确认，请刷新状态。")); return;
         }
         m_enabled->setChecked(response.value("enabled").toBool());
         m_paused->setChecked(response.value("paused").toBool());
+        if (m_pending == Pending::LeaveSettings) {
+            if (response.value("enabled").toBool()) {
+                finish(tr("退出未完成：后端未确认网络设置关闭，信任解除可能已部分生效。请刷新核对。"));
+                return;
+            }
+            m_pending = Pending::LeaveVerify;
+            m_status->setText(tr("网络设置已关闭，正在核对剩余信任节点…"));
+            m_transport->listPeers();
+            return;
+        }
         finish(tr("后端已保存同步设置；网络证书与环境仍会影响实际传输。"));
     });
     connect(m_transport, &BackendTransport::revokeResult, this, [this](const QJsonObject &response) {
-        if (m_pending != Pending::Revoke) return;
+        if (m_pending != Pending::Revoke && m_pending != Pending::LeaveRevoke) return;
         if (response.value("status").toString() != "revoked" || response.value("peer_id").toString() != m_revoking) {
             finish(tr("解除信任响应不匹配，未确认成功，请刷新核对。")); return;
+        }
+        if (m_pending == Pending::LeaveRevoke) {
+            m_leaveQueue.removeFirst();
+            leaveNext();
+            return;
         }
         m_peers->clear();
         finish(tr("已解除所选设备的本地信任。请刷新节点与设备广播；对端状态未验证。"));
     });
     connect(m_transport, &BackendTransport::errorOccurred, this, [this](const QString &, const QString &message, const QString &) {
         if (m_pending == Pending::None) return;
+        if (m_pending == Pending::LeaveRevoke || m_pending == Pending::LeaveSettings || m_pending == Pending::LeaveVerify) {
+            m_loaded = false;
+            m_peers->clear();
+            finish(tr("退出未完成：%1。可能已有部分信任被解除；停止后续操作，请刷新核对，不会自动重试。").arg(message));
+            return;
+        }
         if (m_pending == Pending::Settings) m_loaded = false;
         finish(tr("操作失败：%1。写操作是否生效未确认，请刷新核对后再操作。").arg(message));
     });
     controls();
+}
+void DevicePage::leaveNext()
+{
+    if (m_leaveQueue.isEmpty()) {
+        m_pending = Pending::LeaveSettings;
+        controls();
+        m_status->setText(tr("所选节点的解除响应已确认，正在关闭网络…"));
+        m_transport->updateSyncSettings(false, false);
+    } else {
+        m_revoking = m_leaveQueue.first();
+        m_pending = Pending::LeaveRevoke;
+        controls();
+        m_status->setText(tr("正在解除设备 %1；队列剩余 %2 个。已完成操作不会自动撤销。")
+            .arg(m_revoking).arg(m_leaveQueue.size()));
+        m_transport->revokePeer(m_revoking);
+    }
 }
 void DevicePage::refresh()
 {
@@ -209,6 +283,8 @@ void DevicePage::controls()
     const bool idle = m_pending == Pending::None;
     m_refresh->setEnabled(idle);
     m_discover->setEnabled(idle);
+    m_leave->setEnabled(idle);
+    if (auto *pair = findChild<QPushButton *>(QStringLiteral("devicePair"))) pair->setEnabled(idle);
     m_save->setEnabled(idle && m_loaded);
     m_enabled->setEnabled(idle && m_loaded);
     m_paused->setEnabled(idle && m_loaded);
