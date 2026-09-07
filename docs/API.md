@@ -104,7 +104,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 {
   "product_version": "0.1.8",
   "component": "pixiu-memory-backend",
-  "api_version": "0.4.0",
+  "api_version": "0.5.0",
   "agent_memory_api": 1,
   "schema_version": 12
 }
@@ -547,7 +547,8 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 
 ### 3.8 POST /forget
 
-自然语言遗忘指令。
+自然语言遗忘指令。HTTP API 0.5 起确认强制绑定预览凭证；0.3/0.4 的无凭证
+确认调用不兼容。Agent Memory 生命周期接口版本仍为 1，产品版本独立维护。
 
 **请求体：**
 

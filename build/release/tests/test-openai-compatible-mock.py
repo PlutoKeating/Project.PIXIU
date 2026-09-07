@@ -268,7 +268,7 @@ class MockNodeContractTests(unittest.TestCase):
             },
             "product": {"version": "0.1.7", "debian_version": "0.1.7-1"},
             "interfaces": {
-                "http_api": "0.4.0",
+                "http_api": "0.5.0",
                 "agent_memory_api": 1,
                 "database_schema": 12,
             },
@@ -276,7 +276,7 @@ class MockNodeContractTests(unittest.TestCase):
         version = {
             "product_version": "0.1.7",
             "component": "pixiu-memory-backend",
-            "api_version": "0.4.0",
+            "api_version": "0.5.0",
             "agent_memory_api": 1,
             "schema_version": 12,
         }
@@ -296,7 +296,7 @@ class MockNodeContractTests(unittest.TestCase):
             "build": {"git_commit": commit},
             "product": {"version": "0.1.7"},
             "interfaces": {
-                "http_api": "0.4.0",
+                "http_api": "0.5.0",
                 "agent_memory_api": 1,
                 "database_schema": 12,
             },

@@ -32,7 +32,7 @@ class FakeClient:
         delay: float = 0,
         product_version: str = PRODUCT_VERSION,
         agent_memory_api: int = 1,
-        api_version: str = "0.3.0",
+        api_version: str = "0.5.0",
     ):
         self.contest_ready = contest_ready
         self.delay = delay
@@ -102,13 +102,14 @@ def test_initialize_rejects_incompatible_memory_api():
 
 
 def test_initialize_rejects_incompatible_http_api():
-    compatible = provider(FakeClient(api_version="0.4.0"))
+    compatible = provider(FakeClient(api_version="0.5.0"))
     compatible.initialize("session 1", platform="cli")
     compatible.shutdown()
 
-    item = provider(FakeClient(api_version="0.2.9"))
-    with pytest.raises(RuntimeError, match="PIXIU_API_INCOMPATIBLE"):
-        item.initialize("session 1", platform="cli")
+    for version in ("0.2.9", "0.3.0", "0.4.0", "0.6.0"):
+        item = provider(FakeClient(api_version=version))
+        with pytest.raises(RuntimeError, match="PIXIU_API_INCOMPATIBLE"):
+            item.initialize("session 1", platform="cli")
 
 
 def test_initialize_rejects_mixed_product_release():

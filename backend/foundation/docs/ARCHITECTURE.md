@@ -105,6 +105,7 @@ class ConflictRepository(ABC): ...
 ### 1.2 api/ —— API 网关
 
 `/forget` 确认必须使用预览生成的一次性凭证，绑定 command、scope、目标 ID/版本；
+该不兼容变更由 HTTP API 0.5.0 标识，Agent Memory 生命周期接口仍为 v1。
 凭证在异步执行前消费，过期/缺失/不匹配拒绝，目标漂移映射为 409。进程内凭证
 有效期 120 秒、容量 256，重启后要求重新预览，不支持跨 worker 携带预览。
 D-Bus `ReviewedForget` 已复用同一 HTTP 执行函数并显式注入仓储/同步服务，包含

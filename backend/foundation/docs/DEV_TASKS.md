@@ -113,6 +113,10 @@ git submodule update --init --recursive
 
 ### api/ —— API 网关
 
+HTTP API 当前为 0.5.0：遗忘确认强制预览凭证，与旧无凭证调用不兼容；Provider
+握手只接受 0.5.x。此版本不同于根产品 VERSION 和 Agent Memory API v1，不得在
+发布探针或兼容夹具中混用。无新增依赖或数据库迁移。
+
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `api/__init__.py` | ★★★ | 导出 `app`（FastAPI 实例） |

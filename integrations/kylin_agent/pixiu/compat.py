@@ -8,7 +8,7 @@ from pathlib import Path
 
 EXPECTED_AGENT_MEMORY_API = 1
 EXPECTED_BACKEND_COMPONENT = "pixiu-memory-backend"
-SUPPORTED_HTTP_APIS = frozenset({(0, 3), (0, 4)})
+SUPPORTED_HTTP_APIS = frozenset({(0, 5)})
 
 _SEMVER = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)(?:[-+][0-9A-Za-z.-]+)?$")
 _MANIFEST_VERSION = re.compile(r"^version:\s*([^\s]+)\s*$", re.MULTILINE)
