@@ -1,11 +1,53 @@
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import os
+import subprocess
 import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "third_party" / "kylin-agent-runtime"))
 from integrations.kylin_agent.pixiu.outbox import Outbox
+
+
+@pytest.mark.parametrize("stage", ["enqueued", "claimed", "acknowledged"])
+def test_abrupt_process_exit_preserves_committed_delivery_state(tmp_path, stage):
+    # os._exit skips finally blocks and SQLite.close; this is not a clean restart.
+    root = Path(__file__).resolve().parents[3]
+    directory = tmp_path / "outbox"
+    child = subprocess.run(
+        [sys.executable, "-c", """
+import os, sys
+from pathlib import Path
+sys.path.insert(0, str(Path.cwd() / "third_party" / "kylin-agent-runtime"))
+from integrations.kylin_agent.pixiu.outbox import Outbox
+box = Outbox(Path(sys.argv[1]), "profile-a", clock=lambda: 100.0)
+box.enqueue("stable", {"idempotency_key": "stable", "text": "记忆"})
+if sys.argv[2] != "enqueued":
+    item = box.claim(lease_seconds=30)
+    assert item is not None
+    if sys.argv[2] == "acknowledged":
+        assert box.acknowledge(item[0], item[2])
+os._exit(73)
+""", str(directory), stage], cwd=root, capture_output=True, text=True, timeout=10)
+    assert child.returncode == 73, child.stderr
+    now = [101.0]
+    recovered = Outbox(directory, "profile-a", clock=lambda: now[0])
+    try:
+        if stage == "acknowledged":
+            assert recovered.pending() == 0
+            assert recovered.claim() is None
+            return
+        assert recovered.pending() == 1
+        if stage == "claimed":
+            assert recovered.claim() is None  # respect the dead sender's lease
+            now[0] = 131.0
+        item = recovered.claim()
+        assert item is not None
+        assert item[:2] == ("stable", {"idempotency_key": "stable", "text": "记忆"})
+        assert recovered.acknowledge(item[0], item[2])
+        assert recovered.pending() == 0
+    finally:
+        recovered.close()
 
 
 def test_restart_retains_exact_request_and_lease_expires(tmp_path):

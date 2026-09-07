@@ -629,7 +629,10 @@ Module E 的本地 `Outbox` 已用于后台 `/memory/write` 和 `/agent/lifecycl
 `OUTBOX_WRITE_FAILED`。诊断新增 pending_deliveries，queued_jobs 仅统计内存预取队列。
 退出保留未确认投递，仍存活的工作线程阻止重新初始化；只读预取缓存不持久化。
 沿用 Python 标准库 sqlite3，安装脚本复制现有 Provider 目录，无新增系统依赖。
-已测试受控重启重放；真实 Runtime 崩溃/断网恢复及用户可见失败处理仍待验收。
+已测试受控 Provider 重启重放，以及独立子进程在入队、领取、确认事务完成后直接
+退出且不关闭 SQLite 的恢复：待发送记录保留原键/载荷，未到期租约不可抢占，到期
+可重新领取，已确认记录不会复活。此证据属于 Outbox 存储层，不代表整机断电、
+真实 Runtime 网络发送中断或服务端去重已验收；用户可见失败处理仍待完善。
 
 ### 3.9 GET /conflicts
 
