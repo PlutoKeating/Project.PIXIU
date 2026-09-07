@@ -129,6 +129,9 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
             return;
         }
         m_loaded = true;
+        m_haveSnapshot = true;
+        m_savedEnabled = state.value("enabled").toBool();
+        m_savedPaused = state.value("paused").toBool();
         m_enabled->setChecked(state.value("enabled").toBool());
         m_paused->setChecked(state.value("paused").toBool());
         m_summary->setText(tr("共享域：%1\n节点记录：%2（含本机） · 待发操作：%3 · 累计同步计数：%4\n这是后端记录，不是实时网络连通性检测。")
@@ -207,6 +210,9 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
         }
         m_enabled->setChecked(response.value("enabled").toBool());
         m_paused->setChecked(response.value("paused").toBool());
+        m_haveSnapshot = true;
+        m_savedEnabled = response.value("enabled").toBool();
+        m_savedPaused = response.value("paused").toBool();
         if (m_pending == Pending::LeaveSettings) {
             if (response.value("enabled").toBool()) {
                 finish(tr("退出未完成：后端未确认网络设置关闭，信任解除可能已部分生效。请刷新核对。"));
@@ -271,6 +277,11 @@ void DevicePage::refresh()
     m_status->setText(tr("正在读取同步状态…"));
     controls();
     m_transport->syncStatus();
+}
+bool DevicePage::hasUnsavedChanges() const
+{
+    return m_haveSnapshot && (m_enabled->isChecked() != m_savedEnabled
+        || m_paused->isChecked() != m_savedPaused);
 }
 void DevicePage::finish(const QString &message)
 {

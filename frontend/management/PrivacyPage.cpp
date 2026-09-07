@@ -158,6 +158,18 @@ void PrivacyPage::controls()
     m_previous->setEnabled(idle && m_offset > 0);
     m_next->setEnabled(idle && m_more);
 }
+bool PrivacyPage::hasUnsavedChanges() const
+{
+    if (m_config.isEmpty()) return false;
+    const auto sources = m_config.value("sources").toObject();
+    QStringList savedPaths;
+    for (const auto &path : m_config.value("directories").toArray())
+        savedPaths << path.toString();
+    return m_enabled->isChecked() != m_config.value("enabled").toBool()
+        || m_directory->isChecked() != sources.value("directory").toBool()
+        || m_behavior->isChecked() != sources.value("behavior").toBool()
+        || m_directories->toPlainText() != savedPaths.join(QLatin1Char('\n'));
+}
 void PrivacyPage::loadLogs(int offset)
 {
     if (m_pending != Pending::None) return;

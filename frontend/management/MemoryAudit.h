@@ -14,6 +14,7 @@ class MemoryAudit : public QWidget
 public:
     explicit MemoryAudit(QWidget *parent, BackendTransport *transport = nullptr);
     void setEvidenceIds(const QStringList &ids);
+    bool hasPendingOperation() const { return m_pending != Pending::None; }
 private:
     enum class Pending { None, Preferences, History, Conflicts, Extract };
     void refresh();

@@ -44,6 +44,17 @@ grep -q 'PIXIU_PRODUCT_VERSION' "${fixture}/source/CMakeLists.txt"
 cmp "${repo_root}/VERSION" "${fixture}/source/pixiu/VERSION"
 grep -q 'GatewayService gatewayService' "${fixture}/source/src/main.cpp"
 grep -q 'app.setQuitOnLastWindowClosed(true)' "${fixture}/source/src/main.cpp"
+grep -q 'pixiu::HostCloseGuard closeGuard(&window)' "${fixture}/source/src/main.cpp"
+test -f "${fixture}/source/pixiu/frontend/management/HostCloseGuard.cpp"
+python3 - "${fixture}/source/src/main.cpp" <<'PY'
+from pathlib import Path
+import sys
+
+source = Path(sys.argv[1]).read_text()
+quit_branch = source.split('message == QStringLiteral("quit")', 1)[1].split('\n        }', 1)[0]
+assert quit_branch.index('window.showFromTray();') < quit_branch.index('window.close();')
+assert source.count('pixiu::HostCloseGuard closeGuard(&window);') == 1
+PY
 ! grep -q 'setQuitOnLastWindowClosed(false)' "${fixture}/source/src/main.cpp"
 ! grep -q 'src/ui/modelsettingswidget.cpp' "${fixture}/source/CMakeLists.txt"
 grep -q '/v1/chat/completions' "${fixture}/source/src/services/pixiu_host_compat.cpp"

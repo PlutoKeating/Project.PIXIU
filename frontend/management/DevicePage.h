@@ -12,6 +12,8 @@ class DevicePage : public QWidget
     Q_OBJECT
 public:
     explicit DevicePage(QWidget *parent, BackendTransport *transport = nullptr);
+    bool hasPendingOperation() const { return m_pending != Pending::None; }
+    bool hasUnsavedChanges() const;
 private:
     enum class Pending { None, Status, Peers, Discover, Settings, Revoke, LeavePeers, LeaveRevoke, LeaveSettings, LeaveVerify };
     void controls();
@@ -25,6 +27,7 @@ private:
     QPushButton *m_refresh, *m_save, *m_discover, *m_revoke, *m_leave;
     Pending m_pending = Pending::None;
     bool m_loaded = false;
+    bool m_haveSnapshot = false, m_savedEnabled = false, m_savedPaused = false;
     QString m_revoking;
     QStringList m_leaveQueue;
 };

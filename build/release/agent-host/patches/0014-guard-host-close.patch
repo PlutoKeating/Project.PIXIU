@@ -1,0 +1,14 @@
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -1,1 +1,2 @@
+-#include <QApplication>
++#include <QApplication>
++#include "HostCloseGuard.h"
+@@ -97,1 +98,2 @@
+-    MainWindow window;
++    MainWindow window;
++    pixiu::HostCloseGuard closeGuard(&window);
+@@ -112,2 +114,3 @@
+         } else if (message == QStringLiteral("quit")) {
++            window.showFromTray();
+             window.close();

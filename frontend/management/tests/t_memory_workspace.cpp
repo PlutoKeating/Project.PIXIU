@@ -7,11 +7,13 @@
 #include "DeliveryPage.h"
 #include "ForgetPage.h"
 #include "SettingsWorkspace.h"
+#include "HostCloseGuard.h"
 #include <QTabWidget>
 #include "PairingDialog.h"
 #include <QMessageBox>
 #include <QTimer>
 #include <QCheckBox>
+#include <QCloseEvent>
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QLabel>
@@ -78,6 +80,128 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void hostClosePreservesPrivacyDraftAndWaitsForResult()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::PrivacyPage page(&host, &transport);
+        pixiu::HostCloseGuard guard(&host);
+        host.show();
+        auto *load = page.findChild<QPushButton *>("privacyLoad");
+        auto *save = page.findChild<QPushButton *>("privacySave");
+        auto *enabled = page.findChild<QCheckBox *>("privacyEnabled");
+        const QJsonObject config{{"enabled", false}, {"directories", QJsonArray{}},
+            {"sources", QJsonObject{{"directory", false}, {"behavior", false},
+                {"clipboard", false}, {"screenshot", false}}}};
+        QVERIFY(!page.hasUnsavedChanges());
+        load->click();
+        QVERIFY(page.hasPendingOperation());
+        emit transport.configResult(config);
+        QVERIFY(!page.hasUnsavedChanges());
+        enabled->setChecked(true);
+        QVERIFY(page.hasUnsavedChanges());
+        bool defaultCancel = false;
+        bool nestedRejected = false;
+        QTimer::singleShot(0, &host, [&]() {
+            auto *question = host.findChild<QMessageBox *>();
+            QVERIFY(question);
+            defaultCancel = question->defaultButton() == question->button(QMessageBox::No);
+            QCloseEvent nested;
+            QApplication::sendEvent(&host, &nested);
+            nestedRejected = !nested.isAccepted();
+            question->done(QMessageBox::No);
+        });
+        QVERIFY(!host.close());
+        QVERIFY(defaultCancel);
+        QVERIFY(nestedRejected);
+        QVERIFY(host.isVisible());
+        QCOMPARE(transport.configWrites, 0);
+        QVERIFY(enabled->isChecked());
+        enabled->setChecked(false);
+        QVERIFY(!page.hasUnsavedChanges()); // Returning to the snapshot is not a draft.
+        enabled->setChecked(true);
+        save->click();
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
+        QVERIFY(!host.close());
+        QCOMPARE(transport.configWrites, 1);
+        emit transport.errorOccurred("TIMEOUT", "unknown result", "test");
+        QVERIFY(page.hasUnsavedChanges());
+        save->click();
+        emit transport.configResult(transport.savedConfig);
+        QVERIFY(!page.hasPendingOperation());
+        QVERIFY(!page.hasUnsavedChanges());
+        QVERIFY(host.close());
+    }
+    void hostCloseRequiresExplicitDiscardAndPreservesBackend()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::DevicePage page(&host, &transport);
+        pixiu::HostCloseGuard guard(&host);
+        host.show();
+        page.findChild<QPushButton *>("deviceRefresh")->click();
+        emit transport.syncStatusResult({{"enabled", true}, {"paused", false},
+            {"domain", "shared:home"}, {"peers_total", 1},
+            {"pending_outgoing_ops", 0}, {"total_ops_synced", 0}});
+        emit transport.peersResult({{"peers", QJsonArray{}}});
+        auto *paused = page.findChild<QCheckBox *>("devicePaused");
+        QVERIFY(!page.hasUnsavedChanges());
+        paused->setChecked(true);
+        QVERIFY(page.hasUnsavedChanges());
+        page.findChild<QPushButton *>("deviceSave")->click();
+        QVERIFY(page.hasPendingOperation());
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
+        QVERIFY(!host.close());
+        emit transport.errorOccurred("TIMEOUT", "unknown result", "test");
+        QVERIFY(page.hasUnsavedChanges()); // Disabling Save after an error must not lose the draft.
+        const auto submitted = transport.syncSettings;
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        QVERIFY(host.close());
+        QCOMPARE(transport.syncSettings, submitted); // Discard does not send another write.
+    }
+    void hostCloseDoesNotBypassOwnedDialog()
+    {
+        QWidget host;
+        pixiu::HostCloseGuard guard(&host);
+        QDialog dialog(&host);
+        host.show();
+        dialog.show();
+        QVERIFY(!host.close());
+        QVERIFY(dialog.isVisible());
+        QVERIFY(host.isVisible());
+        dialog.reject();
+        QVERIFY(host.close());
+    }
+    void hostCloseWaitsForForgetAndPreferenceExtraction()
+    {
+        Transport forgetTransport, auditTransport;
+        QWidget host;
+        pixiu::HostCloseGuard guard(&host);
+        pixiu::ForgetPage forget(&host, &forgetTransport);
+        pixiu::MemoryAudit audit(&host, &auditTransport);
+        host.show();
+        forget.findChild<QLineEdit *>("forgetCommand")->setText("forget test memory");
+        forget.findChild<QPushButton *>("forgetPreview")->click();
+        emit forgetTransport.forgetResult({{"targets", QJsonArray{QJsonObject{
+            {"id", "k1"}, {"title", "test memory"}, {"version", 1}, {"scope", "user:local"}}}},
+            {"confirmation_token", "test-token"}, {"expires_in_seconds", 120}});
+        auto *confirm = forget.findChild<QPushButton *>("forgetConfirm");
+        QVERIFY(confirm->isEnabled());
+        confirm->click();
+        QVERIFY(forget.hasPendingOperation());
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
+        QVERIFY(!host.close());
+        QCOMPARE(forgetTransport.forgetCalls, 2);
+        emit forgetTransport.errorOccurred("TIMEOUT", "unknown result", "test");
+        QVERIFY(!forget.hasPendingOperation());
+        audit.setEvidenceIds({"evd_test"});
+        audit.findChild<QPushButton *>("auditExtract")->click();
+        QVERIFY(audit.hasPendingOperation());
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
+        QVERIFY(!host.close());
+        emit auditTransport.errorOccurred("TIMEOUT", "unknown result", "test");
+        QVERIFY(host.close());
+    }
     void editingPreservesFullBodyAndRequiresVersion()
     {
         Transport transport;

@@ -13,6 +13,8 @@ class PrivacyPage : public QWidget
     Q_OBJECT
 public:
     explicit PrivacyPage(QWidget *parent, BackendTransport *transport = nullptr);
+    bool hasPendingOperation() const { return m_pending != Pending::None; }
+    bool hasUnsavedChanges() const;
 private:
     enum class Pending { None, Load, Save, Logs };
     void controls();

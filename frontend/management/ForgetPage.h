@@ -16,6 +16,7 @@ class ForgetPage : public QWidget
     Q_OBJECT
 public:
     explicit ForgetPage(QWidget *parent, BackendTransport *transport = nullptr);
+    bool hasPendingOperation() const { return m_pending != Pending::None; }
 signals:
     void memoryForgotten();
 private:
