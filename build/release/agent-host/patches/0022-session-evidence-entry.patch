@@ -1,0 +1,66 @@
+--- a/include/services/apiservice.h
++++ b/include/services/apiservice.h
+@@ -27,6 +27,7 @@
+     bool isConnected() const { return m_connected; }
+     QString apiUrl() const { return m_apiUrl; }
+     QString networkApiUrl() const { return apiUrl(); }
++    QNetworkRequest sessionEvidenceRequest() const;
+     bool usesLocalStorageMode() const;
+     void setApiUrl(const QString& url);
+     void checkConnection();
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -1,3 +1,4 @@
+ #include "ui/mainwindow.h"
++#include "AgentEvidenceClient.h"
+ 
+ #include "services/apiservice.h"
+@@ -112,1 +113,47 @@
+-    workspaces->addTab(new pixiu::MemoryWorkspace(workspaces), tr("记忆"));
++    auto *memory = new pixiu::MemoryWorkspace(workspaces);
++    workspaces->addTab(memory, tr("记忆"));
++    auto *sources = new QPushButton(tr("本会话记忆来源"), titleBar);
++    sources->setObjectName(QStringLiteral("sessionMemorySources"));
++    sources->setAccessibleName(tr("读取本会话记忆来源，再选择查看当前证据"));
++    titleLayout->insertWidget(2, sources);
++    auto *evidenceClient = new pixiu::AgentEvidenceClient(this);
++    auto resetSources = [this, sources, evidenceClient]() {
++        evidenceClient->cancel();
++        sources->setText(tr("本会话记忆来源"));
++    };
++    connect(m_chatWidget, &ChatWidget::sessionChanged, this, resetSources);
++    connect(m_chatWidget, &ChatWidget::sessionActivated, this, resetSources);
++    connect(&ApiService::instance(), &ApiService::backendChanged, this, resetSources);
++    connect(sources, &QPushButton::clicked, this, [this, sources, evidenceClient, resetSources, workspaces]() {
++        if (evidenceClient->busy()) { resetSources(); return; }
++        if (m_chatWidget->currentSessionId().isEmpty()) {
++            statusBar()->showMessage(tr("请先选择一个会话。"), 5000);
++            return;
++        }
++        workspaces->setCurrentIndex(0);
++        sources->setText(tr("取消读取来源"));
++        evidenceClient->load(ApiService::instance().sessionEvidenceRequest(),
++            m_chatWidget->currentSessionId(), qEnvironmentVariable("PIXIU_AGENT_SCOPE"));
++    });
++    connect(evidenceClient, &pixiu::AgentEvidenceClient::failed, this,
++        [this, resetSources](const QString &session, const QString &message) {
++            resetSources();
++            if (session == m_chatWidget->currentSessionId()) statusBar()->showMessage(message, 10000);
++        });
++    connect(evidenceClient, &pixiu::AgentEvidenceClient::loaded, this,
++        [this, resetSources, memory, workspaces](const QString &session, const pixiu::AgentEvidenceResult &result) {
++            resetSources();
++            if (session != m_chatWidget->currentSessionId() || workspaces->currentIndex() != 0) return;
++            if (result.status != pixiu::AgentEvidenceResult::Ready) {
++                statusBar()->showMessage(tr("会话来源记录不完整、无效或超过上限，未展示来源。"), 10000);
++                return;
++            }
++            if (!memory->showAgentSources(result, qEnvironmentVariable("PIXIU_AGENT_SCOPE"))) {
++                statusBar()->showMessage(tr("记忆操作尚未结束或范围不匹配，请稍后重试。"), 10000);
++                return;
++            }
++            workspaces->setCurrentWidget(memory);
++        });
++    connect(workspaces, &QTabWidget::currentChanged, this, [resetSources](int index) {
++        if (index != 0) resetSources();
++    });

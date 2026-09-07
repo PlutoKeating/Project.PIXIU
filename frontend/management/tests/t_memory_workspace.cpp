@@ -10,6 +10,8 @@
 #include "SettingsWorkspace.h"
 #include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
+#include "AgentEvidenceClient.h"
+#include <QTcpServer>
 #include <QTabWidget>
 #include "PairingDialog.h"
 #include <QMessageBox>
@@ -86,6 +88,23 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void sessionSourceReadParticipatesInHostExitGuard()
+    {
+        QWidget host;
+        QTcpServer server;
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        pixiu::AgentEvidenceClient client(&host);
+        pixiu::HostCloseGuard guard(&host);
+        client.load(QNetworkRequest(QUrl(QString("http://127.0.0.1:%1").arg(server.serverPort()))),
+                    "session-1", "user:local");
+        QVERIFY(client.busy());
+        QTimer::singleShot(0, [] {
+            if (auto *dialog = qobject_cast<QDialog *>(QApplication::activeModalWidget())) dialog->accept();
+        });
+        QVERIFY(!guard.confirmExit());
+        client.cancel();
+        QVERIFY(guard.confirmExit());
+    }
     void agentSourcesReuseReaderAndValidateFreshEvidence()
     {
         Transport transport;

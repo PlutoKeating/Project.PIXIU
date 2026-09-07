@@ -67,6 +67,13 @@ void applyAuthentication(QNetworkRequest *request)
 
 } // namespace
 
+QNetworkRequest ApiService::sessionEvidenceRequest() const
+{
+    QNetworkRequest request(runtimeUrl(m_apiUrl, QStringLiteral("/")));
+    applyAuthentication(&request);
+    return request;
+}
+
 void ApiService::sendChatCompletion(const QString &sessionId,
                                     const QJsonArray &messages,
                                     const QString &model)

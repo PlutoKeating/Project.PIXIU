@@ -6,6 +6,7 @@
 #include "MemoryWorkspace.h"
 #include "DeliveryPage.h"
 #include "ServiceStatusPage.h"
+#include "AgentEvidenceClient.h"
 #include <QCloseEvent>
 #include <QDialog>
 #include <QMessageBox>
@@ -36,6 +37,8 @@ bool HostCloseGuard::eventFilter(QObject *watched, QEvent *event)
 bool HostCloseGuard::hasPendingOperation() const
 {
     if (m_agentPending && m_agentPending()) return true;
+    for (auto *client : m_host->findChildren<AgentEvidenceClient *>())
+        if (client->busy()) return true;
     for (auto *page : m_host->findChildren<PrivacyPage *>())
         if (page->hasPendingOperation()) return true;
     for (auto *page : m_host->findChildren<DevicePage *>())
