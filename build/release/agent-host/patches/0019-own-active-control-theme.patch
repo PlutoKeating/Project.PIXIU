@@ -1,0 +1,28 @@
+--- a/src/utils/thememanager.cpp
++++ b/src/utils/thememanager.cpp
+@@ -343,5 +343,25 @@
+             font-size: 14px;
+         }
++        QTabWidget::pane { border: 0; background-color: %1; }
++        QTabBar::tab {
++            color: %4; background-color: %1;
++            border: 1px solid transparent; border-radius: 6px;
++            padding: 9px 16px;
++        }
++        QTabBar::tab:selected { color: %4; background-color: %9; border-color: %7; }
++        QTabBar::tab:hover:!selected { background-color: %3; border-color: %6; }
++        QTabBar::tab:disabled { color: %11; }
++        QDateEdit {
++            color: %4; background-color: %2;
++            border: 1px solid %6; border-radius: 9px; padding: 8px 11px;
++            selection-background-color: %7; selection-color: %2;
++        }
++        QDateEdit:focus { border: 2px solid %7; }
++        QDateEdit:disabled { color: %11; background-color: %3; }
++        QCalendarWidget QToolButton {
++            color: %4; background-color: %2; border: 1px solid %6; padding: 4px;
++        }
++        QCalendarWidget QToolButton:hover { background-color: %9; }
+         QMainWindow#mainWindow, QWidget#appSurface, QDialog {
+             background-color: %1;
+         }
