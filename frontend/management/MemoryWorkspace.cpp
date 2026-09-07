@@ -1,6 +1,7 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryAudit.h"
+#include "PrivacyPage.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -27,6 +28,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     tabs->addTab(queryPage, tr("检索与录入"));
     m_audit = new MemoryAudit(tabs);
     tabs->addTab(m_audit, tr("偏好与审计"));
+    tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
     layout->setContentsMargins(20, 16, 20, 16);
     auto *title = new QLabel(tr("记忆工作区"), this);
     title->setObjectName(QStringLiteral("brandTitle"));

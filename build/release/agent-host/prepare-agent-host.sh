@@ -54,6 +54,7 @@ patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
     management/MemoryAudit.h management/MemoryAudit.cpp \
+    management/PrivacyPage.h management/PrivacyPage.cpp \
     src/services/BackendTransport.h src/services/BackendTransport.cpp \
     src/services/HttpBackendTransport.h src/services/HttpBackendTransport.cpp src/services/BackendTypes.h; do
     install -D -m 0644 "${repo_root}/frontend/${relative}" "${target_source}/pixiu/frontend/${relative}"

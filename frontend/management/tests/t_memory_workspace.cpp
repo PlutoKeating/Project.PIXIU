@@ -1,6 +1,8 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryAudit.h"
+#include "PrivacyPage.h"
+#include <QCheckBox>
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QLabel>
@@ -22,6 +24,12 @@ public:
     QString auditScope, historyId;
     QJsonObject extraction;
     int conflictRequests = 0;
+    QJsonObject savedConfig;
+    int configReads = 0, configWrites = 0;
+    int logOffset = -1;
+    void monitorConfig() override { ++configReads; }
+    void updateMonitorConfig(const QJsonObject &payload) override { savedConfig = payload; ++configWrites; }
+    void monitorLog(int, int offset) override { logOffset = offset; }
     void preferencesList(const QString &scope) override { auditScope = scope; }
     void preferenceHistory(const QString &id) override { historyId = id; }
     void extractPreferences(const QJsonObject &payload) override { extraction = payload; }
@@ -36,6 +44,38 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void privacyPreservesUnavailableSourcesAndFailedEdits()
+    {
+        Transport transport;
+        pixiu::PrivacyPage page(nullptr, &transport);
+        auto *save = page.findChild<QPushButton *>("privacySave");
+        auto *load = page.findChild<QPushButton *>("privacyLoad");
+        auto *paths = page.findChild<QPlainTextEdit *>("privacyDirectories");
+        QVERIFY(!save->isEnabled());
+        load->click();
+        QCOMPARE(transport.configReads, 1);
+        const QJsonObject sources{{"directory", false}, {"behavior", false}, {"clipboard", true}, {"screenshot", false}};
+        emit transport.configResult({{"enabled", false}, {"sources", sources}, {"directories", QJsonArray{}}});
+        QVERIFY(save->isEnabled());
+        paths->setPlainText("relative/path");
+        save->click();
+        QCOMPARE(transport.configWrites, 0);
+        paths->setPlainText("/documents\n/documents\n");
+        page.findChild<QCheckBox *>("privacyEnabled")->setChecked(true);
+        page.findChild<QCheckBox *>("privacyDirectory")->setChecked(true);
+        save->click();
+        QCOMPARE(transport.configWrites, 1);
+        QCOMPARE(transport.savedConfig.value("directories").toArray(), QJsonArray{"/documents"});
+        QVERIFY(transport.savedConfig.value("sources").toObject().value("clipboard").toBool());
+        QVERIFY(transport.savedConfig.value("enabled").toBool());
+        emit transport.errorOccurred("NETWORK_ERROR", "offline", "");
+        QCOMPARE(paths->toPlainText(), QStringLiteral("/documents\n/documents\n"));
+        QVERIFY(save->isEnabled());
+        page.findChild<QPushButton *>("privacyLogs")->click();
+        QCOMPARE(transport.logOffset, 0);
+        emit transport.monitorLogResult({QJsonObject{{"source", "directory"}, {"status", "ingested"}, {"summary", "example"}}});
+        QCOMPARE(page.findChild<QListWidget *>("privacyEvents")->count(), 1);
+    }
     void auditHistoryExtractionAndErrors()
     {
         Transport transport;
