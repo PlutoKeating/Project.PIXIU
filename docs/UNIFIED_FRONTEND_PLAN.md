@@ -8,13 +8,34 @@
 
 ## 代码基线与已知差距
 
-- 本计划的审查基线为 `18561766970f6a330be54e3c6f9838076259473d`，产品版本 `0.1.8`。
-- `frontend/CMakeLists.txt` 构建独立 `pixiu-frontend`；`PixiuApp` 创建聊天、悬浮球、托盘与管理窗口。
-- `build/release/debian/usr/bin/pixiu` 在严格包启动 `kylin-agent`，通用包仍回退旧前端。
+- 当前代码核查基线为 `17f1323bca8a380d3c34c89a11d3060b67c34010`，产品版本 `0.1.8`；该提交不是新生产 Release。
+- `frontend/CMakeLists.txt` 仍构建独立 `pixiu-frontend`；`PixiuApp` 的聊天、悬浮球、托盘及管理窗口实现尚待删除。旧源码可构建不代表仍应交付。
+- `build/release/debian/usr/bin/pixiu` 的通用与原生包入口均执行 `kylin-agent`，不再回退旧前端。当前宿主嵌入 `frontend/management/` 的记忆、设备及设置页。
 - Agent 构建使用固定 submodule 的导出副本及自有补丁；上游记忆设置源码被现有构建补丁排除，不能算已交付界面。
-- 旧查询入口仅调用记忆检索，不具备 Agent 循环。管理能力与真正 Agent 会话分离。
-- Agent 当前必需 `kysdk-qtwidgets`，删除通用回退前必须使同一宿主支持无 SDK 构建。
-- 当前升级辅助脚本位于 `frontend/scripts/`，被统一包消费，不属于可以随旧聊天删除的代码。
+- 旧查询入口仅调用记忆检索，不具备 Agent 循环。管理能力已接入唯一宿主，但范围配置、视觉、事件状态及全功能验收尚未统一，不能以导航接入证明迁移完成。
+- Agent 导出副本已有显式 `KYSDK=OFF` 的 Qt 适配与原生 `KYSDK=ON` 路径；固定上游源码保持只读，不恢复另一套前端作为降级路径。
+- 升级辅助脚本已迁入 `build/release/debian/usr/lib/pixiu/`；管理模块复用升级控制器与对话框，不能随旧聊天删除这些有效依赖。
+
+范围与连接配置按实际调用关系核查如下；`user:local` 与 `user:default` 是不同的硬过滤值，
+不是同一身份的两个显示名称。此清单描述当前实现，不代表已经完成配置统一。
+
+| 消费入口 | 当前事实源 | 迁移约束 |
+|---|---|---|
+| 正式启动器 `build/release/debian/usr/bin/pixiu` | 准备用户服务、运行集成脚本后执行宿主；不向 Qt 转发 Agent 范围 | 同一进程入口不保证范围或连接配置一致 |
+| Agent 集成脚本 `pixiu-agent-integrate` | 在当前 Agent profile 的 `.env` 中缺省写入 `PIXIU_AGENT_SCOPE=user:default`，保留已有值 | 必须保留自定义 profile、范围和 endpoint；禁止直接 source 用户 `.env` 执行其中内容 |
+| `integrations/kylin_agent/pixiu/provider.py` | 显式构造参数或 `PIXIU_AGENT_SCOPE`，缺省 `user:default`；API 地址使用 `PIXIU_AGENT_ENDPOINT` | 轮次上下文、写入、更新与遗忘均绑定实际 Provider 范围；不能把模型提交的范围作为覆盖值 |
+| `frontend/src/services/HttpBackendTransport.cpp` | `PIXIU_BACKEND_URL`，缺省本机 8765；不读取 Agent profile 的 endpoint | 默认地址相同不证明显式配置一致；公共管理接口不应依赖模型可用 |
+| `MemoryWorkspace`、`MemoryWriteDialog`、`MemoryAudit`、`ForgetPage` | Qt 下拉框固定 `user:local` / `shared:home`；检索和偏好另有全部范围 | 应共用明确的范围选择与配置来源，覆盖已有 Agent 范围；查询“全部”不能自动变为跨范围编辑或遗忘 |
+| `MemoryEditDialog` | 从查询页传入范围，读取完整快照并要求目标范围匹配 | 保留版本校验和精确范围，不为找不到记录而改用无范围请求 |
+| `backend/foundation/monitor/` | 目录采集默认 `user:local`；行为采集固定 `user:local` | 本机采集不应因 Agent 配置为 `shared:*` 而自动共享；与主动共享写入分别处理 |
+| `backend/foundation/api/delivery.py` | 洞察固定 `user:local`；简报聚合采集日志 | 不得宣称洞察已覆盖 Agent 记忆或全部范围；范围能力变更须先更新公共契约和后端测试 |
+
+U03/U04/U10/U12 的范围统一必须共同覆盖：读取有效配置且不泄露 profile 中的凭证；
+区分 Agent 范围、本机采集范围和主动共享范围；使已有 `user:default`、`user:local`
+及自定义范围的数据可以被明确选择、读取和管理；配置不一致或不可读取时显示明确错误，
+不得静默换库或换范围。不能通过全局字符串替换、删除旧域数据、放宽 Provider 硬过滤、
+自动合并域或将全部个人数据改为共享来实现“统一”。写入、检索、编辑、偏好、遗忘和
+洞察需用同一组跨入口验收数据核对，已有数据与新数据分别验证。
 
 ## 完整开发任务
 
