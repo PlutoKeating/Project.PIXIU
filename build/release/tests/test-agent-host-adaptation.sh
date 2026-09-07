@@ -52,6 +52,11 @@ PY
 grep -q 'ApiService::sessionEvidenceRequest() const' "${fixture}/source/src/services/pixiu_host_compat.cpp"
 test -f "${fixture}/source/pixiu/frontend/management/MemoryWorkspace.cpp"
 test ! -e "${fixture}/source/pixiu/frontend/src/main.cpp"
+cmp "${repo_root}/frontend/src/app/ShortcutManager.cpp" \
+    "${fixture}/source/pixiu/frontend/src/app/ShortcutManager.cpp"
+test ! -e "${fixture}/source/pixiu/frontend/tests/fixtures/kysdk/desktop/libkyshortcut.h"
+grep -q 'IMPORTED_TARGET kysdk-shortcut' "${fixture}/source/pixiu/frontend/management/CMakeLists.txt"
+grep -q 'PkgConfig::PIXIU_SHORTCUT' "${fixture}/source/pixiu/frontend/management/CMakeLists.txt"
 grep -q 'app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION))' "${fixture}/source/src/main.cpp"
 grep -q 'PIXIU_PRODUCT_VERSION' "${fixture}/source/CMakeLists.txt"
 python3 - "${fixture}/source/src/main.cpp" "${repo_root}" <<'PY'
