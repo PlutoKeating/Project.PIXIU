@@ -11,7 +11,7 @@ from backend.foundation.core.repository import EntityRepository, KnowledgeReposi
 from backend.foundation.core.vector_store import VectorStore
 
 from backend.engine.security.detector import DetectionResult, Detector
-from backend.engine.security.forget import ForgetEngine
+from backend.engine.security.forget import ForgetEngine, ForgetPreviewChanged
 from backend.engine.security.models import ForgetResult
 
 
@@ -42,6 +42,8 @@ class SecurityService:
         command: str,
         confirm: bool,
         scope: Optional[str] = None,
+        *,
+        expected_targets: dict[str, int] | None = None,
     ) -> ForgetResult:
         return await self._forget_engine.forget(
             command,
@@ -50,7 +52,8 @@ class SecurityService:
             knw_repo=self._knw_repo,
             entity_repo=self._entity_repo,
             vector_store=self._vector_store,
+            expected_targets=expected_targets,
         )
 
 
-__all__ = ["DetectionResult", "ForgetResult", "SecurityService"]
+__all__ = ["DetectionResult", "ForgetResult", "ForgetPreviewChanged", "SecurityService"]

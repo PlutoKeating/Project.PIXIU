@@ -148,6 +148,12 @@ patterns = {
 
 **自然语言遗忘**：
 
+预览目标包含 ID、版本与范围；调用者可传入 `expected_targets={id: version}`，
+确认时若匹配集合或版本与预览不同，抛出 `ForgetPreviewChanged`，在任何状态/向量
+删除前拒绝。此为引擎前置检查，不是原子 CAS；公共 API 仍需接入预览凭证，存储层
+仍需覆盖检查后并发更新的原子边界。未传此参数的旧调用尚保持原有行为，不能视为
+安全确认迁移已完成。级联数字只表示关联预估，不证明证据或关系被物理清理。
+
 ```
 forget("忘记那张4月支出清单")
   → 解析意图 + 构造匹配条件（title~"4月" AND source_type=OCR）
@@ -228,7 +234,8 @@ class SecurityService:
     def __init__(self, knw_repo: KnowledgeRepository, entity_repo: EntityRepository,
                  vector_store: VectorStore): ...
     async def detect_sensitivity(self, raw: dict) -> int: ...
-    async def forget(self, command: str, confirm: bool) -> ForgetResult: ...
+    async def forget(self, command: str, confirm: bool, scope: str | None = None,
+                     *, expected_targets: dict[str, int] | None = None) -> ForgetResult: ...
 ```
 
 ---

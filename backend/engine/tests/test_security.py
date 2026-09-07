@@ -6,7 +6,7 @@ from typing import Optional
 
 import pytest
 
-from backend.engine.security import SecurityService
+from backend.engine.security import ForgetPreviewChanged, SecurityService
 from backend.engine.security.detector import Detector
 from backend.foundation.core.idgen import gen_evidence_id, gen_knowledge_id
 from backend.foundation.core.models import (
@@ -341,6 +341,33 @@ async def test_forget_repeat_confirm_returns_no_active_targets() -> None:
     again = await service.forget("忘记四月份电费", confirm=True, scope="user:alice")
     assert again.targets == []
     assert again.forgotten_ids == []
+
+
+@pytest.mark.asyncio
+async def test_reviewed_forget_rejects_added_matches_without_deletion() -> None:
+    original = _knowledge_item(title="四月份电费账单", scope="user:alice")
+    service, knw, _ = _security([original])
+    preview = await service.forget("忘记四月份电费", False, "user:alice")
+    expected = {target["id"]: target["version"] for target in preview.targets}
+    assert preview.targets[0]["scope"] == "user:alice"
+    added = _knowledge_item(title="四月份电费新账单", scope="user:alice")
+    await knw.save(added)
+    with pytest.raises(ForgetPreviewChanged):
+        await service.forget("忘记四月份电费", True, "user:alice", expected_targets=expected)
+    assert original.status == added.status == KnowledgeStatus.ACTIVE
+
+
+@pytest.mark.asyncio
+async def test_reviewed_forget_rejects_version_change_then_accepts_new_preview() -> None:
+    item = _knowledge_item(title="四月份电费账单", scope="user:alice")
+    service, _, _ = _security([item])
+    version = item.version
+    item.version += 1
+    with pytest.raises(ForgetPreviewChanged):
+        await service.forget("忘记四月份电费", True, "user:alice", expected_targets={item.id: version})
+    assert item.status == KnowledgeStatus.ACTIVE
+    result = await service.forget("忘记四月份电费", True, "user:alice", expected_targets={item.id: item.version})
+    assert result.forgotten_ids == [item.id]
 
 
 def test_legacy_find_matches_labels() -> None:

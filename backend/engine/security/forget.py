@@ -64,6 +64,10 @@ class _ScoredTarget:
     confidence: float
 
 
+class ForgetPreviewChanged(ValueError):
+    """The current match set or versions differ from the reviewed snapshot."""
+
+
 class ForgetEngine:
     async def forget(
         self,
@@ -74,6 +78,7 @@ class ForgetEngine:
         knw_repo: KnowledgeRepository,
         entity_repo: EntityRepository,
         vector_store: VectorStore | None = None,
+        expected_targets: dict[str, int] | None = None,
     ) -> ForgetResult:
         normalized_scope = scope.strip() if scope is not None else None
         if scope is not None and not normalized_scope:
@@ -99,6 +104,8 @@ class ForgetEngine:
                 "type": "knowledge",
                 "id": entry.item.id,
                 "title": entry.item.title,
+                "version": entry.item.version,
+                "scope": entry.item.scope,
                 "score": round(entry.score, 4),
                 "confidence": round(entry.confidence, 4),
             }
@@ -115,6 +122,11 @@ class ForgetEngine:
                 cascade_preview=cascade_preview,
                 irreversible=True,
             )
+
+        if expected_targets is not None:
+            actual = {entry.item.id: entry.item.version for entry in scored}
+            if actual != expected_targets:
+                raise ForgetPreviewChanged("forget preview targets or versions changed")
 
         forgotten_ids: list[str] = []
         for entry in scored:
