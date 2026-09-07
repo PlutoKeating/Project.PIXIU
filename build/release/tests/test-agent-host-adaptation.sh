@@ -2,53 +2,33 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-source_dir="${repo_root}/third_party/kylin-agent"
 fixture="$(mktemp -d)"
 trap 'rm -rf "${fixture}"' EXIT
 
-expected_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["components"]["kylin_agent"]["source_commit"])' "${repo_root}/build/release/agent-supply-chain-policy.json")"
-test "$(git -C "${source_dir}" rev-parse HEAD)" = "${expected_commit}"
-
 mkdir -p "${fixture}/source"
-git -C "${source_dir}" archive --format=tar HEAD | tar -xf - -C "${fixture}/source"
-patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-host/patches/0001-build-coherent-offline-host.patch"
-patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch"
-patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-host/patches/0003-kylin-cloud-model-settings.patch"
-patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-host/patches/0004-working-agent-experience.patch"
-patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-host/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
-patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-host/patches/0006-rich-message-rendering.patch"
-patch -d "${fixture}/source" -p1 --forward --batch --no-backup-if-mismatch \
-    < "${repo_root}/build/release/agent-host/patches/0007-chat-layout-follow.patch"
-patch -d "${fixture}/source" -p1 --forward --batch --no-backup-if-mismatch \
-    < "${repo_root}/build/release/agent-host/patches/0008-pixiu-assistant-history.patch"
-cp -a "${repo_root}/integrations/kylin_agent/message_renderer" \
-    "${fixture}/source/res/message-renderer"
-install -D -m 0644 "${repo_root}/build/release/agent-host/compat/pixiu_host_compat.cpp" \
-    "${fixture}/source/src/services/pixiu_host_compat.cpp"
+bash "${repo_root}/build/release/agent-host/prepare-agent-host.sh" "${fixture}/source"
 
-# Exercise the same fail-closed source sanitization used by the real build.
+# A second preparation must reject existing source, without overwriting it.
+prepared_hash="$(sha256sum "${fixture}/source/CMakeLists.txt")"
+if bash "${repo_root}/build/release/agent-host/prepare-agent-host.sh" "${fixture}/source"; then
+    echo "source preparation unexpectedly accepted nonempty destination" >&2
+    exit 1
+fi
+test "$(sha256sum "${fixture}/source/CMakeLists.txt")" = "${prepared_hash}"
+ln -s "${fixture}/source" "${fixture}/source-link"
+if bash "${repo_root}/build/release/agent-host/prepare-agent-host.sh" "${fixture}/source-link"; then
+    echo "source preparation unexpectedly accepted symlink destination" >&2
+    exit 1
+fi
+
+# Independent postcondition scan, not a second copy of source preparation.
 python3 - "${fixture}/source" <<'PY'
 from pathlib import Path
 import re
 import sys
 
 root = Path(sys.argv[1])
-gateway = root / "src/services/gatewayservice.cpp"
-content = gateway.read_text(encoding="utf-8")
 pattern = re.compile(r"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@[^\\\"\s]+")
-content, count = pattern.subn("https://gitee.com/openkylin/kylin-cua.git", content)
-test_count = count == 1
-if not test_count:
-    raise SystemExit(f"expected one authenticated upstream URL, found {count}")
-gateway.write_text(content, encoding="utf-8")
-for relative in ("scripts/agent_runtime_install.sh", "scripts/agent_runtime_install_bak.sh"):
-    (root / relative).unlink()
 for candidate in root.rglob("*"):
     if candidate.is_file() and pattern.search(candidate.read_text(encoding="utf-8", errors="ignore")):
         raise SystemExit(f"authenticated URL remains in {candidate.relative_to(root)}")

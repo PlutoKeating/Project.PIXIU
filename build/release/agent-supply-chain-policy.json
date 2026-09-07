@@ -7,6 +7,7 @@
   ],
   "host_adaptation_inputs": [
     "build/release/agent-host/build-agent-host.sh",
+    "build/release/agent-host/prepare-agent-host.sh",
     "build/release/agent-host/patches/0001-build-coherent-offline-host.patch",
     "build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch",
     "build/release/agent-host/patches/0003-kylin-cloud-model-settings.patch",
