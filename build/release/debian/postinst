@@ -2,10 +2,8 @@
 # PIXIU 安装后脚本：准备 root-owned Python 环境与 systemd user unit。
 # 用户配置、数据和服务只能由桌面用户首次启动时创建。
 #
-# 兼容性设计（针对麒麟 V11/openKylin 实测）：
-#  - 部分麒麟发行版不提供 python3-venv / python3-pip：本脚本先引导 get-pip，
-#    再尝试 venv，失败则回退系统 Python（PEP 668 用 --break-system-packages）。
-#  - 依赖优先从随包 wheels 离线安装（--no-index），无 wheels 时在线安装。
+# Python/venv 由包依赖提供；不下载引导脚本或向系统 Python 安装依赖。
+# 后端依赖安装方式由包内 wheels 决定，Runtime 始终使用随包哈希锁。
 set -e
 
 PIXIU_LIB=/usr/lib/pixiu
@@ -14,52 +12,38 @@ VENV="${PIXIU_LIB}/venv"
 
 echo "pixiu: configuring backend runtime environment"
 
-# 1) pip 引导（缺失时下载 get-pip.py）
-if ! "${PY}" -m pip --version >/dev/null 2>&1; then
-    echo "pixiu: bootstrapping pip"
-    command -v curl >/dev/null 2>&1 || {
-        echo "pixiu: pip missing and curl unavailable — cannot bootstrap" >&2
-        exit 1
-    }
-    curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/pixiu-get-pip.py
-    if ! PIP_BREAK_SYSTEM_PACKAGES=1 "${PY}" /tmp/pixiu-get-pip.py >/dev/null 2>&1; then
-        "${PY}" /tmp/pixiu-get-pip.py --break-system-packages >/dev/null 2>&1 || {
-            echo "pixiu: failed to bootstrap pip" >&2
-            exit 1
-        }
-    fi
-    rm -f /tmp/pixiu-get-pip.py
-fi
+# 1) Validate the interpreter before creating or changing the product venv.
+"${PY}" -c 'import sys; sys.exit(sys.implementation.cache_tag != "cpython-312")' || {
+    echo "pixiu: packaged Runtime requires CPython 3.12" >&2
+    exit 1
+}
 
-# 2) Python 解释器：venv 存在时优先复用（升级/重装路径——启动器固定跑 venv，
-#    依赖必须装进 venv，否则升级后服务 ModuleNotFoundError 崩溃循环）；
-#    不存在才尝试创建（无 python3-venv 的发行版回退系统 Python）。
-VPY="${PY}"
+# 2) Reuse the installed venv for upgrades; never erase it or fall back to the
+# system interpreter when creation, ABI validation or pip checks fail.
 if [ -x "${VENV}/bin/python" ]; then
     echo "pixiu: using existing venv at ${VENV}"
-    VPY="${VENV}/bin/python"
-    "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
 elif "${PY}" -m venv "${VENV}" >/dev/null 2>&1 \
         && [ -x "${VENV}/bin/python" ]; then
     echo "pixiu: using venv at ${VENV}"
-    VPY="${VENV}/bin/python"
-    "${VPY}" -m pip install --upgrade pip >/dev/null 2>&1 || true
 else
-    echo "pixiu: python3-venv unavailable — using system Python ${PY}"
+    echo "pixiu: cannot create the required product venv; check python3-venv" >&2
+    exit 1
 fi
+VPY="${VENV}/bin/python"
+"${VPY}" -c 'import sys; sys.exit(sys.implementation.cache_tag != "cpython-312" or sys.prefix == sys.base_prefix)' || {
+    echo "pixiu: existing product venv is not an isolated CPython 3.12 environment" >&2
+    exit 1
+}
+"${VPY}" -m pip --version >/dev/null 2>&1 || {
+    echo "pixiu: product venv pip is unavailable; installation cannot continue" >&2
+    exit 1
+}
 
 REQ="${PIXIU_LIB}/backend/requirements.txt"
 SYNC_REQ="${PIXIU_LIB}/backend/foundation/requirements-sync.txt"
 
 install_reqs() {
-    if [ "${VPY}" = "${PY}" ]; then
-        # --ignore-installed：避免发行版自带包（如 typing_extensions）无 RECORD
-        # 导致 pip 升级失败（麒麟 V11 实测）。
-        PIP_BREAK_SYSTEM_PACKAGES=1 \
-            "${VPY}" -m pip install --ignore-installed "$@" >/dev/null
-    else
-        "${VPY}" -m pip install "$@" >/dev/null
-    fi
+    "${VPY}" -m pip install "$@" >/dev/null
 }
 
 if [ -d "${PIXIU_LIB}/wheels" ] && [ -n "$(ls -A "${PIXIU_LIB}/wheels" 2>/dev/null)" ]; then
