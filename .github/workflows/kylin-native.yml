@@ -52,7 +52,7 @@ jobs:
           make -C build/release governance
           python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
       - name: Rebuild Agent and verify offline supply chain
-        run: bash build/release/scripts/prepare-native-supply-chain.sh
+        run: PIXIU_KYSDK=ON bash build/release/scripts/prepare-agent-supply-chain.sh
       - name: Build strict native package
         env:
           PIXIU_PROFILE: kylin-v11-native-x86_64

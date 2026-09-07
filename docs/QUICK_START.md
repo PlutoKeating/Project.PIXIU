@@ -82,13 +82,18 @@ PIXIU_BACKEND_URL=http://127.0.0.1:8765 ./build/frontend/pixiu-frontend
 sudo bash build/release/scripts/provision-target.sh \
   kylin-v11-native-x86_64 --with-build-deps
 pip install -r backend/requirements-build.txt
-bash build/release/scripts/prepare-native-supply-chain.sh
+PIXIU_KYSDK=ON bash build/release/scripts/prepare-agent-supply-chain.sh
 PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ```
 
 严格构建使用洁净 checkout、V11 amd64 和 CPython 3.12；供应链准备需要 sudo
 网络命名空间隔离权限。正式发布由 GitHub `pixiu-release` 标签工作流执行，
 手动 `pixiu-kylin-v11-native` 只产生经过安装验证的候选 Artifact。
+
+通用宿主供应链使用同一脚本并显式设置 `PIXIU_KYSDK=OFF`，记录为
+`generic-debian`；仍要求 amd64、CPython 3.12 与网络隔离权限。
+`--describe` 只打印选择的证据目标，不构建、不写入。两类构建均拒绝覆盖已有证据目录，
+不得把通用证据用于原生发布门；通用整包的宿主/Runtime 装配仍在迁移。
 
 ## 测试
 

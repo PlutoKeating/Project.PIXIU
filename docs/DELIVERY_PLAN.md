@@ -16,6 +16,11 @@ Agent 供应链记录区分 `kylin-v11` 和 `generic-debian`；审计默认仍�
 匹配该目标，不允许混用或将通用记录作为原生证明。此字段区分记录目标，不单独证明
 SDK 已实际运行；通用整包的完整宿主/Runtime 安装链仍在迁移，不能只凭审计格式发布。
 
+`prepare-agent-supply-chain.sh` 是共用构建入口：ON 对应 kylin-v11、OFF 对应
+generic-debian，隔离构建显式传递 SDK 开关和 Python PATH，宿主与 Runtime 记录及
+末尾审计使用同一目标。现有锁仅覆盖 amd64/CPython 3.12，不满足时在创建证据目录
+前拒绝；原生工作流显式固定 ON，不因构建环境继承值而选择通用画像。
+
 最终向评委提供一个带版本号、架构和校验/签名信息的 PIXIU `.deb`。用户应能在
 银河麒麟 V11 图形软件安装器中打开安装，或以一条 `apt install ./pixiu_*.deb`
 命令完成；不得要求手工复制源码、创建虚拟环境、逐个安装 Python 包或编辑数据库。

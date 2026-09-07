@@ -47,7 +47,16 @@ grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/.github/workflows/kylin-native.yml"
 grep -q 'systemctl --user restart pixiu-backend.service' \
     "${ROOT}/.github/workflows/kylin-native.yml"
-grep -q 'prepare-native-supply-chain.sh' "${ROOT}/.github/workflows/kylin-native.yml"
+grep -q 'prepare-agent-supply-chain.sh' "${ROOT}/.github/workflows/kylin-native.yml"
+PREPARE="${ROOT}/build/release/scripts/prepare-agent-supply-chain.sh"
+test "$(PIXIU_KYSDK=ON bash "$PREPARE" --describe)" = kylin-v11
+test "$(PIXIU_KYSDK=OFF bash "$PREPARE" --describe)" = generic-debian
+if PIXIU_KYSDK=invalid bash "$PREPARE" --describe >/dev/null 2>&1; then
+    echo "invalid supply-chain SDK selection must fail" >&2
+    exit 1
+fi
+grep -qF 'PIXIU_KYSDK="${PIXIU_KYSDK:-ON}"' "$PREPARE"
+grep -qF -- '--expected-os "$target_os"' "$PREPARE"
 grep -q 'native-sdk-smoke.py' "${ROOT}/.github/workflows/kylin-native.yml"
 
 if PIXIU_PROFILE=kylin-v11-native-x86_64 PIXIU_KYSDK=ON \
