@@ -80,7 +80,7 @@ class PixiuMemoryProvider(MemoryProvider):
         self._stopping = threading.Event()
         self._lock = threading.Lock()
         self._cache: dict[str, str] = {}
-        self._pending_forget: dict[str, tuple[str, float]] = {}
+        self._pending_forget: dict[str, tuple[str, float, str, str]] = {}
         self._session_id = ""
         self._run_id = ""
         self._turn_id = "turn-000001"
@@ -482,21 +482,39 @@ class PixiuMemoryProvider(MemoryProvider):
         token = str(args.get("confirmation_token") or "").strip()
         self._expire_confirmations()
         if not token:
-            preview = self._client.request("POST", "/forget", {"command": command, "confirm": False})
+            started = time.monotonic()
+            preview = self._client.request("POST", "/forget", {"command": command, "confirm": False, "scope": self._scope})
+            backend_token = preview.get("confirmation_token")
+            ttl = preview.get("expires_in_seconds")
+            targets = preview.get("targets")
+            if (not isinstance(backend_token, str) or not backend_token
+                    or type(ttl) is not int or not 0 < ttl <= 120
+                    or not isinstance(targets, list)
+                    or any(not isinstance(target, dict) or not target.get("id")
+                           or type(target.get("version")) is not int or target["version"] < 1
+                           or target.get("scope") != self._scope for target in targets)):
+                return {"error": "INVALID_FORGET_PREVIEW"}
+            deadline = started + ttl
+            if deadline <= time.monotonic():
+                return {"error": "FORGET_PREVIEW_EXPIRED"}
             confirmation = secrets.token_urlsafe(18)
             with self._lock:
-                self._pending_forget[confirmation] = (command, time.monotonic() + 120)
+                if len(self._pending_forget) >= 256:
+                    return {"error": "FORGET_PREVIEW_CAPACITY"}
+                self._pending_forget[confirmation] = (command, deadline, backend_token, self._session_id)
+            public_preview = {key: value for key, value in preview.items() if key != "confirmation_token"}
             return {
                 "status": "confirmation_required",
                 "confirmation_token": confirmation,
-                "preview": preview,
+                "preview": public_preview,
                 "instruction": "Ask the user to confirm before reusing this token.",
             }
         with self._lock:
             pending = self._pending_forget.pop(token, None)
-        if not pending or pending[0] != command:
+        if not pending or pending[0] != command or pending[3] != self._session_id or pending[1] <= time.monotonic():
             return {"error": "CONFIRMATION_MISMATCH"}
-        return self._client.request("POST", "/forget", {"command": command, "confirm": True})
+        return self._client.request("POST", "/forget", {"command": command, "confirm": True,
+            "scope": self._scope, "confirmation_token": pending[2]})
 
     def _enqueue_context(self, query: str, session_id: str, turn_id: str) -> None:
         self._enqueue(
@@ -648,7 +666,7 @@ class PixiuMemoryProvider(MemoryProvider):
     def _expire_confirmations(self) -> None:
         now = time.monotonic()
         with self._lock:
-            expired = [key for key, (_, deadline) in self._pending_forget.items() if deadline < now]
+            expired = [key for key, pending in self._pending_forget.items() if pending[1] <= now]
             for key in expired:
                 self._pending_forget.pop(key, None)
 

@@ -603,6 +603,9 @@ D-Bus 同等入口为 `ReviewedForget(payload_json: s) → s`，JSON 字段及�
 一致，复用同一预览凭证、执行和墓碑广播逻辑。旧 `Forget(command: s, confirm: b)`
 只允许 `confirm=false` 预览；`true` 返回 `FORGET_PREVIEW_REQUIRED`，不再绕过确认。
 
+Module E 的遗忘工具固定传 Provider scope，私下保存后端凭证，向模型只暴露绑定
+会话的本地一次性引用；确认时转交原后端凭证。该映射不等同于已验证宿主人工审批。
+
 ### 3.9 GET /conflicts
 
 冲突审计列表。
