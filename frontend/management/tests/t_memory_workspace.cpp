@@ -584,6 +584,28 @@ private slots:
         sources->setCurrentRow(0);
         emit transport.evidenceDetailResult({{"id", "e1"}, {"raw", QJsonObject{{"body", QJsonObject{{"text", "结构化正文"}}}}}});
         QCOMPARE(workspace.findChild<QPlainTextEdit *>("memoryEvidence")->toPlainText(), QStringLiteral("结构化正文"));
+        auto *rawToggle = workspace.findChild<QCheckBox *>("memoryEvidenceRaw");
+        auto *detail = workspace.findChild<QPlainTextEdit *>("memoryEvidence");
+        QVERIFY(rawToggle->isEnabled());
+        QVERIFY(!rawToggle->isChecked());
+        rawToggle->setChecked(true);
+        QVERIFY(detail->toPlainText().contains("\"text\""));
+        rawToggle->setChecked(false);
+        QCOMPARE(detail->toPlainText(), QStringLiteral("结构化正文"));
+        rawToggle->setChecked(true);
+        sources->setCurrentRow(-1);
+        sources->setCurrentRow(0);
+        QVERIFY(!rawToggle->isEnabled());
+        QVERIFY(!rawToggle->isChecked());
+        QVERIFY(detail->toPlainText().isEmpty());
+        emit transport.evidenceDetailResult({{"id", "e1"}, {"raw", QJsonObject{
+            {"body", QJsonObject{{"amount", 42}, {"items", QJsonArray{"receipt"}}}}}}});
+        QVERIFY(!detail->toPlainText().contains("receipt"));
+        rawToggle->setChecked(true);
+        QVERIFY(detail->toPlainText().contains("receipt"));
+        workspace.findChild<QComboBox *>("memoryScope")->setCurrentIndex(2);
+        QVERIFY(detail->toPlainText().isEmpty());
+        QVERIFY(!rawToggle->isEnabled());
     }
     void scopeChangeRejectsOldResponse()
     {

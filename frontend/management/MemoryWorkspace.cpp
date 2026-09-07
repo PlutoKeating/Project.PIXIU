@@ -6,6 +6,8 @@
 #include "ForgetPage.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
+#include <QCheckBox>
+#include <QJsonDocument>
 #include <QHBoxLayout>
 #include <QJsonArray>
 #include <QLabel>
@@ -106,11 +108,18 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_detailMeta->setWordWrap(true);
     m_detailMeta->setTextFormat(Qt::PlainText);
     layout->addWidget(m_detailMeta);
+    m_showRaw = new QCheckBox(tr("查看原始数据（高级）"), this);
+    m_showRaw->setObjectName("memoryEvidenceRaw");
+    m_showRaw->setEnabled(false);
+    layout->addWidget(m_showRaw);
     m_detail = new QPlainTextEdit(this);
     m_detail->setObjectName(QStringLiteral("memoryEvidence"));
     m_detail->setReadOnly(true);
     m_detail->setAccessibleName(tr("原始证据正文"));
     layout->addWidget(m_detail, 2);
+    connect(m_showRaw, &QCheckBox::toggled, this, [this](bool checked) {
+        m_detail->setPlainText(checked ? m_evidenceRaw : m_evidenceText);
+    });
     connect(m_search, &QPushButton::clicked, this, &MemoryWorkspace::search);
     connect(m_query, &QLineEdit::returnPressed, this, &MemoryWorkspace::search);
     connect(m_scope, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {
@@ -152,7 +161,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_search->setEnabled(false);
         m_scope->setEnabled(false);
         m_evidence = item->data(Qt::UserRole).toString();
-        m_detail->clear();
+        clearEvidence();
         m_detailMeta->setText(tr("正在加载证据…"));
         m_transport->evidenceDetail(m_evidence);
     });
@@ -178,7 +187,11 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
                  evidence.value(QStringLiteral("source_type")).toString(),
                  evidence.value(QStringLiteral("scope")).toString())
             .arg(evidence.value(QStringLiteral("quality_score")).toDouble(), 0, 'f', 2));
-        m_detail->setPlainText(body.isEmpty() ? tr("此证据没有可显示的文本正文。") : body);
+        m_evidenceText = body.isEmpty()
+            ? tr("此证据没有文本正文，可展开原始数据查看结构化内容。") : body;
+        m_evidenceRaw = QString::fromUtf8(QJsonDocument(raw).toJson(QJsonDocument::Indented));
+        m_showRaw->setEnabled(!raw.isEmpty());
+        m_detail->setPlainText(m_evidenceText);
     });
     connect(m_transport, &BackendTransport::errorOccurred, this,
             [this](const QString &, const QString &message, const QString &) {
@@ -192,6 +205,15 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     });
 }
 
+void MemoryWorkspace::clearEvidence()
+{
+    m_evidenceText.clear();
+    m_evidenceRaw.clear();
+    m_showRaw->setChecked(false);
+    m_showRaw->setEnabled(false);
+    m_detail->clear();
+}
+
 void MemoryWorkspace::clearResult()
 {
     m_knowledge.clear();
@@ -201,7 +223,7 @@ void MemoryWorkspace::clearResult()
     m_audit->setEvidenceIds({});
     m_answer->clear();
     m_sources->clear();
-    m_detail->clear();
+    clearEvidence();
     m_detailMeta->clear();
     m_search->setEnabled(true);
 }

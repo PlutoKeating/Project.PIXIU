@@ -8,6 +8,7 @@ class QPushButton;
 class QLabel;
 class QPlainTextEdit;
 class QListWidget;
+class QCheckBox;
 
 namespace pixiu {
 class MemoryAudit;
@@ -20,6 +21,7 @@ public:
 private:
     void search();
     void clearResult();
+    void clearEvidence();
     BackendTransport *m_transport;
     MemoryAudit *m_audit;
     QLineEdit *m_query;
@@ -32,6 +34,9 @@ private:
     QListWidget *m_sources;
     QLabel *m_detailMeta;
     QPlainTextEdit *m_detail;
+    QCheckBox *m_showRaw;
+    QString m_evidenceText;
+    QString m_evidenceRaw;
     quint64 m_request = 0;
     QString m_evidence;
     bool m_evidenceBusy = false;
