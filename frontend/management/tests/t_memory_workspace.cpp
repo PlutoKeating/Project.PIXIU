@@ -18,6 +18,8 @@
 #include <QTimer>
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QAction>
+#include "HostTray.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QDateEdit>
@@ -305,6 +307,34 @@ private slots:
         forget.findChild<QPushButton *>("forgetPreview")->click();
         QCOMPARE(forgetTransport.forgetPayload.value("scope").toString(), QStringLiteral("user:alice"));
         QVERIFY(!forgetTransport.forgetPayload.value("confirm").toBool());
+    }
+    void trayRestoresSameHostAndRespectsPendingCloseGuard()
+    {
+        QWidget host;
+        bool pending = true;
+        pixiu::HostCloseGuard guard(&host, [&]() { return pending; });
+        pixiu::HostTray tray(&host);
+        auto *show = host.findChild<QAction *>("hostTrayShow");
+        auto *quit = host.findChild<QAction *>("hostTrayQuit");
+        QVERIFY(show);
+        QVERIFY(quit);
+        show->trigger();
+        QVERIFY(host.isVisible());
+        host.setWindowState(Qt::WindowMaximized | Qt::WindowMinimized);
+        show->trigger();
+        QVERIFY(!host.isMinimized());
+        QVERIFY(host.isMaximized());
+        host.hide();
+        show->trigger();
+        QVERIFY(host.isVisible());
+        QTimer::singleShot(0, &host, [&]() {
+            if (auto *box = host.findChild<QMessageBox *>()) box->accept();
+        });
+        quit->trigger();
+        QVERIFY(host.isVisible());
+        pending = false;
+        quit->trigger();
+        QVERIFY(!host.isVisible());
     }
     void hostCloseWaitsForMemoryReads()
     {

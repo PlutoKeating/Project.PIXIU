@@ -10,6 +10,7 @@ if(NOT PIXIU_QRENCODE_INCLUDE_DIR OR NOT PIXIU_QRENCODE_LIBRARY)
 endif()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1)
 add_library(pixiu-management STATIC
+    HostTray.h HostTray.cpp
     BackendEventStatus.h BackendEventStatus.cpp
     ../src/services/WebSocketClient.h ../src/services/WebSocketClient.cpp
     AgentEvidence.h AgentEvidence.cpp

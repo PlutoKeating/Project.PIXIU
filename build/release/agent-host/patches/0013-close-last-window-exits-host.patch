@@ -2,6 +2,6 @@
 +++ b/src/main.cpp
 @@ -90,1 +90,3 @@
 -    app.setQuitOnLastWindowClosed(false);
-+    // No tray is created by this host: closing its last window must not
++    // Even with an optional tray, closing the last window must not
 +    // leave an invisible desktop process running.
 +    app.setQuitOnLastWindowClosed(true);

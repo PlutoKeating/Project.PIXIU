@@ -1,0 +1,10 @@
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -9,1 +9,2 @@
+-#include "MemoryWorkspace.h"
++#include "MemoryWorkspace.h"
++#include "HostTray.h"
+@@ -53,1 +54,2 @@
+-    setWindowTitle(QStringLiteral("PIXIU"));
++    setWindowTitle(QStringLiteral("PIXIU"));
++    new pixiu::HostTray(this);

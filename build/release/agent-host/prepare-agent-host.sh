@@ -77,6 +77,8 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
     < "${script_dir}/patches/0022-session-evidence-entry.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${script_dir}/patches/0023-backend-event-status.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0024-single-host-tray.patch"
 install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
     "${target_source}/res/pixiu.svg"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
@@ -86,6 +88,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/AgentEvidenceClient.h management/AgentEvidenceClient.cpp \
     management/MemoryScopes.h \
     management/HostCloseGuard.h management/HostCloseGuard.cpp \
+    management/HostTray.h management/HostTray.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
     management/MemoryEditDialog.h management/MemoryEditDialog.cpp \
     management/MemoryAudit.h management/MemoryAudit.cpp \
