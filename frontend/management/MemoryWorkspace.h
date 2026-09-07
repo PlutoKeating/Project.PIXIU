@@ -25,6 +25,8 @@ private:
     QLineEdit *m_query;
     QComboBox *m_scope;
     QPushButton *m_search;
+    QPushButton *m_edit;
+    QString m_knowledge;
     QLabel *m_status;
     QPlainTextEdit *m_answer;
     QListWidget *m_sources;

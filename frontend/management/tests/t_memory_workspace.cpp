@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
+#include "MemoryEditDialog.h"
 #include "MemoryAudit.h"
 #include "PrivacyPage.h"
 #include "DevicePage.h"
@@ -29,6 +30,11 @@ public:
     void evidenceDetail(const QString &id) override { evidence = id; }
     void writeMemory(const QJsonObject &payload) override { written = payload; ++writes; }
     QJsonObject written;
+    QString editId, editScope;
+    QJsonObject edited;
+    int edits = 0;
+    void memoryItem(const QString &id, const QString &scope) override { editId = id; editScope = scope; }
+    void updateMemory(const QJsonObject &payload) override { edited = payload; ++edits; }
     QString auditScope, historyId;
     QJsonObject extraction;
     int conflictRequests = 0;
@@ -71,6 +77,76 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void editingPreservesFullBodyAndRequiresVersion()
+    {
+        Transport transport;
+        pixiu::MemoryEditDialog editor(nullptr, &transport);
+        auto *title = editor.findChild<QLineEdit *>("editTitle");
+        auto *body = editor.findChild<QPlainTextEdit *>("editBody");
+        auto *save = editor.findChild<QPushButton *>("editSave");
+        editor.openMemory("knw_example01", "user:local");
+        QCOMPARE(transport.editId, QStringLiteral("knw_example01"));
+        QCOMPARE(transport.editScope, QStringLiteral("user:local"));
+        QVERIFY(!save->isEnabled());
+        const QJsonObject originalBody{{"text", "full body"}, {"nested", QJsonObject{{"keep", true}}}};
+        emit transport.memoryItemResult({{"knowledge_id", "knw_example01"}, {"scope", "user:local"},
+            {"version", 7}, {"title", "original"}, {"body", originalBody}});
+        QVERIFY(!save->isEnabled());
+        title->setText("revised");
+        QVERIFY(save->isEnabled());
+        save->click();
+        QVERIFY(!transport.edited.contains("body")); // Title-only edits leave stored body untouched.
+        QCOMPARE(transport.edited.value("expected_version").toInt(), 7);
+        const auto first = transport.edited;
+        QVERIFY(!save->isEnabled());
+        editor.reject();
+        QVERIFY(editor.isVisible());
+        emit transport.errorOccurred("TIMEOUT", "unknown result", "request");
+        QCOMPARE(title->text(), QStringLiteral("revised"));
+        save->click();
+        QCOMPARE(transport.edited, first);
+        emit transport.errorOccurred("VERSION_CONFLICT", "changed", "request");
+        QVERIFY(!save->isEnabled());
+        QCOMPARE(title->text(), QStringLiteral("revised"));
+        QVERIFY(body->toPlainText().contains("nested"));
+        title->setText("still cannot overwrite");
+        QVERIFY(!save->isEnabled());
+        QCOMPARE(transport.edits, 2);
+    }
+    void editorRejectsWrongSnapshotAndValidatesSuccess()
+    {
+        Transport transport;
+        pixiu::MemoryEditDialog editor(nullptr, &transport);
+        auto *title = editor.findChild<QLineEdit *>("editTitle");
+        auto *body = editor.findChild<QPlainTextEdit *>("editBody");
+        auto *save = editor.findChild<QPushButton *>("editSave");
+        auto *reload = editor.findChild<QPushButton *>("editReload");
+        editor.openMemory("knw_example01", "shared:home");
+        QJsonObject snapshot{{"knowledge_id", "knw_wrong001"}, {"scope", "shared:home"},
+            {"version", 1}, {"title", "original"}, {"body", QJsonObject{{"text", "before"}}}};
+        emit transport.memoryItemResult(snapshot);
+        QVERIFY(!save->isEnabled());
+        QVERIFY(!title->isEnabled());
+        reload->click();
+        snapshot.insert("knowledge_id", "knw_example01");
+        emit transport.memoryItemResult(snapshot);
+        title->setText("revised");
+        body->setPlainText("not json");
+        QVERIFY(!save->isEnabled());
+        body->setPlainText("[]");
+        QVERIFY(!save->isEnabled());
+        body->setPlainText("{\"text\":\"after\"}");
+        QSignalSpy updated(&editor, &pixiu::MemoryEditDialog::memoryUpdated);
+        save->click();
+        QCOMPARE(transport.edited.value("scope").toString(), QStringLiteral("shared:home"));
+        emit transport.memoryUpdated({{"knowledge_id", "knw_wrong001"}, {"version", 2}, {"status", "updated"}, {"evidence_id", "evd_example01"}});
+        QCOMPARE(updated.count(), 0);
+        QVERIFY(save->isEnabled());
+        save->click();
+        emit transport.memoryUpdated({{"knowledge_id", "knw_example01"}, {"version", 2}, {"status", "updated"}, {"evidence_id", "evd_example01"}});
+        QCOMPARE(updated.count(), 1);
+        QVERIFY(!save->isEnabled());
+    }
     void settingsOwnPrivacyAndUpgradeOutsideMemory()
     {
         QWidget host;

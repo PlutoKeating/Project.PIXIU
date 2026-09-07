@@ -7,6 +7,11 @@ BackendTransport::BackendTransport(QObject *parent)
 
 BackendTransport::~BackendTransport() = default;
 
+void BackendTransport::memoryItem(const QString &, const QString &)
+{
+    emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持完整记忆读取"), QString());
+}
+
 void BackendTransport::memoryContext(const QJsonObject &)
 {
     emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持版本化记忆召回"), QString());

@@ -4,6 +4,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTest>
+#include <QUrlQuery>
 
 class UpdateTransportTest : public QObject
 {
@@ -29,7 +30,7 @@ private slots:
                 const int split = buffer.indexOf("\r\n\r\n");
                 if (split < 0) return;
                 const auto headers = buffer.left(split).split('\n');
-                int length = -1;
+                int length = 0;
                 for (const auto &header : headers)
                     if (header.toLower().startsWith("content-length:")) length = header.mid(15).trimmed().toInt();
                 if (length < 0 || buffer.size() < split + 4 + length) return;
@@ -39,6 +40,8 @@ private slots:
                 if (conflict) body = R"({"detail":"VERSION_CONFLICT"})";
                 else if (paths.last() == "/agent/context")
                     body = R"({"items":[{"knowledge_id":"knw_example01","version":7,"scope":"user:local"}],"truncated":false})";
+                else if (paths.last().startsWith("/memory/items/"))
+                    body = R"({"knowledge_id":"knw_example01","scope":"user:local","version":7,"title":"full snapshot","body":{"nested":{"keep":true}}})";
                 else body = R"({"knowledge_id":"knw_example01","version":8,"evidence_id":"evd_example01","status":"updated"})";
                 socket->write(QByteArray("HTTP/1.1 ") + (conflict ? "409 Conflict" : "200 OK")
                     + "\r\nContent-Type: application/json\r\nConnection: close\r\nContent-Length: "
@@ -49,6 +52,7 @@ private slots:
         });
         QSignalSpy recalled(&transport, &BackendTransport::memoryContextResult);
         QSignalSpy updated(&transport, &BackendTransport::memoryUpdated);
+        QSignalSpy item(&transport, &BackendTransport::memoryItemResult);
         QSignalSpy errors(&transport, &BackendTransport::errorOccurred);
         const QJsonObject context{{"query", "example"}, {"scope", "user:local"},
             {"session_id", "desktop-edit"}, {"turn_id", "lookup-1"}, {"top_k", 5}};
@@ -56,6 +60,12 @@ private slots:
         QTRY_COMPARE(recalled.count(), 1);
         QCOMPARE(paths.last(), QByteArray("/agent/context"));
         QCOMPARE(requests.last(), context);
+        transport.memoryItem("knw_example01", "user:local");
+        QTRY_COMPARE(item.count(), 1);
+        const QUrl itemUrl = QUrl::fromEncoded(paths.last());
+        QCOMPARE(itemUrl.path(), QStringLiteral("/memory/items/knw_example01"));
+        QCOMPARE(QUrlQuery(itemUrl).queryItemValue("scope", QUrl::FullyDecoded), QStringLiteral("user:local"));
+        QCOMPARE(item.first().first().toJsonObject().value("body").toObject(), QJsonObject({{"nested", QJsonObject{{"keep", true}}}}));
         const QJsonObject payload{{"knowledge_id", "knw_example01"}, {"expected_version", 7},
             {"scope", "user:local"}, {"title", "revised"},
             {"body", QJsonObject{{"text", "完整正文"}, {"nested", QJsonObject{{"keep", true}}}}},
@@ -71,7 +81,7 @@ private slots:
         QCOMPARE(errors.first().at(0).toString(), QStringLiteral("VERSION_CONFLICT"));
         QCOMPARE(updated.count(), 1);
         QCOMPARE(requests.last(), payload);
-        QCOMPARE(requests.size(), 3); // No automatic stale-version retry.
+        QCOMPARE(requests.size(), 4); // No automatic stale-version retry.
     }
 };
 QTEST_MAIN(UpdateTransportTest)

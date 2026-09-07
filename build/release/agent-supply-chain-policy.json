@@ -16,6 +16,8 @@
     "frontend/management/MemoryWorkspace.cpp",
     "frontend/management/MemoryWriteDialog.h",
     "frontend/management/MemoryWriteDialog.cpp",
+    "frontend/management/MemoryEditDialog.h",
+    "frontend/management/MemoryEditDialog.cpp",
     "frontend/management/MemoryAudit.h",
     "frontend/management/MemoryAudit.cpp",
     "frontend/management/PrivacyPage.h",

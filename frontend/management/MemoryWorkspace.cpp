@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "MemoryWriteDialog.h"
+#include "MemoryEditDialog.h"
 #include "MemoryAudit.h"
 #include "DeliveryPage.h"
 #include "ForgetPage.h"
@@ -68,6 +69,20 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     write->setObjectName(QStringLiteral("memoryWrite"));
     row->addWidget(write);
     auto *writeDialog = new MemoryWriteDialog(this);
+    m_edit = new QPushButton(tr("编辑命中记忆"), this);
+    m_edit->setObjectName("memoryEdit");
+    m_edit->setToolTip(tr("选择个人或家庭共享范围并检索后，编辑主要命中的记忆。"));
+    m_edit->setEnabled(false);
+    row->addWidget(m_edit);
+    auto *editor = new MemoryEditDialog(this);
+    connect(m_edit, &QPushButton::clicked, this, [this, editor]() {
+        if (!m_knowledge.isEmpty() && !m_scope->currentData().toString().isEmpty())
+            editor->openMemory(m_knowledge, m_scope->currentData().toString());
+    });
+    connect(editor, &MemoryEditDialog::memoryUpdated, this, [this]() {
+        clearResult();
+        m_status->setText(tr("记忆已更新，请重新检索查看当前结果。"));
+    });
     connect(write, &QPushButton::clicked, writeDialog, &QDialog::show);
     connect(writeDialog, &MemoryWriteDialog::memoryAccepted, m_audit,
             [this](const QString &id) { m_audit->setEvidenceIds({id}); });
@@ -107,6 +122,8 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         if (!m_request || id != m_request) return;
         m_request = 0;
         m_search->setEnabled(true);
+        m_knowledge = result.value("source_knowledge").toString();
+        m_edit->setEnabled(!m_knowledge.isEmpty() && !m_scope->currentData().toString().isEmpty());
         const QString answer = result.value(QStringLiteral("answer")).toString();
         m_answer->setPlainText(answer);
         m_status->setText(answer.isEmpty() ? tr("没有找到匹配的记忆。") : tr("检索完成，选择来源查看证据。"));
@@ -177,6 +194,8 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
 
 void MemoryWorkspace::clearResult()
 {
+    m_knowledge.clear();
+    m_edit->setEnabled(false);
     m_request = 0;
     m_evidence.clear();
     m_audit->setEvidenceIds({});

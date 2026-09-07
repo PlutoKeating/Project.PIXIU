@@ -100,6 +100,13 @@ void HttpBackendTransport::memoryContext(const QJsonObject &payload)
              [this](quint64, const QJsonObject &obj) { emit memoryContextResult(obj); });
 }
 
+void HttpBackendTransport::memoryItem(const QString &knowledgeId, const QString &scope)
+{
+    getJson(QStringLiteral("/memory/items/") + QUrl::toPercentEncoding(knowledgeId)
+            + QStringLiteral("?scope=") + QUrl::toPercentEncoding(scope),
+            [this](quint64, const QJsonObject &obj) { emit memoryItemResult(obj); });
+}
+
 void HttpBackendTransport::updateMemory(const QJsonObject &payload)
 {
     postJson(QStringLiteral("/memory/update"), payload,

@@ -31,6 +31,7 @@ public:
     // 每个串行控制器使用自己的 transport，不与健康探测共享错误通道。
     virtual void memoryContext(const QJsonObject &payload);
     virtual void updateMemory(const QJsonObject &payload);
+    virtual void memoryItem(const QString &knowledgeId, const QString &scope);
     virtual void forget(const QString &command, bool confirm) = 0;
     virtual void reviewedForget(const QJsonObject &payload);
     virtual void listConflicts() = 0;
@@ -87,6 +88,7 @@ signals:
     void writeAcknowledged(const QJsonObject &response);
     void memoryContextResult(const QJsonObject &response);
     void memoryUpdated(const QJsonObject &response);
+    void memoryItemResult(const QJsonObject &response);
     // 遗忘响应（/forget，confirm=false 为待确认、confirm=true 为已执行）。
     void forgetResult(const QJsonObject &response);
     // 冲突审计列表（GET /conflicts → {"conflicts": [...]}）。
