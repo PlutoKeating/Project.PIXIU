@@ -86,6 +86,18 @@ void HttpBackendTransport::probeHealth()
     });
 }
 
+void HttpBackendTransport::backendDiagnostics()
+{
+    getJson(QStringLiteral("/health"), [this](quint64, const QJsonObject &health) {
+        getJson(QStringLiteral("/version"), [this, health](quint64, const QJsonObject &version) {
+            getJson(QStringLiteral("/capabilities"), [this, health, version](quint64, const QJsonObject &capabilities) {
+                emit diagnosticsResult({{"health", health}, {"version", version},
+                                        {"capabilities", capabilities}});
+            });
+        });
+    });
+}
+
 quint64 HttpBackendTransport::queryMemory(const QString &text, const QJsonObject &contextHint)
 {
     const quint64 requestId = m_nextRequestId++;

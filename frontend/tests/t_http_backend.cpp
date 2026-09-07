@@ -35,6 +35,8 @@ private slots:
     void rejectsUnreadyHealth();
     void disconnectRejectsPendingReplies();
     void startsHealthAfterBusinessReachability();
+    void diagnosticsStopOnFailedRead();
+    void diagnosticsReadAllPublicEndpoints();
 
 private:
     HttpBackendTransport *makeTransport(int intervalMs = 300);
@@ -46,6 +48,8 @@ private:
     QByteArray m_healthBody;
     int m_replyDelay = 0;
     int m_requests = 0;
+    QList<QByteArray> m_paths;
+    bool m_serveMetadata = false;
 };
 
 void TestHttpBackend::init()
@@ -56,6 +60,8 @@ void TestHttpBackend::init()
     m_healthBody = R"({"status":"ready","component":"pixiu-memory-backend","database":"ok"})";
     m_replyDelay = 0;
     m_requests = 0;
+    m_paths.clear();
+    m_serveMetadata = false;
 }
 
 void TestHttpBackend::cleanup()
@@ -88,12 +94,18 @@ void TestHttpBackend::startServer(quint16 port)
                     parts.value(0).toUpper();
                 const QByteArray path = parts.value(1);
                 ++m_requests;
+                m_paths.append(path);
 
                 // 按请求路径返回不同响应，覆盖后端真实错误形状与旧契约形状。
                 QJsonObject body;
                 int status = 200;
                 if (method == "GET" && path == "/health") {
                     body = QJsonDocument::fromJson(m_healthBody).object();
+                } else if (method == "GET" && path == "/version" && m_serveMetadata) {
+                    body = {{"component", "pixiu-memory-backend"}, {"product_version", "9.9.9"},
+                            {"api_version", "0.5.0"}, {"agent_memory_api", 1}, {"schema_version", 12}};
+                } else if (method == "GET" && path == "/capabilities" && m_serveMetadata) {
+                    body = {{"contest_ready", false}, {"embedding", QJsonObject{{"runtime", "portable"}}}};
                 } else if (method == "GET" && path == "/conflicts") {
                     body = QJsonObject{
                         {QStringLiteral("conflicts"), QJsonArray()}};
@@ -326,6 +338,35 @@ void TestHttpBackend::startsHealthAfterBusinessReachability()
     QCOMPARE(transport->connectionState(), ConnectionState::Connected);
     transport->connectToBackend();
     QTRY_COMPARE_WITH_TIMEOUT(transport->connectionState(), ConnectionState::Error, 3000);
+}
+
+void TestHttpBackend::diagnosticsStopOnFailedRead()
+{
+    startServer();
+    auto *transport = makeTransport();
+    QSignalSpy results(transport, &BackendTransport::diagnosticsResult);
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    transport->backendDiagnostics();
+    QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
+    QCOMPARE(results.count(), 0);
+    QCOMPARE(m_paths, QList<QByteArray>({"/health", "/version"}));
+}
+
+void TestHttpBackend::diagnosticsReadAllPublicEndpoints()
+{
+    startServer();
+    m_serveMetadata = true;
+    auto *transport = makeTransport();
+    QSignalSpy results(transport, &BackendTransport::diagnosticsResult);
+    QSignalSpy errors(transport, &BackendTransport::errorOccurred);
+    transport->backendDiagnostics();
+    QTRY_COMPARE_WITH_TIMEOUT(results.count(), 1, 3000);
+    QCOMPARE(errors.count(), 0);
+    QCOMPARE(m_paths, QList<QByteArray>({"/health", "/version", "/capabilities"}));
+    const auto report = results.takeFirst().at(0).toJsonObject();
+    QCOMPARE(report.value("health").toObject(), QJsonDocument::fromJson(m_healthBody).object());
+    QCOMPARE(report.value("version").toObject().value("api_version").toString(), QStringLiteral("0.5.0"));
+    QCOMPARE(report.value("capabilities").toObject().value("embedding").toObject().value("runtime").toString(), QStringLiteral("portable"));
 }
 
 QTEST_MAIN(TestHttpBackend)

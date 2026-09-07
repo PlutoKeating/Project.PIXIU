@@ -8,6 +8,7 @@
 #include "DeliveryPage.h"
 #include "ForgetPage.h"
 #include "SettingsWorkspace.h"
+#include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
 #include <QTabWidget>
 #include "PairingDialog.h"
@@ -48,6 +49,8 @@ public:
     QJsonObject tokenRequest, pairRequest;
     int pairCalls = 0;
     int insightReads = 0, digestReads = 0;
+    int diagnosticReads = 0;
+    void backendDiagnostics() override { ++diagnosticReads; }
     QJsonObject forgetPayload;
     int forgetCalls = 0;
     void reviewedForget(const QJsonObject &payload) override { forgetPayload = payload; ++forgetCalls; }
@@ -81,6 +84,90 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void serviceDiagnosticsAreReadOnlyBoundedAndExplicit()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::ServiceStatusPage page(&host, &transport);
+        pixiu::HostCloseGuard guard(&host);
+        auto *refresh = page.findChild<QPushButton *>("serviceRefresh");
+        auto *details = page.findChild<QPlainTextEdit *>("serviceDetails");
+        auto *status = page.findChild<QLabel *>("serviceStatus");
+        QVERIFY(!page.isWindow());
+        QVERIFY(details->isReadOnly());
+        QVERIFY(details->toPlainText().isEmpty());
+        QCOMPARE(transport.diagnosticReads, 0);
+        refresh->click();
+        refresh->click();
+        QCOMPARE(transport.diagnosticReads, 1);
+        QVERIFY(page.hasPendingOperation());
+        QTimer::singleShot(0, []() {
+            if (auto *dialog = qobject_cast<QDialog *>(QApplication::activeModalWidget())) dialog->accept();
+        });
+        QVERIFY(!guard.confirmExit());
+        const QJsonObject version{{"component", "pixiu-memory-backend"}, {"product_version", "9.9.9"},
+            {"api_version", "0.5.0"}, {"agent_memory_api", 1}, {"schema_version", 12}};
+        auto health = version;
+        health.insert("status", "ready");
+        health.insert("database", "ok");
+        const QJsonObject portable{{"configured", "auto"}, {"runtime", "portable"}, {"compliant", false}};
+        QJsonObject caps{{"platform", QJsonObject{{"family", "other"}, {"version_major", "24"}, {"v11", false}}},
+            {"embedding", portable}, {"vector_store", portable}, {"contest_ready", false}};
+        QJsonObject report{{"health", health}, {"version", version}, {"capabilities", caps}};
+        emit transport.diagnosticsResult(report);
+        QVERIFY(!page.hasPendingOperation());
+        QVERIFY(refresh->isEnabled());
+        QVERIFY(details->toPlainText().contains(QStringLiteral("配置 auto → 实际 portable")));
+        QVERIFY(details->toPlainText().contains(QStringLiteral("产品版本：不一致")));
+        QVERIFY(details->toPlainText().contains(QStringLiteral("不作为原生验收")));
+        QVERIFY(guard.confirmExit());
+
+        refresh->click();
+        QVERIFY(details->toPlainText().isEmpty());
+        emit transport.errorOccurred("https://private.invalid", "secret credential", "req");
+        QVERIFY(status->text().contains("UNKNOWN_ERROR"));
+        QVERIFY(!status->text().contains("private"));
+        QVERIFY(!status->text().contains("secret"));
+        emit transport.diagnosticsResult(report); // Ignore a late response after failure.
+        QVERIFY(details->toPlainText().isEmpty());
+
+        QList<QJsonObject> invalid;
+        auto wrong = report;
+        wrong.remove("version");
+        invalid << wrong;
+        wrong = report;
+        auto mismatched = health;
+        mismatched.insert("product_version", "different");
+        wrong.insert("health", mismatched);
+        invalid << wrong;
+        wrong = report;
+        auto contradictory = caps;
+        contradictory.insert("contest_ready", true);
+        wrong.insert("capabilities", contradictory);
+        invalid << wrong;
+        for (const auto &value : invalid) {
+            refresh->click();
+            emit transport.diagnosticsResult(value);
+            QVERIFY(details->toPlainText().isEmpty());
+            QVERIFY(status->text().contains(QStringLiteral("不能确认")));
+            QVERIFY(!page.hasPendingOperation());
+        }
+        refresh->click();
+        auto newer = version;
+        newer.insert("api_version", "0.6.0");
+        report.insert("version", newer);
+        emit transport.diagnosticsResult(report);
+        QVERIFY(details->toPlainText().contains(QStringLiteral("不在当前已验证范围")));
+        report.insert("version", version);
+        const QJsonObject sdk{{"configured", "kylin"}, {"runtime", "kylin"}, {"compliant", true}};
+        report.insert("capabilities", QJsonObject{
+            {"platform", QJsonObject{{"family", "kylin"}, {"version_major", "11"}, {"v11", true}}},
+            {"embedding", sdk}, {"vector_store", sdk}, {"contest_ready", true}});
+        refresh->click();
+        emit transport.diagnosticsResult(report);
+        QVERIFY(details->toPlainText().contains(QStringLiteral("双原生 SDK")));
+        QVERIFY(details->toPlainText().contains(QStringLiteral("不代表完整验收通过")));
+    }
     void scopesPreserveLocalDomainsAndExposeAgentWithoutImplicitSharing()
     {
         QComboBox query, write, sharedWrite, existingShared, invalid;
@@ -524,6 +611,7 @@ private slots:
         pixiu::MemoryWorkspace memory(&host);
         QVERIFY(!settings.isWindow());
         QVERIFY(settings.findChild<pixiu::PrivacyPage *>());
+        QVERIFY(settings.findChild<pixiu::ServiceStatusPage *>());
         QVERIFY(settings.findChild<QPushButton *>("productUpdates"));
         QVERIFY(!memory.findChild<pixiu::PrivacyPage *>());
         QVERIFY(!memory.findChild<pixiu::DevicePage *>());

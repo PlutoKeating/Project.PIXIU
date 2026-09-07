@@ -5,6 +5,7 @@
 #include "MemoryAudit.h"
 #include "MemoryWorkspace.h"
 #include "DeliveryPage.h"
+#include "ServiceStatusPage.h"
 #include <QCloseEvent>
 #include <QDialog>
 #include <QMessageBox>
@@ -46,6 +47,8 @@ bool HostCloseGuard::hasPendingOperation() const
     for (auto *page : m_host->findChildren<MemoryWorkspace *>())
         if (page->hasPendingOperation()) return true;
     for (auto *page : m_host->findChildren<DeliveryPage *>())
+        if (page->hasPendingOperation()) return true;
+    for (auto *page : m_host->findChildren<ServiceStatusPage *>())
         if (page->hasPendingOperation()) return true;
     return false;
 }

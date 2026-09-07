@@ -7,6 +7,11 @@ BackendTransport::BackendTransport(QObject *parent)
 
 BackendTransport::~BackendTransport() = default;
 
+void BackendTransport::backendDiagnostics()
+{
+    emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持服务诊断"), QString());
+}
+
 void BackendTransport::memoryItem(const QString &, const QString &)
 {
     emit errorOccurred(QStringLiteral("UNSUPPORTED"), tr("此传输不支持完整记忆读取"), QString());

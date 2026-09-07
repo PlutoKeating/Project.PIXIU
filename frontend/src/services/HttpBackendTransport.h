@@ -60,6 +60,7 @@ public:
     void updateSyncSettings(bool enabled, bool paused) override;
     void deliveryInsights() override;
     void deliveryDigest() override;
+    void backendDiagnostics() override;
 
     ConnectionState connectionState() const override;
 

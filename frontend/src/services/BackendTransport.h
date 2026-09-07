@@ -73,6 +73,8 @@ public:
     // 今日简报（GET /delivery/digest，B4-2）：当日记忆沉淀摘要。默认空实现，
     // 理由同上。
     virtual void deliveryDigest();
+    // Read-only health/version/capability snapshot; use a dedicated transport.
+    virtual void backendDiagnostics();
 
     // 当前连接状态。
     virtual ConnectionState connectionState() const = 0;
@@ -137,6 +139,7 @@ signals:
     void insightsResult(const QJsonArray &insights);
     // 今日简报（GET /delivery/digest → {"date","summary"}）。
     void digestResult(const QJsonObject &response);
+    void diagnosticsResult(const QJsonObject &response);
 
     // 通用错误；code 取 API 错误码或 NETWORK_ERROR / TIMEOUT。
     void errorOccurred(const QString &code, const QString &message, const QString &requestId);

@@ -38,6 +38,8 @@
     "frontend/management/ForgetPage.cpp",
     "frontend/management/SettingsWorkspace.h",
     "frontend/management/SettingsWorkspace.cpp",
+    "frontend/management/ServiceStatusPage.h",
+    "frontend/management/ServiceStatusPage.cpp",
     "build/release/agent-host/patches/0012-unified-workspace-navigation.patch",
     "build/release/agent-host/patches/0013-close-last-window-exits-host.patch",
     "build/release/agent-host/patches/0011-product-application-version.patch",

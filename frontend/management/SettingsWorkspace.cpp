@@ -1,5 +1,6 @@
 #include "SettingsWorkspace.h"
 #include "PrivacyPage.h"
+#include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
 #include "widgets/CheckUpdateDialog.h"
 #include <QCoreApplication>
@@ -42,5 +43,6 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     connect(upgrade, &UpgradeController::restartScheduled, QCoreApplication::instance(), &QCoreApplication::quit);
     tabs->addTab(general, tr("应用与升级"));
     tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
+    tabs->addTab(new ServiceStatusPage(tabs), tr("服务与能力"));
 }
 }
