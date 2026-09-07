@@ -19,7 +19,7 @@ if (PIXIU_VERSION=9.9.9 resolve_version) >/dev/null 2>&1; then
 fi
 
 grep -q 'PIXIU_ROOT}/VERSION' "${ROOT}/build/release/scripts/functions.sh"
-grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${ROOT}/frontend/CMakeLists.txt"
+grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../../VERSION' "${ROOT}/frontend/management/CMakeLists.txt"
 grep -qx 'version: @VERSION@' \
     "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in"
 test ! -e "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml"
@@ -29,7 +29,7 @@ done
 grep -qx 'Package: pixiu' "${ROOT}/build/release/debian/control.in"
 
 if grep -nF "${EXPECTED}" \
-        "${ROOT}/frontend/CMakeLists.txt" \
+        "${ROOT}/frontend/management/CMakeLists.txt" \
         "${ROOT}/build/release/debian/control.in" \
         "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in" \
         "${ROOT}/build/release/scripts/functions.sh" \
@@ -40,4 +40,33 @@ if grep -nF "${EXPECTED}" \
     exit 1
 fi
 
+# Exercise the actual packaging precheck against isolated source fixtures. The
+# legacy frontend CMake/main are deliberately absent: they are not shipped.
+fixture="$(mktemp -d)"
+trap 'rm -rf -- "${fixture}"' EXIT
+(
+    cd "${ROOT}"
+    cp --parents VERSION frontend/management/CMakeLists.txt \
+        frontend/src/services/HttpBackendTransport.cpp \
+        build/release/agent-host/patches/0011-product-application-version.patch \
+        build/release/agent-host/prepare-agent-host.sh \
+        backend/foundation/api/version.py build/release/debian/pixiu-backend.service \
+        integrations/kylin_agent/pixiu/plugin.yaml.in "${fixture}"
+)
+source <(sed -n '/^check_version_consistency() {/,/^}/p' \
+    "${ROOT}/build/release/scripts/build-deb.sh")
+PIXIU_ROOT="${fixture}" check_version_consistency
+sed -i 's/PIXIU_VERSION="${PIXIU_MANAGEMENT_VERSION}"/PIXIU_VERSION="9.9.9"/' \
+    "${fixture}/frontend/management/CMakeLists.txt"
+if (PIXIU_ROOT="${fixture}" check_version_consistency) >/dev/null 2>&1; then
+    echo "management version drift must be rejected" >&2
+    exit 1
+fi
+cp "${ROOT}/frontend/management/CMakeLists.txt" "${fixture}/frontend/management/CMakeLists.txt"
+sed -i 's/QStringLiteral(PIXIU_PRODUCT_VERSION)/QStringLiteral("9.9.9")/' \
+    "${fixture}/build/release/agent-host/patches/0011-product-application-version.patch"
+if (PIXIU_ROOT="${fixture}" check_version_consistency) >/dev/null 2>&1; then
+    echo "host version drift must be rejected" >&2
+    exit 1
+fi
 printf 'single version source tests: OK\n'

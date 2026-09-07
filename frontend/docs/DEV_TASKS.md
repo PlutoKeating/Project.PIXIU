@@ -527,6 +527,8 @@ QMP 点击/普通键盘切页仍出现失败，X11 与截图指针坐标不一�
 升级辅助脚本已迁入 `build/release/debian/usr/lib/pixiu/`，旧源码位置移除。
 整包引用该唯一来源，安装后的路径及协议不变；独立前端包脚本及 Debian 元数据已删除。
 `scripts/regression.sh` 的打包步骤委托根 `build/release`，版本测试检查旧包目标不可重现。
+发布版本检查已改为实际管理库和统一宿主的派生链，隔离回归不包含旧应用入口，
+并验证管理库宏和宿主 applicationVersion 漂移会被拒绝；旧应用源码退役仍未完成。
 升级辅助与 Agent 安装集成测试验证新路径；此迁移不是新版 GUI 升级矩阵验收。
 
 `memory_update_transport` 使用本地 TCP HTTP 服务验证版本召回与更新端点、完整载荷、

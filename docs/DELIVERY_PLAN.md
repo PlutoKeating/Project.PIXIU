@@ -175,7 +175,9 @@ PR 不进入自托管 runner。后续发布必须由同一候选提交自动重�
 
 图形“关于/更新”页必须展示当前版本、可用版本、通道、组件兼容状态和发行说明。
 不得只在多个源码文件手工重复版本号。当前 `0.1.8` 发布预检已同步校验根
-`VERSION`、CMake/前端宏及 Module E manifest。构建现生成包内只读
+`VERSION`、管理库宏、统一宿主的版本注入补丁及 Module E manifest；不再以旧小窗口
+的 CMake/main.cpp 作为发布版本证据。预检回归在不包含旧入口的隔离源码中通过，
+管理库宏或宿主应用版本被改成硬编码时必须失败。构建现生成包内只读
 `/usr/share/pixiu/release-manifest.json`，从源码和构建输入记录产品/Debian、Git、
 构建时间、架构/profile/KYSDK/Python ABI、API/schema/provider、Agent 上游及双 SDK
 源码钉住版本与许可证；CI 会从成包反向提取并核对。上游 runtime 的 `version` 文件

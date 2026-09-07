@@ -64,14 +64,13 @@ resolve_version
 log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSDK} wheels=${PIXIU_BUNDLE_WHEELS} py=${PIXIU_PYTHON_VERSION}"
 
 # ── 0/5 版本一致性预检（含 Module E manifest，不一致即中止发布）────────
-# 用户宗旨①的可执行化：frontend/CMakeLists.txt（project VERSION 及其派生的
-# PIXIU_VERSION 宏）、frontend/src/main.cpp（消费宏、不得硬编码）、
+# 实际交付链：management CMake 的版本宏、统一宿主版本补丁、
 # frontend/src/services/HttpBackendTransport.cpp（User-Agent 消费宏、不得
 # 硬编码，S4 曾因硬编码 0.1.0 漏检）及 Module E plugin.yaml 必须与根
 # VERSION 单一事实源一致。
 check_version_consistency() {
-    local frontend_cmake="${PIXIU_ROOT}/frontend/CMakeLists.txt"
-    local frontend_main="${PIXIU_ROOT}/frontend/src/main.cpp"
+    local frontend_cmake="${PIXIU_ROOT}/frontend/management/CMakeLists.txt"
+    local frontend_main="${PIXIU_ROOT}/build/release/agent-host/patches/0011-product-application-version.patch"
     local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
     local version_file="${PIXIU_ROOT}/VERSION"
     local backend_version="${PIXIU_ROOT}/backend/foundation/api/version.py"
@@ -80,23 +79,19 @@ check_version_consistency() {
 
     source_ver="$(tr -d '\r\n' < "${version_file}")"
 
-    # 1) CMake project VERSION 必须直接从根 VERSION 派生。
-    if grep -qF 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${frontend_cmake}" \
-       && grep -qF 'project(pixiu-frontend VERSION "${PIXIU_PRODUCT_VERSION}"' \
+    # 1) 管理库必须直接读取根 VERSION。
+    if grep -qF 'CMAKE_CURRENT_SOURCE_DIR}/../../VERSION' "${frontend_cmake}" \
+       && grep -qF 'PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1' \
             "${frontend_cmake}"; then
         cmake_ver="${source_ver}"
     else
         cmake_ver=""
     fi
-    # 2) PIXIU_VERSION 宏定义：由 ${PROJECT_VERSION} 派生视为与 project VERSION
-    #    构造一致；若退化为字面量（回归防线），必须等于 project VERSION。
-    if grep -qF 'PIXIU_VERSION_STR' "${frontend_cmake}" \
-       && grep -qF 'PROJECT_VERSION' "${frontend_cmake}"; then
+    # 2) HTTP/升级组件消费的宏必须来自该读取值。
+    if grep -qF 'target_compile_definitions(pixiu-management PRIVATE PIXIU_VERSION="${PIXIU_MANAGEMENT_VERSION}")' "${frontend_cmake}"; then
         pixiu_ver="${cmake_ver}"
     else
-        pixiu_ver="$(grep -F 'PIXIU_VERSION=' "${frontend_cmake}" \
-            | sed -nE 's/.*PIXIU_VERSION=[^0-9]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' \
-            | head -n1 || true)"
+        pixiu_ver=""
     fi
     # 3) Module E manifest 必须是由根 VERSION 渲染的模板。
     if grep -qx 'version: @VERSION@' \
@@ -105,12 +100,15 @@ check_version_consistency() {
     else
         provider_ver=""
     fi
-    # 4) main.cpp 必须消费宏、不得残留硬编码版本
-    if ! grep -qF 'QStringLiteral(PIXIU_VERSION)' "${frontend_main}"; then
-        die "frontend/src/main.cpp 未使用 PIXIU_VERSION 宏（setApplicationVersion 应改为 QStringLiteral(PIXIU_VERSION)）"
+    # 4) 唯一宿主读取导出的根 VERSION 并注入应用版本，旧 main 不参与发布判定。
+    if ! grep -qF '+    app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION));' "${frontend_main}" \
+       || ! grep -qF 'CMAKE_CURRENT_SOURCE_DIR}/pixiu/VERSION' "${frontend_main}" \
+       || ! grep -qF 'PRIVATE PIXIU_PRODUCT_VERSION="${PIXIU_PRODUCT_VERSION}"' "${frontend_main}" \
+       || ! grep -qF '"${repo_root}/VERSION" "${target_source}/pixiu/VERSION"' "${PIXIU_ROOT}/build/release/agent-host/prepare-agent-host.sh"; then
+        die "统一宿主产品版本未从根 VERSION 导出并注入"
     fi
     if grep -qE 'setApplicationVersion\(QStringLiteral\("[0-9]+\.[0-9]+\.[0-9]+"\)\)' "${frontend_main}"; then
-        die "frontend/src/main.cpp 的 setApplicationVersion 存在硬编码版本（应改用 PIXIU_VERSION 宏）"
+        die "统一宿主 setApplicationVersion 存在硬编码版本"
     fi
     # 5) HttpBackendTransport.cpp：User-Agent 必须
     #    消费 PIXIU_VERSION 宏、不得残留 "PIXIU-Frontend/<版本>" 硬编码字面量。
@@ -134,7 +132,7 @@ check_version_consistency() {
        || [ "${source_ver}" != "${provider_ver}" ]; then
         die "版本不一致（发布版本与 Module E 均不得遗漏）：" \
             "VERSION=${source_ver:-<未提取>}，" \
-            "frontend/CMakeLists.txt=${cmake_ver:-<未提取>}，" \
+            "frontend/management/CMakeLists.txt=${cmake_ver:-<未提取>}，" \
             "PIXIU_VERSION 宏=${pixiu_ver:-<未提取>}，" \
             "provider=${provider_ver:-<未提取>}"
     fi

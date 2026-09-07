@@ -517,6 +517,9 @@ Agent 的只读回调检查实际在途请求表（所有会话）与当前输�
 `restartScheduled` 退出当前 Agent QApplication，原有无特权 helper 等待该进程退出
 后执行 `/usr/bin/pixiu`。宿主 applicationVersion 改从根 VERSION 派生，避免将上游
 Agent 版本误用于 PIXIU Release 比较；上游组件版本仍由供应链独立记录。
+发布预检校验管理库读取根 VERSION 并注入 HTTP/升级宏，以及宿主导出的 VERSION
+和 applicationVersion 补丁，不再依赖旧小窗口的 CMake/main.cpp；清单生成器同样
+读取管理库版本派生关系。隔离测试覆盖旧入口缺失及管理库/宿主版本漂移拒绝。
 
 `PrivacyPage` 嵌入同一工作区，提供采集总开关、目录与行为来源、绝对目录列表和分页
 采集日志。先读取有效配置才允许保存，全量提交时保留剪贴板/截图字段原值；这两种
