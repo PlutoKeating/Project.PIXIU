@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     auto *raw = new QCheckBox(QStringLiteral("Show original data"), page);
     content->addWidget(raw);
     auto *sources = new QListWidget(page);
-    sources->setObjectName(QStringLiteral("memorySources"));
+    sources->setObjectName(argc > 1 ? QString::fromLocal8Bit(argv[1]) : QStringLiteral("memorySources"));
     sources->setFixedHeight(64);
     sources->addItem(QStringLiteral("Memory source"));
     sources->setCurrentRow(0);
