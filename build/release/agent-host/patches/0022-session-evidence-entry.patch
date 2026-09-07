@@ -68,3 +68,10 @@
 +    connect(workspaces, &QTabWidget::currentChanged, this, [resetSources](int index) {
 +        if (index != 0) resetSources();
 +    });
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -153,1 +153,3 @@
+-    m_currentSessionId = sessionId;
++    const bool changed = m_currentSessionId != sessionId;
++    m_currentSessionId = sessionId;
++    if (changed) emit sessionChanged(sessionId);

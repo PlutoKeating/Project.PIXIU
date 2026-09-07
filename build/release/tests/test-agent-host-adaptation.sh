@@ -40,6 +40,15 @@ grep -q 'new pixiu::MemoryWorkspace(workspaces)' "${fixture}/source/src/ui/mainw
 grep -q 'sessionMemorySources' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'titleLayout->insertWidget(titleLayout->count() - 1, sources)' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'memory->showAgentSources(result' "${fixture}/source/src/ui/mainwindow.cpp"
+python3 - "${fixture}/source/src/ui/chatwidget.cpp" <<'PY'
+from pathlib import Path
+import sys
+source = Path(sys.argv[1]).read_text()
+load = source.split('void ChatWidget::loadSession(const QString &sessionId)', 1)[1].split('\n}', 1)[0]
+assert 'const bool changed = m_currentSessionId != sessionId;' in load
+assert 'if (changed) emit sessionChanged(sessionId);' in load, 'actual session load does not notify source invalidation'
+assert load.index('m_currentSessionId = sessionId;') < load.index('emit sessionChanged(sessionId);') < load.index('refreshMessages();')
+PY
 grep -q 'ApiService::sessionEvidenceRequest() const' "${fixture}/source/src/services/pixiu_host_compat.cpp"
 test -f "${fixture}/source/pixiu/frontend/management/MemoryWorkspace.cpp"
 test ! -e "${fixture}/source/pixiu/frontend/src/main.cpp"
