@@ -147,6 +147,15 @@ check_version_consistency() {
 
 check_version_consistency
 
+AGENT_TARGET_OS=generic-debian
+[ "${PIXIU_KYSDK}" != ON ] || AGENT_TARGET_OS=kylin-v11
+AGENT_EVIDENCE="${PIXIU_RELEASE_DIR}/evidence/agent-supply-chain"
+[ "${PIXIU_ARCH}" = amd64 ] && [ "${PIXIU_PYTHON_VERSION}" = 312 ] \
+    || die "The complete Agent package requires the reviewed amd64/cp312 distribution"
+"${PIXIU_PYTHON}" "${PIXIU_RELEASE_DIR}/scripts/audit-agent-supply-chain.py" \
+    --root "${PIXIU_ROOT}" --evidence-dir "${AGENT_EVIDENCE}" \
+    --expected-arch "${PIXIU_ARCH}" --expected-os "${AGENT_TARGET_OS}" --require-ready
+
 rm -rf "${STAGE}" "${OUT}"
 mkdir -p "${STAGE}" "${OUT}"
 
@@ -164,7 +173,13 @@ if [ "${PIXIU_SKIP_TESTS}" != "1" ]; then
     (cd "${PIXIU_FRONTEND_BUILD_DIR}" && QT_QPA_PLATFORM=offscreen ctest --output-on-failure)
 fi
 
-cmake --install "${PIXIU_FRONTEND_BUILD_DIR}" --prefix "${STAGE}/usr"
+# Keep legacy behavior tests during migration, but never ship its executable.
+install -D -m 0644 "${PIXIU_ROOT}/frontend/resources/com.kylin.pixiu.desktop" \
+    "${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"
+sed -i 's/^Exec=.*/Exec=pixiu/' "${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"
+install -D -m 0644 "${PIXIU_ROOT}/frontend/resources/icons/pixiu.svg" \
+    "${STAGE}/usr/share/icons/hicolor/scalable/apps/pixiu.svg"
+install -d "${STAGE}/usr/bin"
 
 # ── 2/5 后端：源码随包安装 ──────────────────────────────────────
 log "[2/5] backend source staging"
@@ -203,18 +218,20 @@ find "${INTEGRATION_ROOT}" -name '*.pyc' -delete
 find "${INTEGRATION_ROOT}" -type d -exec chmod 0755 {} +
 find "${INTEGRATION_ROOT}" -type f -exec chmod 0644 {} +
 
-# A strict release is a single complete OS Agent package. Its host/runtime
+# Every release is a single complete OS Agent package. Its host/runtime
 # inputs must already have passed the artifact-backed supply-chain audit.
 if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     install -m 0755 "${PIXIU_ROOT}/integrations/kylin_agent/kylin_genai_bridge.py" \
         "${INTEGRATION_ROOT}/kylin_genai_bridge.py"
+fi
+{
     AGENT_EVIDENCE="${PIXIU_RELEASE_DIR}/evidence/agent-supply-chain"
     AGENT_DOC="${STAGE}/usr/share/doc/pixiu/agent"
     AGENT_RUNTIME="${STAGE}/usr/lib/pixiu/agent-runtime"
     "${PIXIU_PYTHON}" "${PIXIU_RELEASE_DIR}/scripts/audit-agent-supply-chain.py" \
         --root "${PIXIU_ROOT}" --evidence-dir "${AGENT_EVIDENCE}" \
         --output "${STAGE}/usr/share/pixiu/agent-supply-chain-audit.json" \
-        --expected-arch "${PIXIU_ARCH}" \
+        --expected-arch "${PIXIU_ARCH}" --expected-os "${AGENT_TARGET_OS}" \
         --require-ready
     install -m 0755 "${AGENT_EVIDENCE}/host/kylin-agent" \
         "${STAGE}/usr/bin/kylin-agent"
@@ -234,7 +251,7 @@ if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     install -d -m 0755 "${AGENT_DOC}/message-renderer"
     install -m 0644 "${PIXIU_ROOT}/integrations/kylin_agent/message_renderer/licenses/"* \
         "${AGENT_DOC}/message-renderer/"
-fi
+}
 
 if [ "${PIXIU_KYSDK}" = "ON" ]; then
     log "[2.5/5] backend Kylin SDK native bindings"
@@ -340,17 +357,18 @@ chmod 0644 "${STAGE}/usr/lib/systemd/user/pixiu-backend.service"
 printf '%s\n' "${PIXIU_VERSION}" > "${STAGE}/usr/share/pixiu/VERSION"
 printf '%s\n' "${PIXIU_INSTALL_STRICT}" \
     > "${STAGE}/usr/share/pixiu/install-strict"
+printf '1\n' > "${STAGE}/usr/share/pixiu/agent-bundled"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-user-setup" "${STAGE}/usr/bin/pixiu-user-setup"
 install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
     "${STAGE}/usr/bin/pixiu-agent-integrate"
-if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     install -m 0755 "${DEB_SRC}/usr/bin/kylin-agent-runtime" \
         "${STAGE}/usr/bin/kylin-agent-runtime"
     install -D -m 0644 \
         "${DEB_SRC}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service" \
         "${STAGE}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service"
+if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     install -D -m 0644 \
         "${DEB_SRC}/usr/lib/systemd/user/pixiu-kylin-genai-bridge.service" \
         "${STAGE}/usr/lib/systemd/user/pixiu-kylin-genai-bridge.service"

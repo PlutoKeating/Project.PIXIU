@@ -169,6 +169,17 @@ jobs:
           dpkg-deb --fsys-tarfile "${deb}" \
             | tar -xOf - ./usr/share/pixiu/release-manifest.json \
             > "${manifest}"
+          package_root="$(mktemp -d)"
+          trap 'rm -f "${manifest}"; rm -rf "${package_root}"' EXIT
+          dpkg-deb --extract "${deb}" "${package_root}"
+          test ! -e "${package_root}/usr/bin/pixiu-frontend"
+          test -x "${package_root}/usr/bin/kylin-agent"
+          test -x "${package_root}/usr/bin/kylin-agent-runtime"
+          test -s "${package_root}/usr/lib/pixiu/agent-runtime/runtime-cp312.lock"
+          test -s "${package_root}/usr/lib/systemd/user/kylin-agent-runtime-gateway.service"
+          grep -qx 1 "${package_root}/usr/share/pixiu/agent-bundled"
+          grep -qx 'Exec=pixiu' "${package_root}/usr/share/applications/com.kylin.pixiu.desktop"
+          ! grep -q pixiu-frontend "${package_root}/usr/bin/pixiu"
           python3 - "${manifest}" "${GITHUB_SHA}" \
             "$(dpkg-deb --field "${deb}" Version)" <<'PY'
           import json

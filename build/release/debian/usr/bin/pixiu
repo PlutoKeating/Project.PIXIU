@@ -4,25 +4,11 @@ set -eu
 
 /usr/bin/pixiu-user-setup --start
 
-# This runs as the desktop user, so user-local Agent runtimes are discoverable.
-# A strict native build must not open while its complete Agent integration is
-# unavailable; generic builds retain the standalone memory-console fallback.
-STRICT_FILE=/usr/share/pixiu/install-strict
-STRICT=0
-if [ -f "${STRICT_FILE}" ]; then
-    STRICT="$(tr -d '\r\n' < "${STRICT_FILE}")"
-fi
-if [ "${STRICT}" = "1" ]; then
-    # Keep the complete Agent on the Runtime installed from this same package,
-    # even when an older per-user command appears earlier in the desktop PATH.
-    PATH=/usr/bin:/bin:/usr/sbin:/sbin
-    export PATH
-    KYLIN_AGENT_FORCE_RUNTIME_RESTART=1
-    export KYLIN_AGENT_FORCE_RUNTIME_RESTART
-    /usr/bin/pixiu-agent-integrate --quiet
-    exec /usr/bin/kylin-agent "$@"
-else
-    /usr/bin/pixiu-agent-integrate --quiet || true
-fi
-
-exec /usr/bin/pixiu-frontend "$@"
+# Both platform profiles use the same package-owned host and Runtime.
+# Missing integration is an error, never a reason to open a second frontend.
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+KYLIN_AGENT_FORCE_RUNTIME_RESTART=1
+export KYLIN_AGENT_FORCE_RUNTIME_RESTART
+/usr/bin/pixiu-agent-integrate --quiet
+exec /usr/bin/kylin-agent "$@"

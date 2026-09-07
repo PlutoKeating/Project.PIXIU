@@ -86,13 +86,13 @@ if [ -d "${VENV}" ]; then
     chown -Rh root:root "${VENV}"
 fi
 
-# 3) A strict candidate contains the complete Agent Runtime wheelhouse and a
+# 3) A complete candidate contains the Agent Runtime wheelhouse and a
 # hash lock. It must install without an index into the same root-owned venv;
 # falling back to network or a mutable per-user runtime is forbidden.
 AGENT_ROOT="${PIXIU_LIB}/agent-runtime"
 if [ -d "${AGENT_ROOT}/wheelhouse" ]; then
     [ "${VPY}" != "${PY}" ] || {
-        echo "pixiu: strict Agent Runtime requires python3-venv" >&2
+        echo "pixiu: packaged Agent Runtime requires python3-venv" >&2
         exit 1
     }
     echo "pixiu: installing hash-locked Agent Runtime from bundled wheels (offline)"
