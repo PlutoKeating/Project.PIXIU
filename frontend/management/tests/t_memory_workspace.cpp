@@ -18,6 +18,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPlainTextEdit>
+#include <QPixmap>
 #include <QPushButton>
 #include <QTest>
 #include <QSignalSpy>
@@ -322,6 +323,40 @@ private slots:
         emit transport.peersResult({{"peers", QJsonArray{peers.at(0)}}});
         QVERIFY(status->text().contains("无剩余信任节点"));
         QVERIFY(leave->isEnabled());
+    }
+    void pairingQrIsClearedAndOversizeFallsBackToText()
+    {
+        Transport transport;
+        pixiu::PairingDialog dialog(nullptr, &transport);
+        auto *method = dialog.findChild<QComboBox *>("pairingMethod");
+        auto *generate = dialog.findChild<QPushButton *>("pairingGenerate");
+        auto *qr = dialog.findChild<QLabel *>("pairingQrImage");
+        auto *token = dialog.findChild<QPlainTextEdit *>("pairingLocalToken");
+        auto issue = [&](const QString &value) {
+            generate->click();
+            QVERIFY(qr->pixmap(Qt::ReturnByValue).isNull());
+            emit transport.pairingTokenResult({{"token", value}, {"method", "QR"}, {"ttl_seconds", 300}});
+        };
+        method->setCurrentIndex(1);
+        issue("synthetic-qr-test-token");
+        QVERIFY(!qr->pixmap(Qt::ReturnByValue).isNull());
+        const auto bitmap = qr->pixmap(Qt::ReturnByValue).toImage();
+        QVERIFY(bitmap.width() <= 240);
+        QCOMPARE(bitmap.pixelColor(0, 0), QColor(Qt::white));
+        QMetaObject::invokeMethod(dialog.findChild<QTimer *>("pairingExpiry"), "timeout");
+        QVERIFY(qr->pixmap(Qt::ReturnByValue).isNull());
+        QVERIFY(token->toPlainText().isEmpty());
+        issue(QString(5000, QLatin1Char('x')));
+        QVERIFY(qr->pixmap(Qt::ReturnByValue).isNull());
+        QCOMPARE(token->toPlainText().size(), 5000);
+        issue("another-synthetic-token");
+        method->setCurrentIndex(0);
+        QVERIFY(qr->pixmap(Qt::ReturnByValue).isNull());
+        method->setCurrentIndex(1);
+        issue("closing-synthetic-token");
+        dialog.reject();
+        QVERIFY(qr->pixmap(Qt::ReturnByValue).isNull());
+        QVERIFY(token->toPlainText().isEmpty());
     }
     void pairingMatchesMethodsAndPreservesFailedInput()
     {

@@ -1,6 +1,10 @@
 #include "PairingDialog.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
+#include <QHBoxLayout>
+#include <QImage>
+#include <QPixmap>
+#include <qrencode.h>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -29,7 +33,7 @@ PairingDialog::PairingDialog(QWidget *parent, BackendTransport *transport)
     m_method = new QComboBox(this);
     m_method->setObjectName(QStringLiteral("pairingMethod"));
     m_method->addItem(tr("PIN 保护令牌"), QStringLiteral("PIN"));
-    m_method->addItem(tr("QR 格式令牌（文本交换）"), QStringLiteral("QR"));
+    m_method->addItem(tr("二维码令牌（也可复制文本）"), QStringLiteral("QR"));
     layout->addWidget(m_method);
     m_localPin = new QLineEdit(this);
     m_localPin->setObjectName(QStringLiteral("pairingLocalPin"));
@@ -53,7 +57,16 @@ PairingDialog::PairingDialog(QWidget *parent, BackendTransport *transport)
     m_localToken->setObjectName(QStringLiteral("pairingLocalToken"));
     m_localToken->setAccessibleName(tr("本机配对令牌，仅交给可信设备"));
     m_localToken->setReadOnly(true);
-    layout->addWidget(m_localToken, 1);
+    auto *tokenRow = new QHBoxLayout;
+    tokenRow->addWidget(m_localToken, 1);
+    m_qr = new QLabel(this);
+    m_qr->setObjectName("pairingQrImage");
+    m_qr->setAccessibleName(tr("本机配对二维码，仅交给可信设备；本页不提供摄像头扫描"));
+    m_qr->setFixedSize(240, 240);
+    m_qr->setAlignment(Qt::AlignCenter);
+    m_qr->hide();
+    tokenRow->addWidget(m_qr);
+    layout->addLayout(tokenRow, 1);
     m_tokenStatus = new QLabel(tr("尚未生成令牌。"), this);
     m_tokenStatus->setWordWrap(true);
     layout->addWidget(m_tokenStatus);
@@ -77,13 +90,13 @@ PairingDialog::PairingDialog(QWidget *parent, BackendTransport *transport)
     m_expiry->setObjectName(QStringLiteral("pairingExpiry"));
     m_expiry->setSingleShot(true);
     connect(m_expiry, &QTimer::timeout, this, [this]() {
-        m_localToken->clear();
+        clearLocalToken();
         m_tokenStatus->setText(tr("本机令牌已到期并从界面清除，请重新生成。"));
     });
     connect(m_remoteToken, &QPlainTextEdit::textChanged, this, [this]() { controls(); });
     connect(m_method, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {
         m_expiry->stop();
-        m_localToken->clear();
+        clearLocalToken();
         m_tokenStatus->setText(tr("方式已切换，请按当前方式重新生成令牌。旧令牌在后端到期前仍可能有效。"));
         controls();
     });
@@ -94,7 +107,7 @@ PairingDialog::PairingDialog(QWidget *parent, BackendTransport *transport)
         QJsonObject payload{{"method", m_requestedMethod}, {"ttl_seconds", 300}};
         if (m_requestedMethod == "PIN") payload.insert("pin", m_localPin->text());
         m_expiry->stop();
-        m_localToken->clear();
+        clearLocalToken();
         m_pending = Pending::Token;
         controls();
         m_tokenStatus->setText(tr("正在生成令牌…"));
@@ -123,6 +136,8 @@ PairingDialog::PairingDialog(QWidget *parent, BackendTransport *transport)
             m_localToken->setPlainText(token);
             m_expiry->start(int(remaining));
             m_tokenStatus->setText(tr("令牌已生成；到期自动清除。生成令牌不会自动建立任何设备信任。"));
+            if (m_requestedMethod == "QR" && !showQrToken(token))
+                m_tokenStatus->setText(tr("令牌已生成，但无法编码为二维码；请复制文本交换，到期自动清除。"));
         }
         controls();
     });
@@ -150,6 +165,37 @@ PairingDialog::PairingDialog(QWidget *parent, BackendTransport *transport)
     });
     controls();
 }
+void PairingDialog::clearLocalToken()
+{
+    m_localToken->clear();
+    m_qr->clear();
+    m_qr->hide();
+}
+bool PairingDialog::showQrToken(const QString &token)
+{
+    const QByteArray bytes = token.toUtf8();
+    QRcode *code = QRcode_encodeData(bytes.size(),
+        reinterpret_cast<const unsigned char *>(bytes.constData()), 0, QR_ECLEVEL_M);
+    if (!code) return false;
+    // Preserve four quiet modules and integer pixels per module; do not blur
+    // or stretch the code to fill the label. Text exchange remains available.
+    const int quiet = 4;
+    const int scale = qMax(1, 240 / (code->width + 2 * quiet));
+    const int size = (code->width + 2 * quiet) * scale;
+    QImage image(size, size, QImage::Format_RGB32);
+    image.fill(Qt::white);
+    for (int y = 0; y < code->width; ++y)
+        for (int x = 0; x < code->width; ++x)
+            if (code->data[y * code->width + x] & 1)
+                for (int dy = 0; dy < scale; ++dy)
+                    for (int dx = 0; dx < scale; ++dx)
+                        image.setPixel((x + quiet) * scale + dx,
+                                       (y + quiet) * scale + dy, qRgb(0, 0, 0));
+    QRcode_free(code);
+    m_qr->setPixmap(QPixmap::fromImage(image));
+    m_qr->show();
+    return true;
+}
 void PairingDialog::controls()
 {
     const bool idle = m_pending == Pending::None;
@@ -167,7 +213,7 @@ void PairingDialog::reject()
 {
     if (m_pending != Pending::None) return;
     m_expiry->stop();
-    m_localToken->clear();
+    clearLocalToken();
     m_remoteToken->clear();
     m_localPin->clear();
     m_remotePin->clear();

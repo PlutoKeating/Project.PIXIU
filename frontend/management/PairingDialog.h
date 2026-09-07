@@ -20,12 +20,14 @@ signals:
 private:
     enum class Pending { None, Token, Pair };
     void controls();
+    void clearLocalToken();
+    bool showQrToken(const QString &token);
     BackendTransport *m_transport;
     QComboBox *m_method;
     QLineEdit *m_localPin, *m_remotePin;
     QPlainTextEdit *m_localToken, *m_remoteToken;
     QPushButton *m_generate, *m_pair, *m_close;
-    QLabel *m_status, *m_tokenStatus;
+    QLabel *m_status, *m_tokenStatus, *m_qr;
     QTimer *m_expiry;
     QElapsedTimer m_generationClock;
     Pending m_pending = Pending::None;
