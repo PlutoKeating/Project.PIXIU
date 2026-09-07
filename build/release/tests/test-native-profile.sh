@@ -5,6 +5,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 
 # Every complete distribution uses the committed cp312 Runtime closure, not
 # only the generic CI profile. Apt must reject incompatible system interpreters.
+if PIXIU_PROFILE=generic-ubuntu PIXIU_BUNDLE_WHEELS=0 \
+        "${ROOT}/build/release/scripts/build-deb.sh" >/dev/null 2>&1; then
+    echo "complete packages must not omit backend dependencies" >&2
+    exit 1
+fi
 for PROFILE in generic-ubuntu kylin-v11-x86_64 kylin-v11-native-x86_64; do
     (
         . "${ROOT}/build/release/profiles/${PROFILE}.env"

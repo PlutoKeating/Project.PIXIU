@@ -11,6 +11,16 @@ POSTINST = ROOT / "build/release/debian/postinst"
 
 
 class BootstrapTests(unittest.TestCase):
+    def test_dependency_installations_have_no_online_fallback(self):
+        source = POSTINST.read_text(encoding="utf-8")
+        calls = [line.strip() for line in source.splitlines()
+                 if line.strip().startswith("install_reqs ")]
+        self.assertEqual(len(calls), 3)
+        self.assertTrue(all("--no-index" in call for call in calls))
+        self.assertNotIn("get-pip.py", source)
+        self.assertNotIn("--break-system-packages", source)
+        self.assertIn('"${VPY}" -m pip check', source)
+
     def run_bootstrap(self, *, existing=False, system_abi=True, venv_abi=True,
                       pip=True, create=True):
         with tempfile.TemporaryDirectory() as temporary:

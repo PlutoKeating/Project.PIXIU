@@ -156,7 +156,7 @@ jobs:
       - name: Compile, test, and package
         env:
           PIXIU_PROFILE: generic-ubuntu
-          PIXIU_BUNDLE_WHEELS: "0"
+          PIXIU_BUNDLE_WHEELS: "1"
           PIXIU_SKIP_TESTS: "0"
         run: make -C build/release build-deb
 
@@ -180,6 +180,15 @@ jobs:
           grep -qx 1 "${package_root}/usr/share/pixiu/agent-bundled"
           grep -qx 'Exec=pixiu' "${package_root}/usr/share/applications/com.kylin.pixiu.desktop"
           ! grep -q pixiu-frontend "${package_root}/usr/bin/pixiu"
+          python3 -m venv "${package_root}/verify-venv"
+          "${package_root}/verify-venv/bin/pip" install --no-index \
+            --find-links="${package_root}/usr/lib/pixiu/wheels" \
+            -r "${package_root}/usr/lib/pixiu/backend/requirements.txt" \
+            -r "${package_root}/usr/lib/pixiu/backend/foundation/requirements-sync.txt"
+          "${package_root}/verify-venv/bin/pip" install --no-index \
+            --find-links="${package_root}/usr/lib/pixiu/agent-runtime/wheelhouse" \
+            --require-hashes -r "${package_root}/usr/lib/pixiu/agent-runtime/runtime-cp312.lock"
+          "${package_root}/verify-venv/bin/pip" check
           python3 - "${manifest}" "${GITHUB_SHA}" \
             "$(dpkg-deb --field "${deb}" Version)" <<'PY'
           import json

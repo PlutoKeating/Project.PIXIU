@@ -3,7 +3,7 @@
 # 用户配置、数据和服务只能由桌面用户首次启动时创建。
 #
 # Python/venv 由包依赖提供；不下载引导脚本或向系统 Python 安装依赖。
-# 后端依赖安装方式由包内 wheels 决定，Runtime 始终使用随包哈希锁。
+# 后端与 Runtime 均只使用包内 wheels，Runtime 另有随包哈希锁。
 set -e
 
 PIXIU_LIB=/usr/lib/pixiu
@@ -48,21 +48,13 @@ install_reqs() {
 
 if [ -d "${PIXIU_LIB}/wheels" ] && [ -n "$(ls -A "${PIXIU_LIB}/wheels" 2>/dev/null)" ]; then
     echo "pixiu: installing backend dependencies from bundled wheels (offline)"
-    if ! install_reqs --no-index --find-links="${PIXIU_LIB}/wheels" -r "${REQ}"; then
-        echo "pixiu: offline wheels 不完整（目标 Python 版本不匹配等），回退在线安装"
-        install_reqs -r "${REQ}"
-    fi
+    install_reqs --no-index --find-links="${PIXIU_LIB}/wheels" -r "${REQ}"
     if [ -f "${SYNC_REQ}" ] && [ -s "${SYNC_REQ}" ]; then
-        if ! install_reqs --no-index --find-links="${PIXIU_LIB}/wheels" -r "${SYNC_REQ}"; then
-            install_reqs -r "${SYNC_REQ}"
-        fi
+        install_reqs --no-index --find-links="${PIXIU_LIB}/wheels" -r "${SYNC_REQ}"
     fi
 else
-    echo "pixiu: installing backend dependencies from PyPI (online)"
-    install_reqs -r "${REQ}"
-    if [ -f "${SYNC_REQ}" ] && [ -s "${SYNC_REQ}" ]; then
-        install_reqs -r "${SYNC_REQ}"
-    fi
+    echo "pixiu: required backend wheelhouse is missing or empty" >&2
+    exit 1
 fi
 if [ -d "${VENV}" ]; then
     # 运行服务只需读取 venv；保持 root 所有，避免低权限后端进程改写下一次
@@ -91,7 +83,12 @@ if [ -d "${AGENT_ROOT}/wheelhouse" ]; then
         echo "pixiu: packaged Agent Runtime entry point is missing" >&2
         exit 1
     }
+else
+    echo "pixiu: required Agent Runtime wheelhouse is missing" >&2
+    exit 1
 fi
+
+"${VPY}" -m pip check
 
 # 4) 停用旧版系统服务，但保留 /var/lib/pixiu 与 /etc/pixiu 供显式迁移。
 if command -v systemctl >/dev/null 2>&1; then

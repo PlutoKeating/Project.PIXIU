@@ -42,6 +42,8 @@ PIXIU_DEBIAN_DEPENDS="${PIXIU_DEBIAN_DEPENDS:-}"
 PIXIU_INCLUDE_TESTS="${PIXIU_INCLUDE_TESTS:-0}"
 PIXIU_INSTALL_STRICT="${PIXIU_INSTALL_STRICT:-0}"
 PIXIU_FRONTEND_BUILD_DIR="${PIXIU_FRONTEND_BUILD_DIR:-$(frontend_build_dir)}"
+[ "${PIXIU_BUNDLE_WHEELS}" = 1 ] \
+    || die "Complete packages require PIXIU_BUNDLE_WHEELS=1"
 
 case "${PIXIU_INSTALL_STRICT}" in
     0|1) ;;
@@ -274,37 +276,21 @@ if [ "${PIXIU_KYSDK}" = "ON" ]; then
     install -m 0755 "${VECTOR_MODULE}" "${BK}/engine/kylin/"
 fi
 
-# ── 3/5 可选离线 wheels（目标 Python 版本；含 sync 额外依赖）─────
+# ── 3/5 必需离线 wheels（目标 Python 版本；含 sync 额外依赖）─────
 log "[3/5] python wheels (target py${PIXIU_PYTHON_VERSION})"
 WHEELS="${STAGE}/usr/lib/pixiu/wheels"
-if [ "${PIXIU_BUNDLE_WHEELS}" = "1" ]; then
-    if ! "${PIXIU_PYTHON}" -m pip --version >/dev/null 2>&1; then
-        warn "pip unavailable; wheels skipped (postinst 将在线安装)"
-    else
-        mkdir -p "${WHEELS}"
-        WHEELS_OK=1
-        for REQ in \
-                "${PIXIU_ROOT}/backend/requirements.txt" \
-                "${PIXIU_ROOT}/backend/foundation/requirements-sync.txt"; do
-            [ -f "${REQ}" ] || continue
-            if ! "${PIXIU_PYTHON}" -m pip download \
-                    --only-binary=:all: \
-                    --python-version "${PIXIU_PYTHON_VERSION}" \
-                    -d "${WHEELS}" \
-                    -r "${REQ}"; then
-                WHEELS_OK=0
-                break
-            fi
-        done
-        if [ "${WHEELS_OK}" != "1" ]; then
-            warn "wheel download failed（网络/ABI）；postinst 将在线安装"
-            rm -rf "${WHEELS}"
-        fi
-    fi
-fi
-if [ -d "${WHEELS}" ] && [ -z "$(ls -A "${WHEELS}" 2>/dev/null)" ]; then
-    rm -rf "${WHEELS}"
-fi
+"${PIXIU_PYTHON}" -m pip --version >/dev/null \
+    || die "pip is required to prepare the offline backend dependencies"
+mkdir -p "${WHEELS}"
+# Both components share a venv. Resolve the backend against reviewed Runtime
+# versions rather than independently selecting conflicting shared dependencies.
+sed 's/ --hash=.*//' "${AGENT_RUNTIME}/runtime-cp312.lock" \
+    > "${OUT}/runtime-constraints.txt"
+"${PIXIU_PYTHON}" -m pip download --only-binary=:all: \
+    --python-version "${PIXIU_PYTHON_VERSION}" -d "${WHEELS}" \
+    -c "${OUT}/runtime-constraints.txt" \
+    -r "${PIXIU_ROOT}/backend/requirements.txt" \
+    -r "${PIXIU_ROOT}/backend/foundation/requirements-sync.txt"
 
 # ── 4/5 deb 元数据与运行文件 ────────────────────────────────────
 log "[4/5] deb metadata staging"
