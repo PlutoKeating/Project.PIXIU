@@ -122,10 +122,8 @@ if(BUILD_TESTING)
     set_tests_properties(pair_dialog PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
-    add_executable(t_settings_dialog
-        tests/t_settings_dialog.cpp
-        src/widgets/SettingsDialog.h
-        src/widgets/SettingsDialog.cpp
+    add_executable(t_product_dialogs
+        tests/t_product_dialogs.cpp
         src/widgets/InfoDialog.h
         src/widgets/InfoDialog.cpp
         src/widgets/CheckUpdateDialog.h
@@ -135,11 +133,11 @@ if(BUILD_TESTING)
         src/app/UpgradeController.h
         src/app/UpgradeController.cpp
     )
-    target_include_directories(t_settings_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_compile_definitions(t_settings_dialog PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
-    target_link_libraries(t_settings_dialog PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
-    add_test(NAME settings_dialog COMMAND t_settings_dialog)
-    set_tests_properties(settings_dialog PROPERTIES
+    target_include_directories(t_product_dialogs PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_definitions(t_product_dialogs PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
+    target_link_libraries(t_product_dialogs PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
+    add_test(NAME product_dialogs COMMAND t_product_dialogs)
+    set_tests_properties(product_dialogs PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
     add_executable(t_sync_controller
@@ -437,7 +435,7 @@ if(BUILD_TESTING)
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
         chat_window input_bar message_list import_dialog evidence_card i18n
-        sync_controller event_router settings_dialog
+        sync_controller event_router product_dialogs
         monitor_controller monitor_center
         user_identity
         upgrade_utils

@@ -266,7 +266,10 @@ MemoryScopes 保留本机采集域、家庭域及有效 Agent 域；MemoryScopeC
 凭证流程，未移植旧 EventRouter 的执行语义。PixiuApp、旧 SingleInstanceGuard、
 TrayIcon、EvidenceDetailDialog 及两项旧应用装配测试已删除；屏外恢复和退出
 保护由 HostTray/HostCloseGuard 测试覆盖，证据在 MemoryWorkspace 同页阅读。
-其余旧控件、控制器和翻译资源仍需逐项清理。
+旧 SettingsDialog 及专属翻译、测试也已删除；有效信息页和升级页测试拆为
+product_dialogs，直接测试正式管理库保留的 InfoDialog/CheckUpdateDialog。
+快捷键由正式设置管理，采集由 PrivacyPage 管理；完整语言资源与切换仍待实现。
+其余旧控件、控制器和翻译资源仍需逐项清理，不删除用户已有配置。
 
 公共 HTTP transport 已接入 `/agent/context` 版本化召回与 `/memory/update` 乐观锁更新，
 原样传送 scope、expected_version、结构化正文和幂等键，冲突走错误信号而不自动重试。
