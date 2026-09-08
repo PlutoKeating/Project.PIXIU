@@ -340,15 +340,6 @@ if(BUILD_TESTING)
     )
 
 
-    add_executable(t_input_bar
-        tests/t_input_bar.cpp
-        src/widgets/InputBar.h
-        src/widgets/InputBar.cpp
-    )
-    target_include_directories(t_input_bar PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_input_bar PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME input_bar COMMAND t_input_bar)
-
     add_executable(t_message_list
         tests/t_message_list.cpp
         src/widgets/MessageList.h
@@ -404,7 +395,7 @@ if(BUILD_TESTING)
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
-        input_bar message_list import_dialog evidence_card i18n
+        message_list import_dialog evidence_card i18n
         sync_controller event_router product_dialogs
         monitor_controller monitor_center
         upgrade_utils

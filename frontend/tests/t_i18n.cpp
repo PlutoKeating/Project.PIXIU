@@ -20,10 +20,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
              "embedded en_US translation must be present in qrc");
     QCoreApplication::installTranslator(&translator);
 
-    QCOMPARE(QCoreApplication::translate("InputBar", "记忆"),
-             QStringLiteral("Memory"));
-    QCOMPARE(QCoreApplication::translate("InputBar", "发送"),
-             QStringLiteral("Send"));
     QCOMPARE(QCoreApplication::translate("ForgetDialog", "取消"),
              QStringLiteral("Cancel"));
     QCOMPARE(QCoreApplication::translate("MessageList", "思考中…"),
@@ -32,16 +28,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("MessageList", "录入知识"),
              QStringLiteral("Import knowledge"));
-    QCOMPARE(QCoreApplication::translate("InputBar", "打开记忆面板"),
-             QStringLiteral("Open memory panel"));
-    QCOMPARE(QCoreApplication::translate("InputBar", "更多"),
-             QStringLiteral("More"));
-    QCOMPARE(QCoreApplication::translate("InputBar", "打开同步面板"),
-             QStringLiteral("Open sync panel"));
-    QCOMPARE(QCoreApplication::translate("InputBar", "录入图片或文件"),
-             QStringLiteral("Import image or file"));
-    QCOMPARE(QCoreApplication::translate("InputBar", "打开设置"),
-             QStringLiteral("Open settings"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "正在加载…"),
