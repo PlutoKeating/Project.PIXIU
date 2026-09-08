@@ -87,6 +87,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/AgentEvidence.h management/AgentEvidence.cpp \
     management/AgentEvidenceClient.h management/AgentEvidenceClient.cpp \
     management/MemoryScopes.h \
+    management/MemoryScopeControl.h management/MemoryScopeControl.cpp \
     management/HostCloseGuard.h management/HostCloseGuard.cpp \
     src/app/ProductInformation.h src/widgets/InfoDialog.h src/widgets/InfoDialog.cpp \
     management/HostTray.h management/HostTray.cpp \

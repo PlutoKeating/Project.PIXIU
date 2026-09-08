@@ -1,5 +1,6 @@
 #include "MemoryWriteDialog.h"
 #include "MemoryScopes.h"
+#include "MemoryScopeControl.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QFormLayout>
@@ -27,7 +28,7 @@ MemoryWriteDialog::MemoryWriteDialog(QWidget *parent, BackendTransport *transpor
     auto *form = new QFormLayout;
     form->addRow(tr("标题"), m_title);
     form->addRow(tr("正文"), m_body);
-    form->addRow(tr("范围"), m_scope);
+    form->addRow(tr("范围"), new MemoryScopeControl(m_scope));
     auto *privacy = new QLabel(tr("个人记忆默认不共享。共享范围的敏感内容会被后端拒绝；本界面不会自动改为共享。"), this);
     privacy->setWordWrap(true);
     m_status = new QLabel(this);

@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "MemoryScopes.h"
+#include "MemoryScopeControl.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryEditDialog.h"
 #include "MemoryAudit.h"
@@ -311,6 +312,111 @@ private slots:
         forget.findChild<QPushButton *>("forgetPreview")->click();
         QCOMPARE(forgetTransport.forgetPayload.value("scope").toString(), QStringLiteral("user:alice"));
         QVERIFY(!forgetTransport.forgetPayload.value("confirm").toBool());
+    }
+    void customScopeChoiceValidatesCancelsReusesAndFollowsBusyState()
+    {
+        QWidget host;
+        pixiu::HostCloseGuard guard(&host);
+        auto *combo = new QComboBox(&host);
+        combo->setObjectName("testScope");
+        pixiu::populateMemoryScopes(combo, false, false, "");
+        pixiu::MemoryScopeControl control(combo);
+        auto *choose = control.findChild<QPushButton *>("testScopeCustom");
+        QVERIFY(choose);
+        QSignalSpy changed(combo, QOverload<int>::of(&QComboBox::currentIndexChanged));
+        bool rejectsInvalid = true, acceptsShared = false, guarded = false;
+        QTimer::singleShot(0, &host, [&]() {
+            auto *dialog = control.findChild<QDialog *>("testScopeDialog");
+            guarded = !guard.confirmExit();
+            auto *input = dialog->findChild<QLineEdit *>("customScopeInput");
+            auto *use = dialog->findChild<QPushButton *>("customScopeUse");
+            for (const auto &invalid : {"", "user:", "user:*", "user:with space", "admin:local", "user:a\n"}) {
+                input->setText(invalid);
+                rejectsInvalid &= !use->isEnabled();
+            }
+            input->setText("user:" + QString(252, QLatin1Char('a')));
+            rejectsInvalid &= !use->isEnabled() && input->text().size() == 257;
+            input->setText("shared:team");
+            acceptsShared = use->isEnabled();
+            QTest::keyClick(dialog, Qt::Key_Return); // Default action is cancel.
+        });
+        choose->click();
+        QVERIFY(rejectsInvalid);
+        QVERIFY(acceptsShared);
+        QVERIFY(guarded);
+        QVERIFY(guard.confirmExit());
+        QCOMPARE(combo->currentData().toString(), QStringLiteral("user:local"));
+        QCOMPARE(combo->count(), 2);
+        QCOMPARE(changed.count(), 0);
+        for (int attempt = 0; attempt < 2; ++attempt) {
+            QTimer::singleShot(0, &host, [&]() {
+                auto *dialog = control.findChild<QDialog *>("testScopeDialog");
+                dialog->findChild<QLineEdit *>("customScopeInput")->setText("user:project_2025");
+                dialog->findChild<QPushButton *>("customScopeUse")->click();
+            });
+            choose->click();
+            QCOMPARE(combo->currentData().toString(), QStringLiteral("user:project_2025"));
+            QCOMPARE(combo->count(), 3);
+        }
+        QCOMPARE(changed.count(), 1);
+        QTimer::singleShot(0, &host, [&]() {
+            auto *dialog = control.findChild<QDialog *>("testScopeDialog");
+            dialog->findChild<QLineEdit *>("customScopeInput")->setText("shared:new_team");
+            combo->setEnabled(false); // Async state changed while the dialog was open.
+            dialog->accept();
+        });
+        choose->click();
+        QCOMPARE(combo->currentData().toString(), QStringLiteral("user:project_2025"));
+        QCOMPARE(combo->count(), 3);
+        QCOMPARE(changed.count(), 1);
+        combo->setEnabled(false);
+        QVERIFY(!choose->isEnabled());
+        combo->setEnabled(true);
+        QVERIFY(choose->isEnabled());
+    }
+    void customScopeReachesManagementWithoutImplicitWrites_data()
+    {
+        QTest::addColumn<QString>("chosenScope");
+        QTest::newRow("private-history") << QStringLiteral("user:project_2025");
+        QTest::newRow("explicit-shared") << QStringLiteral("shared:project_2025");
+    }
+    void customScopeReachesManagementWithoutImplicitWrites()
+    {
+        QFETCH(QString, chosenScope);
+        QWidget host;
+        Transport queryTransport, writeTransport, auditTransport, forgetTransport;
+        pixiu::MemoryWorkspace query(&host, &queryTransport);
+        pixiu::MemoryWriteDialog write(&host, &writeTransport);
+        pixiu::MemoryAudit audit(&host, &auditTransport);
+        pixiu::ForgetPage forget(&host, &forgetTransport);
+        const QList<QPair<QWidget *, QString>> pages = {{&query, "memoryScope"},
+            {&write, "writeScope"}, {&audit, "auditScope"}, {&forget, "forgetScope"}};
+        for (const auto &entry : pages) {
+            auto *page = entry.first;
+            QTimer::singleShot(0, &host, [page, entry, chosenScope]() {
+                auto *dialog = page->findChild<QDialog *>(entry.second + "Dialog");
+                dialog->findChild<QLineEdit *>("customScopeInput")->setText(chosenScope);
+                dialog->findChild<QPushButton *>("customScopeUse")->click();
+            });
+            page->findChild<QPushButton *>(entry.second + "Custom")->click();
+            QCOMPARE(page->findChild<QComboBox *>(entry.second)->currentData().toString(), chosenScope);
+        }
+        QCOMPARE(writeTransport.writes, 0);
+        QCOMPARE(forgetTransport.forgetCalls, 0);
+        QCOMPARE(auditTransport.auditScope, chosenScope);
+        query.findChild<QLineEdit *>("memoryQuery")->setText("example");
+        query.findChild<QPushButton *>("memorySearch")->click();
+        QCOMPARE(queryTransport.scope.value("scope").toString(), chosenScope);
+        write.findChild<QLineEdit *>("writeTitle")->setText("example");
+        write.findChild<QPlainTextEdit *>("writeBody")->setPlainText("synthetic content");
+        write.findChild<QPushButton *>("writeSave")->click();
+        QCOMPARE(writeTransport.written.value("scope").toString(), chosenScope);
+        QVERIFY(!write.findChild<QPushButton *>("writeScopeCustom")->isEnabled());
+        forget.findChild<QLineEdit *>("forgetCommand")->setText("forget example");
+        forget.findChild<QPushButton *>("forgetPreview")->click();
+        QCOMPARE(forgetTransport.forgetPayload.value("scope").toString(), chosenScope);
+        QVERIFY(!forgetTransport.forgetPayload.value("confirm").toBool());
+        QVERIFY(!forget.findChild<QPushButton *>("forgetScopeCustom")->isEnabled());
     }
     void trayRestoresSameHostAndRespectsPendingCloseGuard()
     {

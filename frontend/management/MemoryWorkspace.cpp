@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "MemoryScopes.h"
+#include "MemoryScopeControl.h"
 #include "MemoryWriteDialog.h"
 #include "MemoryEditDialog.h"
 #include "MemoryAudit.h"
@@ -143,7 +144,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_search = new QPushButton(tr("检索"), this);
     m_search->setObjectName(QStringLiteral("memorySearch"));
     row->addWidget(m_query, 1);
-    row->addWidget(m_scope);
+    row->addWidget(new MemoryScopeControl(m_scope));
     row->addWidget(m_search);
     auto *write = new QPushButton(tr("录入记忆"), this);
     write->setObjectName(QStringLiteral("memoryWrite"));

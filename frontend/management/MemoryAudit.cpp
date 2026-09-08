@@ -1,5 +1,6 @@
 #include "MemoryAudit.h"
 #include "MemoryScopes.h"
+#include "MemoryScopeControl.h"
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QDateTime>
@@ -67,7 +68,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     m_extract->setObjectName(QStringLiteral("auditExtract"));
     auto *toolbar = new QHBoxLayout;
     toolbar->addWidget(m_mode);
-    toolbar->addWidget(m_scope);
+    toolbar->addWidget(new MemoryScopeControl(m_scope));
     toolbar->addStretch();
     toolbar->addWidget(m_refresh);
     layout->addLayout(toolbar);

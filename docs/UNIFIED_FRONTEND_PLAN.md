@@ -25,7 +25,7 @@
 | Agent 集成脚本 `pixiu-agent-integrate` | 在当前 Agent profile 的 `.env` 中缺省写入 `PIXIU_AGENT_SCOPE=user:default`，保留已有值 | 必须保留自定义 profile、范围和 endpoint；禁止直接 source 用户 `.env` 执行其中内容 |
 | `integrations/kylin_agent/pixiu/provider.py` | 显式构造参数或 `PIXIU_AGENT_SCOPE`，缺省 `user:default`；API 地址使用 `PIXIU_AGENT_ENDPOINT` | 轮次上下文、写入、更新与遗忘均绑定实际 Provider 范围；不能把模型提交的范围作为覆盖值 |
 | `frontend/src/services/HttpBackendTransport.cpp` | `PIXIU_BACKEND_URL`，正式启动时由引导器与有效 Agent endpoint 对齐；直接运行宿主仍使用进程环境或缺省本机 8765 | 不能将直接宿主启动当作 profile 已解析；公共管理接口不应依赖模型可用 |
-| `MemoryWorkspace`、`MemoryWriteDialog`、`MemoryAudit`、`ForgetPage` | 共用 `MemoryScopes.h`，保留 `user:local` / `shared:home` 并增加有效 Agent scope；检索和偏好另有全部范围 | 录入只自动选择私有 Agent 域；不隐式共享或跨域遗忘；其他历史自定义域尚须补可达性 |
+| `MemoryWorkspace`、`MemoryWriteDialog`、`MemoryAudit`、`ForgetPage` | 共用 `MemoryScopes.h`，保留 `user:local` / `shared:home` 并增加有效 Agent scope；MemoryScopeControl 支持明确输入其他范围，检索和偏好另有全部范围 | 录入只自动选择私有 Agent 域；不隐式共享或跨域遗忘；历史范围自动发现及跨入口真实数据验证仍待完成 |
 | `MemoryEditDialog` | 从查询页传入范围，读取完整快照并要求目标范围匹配 | 保留版本校验和精确范围，不为找不到记录而改用无范围请求 |
 | `backend/foundation/monitor/` | 目录采集默认 `user:local`；行为采集固定 `user:local` | 本机采集不应因 Agent 配置为 `shared:*` 而自动共享；与主动共享写入分别处理 |
 | `backend/foundation/api/delivery.py` | 洞察固定 `user:local`；简报聚合采集日志 | 不得宣称洞察已覆盖 Agent 记忆或全部范围；范围能力变更须先更新公共契约和后端测试 |
@@ -180,6 +180,16 @@ ee5da25 进程行为，不作为后续新包、采集事件刷新、断线重连
 - 验收：离线、恢复、并发和迟到响应不会覆盖错误对象或误报操作成功。
 
 ### U04：记忆检索、录入与更新
+
+检索、录入、偏好与遗忘页已共用 MemoryScopeControl 的“其他范围”入口。输入
+完整范围名并明确确认后才加入当前页面选项；取消不变、重复不新增、不修剪空白，
+超长输入拒绝而非截短。选项继续使用既有数据值与切换信号，偏好页可按新范围刷新
+只读列表；选择本身不提交写入或遗忘。请求在途时随原选择器禁用，确认返回再次
+检查可用状态。没有新配置存储、不迁移数据、不改 Agent profile，也不扩大 Provider
+授权范围。新控件源文件已纳入管理模块和宿主导出，复用现有 Qt Widgets。
+公开读取契约允许点号，但核心模型范围校验不允许点号，存在实际不一致；界面
+不因后端拒绝而换域。该契约差异、历史范围自动发现、真实历史数据全链路及原生
+界面仍待验证/修复，不把手动选择入口视为 U04 全部完成。
 
 - [ ] 建立检索、结果、空态、失败重试与手动录入界面，保留失败输入。
 - [ ] 明确个人与共享范围、敏感信息约束和异步入库状态。

@@ -88,7 +88,7 @@ grep -q 'return window.hasUnsentAgentDraft();' "${fixture}/source/src/main.cpp"
 grep -q 'return !m_pendingFallbackReplies.isEmpty();' "${fixture}/source/include/ui/chatwidget.h"
 grep -q 'return !m_inputEdit->toPlainText().isEmpty();' "${fixture}/source/src/ui/chatwidget.cpp"
 test -f "${fixture}/source/pixiu/frontend/management/HostCloseGuard.cpp"
-for close_state_source in HostCloseGuard.cpp HostCloseGuard.h MemoryWorkspace.h DeliveryPage.cpp DeliveryPage.h ServiceStatusPage.cpp ServiceStatusPage.h; do
+for close_state_source in HostCloseGuard.cpp HostCloseGuard.h MemoryWorkspace.h MemoryScopeControl.cpp MemoryScopeControl.h DeliveryPage.cpp DeliveryPage.h ServiceStatusPage.cpp ServiceStatusPage.h; do
     cmp "${repo_root}/frontend/management/${close_state_source}" \
         "${fixture}/source/pixiu/frontend/management/${close_state_source}"
 done
