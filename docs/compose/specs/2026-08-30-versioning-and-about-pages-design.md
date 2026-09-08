@@ -1,84 +1,91 @@
 # 版本管理宗旨落地 + 关于/更新/条款/隐私页面 Design Spec
 
-> 2026-09-06 代码复核：根 VERSION 为唯一版本源，Provider 模板和包内 release-manifest.json 派生；在线升级、独立签名和用户级服务已实现。当前仍需补最终 GUI 安装升级实证，不是这些功能尚未编码。
-> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
-
-> 日期：2026-08-30 · 状态：已实现并被在线一键升级方案扩展（2026-09-03 复核）
-> 定位：落实用户定义的版本管理核心宗旨（严格版本增量 + 摘要校验一致 + 旧版可增量升级），并为应用补充更新入口与 About Us / Terms & Conditions / Privacy 页面。
->
-> 本文保留最初设计过程。当前版本已统一为 0.1.7，关于/条款/隐私和在线升级均已
-> 实现；原“三处静态版本同步”已被根 `VERSION` 唯一输入和派生生成取代。在线流程
-> 以 `2026-09-01-in-app-upgrade-design.md` 为准，最终签名、回滚和兼容门禁以
-> `docs/DELIVERY_PLAN.md` 为准。
+本文按实际唯一宿主实现维护，保留既有章节编号与标题用于引用。
+旧 SettingsDialog、PixiuApp 及其接线已删除；不保留旧版本号、旧截图状态或失效承诺。
+安装发布约束见 docs/DELIVERY_PLAN.md，完整待办见 docs/UNIFIED_FRONTEND_PLAN.md。
 
 ## [S1] 背景与目标
 
-- 用户核心宗旨：每次新发布必须**版本增量更新**；当前只修改根 `VERSION`，应用、
-  Debian 包、后端注入和 Provider manifest 全部派生。发布产物须**摘要校验一致**
-  （`.deb.sha256` 不是独立数字签名）；任何旧版本/内测安装用户都能用新 `.deb`
-  直接**增量升级**（当前机制为 venv 复用 + postinst 管理非 conffile 运行配置）。
-- 实施前缺口（已关闭）：当时版本源不一致且 SettingsDialog 无更新/About/T&C/
-  Privacy 入口；当前代码与发布默认值已统一到 0.1.7，并已提供对应页面。
-- 产品定位：**参赛作品**（麒麟 OS Agent 记忆优化赛题），非商业上线产品——文案须符合赛题语境（麒麟适配、偏好/知识记忆优化、隐私承诺：敏感信息识别过滤、端侧处理、数据本地），少量即可。
+- 根 VERSION 是唯一产品版本输入；前端、整包、运行时注入及 Provider 由它派生。
+- 新发布需版本递增、摘要与独立签名验证、安装后健康检查和升级兼容验证。
+- 正式宿主提供更新、关于、数据联网说明与许可证页面；不恢复独立小窗口。
+- 页面说明必须区分本地管理、模型联网、共享同步、采集授权与遗忘实际边界。
 
 ## [S2] 版本管理一致性落地
 
 ### [S2.1] 单一版本源（已取代最初三处同步方案）
 
-- 根 `VERSION` 是唯一产品版本输入。
-- 前端 CMake/编译宏、前端独立 control、全量 Debian 包、后端运行时注入和 Module E
-  `plugin.yaml` 均从该文件派生。
-- 发布预检拒绝环境断言、tag 或派生关系不一致，防止未来发布遗漏。
+- 正式管理 CMake 与宿主导出从根 VERSION 注入产品版本。
+- Debian 整包 control、release-manifest.json 和 Module E 模板由构建生成。
+- frontend/CMakeLists.txt 仅构建回归，不提供独立产品或独立 Debian 包。
+- 发布预检检查版本与派生关系；前端版本测试还禁止已退役源码和构建目标回归。
 
 ### [S2.2] 摘要校验一致
-- 现状：build-deb.sh 已生成 `.deb.sha256`；publish.sh 随包拷贝。**保持**，文档注明校验方法（`sha256sum -c pixiu_*.deb.sha256`）。
-- 增量升级兼容：postinst 复用 venv；运行配置由 `/usr/share` 默认模板首装创建，升级
-  保留并幂等补字段，不再作为 dpkg conffile（2026-09-03 修复非交互升级冲突）。
+
+- build-deb.sh 生成包及 .deb.sha256；发布链另提供独立签名。
+- 在线升级校验摘要、获取签名并通过授权安装验证链；不能把下载成功当作安装成功。
+- postinst 的配置保留、用户服务与健康检查属于整包流程。
+- 真实旧版升级、失败与回滚仍需完整验证，不承诺所有历史安装状态均已实测。
 
 ## [S3] 应用内页面（SettingsDialog 扩展）
 
 ### [S3.1] SettingsDialog 新增「关于与法律」区
-- 在 versionLabel 之后新增一行按钮（objectName 明确）：
-  - **「检查更新…」**（objectName=checkUpdateButton）→ 打开更新对话框；
-  - **「关于 PIXIU」**（objectName=aboutUsButton）→ 打开 About Us 页；
-  - **「服务条款」**（objectName=termsButton）→ 打开 T&C 页；
-  - **「隐私政策」**（objectName=privacyButton）→ 打开 Privacy 页。
-- 布局：按钮行（QHBoxLayout 或 grid）置于 versionLabel 之后、buttonRow 之前；窄窗下允许换行（WordWrap 或 wrap 布局——以最小改动为准，按钮文案短不换行）。
+
+章节名保留，实际实现已替换为 SettingsWorkspace 的“应用与升级”。
+
+- productUpdates：检查更新。
+- productAbout：关于 PIXIU。
+- productDataUse：数据与联网说明。
+- productLicenses：许可证与第三方组件。
+- 页面还包含模型与 Agent 配置、唤起快捷键和版本信息；采集、服务诊断在独立页签。
+- 不沿用旧窗口尺寸、旧按钮信号或旧条款/隐私承诺。
 
 ### [S3.2] InfoDialog 通用文档对话框（新建）
-- 新建 `frontend/src/widgets/InfoDialog.{h,cpp}`：`InfoDialog(title, bodyHtml, parent)`——只读 QTextBrowser 或 QLabel(Qt::RichText) + 关闭按钮；objectName=`infoDialog`/`infoTextBrowser`。
-- 三种页面复用同一对话框，内容由调用方传入（服务条款/隐私政策/关于各一份文案）：
-  - **About Us**：产品一句话（参赛定位）+ 核心能力（记忆优化：偏好捕捉/知识整合/高效检索）+ 麒麟适配 + 版本号；
-  - **Terms & Conditions**（服务条款）：参赛作品声明 + 使用约定（数据本地存储、功能按现状提供）+ 简短；
-  - **Privacy**（隐私政策）：数据隐私承诺（敏感信息识别过滤、端侧处理不上传、监控可随时关闭、记忆可遗忘）。
-- 文案**参照 docs/OriginProblemDescription.md 语境**编写，**少量即可**（每页 3-6 句），全部 tr() 中文源文本 + 英文译文（i18n 收编）。
+
+- 现有 InfoDialog(title, body, parent) 使用只读 QTextBrowser::setPlainText；
+  HTML 字面量和段落原样呈现，不是富文本契约。
+- 三个说明实例由 SettingsWorkspace 持有，重复点击复用；关闭只隐藏所属说明页。
+- ProductInformation::about 描述唯一 Agent 宿主与直接访问记忆服务的管理功能。
+- dataUse 明确模型可能接收输入、召回上下文及工具结果；默认本地服务不等于永不联网。
+- 关闭采集不删除已有记忆，敏感识别不保证完整，逻辑遗忘不等于所有副本物理擦除。
+- licenses 指向包内 NOTICE、组件清单和实际许可证，不授予新许可。
 
 ### [S3.3] 更新对话框（历史最小范围，已被在线升级实现取代）
-- 简单实现（不引入 OTA 服务——参赛语境）：显示**当前版本**（applicationVersion）与**提示文案**「请从官方渠道获取最新版本，通过安装包直接升级；升级将保留您的记忆与配置。」；
-- objectName=`checkUpdateDialog`；按钮「知道了」关闭；
-- 后续已经实现在线检查、下载、校验和授权安装；本条“不做网络请求”的旧边界失效。
+
+- CheckUpdateDialog 配合 UpgradeController 执行实际检查、下载、验证、授权安装。
+- 展示当前版本、远程版本、进度与错误；没有控制器时禁用升级。
+- 成功后由用户选择重启；SettingsWorkspace 先经 HostCloseGuard 检查在途请求和草稿，
+  拒绝时不调用重启 helper。
+- 当前实现不是仅展示下载指引的静态弹窗；也不能据此宣称所有原生升级状态已验收。
 
 ## [S4] 契约与接线
-- SettingsDialog 新增信号：`checkUpdateRequested()` / `aboutUsRequested()` / `termsRequested()` / `privacyRequested()`（四个按钮各自信号）；
-- PixiuApp openSettings 懒创建块内一次性 connect 四信号 → 各自 showInfoDialog（懒创建 InfoDialog/CheckUpdateDialog 实例）——仿 monitorCenterRequested 既有接线模式；
-- i18n：新文案 tr() 中文源文本；B4-4 后 i18n 基线 279 条，本次预计 +~15-20 条（按钮+三页文案+更新对话框），Task 收尾 lupdate/lrelease 至 0 unfinished。
+
+- SettingsWorkspace 直接持有三个 InfoDialog 和一个受控升级对话框。
+- 模型配置通过 agentSettingsRequested 交还原宿主；不创建另一套模型设置生命周期。
+- 信息正文由 ProductInformation 统一提供；版本来自编译注入与宿主应用版本。
+- 旧 SettingsDialog 四信号与 PixiuApp 懒创建接口不再存在。
+- 正式管理模块完整英文资源与语言切换未完成，不能以旧资源测试代替。
 
 ## [S5] 测试策略
-- 前端 ctest（offscreen）：
-  - SettingsDialog 四按钮存在且 emit 对应信号（t_memory_panel 或新建 t_settings_dialog——若存在沿用）；
-  - InfoDialog 渲染标题与正文（三页内容可断言非空/含关键词）；
-  - 更新对话框显示当前版本；
-  - PixiuApp 接线（t_app_navigation：点按钮 → 对应对话框可见）；
-- 全量回归：前端 OFF/ON ctest + regression.sh；后端零改动（纯前端）。
-- 版本一致性：`test-version-source.sh` 验证唯一输入及全部派生关系；显式版本漂移必须失败。
+
+- product_dialogs 在根回归与正式管理库两处构建：纯文本/只读、关闭不影响宿主、
+  当前版本显示、无控制器禁用升级。
+- t_memory_workspace 验证正式信息入口、实例复用及退出保护。
+- t_check_update_dialog 与 t_upgrade_controller 验证本地假服务驱动的状态、失败和重启行为。
+- test-version-source.sh 只证明其覆盖的回归版本关系和退役检查；整包派生另需发布预检。
+- offscreen、SDK 替身、V11 原生分别报告；独立测试套件隔离临时目录。
+- 完整安装、升级、权限拒绝、签名失败和数据保留需真实环境证据。
 
 ## [S6] 范围边界（不做）
-- 原“不做真实在线更新”已由 2026-09-01 方案取代。
-- 原“不做独立签名”不再适用于最终交付；SHA-256 已实现，独立签名仍是发布阻断项。
-- 不改后端（纯前端 + 发布脚本预检）；
-- 不引入新第三方依赖。
+
+- 不恢复旧应用、独立包、旧配置层或旧语言选择空壳。
+- 不把摘要当作签名，不把组件测试当作生产安装验收。
+- 不修改后端私有实现，不引入新的页面框架或系统依赖。
+- 不删除用户配置、会话、记忆或同步身份。
 
 ## [S7] 风险与开放点
-- 版本号人工同步风险已由根 `VERSION` 唯一输入关闭；发布预检仍作为回归防线（S2.1）。
-- InfoDialog 文案语言（中文源 + 英文译文）——保持与既有 i18n 一致；
-- 更新对话框文案避免承诺不存在的在线更新能力（参赛语境如实）。
+
+- 派生版本仍需持续门禁，最终标签和产物必须对应经过验证的提交。
+- 完整语言、布局、可访问性与原生升级矩阵仍在统一计划中。
+- 升级测试扫描临时包的共享目录存在跨套件干扰风险，独立执行使用隔离目录。
+- 文案必须随实际模型、同步、采集与遗忘能力变化而更新，不承诺不存在的隐私保证。

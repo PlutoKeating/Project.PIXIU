@@ -1,95 +1,100 @@
 # 版本管理一致性 + 关于/更新/条款/隐私页面 Implementation Plan
 
-> 2026-09-06 代码复核：根 VERSION 为唯一版本源，Provider 模板和包内 release-manifest.json 派生；在线升级、独立签名和用户级服务已实现。当前仍需补最终 GUI 安装升级实证，不是这些功能尚未编码。
-> 下文实施步骤、旧接口草图和测试数字保留作阶段历史，不作为当前操作手册；当前契约见 docs/API.md，发布见 docs/DELIVERY_PLAN.md。
+本文按当前代码维护；既有章节名称保留用于引用，不代表旧窗口或旧方案仍在使用。
+唯一桌面入口为 openKylin Agent 宿主，设置管理由 SettingsWorkspace 提供。
+完整交付与未完成验收以 docs/UNIFIED_FRONTEND_PLAN.md 和 docs/DELIVERY_PLAN.md 为准。
 
-> 状态更新（2026-09-03）：V-1～V-3 均已实现；版本已推进到 0.1.7，在线升级由
-> 后续计划继续扩展。下列版本 0.1.1 与失败步骤是历史执行上下文，不是当前状态。
+**Goal:** 根 VERSION 单一输入、受验证的整包升级，以及正式宿主的信息与更新入口。
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use compose:subagent (recommended) or compose:execute to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+**Architecture:** SettingsWorkspace 直接持有 InfoDialog、CheckUpdateDialog 和
+UpgradeController。ProductInformation 提供关于、数据联网、许可证正文。
+不存在旧 SettingsDialog → PixiuApp 接线；禁止恢复第二个应用装配层。
 
-**Goal:** 落实版本管理核心宗旨（本文最初采用三处版本一致性预检；当前已迁移为
-根 `VERSION` 唯一输入 + 发布预检 + sha256 校验一致 + 旧版可增量升级），并为设置
-界面补齐「检查更新」「关于 PIXIU」「服务条款」「隐私政策」四入口与对应页面。
-
-**Architecture:** 当前版本号由根 `VERSION` 唯一输入，经 CMake 宏、Debian control
-与 Module E 模板生成；build-deb.sh 校验全部派生链。本文其余内容保留最初页面实现
-计划，新建通用 InfoDialog（About/T&C/Privacy 三页复用）+ CheckUpdateDialog；
-SettingsDialog 四按钮 → 四信号 → PixiuApp 懒创建接线。
-
-**Tech Stack:** C++17 · Qt5 Widgets · CMake | shell（发布脚本预检）
+**Tech Stack:** C++17、Qt5 Widgets/Network、CMake，以及既有整包发布脚本。
 
 ## Global Constraints
 
-- **模块边界**：Plan-F 只改 `frontend/`；发布脚本预检改 `build/release/scripts/build-deb.sh`（版本一致性校验，属发布基础设施）。
-- **版本管理宗旨（用户核心规则）**：①当前由根 `VERSION` 唯一输入派生应用、包和
-  Provider 版本（本文原“三处同步”方案已淘汰）；②发布产物 .deb + .sha256 一致；
-  ③旧版/内测用户可 dpkg -i 直接增量升级（当前实现为 postinst 复用 venv + 管理非
-  conffile 运行配置；2026-09-03 已替代会触发交互冲突的旧机制）。
-- **不做**：真实在线更新（OTA）、GPG 签名、后端改动、新第三方依赖。
-- **文案语境**：参赛作品（麒麟 OS Agent 记忆优化赛题），参照 docs/OriginProblemDescription.md；少量（每页 3-6 句）；全部 tr() 中文源文本。
-- 提交前缀 `feat(frontend)/fix(frontend)/chore(frontend)/test(frontend)`；禁止 push；offscreen 测试。
+- 前端实现限定 frontend/，发布清单和脚本属于整包交付层；不修改上游原件。
+- 产品版本从根 VERSION 派生，不能在文档或另一份 control 中维持平行版本源。
+- .deb.sha256 是摘要，不等于签名；在线安装需沿用当前独立签名验证链。
+- 用户数据、配置与同步身份不属于旧界面清理范围。
+- 页面只描述实际能力：模型调用可能联网，关闭采集不删除记忆，逻辑遗忘不等于所有副本物理擦除。
+- 推送与发布遵循当前 AGENTS.md 及用户当次授权，不沿用旧计划中的绝对禁止或默认授权。
+- 通用 offscreen 测试、SDK 替身测试和 V11 真机结果分别报告。
 
 ---
 
 ## Task V-1: 版本一致性（CMake 注入 + 三处同步 + 发布预检）
 
-**Covers:** [S2.1, S2.2]
+原“三处同步”已由唯一输入与派生校验替代，保留标题但不执行旧流程。
 
 **Files:**
-- Modify: `frontend/CMakeLists.txt`（project VERSION 0.1.1；target_compile_definitions 注入 `PIXIU_VERSION="0.1.1"`）
-- Modify: `frontend/src/main.cpp:24`（`setApplicationVersion` 改用宏 `QStringLiteral(PIXIU_VERSION)`，删除硬编码）
-- Modify: `build/release/scripts/build-deb.sh`（历史方案为三处静态值预检；当前已替换为
-  根 `VERSION` 与各派生链校验，不一致 exit 1）
-- Verify: `build/release/scripts/functions.sh` 确认 0.1.1（T24 已 bump）
 
-- [x] **Step 1: 写失败测试**（版本注入生效）
-  构建后 `pixiu-frontend --version` 或现有 t_app 断言 `QCoreApplication::applicationVersion() == "0.1.1"`（grep 现有测试是否有版本断言；无则加 t_app_settings 或用 CMake configure 期断言）。
-- [x] **Step 2: 运行验证失败**（当前 main.cpp 硬编码 0.1.0 ≠ 0.1.1）
-- [x] **Step 3: 实现**（CMakeLists project VERSION + compile definition；main.cpp 用宏；build-deb.sh 预检函数）
-- [x] **Step 4: 运行验证通过**（构建 + ctest；预检脚本测三处一致通过/不一致报错——shell 单测或手动）
-- [x] **Step 5: 提交** `git commit -m "fix(frontend): inject version from cmake and guard release consistency"`
+- VERSION：产品版本输入。
+- frontend/management/CMakeLists.txt：正式管理库版本宏。
+- frontend/CMakeLists.txt：仅保留回归目标，无独立产品 main 或安装目标。
+- build/release/scripts/build-deb.sh：派生关系预检与整包构建。
+- build/release/scripts/generate-release-manifest.py：包内发布清单生成。
+- frontend/tests/test-version-source.sh：根回归版本、退役源码和旧目标检查。
+
+**验证与剩余工作：**
+
+- 已实现单源派生及漂移拒绝；不得把单个前端测试描述为完整发布门。
+- 版本递增后需重新通过整包发布预检、通用 CI、V11 原生门，并由标签自动发布。
+- 安装后的版本展示、签名失败、升级失败、回滚及用户数据保留仍须完整 GUI 实证。
 
 ---
 
 ## Task V-2: InfoDialog + CheckUpdateDialog + SettingsDialog 四入口
 
-**Covers:** [S3.1, S3.2, S3.3, S4]
+旧 SettingsDialog 已删除，以下为正式替代关系。
 
 **Files:**
-- Create: `frontend/src/widgets/InfoDialog.h/.cpp`（通用只读文档对话框：title + QTextBrowser + 关闭按钮；objectName infoDialog/infoTextBrowser）
-- Create: `frontend/src/widgets/CheckUpdateDialog.h/.cpp`（当前版本 + 升级指引文案；objectName checkUpdateDialog）
-- Modify: `frontend/src/widgets/SettingsDialog.h/.cpp`（四按钮：checkUpdateButton/aboutUsButton/termsButton/privacyButton；四信号：checkUpdateRequested/aboutUsRequested/termsRequested/privacyRequested；布局：versionLabel 后新增按钮行）
-- Modify: `frontend/src/app/PixiuApp.h/.cpp`（懒创建 InfoDialog/CheckUpdateDialog；connect 四信号 → 各自打开对应页面——About/T&C/Privacy 传不同文案）
-- Modify: `frontend/CMakeLists.txt`（主目标 + t_app_navigation/t_window_restore 加两对新源文件——编译 PixiuApp.cpp 的目标三处同步，批次②教训）
-- Test: `frontend/tests/t_settings_dialog.cpp`（若存在）或 t_memory_panel 扩展 + `frontend/tests/t_app_navigation.cpp`
+
+- frontend/management/SettingsWorkspace.cpp：应用与升级、采集与隐私、服务与能力三个页签。
+- frontend/src/widgets/InfoDialog.h/.cpp：只读纯文本说明页。
+- frontend/src/widgets/CheckUpdateDialog.h/.cpp：实际升级状态与操作。
+- frontend/src/app/ProductInformation.h：事实性正文。
+- frontend/src/app/UpgradeController.h/.cpp：检查、下载、验证、授权安装及受控重启。
+- frontend/tests/t_product_dialogs.cpp：保留组件基础行为，根回归和正式管理测试均编译。
+- frontend/management/tests/t_memory_workspace.cpp：正式信息页入口和宿主归属检查。
+- frontend/tests/t_check_update_dialog.cpp：更新状态与受控重启回归。
 
 **Interfaces:**
-- Consumes: `QCoreApplication::applicationVersion()`、`ui::UiTokens`、既有 PixiuApp openSettings 懒创建接线模式
-- Produces: `InfoDialog(title, body, parent)`（showAndFocus 或 show）；`CheckUpdateDialog(parent)`；SettingsDialog 四信号；PixiuApp `showAboutUs()/showTerms()/showPrivacy()/showCheckUpdate()`（懒创建各自实例或统一 InfoDialog 复用——实现时选一说明）
 
-- [x] **Step 1: 写失败测试**（四按钮存在且 emit 对应信号；InfoDialog 渲染标题与正文关键词；更新对话框显示版本；t_app_navigation 点按钮 → 对话框可见）
-- [x] **Step 2: 运行验证失败**（ctest 红）
-- [x] **Step 3: 实现**（InfoDialog/CheckUpdateDialog + SettingsDialog 四按钮四信号 + PixiuApp 接线 + CMake 三目标同步）
-- [x] **Step 4: 运行验证通过**（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 32+ 绿）
-- [x] **Step 5: 提交** `git commit -m "feat(frontend): add about, terms, privacy and update entries"`
+- productUpdates → CheckUpdateDialog::showAndCheck。
+- productAbout / productDataUse / productLicenses → 各自宿主所属 InfoDialog。
+- InfoDialog(title, body, parent) 使用 setPlainText，不解释 HTML。
+- 更新成功后的重启先调用 HostCloseGuard；拒绝退出时不调度重启。
+- 无 UpgradeController 的独立对话框禁用升级，不伪造已安装或可升级状态。
+
+**验证与剩余工作：**
+
+- product_dialogs 检查纯文本/只读、关闭不影响宿主、版本显示和无控制器禁用升级。
+- 快捷键已在正式设置中编辑和持久化，验证见统一计划 U02。
+- 完整原生升级、无障碍和布局矩阵仍须验收，不能用组件测试替代。
 
 ---
 
 ## Task V-3: i18n 收编 + 双路径回归
 
-**Covers:** [S5, S7]
-
 **Files:**
-- Modify: `frontend/resources/i18n/pixiu_en_US.ts/.qm`（lupdate/lrelease：四按钮 + 三页文案 + 更新对话框文案）
-- Test: 回归
 
-- [x] **Step 1: lupdate/lrelease**（cd frontend/resources/i18n && lupdate ../../src ../../tests -no-obsolete -locations none -ts pixiu_en_US.ts；补英文译文至 0 unfinished；lrelease）
-- [x] **Step 2: 全量双路径回归**：`bash frontend/scripts/regression.sh`（OFF/ON + deb 校验——注意本机低内存 ON 构建若 OOM 用增量目录 -j1）
-- [x] **Step 3: 提交** `git commit -m "chore(frontend): regenerate i18n resources for about and update pages"`
+- frontend/resources/i18n/pixiu_en_US.ts/.qm：保留组件资源；退役 SettingsDialog 上下文已移除。
+- frontend/tests/t_i18n.cpp：保留资源的加载及译文检查。
+- frontend/management/CMakeLists.txt：正式组件回归入口。
+
+**验证与剩余工作：**
+
+- 修改 TS 后以 lrelease 同步 QM，检查实际保留文案，不以译文数量声明语言全覆盖。
+- 正式管理模块完整英文资源与语言切换尚未完成，不能迁入无实际资源支持的选择框。
+- frontend/scripts/regression.sh 按所选画像运行，不把单次执行描述为同时完成 OFF/ON。
+- V11 SDK=ON 产品验证与通用 SDK=OFF 检查分开，真实安装升级不由 offscreen 自动证明。
+- 升级测试会扫描临时安装包，独立测试套件应使用各自临时目录，避免交叉干扰。
 
 ---
 
 ## 执行顺序
 
-V-1 → V-2（依赖版本宏）→ V-3 收尾。每任务独立提交供两阶段审查。
+确认版本派生与正式页面归属 → 维护当前组件及有效测试 → 补齐语言与原生状态矩阵
+→ 整包安装升级验收 → 自动化发布。旧窗口删除与有效组件测试保留同步进行。
