@@ -37,7 +37,7 @@ from ..storage.idempotency import (
     IdempotencyInProgress,
     IdempotencyNotFound,
 )
-from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound
+from ..sync import PairRequestError, PairingError, PairingMethod, PeerNotFound, ScopeNotShareable
 from .di import (
     get_agent_context_service,
     get_agent_ingest_receipt_store,
@@ -467,6 +467,14 @@ def _canonical_request_hash(body: BaseModel) -> str:
 
 # ─── 记忆写入 ────────────────────────────────────────────
 
+async def _require_writable_shared_scope(scope: str, sync) -> None:
+    if scope.startswith("shared:") and sync is not None:
+        try:
+            await sync.require_local_scope(scope)
+        except ScopeNotShareable as exc:
+            raise HTTPException(status_code=403, detail="SHARED_SCOPE_MISMATCH") from exc
+
+
 @app.post("/memory/write", tags=["Memory"], summary="写入一条记忆")
 async def memory_write(
     body: MemoryWriteRequest,
@@ -491,6 +499,8 @@ async def memory_write(
         ) from exc
     if sensitivity > 0 and body.scope.startswith("shared:"):
         raise HTTPException(status_code=422, detail="SENSITIVE_SHARED_SCOPE")
+
+    await _require_writable_shared_scope(body.scope, sync)
 
     request_hash = _canonical_request_hash(body)
     if body.idempotency_key:
@@ -638,6 +648,8 @@ async def memory_update(
         ) from exc
     if sensitivity > 0 and existing.scope.startswith("shared:"):
         raise HTTPException(status_code=422, detail="SENSITIVE_SHARED_SCOPE")
+
+    await _require_writable_shared_scope(existing.scope, sync)
 
     request_hash = _canonical_request_hash(body)
     receipt_key = f"update:{body.idempotency_key}"

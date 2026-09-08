@@ -124,6 +124,39 @@ def test_dotted_scope_round_trip_keeps_exact_domain(client, scope):
     assert client.get(path, params={"scope": wrong_scope}).status_code == 404
 
 
+def test_wrong_shared_domain_write_is_rejected_before_any_database_change(client):
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        before = list(db.iterdump())
+    # Return the real HTTP error instead of re-raising the server exception.
+    client._transport.raise_server_exceptions = False
+    response = client.post("/memory/write", json={
+        "source_type": "OCR", "raw": OCR_RAW, "scope": "shared:other.domain",
+        "idempotency_key": "wrong-shared-domain",
+    })
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        after = list(db.iterdump())
+    assert after == before, "rejected shared write left persisted side effects"
+    assert response.status_code == 403
+    assert response.json()["error"] == "SHARED_SCOPE_MISMATCH"
+
+
+def test_wrong_shared_domain_update_preserves_record_and_receipts(client):
+    knowledge_id = _write_knowledge_id(client, title="shared update domain guard",
+                                      scope="shared:home")
+    # Historical data can remain after a configuration change. Do not rewrite it.
+    di_module.settings.sync_domain = "shared:new-domain"
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        before = list(db.iterdump())
+    response = client.post("/memory/update", json={
+        "knowledge_id": knowledge_id, "expected_version": 1, "scope": "shared:home",
+        "title": "must not replace", "idempotency_key": "wrong-domain-update",
+    })
+    assert response.status_code == 403
+    assert response.json()["error"] == "SHARED_SCOPE_MISMATCH"
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        assert list(db.iterdump()) == before
+
+
 def test_capabilities_exposes_actual_noncompliant_portable_runtime(client):
     response = client.get("/capabilities")
 

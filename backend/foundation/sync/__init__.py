@@ -148,6 +148,19 @@ class SyncService:
             pass
         return status
 
+    async def require_local_scope(self, scope: str) -> DeviceIdentity:
+        """Validate domain and signing identity before a caller mutates memory."""
+        try:
+            validate_shared_scope(scope)
+        except ValueError as exc:
+            raise ScopeNotShareable(str(exc)) from exc
+        if scope != self._domain:
+            raise ScopeNotShareable("scope is outside the local shared domain")
+        identity = await self.initialize()
+        if scope != identity.domain:
+            raise ScopeNotShareable("scope is outside the local shared domain")
+        return identity
+
     async def record_local(
         self,
         entity: str,
@@ -159,13 +172,7 @@ class SyncService:
     ) -> SyncOp:
         if not isinstance(value, dict):
             raise InvalidSyncOperation("operation value must be an object")
-        try:
-            validate_shared_scope(scope)
-        except ValueError as exc:
-            raise ScopeNotShareable(str(exc)) from exc
-        identity = await self.initialize()
-        if scope != identity.domain:
-            raise ScopeNotShareable("scope is outside the local shared domain")
+        identity = await self.require_local_scope(scope)
         if "scope" in value and value["scope"] != scope:
             raise InvalidSyncOperation("operation value scope does not match envelope")
 
