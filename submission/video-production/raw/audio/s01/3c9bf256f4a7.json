@@ -1,0 +1,115 @@
+{
+  "shot": "s01",
+  "request": {
+    "text": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "3c9bf256f4a7ef7e684ddc7fc46f66583a2ba12dcce74791977bcbadf8499c75",
+  "audio_sha256": "7f25094a1f9c2576b9e21820321d203cf018be69c62d0bf60498b5b986e9c97a",
+  "duration_seconds": 9.36,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 5921250,
+      "text": "貔貅"
+    },
+    {
+      "offset": 10894580,
+      "duration": 4473750,
+      "text": "面向"
+    },
+    {
+      "offset": 15631660,
+      "duration": 2894580,
+      "text": "麒麟"
+    },
+    {
+      "offset": 18657910,
+      "duration": 7631660,
+      "text": "操作系统"
+    },
+    {
+      "offset": 26552500,
+      "duration": 4868330,
+      "text": "智能体"
+    },
+    {
+      "offset": 31421250,
+      "duration": 2631660,
+      "text": "的"
+    },
+    {
+      "offset": 34315830,
+      "duration": 2500000,
+      "text": "去"
+    },
+    {
+      "offset": 36947500,
+      "duration": 3815830,
+      "text": "中心"
+    },
+    {
+      "offset": 40763330,
+      "duration": 1973750,
+      "text": "化"
+    },
+    {
+      "offset": 43000000,
+      "duration": 2236660,
+      "text": "记忆"
+    },
+    {
+      "offset": 45368330,
+      "duration": 3815830,
+      "text": "系统"
+    },
+    {
+      "offset": 55263330,
+      "duration": 1973750,
+      "text": "让"
+    },
+    {
+      "offset": 57368330,
+      "duration": 1578750,
+      "text": "每"
+    },
+    {
+      "offset": 58947500,
+      "duration": 920830,
+      "text": "一"
+    },
+    {
+      "offset": 59868330,
+      "duration": 1710410,
+      "text": "台"
+    },
+    {
+      "offset": 61842080,
+      "duration": 3421250,
+      "text": "设备"
+    },
+    {
+      "offset": 65263330,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 66447500,
+      "duration": 5789580,
+      "text": "记忆"
+    },
+    {
+      "offset": 75394580,
+      "duration": 3289580,
+      "text": "彼此"
+    },
+    {
+      "offset": 78815830,
+      "duration": 5526250,
+      "text": "相通"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

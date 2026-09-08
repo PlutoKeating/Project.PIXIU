@@ -1,0 +1,150 @@
+{
+  "shot": "s02",
+  "request": {
+    "text": "在工作电脑上交代过的安排，换到另一台设备，却又要重新解释。我们要优化的，正是麒麟操作系统智能体的记忆能力。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "a444368befbc2eb85524e39b3a401e1d24187dc0b1561dcd4e2b0ebf3b69f947",
+  "audio_sha256": "39fbfcf98593e9bc30879806081d4b8c9be011f260a9f38ee9ce8672cb9bf722",
+  "duration_seconds": 11.76,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 1973750,
+      "text": "在"
+    },
+    {
+      "offset": 3131660,
+      "duration": 2894580,
+      "text": "工作"
+    },
+    {
+      "offset": 6157910,
+      "duration": 5131660,
+      "text": "电脑"
+    },
+    {
+      "offset": 12342080,
+      "duration": 6184160,
+      "text": "上交代"
+    },
+    {
+      "offset": 18526250,
+      "duration": 921250,
+      "text": "过"
+    },
+    {
+      "offset": 19447500,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 20368330,
+      "duration": 5657910,
+      "text": "安排"
+    },
+    {
+      "offset": 29578750,
+      "duration": 3421250,
+      "text": "换到"
+    },
+    {
+      "offset": 33263330,
+      "duration": 1578750,
+      "text": "另"
+    },
+    {
+      "offset": 34842080,
+      "duration": 1052500,
+      "text": "一"
+    },
+    {
+      "offset": 35894580,
+      "duration": 1447500,
+      "text": "台"
+    },
+    {
+      "offset": 37473750,
+      "duration": 4605410,
+      "text": "设备"
+    },
+    {
+      "offset": 45368330,
+      "duration": 1842080,
+      "text": "却"
+    },
+    {
+      "offset": 47210410,
+      "duration": 2105410,
+      "text": "又要"
+    },
+    {
+      "offset": 49578750,
+      "duration": 4210410,
+      "text": "重新"
+    },
+    {
+      "offset": 53921250,
+      "duration": 4078750,
+      "text": "解释"
+    },
+    {
+      "offset": 64078750,
+      "duration": 2105410,
+      "text": "我们"
+    },
+    {
+      "offset": 66315830,
+      "duration": 1184160,
+      "text": "要"
+    },
+    {
+      "offset": 67631660,
+      "duration": 4605000,
+      "text": "优化"
+    },
+    {
+      "offset": 72236660,
+      "duration": 2631660,
+      "text": "的"
+    },
+    {
+      "offset": 77763330,
+      "duration": 4605410,
+      "text": "正是"
+    },
+    {
+      "offset": 82631660,
+      "duration": 3157910,
+      "text": "麒麟"
+    },
+    {
+      "offset": 85921250,
+      "duration": 7631660,
+      "text": "操作系统"
+    },
+    {
+      "offset": 93815830,
+      "duration": 5000000,
+      "text": "智能体"
+    },
+    {
+      "offset": 98815830,
+      "duration": 2105410,
+      "text": "的"
+    },
+    {
+      "offset": 101184160,
+      "duration": 3421250,
+      "text": "记忆"
+    },
+    {
+      "offset": 104736660,
+      "duration": 3684160,
+      "text": "能力"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

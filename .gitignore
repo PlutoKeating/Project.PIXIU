@@ -109,3 +109,11 @@ docs/.~*.pptx
 # Keep this last: every official submission artifact is versioned.
 !submission/
 !submission/**
+
+# Video sources and media are versioned; tooling caches are not artifacts.
+submission/video-production/**/node_modules/
+submission/video-production/**/.venv/
+submission/video-production/**/__pycache__/
+submission/video-production/**/.cache/
+submission/video-production/**/*.log
+submission/video-production/.runtime/

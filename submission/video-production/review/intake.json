@@ -1,0 +1,24 @@
+{
+  "kind": "制作起点核对，非最终赛事验收",
+  "source_commit": "96b922c828f861509cab8f4dbc625519f988639b",
+  "existing_screenshots_verified": 38,
+  "vm_count_confirmed": 1,
+  "vm_platform": "银河麒麟桌面操作系统 V11",
+  "embedding_runtime": "kylin",
+  "vector_runtime": "kylin",
+  "sync_enabled": false,
+  "peer_count": 1,
+  "requirements_images_inspected": 3,
+  "official_documents_sha256": {
+    "docs/OriginProblemDescription.md": "0a354e333bb00c36d0f5e70510334a765b374ead7704ea276cdb816ff3d4bdb8",
+    "docs/完整赛题要求.pptx": "c4940381e1f134791ddff0e217a4a3bb60e1a3fadb1a1d0112cbda9e2d0f472d"
+  },
+  "pending": [
+    "完整时间线",
+    "中文口白试听与同步",
+    "三端共享与离线并发录制",
+    "全部功能覆盖核对",
+    "终渲与独立审查",
+    "ZIP 交付"
+  ]
+}

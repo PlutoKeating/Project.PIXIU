@@ -30,6 +30,11 @@
   项目报告和技术方案；`prepare-submission.py` 生成源码并校验目录、格式和摘要。
   最终三机、完整 Agent、性能消融和 GUI 安装升级结论继续按真实证据记录。
 
+2026-09-09 视频制作：用户另行明确授权在 `submission/video-production/` 保存视频
+工程及所有中间素材，位于正式两层同名目录之外。已有 30 镜中文草案、38 张既有原图、
+Ink Press 模板参考与固定制作依赖；继续补采跨节点操作、配音字幕和成片终检。
+视频工具依赖归该目录的 `package.json`／`requirements.txt`，不加入产品运行闭包。
+
 - 🟡 **历史测试基线（2026-08-11）**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
   pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见
   `backend/foundation/docs/QUICK_START.md`）；前端回归脚本

@@ -343,6 +343,10 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 技术方案汇入用户手册、安装部署、测试结果和效果验证报告。编写材料、原图和内部
 检查记录在 `docs/delivery/` 维护，中间导出在 `build/release/out/`，不进入提交目录。
 
+2026-09-09 用户对视频制作另行授权：视频工程、原始截图、录屏、解说和中间素材放在
+`submission/video-production/`，位于正式两层同名目录之外。该工作目录不是额外必交
+作品，不改变 §0；最终仅把 `演示视频.zip` 补入既有内层目录。
+
 文档导出、源码生成和目录检查命令见 [材料维护说明](delivery/README.md)，检查结果见
 [材料检查记录](delivery/PREPARATION_CHECK.md)。各项功能和性能结论仍以真实证据判定。
 
@@ -350,7 +354,7 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 |----------|------------|------------|------|
 | 项目报告 | 1 份，ppt；目录示例 `项目报告.pptx` | `delivery/PRESENTATION_AND_VIDEO.md` | 已整理 12 页并逐页观察；同版量化证据仍待补 |
 | 技术方案 | 1 份，word、pdf；目录示例 `技术方案.doc` | `delivery/TECHNICAL_SOLUTION.md` 及同目录测试、用户手册、部署、流转、案例和适配内容 | 已合并八篇内容；实际结果与限制如实列出 |
-| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md` | 待录制 |
+| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | Ink Press 制作中；30 镜中文草案与 38 张原素材已建档，成片及三端操作素材待完成 |
 | 源代码 | 1 份，完整源代码及必要技术规范要素 | `delivery/SOURCE_AND_LICENSES.md` 与项目源码 | 按当前源码及四个固定上游生成，逐文件核对 |
 
 提交作品匿名；团队信息只用于平台信息核对与两层目录命名。内部保留版本和审核追踪。

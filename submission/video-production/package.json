@@ -1,0 +1,21 @@
+{
+  "name": "pixiu-ink-press-video",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "check": "tsc --noEmit",
+    "still": "remotion still src/index.ts PixiuOpeningReview",
+    "render": "remotion render src/index.ts PixiuOpeningReview renders/开场审阅样片.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,0 +1,232 @@
+[
+  {
+    "file": "raw/audio/s01/3c9bf256f4a7.json",
+    "bytes": 2308,
+    "sha256": "6b0339edfde63ef160e169b4fcf465a8213fa7322bfbe1dfe5f5b1243a659a07"
+  },
+  {
+    "file": "raw/audio/s01/3c9bf256f4a7.mp3",
+    "bytes": 56160,
+    "sha256": "7f25094a1f9c2576b9e21820321d203cf018be69c62d0bf60498b5b986e9c97a"
+  },
+  {
+    "file": "raw/audio/s02/a444368befbc.json",
+    "bytes": 2970,
+    "sha256": "5930a10e1e208e6c86718e6261a0f1d45ca8c3eaa2d27d893c78f071bc992f85"
+  },
+  {
+    "file": "raw/audio/s02/a444368befbc.mp3",
+    "bytes": 70560,
+    "sha256": "39fbfcf98593e9bc30879806081d4b8c9be011f260a9f38ee9ce8672cb9bf722"
+  },
+  {
+    "file": "raw/audio/transition-soft.mp3",
+    "bytes": 41082,
+    "sha256": "0e25921648c66e30924892ee17110ae621243de770b2944496526845a15a9998"
+  },
+  {
+    "file": "raw/audio/voice-sample.mp3",
+    "bytes": 56160,
+    "sha256": "ffeec8f2b9d72164056ec3df9264bd41300efebf07f5e97e43f0ce92fb4cf501"
+  },
+  {
+    "file": "raw/audio/voice-sample.srt",
+    "bytes": 185,
+    "sha256": "e7994143874c4b1e07edc25811910e9a7910d7dbdcbc627cbbb1e4b67ec1b768"
+  },
+  {
+    "file": "raw/screenshots/02-install-result.png",
+    "bytes": 184134,
+    "sha256": "3ec1b2d767fc016917d1544888d1b4bf899715899c9375b802709a575c643507"
+  },
+  {
+    "file": "raw/screenshots/05-agent-running.png",
+    "bytes": 110717,
+    "sha256": "506f4b6d05ed4ce846426da8fe21ec66b5f59f908ddc9836ba6a5c4e320cf5af"
+  },
+  {
+    "file": "raw/screenshots/06-agent-remember.png",
+    "bytes": 129441,
+    "sha256": "7e3f4872f07dc3fd75642739c1ad76508c108025a4d8ec70327e0f7f34d9feb1"
+  },
+  {
+    "file": "raw/screenshots/10-memory-input.png",
+    "bytes": 176852,
+    "sha256": "32d8720e6fc74b4c7ab0447ec94fa0504e72b3b7457d27041301a6cdbabd0597"
+  },
+  {
+    "file": "raw/screenshots/11-memory-saved.png",
+    "bytes": 157640,
+    "sha256": "74bcf02acc4be82b6b3c9b62eca9f497b3e904896b7ca5469f41cd3bd4ca4d6c"
+  },
+  {
+    "file": "raw/screenshots/12-memory-evidence.png",
+    "bytes": 171482,
+    "sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e"
+  },
+  {
+    "file": "raw/screenshots/13-memory-raw.png",
+    "bytes": 174652,
+    "sha256": "ddbb66028799e74d93f26cdad26cc762b032c870b9b926822573a9082ded8bb2"
+  },
+  {
+    "file": "raw/screenshots/14-memory-edit.png",
+    "bytes": 197473,
+    "sha256": "fd5c1eb86600ae1bb2906b171376bc41ba15c05f35c0a75083e1fe051569bd98"
+  },
+  {
+    "file": "raw/screenshots/15-memory-version.png",
+    "bytes": 171807,
+    "sha256": "d49d7f3f0a9744324d1e2c6f98ef1b78d162a8795c3e9571452357a3a3b34274"
+  },
+  {
+    "file": "raw/screenshots/16-agent-recall-result.png",
+    "bytes": 133375,
+    "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
+  },
+  {
+    "file": "raw/screenshots/17-agent-source.png",
+    "bytes": 191241,
+    "sha256": "446cadd9de3a536335d0c9aded6ee67cf2b76d7913eadfa91fadb8055ca27551"
+  },
+  {
+    "file": "raw/screenshots/20260909-current-desktop.png",
+    "bytes": 217729,
+    "sha256": "bc43309b95bcfd35c304be790658f17b767351204242ac62f596e5e3c8c4a4c2"
+  },
+  {
+    "file": "raw/screenshots/25-forget-target.png",
+    "bytes": 153695,
+    "sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5"
+  },
+  {
+    "file": "raw/screenshots/26-forget-cancel-ready.png",
+    "bytes": 128568,
+    "sha256": "bb0d53c907dd3d5a698ec4f9935d329e7d366509336dcbfec3c69dbfdaef435d"
+  },
+  {
+    "file": "raw/screenshots/27-forget-complete.png",
+    "bytes": 131893,
+    "sha256": "20494b714fc45a01acdc5653aca38568d3963009c386b01561d38ba34d156657"
+  },
+  {
+    "file": "raw/screenshots/30-privacy-enabled.png",
+    "bytes": 146891,
+    "sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b"
+  },
+  {
+    "file": "raw/screenshots/32-capture-log.png",
+    "bytes": 157722,
+    "sha256": "7e99b55676a09d7d1fb592193e962dbcee7c464cb84d735dc2aef2d6b519f98c"
+  },
+  {
+    "file": "raw/screenshots/33-capture-disabled.png",
+    "bytes": 146868,
+    "sha256": "48f9df32d2b08c16f08b2b56e702ab305c7367a9e8f778fb78526daa53c1d379"
+  },
+  {
+    "file": "raw/screenshots/34-file-source.png",
+    "bytes": 194149,
+    "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
+  },
+  {
+    "file": "raw/screenshots/40-device-status.png",
+    "bytes": 156667,
+    "sha256": "0b78fd1d8db78e4526e60dde05f8519c8e83c64b14dca19a726e3e5b68df8d85"
+  },
+  {
+    "file": "raw/screenshots/41-pair-dialog.png",
+    "bytes": 210252,
+    "sha256": "bc9486d35815ea3ee92039580c367740b80b77117da53c4e97268931a4fe46d7"
+  },
+  {
+    "file": "raw/screenshots/50-service-version.png",
+    "bytes": 154769,
+    "sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85"
+  },
+  {
+    "file": "raw/screenshots/51-update-check.png",
+    "bytes": 153435,
+    "sha256": "b5829fec233f3252796bcdd3db63ef9df1f8252e6dc42cedf8cc69088251b3f9"
+  },
+  {
+    "file": "raw/screenshots/52-settings-light.png",
+    "bytes": 136784,
+    "sha256": "f85446e41ae168e81b6845fb2bb5e534d0b63cd2783ec564e53b6145f258e0ad"
+  },
+  {
+    "file": "raw/screenshots/54-model-check.png",
+    "bytes": 184350,
+    "sha256": "1b6758586a1b815c0976d154a44afc7416098740f32200cd791fbaa642cb66f2"
+  },
+  {
+    "file": "raw/screenshots/55-dark-ready.png",
+    "bytes": 134530,
+    "sha256": "c063510d870f901e318426f7ed64266dc59c0acc2c55f51d5439df29dac65cd4"
+  },
+  {
+    "file": "raw/screenshots/60-insight-digest.png",
+    "bytes": 160821,
+    "sha256": "d6653f474c82886e8b24f3b177fac938c3c23fdb5fb9b87dfe244543e353af9c"
+  },
+  {
+    "file": "raw/screenshots/61-preference-history.png",
+    "bytes": 109406,
+    "sha256": "fa7a2db72a5cf2d8489acf855f367247e895f83359027bbec9e2c8163f71785d"
+  },
+  {
+    "file": "raw/screenshots/62-preference-changed.png",
+    "bytes": 116084,
+    "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593"
+  },
+  {
+    "file": "raw/screenshots/64-edit-version-conflict.png",
+    "bytes": 182075,
+    "sha256": "4978152783dad68c9ecab7b7ac3a954a903827e1c17bdba0b67ce19daf5297a5"
+  },
+  {
+    "file": "raw/screenshots/65-reload-confirm.png",
+    "bytes": 185753,
+    "sha256": "c631035ca9f6dc2cb70e1fc08a47449d9fffee753ef898b62509dbfd9b1801a8"
+  },
+  {
+    "file": "raw/screenshots/70-task-running.png",
+    "bytes": 105026,
+    "sha256": "158a2399dee438f83428b7999ca402876154258bc13127571104fb5e040715fe"
+  },
+  {
+    "file": "raw/screenshots/72-task-stop-result.png",
+    "bytes": 108386,
+    "sha256": "86867397e54a8ebf50bcb680d62ffa19b56344435c3ce1715bb4e73904e38f1a"
+  },
+  {
+    "file": "raw/screenshots/73-command-window.png",
+    "bytes": 94192,
+    "sha256": "e101000cf1d362e9203f5bea0f057ee0c925c4c2e09eb6e0571a4e09775eb3ed"
+  },
+  {
+    "file": "raw/screenshots/75-menu-launch.png",
+    "bytes": 150388,
+    "sha256": "e9ee939221a5befff613b032754f9876d264e6fde28eaa01523d4a6e4e8552fb"
+  },
+  {
+    "file": "raw/screenshots/78-command-and-window.png",
+    "bytes": 163113,
+    "sha256": "df8a7aa178d26b6b3682ffa0a6332d1d68049f42a813f267670c4a74f05f69be"
+  },
+  {
+    "file": "raw/screenshots/81-long-reader.png",
+    "bytes": 255954,
+    "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062"
+  },
+  {
+    "file": "raw/screenshots/84-long-bottom.png",
+    "bytes": 217417,
+    "sha256": "5243cea72d83195f45691edf4a0756eb12cbb7d23b3cd10f9a356244e2a93f99"
+  },
+  {
+    "file": "raw/screenshots/85-invalid-json.png",
+    "bytes": 206995,
+    "sha256": "ec4f8ac514fff22c4cd21730b67b34325d2616a55126a708577ec3059b6fc9f4"
+  }
+]

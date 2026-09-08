@@ -1,0 +1,251 @@
+[
+  {
+    "name": "brand-ink-open",
+    "summary": "墨线十字准星描画→字标逐字压印→打字机副标→满一秒静止再上浮消散",
+    "use": "品牌开场；任何\"先立名号再进产品\"的片头",
+    "duration": "约 2.8s（83f）",
+    "energy": "低（起步位，为后续镜头留爬升空间）",
+    "intention": "第一拍先给品牌记忆点：观众在任何产品画面出现之前，先看清并记住名字。安静、纸墨质感、有一个完整的静止时刻。",
+    "source": "references/shots/opening/brand-ink-open.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "brand-ink-open",
+        "label": "brand-ink-open",
+        "description": "墨线十字准星描画→字标逐字压印→打字机副标→满一秒静止再上浮消散",
+        "media": {
+          "url": "./media/brand-ink-open.mp4?v=1784437314501",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/brand-ink-open.md",
+    "category": "opening",
+    "tags": [
+      "opening",
+      "typography"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "deck-deal-flyin",
+    "summary": "暗场金属背景里的实体牌堆特写环绕开局，拉远交给页面后一摞卡像发牌一样硬加速甩进网格，相机追着滚动、满板停半秒",
+    "use": "展示\"内容量大/源源不断汇入\"的列表页与卡片墙；建立信息密度的第一印象",
+    "duration": "约 2.6s 发牌段（36–113f），前接约 2s（62f）牌堆特写可选",
+    "energy": "高（节奏爬升段主力，不放开场第一镜）",
+    "intention": "先给悬念（这一摞是什么？），再给答案（是几十个项目，它们自己飞进页面各就各位）。观众要感受到\"东西源源不断地涌进来\"，每张卡带着急迫感砸到位。",
+    "source": "references/shots/ui-entrance/deck-deal-flyin.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "deck-deal-flyin",
+        "label": "deck-deal-flyin",
+        "description": "暗场金属背景里的实体牌堆特写环绕开局，拉远交给页面后一摞卡像发牌一样硬加速甩进网格，相机追着滚动、满板停半秒",
+        "media": {
+          "url": "./media/deck-deal-flyin.mp4?v=1784437314552",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/deck-deal-flyin.md",
+    "category": "ui-entrance",
+    "tags": [
+      "ui-entrance"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "document-typewriter-reveal",
+    "summary": "整页真排版文档在光标后自己\"写\"出来、侧栏跟进、历史条目逐个落入轨道",
+    "use": "文档/报告/笔记类功能镜头；信息密度最高的一拍",
+    "duration": "约 3.7s（110f，含 history-list-stack 尾段）",
+    "energy": "低中（信息密度最高，节奏放稳让观众读字）",
+    "intention": "观众会读清屏幕上每个字——这一镜的说服力全在\"文档是真的\"。打字机式写入把静态页面变成\"正在被写出来的文档\"，侧栏历史条目落入补上\"持续产出\"的时间纵深。",
+    "source": "references/shots/typography/document-typewriter-reveal.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "document-typewriter-reveal",
+        "label": "document-typewriter-reveal",
+        "description": "整页真排版文档在光标后自己\"写\"出来、侧栏跟进、历史条目逐个落入轨道",
+        "media": {
+          "url": "./media/document-typewriter-reveal.mp4?v=1784437314877",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/document-typewriter-reveal.md",
+    "category": "typography",
+    "tags": [
+      "typography",
+      "ui-entrance"
+    ],
+    "addedAt": "2026-07-20T02:21:04.000Z"
+  },
+  {
+    "name": "list-stack-press",
+    "summary": "列表卡从画面底部逐张飞上摞起，每张落地压弹整摞、计数器同步跳一格",
+    "use": "feed/雷达/收件箱类\"每天有新东西\"的镜头；强调持续积累的资产列表",
+    "duration": "约 3s（18–88f）",
+    "energy": "中",
+    "intention": "\"堆叠有重量\"：每张新卡落上来，已落定的整摞被压下再弹回——观众从物理反馈里读出\"这是实打实攒下来的东西\"。计数器同步跳格把数量感钉死。",
+    "source": "references/shots/ui-entrance/list-stack-press.md",
+    "updatedAt": "2026-08-25T14:22:11.000Z",
+    "styles": [
+      {
+        "key": "list-stack-press",
+        "label": "list-stack-press",
+        "description": "列表卡从画面底部逐张飞上摞起，每张落地压弹整摞、计数器同步跳一格",
+        "media": {
+          "url": "./media/list-stack-press.mp4?v=1784437314631",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/list-stack-press.md",
+    "category": "ui-entrance",
+    "tags": [
+      "ui-entrance"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "outro-group-photo-launch",
+    "summary": "全片元素从四面八方飞来围住字标合影，crane 落机位+舞台光+金尘做成发布会收场",
+    "use": "outro/品牌收尾；多功能产品的\"全家福\"式终镜",
+    "duration": "约 4.8s（145f）",
+    "energy": "峰值（全片最高点）",
+    "intention": "把看过的每个功能各抽一个代表元素叫回来合影，字标压轴登场——观众离场前最后记住的是\"这些东西属于同一个产品\"。规格必须是发布会级：能量推到全片最高。",
+    "source": "references/shots/outro/outro-group-photo-launch.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "outro-group-photo-launch",
+        "label": "outro-group-photo-launch",
+        "description": "全片元素从四面八方飞来围住字标合影，crane 落机位+舞台光+金尘做成发布会收场",
+        "media": {
+          "url": "./media/outro-group-photo-launch.mp4?v=1784437314661",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/outro-group-photo-launch.md",
+    "category": "outro",
+    "tags": [
+      "outro"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "paper-title-card",
+    "summary": "一句话逐词压印上纸、一个词标强调色斜体、短划线收束",
+    "use": "章节转场/价值主张字卡；重要功能出场前的引导卡；全片呼吸位",
+    "duration": "1.7–1.8s（50–55f）",
+    "energy": "低（呼吸位，隔开两段高能镜头）",
+    "intention": "在两段产品画面之间给观众一句话的喘息：说清\"接下来看什么、它值什么\"。letterpress 压印质感让字卡与纸墨风格的产品画面同属一个世界。",
+    "source": "references/shots/typography/paper-title-card.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "paper-title-card",
+        "label": "paper-title-card",
+        "description": "一句话逐词压印上纸、一个词标强调色斜体、短划线收束",
+        "media": {
+          "url": "./media/paper-title-card.mp4?v=1784437314694",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/paper-title-card.md",
+    "category": "typography",
+    "tags": [
+      "typography",
+      "transition",
+      "rhythm"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "row-embed",
+    "summary": "内容行像卡片一样从空中降下、rotateX 收平、嵌入瞬间底边亮一道强调色的缝",
+    "use": "\"结构化数据长进页面\"的详情页/列表镜头；行级内容的批量入场",
+    "duration": "约 2s（12–68f）",
+    "energy": "中",
+    "intention": "详情页的行不是\"显示出来\"而是\"长进去\"——每一行从空中降下并严丝合缝嵌入页面布局，嵌入瞬间的强调色缝是\"咔哒\"扣上的视觉拟音。",
+    "source": "references/shots/ui-entrance/row-embed.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "row-embed",
+        "label": "row-embed",
+        "description": "内容行像卡片一样从空中降下、rotateX 收平、嵌入瞬间底边亮一道强调色的缝",
+        "media": {
+          "url": "./media/row-embed.mp4?v=1784437314715",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/row-embed.md",
+    "category": "ui-entrance",
+    "tags": [
+      "ui-entrance"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "spotlight-hero-card",
+    "summary": "聚光灯扫过页面锁定一张卡，斜 45° 推进后卡片弹起悬浮、光束沿轮廓两圈、贴回原位",
+    "use": "\"单一主角\"式产品开场；把一个核心对象（卡片/条目/模块）立成全片主角",
+    "duration": "约 4.6s（82–220f）",
+    "energy": "中（质感最高的一镜，节奏慢而稳）",
+    "intention": "开场只讲一件事：这一张卡就是产品的原子单位。聚光灯替观众做视线引导，弹起悬浮给它体积和重量，轮廓光束是\"扫描/检视\"的隐喻，最后贴回原位表示它属于这个页面。",
+    "source": "references/shots/opening/spotlight-hero-card.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "spotlight-hero-card",
+        "label": "spotlight-hero-card",
+        "description": "聚光灯扫过页面锁定一张卡，斜 45° 推进后卡片弹起悬浮、光束沿轮廓两圈、贴回原位",
+        "media": {
+          "url": "./media/spotlight-hero-card.mp4?v=1785050510059",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/spotlight-hero-card.md",
+    "category": "opening",
+    "tags": [
+      "opening",
+      "effects",
+      "camera"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  },
+  {
+    "name": "type-and-filter",
+    "summary": "真实 UI 上打字搜索、网格自己收敛成一张卡、点击穿透进详情页",
+    "use": "功能演示的\"操作叙事\"段；搜索/筛选/进入详情的任何交互链路",
+    "duration": "约 2.5s（118–190f）",
+    "energy": "中（发牌高能段之后的从容一拍）",
+    "intention": "让观众\"跟着做一遍\"：看清输入了什么、页面怎么响应、点了哪里。这是全片唯一模拟真人操作的镜头，节奏必须像人手，不能像脚本。",
+    "source": "references/shots/interaction/type-and-filter.md",
+    "updatedAt": "2026-08-18T10:00:28.000Z",
+    "styles": [
+      {
+        "key": "type-and-filter",
+        "label": "type-and-filter",
+        "description": "真实 UI 上打字搜索、网格自己收敛成一张卡、点击穿透进详情页",
+        "media": {
+          "url": "./media/type-and-filter.mp4?v=1784437314842",
+          "type": "mp4"
+        }
+      }
+    ],
+    "sourceUrl": "./source/type-and-filter.md",
+    "category": "interaction",
+    "tags": [
+      "interaction"
+    ],
+    "addedAt": "2026-07-19T05:45:41.000Z"
+  }
+]

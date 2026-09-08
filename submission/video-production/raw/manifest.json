@@ -1,0 +1,230 @@
+[
+  {
+    "file": "raw/screenshots/02-install-result.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/02-install-result.png",
+    "sha256": "3ec1b2d767fc016917d1544888d1b4bf899715899c9375b802709a575c643507",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/05-agent-running.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/05-agent-running.png",
+    "sha256": "506f4b6d05ed4ce846426da8fe21ec66b5f59f908ddc9836ba6a5c4e320cf5af",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/06-agent-remember.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/06-agent-remember.png",
+    "sha256": "7e3f4872f07dc3fd75642739c1ad76508c108025a4d8ec70327e0f7f34d9feb1",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/10-memory-input.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/10-memory-input.png",
+    "sha256": "32d8720e6fc74b4c7ab0447ec94fa0504e72b3b7457d27041301a6cdbabd0597",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/11-memory-saved.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/11-memory-saved.png",
+    "sha256": "74bcf02acc4be82b6b3c9b62eca9f497b3e904896b7ca5469f41cd3bd4ca4d6c",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/12-memory-evidence.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/12-memory-evidence.png",
+    "sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/13-memory-raw.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/13-memory-raw.png",
+    "sha256": "ddbb66028799e74d93f26cdad26cc762b032c870b9b926822573a9082ded8bb2",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/14-memory-edit.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/14-memory-edit.png",
+    "sha256": "fd5c1eb86600ae1bb2906b171376bc41ba15c05f35c0a75083e1fe051569bd98",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/15-memory-version.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/15-memory-version.png",
+    "sha256": "d49d7f3f0a9744324d1e2c6f98ef1b78d162a8795c3e9571452357a3a3b34274",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/16-agent-recall-result.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
+    "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/17-agent-source.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/17-agent-source.png",
+    "sha256": "446cadd9de3a536335d0c9aded6ee67cf2b76d7913eadfa91fadb8055ca27551",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/25-forget-target.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/25-forget-target.png",
+    "sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/26-forget-cancel-ready.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/26-forget-cancel-ready.png",
+    "sha256": "bb0d53c907dd3d5a698ec4f9935d329e7d366509336dcbfec3c69dbfdaef435d",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/27-forget-complete.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/27-forget-complete.png",
+    "sha256": "20494b714fc45a01acdc5653aca38568d3963009c386b01561d38ba34d156657",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/30-privacy-enabled.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/30-privacy-enabled.png",
+    "sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/32-capture-log.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/32-capture-log.png",
+    "sha256": "7e99b55676a09d7d1fb592193e962dbcee7c464cb84d735dc2aef2d6b519f98c",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/33-capture-disabled.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/33-capture-disabled.png",
+    "sha256": "48f9df32d2b08c16f08b2b56e702ab305c7367a9e8f778fb78526daa53c1d379",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/34-file-source.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/34-file-source.png",
+    "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/40-device-status.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/40-device-status.png",
+    "sha256": "0b78fd1d8db78e4526e60dde05f8519c8e83c64b14dca19a726e3e5b68df8d85",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/41-pair-dialog.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/41-pair-dialog.png",
+    "sha256": "bc9486d35815ea3ee92039580c367740b80b77117da53c4e97268931a4fe46d7",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/50-service-version.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/50-service-version.png",
+    "sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/51-update-check.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/51-update-check.png",
+    "sha256": "b5829fec233f3252796bcdd3db63ef9df1f8252e6dc42cedf8cc69088251b3f9",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/52-settings-light.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/52-settings-light.png",
+    "sha256": "f85446e41ae168e81b6845fb2bb5e534d0b63cd2783ec564e53b6145f258e0ad",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/54-model-check.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/54-model-check.png",
+    "sha256": "1b6758586a1b815c0976d154a44afc7416098740f32200cd791fbaa642cb66f2",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/55-dark-ready.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/55-dark-ready.png",
+    "sha256": "c063510d870f901e318426f7ed64266dc59c0acc2c55f51d5439df29dac65cd4",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/60-insight-digest.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/60-insight-digest.png",
+    "sha256": "d6653f474c82886e8b24f3b177fac938c3c23fdb5fb9b87dfe244543e353af9c",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/61-preference-history.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/61-preference-history.png",
+    "sha256": "fa7a2db72a5cf2d8489acf855f367247e895f83359027bbec9e2c8163f71785d",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/62-preference-changed.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/62-preference-changed.png",
+    "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/64-edit-version-conflict.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/64-edit-version-conflict.png",
+    "sha256": "4978152783dad68c9ecab7b7ac3a954a903827e1c17bdba0b67ce19daf5297a5",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/65-reload-confirm.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/65-reload-confirm.png",
+    "sha256": "c631035ca9f6dc2cb70e1fc08a47449d9fffee753ef898b62509dbfd9b1801a8",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/70-task-running.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/70-task-running.png",
+    "sha256": "158a2399dee438f83428b7999ca402876154258bc13127571104fb5e040715fe",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/72-task-stop-result.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/72-task-stop-result.png",
+    "sha256": "86867397e54a8ebf50bcb680d62ffa19b56344435c3ce1715bb4e73904e38f1a",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/73-command-window.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/73-command-window.png",
+    "sha256": "e101000cf1d362e9203f5bea0f057ee0c925c4c2e09eb6e0571a4e09775eb3ed",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/75-menu-launch.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/75-menu-launch.png",
+    "sha256": "e9ee939221a5befff613b032754f9876d264e6fde28eaa01523d4a6e4e8552fb",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/78-command-and-window.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/78-command-and-window.png",
+    "sha256": "df8a7aa178d26b6b3682ffa0a6332d1d68049f42a813f267670c4a74f05f69be",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/81-long-reader.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/81-long-reader.png",
+    "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/84-long-bottom.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/84-long-bottom.png",
+    "sha256": "5243cea72d83195f45691edf4a0756eb12cbb7d23b3cd10f9a356244e2a93f99",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  },
+  {
+    "file": "raw/screenshots/85-invalid-json.png",
+    "source": "docs/delivery/assets/operations/01-图片记录/85-invalid-json.png",
+    "sha256": "ec4f8ac514fff22c4cd21730b67b34325d2616a55126a708577ec3059b6fc9f4",
+    "use": "已归档原素材；每次入片另核对构图、中文与匿名要求"
+  }
+]
