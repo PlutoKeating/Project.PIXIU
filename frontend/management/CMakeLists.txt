@@ -19,6 +19,8 @@ add_library(pixiu-management STATIC
     AgentEvidenceClient.h AgentEvidenceClient.cpp
     MemoryScopes.h
     HostCloseGuard.h HostCloseGuard.cpp
+    ../src/app/ProductInformation.h
+    ../src/widgets/InfoDialog.h ../src/widgets/InfoDialog.cpp
     MemoryWorkspace.h MemoryWorkspace.cpp
     MemoryWriteDialog.h MemoryWriteDialog.cpp
     MemoryEditDialog.h MemoryEditDialog.cpp

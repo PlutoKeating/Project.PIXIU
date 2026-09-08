@@ -1,4 +1,5 @@
 #include "app/PixiuApp.h"
+#include "app/ProductInformation.h"
 
 #include "app/SingleInstanceGuard.h"
 #include "app/TrayIcon.h"
@@ -987,46 +988,23 @@ void PixiuApp::openMonitorCenter()
 
 void PixiuApp::showAboutUs()
 {
-    if (!m_aboutDialog) {
-        m_aboutDialog = new InfoDialog(
-            tr("关于 PIXIU"),
-            tr("PIXIU 貔貅是面向银河麒麟桌面操作系统的 OS Agent 记忆优化"
-               "助手。\n\n"
-               "它专注偏好捕捉、知识整合与高效检索，让记忆的沉淀、复用与"
-               "遗忘更自然。\n\n"
-               "记忆数据仅保存在本机，敏感信息可识别过滤，您可随时掌控与"
-               "清除。\n\n"
-               "当前版本 %1。")
-                .arg(QCoreApplication::applicationVersion()));
-    }
+    if (!m_aboutDialog)
+        m_aboutDialog = new InfoDialog(tr("关于 PIXIU"),
+            ProductInformation::about(QCoreApplication::applicationVersion()));
     m_aboutDialog->showAndFocus();
 }
 
 void PixiuApp::showTerms()
 {
-    if (!m_termsDialog) {
-        m_termsDialog = new InfoDialog(
-            tr("服务条款"),
-            tr("PIXIU 为参赛作品，按现状提供，不构成任何明示或默示的担保。"
-               "\n\n"
-               "您对使用本软件产生的数据负责；本软件不收集、不上传您的个人"
-               "数据，记忆数据仅存储于本机。\n\n"
-               "如对作品有疑问或建议，请通过官方渠道联系我们。"));
-    }
+    if (!m_termsDialog)
+        m_termsDialog = new InfoDialog(tr("服务条款"), ProductInformation::licenses());
     m_termsDialog->showAndFocus();
 }
 
 void PixiuApp::showPrivacy()
 {
-    if (!m_privacyDialog) {
-        m_privacyDialog = new InfoDialog(
-            tr("隐私政策"),
-            tr("您的记忆数据仅存储在本机，不会上传至任何服务器。\n\n"
-               "PIXIU 提供敏感信息识别过滤，并可在监控中心随时关闭监控"
-               "总开关。\n\n"
-               "您可以通过自然语言指令遗忘任意记忆，数据可随时掌控与"
-               "清除。"));
-    }
+    if (!m_privacyDialog)
+        m_privacyDialog = new InfoDialog(tr("隐私政策"), ProductInformation::dataUse());
     m_privacyDialog->showAndFocus();
 }
 

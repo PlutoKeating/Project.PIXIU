@@ -3,6 +3,8 @@
 #include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
 #include "widgets/CheckUpdateDialog.h"
+#include "widgets/InfoDialog.h"
+#include "app/ProductInformation.h"
 #include <QCoreApplication>
 #include <QLabel>
 #include <QPushButton>
@@ -32,6 +34,19 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     auto *updates = new QPushButton(tr("检查更新"), general);
     updates->setObjectName(QStringLiteral("productUpdates"));
     generalLayout->addWidget(updates);
+    auto addInformation = [this, general, generalLayout](const QString &name,
+        const QString &title, const QString &body) {
+        auto *button = new QPushButton(title, general);
+        button->setObjectName(name);
+        auto *dialog = new InfoDialog(title, body, this);
+        dialog->setObjectName(name + QStringLiteral("Dialog"));
+        generalLayout->addWidget(button);
+        connect(button, &QPushButton::clicked, dialog, &InfoDialog::showAndFocus);
+    };
+    addInformation(QStringLiteral("productAbout"), tr("关于 PIXIU"),
+        ProductInformation::about(QStringLiteral(PIXIU_VERSION)));
+    addInformation(QStringLiteral("productDataUse"), tr("数据与联网说明"), ProductInformation::dataUse());
+    addInformation(QStringLiteral("productLicenses"), tr("许可证与第三方组件"), ProductInformation::licenses());
     generalLayout->addStretch();
     auto *upgrade = new UpgradeController(this);
     auto *updateDialog = new CheckUpdateDialog(upgrade, this);

@@ -14,7 +14,7 @@ InfoDialog::InfoDialog(const QString &title, const QString &body,
 {
     setObjectName(QStringLiteral("infoDialog"));
     setWindowTitle(title);
-    // 非模态：与设置/遗忘/监控中心等弹窗一致，关闭只关本弹窗，不阻塞聊天。
+    // 非模态只读说明；关闭只隐藏本弹窗，归属及退出检查由宿主负责。
     resize(420, 360);
     setMinimumSize(360, 280);
 
@@ -26,7 +26,7 @@ InfoDialog::InfoDialog(const QString &title, const QString &body,
     m_textBrowser = new QTextBrowser(this);
     m_textBrowser->setObjectName(QStringLiteral("infoTextBrowser"));
     // QTextBrowser 默认只读；用纯文本渲染避免 HTML 转义/换行折叠问题
-    //（正文为调用方传入的参赛语境文案，多段以空行分隔）。
+    //（正文由调用方提供，多段以空行分隔）。
     m_textBrowser->setPlainText(body);
 
     QPushButton *closeButton = new QPushButton(tr("关闭"), this);

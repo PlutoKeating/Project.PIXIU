@@ -93,6 +93,10 @@ for close_state_source in HostCloseGuard.cpp HostCloseGuard.h MemoryWorkspace.h 
         "${fixture}/source/pixiu/frontend/management/${close_state_source}"
 done
 grep -q 'guard && guard->confirmExit(updateDialog)' "${fixture}/source/pixiu/frontend/management/SettingsWorkspace.cpp"
+for information_source in app/ProductInformation.h widgets/InfoDialog.h widgets/InfoDialog.cpp; do
+    cmp "${repo_root}/frontend/src/${information_source}" \
+        "${fixture}/source/pixiu/frontend/src/${information_source}"
+done
 python3 - "${fixture}/source/src/main.cpp" <<'PY'
 from pathlib import Path
 import sys

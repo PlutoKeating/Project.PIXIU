@@ -8,6 +8,7 @@
 #include "DeliveryPage.h"
 #include "ForgetPage.h"
 #include "SettingsWorkspace.h"
+#include "widgets/InfoDialog.h"
 #include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
 #include "AgentEvidenceClient.h"
@@ -33,6 +34,7 @@
 #include <QSignalSpy>
 #include <QScreen>
 #include <QStyle>
+#include <QTextBrowser>
 
 class Transport : public HttpBackendTransport
 {
@@ -811,6 +813,54 @@ private slots:
         QSignalSpy requested(&settings, &pixiu::SettingsWorkspace::agentSettingsRequested);
         settings.findChild<QPushButton *>("agentSettings")->click();
         QCOMPARE(requested.count(), 1);
+    }
+    void settingsInformationIsOwnedReadOnlyAndReused()
+    {
+        QWidget host;
+        pixiu::SettingsWorkspace settings(&host);
+        pixiu::HostCloseGuard guard(&host);
+        host.show();
+        QSignalSpy requested(&settings, &pixiu::SettingsWorkspace::agentSettingsRequested);
+        const QStringList names = {"productAbout", "productDataUse", "productLicenses"};
+        QCOMPARE(settings.findChildren<InfoDialog *>().size(), 3);
+        for (const auto &name : names) {
+            auto *button = settings.findChild<QPushButton *>(name);
+            auto *dialog = settings.findChild<InfoDialog *>(name + "Dialog");
+            QVERIFY(button);
+            QVERIFY(dialog);
+            QCOMPARE(dialog->parentWidget(), &settings);
+            QVERIFY(!dialog->isVisible());
+            button->click();
+            QTRY_VERIFY(dialog->isVisible());
+            QCOMPARE(dialog->windowTitle(), button->text());
+            auto *body = dialog->findChild<QTextBrowser *>("infoTextBrowser");
+            QVERIFY(body);
+            QVERIFY(body->isReadOnly());
+            const auto text = body->toPlainText();
+            if (name == "productAbout") {
+                QVERIFY(text.contains(settings.findChild<QLabel *>("productVersion")->text()));
+                QVERIFY(text.contains("openKylin Agent"));
+            } else if (name == "productDataUse") {
+                QVERIFY(text.contains("shared:*"));
+                QVERIFY(text.contains("user:*"));
+                QVERIFY(text.contains(QStringLiteral("可能发送到所选模型服务")));
+                QVERIFY(text.contains(QStringLiteral("不等于证据")));
+                QVERIFY(!text.contains(QStringLiteral("不会上传至任何服务器")));
+            } else {
+                QVERIFY(text.contains("/usr/share/doc/pixiu/agent/NOTICE.agent.txt"));
+                QVERIFY(text.contains("agent-components.spdx.json"));
+                QVERIFY(text.contains(QStringLiteral("不授予新的许可")));
+            }
+            button->click();
+            QCOMPARE(settings.findChildren<InfoDialog *>().size(), 3);
+            QVERIFY(!guard.confirmExit());
+            QVERIFY(host.isVisible());
+            dialog->findChild<QPushButton *>("infoCloseButton")->click();
+            QTRY_VERIFY(!dialog->isVisible());
+            QVERIFY(host.isVisible());
+            QVERIFY(guard.confirmExit());
+        }
+        QCOMPARE(requested.count(), 0);
     }
     void forgettingDoesNotInventMissingCascadeCounts()
     {

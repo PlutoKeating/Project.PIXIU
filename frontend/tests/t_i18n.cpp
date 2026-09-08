@@ -2,6 +2,7 @@
 #include <QSignalSpy>
 #include <QTest>
 #include <QTranslator>
+#include "../src/app/ProductInformation.h"
 
 // i18n 资源测试：内嵌英文翻译可从 qrc 加载并生效。
 class TestI18n : public QObject
@@ -88,6 +89,10 @@ void TestI18n::englishTranslationLoadsAndApplies()
     QCOMPARE(QCoreApplication::translate(
                  "UpgradeController", "升级失败：%1"),
              QStringLiteral("Upgrade failed: %1"));
+    QVERIFY(ProductInformation::about("test-version").startsWith("PIXIU test-version\n\nA memory workspace"));
+    QVERIFY(ProductInformation::dataUse().contains("may be sent to the selected model service"));
+    QVERIFY(ProductInformation::dataUse().contains("have been physically erased"));
+    QVERIFY(ProductInformation::licenses().contains("This notice grants no new license"));
 }
 
 QTEST_MAIN(TestI18n)
