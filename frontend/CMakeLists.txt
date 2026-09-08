@@ -506,8 +506,6 @@ if(BUILD_TESTING)
         src/app/SyncController.cpp
         src/app/EventRouter.h
         src/app/EventRouter.cpp
-        src/app/DeliveryController.h
-        src/app/DeliveryController.cpp
         src/app/ThemeService.h
         src/app/ThemeService.cpp
         src/app/UkuiWindow.h
@@ -600,8 +598,6 @@ if(BUILD_TESTING)
         src/app/SyncController.cpp
         src/app/EventRouter.h
         src/app/EventRouter.cpp
-        src/app/DeliveryController.h
-        src/app/DeliveryController.cpp
         src/app/ThemeService.h
         src/app/ThemeService.cpp
         src/app/UkuiWindow.h

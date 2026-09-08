@@ -979,6 +979,7 @@ private slots:
         auto *items = page.findChild<QListWidget *>("deliveryItems");
         auto *status = page.findChild<QLabel *>("deliveryStatus");
         QVERIFY(!search->isEnabled());
+        QCOMPARE(transport.insightReads, 0); // No hidden startup request.
         insights->click();
         QVERIFY(!digest->isEnabled());
         QVERIFY(!date->isEnabled());
@@ -986,6 +987,9 @@ private slots:
         QVERIFY(status->text().contains("不代表记忆库为空"));
         insights->click();
         emit transport.insightsResult({QJsonObject{{"title", "Example"}, {"summary", "Summary"}, {"knowledge_id", "k1"}, {"score", 0.7}}});
+        QCOMPARE(items->count(), 1);
+        QVERIFY(items->item(0)->text().contains("Example\nSummary"));
+        QVERIFY(items->item(0)->text().contains("0.70"));
         items->setCurrentRow(0);
         QSignalSpy requested(&page, &pixiu::DeliveryPage::searchRequested);
         search->click();

@@ -15,7 +15,6 @@
 #include "app/Severity.h"
 #include "app/ThemeService.h"
 #include "app/MonitorController.h"
-#include "app/DeliveryController.h"
 #include "app/UpgradeController.h"
 #include "app/UiTokens.h"
 #include "widgets/FloatingBall.h"
@@ -404,24 +403,6 @@ bool PixiuApp::start()
                     return;
                 }
             });
-
-    // Remaining legacy insight checks; digest presentation belongs to DeliveryPage.
-    // 洞察加载 → 聊天窗渲染动态建议卡（静态兜底保留）；加载时机：启动时
-    // 一次 + 聊天窗每次可见时刷新（见 ChatWindow::shown 接线）。
-    m_deliveryController = new DeliveryController(m_transport, this);
-    connect(m_deliveryController, &DeliveryController::insightsLoaded, this,
-            [this](const QJsonArray &insights) {
-                if (m_chatWindow) {
-                    m_chatWindow->setInsights(insights);
-                }
-            });
-    connect(m_deliveryController, &DeliveryController::failed, this,
-            [](const QString &code, const QString &message) {
-                // 洞察失败不打扰用户：欢迎页保留静态兜底，仅记日志。
-                qCWarning(lcApp) << "delivery request failed:"
-                                 << code << message;
-            });
-    m_deliveryController->loadInsights();
 
     // 同步管理：总开关/暂停/发现/确认式配对/退出网络（SN-6）。
     // 兼容旧后端的 not_implemented 响应，不伪造节点或成功状态。
@@ -880,14 +861,10 @@ bool PixiuApp::start()
                     m_notify->notify(tr("监控隔离"), summary);
                 }
             });
-    // 聊天窗口可见时视为已读，清除悬浮球角标；同时刷新洞察（欢迎页
-    // 动态建议卡每次打开都拿最新数据，在途防重由控制器保证）。
+    // Remaining legacy unread marker; delivery belongs to the formal workspace.
     connect(m_chatWindow, &ChatWindow::shown, this, [this]() {
         if (m_floatingBall) {
             m_floatingBall->clearUnread();
-        }
-        if (m_deliveryController) {
-            m_deliveryController->loadInsights();
         }
     });
 

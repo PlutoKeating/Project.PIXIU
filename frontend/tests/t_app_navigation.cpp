@@ -199,22 +199,11 @@ public:
     }
     void monitorLog(int, int) override {}
 
-    // ── B4-3 递送层测试缝 ──
-    // 默认不回包（模拟后端静默）；需要回包的用例置 autoEcho* 并填充载荷。
-    bool autoEchoInsights = false;        // deliveryInsights → insightsResult
+    // Remaining preference transport fixture.
     bool autoEchoPreferences = false;     // preferencesList → preferencesListResult
-    QJsonArray insightsPayload;
     QJsonArray preferencesPayload;
-    int insightsCalls = 0;
     int preferencesListCalls = 0;
 
-    void deliveryInsights() override
-    {
-        ++insightsCalls;
-        if (autoEchoInsights) {
-            emit insightsResult(insightsPayload);
-        }
-    }
     void preferencesList(const QString &) override
     {
         ++preferencesListCalls;
@@ -411,7 +400,6 @@ private slots:
     void conflictSeverityDispatchesDisturbance();
     void severityParsingNormalizesCaseAndUnknown();
     void pairRequestDialogShowsAndConfirms();
-    void insightsLoadedRenderIntoChatWindow();
 
 private:
     template <typename T>
@@ -1428,42 +1416,6 @@ void TestAppNavigation::pairRequestDialogShowsAndConfirms()
     app.shutdown();
 }
 
-void TestAppNavigation::insightsLoadedRenderIntoChatWindow()
-{
-    // B4-3：启动时 DeliveryController::loadInsights() → insightsLoaded →
-    // ChatWindow::setInsights 渲染动态洞察卡。
-    qputenv("USER", QStringLiteral("pixiu-nav-insights-%1")
-                        .arg(QCoreApplication::applicationPid()).toUtf8());
-    FakeTransport *fake = new FakeTransport(this);
-    fake->autoEchoInsights = true;
-    fake->insightsPayload = QJsonArray{
-        QJsonObject{
-            {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
-            {QStringLiteral("summary"),
-             QStringLiteral("2026年4月家庭支出清单：本月水电燃气共支出 434.50 元…")},
-            {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")},
-            {QStringLiteral("score"), 0.94},
-            {QStringLiteral("kind"), QStringLiteral("recent")}},
-        QJsonObject{
-            {QStringLiteral("title"), QStringLiteral("会议记录")},
-            {QStringLiteral("summary"), QStringLiteral("会议记录：季度规划…")}}};
-
-    const auto chatsBefore = topLevels<ChatWindow>();
-    PixiuApp app;
-    app.setTransportForTest(fake);
-    QVERIFY(app.start());
-
-    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
-    QVERIFY(chat != nullptr);
-    QCOMPARE(fake->insightsCalls, 1);
-    // 动态洞察卡已渲染；静态建议兜底 4 张保留。
-    QCOMPARE(chat->findChildren<QPushButton *>(
-                 QStringLiteral("insightCard")).size(), 2);
-    QCOMPARE(chat->findChildren<QPushButton *>(
-                 QStringLiteral("suggestionCard")).size(), 4);
-
-    app.shutdown();
-}
 
 QTEST_MAIN(TestAppNavigation)
 #include "t_app_navigation.moc"

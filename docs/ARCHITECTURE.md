@@ -228,9 +228,10 @@ query + context_hint
 
 ✅ **已实现**（批次④，2026-08-29 合入 main）：
 
-- **洞察流**：`GET /delivery/insights`——最近 24h 高质量记忆按 quality 降序，
-  敏感过滤 + MANUAL 冲突抑制，欢迎页动态建议卡（`kind:"recent"`；偏好类洞察
-  `kind:"preference"` 为发布后增强项）。
+- **洞察流**：`GET /delivery/insights`——本机 `user:local` 域最近 24h 候选按
+  quality 降序，按关联证据敏感度过滤；扫描范围内有 MANUAL 冲突时整体抑制。
+  正式入口为同一宿主的“记忆 → 洞察与简报”，按需读取候选并按标题检索。
+  仅 `kind:"recent"`，未实现偏好类洞察；摘要包含标题及正文片段，并非无原文统计。
 - **定时简报**：`GET /delivery/digest`——按日聚合当日记忆沉淀（ingested 分组
   计数 + sensitive 单列），服务端生成中文文案，空日返回「当日无新记忆」。
 - **变化提示**：正式宿主对采集事件提示受影响页面，刷新可见日志并使旧洞察/

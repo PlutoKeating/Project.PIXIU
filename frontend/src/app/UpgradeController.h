@@ -16,8 +16,8 @@ class QNetworkReply;
 class QProcess;
 class QSaveFile;
 
-// 应用内一键升级控制器：检查/下载/校验/安装状态机（仿 SyncController /
-// DeliveryController，但网络走 GitHub 直连，不经 backend transport）。
+// 应用内一键升级控制器：检查/下载/校验/安装状态机。
+// 网络走 GitHub 直连，不经 backend transport。
 //
 // 流程：checkForUpdate → (Checking) → Updatable | UpToDate | Failed；
 //       仅 Updatable 可 downloadAndInstall → Downloading → Verifying →

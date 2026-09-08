@@ -79,7 +79,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
 | GET | `/monitor/config` | 读取监控配置 | ✅ 已实现（2026-08-26） |
 | PUT | `/monitor/config` | 写入监控配置（全量提交，热生效） | ✅ 已实现（2026-08-26） |
 | GET | `/monitor/log` | 监控活动日志（分页，最新在前） | ✅ 已实现（2026-08-26） |
-| GET | `/delivery/insights` | 洞察流（欢迎页动态建议，最近高质量记忆） | ✅ 已实现（2026-08-29） |
+| GET | `/delivery/insights` | 洞察流（正式记忆工作台按需读取的本机个人域候选） | ✅ 已实现 |
 | GET | `/delivery/digest` | 定时简报（按日聚合当日记忆沉淀） | ✅ 已实现（2026-08-29） |
 | WS | `/events` | 事件推送 | ✅ 契约已实现（连接/心跳/广播，含全部六类事件） |
 

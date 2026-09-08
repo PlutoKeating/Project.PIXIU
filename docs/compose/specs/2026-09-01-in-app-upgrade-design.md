@@ -57,7 +57,7 @@
 ## [S3] 契约与既有设施
 - **依赖**：QNetworkAccessManager（HttpBackendTransport 已用先例）、QProcess（FloatingBall/ThemeService 先例）、QStandardPaths、std 哈希/`QCryptographicHash`（sha256 校验——Qt 内置 QCryptographicHash::Sha256，无需新依赖）。
 - **不引入** curl/系统工具于生产路径（QNetworkAccessManager 原生 HTTP）；sha256 用 `QCryptographicHash`（纯 Qt）或调用 `sha256sum`（deb 校验用哈希库更稳，选 QCryptographicHash，说明理由）。
-- **BackendTransport 不动**：升级是前端独立设施（不经后端 HTTP 网关——那会多一跳且后端是 Python 服务无 GUI 提权能力），走 `UpgradeController`（仿 SyncController/DeliveryController 状态机模式）。
+- **BackendTransport 不动**：升级由正式设置页复用 `UpgradeController` 状态机，不经后端 HTTP 网关，不依赖已删除的旧递送控制器。
 
 ## [S4] 测试策略
 - 前端 ctest（offscreen）：

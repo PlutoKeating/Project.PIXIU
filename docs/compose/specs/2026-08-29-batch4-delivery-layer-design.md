@@ -17,17 +17,17 @@
 ## [S2] 三种递送形态
 
 ### [S2.1] 洞察流（聊天窗欢迎页动态建议）
-- 现状：`ChatWindow` 欢迎页 `buildWelcomeView()`（suggestionCard 建议卡）为静态文案。
-- 改造：打开聊天窗/回欢迎页时拉取 `GET /delivery/insights?limit=3` → 渲染动态建议卡（标题+一句话摘要，点击 → 触发对应检索/打开记忆面板）。
+- 当前入口：唯一宿主“记忆 → 洞察与简报”的 `DeliveryPage`，不再由旧 ChatWindow 欢迎页或 DeliveryController 请求。
+- 操作：点击刷新后读取 `GET /delivery/insights`，显示标题、摘要与质量分；选中候选后按标题检索。空候选、畸形响应和请求错误分别提示，不用静态建议掩盖失败。
 - 服务端生成规则（后端 `backend/foundation/api/delivery.py` + `backend/engine/delivery/insights.py`）：
-  - 候选：最近 24h 入库的 knowledge（按 quality_score 降序）+ 偏好 resolve 命中的「高频工具」提示；
-  - 过滤：sensitivity>0 不出现；已有 source=sync 的 MANUAL 冲突待处理时不递送相关候选（避免干扰人工裁决）；
-  - 输出：`{"insights": [{"title", "summary", "knowledge_id", "score", "kind": "recent|preference"}]}`；summary 服务端生成不含敏感原文。
+  - 候选：固定 `user:local` 域最近 24h 的 ACTIVE knowledge，按关联证据质量分排序；未实现偏好类候选；
+  - 过滤：关联证据最大 sensitivity>0 时排除；冲突仓储默认扫描范围内有 MANUAL 冲突时整体抑制，未按 source 或当前候选精确关联；扫描上限之外可能漏抑制；
+  - 输出：`{"insights": [{"title", "summary", "knowledge_id", "score", "kind": "recent"}]}`；summary 为标题与正文前 60 字，不是无原文统计。敏感度过滤不保证识别全部私人内容；缺失证据也不是已完成敏感检查的证明。
 
 ### [S2.2] 定时简报（每日摘要）
-- 后端：`backend/engine/delivery/digest.py`——按日聚合（当日 ingested capture_event 数量按 source 分组 + 偏好变化 + 冲突裁决情况），生成中文简报文本；
-- 触发：`GET /delivery/digest?date=YYYY-MM-DD`（按需拉取）+ 前端「今日简报」入口（悬浮球菜单或聊天窗建议卡）；
-- 输出：`{"date", "summary": "今日新增 12 条记忆（目录 8、文本 3、剪贴板 1），2 项偏好更新，1 项冲突已自动合并。"}`；
+- 后端：`backend/engine/delivery/digest.py` 按日聚合 monitor_log 中已登记 source 的 ingested 数量，敏感隔离另计；没有偏好变化或冲突裁决计数；
+- 触发：正式 DeliveryPage 选择日期后读取 `GET /delivery/digest?date=YYYY-MM-DD`，按后端本地日期解释；无自动定时推送，无悬浮球产品入口；
+- 输出字段为 `date` 和 `summary`；模板示例为“当日新增 1 条记忆（目录 1）”，空日为“当日无新记忆”。这不是全部记忆库存统计；
 - 简报由服务端生成用户可读文案，不含敏感原文全文。
 
 ### [S2.3] 相关性提醒（即时轻提醒）
@@ -49,8 +49,8 @@
   - digest：按日聚合计数正确、文案不含敏感原文、空日文案；
   - API：端点契约（limit 校验、错误体、空列表）；
 - 前端 ctest（offscreen）：
-  - 欢迎页动态建议卡渲染（FakeTransport 注入 insights 响应）；
-  - 建议卡点击触发检索；
+  - 正式 DeliveryPage 按需读取，展示候选标题、摘要和质量分；不在启动时隐式请求；
+  - 所选候选按标题检索，不冒充按知识 ID 打开详情；
   - 正式事件通道对采集四状态发出无正文刷新信号，不推断相关性、不转发文件名、不误触发严重冲突通知或发送命令；
   - 正式偏好列表版本基线、范围切换、重复/回退及损坏响应；
 - 全量回归：后端全量 pytest + `frontend/scripts/regression.sh`（OFF/ON 双路径）。
@@ -66,5 +66,5 @@
 
 - 不再接受文件名/标题字串重叠作为相关性的依据；如需语义推荐，须另有可追溯检索结果和质量验证，不能恢复已移除的误导性通知；
 - 洞察流排序的质量分（quality_score）在真实数据下的分布未知——先按降序取 top3，后续可用偏好加权；
-- 前端欢迎页建议卡改造需保持 offscreen 测试稳定（QSignalBlocker/无网络依赖）；
+- 正式管理页组件回归与原生完整界面验证分别执行，不恢复旧欢迎页控制器来通过测试；
 - 采集状态提示、日志内容和系统通知具有不同隐私边界；当前目录日志仍含原始文件名，不能把日志原文直接用于系统通知或公开截图。

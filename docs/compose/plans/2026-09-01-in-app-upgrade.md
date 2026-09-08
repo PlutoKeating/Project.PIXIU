@@ -12,7 +12,7 @@
 
 **Goal:** 「检查更新」对话框升级为真正的一键升级：检测公开 GitHub repo 最新版本 → 下载 deb + sha256 校验 → pkexec 特权安装 → 重启提示。
 
-**Architecture:** 前端新增 `UpgradeController`（仿 SyncController/DeliveryController 状态机）；`CheckUpdateDialog` 全面改造（远程版本对比 + 状态机 + 一键升级按钮 + 进度）；网络用 `QNetworkAccessManager`；下载/校验/安装用 `QProcess` + `QCryptographicHash::Sha256`；安装经 `pkexec` 调用 root-only 副本二次校验 helper，再执行 `dpkg -i`。
+**Architecture:** 正式 SettingsWorkspace 复用 `UpgradeController` 状态机与 `CheckUpdateDialog`（远程版本对比、升级按钮、进度及受控重启）；网络用 `QNetworkAccessManager`；下载/校验/安装用 `QProcess` 与 `QCryptographicHash::Sha256`；安装经 `pkexec` 调用 root-only 副本校验 helper，验证 SHA-256 与 Ed25519 后再执行 `dpkg -i`。不依赖已删除的旧递送控制器。
 
 **Tech Stack:** C++17 · Qt5 Widgets · QNetworkAccessManager · QProcess · QtTest(offscreen)
 

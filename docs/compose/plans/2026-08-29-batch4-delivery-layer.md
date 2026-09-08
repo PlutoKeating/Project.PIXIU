@@ -8,6 +8,8 @@
 **Goal:** 让「一次配置、永久监控」沉淀的记忆转化为主动递上——洞察流（聊天窗欢迎页动态建议）、定时简报（按日汇总）、相关性提醒（目录事件/偏好变更的轻提醒），兑现产品愿景「主动服务」半句。
 
 **Architecture:** 后端 `backend/engine/delivery/` 提供规则化生成器，`backend/foundation/api/delivery.py` 提供两个 GET 端点；正式前端使用 `frontend/management/DeliveryPage`、`BackendEventStatus`、`MemoryAudit` 与 `HostTray`。不再将 PixiuApp 的文件名字串匹配通知作为目标实现。
+旧 `DeliveryController` 与 PixiuApp 启动/窗口显示时的洞察请求已删除；正式候选
+入口按需读取，不把静态欢迎卡当作失败兜底或当前已发布界面。
 
 **Tech Stack:** Python 3.12 · FastAPI · SQLite（既有仓储） | C++17 · Qt5 · QtTest(offscreen)
 
