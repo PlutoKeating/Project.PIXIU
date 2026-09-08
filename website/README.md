@@ -103,10 +103,10 @@ VitePress 使用稳定版本，依赖由 `package-lock.json` 锁定。`overrides
 5. 下载与历史显示真实 GitHub 数据，逐项核对附件。临时阻断 GitHub 请求时应出现错误状态。
 6. 未知路径返回 404 页面；设置正式域名后检查 sitemap 和 canonical。
 
-本次交付只准备代码和本地提交；远程推送、Pages 项目创建与域名绑定由维护者执行。
+已按维护者授权推送官网提交，并创建 GitHub 集成项目 `pixiu-website`，绑定 `PlutoKeating/Project.PIXIU` 的 `main`。生产地址为 <https://pixiu-website.pages.dev>，生产环境 `VITE_SITE_URL` 使用该地址；仅 `website/*` 变动自动触发生产构建，预览分支部署和 PR 评论关闭。自定义域名尚未绑定。
 
 ## 本地验证记录
 
 本次在 Node.js 24 / Chromium 环境验证：生产构建、Vue/TypeScript 类型检查、Prettier 检查和 17 项 Playwright 回归通过。浏览器实际请求 GitHub 成功，读取了公开正式发布及其附件，未出现 JavaScript 运行错误；375px、768px、1440px 布局与中文搜索、数学公式、Mermaid 渲染已检查。依赖安装审计为 0 个已知漏洞。
 
-静态产物包含首页、下载、历史、16 篇手册与 404 页；维护文档、测试用例与测试报告不进入发布目录。Cloudflare 项目、真实域名路由和银河麒麟桌面截图尚未在此步骤验证。
+静态产物包含首页、下载、历史、16 篇手册与 404 页；维护文档、测试用例与测试报告不进入发布目录。以上为部署前的本地验证，线上状态需另行核对 Pages 部署记录与实际访问；银河麒麟桌面截图尚未验证。

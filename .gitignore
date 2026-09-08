@@ -100,6 +100,9 @@ pixiu.db-*
 .docker/
 docker-compose.override.yml
 
+# Cloudflare local deployment cache (never commit)
+.wrangler/
+
 # AI agent session/tooling data (never commit)
 .mimocode/
 

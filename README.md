@@ -132,6 +132,8 @@ Project.PIXIU/
 
 ## 项目官网
 
+官网地址：[pixiu-website.pages.dev](https://pixiu-website.pages.dev)。
+
 官网源码位于 [`website/`](website/README.md)，使用 VitePress 构建独立静态站。根路径为产品介绍，`/docs/` 提供分类手册、图表和网页交互演示，下载与版本记录由浏览器实时读取 GitHub Releases。Cloudflare Pages 根目录设为 `website`，构建命令 `npm ci && npm run build`，输出目录 `.vitepress/dist`；完整配置与内容维护说明见 [官网 README](website/README.md)。
 
 ## 文档导航
