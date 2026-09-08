@@ -48,9 +48,6 @@ public:
     // 恢复用户输入（查询失败重试）。
     void restoreInput(const QString &text);
 
-    // 递送层动态洞察（B4-3）：渲染动态建议卡（title + summary），追加在
-    // 静态建议卡之后；空数组是合法空态，保留静态兜底不渲染。
-    void setInsights(const QJsonArray &insights);
 
 signals:
     void closeRequested();
@@ -90,12 +87,7 @@ private:
 
     QPushButton *m_pinButton = nullptr;
     QList<QPushButton *> m_suggestionCards;
-    // 动态洞察卡（setInsights 渲染，追加在静态建议卡之后；刷新时先清空）。
-    QList<QPushButton *> m_insightCards;
-    // 今日简报入口卡（展示顺序保持在洞察卡之后，见 setInsights）。
     QPushButton *m_digestCard = nullptr;
-    // 建议卡容器（静态 + 动态共用，动态卡在静态卡下方追加）。
-    QVBoxLayout *m_suggestionsLayout = nullptr;
     InputBar *m_inputBar = nullptr;
     MessageList *m_messageList = nullptr;
     QStackedWidget *m_centerStack = nullptr;
