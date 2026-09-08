@@ -116,11 +116,13 @@ jobs:
           fail_on_unmatched_files: true
           body: |
             银河麒麟 OS V11 amd64 严格原生安装包（KYSDK=ON，CPython 3.12）。
-            包含 PIXIU 控制台/记忆引擎、KylinAgent 宿主、锁定 Runtime wheelhouse、
+            单一 PIXIU 桌面入口，包含 KylinAgent 宿主和内嵌记忆、设备、设置工作区；不再安装旧小窗口前端。
+            包含记忆引擎、锁定 Runtime wheelhouse、
             MemoryProvider、系统云模型桥接、双 SDK 扩展及许可证/对应源码。
             由 GitHub Actions 从标签提交重建；安装并验证当前桌面用户服务后签名发布。
             Debian 通用画像是独立 CI 兼容性检查，不是本 Release 的严格原生包。
             本次产品发布不代表三台物理设备、完整业务场景与赛事最终性能验收全部完成。
+            云端模型需用户配置；剪贴板与自动截图采集未实现。完整截图图库、视觉细节及非阻塞整理留待后续。
           files: |
             build/release/out/*.deb
             build/release/out/*.sha256
