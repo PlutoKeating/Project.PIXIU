@@ -29,7 +29,7 @@ def save(label, value):
     events.append({'time': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                    'step': label, 'result': value})
     args.output.write_text(json.dumps({
-        'environment': '同宿主三台 V11 虚拟机；0.1.9 加 mDNS 回调源码修复',
+        'environment': '同宿主三台 V11 虚拟机；开发源码加载，正式包待重建；运行后另记录实际源码摘要',
         'partition': '仅阻断客厅设备同步 TCP 端口；SSH 与设备广播保留',
         'final_device_evidence': False, 'events': events,
     }, ensure_ascii=False, indent=2) + '\n')

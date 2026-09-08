@@ -1,0 +1,65 @@
+{
+  "captured_at": "2026-09-08T17:51:05.303018+00:00",
+  "environment": "三台 V11 虚拟机，3531a75 同步修复源码；公共 API 的合成输入验证，不是 OCR SDK 截图识别",
+  "private_write": {
+    "status": 200,
+    "body": {
+      "evidence_id": "evd_01M212A512HBRKSN4QKXQ1R0XQ",
+      "status": "accepted",
+      "quality_score": 0.775,
+      "sensitivity": 0,
+      "preference_count": 0,
+      "conflict_detected": false,
+      "latency_ms": 172
+    }
+  },
+  "local_private_query": {
+    "status": 200,
+    "body": {
+      "answer": "个人阅读习惯",
+      "source_evidence": [
+        "evd_01M212A512HBRKSN4QKXQ1R0XQ"
+      ],
+      "source_knowledge": "knw_01M212A51JNX8JYTSYQ82H9N1J",
+      "confidence": 1.0,
+      "latency_ms": 17
+    }
+  },
+  "remote_private_reads": [
+    {
+      "status": 404,
+      "body": {
+        "error": "NOT_FOUND",
+        "message": "NOT_FOUND",
+        "request_id": "req_01M212A5SNKXTMMKV41N4P0DVH"
+      }
+    },
+    {
+      "status": 404,
+      "body": {
+        "error": "NOT_FOUND",
+        "message": "NOT_FOUND",
+        "request_id": "req_01M212A62Z3WAZMX61DVXHE3N9"
+      }
+    }
+  ],
+  "private_sync_state": {
+    "status": 200,
+    "body": {
+      "present": false,
+      "tombstone": false,
+      "clock_entries": 0,
+      "clock_total": 0,
+      "operation_digest": null,
+      "updated_at": null
+    }
+  },
+  "synthetic_sensitive_shared_write": {
+    "status": 422,
+    "body": {
+      "error": "SENSITIVE_SHARED_SCOPE",
+      "message": "SENSITIVE_SHARED_SCOPE",
+      "request_id": "req_01M212A6Q9XJF8JNDYG9X360TN"
+    }
+  }
+}

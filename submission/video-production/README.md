@@ -37,6 +37,17 @@
 30 段解说原音已生成，当前稿净时长 444.024 秒；测量清单为
 `review/narration-durations.json`，尚待逐段试听和最终字幕校准。
 
+第二轮同步验证使用新的独立数据库（旧失败现场保留），已通过断连补齐、同 ID
+并发收敛、遗忘重连传播及遗忘后检索为空。源文件摘要与原始 API 结果保存在
+`raw/network/第二轮断连并发与遗忘传播.json`；修复提交为 `3531a75`，没有把开发
+源码加载冒称为重建后的正式安装包。两台克隆的 Runtime 共享 scope 已设为
+`shared:home`，修改前配置备份保留在各自私有制作目录；原虚拟机 Runtime 配置未改。
+
+新增 `PixiuSharedChapterReview` 章节审阅合成：
+`npx remotion render src/index.ts PixiuSharedChapterReview renders/集体记忆章节审阅.mp4`。
+此镜沿用 Ink Press 的 PaperTitleCard/DigitRoll 实现，替换为蓝白主题和中文字体，
+接入词级字幕草稿。输出 8.7 秒，只是章节引导片段，完整成片尚未生成。
+
 安装：本目录运行 `npm ci`（锁文件生成后）；Python 在独立虚拟环境安装 `pip install -r requirements.txt`。音频采用 [edge-tts](https://github.com/rany2/edge-tts) 的中文语音，逐句生成原音和时间信息，仅提交公开合成演示讲稿。完整时间线与渲染命令仍在制作中，不能把模板源文件当成产品视频。
 
 当前已生成 `renders/开场审阅样片.mp4`：11 秒的中文配音与字幕开场，供制作检查，不能提交为比赛视频。运行 `npm run check` 做类型检查，`npm run still -- review/new-frame.png --frame=80` 出新静帧；完整重渲使用 `npx remotion render src/index.ts PixiuOpeningReview <新输出.mp4>`。默认不覆盖已有素材。`scripts/narrate.py --shots s01 s02` 生成所选讲稿的中文原音与逐词时间信息，按请求和音频摘要核对后复用；须在上述 Python 环境运行。

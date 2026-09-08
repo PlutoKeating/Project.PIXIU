@@ -1,6 +1,7 @@
 import {AbsoluteFill, Audio, Composition, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {BrandInkOpen} from './BrandInkOpen';
 import {Fonts} from './Fonts';
+import {NarratedChapter, SHARED_CHAPTER} from './NarratedChapter';
 
 // Opening review only. Full film remains governed by storyboard/shots.json.
 export const OpeningReview: React.FC = () => {
@@ -23,5 +24,9 @@ export const OpeningReview: React.FC = () => {
   </AbsoluteFill>;
 };
 
-export const Root: React.FC = () => <Composition id="PixiuOpeningReview"
-  component={OpeningReview} durationInFrames={330} fps={30} width={1920} height={1080} />;
+export const Root: React.FC = () => <>
+  <Composition id="PixiuOpeningReview" component={OpeningReview}
+    durationInFrames={330} fps={30} width={1920} height={1080} />
+  <Composition id="PixiuSharedChapterReview" component={NarratedChapter}
+    durationInFrames={SHARED_CHAPTER.duration} fps={30} width={1920} height={1080} />
+</>;
