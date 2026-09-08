@@ -907,14 +907,19 @@ Module E 的本地 `Outbox` 已用于后台 `/memory/write` 和 `/agent/lifecycl
 
 字段说明：`enabled` 全局总闸（关闭时各数据源开关状态保留）；`sources`
 四类数据源开关，键名固定 `directory | clipboard | behavior | screenshot`；
-`directories` 监视目录绝对路径清单（去重、非空）。
+`directories` 监视目录绝对路径清单（字符串去首尾空白、丢弃空串、按原序去重，
+列表可为空）。未保存配置时，总闸/四个来源均关闭、目录为空。读取值是持久化配置，
+不是采集器健康状态；剪贴板与自动截图尚未实现，不能由四个配置键推断可用能力。
 
 ### 3.19 PUT /monitor/config
 
 写入监控配置，请求体结构与 GET 响应一致（**全量提交，不做局部 patch**）。
-服务端持久化配置并对运行中的 daemon **热生效**（开启/关闭采集器、增删
-inotify 监视点），无需重启。每次成功写入追加一条 `state_changed` 活动日志
-并广播 `capture_event`。
+服务端先持久化，再通知配置订阅者；目录 watcher 将应用调度到其工作线程，无需
+手工重启。订阅回调异常、目录缺失或监视失败可能只记录日志，所以成功响应不能
+保证采集器已经实际启用。保存后尝试追加 `state_changed` 活动日志并广播
+`capture_event`；旁路日志/广播失败不回滚已保存配置，也不改变成功响应。
+缺省字段按默认值归一化，不保留先前值；未知顶层键被丢弃。客户端应先读取并全量
+提交，避免意外重置开关。关闭采集不删除已有数据，不承诺撤销所有在途捕获。
 
 **请求体 / 响应体（200，返回归一化后的完整配置）：**
 
@@ -1189,9 +1194,9 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 
 ### 4.5 capture_event ✅ 已实现（2026-08-26，监视捕获/状态变更时已广播）
 
-每次目录捕获（ingested / sensitive_quarantined / ignored）与监控配置变更
-（state_changed）推送；`data` 与 §3.19 日志条目同构，`knowledge_id` 可缺
-（事件未产生入库时为 null）。
+目录捕获（ingested / sensitive_quarantined / ignored）与监控配置变更
+（state_changed）尝试推送；`data` 与 §3.20 日志条目同构，未产生入库时关联 ID
+为 null。广播失败不回滚已经完成的入库或配置保存，不提供历史重放游标。
 
 ```jsonc
 {
@@ -1199,7 +1204,7 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
   "data": {
     "source": "directory",
     "status": "ingested",
-    "summary": "记住文件 支出清单.xlsx",
+    "summary": "记住文件 示例.txt",
     "ts": 1756080000,
     "evidence_id": "evd_...",
     "knowledge_id": "knw_..."
@@ -1207,8 +1212,10 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 }
 ```
 
-> 前端行为：普通事件 → 角标 +1（可选）+ 监控中心「活动记录」实时追加；
-> `sensitive_quarantined` 额外弹系统通知（隔离区查看/恢复交互属批次③范围）。
+> 正式前端通过 BackendEventStatus 提示“采集与隐私”发生变化；PrivacyPage 可见、
+> 空闲且在日志首页时合并请求刷新后端日志，不直接追加 WS 载荷、不增加旧悬浮球角标。
+> 日志刷新不会保存配置或覆盖配置草稿；重连提示重新核对，不证明断线事件全部补齐。
+> 当前没有敏感采集事件的额外系统通知或隔离区恢复控件；日志文件名并非已脱敏信息。
 
 ### 4.6 pair_request ✅ 已实现（2026-08-29，发起配对请求时已广播）
 
