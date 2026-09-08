@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QTest>
 #include <QSignalSpy>
+#include <QScreen>
 
 class Transport : public HttpBackendTransport
 {
@@ -324,6 +325,11 @@ private slots:
         show->trigger();
         QVERIFY(!host.isMinimized());
         QVERIFY(host.isMaximized());
+        host.setWindowState(Qt::WindowFullScreen | Qt::WindowMinimized);
+        show->trigger();
+        QVERIFY(!host.isMinimized());
+        QVERIFY(host.isFullScreen());
+        host.setWindowState(Qt::WindowNoState);
         host.hide();
         show->trigger();
         QVERIFY(host.isVisible());
@@ -335,6 +341,37 @@ private slots:
         pending = false;
         quit->trigger();
         QVERIFY(!host.isVisible());
+    }
+    void trayRecoversOffscreenHostWithoutResettingVisiblePlacement()
+    {
+        auto *screen = QGuiApplication::primaryScreen();
+        QVERIFY(screen);
+        const QRect available = screen->availableGeometry();
+        QWidget host(nullptr, Qt::FramelessWindowHint);
+        host.resize(320, 240);
+        pixiu::HostTray tray(&host);
+        auto *show = host.findChild<QAction *>("hostTrayShow");
+        QVERIFY(show);
+        host.show();
+        const QSize originalSize = host.size();
+        for (const QPoint &position : {QPoint(50000, 50000), QPoint(-50000, -50000),
+                                       QPoint(available.right() - 10, available.top() + 40)}) {
+            host.move(position);
+            show->trigger();
+            const QRect handle(host.frameGeometry().topLeft(), QSize(160, 32));
+            QVERIFY(available.contains(handle));
+            QCOMPARE(host.size(), originalSize);
+            const QPoint recovered = host.pos();
+            host.hide();
+            show->trigger();
+            QVERIFY(host.isVisible());
+            QCOMPARE(host.pos(), recovered);
+        }
+        host.move(available.topLeft() + QPoint(40, 40));
+        const QPoint visiblePosition = host.pos();
+        show->trigger();
+        QCOMPARE(host.pos(), visiblePosition);
+        host.close();
     }
     void hostCloseWaitsForMemoryReads()
     {

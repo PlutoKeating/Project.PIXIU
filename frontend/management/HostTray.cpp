@@ -2,7 +2,9 @@
 #include "app/ShortcutManager.h"
 #include "services/NotifyService.h"
 #include <QAction>
+#include <QGuiApplication>
 #include <QMenu>
+#include <QScreen>
 #include <QSystemTrayIcon>
 #include <QWidget>
 
@@ -21,6 +23,19 @@ HostTray::HostTray(QWidget *host) : QObject(host)
     auto restore = [host]() {
         host->setWindowState(host->windowState() & ~Qt::WindowMinimized);
         host->show();
+        if (!host->isMaximized() && !host->isFullScreen()) {
+            const QRect frame = host->frameGeometry();
+            // Keep a usable title/header area on one real screen, not merely
+            // inside the bounding rectangle of a disconnected monitor layout.
+            const QRect handle(frame.topLeft(), QSize(qMin(160, frame.width()), qMin(32, frame.height())));
+            bool reachable = false;
+            for (auto *screen : QGuiApplication::screens())
+                reachable |= screen->availableGeometry().contains(handle);
+            if (!reachable) {
+                if (auto *screen = QGuiApplication::primaryScreen())
+                    host->move(screen->availableGeometry().topLeft());
+            }
+        }
         host->raise();
         host->activateWindow();
     };
