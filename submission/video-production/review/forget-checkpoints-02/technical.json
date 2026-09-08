@@ -1,0 +1,11 @@
+{
+  "video_sha256": "ddd58993a923a236644a6e50bc9c125f45d6bf2ccfb01c4f23ea108716d9cf51",
+  "full_decode_passed": true,
+  "stage_frames": [
+    284,
+    378,
+    428
+  ],
+  "independent_review": "../independent-forget-02/REPORT.md",
+  "limitation": "仅遗忘检查点章节，非全片"
+}

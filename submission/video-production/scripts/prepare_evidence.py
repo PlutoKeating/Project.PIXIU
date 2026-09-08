@@ -7,7 +7,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parents[1]
 source = ROOT / 'raw/network/第二轮断连并发与遗忘传播.json'
-events = json.loads(source.read_text())['events']
+observations = json.loads(source.read_text())
+events = observations['events']
 
 
 def row(event, device, index=None):
@@ -45,6 +46,26 @@ assert len({r['knowledge_id'] for group in ('offline', 'concurrent')
 assert len({r['text'] for r in trace['concurrent'][-1]['rows']}) == 1
 (ROOT / 'src/sync-trace.json').write_text(json.dumps(trace, ensure_ascii=False, indent=2) + '\n')
 
+named = {event['step']: event for event in events}
+online = named['在线笔记本不再返回有效条目']
+offline = named['断连客厅尚未收到遗忘']
+rejoined = named['客厅重连后条目失效']
+tombstones = named['三端墓碑诊断']['result']
+queries = observations['post_forget_queries']
+assert online['result']['status'] == rejoined['result']['status'] == 404
+assert offline['result']['status'] == 200
+assert len(tombstones) == 3
+assert all(r['status'] == 200 and r['body']['tombstone'] for r in tombstones)
+assert len({r['body']['operation_digest'] for r in tombstones}) == 1
+assert len(queries) == 3
+assert all(q['query']['status'] == 200 and q['query']['body']['answer'] == ''
+           and q['query']['body']['source_evidence'] == []
+           and q['query']['body']['source_knowledge'] == '' for q in queries)
+forget = {'source': trace['source'], 'sha256': trace['sha256'],
+          'online': online, 'offline': offline, 'rejoined': rejoined,
+          'tombstones': tombstones, 'queries': queries}
+(ROOT / 'src/forget-trace.json').write_text(json.dumps(forget, ensure_ascii=False, indent=2) + '\n')
+
 source = REPO / 'docs/acceptance/acceptance-baseline-2026-08-24.json'
 baseline = json.loads(source.read_text())
 labels = {'preference_accuracy': '偏好准确率', 'knowledge_recall_at_k': '知识召回率',
@@ -56,4 +77,4 @@ output = {'source': str(source.relative_to(REPO)),
                       if m['name'] in labels]}
 assert len(output['metrics']) == 4
 (ROOT / 'src/evaluation-baseline.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n')
-print('已从原始证据生成同步检查点与四项历史评测数据')
+print('已从原始证据生成同步与遗忘检查点、四项历史评测数据')

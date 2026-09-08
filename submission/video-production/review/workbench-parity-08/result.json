@@ -1,0 +1,18 @@
+{
+  "frames": [
+    13427,
+    13517,
+    13587
+  ],
+  "different_pixels": [
+    0,
+    0,
+    0
+  ],
+  "max_channel_difference": [
+    0,
+    0,
+    0
+  ],
+  "scope": "s24跨端遗忘检查点三帧，非全片"
+}

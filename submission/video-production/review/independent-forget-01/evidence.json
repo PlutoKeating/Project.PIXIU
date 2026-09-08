@@ -1,0 +1,24 @@
+{
+  "video": "submission/video-production/renders/\u8de8\u7aef\u9057\u5fd8\u68c0\u67e5\u70b9-01.mp4",
+  "sha256": "59843b0d1b1fa2086c85a716889ba21c843aa4ac8ee751c28734ee7af535c02d",
+  "fps": 30,
+  "frames": 660,
+  "global_offset": 13127,
+  "sampled_frames": [
+    283,
+    284,
+    300,
+    350,
+    364,
+    377,
+    378,
+    400,
+    420,
+    427,
+    428,
+    450,
+    510,
+    580,
+    659
+  ]
+}
