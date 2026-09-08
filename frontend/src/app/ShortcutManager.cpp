@@ -89,6 +89,13 @@ void ShortcutManager::releaseToggleShortcut()
 #ifdef PIXIU_HAVE_KYSDK
 bool ShortcutManager::registerKylinGlobalShortcut()
 {
+    // Upgrade migration: this name belonged exclusively to the removed desktop
+    // executable. Never enumerate or delete other applications' bindings.
+    const int legacyResult = kdk_shortcut_delete_global_shortcut("pixiu-frontend.toggle-chat");
+    if (legacyResult != KYSDK_SUCCESS && legacyResult != KYSDK_SHORTCUT_NOT_EXISTS
+        && legacyResult != KYSDK_SHORTCUT_NAME_ERROR) {
+        qCWarning(lcShortcut) << "failed to remove retired PIXIU shortcut, error code:" << legacyResult;
+    }
     const QByteArray name(kToggleShortcutName);
     const QByteArray key =
         m_sequence.toString(QKeySequence::PortableText).toUtf8();
