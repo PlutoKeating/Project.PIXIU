@@ -1,6 +1,10 @@
 #include "PrivacyPage.h"
 #include "services/HttpBackendTransport.h"
+#include <QAction>
+#include <QApplication>
 #include <QCheckBox>
+#include <QClipboard>
+#include <QDateTime>
 #include <QDir>
 #include <QHBoxLayout>
 #include <QJsonArray>
@@ -11,6 +15,7 @@
 #include <QShowEvent>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <cmath>
 
 namespace pixiu {
 PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
@@ -62,7 +67,22 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     connect(m_directories, &QPlainTextEdit::textChanged, this, edited);
     m_events = new QListWidget(this);
     m_events->setObjectName(QStringLiteral("privacyEvents"));
+    m_events->setAccessibleName(tr("采集日志，包含 UTC 时间及关联标识"));
+    m_events->setAccessibleDescription(tr("选择记录后可右键或按 Ctrl+C 复制；公开前请核对文件名和标识中的私人信息。"));
     m_events->setWordWrap(true);
+    auto *copy = new QAction(tr("复制所选日志（公开前核对私人信息）"), m_events);
+    copy->setObjectName(QStringLiteral("copyCaptureLog"));
+    copy->setShortcut(QKeySequence::Copy);
+    copy->setShortcutContext(Qt::WidgetShortcut);
+    copy->setEnabled(false);
+    m_events->addAction(copy);
+    m_events->setContextMenuPolicy(Qt::ActionsContextMenu);
+    connect(m_events, &QListWidget::currentItemChanged, copy, [this, copy]() {
+        copy->setEnabled(m_events->currentItem() != nullptr);
+    });
+    connect(copy, &QAction::triggered, this, [this]() {
+        if (auto *item = m_events->currentItem()) QApplication::clipboard()->setText(item->text());
+    });
     layout->addWidget(m_events, 1);
     m_logs = new QPushButton(tr("刷新采集日志"), this);
     m_logs->setObjectName(QStringLiteral("privacyLogs"));
@@ -141,8 +161,23 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
         m_events->clear();
         for (const auto &value : events) {
             const auto event = value.toObject();
-            m_events->addItem(tr("%1 · %2\n%3").arg(event.value("source").toString(),
-                event.value("status").toString(), event.value("summary").toString()));
+            const auto stamp = event.value("ts");
+            const double seconds = stamp.toDouble(-1);
+            QString timestamp = tr("未提供或无效");
+            // Contract uses integral Unix seconds, not milliseconds. Do not turn
+            // a missing/invalid value into epoch zero or the current time.
+            if (stamp.isDouble() && std::isfinite(seconds) && seconds >= -62135596800.0
+                && seconds <= 253402300799.0 && std::floor(seconds) == seconds) {
+                const auto date = QDateTime::fromSecsSinceEpoch(qint64(seconds), Qt::UTC);
+                if (date.isValid()) timestamp = date.toString(Qt::ISODate);
+            }
+            auto identifier = [this, &event](const char *key) {
+                const QString id = event.value(QLatin1String(key)).toString();
+                return id.isEmpty() ? tr("未提供") : id;
+            };
+            m_events->addItem(tr("时间（UTC）：%1\n%2 · %3\n%4\n证据 ID：%5\n知识 ID：%6")
+                .arg(timestamp, event.value("source").toString(), event.value("status").toString(),
+                    event.value("summary").toString(), identifier("evidence_id"), identifier("knowledge_id")));
         }
         m_status->setText(events.isEmpty() ? tr("本页没有采集日志。") : tr("采集日志第 %1 页").arg(m_offset / 50 + 1));
         if (hasUnsavedChanges()) m_status->setText(m_status->text() + tr(" 配置有未保存的修改，日志刷新不会保存配置。"));

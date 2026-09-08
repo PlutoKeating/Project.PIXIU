@@ -20,6 +20,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QCheckBox>
+#include <QClipboard>
 #include <QCloseEvent>
 #include <QAction>
 #include "HostTray.h"
@@ -1457,6 +1458,51 @@ private slots:
         emit transport.monitorLogResult({});
         QTest::qWait(600);
         QCOMPARE(transport.logReads, 4);
+    }
+    void privacyLogsExposeTimeAndIdsWithoutInventingMissingValues()
+    {
+        Transport transport;
+        pixiu::PrivacyPage page(nullptr, &transport);
+        auto *list = page.findChild<QListWidget *>("privacyEvents");
+        auto *refresh = page.findChild<QPushButton *>("privacyLogs");
+        refresh->click();
+        emit transport.monitorLogResult({QJsonObject{{"ts", 0}, {"source", "directory"},
+            {"status", "ingested"}, {"summary", "<b>synthetic.txt</b>"},
+            {"evidence_id", "evd_synthetic"}, {"knowledge_id", "knw_synthetic"}}});
+        const QString text = list->item(0)->text();
+        QVERIFY(text.contains("1970-01-01T00:00:00Z"));
+        QVERIFY(text.contains("UTC"));
+        QVERIFY(text.contains("evd_synthetic"));
+        QVERIFY(text.contains("knw_synthetic"));
+        QVERIFY(text.contains("<b>synthetic.txt</b>"));
+        auto *copy = list->findChild<QAction *>("copyCaptureLog");
+        QVERIFY(copy);
+        QVERIFY(!copy->isEnabled());
+        list->setCurrentRow(0);
+        QVERIFY(copy->isEnabled());
+        copy->trigger();
+        QCOMPARE(QApplication::clipboard()->text(), text);
+        page.show();
+        page.activateWindow();
+        list->setFocus();
+        QVERIFY(QTest::qWaitForWindowActive(&page));
+        QApplication::clipboard()->clear();
+        QTest::keyClick(list, Qt::Key_C, Qt::ControlModifier);
+        QCOMPARE(QApplication::clipboard()->text(), text);
+        for (const auto &invalid : {QJsonValue(), QJsonValue("yesterday"),
+                QJsonValue(-62135596801.0), QJsonValue(1.5), QJsonValue(1788848833000.0)}) {
+            refresh->click();
+            emit transport.monitorLogResult({QJsonObject{{"ts", invalid}}});
+            QVERIFY(list->item(0)->text().contains(QStringLiteral("时间（UTC）：未提供或无效")));
+            QVERIFY(list->item(0)->text().contains(QStringLiteral("证据 ID：未提供")));
+            QVERIFY(list->item(0)->text().contains(QStringLiteral("知识 ID：未提供")));
+            QVERIFY(!copy->isEnabled());
+        }
+        QCOMPARE(QApplication::clipboard()->text(), text); // Refresh never copies automatically.
+        refresh->click();
+        emit transport.monitorLogResult({QJsonObject{{"ts", -1}}});
+        QVERIFY(list->item(0)->text().contains("1969-12-31T23:59:59Z"));
+        QCOMPARE(transport.configWrites, 0);
     }
     void privacyPreservesUnavailableSourcesAndFailedEdits()
     {
