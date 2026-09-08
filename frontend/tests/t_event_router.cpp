@@ -14,11 +14,11 @@ private slots:
     void memoryReadyIsForwarded();
     void conflictDetectedIsForwarded();
     void conflictDetectedDefaultsSeverityHigh();
-    void forgetConfirmationIsForwarded();
     void syncEventIsForwarded();
     void captureEventIsForwarded();
     void pairRequestIsForwarded();
     void unknownEventIsIgnored();
+    void retiredForgetBroadcastIsIgnored();
     void nonObjectDataIsIgnored();
     void emptyEventIsIgnored();
     void captureEventWithoutDataIsIgnored();
@@ -87,29 +87,6 @@ void TestEventRouter::conflictDetectedDefaultsSeverityHigh()
     QCOMPARE(spy.count(), 1);
     const QList<QVariant> args = spy.takeFirst();
     QCOMPARE(args.at(4).toString(), QStringLiteral("high"));
-}
-
-void TestEventRouter::forgetConfirmationIsForwarded()
-{
-    EventRouter router;
-    QSignalSpy spy(&router, &EventRouter::forgetConfirmationReady);
-
-    router.handleEvent(QJsonObject{
-        {QStringLiteral("event"), QStringLiteral("forget_confirmation")},
-        {QStringLiteral("data"), QJsonObject{
-            {QStringLiteral("command"), QStringLiteral("忘记那张4月支出清单")},
-            {QStringLiteral("targets"), QJsonArray{
-                QJsonObject{
-                    {QStringLiteral("type"), QStringLiteral("knowledge")},
-                    {QStringLiteral("id"), QStringLiteral("knw_1")}}}},
-            {QStringLiteral("expires_at"), 1714608100}}}});
-
-    QCOMPARE(spy.count(), 1);
-    const QList<QVariant> args = spy.takeFirst();
-    QCOMPARE(args.at(0).toString(),
-             QStringLiteral("忘记那张4月支出清单"));
-    QCOMPARE(args.at(1).toJsonArray().size(), 1);
-    QCOMPARE(args.at(3).toLongLong(), qint64(1714608100));
 }
 
 void TestEventRouter::syncEventIsForwarded()
@@ -182,7 +159,6 @@ void TestEventRouter::unknownEventIsIgnored()
     EventRouter router;
     QSignalSpy memorySpy(&router, &EventRouter::memoryReady);
     QSignalSpy conflictSpy(&router, &EventRouter::conflictDetected);
-    QSignalSpy forgetSpy(&router, &EventRouter::forgetConfirmationReady);
     QSignalSpy syncSpy(&router, &EventRouter::syncEvent);
     QSignalSpy captureSpy(&router, &EventRouter::captureEvent);
     QSignalSpy pairingSpy(&router, &EventRouter::pairingRequested);
@@ -192,10 +168,27 @@ void TestEventRouter::unknownEventIsIgnored()
         {QStringLiteral("data"), QJsonObject{{QStringLiteral("x"), 1}}}});
     QCOMPARE(memorySpy.count(), 0);
     QCOMPARE(conflictSpy.count(), 0);
-    QCOMPARE(forgetSpy.count(), 0);
     QCOMPARE(syncSpy.count(), 0);
     QCOMPARE(captureSpy.count(), 0);
     QCOMPARE(pairingSpy.count(), 0);
+}
+
+void TestEventRouter::retiredForgetBroadcastIsIgnored()
+{
+    EventRouter router;
+    QSignalSpy memory(&router, &EventRouter::memoryReady);
+    QSignalSpy conflict(&router, &EventRouter::conflictDetected);
+    QSignalSpy sync(&router, &EventRouter::syncEvent);
+    QSignalSpy capture(&router, &EventRouter::captureEvent);
+    QSignalSpy pairing(&router, &EventRouter::pairingRequested);
+    router.handleEvent({{"event", "forget_confirmation"}, {"data", QJsonObject{
+        {"command", "synthetic command"}, {"confirmation_token", "not-an-authorization"},
+        {"targets", QJsonArray{"synthetic-id"}}}}});
+    QCOMPARE(memory.count(), 0);
+    QCOMPARE(conflict.count(), 0);
+    QCOMPARE(sync.count(), 0);
+    QCOMPARE(capture.count(), 0);
+    QCOMPARE(pairing.count(), 0);
 }
 
 void TestEventRouter::nonObjectDataIsIgnored()

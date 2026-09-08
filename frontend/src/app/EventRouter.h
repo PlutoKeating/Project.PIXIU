@@ -1,15 +1,14 @@
 #ifndef PIXIU_EVENT_ROUTER_H
 #define PIXIU_EVENT_ROUTER_H
 
-#include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
 #include <QString>
 
 // WebSocket 业务事件路由器：把 WS 事件帧解析为语义信号，UI 层只订阅语义。
 //
-// 覆盖 docs/API.md §4 定义的六类业务事件（memory_ready / conflict_detected /
-// forget_confirmation / sync_event / capture_event / pair_request）。未知事件与
+// 旧壳回归专用，正式宿主使用 management/BackendEventStatus。
+// 遗忘广播不提供确认/执行入口。未知事件与
 // data 缺失/类型错误的帧安全忽略：不崩溃、不断开连接、不向 UI 抛原始 payload。
 // WebSocketClient 已过滤未知事件，本类做应用层二次防御。
 class EventRouter : public QObject
@@ -32,10 +31,6 @@ signals:
                           const QString &oldValue,
                           const QString &newValue,
                           const QString &severity);
-    void forgetConfirmationReady(const QString &command,
-                                 const QJsonArray &targets,
-                                 const QJsonObject &cascade,
-                                 qint64 expiresAt);
     void syncEvent(const QJsonObject &data);
     // 监控捕获事件（docs/API.md §4.5）：信号只带契约保证存在的
     // source / status / summary / ts 四字段；evidence_id / knowledge_id 由

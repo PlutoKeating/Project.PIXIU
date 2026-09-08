@@ -254,6 +254,10 @@ MemoryScopes 保留本机采集域、家庭域及有效 Agent 域；MemoryScopeC
 
 ### 10.1 组件结构
 
+旧壳的遗忘广播确认执行接线和 confirmRemote 入口已清退；广播不是用户授权。
+正式宿主继续使用 BackendEventStatus 只读失效提示与 ForgetPage 的一次性预览
+凭证流程，未移植旧 EventRouter 的执行语义。其余旧壳依赖仍需逐项清理。
+
 公共 HTTP transport 已接入 `/agent/context` 版本化召回与 `/memory/update` 乐观锁更新，
 原样传送 scope、expected_version、结构化正文和幂等键，冲突走错误信号而不自动重试。
 `MemoryEditDialog` 通过 `/memory/items/{id}?scope=...` 读取完整快照，不使用召回 context

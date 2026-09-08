@@ -646,17 +646,6 @@ bool PixiuApp::start()
             m_forgetController, &ForgetController::confirm);
     connect(m_forgetDialog, &ForgetDialog::cancelled,
             m_forgetController, &ForgetController::cancel);
-    // 远端遗忘确认（WS forget_confirmation）：确认后直接执行第二阶段。
-    connect(m_forgetDialog, &ForgetDialog::confirmed, this, [this]() {
-        if (m_remoteForgetCommand.isEmpty()) {
-            return;
-        }
-        m_forgetController->confirmRemote(m_remoteForgetCommand);
-        m_remoteForgetCommand.clear();
-    });
-    connect(m_forgetDialog, &ForgetDialog::cancelled, this, [this]() {
-        m_remoteForgetCommand.clear();
-    });
     connect(m_forgetController, &ForgetController::forgotten, this,
             [this](const QJsonObject &response) {
                 const int forgottenCount =
@@ -822,15 +811,6 @@ bool PixiuApp::start()
                 if (m_memoryPanel && m_memoryPanel->isVisible()) {
                     m_memoryPanel->showConflictTab();
                 }
-            });
-    connect(m_eventRouter, &EventRouter::forgetConfirmationReady, this,
-            [this](const QString &command, const QJsonArray &targets,
-                   const QJsonObject &cascade, qint64) {
-                m_remoteForgetCommand = command;
-                m_forgetDialog->setForgetTargets(targets, cascade);
-                m_forgetDialog->show();
-                m_forgetDialog->raise();
-                m_forgetDialog->activateWindow();
             });
     connect(m_eventRouter, &EventRouter::syncEvent, this,
             [this](const QJsonObject &data) {

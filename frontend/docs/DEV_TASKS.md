@@ -311,7 +311,9 @@ SettingsWorkspace 复用宿主模型配置入口、升级状态机和 InfoDialog
 
 正式 ThemeManager 的普通容器、选中项、日期/日历、复选框样式与延迟对象生命周期
 已有导出回归和局部原生验证。完整语言、主题、焦点、DPI、多屏及所有页面仍未验收。
-旧 ChatWindow 洞察卡、DeliveryController 和部分重复通知已清退；其余旧控件、
+旧 ChatWindow 洞察卡、DeliveryController 和部分重复通知已清退。旧遗忘广播的
+确认执行接线、命令缓存与 confirmRemote 方法已删除，不继承无预览凭证流程；
+正式广播只读提示和安全遗忘回归保留。其余旧控件、
 控制器与测试按调用关系继续移除，不删除仍被正式宿主复用的公共升级/SDK代码。
 
 | 场景 | 当前正式界面行为 |

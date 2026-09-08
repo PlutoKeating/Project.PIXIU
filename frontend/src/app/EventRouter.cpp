@@ -45,26 +45,12 @@ void EventRouter::handleEvent(const QJsonObject &event)
             severity.isEmpty() ? QStringLiteral("high") : severity);
         return;
     }
-    if (name == QStringLiteral("forget_confirmation")) {
-        const QJsonValue expires = data.value(QStringLiteral("expires_at"));
-        const qint64 expiresAt =
-            expires.isDouble() ? qint64(expires.toDouble())
-                               : qint64(expires.toVariant().toLongLong());
-        // WS 帧契约不含 cascade；由确认响应补全，此处按空对象传递。
-        emit forgetConfirmationReady(
-            data.value(QStringLiteral("command")).toString(),
-            data.value(QStringLiteral("targets")).toArray(),
-            QJsonObject(),
-            expiresAt);
-        return;
-    }
     if (name == QStringLiteral("sync_event")) {
         emit syncEvent(data);
         return;
     }
     if (name == QStringLiteral("capture_event")) {
-        // 契约保证 ts 为整数；防御性解析对齐 forget_confirmation 的
-        // expires_at 处理（isDouble → toDouble，否则 toLongLong）。
+        // 契约保证 ts 为整数；兼容数值或可解析的整数文本。
         const QJsonValue tsValue = data.value(QStringLiteral("ts"));
         const qint64 ts =
             tsValue.isDouble() ? qint64(tsValue.toDouble())

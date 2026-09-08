@@ -47,17 +47,6 @@ void ForgetController::confirm()
     m_transport->forget(m_pendingCommand, true);
 }
 
-void ForgetController::confirmRemote(const QString &command)
-{
-    const QString trimmed = command.trimmed();
-    if (trimmed.isEmpty()) {
-        return;
-    }
-    m_pendingCommand = trimmed;
-    qCInfo(lcForget) << "confirming remote forget (confirm=true):" << trimmed;
-    m_transport->forget(m_pendingCommand, true);
-}
-
 void ForgetController::cancel()
 {
     qCInfo(lcForget) << "forget confirmation cancelled";

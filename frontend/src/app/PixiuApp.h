@@ -118,8 +118,6 @@ private:
     bool m_pairPending = false;
     // 配对令牌生成在途标记：错误路由到配对对话框。
     bool m_tokenPending = false;
-    // WS forget_confirmation 事件携带的待确认指令（确认后执行第二阶段）。
-    QString m_remoteForgetCommand;
     // 最近一次偏好历史请求的 ID（失败重试时重发）。
     QString m_lastPreferenceId;
     // 最近一次证据详情请求的 ID（响应路由与错误上报用）。
