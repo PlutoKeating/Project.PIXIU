@@ -109,6 +109,12 @@ class ConflictRepository(ABC): ...
 
 ### 1.2 api/ —— API 网关
 
+HTTP 记忆写入/更新、遗忘、Agent context/lifecycle 和流转请求复用核心范围
+校验；查询的 `context_hint.scope` 拒绝非字符串或非法格式，详情及偏好列表也
+校验查询参数。非法范围返回既有 `400 INVALID_REQUEST`，不进入端点业务操作；
+保留可选范围的缺省/null 语义与既有长度上限。格式校验不是共享域授权，后者仍
+由同步服务检查；不把任意 `shared:` 格式可解析描述为任意共享域可写。
+
 `GET /memory/items/{knowledge_id}` 为管理编辑返回完整 ACTIVE 快照，强制显式 scope
 精确匹配；不存在、范围错误、已替代或遗忘均返回 404。只调用仓储读取，不生成证据、
 不访问向量或同步服务；返回版本用于既有 `/memory/update` 的乐观锁，不能充当锁定。

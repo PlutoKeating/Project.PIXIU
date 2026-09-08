@@ -16,16 +16,16 @@ from contextlib import asynccontextmanager
 from enum import Enum
 
 import time
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import Body, Depends, FastAPI, HTTPException, Path, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, ValidationError, model_validator
+from pydantic import AfterValidator, BaseModel, Field, ValidationError, model_validator
 
 from ..core.logger import get_logger
-from ..core.models import AgentProvenance, KnowledgeStatus, SourceType
+from ..core.models import AgentProvenance, KnowledgeStatus, SourceType, validate_scope
 from ..core.repository import KnowledgeVersionConflict
 from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
 from ..monitor.config_store import InvalidMonitorConfig
@@ -210,10 +210,17 @@ async def capabilities(
         vector_store=vector_store,
     )
 
+ScopeValue = Annotated[
+    str,
+    Field(pattern=r"^(user|shared):[A-Za-z0-9._-]+$"),
+    AfterValidator(validate_scope),
+]
+
+
 class MemoryWriteRequest(BaseModel):
     source_type: SourceType
     raw: dict[str, Any] = Field(default_factory=dict)
-    scope: str
+    scope: ScopeValue
     context: dict[str, Any] = Field(default_factory=dict)
     provenance: AgentProvenance | None = None
     idempotency_key: str | None = Field(
@@ -267,7 +274,7 @@ class PreferenceExtractRequest(BaseModel):
 class MemoryUpdateRequest(BaseModel):
     knowledge_id: str = Field(pattern=r"^knw_[A-Za-z0-9_-]{8,128}$")
     expected_version: int = Field(ge=1)
-    scope: str = Field(min_length=1, max_length=256)
+    scope: ScopeValue = Field(min_length=1, max_length=256)
     title: str | None = Field(default=None, max_length=512)
     body: dict[str, Any] | None = None
     provenance: AgentProvenance | None = None
@@ -300,7 +307,7 @@ class MemoryUpdateRequest(BaseModel):
 class ForgetRequest(BaseModel):
     command: str = Field(min_length=1, max_length=4096)
     confirm: bool = False
-    scope: str | None = Field(default=None, min_length=1, max_length=256)
+    scope: ScopeValue | None = Field(default=None, min_length=1, max_length=256)
     confirmation_token: str | None = Field(default=None, max_length=128)
 
 
@@ -308,10 +315,19 @@ class MemoryQueryRequest(BaseModel):
     text: str
     context_hint: dict[str, Any] = Field(default_factory=dict)
 
+    @model_validator(mode="after")
+    def _validate_query_scope(self) -> "MemoryQueryRequest":
+        scope = self.context_hint.get("scope")
+        if scope is not None:
+            if not isinstance(scope, str):
+                raise ValueError("scope must be a string")
+            validate_scope(scope)
+        return self
+
 
 class AgentContextRequest(BaseModel):
     query: str = Field(min_length=1, max_length=16 * 1024)
-    scope: str = Field(pattern=r"^(user|shared):[A-Za-z0-9._-]+$")
+    scope: ScopeValue
     session_id: str = Field(
         min_length=1,
         max_length=128,
@@ -338,7 +354,7 @@ class AgentLifecycleEvent(str, Enum):
 
 class AgentLifecycleRequest(BaseModel):
     event: AgentLifecycleEvent
-    scope: str = Field(pattern=r"^(user|shared):[A-Za-z0-9._-]+$")
+    scope: ScopeValue
     session_id: str = Field(
         min_length=1,
         max_length=128,
@@ -397,7 +413,7 @@ class AgentRetryRecoveryRequest(BaseModel):
 class FlowPromoteRequest(BaseModel):
     source: MemoryTier
     context_ids: list[str] = Field(min_length=1)
-    scope: str
+    scope: ScopeValue
 
 
 class SyncPairRequest(BaseModel):
@@ -566,7 +582,7 @@ async def memory_write(
 @app.get("/memory/items/{knowledge_id}", tags=["Memory"], summary="读取待编辑记忆")
 async def memory_item(
     knowledge_id: str = Path(pattern=r"^knw_[A-Za-z0-9_-]{8,128}$"),
-    scope: str = Query(pattern=r"^(user|shared):[A-Za-z0-9._-]+$", max_length=256),
+    scope: ScopeValue = Query(pattern=r"^(user|shared):[A-Za-z0-9._-]+$", max_length=256),
     knowledge_repo=Depends(get_knowledge_repo),
 ):
     """Read a complete active snapshot; callers must use its version for updates."""
@@ -954,7 +970,7 @@ async def preference_history(id: str, pref_repo=Depends(get_preference_repo)):
 
 @app.get("/preferences", tags=["Preference"], summary="偏好列表")
 async def preferences_list(
-    scope: str | None = None,
+    scope: ScopeValue | None = Query(default=None, pattern=r"^(user|shared):[A-Za-z0-9._-]+$"),
     pref_repo=Depends(get_preference_repo),
 ):
     """列出偏好，支持按 scope 过滤，供前端 MemoryPanel 选择器使用。"""

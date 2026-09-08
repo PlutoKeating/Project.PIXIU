@@ -78,6 +78,52 @@ OCR_RAW = {
 }
 
 
+@pytest.mark.parametrize("scope", ["user:project\n", "shared:*", " user:project", "", 7])
+def test_invalid_scopes_are_rejected_at_http_boundary(client, scope):
+    requests = [
+        ("/memory/write", {"source_type": "OCR", "raw": OCR_RAW, "scope": scope}),
+        ("/memory/update", {"knowledge_id": "knw_01KYSVDG0739TWR7179BEYETVT",
+                            "expected_version": 1, "scope": scope, "title": "scope test",
+                            "idempotency_key": "invalid-scope-update"}),
+        ("/forget", {"command": "forget scope test", "scope": scope}),
+        ("/memory/query", {"text": "scope test", "context_hint": {"scope": scope}}),
+        ("/agent/context", {"query": "scope test", "scope": scope,
+                            "session_id": "session-test", "turn_id": "turn-test"}),
+        ("/agent/lifecycle", {"event": "TURN_START", "scope": scope,
+                              "session_id": "session-test", "run_id": "run-test",
+                              "turn_id": "turn-test", "data": {"text": "scope test"},
+                              "occurred_at": 1700000000,
+                              "idempotency_key": "invalid-scope-lifecycle"}),
+        ("/memory/flow/promote", {"source": "SHORT_TERM", "context_ids": ["ctx-test"],
+                                 "scope": scope}),
+    ]
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        before = list(db.iterdump())
+    for path, payload in requests:
+        response = client.post(path, json=payload)
+        assert response.status_code == 400, (path, response.text)
+        assert response.json()["error"] == "INVALID_REQUEST"
+    for path in ["/preferences", "/memory/items/knw_01KYSVDG0739TWR7179BEYETVT"]:
+        response = client.get(path, params={"scope": scope})
+        assert response.status_code == 400, (path, response.text)
+        assert response.json()["error"] == "INVALID_REQUEST"
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        assert list(db.iterdump()) == before
+
+
+@pytest.mark.parametrize("scope", ["user:project.2025", "shared:project.2025"])
+def test_dotted_scope_round_trip_keeps_exact_domain(client, scope):
+    if scope.startswith("shared:"):
+        di_module.settings.sync_domain = scope
+    knowledge_id = _write_knowledge_id(client, title="dotted scope target", scope=scope)
+    path = f"/memory/items/{knowledge_id}"
+    response = client.get(path, params={"scope": scope})
+    assert response.status_code == 200
+    assert response.json()["scope"] == scope
+    wrong_scope = scope.replace("project.2025", "project_2025")
+    assert client.get(path, params={"scope": wrong_scope}).status_code == 404
+
+
 def test_capabilities_exposes_actual_noncompliant_portable_runtime(client):
     response = client.get("/capabilities")
 
