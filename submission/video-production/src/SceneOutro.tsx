@@ -235,7 +235,7 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
                       overflow: 'hidden',
                       opacity: 0.2 * Math.max(0, 1 - linT),
                       filter: 'blur(8px)',
-  
+
                     }}
                   >
                     {(
