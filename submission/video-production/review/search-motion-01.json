@@ -1,0 +1,53 @@
+{
+  "status": "s13非标题搜索动效已实现，待独立复核与全片检查",
+  "query": "详细说明",
+  "result_title": "回答风格演示",
+  "sources": [
+    {
+      "path": "raw/20260909-高清检索空白起点.png",
+      "sha256": "0b67ac1b3c633a2daec5f224226c879818c5c0109fc909104bfaf39a45264d13"
+    },
+    {
+      "path": "raw/20260909-非标题检索结果.png",
+      "sha256": "d067b666bcb1a19e93c26a6deba7e2d9e62523fedb6a050c9750ee4ed4371a82"
+    },
+    {
+      "path": "raw/20260909-非标题检索证据.png",
+      "sha256": "d63e6406a979feff294cfcc4a8663770532a64655ba36a89a977c31ce25ea8b9"
+    },
+    {
+      "path": "raw/network/非标题关键词检索核对.json",
+      "sha256": "1cc416689532a13a8230f1f490b8f21ab7d06f230399bb197958150b25540350"
+    }
+  ],
+  "evidence": "evd_01M21EDEC4KPTK34W02XF8V14A",
+  "knowledge": "knw_01M21EDEC7KPKSGAB3BKY0SR9X",
+  "motion": {
+    "card": "type-and-filter",
+    "style": "default",
+    "type_start": 10,
+    "character_interval": 3,
+    "result_reveal": [
+      33,
+      43
+    ],
+    "ripple_starts": [
+      350,
+      353
+    ],
+    "push": [
+      350,
+      366
+    ],
+    "push_scale": 2.2,
+    "detail_start": 366
+  },
+  "adaptation": "真实结果仅一条；不虚构非匹配卡片或过滤网格；沿用逐字输入、停顿、结果落定、双涟漪与推近语法。",
+  "boundaries": [
+    "非标题查询为原生UI截图与公共API再次核对，无连续录屏",
+    "此前高清搜索操作录像查询标题，不能作为本次非标题过程录像",
+    "截图动效重排，输入与点击非原速操作",
+    "关键词在原始正文中出现，非语义独立召回评测",
+    "不新增SFX，不声称完成主观听审"
+  ]
+}

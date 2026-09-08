@@ -145,8 +145,8 @@
       "planned_start_seconds": 206,
       "planned_duration_seconds": 20,
       "narration": "查询不要求记住原来的标题。关键词匹配、语义向量与实体关系共同召回，再做排名融合、条件过滤和结构化聚合。记忆检索本身无需额外的大模型生成步骤。",
-      "visual": "账单模糊查询实录＋三通道示意",
-      "status": "capture-needed"
+      "visual": "非标题关键词“详细说明”实际命中“回答风格演示”，同源证据详情；真实4K裁片重排与检索机制示意",
+      "status": "implemented-motion-review-pending"
     },
     {
       "id": "s14",

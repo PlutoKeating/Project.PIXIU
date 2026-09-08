@@ -1,0 +1,37 @@
+{
+  "status": "第十版初剪，未最终放行",
+  "sha256": "b4f54db178a31b4b9efcddb7f0b6773e2b04dab6cdef1f27b5969757d6a8bac4",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "554.154667",
+      "size": "55125857"
+    }
+  },
+  "full_decode_passed": true,
+  "source_manifest": "full-draft-10-source.json",
+  "changed_shots": [
+    "s13"
+  ],
+  "limits": [
+    "搜索章节有限独立复核无阻断项，非全片放行",
+    "点击强调与静止段节奏有优化建议",
+    "其他旧审查问题及主观听审仍待完成"
+  ]
+}

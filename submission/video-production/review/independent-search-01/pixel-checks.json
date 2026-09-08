@@ -1,0 +1,127 @@
+{
+  "43:query": {
+    "ink_row_runs": [
+      [
+        320,
+        357
+      ]
+    ],
+    "heights": [
+      38
+    ]
+  },
+  "43:result": {
+    "ink_row_runs": [
+      [
+        518,
+        556
+      ]
+    ],
+    "heights": [
+      39
+    ]
+  },
+  "43:source": {
+    "ink_row_runs": [
+      [
+        776,
+        814
+      ]
+    ],
+    "heights": [
+      39
+    ]
+  },
+  "43:caption": {
+    "ink_row_runs": [
+      [
+        988,
+        1046
+      ]
+    ],
+    "heights": [
+      59
+    ]
+  },
+  "43:footnote": {
+    "ink_row_runs": [
+      [
+        917,
+        949
+      ]
+    ],
+    "heights": [
+      33
+    ]
+  },
+  "400:body": {
+    "ink_row_runs": [
+      [
+        446,
+        482
+      ],
+      [
+        485,
+        485
+      ],
+      [
+        488,
+        491
+      ],
+      [
+        515,
+        558
+      ]
+    ],
+    "heights": [
+      37,
+      1,
+      4,
+      44
+    ]
+  },
+  "400:boundary1": {
+    "ink_row_runs": [
+      [
+        653,
+        685
+      ]
+    ],
+    "heights": [
+      33
+    ]
+  },
+  "400:boundary2": {
+    "ink_row_runs": [
+      [
+        718,
+        750
+      ]
+    ],
+    "heights": [
+      33
+    ]
+  },
+  "400:caption": {
+    "ink_row_runs": [
+      [
+        988,
+        1046
+      ]
+    ],
+    "heights": [
+      59
+    ]
+  },
+  "400:footnote": {
+    "ink_row_runs": [
+      [
+        917,
+        949
+      ]
+    ],
+    "heights": [
+      33
+    ]
+  }
+}

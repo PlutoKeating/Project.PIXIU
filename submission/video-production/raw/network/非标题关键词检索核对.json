@@ -1,0 +1,20 @@
+{
+  "input": {
+    "text": "详细说明",
+    "context_hint": {
+      "scope": "user:video-preference-4k-v1"
+    }
+  },
+  "output": {
+    "status": 200,
+    "body": {
+      "answer": "回答风格演示",
+      "source_evidence": [
+        "evd_01M21EDEC4KPTK34W02XF8V14A"
+      ],
+      "source_knowledge": "knw_01M21EDEC7KPKSGAB3BKY0SR9X",
+      "confidence": 1.0,
+      "latency_ms": 57
+    }
+  }
+}
