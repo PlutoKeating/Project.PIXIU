@@ -68,6 +68,7 @@ jobs:
           XDG_CONFIG_HOME="$RUNNER_TEMP/pixiu-native-dialog-config" \
             timeout 60s "$RUNNER_TEMP/pixiu-native-dialog-tests/t_memory_workspace" \
               hostCloseUsesExplicitActionsAndSafeKeyboardDefaults
+          bash build/release/tests/test-native-dialog-theme.sh
       - name: Build strict native package
         env:
           PIXIU_PROFILE: kylin-v11-native-x86_64

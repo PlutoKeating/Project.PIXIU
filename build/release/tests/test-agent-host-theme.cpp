@@ -62,6 +62,7 @@ int main(int argc, char **argv)
     QWidget host;
     auto *layout = new QVBoxLayout(&host);
     auto *tabs = new QTabWidget(&host);
+    tabs->setObjectName(QStringLiteral("pixiuWorkspaces"));
     auto *page = new QWidget(tabs);
     page->setAutoFillBackground(true);
     QPalette conflicting = page->palette();
