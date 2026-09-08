@@ -102,6 +102,11 @@ git submodule update --init --recursive
 
 ### core/ —— 共享契约（最先实现，B 和 C 双方都依赖）
 
+范围校验已修复点号范围无法进入 Evidence/KnowledgeItem/Preference 的不一致，
+并使用完整字符串匹配拒绝尾随换行；保留输入原值及同步的私有域拒绝规则。
+回归复用现有 `test_models.py` 与通用 CI 的 Foundation 测试目录，无新增依赖、
+构建目标或 schema 迁移；入口长度限制及真实安装数据链路仍需验证。
+
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
 | `core/__init__.py` | ★★★ | 导出全部模型和接口 |

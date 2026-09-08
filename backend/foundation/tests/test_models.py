@@ -386,6 +386,45 @@ def test_scope_valid_shared():
     assert e.scope == "shared:home-office"
 
 
+@pytest.mark.parametrize("scope", ["user:project.2025", "shared:project.2025"])
+def test_scope_preserves_dotted_identifiers(scope):
+    assert validate_scope(scope) == scope
+    assert _valid_evidence(scope=scope).scope == scope
+    assert _valid_knowledge(scope=scope).scope == scope
+    preference = Preference(
+        id="pref_01KYSVDG0739TWR7179BEYETVT",
+        category=PreferenceCategory.OP_HABIT,
+        key="output_style",
+        scope=scope,
+        created_at=NOW,
+        updated_at=NOW,
+    )
+    assert preference.scope == scope
+
+
+@pytest.mark.parametrize("scope", [
+    "user:project\n", "shared:project\n", "user:project\r\n",
+    " user:project", "user:project ", "user:pro\nject", "shared:*",
+])
+def test_scope_rejects_entire_invalid_value_without_normalizing(scope):
+    with pytest.raises(ValueError, match="Invalid scope"):
+        validate_scope(scope)
+    with pytest.raises(ValidationError):
+        _valid_evidence(scope=scope)
+    with pytest.raises(ValidationError):
+        _valid_knowledge(scope=scope)
+
+
+def test_dotted_scope_does_not_relax_sync_private_boundary():
+    from backend.foundation.sync.models import validate_shared_scope
+
+    assert validate_shared_scope("shared:project.2025") == "shared:project.2025"
+    with pytest.raises(ValueError, match="only shared"):
+        validate_shared_scope("user:project.2025")
+    with pytest.raises(ValueError, match="Invalid scope"):
+        validate_shared_scope("shared:project.2025\n")
+
+
 def test_scope_invalid_no_prefix():
     with pytest.raises(ValidationError):
         _valid_evidence(scope="alice")

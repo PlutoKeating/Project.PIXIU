@@ -79,7 +79,7 @@ _ID_PATTERNS: dict[str, str] = {
     "sync_op": r"^sync_[a-zA-Z0-9]{26}$",
 }
 
-_SCOPE_PATTERN = re.compile(r"^(user|shared):[a-zA-Z0-9_-]+$")
+_SCOPE_PATTERN = re.compile(r"\A(user|shared):[A-Za-z0-9._-]+\Z")
 
 
 def validate_id(prefix: str, value: str) -> str:
@@ -90,7 +90,7 @@ def validate_id(prefix: str, value: str) -> str:
 
 
 def validate_scope(v: str) -> str:
-    if not _SCOPE_PATTERN.match(v):
+    if not _SCOPE_PATTERN.fullmatch(v):
         raise ValueError(f"Invalid scope format: {v}")
     return v
 
