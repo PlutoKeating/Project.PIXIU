@@ -144,6 +144,63 @@ def _wait_until(predicate, timeout: float = 8.0, interval: float = 0.05) -> bool
     return False
 
 
+@pytest.mark.asyncio
+async def test_relative_capture_records_the_absolute_read_path(env, monkeypatch):
+    monkeypatch.chdir(env.watched)
+    target = Path("relative.txt")
+    target.write_text("synthetic note", encoding="utf-8")
+    result = await _bridge(env).capture(str(target))
+    evidence = await env.evidence_repo.get(result.evidence_id)
+    assert evidence.capture_source.path == str(target.absolute())
+    assert evidence.raw["title"] == "relative.txt"
+    assert env.watched not in str(evidence.raw)
+
+
+@pytest.mark.asyncio
+async def test_capture_keeps_observed_symlink_path(env):
+    target = Path(env.watched) / "target.txt"
+    target.write_text("synthetic note", encoding="utf-8")
+    link = Path(env.watched) / "link.txt"
+    link.symlink_to(target)
+    result = await _bridge(env).capture(str(link))
+    evidence = await env.evidence_repo.get(result.evidence_id)
+    assert evidence.capture_source.path == str(link)
+    assert evidence.raw["title"] == "link.txt"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("case", ["missing", "oversized", "no_ocr", "empty_ocr"])
+async def test_ignored_capture_does_not_persist_source(env, case):
+    target = Path(env.watched) / ("example.png" if "ocr" in case else "example.txt")
+    if case != "missing":
+        target.write_bytes(b"synthetic fixture")
+    bridge = IngestBridge(
+        env.services["ingestion"], env.services["knowledge"],
+        ocr=FakeOcr([]) if case == "empty_ocr" else None,
+        max_text_bytes=1 if case == "oversized" else 1024,
+    )
+    result = await bridge.capture(str(target))
+    assert result.status == "ignored"
+    assert result.evidence_id is None
+    assert await env.db.execute_fetchall("SELECT id FROM evidence") == []
+
+
+@pytest.mark.asyncio
+async def test_detector_failure_does_not_persist_capture_source(env):
+    class FailingSecurity:
+        async def detect_sensitivity(self, raw):
+            raise RuntimeError("detector unavailable")
+
+    target = Path(env.watched) / "example.txt"
+    target.write_text("synthetic fixture", encoding="utf-8")
+    bridge = IngestBridge(
+        env.services["ingestion"], env.services["knowledge"], security=FailingSecurity(),
+    )
+    with pytest.raises(RuntimeError, match="detector unavailable"):
+        await bridge.capture(str(target))
+    assert await env.db.execute_fetchall("SELECT id FROM evidence") == []
+
+
 # ─── PNG + mock OCR ───────────────────────────────────────
 
 @pytest.mark.asyncio
@@ -178,6 +235,13 @@ async def test_png_ocr_captured_and_ingested(env):
         assert evidence is not None
         assert evidence.source_type.value == "MANUAL_CONFIG"
         assert evidence.scope == "user:local"
+        assert evidence.capture_source is not None
+        assert evidence.capture_source.kind == "directory"
+        assert evidence.capture_source.method == "ocr"
+        assert evidence.capture_source.path == str(target)
+        assert 0 < evidence.capture_source.captured_at <= event["ts"]
+        assert evidence.provenance is None
+        assert str(target) not in str(evidence.raw)
         assert "电费 210 元" in evidence.raw["body"]["text"]
         item = await env.knw_repo.get(event["knowledge_id"])
         assert item is not None
@@ -210,6 +274,12 @@ async def test_txt_file_ingested(env):
         assert evidence is not None
         assert "安装依赖" in evidence.raw["body"]["text"]
         assert evidence.raw["title"] == "启动说明.txt"
+        assert evidence.capture_source is not None
+        assert evidence.capture_source.method == "text"
+        assert evidence.capture_source.path == str(Path(env.watched) / "启动说明.txt")
+        assert 0 < evidence.capture_source.captured_at <= event["ts"]
+        assert evidence.provenance is None
+        assert env.watched not in str(evidence.raw)
     finally:
         watcher.stop()
 
@@ -306,6 +376,9 @@ async def test_sensitive_text_quarantined(env):
         evidence = await env.evidence_repo.get(event["evidence_id"])
         assert evidence is not None
         assert evidence.sensitivity >= 2  # 手机号 敏感度 2
+        assert evidence.scope == "user:local"
+        assert evidence.capture_source.method == "text"
+        assert evidence.capture_source.path == str(Path(env.watched) / "通讯录.txt")
     finally:
         watcher.stop()
 

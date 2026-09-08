@@ -465,8 +465,8 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 按 evidence_id 获取原始证据详情，供前端 EvidenceCard「查看原文」。
 
 响应新增可空 `capture_source`，与 Agent `provenance` 独立；schema v13 已实现
-模型、存储及引擎独立入库参数；目录采集器及正式界面尚未接线，现有记录返回
-`null`，不会补造来源。
+模型、存储、引擎独立入库参数及目录采集器传参；正式界面尚未接线。未保存来源的
+旧记录仍返回 `null`，不会补造来源。
 非空值结构为 `{"kind":"directory","method":"text","path":"/data/example.txt",
 "captured_at":1788800000}`，`method` 也可为 `ocr`；仅允许私有文件兼容来源。
 该字段不进入 `raw`，公开写入请求暂不接收该字段，也不保证原文件仍存在。
@@ -490,7 +490,9 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 `raw` 是 connector、清洗和标准化后的证据载荷，并非原始文件字节。
 `provenance` 为可空的 `AgentProvenance`，承载 session/run/turn、工具调用、审批
 及发生时间，不承载目录路径。当前目录桥接默认以 `MANUAL_CONFIG` 入库文本或
-OCR 结果，保留文件名标题和正文，未保存原始文件定位；该枚举不能单独证明内容
+OCR 结果，保留文件名标题和正文，新捕获的文件路径及采集方式由 `capture_source`
+独立保存。路径是本次读取使用的绝对路径（不解析符号链接），`captured_at` 是
+取得内容后的 Unix 秒时间戳，不是文件修改时间。来源枚举不能单独证明内容
 由用户手工输入，也不能因 provenance 为空就判定目录采集失败。目录来源及其
 证据关联可从 `/monitor/log` 核对，当前接口不提供由 evidence 打开原文件的保证。
 

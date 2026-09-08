@@ -10,7 +10,7 @@ evidence + knowledge（同进程直调，不经过 HTTP）：
 - 其余后缀/超限文本 → ``ignored``，不入库。
 
 两者共用 /memory/write 的既有同进程管线：
-``ingestion.ingest(source_type, raw, scope, sensitivity=…)`` 产出 evidence，
+``ingestion.ingest(source_type, raw, scope, sensitivity=…, capture_source=…)`` 产出 evidence，
 ``knowledge.structure(evidence)`` 产出 knowledge（对应的 HTTP handler 见
 http_app.memory_write：ingest → structure → preference.extract → conflict.arbitrate；
 本桥接只取 ingest + structure 两个必要环节，冲突仲裁/偏好提取属 BE-3 共享
@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from ..core.logger import get_logger
-from ..core.models import validate_scope
+from ..core.models import FileCaptureSource, validate_scope
 
 log = get_logger(__name__)
 
@@ -115,6 +115,8 @@ class IngestBridge:
 
         支持图片/文本后缀；不支持或超限 → ``ignored``（不入库）。
         """
+        # Use the same absolute path for reading and provenance; do not resolve symlinks.
+        path = str(Path(path).absolute())
         name = Path(path).name
         suffix = Path(path).suffix.lower()
         if suffix in IMAGE_SUFFIXES:
@@ -149,7 +151,8 @@ class IngestBridge:
                 summary=f"忽略无法识别的图片 {name}",
                 ts=int(time.time()),
             )
-        return await self._ingest({"title": name, "text": text}, name)
+        source = FileCaptureSource(method="ocr", path=path, captured_at=int(time.time()))
+        return await self._ingest({"title": name, "text": text}, name, source)
 
     # ─── 内部：文本直读 ───────────────────────────────────
 
@@ -177,18 +180,22 @@ class IngestBridge:
                 summary=f"忽略无法读取的文件 {name}",
                 ts=int(time.time()),
             )
-        return await self._ingest({"title": name, "text": text}, name)
+        source = FileCaptureSource(method="text", path=path, captured_at=int(time.time()))
+        return await self._ingest({"title": name, "text": text}, name, source)
 
     # ─── 内部：共享入库管线 ───────────────────────────────
 
-    async def _ingest(self, raw: dict[str, Any], name: str) -> CaptureResult:
+    async def _ingest(
+        self, raw: dict[str, Any], name: str, source: FileCaptureSource
+    ) -> CaptureResult:
         """raw → evidence → knowledge，返回 CaptureResult（敏感判定在先）。"""
         sensitivity = 0
         if self._security is not None:
             sensitivity = await self._security.detect_sensitivity(raw)
 
         evidence = await self._ingestion.ingest(
-            self._source_type, raw, self._scope, sensitivity=sensitivity
+            self._source_type, raw, self._scope,
+            sensitivity=sensitivity, capture_source=source,
         )
         item = await self._knowledge.structure(evidence)
 
