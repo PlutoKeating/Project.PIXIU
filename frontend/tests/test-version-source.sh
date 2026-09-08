@@ -8,11 +8,11 @@ EXPECTED="$(tr -d '\r\n' < "${ROOT}/VERSION")"
 
 grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${SOURCE_DIR}/CMakeLists.txt"
 test ! -e "${SOURCE_DIR}/src/main.cpp"
-for retired_source in app/PixiuApp app/SingleInstanceGuard app/TrayIcon widgets/EvidenceDetailDialog widgets/SettingsDialog widgets/FloatingBall; do
+for retired_source in app/PixiuApp app/SingleInstanceGuard app/TrayIcon widgets/EvidenceDetailDialog widgets/SettingsDialog widgets/FloatingBall widgets/ChatWindow; do
     test ! -e "${SOURCE_DIR}/src/${retired_source}.cpp"
     test ! -e "${SOURCE_DIR}/src/${retired_source}.h"
 done
-if rg -n 't_app_navigation|t_window_restore|src/app/PixiuApp|t_settings_dialog|widgets/SettingsDialog|t_floating_ball|widgets/FloatingBall' "${SOURCE_DIR}/CMakeLists.txt"; then
+if rg -n 't_app_navigation|t_window_restore|src/app/PixiuApp|t_settings_dialog|widgets/SettingsDialog|t_floating_ball|widgets/FloatingBall|t_chat_window|widgets/ChatWindow' "${SOURCE_DIR}/CMakeLists.txt"; then
     echo "retired application lifecycle must not return through regression targets" >&2
     exit 1
 fi

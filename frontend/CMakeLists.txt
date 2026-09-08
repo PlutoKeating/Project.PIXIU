@@ -341,35 +341,13 @@ if(BUILD_TESTING)
     target_include_directories(t_upgrade_live PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(t_upgrade_live PRIVATE Qt5::Test Qt5::Widgets Qt5::Network)
     add_test(NAME upgrade_live COMMAND t_upgrade_live)
-    # 三个升级测试都会枚举/清理系统临时目录中的 pixiu-update-*.deb。并行运行
-    # 会互相删除对方文件，形成与产品无关的随机失败；只串行化该共享资源。
+    # 控制器和对话框测试已自行隔离临时目录；保留升级组的调度锁。
+    # 跨进程文件归属由 temp_isolation 哨兵回归验证，不依赖此锁。
     set_tests_properties(
         upgrade_controller check_update_dialog upgrade_live
         PROPERTIES RESOURCE_LOCK pixiu_update_temp_files
     )
 
-    add_executable(t_chat_window
-        tests/t_chat_window.cpp
-        src/widgets/ChatWindow.h
-        src/widgets/ChatWindow.cpp
-        src/app/UserIdentity.h
-        src/app/UserIdentity.cpp
-        src/widgets/InputBar.h
-        src/widgets/InputBar.cpp
-        src/widgets/MessageList.h
-        src/widgets/MessageList.cpp
-        src/widgets/ThinkingSkeleton.h
-        src/widgets/ThinkingSkeleton.cpp
-        src/widgets/EvidenceCard.h
-        src/widgets/EvidenceCard.cpp
-        src/models/ChatMessage.h
-        src/services/BackendTypes.h
-        src/app/UkuiWindow.h
-        src/app/UkuiWindow.cpp
-    )
-    target_include_directories(t_chat_window PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_chat_window PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME chat_window COMMAND t_chat_window)
 
     add_executable(t_input_bar
         tests/t_input_bar.cpp
@@ -435,7 +413,7 @@ if(BUILD_TESTING)
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
-        chat_window input_bar message_list import_dialog evidence_card i18n
+        input_bar message_list import_dialog evidence_card i18n
         sync_controller event_router product_dialogs
         monitor_controller monitor_center
         user_identity

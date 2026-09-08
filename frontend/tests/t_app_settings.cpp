@@ -64,7 +64,6 @@ void TestAppSettings::keysAreStable()
     QVERIFY(!AppSettings::keyLanguage.isEmpty());
     QVERIFY(!AppSettings::keyTheme.isEmpty());
     QVERIFY(!AppSettings::keyToggleShortcut.isEmpty());
-    QVERIFY(!AppSettings::keyWindowGeometry.isEmpty());
 }
 
 void TestAppSettings::cleanupTestCase()

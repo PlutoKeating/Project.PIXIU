@@ -34,10 +34,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Import knowledge"));
     QCOMPARE(QCoreApplication::translate("InputBar", "打开记忆面板"),
              QStringLiteral("Open memory panel"));
-    QCOMPARE(QCoreApplication::translate("ChatWindow", "置顶"),
-             QStringLiteral("Pin to top"));
-    QCOMPARE(QCoreApplication::translate("ChatWindow", "您可以问我："),
-             QStringLiteral("You can ask me:"));
     QCOMPARE(QCoreApplication::translate("InputBar", "更多"),
              QStringLiteral("More"));
     QCOMPARE(QCoreApplication::translate("InputBar", "打开同步面板"),
