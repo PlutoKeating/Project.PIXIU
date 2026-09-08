@@ -100,8 +100,8 @@ Module A 维护 `frontend/management/` 嵌入页、必要公共适配及测试�
 
 会话和模型/工具生命周期来自已批准的 openKylin 宿主与 Runtime；记忆业务由后端
 公共接口提供。管理模块不实现另一个 Agent 循环，不直接访问后端数据库。
-PixiuApp、FloatingBall、ChatWindow 等残留源码仍被回归引用，待按调用关系清退；
-其存在不是产品入口或恢复旧交互的理由。
+PixiuApp 及专属装配测试已删除；FloatingBall、ChatWindow 等旧控件仍被独立
+回归引用，待按调用关系清退，其存在不是产品入口或恢复旧交互的理由。
 
 ## 2. 源文件清单与实现优先级
 
@@ -116,7 +116,7 @@ PixiuApp、FloatingBall、ChatWindow 等残留源码仍被回归引用，待按�
 | `management/CMakeLists.txt` | 嵌入静态库及管理测试 |
 | `management/HostTray.*`、`HostCloseGuard.*` | 同一宿主恢复、退出与未保存状态保护 |
 | `src/app/ShortcutManager.*`、`src/services/NotifyService.*` | 正式复用的 SDK/通用适配，不能随旧壳删除 |
-| `src/app/PixiuApp.*` | 旧生命周期残留，非产品构建输入，待清退 |
+| 旧生命周期装配 | PixiuApp、旧 SingleInstanceGuard/TrayIcon 及专属装配测试已删除 |
 | 宿主 ThemeManager 导出补丁 | 正式主题路径；旧 ThemeService 测试不能替代它 |
 
 ### 第二阶段：核心交互

@@ -27,8 +27,7 @@ public:
     void setTrayIcon(QSystemTrayIcon *tray);
 
     // 弹出通知。返回 true 表示已通过系统托盘展示；false 表示降级为日志记录。
-    // virtual：测试经 PixiuApp::setNotifyServiceForTest 注入记录型子类，
-    // 断言 F3-1 打扰分级发出的通知标题/正文。
+    // 调用方负责内容最小化；正式 HostTray 使用固定提醒，不发送记忆正文。
     virtual bool notify(const QString &title, const QString &body);
 
     // 当前是否具备真实通知能力。

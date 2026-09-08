@@ -8,6 +8,14 @@ EXPECTED="$(tr -d '\r\n' < "${ROOT}/VERSION")"
 
 grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${SOURCE_DIR}/CMakeLists.txt"
 test ! -e "${SOURCE_DIR}/src/main.cpp"
+for retired_source in app/PixiuApp app/SingleInstanceGuard app/TrayIcon widgets/EvidenceDetailDialog; do
+    test ! -e "${SOURCE_DIR}/src/${retired_source}.cpp"
+    test ! -e "${SOURCE_DIR}/src/${retired_source}.h"
+done
+if rg -n 't_app_navigation|t_window_restore|src/app/PixiuApp' "${SOURCE_DIR}/CMakeLists.txt"; then
+    echo "retired application lifecycle must not return through regression targets" >&2
+    exit 1
+fi
 if cmake --build "${BUILD_DIR}" --target pixiu-frontend >/dev/null 2>&1; then
     echo "retired standalone application target must not be buildable" >&2
     exit 1

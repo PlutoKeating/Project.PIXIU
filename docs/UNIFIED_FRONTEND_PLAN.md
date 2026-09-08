@@ -9,7 +9,7 @@
 ## 代码基线与已知差距
 
 - 当前代码核查基线为 `a77eb8c507b2ee1f12d61f6d411e1d72a48a04a4`，产品版本 `0.1.8`；该提交不是新生产 Release。
-- `frontend/CMakeLists.txt` 仅构建保留的回归测试；独立 `pixiu-frontend` 目标、安装规则及旧 main 已删除。`PixiuApp` 的聊天、悬浮球及重复生命周期仍被旧测试引用，尚待逐项清理，不是第二个产品入口。
+- `frontend/CMakeLists.txt` 仅构建保留的回归测试；独立 `pixiu-frontend` 目标、安装规则、旧 main 与 PixiuApp 装配层已删除。聊天和悬浮球等旧控件仍有专属回归，尚待逐项清理，不是第二个产品入口。
 - `build/release/debian/usr/bin/pixiu` 的通用与原生包入口均执行 `kylin-agent`，不再回退旧前端。当前宿主嵌入 `frontend/management/` 的记忆、设备及设置页。
 - Agent 构建使用固定 submodule 的导出副本及自有补丁；上游记忆设置源码被现有构建补丁排除，不能算已交付界面。
 - 旧查询入口仅调用记忆检索，不具备 Agent 循环。管理能力已接入唯一宿主，但范围配置、视觉、事件状态及全功能验收尚未统一，不能以导航接入证明迁移完成。
@@ -552,6 +552,19 @@ clickedButton 判断放弃，裸 Yes 返回码不能授权退出；默认回车/
 - 验收：通用 `KYSDK=OFF` 与 V11 `KYSDK=ON` 各自构建并完成真实基础操作，报告分开。
 
 ### U14：旧应用删除与残留清理
+
+PixiuApp 装配层、仅由它引用的 SingleInstanceGuard/TrayIcon/EvidenceDetailDialog
+及 app_navigation/window_restore 两项旧测试已删除，根 CMake 同步移除两个目标。
+正式管理库与导出清单不消费这些文件；共用通信、升级、快捷键、通知及其测试保留。
+版本门新增旧装配源码缺失及旧测试目标禁止回归检查。替代关系为：HostTray 的同窗
+唤起与屏外恢复、HostCloseGuard 的在途/草稿保护、MemoryWorkspace 的来源阅读、
+PrivacyPage 的显式采集授权、DevicePage/PairingDialog 的信任操作及 SettingsWorkspace
+的升级入口。旧设置中的自定义快捷键持久化尚未迁入正式 HostTray（现为 Ctrl+Alt+P），
+完整语言、多屏及真实双端配对仍须继续实现或验收；不把删除旧测试当作这些能力已通过。
+其余旧控件、控制器、专属资源及文档引用仍在清理范围；不删除用户配置或数据。
+删除后重新配置及构建通过，剩余回归 36/36 组通过（27.82 秒，真实升级未启用），
+正式管理 12/12 组通过（45.70 秒），宿主导出适配检查通过；旧四类定义和 include
+在前端/发布代码中已无引用。三份本轮更新文档的章节标题及顺序保持一致。
 
 旧 PixiuApp/EventRouter/ForgetController 中遗忘广播直达执行的专用接线、命令缓存、
 confirmRemote 方法及两项旧语义测试已移除，不迁移该无预览凭证流程。旧事件路由
