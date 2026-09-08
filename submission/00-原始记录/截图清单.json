@@ -1,12 +1,619 @@
 {
-  "schema": 1,
-  "status": "pending_recapture",
-  "captured_on": null,
+  "schema": 2,
+  "status": "captured_with_documented_gaps",
+  "captured_on": "2026-09-08",
   "timezone": "Asia/Shanghai",
-  "product_version": null,
-  "package_version": null,
-  "release_commit": null,
-  "environment": null,
+  "product_version": "0.1.9",
+  "package_version": "0.1.9-1",
+  "release_commit": "1c4a858b224f93da16936e37d6028fc6c058eb9c",
+  "package_sha256": "de363754209cc668be54cbaa3f090083b8c70e7930c78bf1565174a3685d6246",
+  "package_signature_verified": true,
+  "environment": {
+    "os": "银河麒麟桌面操作系统 V11",
+    "architecture": "amd64",
+    "display": "Wayland",
+    "resolution": [
+      1440,
+      900
+    ],
+    "capture": "virsh screenshot 原始桌面帧",
+    "sdk_profile": "KYSDK=ON，严格安装"
+  },
+  "runtime_verification": {
+    "release_manifest": {
+      "build": {
+        "architecture": "amd64",
+        "built_at_utc": "2026-09-08T11:31:19Z",
+        "git_commit": "1c4a858b224f93da16936e37d6028fc6c058eb9c",
+        "install_strict": true,
+        "kysdk": "ON",
+        "profile": "kylin-v11-native-x86_64",
+        "python_abi": "312",
+        "source_tree_clean": true
+      },
+      "host_compatibility": {
+        "agent_runtime": {
+          "declared_versions": {
+            "package_metadata": "0.9.8",
+            "version_file": "0.9.9"
+          },
+          "gitlink_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+          "license": {
+            "family": "MIT License",
+            "review_status": "confirmed",
+            "spdx_expression": "MIT"
+          },
+          "source_commit": "92c57beb0d6ff1ec5df6bf9a1919a73b1a244012",
+          "source_ref": "V0.9.4-34-g92c57be",
+          "source_tree_clean": true,
+          "supported": "0.9.x"
+        },
+        "kylin_agent": {
+          "declared_version": "0.9.6",
+          "gitlink_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+          "license": {
+            "evidence": {
+              "repository_metadata_url": "https://gitee.com/api/v5/repos/openkylin/kylin-agent",
+              "repository_metadata_value": "AGPL-3.0",
+              "spdx_normalization": "AGPL-3.0-only"
+            },
+            "family": "GNU Affero General Public License v3.0 only",
+            "review_status": "confirmed",
+            "spdx_expression": "AGPL-3.0-only"
+          },
+          "source_commit": "1334c8ee9765a2e1649276b3bca21188598ff445",
+          "source_ref": "0.9.7-34-g1334c8e",
+          "source_tree_clean": true
+        }
+      },
+      "interfaces": {
+        "agent_memory_api": 1,
+        "database_schema": 13,
+        "http_api": "0.5.0"
+      },
+      "manifest_schema": 1,
+      "product": {
+        "debian_version": "0.1.9-1",
+        "name": "pixiu",
+        "revision": "1",
+        "version": "0.1.9"
+      },
+      "provider": {
+        "name": "pixiu",
+        "version": "0.1.9"
+      },
+      "sdk_sources": {
+        "embedding": {
+          "gitlink_commit": "63aed6f3e947926f5def476997ee1baa6735dd8f",
+          "license": {
+            "family": "GNU General Public License v3 or later",
+            "review_status": "confirmed",
+            "spdx_expression": "GPL-3.0-or-later"
+          },
+          "required_in_profile": true,
+          "runtime_package": "libkylin-coreai-embedding",
+          "source_commit": "63aed6f3e947926f5def476997ee1baa6735dd8f",
+          "source_ref": "build/1.2.0.0-ok0.2update1",
+          "source_tree_clean": true
+        },
+        "vector_engine": {
+          "gitlink_commit": "bed675f418d32c052a6ab4c5c49bae148d90f678",
+          "license": {
+            "family": "Apache License 2.0",
+            "review_status": "confirmed",
+            "spdx_expression": "Apache-2.0"
+          },
+          "required_in_profile": true,
+          "runtime_package": "libkysdk-vector-engine-client",
+          "source_commit": "bed675f418d32c052a6ab4c5c49bae148d90f678",
+          "source_ref": "build/1.2.0.0-ok0.5update1",
+          "source_tree_clean": true
+        }
+      }
+    },
+    "package_version": "0.1.9-1",
+    "binary_sha256": "8bb5bd478e9665cd5618c752af44013fc2fe8b4a9de89a4f046310560776ee38",
+    "version": {
+      "product_version": "0.1.9",
+      "component": "pixiu-memory-backend",
+      "api_version": "0.5.0",
+      "agent_memory_api": 1,
+      "schema_version": 13
+    },
+    "health": {
+      "status": "ready",
+      "product_version": "0.1.9",
+      "component": "pixiu-memory-backend",
+      "database": "ok",
+      "schema_version": 13
+    },
+    "capabilities": {
+      "platform": {
+        "family": "kylin",
+        "version_major": "11",
+        "v11": true
+      },
+      "embedding": {
+        "configured": "kylin",
+        "runtime": "kylin",
+        "compliant": true
+      },
+      "vector_store": {
+        "configured": "kylin",
+        "runtime": "kylin",
+        "compliant": true
+      },
+      "contest_ready": true
+    },
+    "running_binary_sha256": [
+      "8bb5bd478e9665cd5618c752af44013fc2fe8b4a9de89a4f046310560776ee38"
+    ],
+    "monitor_config_restored": true
+  },
   "scope_document": "截图素材索引.md",
-  "images": []
+  "images": [
+    {
+      "id": "S01",
+      "file": "01-图片记录/02-install-result.png",
+      "title": "安装完成",
+      "description": "在终端重装 0.1.9-1，安装退出码为 0。此图记录同版本重装。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:52:29+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3ec1b2d767fc016917d1544888d1b4bf899715899c9375b802709a575c643507",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S02",
+      "file": "01-图片记录/78-command-and-window.png",
+      "title": "命令启动",
+      "description": "终端执行 pixiu 后打开唯一主窗口。保留实际图形驱动警告。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:55:05+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "df8a7aa178d26b6b3682ffa0a6332d1d68049f42a813f267670c4a74f05f69be",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S03",
+      "file": "01-图片记录/75-menu-launch.png",
+      "title": "应用菜单入口",
+      "description": "实际点击 PIXIU 菜单项激活窗口后，重新打开菜单定位入口。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:54:07+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e9ee939221a5befff613b032754f9876d264e6fde28eaa01523d4a6e4e8552fb",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S04",
+      "file": "01-图片记录/73-command-window.png",
+      "title": "新建会话",
+      "description": "新会话等待输入，侧栏已收起。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:53:28+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e101000cf1d362e9203f5bea0f057ee0c925c4c2e09eb6e0571a4e09775eb3ed",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S05",
+      "file": "01-图片记录/05-agent-running.png",
+      "title": "填写账单任务",
+      "description": "填写公开合成账单及保存要求，尚未发送。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:26:58+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "506f4b6d05ed4ce846426da8fe21ec66b5f59f908ddc9836ba6a5c4e320cf5af",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S06",
+      "file": "01-图片记录/06-agent-remember.png",
+      "title": "助手写入记忆",
+      "description": "展开已执行的记忆工具；账单合计 434.50 元，后端已接受显式写入。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:28:00+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7e3f4872f07dc3fd75642739c1ad76508c108025a4d8ec70327e0f7f34d9feb1",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S07",
+      "file": "01-图片记录/16-agent-recall-result.png",
+      "title": "跨会话召回",
+      "description": "另一会话调用记忆检索工具，返回三项金额、合计及知识来源。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:38:33+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S08",
+      "file": "01-图片记录/17-agent-source.png",
+      "title": "查看助手的记忆来源",
+      "description": "从本会话记忆来源选择工具结果，核对保存的账单原文。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:39:01+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "446cadd9de3a536335d0c9aded6ee67cf2b76d7913eadfa91fadb8055ca27551",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S09",
+      "file": "01-图片记录/70-task-running.png",
+      "title": "任务执行中",
+      "description": "终端工具执行 sleep 45，停止按钮可用。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:50:53+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "158a2399dee438f83428b7999ca402876154258bc13127571104fb5e040715fe",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S10",
+      "file": "01-图片记录/72-task-stop-result.png",
+      "title": "停止后的界面问题",
+      "description": "停止后后台记录 Command interrupted、退出码 130；界面仍同时显示已完成与进行中，作为问题证据保留。",
+      "status": "issue_observed",
+      "captured_at": "2026-09-08T22:51:36+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "86867397e54a8ebf50bcb680d62ffa19b56344435c3ce1715bb4e73904e38f1a",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S11",
+      "file": "01-图片记录/10-memory-input.png",
+      "title": "填写手动记忆",
+      "description": "输入演示账单标题、正文并选择 Agent 记忆范围。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:29:06+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "32d8720e6fc74b4c7ab0447ec94fa0504e72b3b7457d27041301a6cdbabd0597",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S12",
+      "file": "01-图片记录/11-memory-saved.png",
+      "title": "手动保存结果",
+      "description": "后端接受写入后显示回执，输入框清空。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:29:16+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "74bcf02acc4be82b6b3c9b62eca9f497b3e904896b7ca5469f41cd3bd4ca4d6c",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S13",
+      "file": "01-图片记录/12-memory-evidence.png",
+      "title": "检索与原文阅读",
+      "description": "检索演示账单并打开来源，核对正文和使用范围。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:29:47+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S14",
+      "file": "01-图片记录/13-memory-raw.png",
+      "title": "查看原始数据",
+      "description": "展开高级原始数据，阅读实际证据结构。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:29:47+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ddbb66028799e74d93f26cdad26cc762b032c870b9b926822573a9082ded8bb2",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S15",
+      "file": "01-图片记录/14-memory-edit.png",
+      "title": "修改账单正文",
+      "description": "将演示燃气费改为 186 元，合计改为 464.50 元。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:30:00+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fd5c1eb86600ae1bb2906b171376bc41ba15c05f35c0a75083e1fe051569bd98",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S16",
+      "file": "01-图片记录/15-memory-version.png",
+      "title": "读取更新后的版本",
+      "description": "保存后重新读取，确认版本 2 和修改后的金额。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:30:15+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d49d7f3f0a9744324d1e2c6f98ef1b78d162a8795c3e9571452357a3a3b34274",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S17",
+      "file": "01-图片记录/64-edit-version-conflict.png",
+      "title": "版本冲突保留输入",
+      "description": "编辑窗口保持版本 2；通过公共 API 更新同一演示记录至版本 3，再保存旧编辑，实际返回 VERSION_CONFLICT。此场景为受控并发检查。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:49:58+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4978152783dad68c9ecab7b7ac3a954a903827e1c17bdba0b67ce19daf5297a5",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S18",
+      "file": "01-图片记录/65-reload-confirm.png",
+      "title": "重新读取前确认",
+      "description": "重新读取会替换编辑内容，界面先显示确认提示。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:50:22+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c631035ca9f6dc2cb70e1fc08a47449d9fffee753ef898b62509dbfd9b1801a8",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S19",
+      "file": "01-图片记录/25-forget-target.png",
+      "title": "预览遗忘目标",
+      "description": "在独立演示范围预览，只命中本次创建的一条临时便笺。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:41:36+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S20",
+      "file": "01-图片记录/26-forget-cancel-ready.png",
+      "title": "取消遗忘预览",
+      "description": "取消后目标清空，界面说明未发送遗忘确认。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:41:55+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bb0d53c907dd3d5a698ec4f9935d329e7d366509336dcbfec3c69dbfdaef435d",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S21",
+      "file": "01-图片记录/27-forget-complete.png",
+      "title": "确认遗忘结果",
+      "description": "重新预览同一便笺后点击确认，后端确认遗忘 1 条知识。跨设备送达未验证。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:42:10+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "20494b714fc45a01acdc5653aca38568d3963009c386b01561d38ba34d156657",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S22",
+      "file": "01-图片记录/30-privacy-enabled.png",
+      "title": "保存目录采集配置",
+      "description": "启用目录采集，仅指定公开演示目录，行为采集关闭。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:33:19+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S23",
+      "file": "01-图片记录/32-capture-log.png",
+      "title": "查看真实采集日志",
+      "description": "在演示目录创建文本文件，刷新日志确认实际入库记录。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:34:27+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7e99b55676a09d7d1fb592193e962dbcee7c464cb84d735dc2aef2d6b519f98c",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S24",
+      "file": "01-图片记录/33-capture-disabled.png",
+      "title": "暂停自动采集",
+      "description": "关闭总开关并保存，日志显示监控已暂停。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:34:29+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "48f9df32d2b08c16f08b2b56e702ab305c7367a9e8f778fb78526daa53c1d379",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S25",
+      "file": "01-图片记录/34-file-source.png",
+      "title": "查看文件来源",
+      "description": "检索刚采集的文本，查看采集路径、UTC 时间和原文。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:56:01+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S26",
+      "file": "01-图片记录/40-device-status.png",
+      "title": "读取设备状态",
+      "description": "当前只有本机节点，同步网络关闭，未收到附近广播。此图不证明多设备同步成功。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:42:23+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0b78fd1d8db78e4526e60dde05f8519c8e83c64b14dca19a726e3e5b68df8d85",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S27",
+      "file": "01-图片记录/41-pair-dialog.png",
+      "title": "设备配对入口",
+      "description": "展示 PIN 配对步骤，尚未生成令牌，画面没有有效令牌或 PIN。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:42:36+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bc9486d35815ea3ee92039580c367740b80b77117da53c4e97268931a4fe46d7",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S28",
+      "file": "01-图片记录/50-service-version.png",
+      "title": "核对服务和版本",
+      "description": "桌面与后端均为 0.1.9，API 0.5.0、数据库 13，两个 SDK 实际使用 kylin。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:42:57+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S29",
+      "file": "01-图片记录/51-update-check.png",
+      "title": "检查软件更新",
+      "description": "实际检查返回 0.1.9 已是最新版本。没有执行新版本升级或回滚。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:43:17+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b5829fec233f3252796bcdd3db63ef9df1f8252e6dc42cedf8cc69088251b3f9",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S30",
+      "file": "01-图片记录/52-settings-light.png",
+      "title": "浅色主题与连接设置",
+      "description": "查看浅色主题和本机 Runtime 服务地址。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:43:58+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f85446e41ae168e81b6845fb2bb5e534d0b63cd2783ec564e53b6145f258e0ad",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S31",
+      "file": "01-图片记录/55-dark-ready.png",
+      "title": "深色主题",
+      "description": "实际切换到深色主题后采集，随后恢复浅色。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:45:21+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c063510d870f901e318426f7ed64266dc59c0acc2c55f51d5439df29dac65cd4",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S32",
+      "file": "01-图片记录/54-model-check.png",
+      "title": "检测系统模型连接",
+      "description": "检测返回麒灵系统云模型可用；未改动用户凭据。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:44:50+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1b6758586a1b815c0976d154a44afc7416098740f32200cd791fbaa642cb66f2",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S33",
+      "file": "01-图片记录/60-insight-digest.png",
+      "title": "洞察与采集简报",
+      "description": "当天洞察包含演示文件；简报统计当天 3 条目录采集，含此前两条记录。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:45:55+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d6653f474c82886e8b24f3b177fac938c3c23fdb5fb9b87dfe244543e353af9c",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S34",
+      "file": "01-图片记录/61-preference-history.png",
+      "title": "提取偏好并查看历史",
+      "description": "录入简洁回答要求后提取偏好，查看实际历史版本。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:47:26+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fa7a2db72a5cf2d8489acf855f367247e895f83359027bbec9e2c8163f71785d",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S35",
+      "file": "01-图片记录/62-preference-changed.png",
+      "title": "偏好要求发生变化",
+      "description": "再录入详细回答要求，刷新后版本 3 为 verbose，保留之前 compact 的历史。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:47:52+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S36",
+      "file": "01-图片记录/81-long-reader.png",
+      "title": "阅读长正文开头",
+      "description": "真实录入十八步演示流程，来源阅读区显示开头并提供滚动条。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:57:02+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S37",
+      "file": "01-图片记录/84-long-bottom.png",
+      "title": "阅读长正文末尾",
+      "description": "向下滚动到第十六至十八步和结束标记，确认末尾可达。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:57:57+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "5243cea72d83195f45691edf4a0756eb12cbb7d23b3cd10f9a356244e2a93f99",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    },
+    {
+      "id": "S38",
+      "file": "01-图片记录/85-invalid-json.png",
+      "title": "格式错误时禁止保存",
+      "description": "高级编辑中缺少 JSON 结束括号，输入保留且保存按钮禁用；未向后端提交。",
+      "status": "reviewed",
+      "captured_at": "2026-09-08T22:58:19+08:00",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ec4f8ac514fff22c4cd21730b67b34325d2616a55126a708577ec3059b6fc9f4",
+      "review": "逐张打开原始截图，检查正文、布局、版本与敏感信息。"
+    }
+  ],
+  "remaining": [
+    "多设备双向配对、暂停与恢复、撤销信任和删除传播",
+    "图形安装器安装、新版本升级与失败回滚",
+    "工具授权、会话错误、冲突审计双方、遗忘预览过期和版本变化",
+    "125%/150% 缩放矩阵",
+    "停止后工具状态文案需修复并重拍"
+  ]
 }

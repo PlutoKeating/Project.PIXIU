@@ -1,2 +1,4 @@
-# Optional documentation export tooling; not a product runtime dependency.
+# Documentation export: Markdown plus system LibreOffice.
+# PNG paths, dimensions and digests use the Python standard library.
+# These tools are not product runtime dependencies.
 Markdown==3.10.3

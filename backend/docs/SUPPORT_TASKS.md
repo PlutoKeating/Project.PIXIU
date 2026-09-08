@@ -99,8 +99,8 @@ git submodule update --init --recursive
 > Module C 已交付 `foundation/scripts/phase7_pressure.py`（1000 次压测证据生成器，
 > 产出 `foundation/evidence/` 报告），本岗位无需重复实现。
 
-正式截图当前待重新采集，失效素材已从交付目录移除，见
-[截图素材索引](../../submission/00-原始记录/截图素材索引.md)。空清单不是交付通过；工具安全检查运行
+正式截图已整理 38 张 0.1.9 V11 实拍，覆盖主要单机操作并记录未完成场景，见
+[截图素材索引](../../submission/00-原始记录/截图素材索引.md)。图片数不代表全部验收通过；工具安全检查运行
 `python3 -m unittest discover -s backend/scripts/tests -v`（7 项）。
 全屏截图使用 libvirt 原始帧，区域截图只限定真实采集范围；不拼接、重绘或伪造结果。
 原生 Wayland 的文本输入须检查实际字段，不能假定 X11 剪贴板已经跨协议同步。
@@ -129,3 +129,7 @@ git submodule update --init --recursive
 | 赛题原文 | `docs/OriginProblemDescription.md` |
 | 开发计划 | `docs/DEVELOPMENT_PLAN.md` |
 | 完整交付主实施计划 | `docs/IMPLEMENTATION_MASTER_PLAN.md` |
+
+## 操作图片与文档导出
+
+本次实拍已加入手册、部署指南、应用案例和项目报告。导出脚本解析各源稿的相对 PNG 路径，设置等比显示尺寸，并将图片摘要写入导出清单，避免临时 HTML 目录导致插图丢失。依赖仍为 `requirements-docs.txt` 和 LibreOffice，PNG 尺寸读取使用 Python 标准库。导出后需检查 PDF 图片和 Word 内嵌媒体，并逐页观察排版。
