@@ -174,3 +174,12 @@ review/source-snapshots/full-draft-07。实际抽帧确认断连结句、并发�
 相对音源声明起点偏移1.27–1.29帧；仍未进行主观听审。
 已下载六个Gallery动态参考，来源/摘要保存在reference/gallery-media/sources.json；
 仅用于制作比对，不作为产品视频内容。未完成项继续见独立审查整改台账。
+
+## 偏好历史堆叠初版
+
+s15已接入 `PreferenceHistoryScene.tsx`：当前偏好先从简洁切到详细，再以
+list-stack-press的飞入、压弹和连续计数展示三个实际历史版本。飞行裁片来自
+61/62两张原始产品截图，中文释义区分compact与verbose，明确标注非实时生成。
+不新增依赖；使用既有render:full命令加 `--frames=7543-8202` 可渲染22秒章节。
+章节解码及六帧提取已完成，原图放大偏软，高清重采和独立动效审查尚待完成。
+第八版完整渲染已生成，源快照和核对记录保存在review/full-draft-08-*。

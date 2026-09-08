@@ -167,8 +167,8 @@
       "planned_start_seconds": 244,
       "planned_duration_seconds": 22,
       "narration": "偏好记忆关注操作习惯、输出风格和安全策略。比如先要求回答简洁，后来改为详细说明。提取后查看当前版本与历史，就能知道偏好如何变化，而不是覆盖后无迹可寻。",
-      "visual": "61-preference-history.png → 62-preference-changed.png",
-      "status": "available"
+      "visual": "真实当前偏好截图特写 → 三条实际历史裁片按 list-stack-press 依次落定；中文释义与计数联动",
+      "status": "implemented-motion-review-pending"
     },
     {
       "id": "s16",

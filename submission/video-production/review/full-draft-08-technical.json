@@ -1,0 +1,36 @@
+{
+  "status": "第八版初剪，未最终放行",
+  "sha256": "4f70e8fd91e7069ec9c4c10614070706281de6a4d512531a657d1c77344a241d",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "554.154667",
+      "size": "56053941"
+    }
+  },
+  "full_decode_passed": true,
+  "source_manifest": "full-draft-08-source.json",
+  "changed_shots": [
+    "s15"
+  ],
+  "limits": [
+    "偏好裁片尚待高清替换、独立动效复核与工作台比对",
+    "其他旧审查问题继续保留"
+  ]
+}

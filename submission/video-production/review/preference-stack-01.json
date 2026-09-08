@@ -1,0 +1,73 @@
+{
+  "status": "实现初版，高清替换与独立动效审查待完成",
+  "sources": [
+    {
+      "file": "public/screens/61-preference-history.png",
+      "sha256": "fa7a2db72a5cf2d8489acf855f367247e895f83359027bbec9e2c8163f71785d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "public/screens/62-preference-changed.png",
+      "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "history_crops": [
+    {
+      "x": 17,
+      "y": 610,
+      "w": 380,
+      "h": 51,
+      "scale": 2.7,
+      "version": 1
+    },
+    {
+      "x": 17,
+      "y": 676,
+      "w": 380,
+      "h": 51,
+      "scale": 2.7,
+      "version": 2
+    },
+    {
+      "x": 17,
+      "y": 742,
+      "w": 380,
+      "h": 51,
+      "scale": 2.7,
+      "version": 3
+    }
+  ],
+  "template": "list-stack-press · list-stack-press",
+  "demo": "demos/ui-entrance/list-stack-press/ListStackPress.tsx",
+  "adaptations": [
+    "仅三个实际版本，删去参考中的额外两张卡",
+    "保持22帧飞行、12帧间隔、8帧计数、6px压弹、交替倾斜与单次扫光",
+    "压弹以实际落卡帧触发；强调条滞后3帧",
+    "正视固定机位替代长页面追随，三条记录落定后完整入画",
+    "片中明示截图裁片动画，并增加技术枚举的中文释义"
+  ],
+  "timing": {
+    "current_change": 258,
+    "history_start": 323,
+    "local_cues": [
+      6,
+      18,
+      30
+    ],
+    "last_landing": 375,
+    "counter_settled": 383
+  },
+  "verification": [
+    "TypeScript通过",
+    "22秒章节完整解码",
+    "实际渲染六帧保留，落定计数为3"
+  ],
+  "remaining": [
+    "1440原图裁片放大偏软，需高清原生重采",
+    "尚未独立审查该动效、工作台新版比对或主观听审"
+  ],
+  "capture_attempt": "书房显示临时切到3840×2160/scale2；现运行演示数据库偏好页为空，未伪造历史截图。已恢复1440×900/scale1。新采集原图全部保留。"
+}
