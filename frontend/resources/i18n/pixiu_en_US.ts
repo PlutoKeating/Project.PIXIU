@@ -93,25 +93,6 @@
     </message>
 </context>
 <context>
-    <name>EvidenceCard</name>
-    <message>
-        <source>📄 原始证据</source>
-        <translation>📄 Source evidence</translation>
-    </message>
-    <message>
-        <source>证据 %1 · 置信度 %2 · 延迟 %3ms</source>
-        <translation>Evidence %1 · Confidence %2 · Latency %3ms</translation>
-    </message>
-    <message>
-        <source>查看原文 →</source>
-        <translation>View source →</translation>
-    </message>
-    <message>
-        <source>点击查看原文</source>
-        <translation>Click to view source</translation>
-    </message>
-</context>
-<context>
     <name>EvidenceDetailDialog</name>
     <message>
         <source>证据详情</source>
@@ -514,25 +495,6 @@ This action cannot be undone.</translation>
     <message>
         <source>未发现附近设备</source>
         <translation>No nearby devices found</translation>
-    </message>
-</context>
-<context>
-    <name>MessageList</name>
-    <message>
-        <source>思考中…</source>
-        <translation>Thinking…</translation>
-    </message>
-    <message>
-        <source>置信度 %1 · 延迟 %2ms</source>
-        <translation>Confidence %1 · Latency %2ms</translation>
-    </message>
-    <message>
-        <source>重试</source>
-        <translation>Retry</translation>
-    </message>
-    <message>
-        <source>录入知识</source>
-        <translation>Import knowledge</translation>
     </message>
 </context>
 <context>

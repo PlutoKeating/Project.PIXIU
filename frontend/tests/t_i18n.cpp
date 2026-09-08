@@ -22,12 +22,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
 
     QCOMPARE(QCoreApplication::translate("ForgetDialog", "取消"),
              QStringLiteral("Cancel"));
-    QCOMPARE(QCoreApplication::translate("MessageList", "思考中…"),
-             QStringLiteral("Thinking…"));
-    QCOMPARE(QCoreApplication::translate("MessageList", "重试"),
-             QStringLiteral("Retry"));
-    QCOMPARE(QCoreApplication::translate("MessageList", "录入知识"),
-             QStringLiteral("Import knowledge"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "正在加载…"),

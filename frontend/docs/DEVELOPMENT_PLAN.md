@@ -174,7 +174,8 @@ HostTray 恢复同一窗口并保持最大化/全屏状态，屏外标题区可�
 ### Phase 2：静态交互入口
 
 正式入口为会话、记忆、设备和设置。FloatingBall、ChatWindow、InputBar 及专属测试、翻译已删除。
-MessageList 等旧控件不属于产品构建；保留中的专属回归继续按替代关系清退。
+MessageList、ThinkingSkeleton、EvidenceCard 及专属消息类型、测试和翻译也已清退；
+旧管理面板与控制器继续按替代关系清退，不修改上游实际会话类型。
 不把旧布局、角标或演示数据重新引入正式宿主。
 
 ### Phase 3：HTTP 查询客户端与证据展示

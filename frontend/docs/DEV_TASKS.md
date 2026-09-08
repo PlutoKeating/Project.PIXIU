@@ -100,8 +100,8 @@ Module A 维护 `frontend/management/` 嵌入页、必要公共适配及测试�
 
 会话和模型/工具生命周期来自已批准的 openKylin 宿主与 Runtime；记忆业务由后端
 公共接口提供。管理模块不实现另一个 Agent 循环，不直接访问后端数据库。
-PixiuApp、FloatingBall、ChatWindow、InputBar 及专属测试已删除；MessageList 等旧控件仍被独立
-回归引用，待按调用关系清退，其存在不是产品入口或恢复旧交互的理由。
+PixiuApp、FloatingBall、ChatWindow 及输入/消息展示链和专属测试已删除；旧管理面板、
+录入等控件仍被独立回归引用，待按调用关系清退，其存在不是产品入口或恢复旧交互的理由。
 旧 SettingsDialog 实现与专属翻译已删除；其混合测试里仍适用于正式信息页和
 升级页的检查拆入 product_dialogs，并在正式管理库和根回归入口执行。
 快捷键已迁入正式设置；完整语言支持继续列为待办，不保留无实际资源的语言控件。
@@ -132,7 +132,7 @@ PixiuApp、FloatingBall、ChatWindow、InputBar 及专属测试已删除；Messa
 | `management/AgentEvidence.*`、`AgentEvidenceClient.*` | 验证并读取实际 Runtime 会话工具来源 |
 | `management/MemoryWriteDialog.*`、`MemoryEditDialog.*` | 所属宿主的文本录入、完整快照编辑与版本冲突保护 |
 | `src/services/BackendTransport.*`、`HttpBackendTransport.*` | 公共 HTTP 通信与错误处理 |
-| `src/widgets/MessageList.*` 等旧聊天子控件 | 不进入正式宿主，残留引用与测试逐项清退；ChatWindow/FloatingBall/InputBar 实现、专属测试及翻译已删除 |
+| 旧聊天展示子链 | ChatWindow/FloatingBall/InputBar/MessageList/ThinkingSkeleton/EvidenceCard 及专属消息类型、测试、翻译已删除；不影响上游同名消息类型 |
 
 ### 第三阶段：管理面板
 

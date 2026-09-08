@@ -340,19 +340,6 @@ if(BUILD_TESTING)
     )
 
 
-    add_executable(t_message_list
-        tests/t_message_list.cpp
-        src/widgets/MessageList.h
-        src/widgets/MessageList.cpp
-        src/widgets/ThinkingSkeleton.h
-        src/widgets/ThinkingSkeleton.cpp
-        src/widgets/EvidenceCard.h
-        src/widgets/EvidenceCard.cpp
-        src/models/ChatMessage.h
-    )
-    target_include_directories(t_message_list PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_message_list PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME message_list COMMAND t_message_list)
 
     add_executable(t_import_dialog
         tests/t_import_dialog.cpp
@@ -363,14 +350,6 @@ if(BUILD_TESTING)
     target_link_libraries(t_import_dialog PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME import_dialog COMMAND t_import_dialog)
 
-    add_executable(t_evidence_card
-        tests/t_evidence_card.cpp
-        src/widgets/EvidenceCard.h
-        src/widgets/EvidenceCard.cpp
-    )
-    target_include_directories(t_evidence_card PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_evidence_card PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME evidence_card COMMAND t_evidence_card)
 
     add_executable(t_i18n
         tests/t_i18n.cpp
@@ -395,7 +374,7 @@ if(BUILD_TESTING)
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
-        message_list import_dialog evidence_card i18n
+        import_dialog i18n
         sync_controller event_router product_dialogs
         monitor_controller monitor_center
         upgrade_utils
