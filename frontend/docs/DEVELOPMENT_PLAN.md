@@ -1,1093 +1,301 @@
 # Module A 前端开发执行计划
 
-> 模块：UKUI 桌面客户端（`frontend/`）
-> 分支：`feature/frontend`
-> 技术栈：C++17、Qt5 Widgets、KylinSDK
-> 计划周期：2026-08-07 至 2026-09-15
-> 已批准边界（2026-09-03）：本计划只覆盖记忆控制台；不得在 `frontend/` 新增
-> Agent 循环或 MemoryProvider。完整 Agent 由 openKylin 宿主提供，适配归属 Module E。
-> 对齐基线：2026-08-07，`feature/frontend` 已同步至 `cb8d20e`
-> 当前状态：Phase 1A~1E、Phase 2、Phase 3、Phase 4 与 Phase 5.1~5.3 已完成并本地验收；
-> Phase 7.1 麒麟全局快捷键、Phase 7.2 麒麟桌面通知与 Phase 7.3 UKUI 主题实时跟随
-> 以及 Phase 7.4 UKUI 窗口装饰、Phase 7.5 高 DPI 与多屏、Phase 7.6 桌面入口
-> 与 Phase 7.7 `.deb` 打包已在本机（Kylin V11）完成编译/测试/冒烟验收；
-> Phase 7.3 追加修复：`themeMode()` 仅在启动时缓存，已改为读 QGSettings
-> 实时 `styleName` 判定明暗，并在本机真实桌面会话验证 dark→light→dark
-> 实时跟随（`fix(frontend): read live style name for UKUI theme following`）；
-> Phase 8 本地验收基线已完成（双路径构建 + ctest 23/23 + offscreen 冒烟 +
-> `.deb` 产物校验），已固化为 `frontend/scripts/regression.sh`；中/英文案
-> i18n 已完成（`tr()` 包装 + `resources/i18n/pixiu_en_US.ts/.qm` 内嵌），
-> 适配报告见 `frontend/docs/UKUI_ADAPTATION_REPORT.md`；
-> Phase 6 设备配对前端切片（2026-08-09）已完成：`PairDialog`、
-> 同步 Tab 配对入口与状态行、`/sync/pair` 接线（如实呈现占位/错误，仅
-> `paired` 判成功）、窗口/托盘内嵌 `pixiu.svg` 图标；新增 `t_pair_dialog`/
-> `t_app_icon`，套件增至 23 例全绿，双路径回归通过；真实配对、节点列表、状态和
-> 解绑已于后续 `foundation/sync` 批次落地；
-> Phase 6 同步管理 UI 与 WS 业务事件路由（2026-08-09）已完成：`SyncController`
-> + 同步 Tab 节点列表/同步摘要/刷新/解绑二次确认（`RevokeDialog`），
-> `BackendTransport::peersResult` 改为携带完整响应体以如实识别占位态；
-> `EventRouter` 将 `conflict_detected`/`forget_confirmation`/`sync_event`
-> 路由为通知、角标、面板刷新与远端遗忘确认（`ForgetController::confirmRemote`）；
-> 新增 `t_sync_controller`/`t_revoke_dialog`/`t_event_router`，套件增至 26 例
-> 全绿；真实节点/状态/解绑闭环和 `/events` 注册问题均已在后续批次完成；
-> Phase 8 真实桌面收尾（2026-08-08）：第二实例激活通道、通知弹窗
-> （测试专用 WS 桩驱动 `memory_ready` → KNotifier id 有效）、窗口阴影应用
-> 均已在本机实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发在当前
-> 运行会话未复现（注册 API 与 dconf 配置正确，但 kylin-wlcom 运行期未加载
-> grab），列为全新登录会话人工复测项（见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
-> 设置入口与界面语言偏好（2026-08-09）已完成：`SettingsDialog`（跟随系统/
-> 中文/English、OK/取消/Esc/关闭语义、关于与版本）、聊天框顶栏 ⚙ 与悬浮球
-> 右键菜单“设置”入口、`AppSettings::keyLanguage` 持久化与启动时按显式
-> 偏好加载翻译（`en_US`/`zh_CN`/跟随系统）；新增 `t_settings_dialog` 并
-> 扩展 chat_window/floating_ball/i18n 用例，套件增至 27 例全绿（OFF/ON
-> 双路径），offscreen 冒烟通过。
-> 加载失败态与重试（2026-08-09）已完成：`MemoryPanel` 冲突/偏好历史 Tab
-> 区分“空结果”与“加载失败”（失败原因 + 重试按钮，成功加载后自动隐藏），
-> PixiuApp 将 `ConflictController`/`PreferenceController` 失败上抛到面板
-> 并记录最近偏好 ID 供重试重发；`t_memory_panel` 新增 4 例，套件 27 例
-> 全绿（OFF/ON 双路径），i18n 147 条、0 未完成。
-> 全局快捷键自定义（2026-08-09）已完成：`SettingsDialog` 增加
-> `QKeySequenceEdit`（默认 Ctrl+Alt+P，需含 Ctrl/Alt/Meta 修饰键），
-> `ShortcutManager` 支持自定义序列（空值回退默认），`keyToggleShortcut`
-> 持久化，启动按已存序列注册、设置确认后即时重注册；`t_shortcut_manager`/
-> `t_settings_dialog`/`t_app_settings`/`t_i18n` 扩展，套件 27 例全绿
-> （OFF/ON 双路径），i18n 149 条、0 未完成。
-> 管理面板加载态与写入防重（2026-08-09）已完成：冲突/偏好历史 Tab 增加
-> “正在加载…”态（与空态/失败态互斥），`WriteController` 在途防重且
-> `writeFailed` 仅在写入在途时上抛（修复通用错误串扰）；`t_memory_panel`/
-> `t_write_controller`/`t_i18n` 扩展，套件 27 例全绿（OFF/ON 双路径），
-> i18n 151 条、0 未完成。
-> 管理控制器防重与离线引导（2026-08-09）已完成：`ConflictController`/
-> `PreferenceController` 在途防重（避免重复请求与过期响应误配）；后端未
-> 连接时聊天框引导启动 PIXIU 后端服务（每次断线提示一次）；套件 27 例
-> 全绿（OFF/ON 双路径），i18n 152 条、0 未完成。
-> 聊天框拖动与位置记忆（2026-08-09，ARCHITECTURE §5.2）已完成：无边框
-> 聊天框按住空白区域拖动，位置经 `keyWindowGeometry` 持久化并在启动时
-> 恢复（屏幕可用区域钳制）；`t_chat_window` 新增 1 例，套件 27 例全绿
-> （OFF/ON 双路径）。
-> 视觉验收以唯一 Agent 宿主及内嵌管理工作区为对象；旧图库已删除，不能作为
-> 当前产品基线。主题、图标、焦点及布局的实际状态和待验收项见 `UI_UX_POLISH.md`。
-> 周期健康探测（2026-08-09，健壮性收尾）已完成：`HttpBackendTransport`
-> 独立静默周期探测（GET /conflicts，默认 10s），后端中途挂掉/事后启动时
-> 顶栏状态与离线引导无需用户操作即自动刷新；新增 `t_http_backend`，
-> 套件 28 例 OFF/ON 全绿，本机真实 UKUI 桌面验证通过（详见 §6.3）。
-> 独立侧边浮窗不再作为产品方向；正式导航为会话、记忆、设备、设置。旧侧边窗
-> 截图已删除，新的完整操作图库尚待真实安装包重拍，不宣称已经交付。
+> 模块：唯一 PIXIU 桌面宿主中的原生记忆管理与桌面适配（`frontend/`）。
+> 技术栈：C++17、Qt5 Widgets；麒麟专有依赖经适配层隔离，保留 Debian 系通用路径。
+> 产品边界：ADR-0006 确认 openKylin Agent 为唯一宿主；不交付第二套小窗口前端。
+> 本文保留原有章节标题和顺序；标题中的旧阶段名称、日期和完成标记仅为结构兼容，
+> 不是当前验收结论。正文以实际代码为准，完整任务及证据见 `docs/UNIFIED_FRONTEND_PLAN.md`。
 
 ## 1. 当前进度摘要
 
+本模块的产品输入是 `frontend/management/CMakeLists.txt` 与宿主导出清单。
+根前端 CMake 仅构建保留回归，不是可启动的独立产品。
+
 ### 1.1 已完成
 
-- 已建立独立的 Qt5/CMake 应用骨架，提交为 `9cebaa8 chore(frontend): scaffold Qt5 application`。
-- 已建立 `frontend/src/app`、`frontend/src/models`、`frontend/src/services`、
-  `frontend/src/widgets` 和 `frontend/resources` 基础目录。
-- 独立 `frontend/src/main.cpp` 与产品目标已删除；QApplication 与应用元数据由统一宿主负责，旧 CMake 仅保留回归测试。
-- 已建立 `frontend/CMakeLists.txt`，设置 C++17、Qt5 Widgets 和
-  `PIXIU_HAVE_KYSDK` 构建选项。
-- 已确认构建产物、缓存、`.env` 和 IDE 临时文件不得进入 Git。
-- 已实现 `frontend/src/services/WebSocketClient.{h,cpp}` 并接入 `CMakeLists.txt`
-  （新增 `Qt5::WebSockets` 组件与链接），本地编译/链接验收通过（2026-08-08，
-  Qt 5.15.19）。
-- 后端联调发现的 2 项问题（`/events` 未注册、`ws.py` WebSocket 导入缺失）已记录于
-  `frontend/docs/BACKEND_ISSUES.md` 交接 Module C；WebSocketClient 的真实环境
-  验收已在 2026-08-20 修复后完成，详见该记录。
-- 已实现 `memory_ready` 事件映射：WebSocketClient 接入应用生命周期，业务事件驱动
-  悬浮球未读角标；新增 QtTest 测试基础设施（`tests/t_websocket_client`、
-  `tests/t_floating_ball`）。
-- 已实现桌面通知服务 `NotifyService`（托盘 `QSystemTrayIcon::showMessage`，无托盘
-  降级为日志），`memory_ready` 已联动“记忆已沉淀”通知。
-- 已实现 `/forget` 两段式确认：`ForgetController` 识别“忘记/遗忘/忘了”指令，
-  `ForgetDialog` 展示影响范围，确认后才执行第二阶段。
-- 已实现 `MemoryPanel` 壳：偏好 / 冲突 / 同步 三个 Tab 及占位页，聊天框“记忆”
-  入口已联动打开。
-- 已实现冲突审计视图：`ConflictController` 拉取 `GET /conflicts`，面板冲突 Tab
-  展示 old/new 对比与裁决结果；面板每次打开时刷新。
-- 已实现偏好历史视图：面板偏好 Tab 支持输入偏好 ID 加载
-  `GET /preference/{id}/history` 的版本历史（偏好列表接口落地后替换为选择入口）。
-- 已实现 Phase 6 设备配对前端切片（2026-08-09）：`PairDialog`
-  （PIN/二维码方式、6 位 PIN 门控、Esc/取消语义、契约载荷）、记忆面板同步
-  Tab 配对入口与状态行；PixiuApp 经 `HttpBackendTransport::pairDevice` 发
-  `POST /sync/pair`，`not_implemented`/网络错误/未知状态如实呈现，仅契约
-  `paired` 判成功；窗口与托盘图标改用内嵌 `pixiu.svg`；新增
-  `t_pair_dialog`/`t_app_icon`（套件由 21 增至 23 例），双路径回归
-  （OFF/ON 构建 + ctest + offscreen 冒烟 + desktop 校验 + `.deb`）通过。
-- 已实现 Phase 6 同步管理 UI（2026-08-09）：`SyncController` 封装
-  `/sync/peers`、`/sync/status` 与 `/sync/peers/{id}/revoke`（在途防重、
-  `not_implemented`/未知响应如实上报、仅契约成功态放行）；同步 Tab 新增
-  节点列表（本机/在线/离线/上次同步/待同步条数）、同步摘要（共享域/在线数/
-  待同步/上次对账/累计同步）、刷新按钮与非本机设备“解绑”入口；`RevokeDialog`
-  危险操作二次确认（默认聚焦取消、Esc 视为取消）；`BackendTransport::peersResult`
-  改携完整响应体，便于上层区分 `{"peers":[...]}` 与占位 `{"status":...}`。
-- 已实现 WS 业务事件路由（2026-08-09）：`EventRouter` 将 `conflict_detected`
-  （通知 + 角标 + 冲突列表刷新 + 面板可见时切冲突 Tab）、`forget_confirmation`
-  （弹出 ForgetDialog，确认后经 `ForgetController::confirmRemote` 直接执行
-  第二阶段）、`sync_event`（通知 + 同步刷新）路由为应用行为；`memory_ready`
-  逻辑一并迁入路由层，原有角标/通知行为不变。
-- 已实现设置入口与界面语言偏好（2026-08-09）：`SettingsDialog`
-  （跟随系统/中文/English、OK/取消/Esc/关闭语义、关于与版本信息），聊天框
-  顶栏 ⚙ 按钮与悬浮球右键菜单“设置”统一接入 `PixiuApp::openSettings`；
-  语言偏好经 `AppSettings::keyLanguage` 持久化（仅 accepted 后写入），
-  `main.cpp` 启动时按显式偏好加载翻译，切换在下次启动生效；新增
-  `t_settings_dialog`（7 例），扩展 `t_chat_window`/`t_floating_ball`/
-  `t_i18n`，套件增至 27 例全绿，OFF/ON 双路径构建 + ctest + offscreen
-  冒烟通过。
-- 已实现加载失败态与重试（2026-08-09）：`MemoryPanel` 冲突/偏好历史 Tab
-  将“空结果”与“加载失败”分开呈现（失败原因 + “重试”按钮，成功加载后
-  自动隐藏错误行）；PixiuApp 在 `ConflictController::failed` /
-  `PreferenceController::failed` 时把错误上抛到对应 Tab，并记录最近一次
-  偏好 ID 供重试重发；`t_memory_panel` 新增 4 例，`t_i18n` 扩展，套件
-  27 例全绿（OFF/ON 双路径），i18n 147 条、0 未完成。
-- 已实现全局快捷键自定义（2026-08-09，ARCHITECTURE §9）：`SettingsDialog`
-  增加 `QKeySequenceEdit`（默认 `Ctrl+Alt+P`，要求包含 Ctrl/Alt/Meta 修饰键，
-  否则禁用“确定”）；`ShortcutManager::registerToggleShortcut(sequence)` 支持
-  自定义序列（空序列回退默认，KYSDK 与 Qt 降级路径一致）；
-  `AppSettings::keyToggleShortcut` 持久化 PortableText；`PixiuApp` 启动时按
-  已存序列注册，设置确认后序列变化则释放旧注册并即时重注册。
-  `t_shortcut_manager` 新增 3 例、`t_settings_dialog` 新增 4 例，
-  `t_app_settings`/`t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），
-  i18n 149 条、0 未完成。
-- 已实现管理面板加载态与写入在途防重（2026-08-09）：冲突 Tab 与偏好历史
-  Tab 增加“正在加载…”态（打开面板/刷新/重试时进入，与空态/失败态互斥）；
-  `WriteController::submit` 在途防重（在途返回 false），`writeFailed` 仅在
-  在途时上抛（修复其他端点错误串扰为“录入失败”），重复提交时应用层给出
-  明确提示；`t_memory_panel` 新增 2 例、`t_write_controller` 新增 4 例、
-  `t_i18n` 扩展；套件 27 例全绿（OFF/ON 双路径），i18n 151 条、0 未完成。
-- 已实现管理控制器在途防重与后端离线引导（2026-08-09）：
-  `ConflictController::refresh`/`PreferenceController::loadHistory` 在途
-  防重（避免重复请求与偏好历史过期响应误配）；后端未连接
-  （`Disconnected`/`Error`）时聊天框追加系统提示引导启动 PIXIU 后端服务
-  （每次断线仅提示一次，恢复在线后复位）；`t_conflict_controller`/
-  `t_preference_controller` 各新增 1 例，`t_i18n` 扩展；套件 27 例全绿
-  （OFF/ON 双路径），i18n 152 条、0 未完成。
-- 已实现聊天框拖动与位置记忆（2026-08-09，ARCHITECTURE §5.2）：无边框
-  聊天框支持按住空白区域拖动（子控件自行消费事件），拖动经 `moved` 信号
-  持久化到 `AppSettings::keyWindowGeometry`，启动时恢复并按屏幕可用区域
-  钳制（与悬浮球策略一致）；`t_chat_window` 新增拖动用例 1 例；套件 27 例
-  全绿（OFF/ON 双路径）。
-- 已实现周期健康探测（2026-08-09，健壮性收尾）：`HttpBackendTransport`
-  增加独立、静默的周期健康探测（GET /conflicts，默认 10s，测试可注入短
-  间隔）：仅驱动连接状态（Connected/Error），不广播 `conflictsResult`/
-  `errorOccurred`，在途防重、显式断开停止；后端中途挂掉/事后启动时顶栏
-  “● 在线/服务异常”与离线引导自动刷新，无需等下一次用户操作。新增
-  `t_http_backend`（3 例），套件 28 例 OFF/ON 双路径全绿，`.deb` 校验
-  通过；本机真实 UKUI 桌面验证通过（见 §6.3）。
-- 已实现麒麟全局快捷键：`ShortcutManager` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
-  kysdk-shortcut 注册系统级 `Ctrl+Alt+P`（绑定本应用可执行程序，重复实例经
-  SingleInstanceGuard 转发激活给主实例）；注册失败时降级 Qt `ApplicationShortcut`。
-- 已实现麒麟桌面通知：`NotifyService` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
-  kysdk-notification `KNotifier` 弹系统通知（不依赖托盘）；无 KYSDK 时保持
-  托盘 `showMessage` / 日志降级。
-- 已实现 UKUI 主题实时跟随：`ThemeService` 在 `PIXIU_HAVE_KYSDK=ON` 下通过
-  kysdk-qtwidgets `ThemeController` 监听 UKUI 明暗主题变化，深色主题应用 UKUI
-  深色近似 Palette，浅色主题恢复启动时捕获的系统 Palette；无 KYSDK 时保持
-  Qt Palette 静态降级（不触碰应用调色板）。
-- 已实现 UKUI 窗口装饰：`UkuiWindow` 适配层在 `PIXIU_HAVE_KYSDK=ON` 下通过
-  kysdk-qtwidgets `KShadowHelper` 给聊天框应用 UKUI 风格圆角阴影；无 KYSDK 时
-  空操作，保持现有 Qt Widgets 表现。
-- 已实现高 DPI 与多屏适配：应用入口在 `QApplication` 构造前启用
-  `AA_EnableHighDpiScaling` / `AA_UseHighDpiPixmaps`；悬浮球位置恢复按所在
-  屏幕 `availableGeometry` 钳制并回退主屏，聊天框/悬浮球默认定位基于主屏
-  可用区域。
-- 已实现桌面入口：`resources/com.kylin.pixiu.desktop`（名称/注释/Exec/图标），
-  CMake 增加 `GNUInstallDirs` 安装规则（二进制 → `bin/`，desktop → 
-  `share/applications/`），`desktop-file-validate` 校验通过。
-- `.deb` 统一使用仓库根 `make -C build/release build-deb`；旧前端独立包的
-  Debian 元数据与打包脚本已移除。当前整包仍含迁移中的旧可执行程序，不能据此
-  宣称唯一前端已交付；版本、依赖和安装规则以 `build/release/` 为准。
-- 已实现 i18n：全部用户可见文案经 `tr()` 包装（提交
-  `7a3eb07`/`33967de`），`resources/i18n/pixiu_en_US.ts`/`.qm` 内嵌进 qrc，
-  入口按 `LANGUAGE`/系统语言加载英文翻译，其余环境保持中文源码文本；新增
-  `t_i18n` 测试校验内嵌翻译加载与生效。
-- 已实现 WebSocket 断线重连回归测试与自动化回归基线：`t_websocket_client` 新增
-  重连回归用例（`1d9dd4b`），`scripts/regression.sh` 一键执行 OFF/ON 双路径
-  构建 + ctest 20/20 + offscreen 冒烟 + desktop 校验 + `.deb` 校验。
-- 已实现查询失败重试 UI：失败提示行（红字详情）带“重试”按钮，点击后以原始
-  查询文本重新提交（`MessageList::appendQueryError` + `retryRequested`，
-  PixiuApp 接线到 `QueryController::submit`），输入同时保留；新增
-  `t_message_list` 用例与 `MessageList` 英文翻译。
-- 已实现键盘可达补强（Phase 8 键盘可达条目）：ForgetDialog 的 Esc/窗口关闭
-  统一触发 `cancelled()`（控制器不再残留待确认指令），危险操作默认聚焦
-  “取消”；MemoryPanel Esc 隐藏；聊天框顶栏、输入栏按钮与输入框补充
-  accessibleName（无障碍读屏）。对应 `t_forget_dialog`/`t_memory_panel`/
-  `t_chat_window`/`t_input_bar`/`t_i18n` 用例。
-- 已实现空结果引导（关键状态表“空结果”条目）：空结果提示行附“录入知识”
-  按钮，点击直接打开录入对话框（`MessageList::appendEmptyResult` +
-  `importKnowledgeRequested` → `ImportDialog`）；`t_message_list` 用例与
-  “录入知识”英文翻译已补。
-- 已补 ImportDialog 专属测试（`t_import_dialog`：按钮门控、确认载荷与清空、
-  取消/Esc 隐藏、图片拖入预览与载荷路径），套件由 20 增至 21。
-- 已产出 Phase 8 演示说明与已知问题清单（`frontend/docs/DEMO_GUIDE.md`：
-  演示前置条件、按场景串场步骤、依赖标注、演示口径建议）。
-- 已实现悬浮球右键菜单（IA 第 4/5.1 节“右键菜单”条目）：打开聊天框 /
-  记忆面板 / 退出，动作经 `clicked`/`openPanelRequested`/`quitRequested`
-  与既有入口统一接线（记忆面板复用聊天框顶栏入口逻辑，退出复用托盘
-  退出逻辑）；`t_floating_ball` 覆盖动作触发。
+- 正式宿主提供会话、记忆、设备、设置四个主入口，管理页共享同一 QApplication。
+- 记忆页支持直接检索、范围选择、文本录入、版本化编辑、来源阅读、偏好/冲突审计、
+  遗忘预览确认及洞察/简报；代码存在不等于完整原生矩阵已通过。
+- HostTray、HostCloseGuard 统一唤起和退出保护；快捷键配置复用唯一注册器，
+  信息说明与升级入口属于正式设置页。
+- 独立产品 main、安装规则、前端单独包、PixiuApp 装配层及其旧单实例/托盘/
+  证据弹窗已经删除。旧控件、控制器和资源仍有专属回归，继续清理。
+- 已撤下失效的小窗口图库；不把仓库外诊断图自动纳入产品展示。
 
 ### 1.2 当前剩余
 
-截至当前契约版本，32 个 REST 端点、六类 WS 事件、偏好/证据、配对令牌、真实配对、
-节点数据和 `/memory/flow/promote` 上下文均已落地。前端不再保留“等待后端实现”的
-当前状态声明；`not_implemented` 只用于兼容旧后端，并显示为版本不兼容。
-
-剩余项均为最终目标环境人工验收：全局快捷键、通知点击、HiDPI/多屏、x86/ARM 目标
-画像，以及随最终候选完成的完整 Agent、双 SDK、安装升级与三设备端到端取证。
+- 完成剩余旧控件、控制器、测试、翻译资源和脚本的依赖清理，保留正式共用组件。
+- 完成全宿主能力/版本门控、跨入口范围一致性、记忆来源与错误状态矩阵。
+- 补齐偏好提取、实际通知、OCR 绑定、停用竞态、双端/多端配对同步及遗忘恢复验证。
+- 完成主题、语言、键盘、多屏、DPI、真实升级/回滚/重启和用户数据保留验收。
+- 按当前代码更新全部非 README 文档，维持目录与章节；完成真实安装/启动/功能
+  截图库、交付材料及自动化生产发布。
+- 本清单不是“仅剩人工验收”；实现、删除、契约核对和发布工作均仍有未完成项。
 
 ### 1.3 下一项最小独立 feature
 
-**Phase 8 收尾（本机可完成部分）已完成**：第二实例激活通道、通知弹窗
-（WS 桩驱动 `memory_ready` → `kysdk notification sent, id: 5`）、窗口阴影
-应用均已在本机实时 UKUI 会话验证并截图留证；全局快捷键真实按键触发经
-运行时探针确认当前会话未加载 grab（注册 API 与 dconf 配置正确），需在
-全新登录会话/合成器重启后人工复测，并已记录复测步骤与失败时的备选方案
-（见 `UKUI_ADAPTATION_REPORT.md` 第 4/5 节）。
-
-2026-08-09 追加：设置入口与界面语言偏好（不依赖后端）已作为下一项独立
-feature 完成（`feat(frontend): add settings dialog and language preference`）：
-顶栏 ⚙ / 悬浮球菜单“设置” → `SettingsDialog`，语言三选持久化并在下次启动
-时生效；套件 27 例全绿（OFF/ON 双路径），offscreen 冒烟通过。
-
-2026-08-09 追加：冲突/偏好历史“加载失败 vs 空结果”区分与重试（不依赖后端）
-已完成（`feat(frontend): distinguish load failure from empty state with
-retry`）：MemoryPanel 两个 Tab 显示失败原因 + 重试按钮，成功加载后自动
-恢复；套件 27 例全绿（OFF/ON 双路径）。
-
-2026-08-09 追加：全局快捷键自定义（不依赖后端，对应 ARCHITECTURE §9）已完成
-（`feat(frontend): make toggle shortcut customizable in settings`）：设置页
-`QKeySequenceEdit` 门控（需含修饰键），`ShortcutManager` 自定义序列 + 空值
-回退，`keyToggleShortcut` 持久化，启动读取/确认后即时重注册；套件 27 例
-全绿（OFF/ON 双路径），i18n 149 条、0 未完成。
-
-2026-08-09 追加：管理面板加载态与写入在途防重（不依赖后端）已完成
-（`feat(frontend): add management loading states and write in-flight guard`）：
-冲突/偏好历史 Tab “正在加载…”态；`WriteController` 在途防重 +
-`writeFailed` 仅在有写入在途时上抛（修复通用错误串扰）；套件 27 例全绿
-（OFF/ON 双路径），i18n 151 条、0 未完成。
-
-2026-08-09 追加：管理控制器在途防重与后端离线引导（不依赖后端）已完成
-（`feat(frontend): guard management controllers against duplicate in-flight
-requests` + `feat(frontend): guide user when backend service is offline`）：
-`ConflictController`/`PreferenceController` 在途防重；后端未连接时聊天框
-引导启动服务（断线仅提示一次）；套件 27 例全绿（OFF/ON 双路径），
-i18n 152 条、0 未完成。
-
-2026-08-09 追加：聊天框拖动与位置记忆（不依赖后端，ARCHITECTURE §5.2）
-已完成（`feat(frontend): make chat window draggable and remember position`）：
-空白区域按住拖动 + `keyWindowGeometry` 持久化 + 启动恢复与屏幕钳制；
-套件 27 例全绿（OFF/ON 双路径）。
-
-2026-08-09 追加：周期健康探测（健壮性收尾，不依赖后端）已完成
-（`feat(frontend): probe backend health periodically`）：后端中途挂掉/
-事后启动时，顶栏状态与离线引导无需用户操作即自动刷新；新增
-`t_http_backend`，套件 28 例 OFF/ON 全绿，真实 UKUI 桌面验证通过。
-
-其余 Module A 可执行项仍被后端契约阻塞（2026-08-09 记录；此后 `/sync/*` 与
-flow 已落地，见 §1.2/§3.1）：Phase 5.4/5.5 等待偏好列表与证据详情契约、
-二维码令牌等待令牌生成端点、WS 真实事件联调等待 Module C 修复 `/events`
-注册与 WebSocket 导入（见 `BACKEND_ISSUES.md`）。阻塞期间 Module A 以测试专用 WS 桩
-（`frontend/scripts/ws_smoke_server.py`）维持事件 UI 链路冒烟，不修改
-`backend/`。
+先验证已提交的自定义快捷键在 V11 候选中的真实注册、按键和重启恢复，再清理
+已由正式组件替代的旧设置/聊天依赖。原生作业须绑定提交和安装文件哈希；观察
+超时不能作为重复发起或取消作业的理由。其余任务按统一计划推进，不缩减总目标。
 
 ## 2. 职责边界与 SDK 策略
 
+实现切片遵守根 AGENTS.md 的模块归属；跨模块协作通过公共契约和独立提交边界。
+
 ### 2.1 前端职责
 
-前端为 PIXIU 提供银河麒麟 UKUI 原生交互入口，形成“悬浮球唤起—记忆问答—证据追溯—
-记忆管理—设备配对”的用户链路。前端只修改 `frontend/`，通过 `docs/API.md` 约定的
-HTTP REST、WebSocket 和可选 D-Bus 与 `backend/foundation` 异步通信。
+Module A 维护嵌入管理页和桌面适配，通过公共 HTTP/WS 与记忆后端通信。
+完整 Agent 会话、模型及工具生命周期由宿主与 Runtime 提供；Module E 负责适配。
 
-前端不直接引用 `backend/` 的 Python/C++ 实现，不修改根 API 契约，也不实现：
-
-- 文本向量化、向量数据库客户端或相关 SDK 绑定；
-- SQLite、FTS5、ANN、知识图谱、融合和重排；
-- 数据清洗、知识结构化、偏好提取、冲突仲裁或遗忘执行；
-- CRDT、Gossip、反熵、TLS、同步日志或墓碑回收。
+不直接访问后端数据库、导入私有实现或在 UI 内重写向量化、检索、冲突仲裁、
+遗忘执行、CRDT、Gossip、TLS 与墓碑回收。不另建 Agent 循环或 MemoryProvider。
 
 ### 2.2 官方 third_party submodule
 
-项目已通过根目录 `.gitmodules` 正式引入并 checkout 两个官方 SDK：
-
-| Submodule | 当前 gitlink | 项目用途 | 前端边界 |
-|---|---|---|---|
-| `third_party/kylin-coreai-embedding` | `63aed6f3e947926f5def476997ee1baa6735dd8f` | 后端文本向量化、知识 embedding | 不 include、不 link、不封装、不修改源码 |
-| `third_party/libkysdk-vector-engine-client` | `bed675f418d32c052a6ab4c5c49bae148d90f678` | 后端向量存储/检索接入 | 不 include、不 link、不封装、不修改源码 |
-
-两者都跟踪 `openkylin/nile-sp2` 上游分支，由仓库根目录以 submodule 管理。全员开工前仍需执行：
-
-```bash
-git submodule update --init --recursive
-```
-
-这只是完整仓库环境要求，不代表它们是 `frontend` 的构建依赖。不得在 `frontend/` 下重复
-添加 submodule，也不得把 `third_party` 源码耦合进前端。
+- `third_party/kylin-agent`、`third_party/kylin-agent-runtime` 提供已锁定的宿主和 Runtime。
+- `third_party/kylin-coreai-embedding`、`third_party/libkysdk-vector-engine-client`
+  服务后端 SDK 适配，不因初始化 submodule 就成为 UI 直接依赖。
+- 精确提交以 gitlink 和 `build/release/agent-supply-chain-policy.json` 为准。
+  上游目录只读；经批准的最小补丁由导出流程应用到独立副本，不直接修改上游源码。
+- 初始化使用仓库现有 submodule 流程；不在 frontend 下复制或重复引入上游。
 
 ### 2.3 前端直接使用的麒麟桌面能力
 
-| 能力 | 前端用途 | 普通开发环境策略 |
+| 能力 | 正式实现 | 无专有能力时 |
 |---|---|---|
-| `kysdk-shortcut` | 全局快捷键唤起 | 独立适配接口；开发态使用 Qt 可用能力 |
-| `kysdk-notification` | 记忆、冲突、同步通知 | `QSystemTrayIcon::showMessage` 降级 |
-| Theme / `UkuiStyleHelper` | 明暗主题和系统配色 | Qt Palette / QSS 降级 |
-| UKUI 扩展控件 | 悬浮、拖动、窗口管理 | Qt Widgets 实现基础行为 |
-| 统一配置 | 位置、快捷键、语言持久化 | `QSettings` 降级 |
+| 唤起快捷键 | ShortcutManager；ON 使用 kysdk-shortcut | Qt 应用内快捷键，明确标识 |
+| 桌面通知 | NotifyService；ON 使用 KNotifier | 托盘或日志降级 |
+| 同窗唤起/退出 | HostTray、HostCloseGuard | 无托盘仍可正常启动和退出 |
+| 主题与窗口 | 宿主 ThemeManager 及批准的桌面适配 | Qt 通用控件与主题路径 |
+| 快捷键配置 | 宿主 QSettings，HostTray 单一所有者 | 相同存储和校验，不假报全局注册 |
 
-`PIXIU_HAVE_KYSDK` 只控制这些桌面能力，不得用于切换 embedding/vector 后端。麒麟专有代码
-必须位于适配层之后，避免在 UI 组件中散落条件编译。
+宿主构建与管理适配使用 `PIXIU_HAVE_KYSDK`；整包/回归脚本入口选择
+`PIXIU_KYSDK=OFF/ON`。两者不是 embedding/vector 后端选择器。
+新增依赖前核对官方 SDK 文档和发布画像，不沿用旧壳的链接清单。
 
 ## 3. 最新 backend/foundation 接口基线
 
+下表只列管理相关契约，不声称覆盖全部后端或完整 Agent 接口。
+
 ### 3.1 REST 实现状态
 
-路径与契约以 `docs/API.md` 为准。下表是 2026-08-10 的 **12 端点历史基线**；
-当前 32 个 REST 端点见 `docs/API.md`，不得用此表判定完整 Agent 能力：
+| 接口 | 当前消费方与约束 |
+|---|---|
+| `POST /memory/query` | MemoryWorkspace；请求 ID 隔离，范围变化清空结果 |
+| `POST /memory/write` | MemoryWriteDialog；显式范围、幂等键、在途防重 |
+| `GET /memory/items/{id}`、`POST /memory/update` | MemoryEditDialog；完整快照、expected_version、冲突不覆盖 |
+| `GET /evidence/{id}` | 统一阅读器；正文、raw、Agent/file 来源分开 |
+| `GET /preferences`、`GET /preference/{id}/history`、`POST /preference/extract` | MemoryAudit；范围、记录匹配、真实证据 ID |
+| `GET /conflicts` | MemoryAudit；显示双方与仲裁结果，不充当健康探测 |
+| `POST /forget` | ForgetPage；一次性预览凭证绑定命令/范围，不只发送 confirm=true |
+| `/monitor/config`、`/monitor/log` | PrivacyPage；先读后显式保存、分页日志 |
+| `/sync/*` | DevicePage/PairingDialog；发现、配置、令牌、信任和退出网络 |
+| `/health`、`/version`、`/capabilities` | ServiceStatusPage；核对一致性，不把 WS 在线当健康 |
+| `/agent/context`、`/agent/lifecycle`、`/memory/flow/promote` | Agent 集成契约；不开放任意上下文晋升表单 |
 
-| 接口 | 当前状态 | 前端计划影响 |
-|---|---|---|
-| `POST /memory/write` | 已接入真实 ingest → knowledge → preference → conflict，并广播 `memory_ready` | 可在写入 UI 完成后真实联调；不得依赖未声明的处理时序 |
-| `POST /memory/query` | 已实现（BM25+ANN+Graph 三通道混合检索） | 支持 auto/kylin/portable；仅严格 kylin 模式在 SDK 缺失时失败 |
-| `POST /preference/extract` | 已实现 | 可按契约解析提取结果 |
-| `GET /preference/{id}/history` | 已实现 | `/preferences` 列表选择后读取版本历史 |
-| `POST /forget` | 已实现 `confirm=false/true` 两段式流程 | 前端必须二次确认，取消时不得发确认请求 |
-| `GET /conflicts` | 已实现 | 可展示现有冲突审计列表 |
-| `POST /memory/flow/promote` | 已实现（幂等 promote，复用引擎链路） | 上下文可由 `/agent/lifecycle` 创建；控制台未开放任意上下文晋升入口 |
-| `POST /sync/pair` | 已实现（QR/PIN + 签名令牌，token 必填） | `/sync/token` 提供令牌；主流程使用发现、请求、确认配对 |
-| `GET /sync/peers` | 已实现（含本机/在线状态/待同步数） | 可真实联调 |
-| `GET /sync/status` | 已实现（域/在线数/待同步/对账时间） | 可真实联调 |
-| `POST /sync/peers/{id}/revoke` | 已实现 | 可真实联调 |
-
-客户端解析必须只要求契约中的必需字段，并容忍新增 JSON 字段。例如当前写入实现还返回
-`preference_count` 和 `conflict_detected`，前端不能因为出现额外字段而失败。任何契约字段变更
-仍须由 Module A 与 Module C 双方确认，前端不得单方面修改 `docs/API.md`。
+具体载荷、错误码和权限以 `docs/API.md` 为准。成功回执不等于全部设备同步完成；
+兼容额外字段不能放宽必需字段、范围和响应目标校验。
 
 ### 3.2 WebSocket 状态与兼容规则
 
-`WS /events` 的连接管理、心跳和广播代码已进入仓库；`memory_ready` 已接入写入链路。
+`http_app.py` 已加载 `ws.py`，WebSocket 类型导入完整；不存在待补注册阻塞。
+`connected` 与应用层 `ping` 是控制消息；业务事件包括 memory_ready、
+conflict_detected、forget_confirmation、sync_event、capture_event 和 pair_request。
 
-| 事件 | 当前状态 |
-|---|---|
-| `connected` | 连接建立后由当前实现发送；属于协议控制事件 |
-| `ping` | 当前实现每 30 秒发送；属于心跳控制事件 |
-| `memory_ready` | 已从 `/memory/write` 链路广播 |
-| `conflict_detected` | 写入冲突已广播，包含严重程度 |
-| `forget_confirmation` | 遗忘链路已广播 |
-| `sync_event` | 已从 `/sync/pair`、`/sync/peers/{id}/revoke` 链路广播 |
-
-WebSocket 客户端必须：
-
-- 将 `connected`、`ping` 与业务事件分开处理；控制事件不得触发 UI 通知。
-- 依据顶层 `event` 分发，`data` 缺失或类型错误时记录可脱敏诊断并安全忽略。
-- 对未知事件保持前向兼容：不得崩溃、断开连接或弹出错误，只记录并忽略。
-- 实现退避重连，避免断线后高频重试；心跳/ACK 语义在后端确认前不自行发明。
-- WebSocketClient 已完成编译/链接和真实连接验证；历史注册/导入阻塞已关闭。
-  另外已有 `capture_event`、`pair_request`，共六类业务事件，详见 `docs/API.md`。
+WebSocketClient 负责连接、消息解析及退避重连；BackendEventStatus 只给出只读
+失效提示与受限通知。广播不是遗忘或配对授权，不恢复旧弹窗执行语义。
+未知事件不触发动作；协议无重放游标，重连后需重新读取。
+复核入口见 `BACKEND_ISSUES.md`，心跳与完整网络恢复须另验。
 
 ### 3.3 D-Bus 状态
 
-`backend/foundation/api/dbus_service.py` 已真实实现（2026-08-10）：Bus name
-`com.kylin.pixiu.Memory`，方法 Write/Query/Forget/SyncStatus 镜像 HTTP 并复用
-`di.py` 注入的服务。**前端目前以 HTTP/WS 为首选传输，尚无 D-Bus 客户端**；
-`BackendTransport` 接口已预留第二实现位置，后续可按需补 D-Bus transport
-（参考 `backend/foundation/tests/test_dbus_service.py` 契约）。
+后端公开 D-Bus 服务见 `backend/foundation/api/dbus_service.py`。
+正式 UI 当前使用 HttpBackendTransport 与 WebSocketClient，没有第二个 D-Bus
+前端实现。不得把后端 D-Bus 方法存在描述为 UI 已通过该传输完成验收。
 
 ### 3.4 2026-08-09 历史接口阻塞（已关闭/被后续契约取代）
 
-> 本清单保留用于追溯，不再代表当前状态。WS 注册、六类事件、证据详情、偏好列表、
-> 确认式配对和 portable 降级均已在后续批次落地；当前赛题阻塞改为 H-02、最终
-> V11 双 SDK、Module E 与 Agent 生命周期，见根 `docs/DEVELOPMENT_PLAN.md`。
-
-1. WS `/events` 路由注册/导入修复（`http_app.py` 未导入 `ws.py`、`ws.py` 未导入
-   `fastapi.WebSocket`），修复后前端事件链路自动生效。
-2. `conflict_detected` / `forget_confirmation` 广播调用（后端未实现）。
-3. 证据详情/原文读取端点缺失（`source_evidence` 仅 ID）。
-4. 偏好列表端点缺失（当前为提取 + 指定 ID 历史）。
-5. 配对令牌生成/二维码展示端点缺失（PIN 配对需手动粘贴令牌）。
-6. `GET /conflicts` 分页/排序/筛选/单条详情未定义（暂不影响使用）。
-7. 真实麒麟 SDK 绑定未构建：写入/检索在无绑定环境返回 `KylinSDKUnavailableError`。
+原列出的 WS 注册/导入、证据详情、偏好列表及配对接口缺失已不符合当前代码，
+不再保留为待修复清单。当前差距是统一计划中的集成、原生与跨设备验证，以及
+仍未完善的实际功能。严格 SDK 模式失败与 portable 降级必须分开描述。
 
 ## 4. 实施原则
 
-1. 一个可独立验收的 feature 或组件对应一个 commit，不跨组件堆积提交。
-2. UI 线程不得执行阻塞网络、进程等待或 SDK 调用。
-3. UI 只依赖服务接口和前端模型，不在 Widget 内直接拼 URL 或 JSON。
-4. 危险操作（遗忘、设备解绑）必须二次确认。
-5. 后端不可用时展示明确离线态；请求失败后保留用户输入并允许重试。
-6. 生产运行路径不得内置“假成功”或自动 mock 后端。UI 单元测试可使用显式 fake transport/
-   JSON fixture，但测试替身不得进入生产配置。
-7. JSON 解析对未知字段和未知 WebSocket 事件保持兼容。
-8. 颜色、字体、图标和 DPI 尽量跟随 UKUI，不硬编码单一主题值。
-9. 每个提交前检查 `git diff` 和 `git status`，只精确暂存本 feature 文件。
+1. 一项逻辑变更一个可审查提交，源码、依赖/构建配置和相关文档同步。
+2. HTTP 异步执行并保护请求身份、在途状态和未保存输入；平台调用需有边界与超时。
+3. 复用现有 transport，不直接访问数据库或复制业务算法。
+4. 写入、遗忘、信任和退出以真实状态与显式用户动作授权，不从广播推导授权。
+5. 错误、空态、未知响应和降级明确区分；不内置假成功或演示后端。
+6. 新控件复用宿主布局/主题，避免独立顶层工作台。
+7. 测试替身、临时数据库和配置隔离；测试成功不等于原生或多设备验收。
+8. 提交前审查 diff/status，禁止提交密钥、实际配置、构建产物与缓存。
 
 ## 5. 分阶段、按 feature 的实施计划
 
-日期仅为目标窗口；完成状态以独立 commit、验证记录和依赖门禁为准。
+保留既有标题供引用；以下是当前任务与替代关系，不再使用旧阶段完成率或日期
+安排工作。完整实施及验收清单统一维护在根统一前端计划。
 
 ### Phase 0：同步、契约和环境基线（已完成本轮对齐）
 
-- [x] 同步 `feature/frontend`，确认工作区基线。
-- [x] 初始化两个官方 SDK submodule，并核对 gitlink。
-- [x] 重读根规范、项目计划/API、全部前端文档及 foundation 最新文档/实现。
-- [x] 记录 REST、WebSocket、D-Bus 当前实现状态与职责边界。
-- [x] 在具备目标工具链的环境补齐 Qt5/CMake/C++ 版本与构建记录。
+持续核对当前分支、工作区、API、SDK 画像、供应链 gitlink 与构建入口。
+已有根/模块文档相互矛盾时先核对源码再修订，不以旧完成记录覆盖实际实现。
 
 ### Phase 1：应用基础
 
+应用基础归属于唯一宿主，不再为旧小窗口维护并行生命周期。
+
 #### Phase 1A — Qt5/CMake scaffold（✅ 已完成并验证）
 
-- Commit：`9cebaa8 chore(frontend): scaffold Qt5 application`
-- 内容：目录、`CMakeLists.txt`、`main.cpp`、资源占位、`PIXIU_HAVE_KYSDK` 选项。
-- 验证记录：OFF/ON 双路径 configure/build/ctest 通过；麒麟 V11 真机随整包 .deb
-  安装验证（2026-08-11）。
+根 frontend CMake 是回归入口；management CMake 构建嵌入静态库及测试。
+产品可执行文件由已导出的宿主构建，版本来自根 VERSION，没有独立前端版本。
 
 #### Phase 1B — PixiuApp application lifecycle（✅ 已完成）
 
-- 新建 `src/app/PixiuApp.{h,cpp}`，由其拥有后续顶层服务和窗口。
-- 将启动与退出流程从 `main.cpp` 收敛到应用生命周期对象。
-- 验证正常启动、事件循环和干净退出。
-- Commit：`feat(frontend): add application lifecycle`
+PixiuApp 源码和旧应用装配测试已删除，不再创建或挂载旧聊天框/悬浮球。
+正式生命周期由宿主承担，HostCloseGuard 检查管理请求、Agent 在途工作和草稿。
 
 #### Phase 1C — 单实例守护（✅ 已完成）
 
-- 独立实现重复启动检测和已有实例激活通道。
-- 覆盖正常启动、重复启动、异常退出后再次启动。
-- Commit：`feat(frontend): add single-instance guard`
+旧 SingleInstanceGuard 已删除。唯一宿主使用自己的单实例/激活协议，
+按键及重复启动恢复已有窗口。完整 profile、异常退出、重启恢复矩阵仍须验收。
 
 #### Phase 1D — 系统托盘与退出入口（✅ 已完成）
 
-- 添加托盘显示/隐藏、打开主入口和显式退出动作。
-- 不在本提交实现悬浮球或桌面通知服务。
-- Commit：`feat(frontend): add system tray integration`
+HostTray 恢复同一窗口并保持最大化/全屏状态，屏外标题区可恢复到实际屏幕；
+退出走 HostCloseGuard，关闭最后窗口退出，不留下隐形替代应用。
+旧 TrayIcon 源码已删除，不再保留重复托盘菜单。
 
 #### Phase 1E — 基础配置持久化（✅ 已完成）
 
-- 用 `QSettings` 保存必要的应用级设置，不提前写入窗口业务配置。
-- 不提交本机生成的配置文件。
-- Commit：`feat(frontend): add application settings`
+快捷键配置写入宿主 QSettings 的 `pixiu/activationShortcut`（PortableText）；
+编辑后显式应用，非法组合保留旧绑定，存储失败不宣称重启后保留。
+不导入旧小窗口配置，用户已有数据库及会话不在删除范围。
 
 ### Phase 2：静态交互入口
 
-> ✅ 本阶段已完成（2026-08-08~08-10，验证见 §1.1）。
-
-每一项单独实现、验证和提交：
-
-1. `FloatingBall` 基础显示与拖动：`feat(frontend): add draggable floating ball`
-2. 悬浮球贴边和位置恢复：`feat(frontend): persist floating ball position`
-3. `ChatWindow` 显示/隐藏及焦点：`feat(frontend): add chat window shell`
-4. `InputBar`：`feat(frontend): add chat input bar`
-5. `MessageList` 与消息模型：`feat(frontend): add chat message list`
-6. 开发态快捷键适配：`feat(frontend): add shortcut manager`
-
-本阶段不接后端，不生成自动“假答案”。可用显式测试数据做 Widget 测试。
+正式入口为会话、记忆、设备和设置。FloatingBall、ChatWindow、InputBar、
+MessageList 等旧控件不属于产品构建；保留中的专属回归继续按替代关系清退。
+不把旧布局、角标或演示数据重新引入正式宿主。
 
 ### Phase 3：HTTP 查询客户端与证据展示
 
-1. 建立传输接口、错误类型和连接状态模型：
-   `feat(frontend): add backend transport interface`
-2. 实现 HTTP transport：`feat(frontend): add HTTP backend transport`
-3. 定义并测试 `MemoryAtom` JSON 解析，容忍未知字段：
-   `feat(frontend): add memory response models`
-4. 实现查询加载/离线/超时/取消/重试 UI：
-   `feat(frontend): add memory query states`
-   - 追加（2026-08-08）：失败提示行增加“重试”按钮
-     （`feat(frontend): add retry button for failed queries`），点击以原输入
-     重新提交，输入不丢失；OFF/ON 两路径 ctest 20/20 通过，真实桌面启动冒烟正常。
-5. 实现 `EvidenceCard`：`feat(frontend): add evidence card`
-6. retrieval 落地后接通真实 `/memory/query`：
-   `feat(frontend): connect memory query flow`
-
-> ✅ 真实 `/memory/query` 已接通；当前 auto 模式可降级 portable，严格 kylin
-> 模式缺少 SDK 时返回错误，前端如实呈现失败与“重试”。
+MemoryWorkspace 直接检索，不要求先配置大模型。范围切换清空旧来源与正文，
+迟到响应不恢复旧内容。阅读区可拖动横向分栏，正文/结构字段与高级 raw 分离；
+文件 capture_source 独立显示方法、路径、UTC 时间及有效性限制，缺失不猜测。
+AgentEvidence 只接受当前会话/范围中匹配的工具记录，不把模型文案当真实引用。
+继续验证长文、异常来源、超时、主题和会话切换矩阵。
 
 ### Phase 4：写入、WebSocket、通知和遗忘
 
-1. 对接已实现的 `/memory/write` 文本写入：`feat(frontend): add memory write flow`
-2. 增加图片拖入与录入预览：`feat(frontend): add memory import preview`
-3. [x] 实现 WS 连接、控制事件、未知事件兼容和退避重连：
-   `feat(frontend): add websocket event client`
-   - 本地验收通过（2026-08-08：CMake configure/build 成功，Qt5WebSockets 已链接）。
-   - 真实环境验收阻塞：Module C 需修复 `/events` 注册与 WebSocket 导入问题
-     （见 `frontend/docs/BACKEND_ISSUES.md`），修复后再做连接/心跳/`memory_ready`
-     冒烟验证。
-4. 将已接入的 `memory_ready` 映射到应用状态：
-   `feat(frontend): handle memory ready events`
-   - [x] 本地验收通过（2026-08-08：编译通过；ctest 2/2 通过；offscreen 冒烟启动
-     正常，WS 连接状态与退避重连日志符合预期）。
-   - 真实环境端到端（连接 `/events` 收到真实 `memory_ready`）仍依赖 Module C 修复
-     `/events` 注册与 WebSocket 导入问题（见 `BACKEND_ISSUES.md`）。
-5. [x] 实现桌面通知抽象及普通 Qt 降级：
-   `feat(frontend): add desktop notification service`
-   - 本地验收通过（2026-08-08：编译通过；ctest 3/3 通过；offscreen 冒烟无托盘
-     降级路径正常，不崩溃）。Phase 7 再接入 kysdk-notification。
-6. [x] 实现 `/forget` 两段式确认：`feat(frontend): add forget confirmation flow`
-   - 本地验收通过（2026-08-08：编译通过；ctest 5/5 通过；offscreen 冒烟正常）。
-   - 真实联调需后端 `/forget` 可用（已实现），无 Module C 阻塞项。
-
-> `sync_event` 已由后端广播（配对/解绑，2026-08-10）；`conflict_detected` 与
-> `forget_confirmation` 仍待后端广播后做端到端验收；客户端事件分发已具备未知
-> 事件兼容能力。
+- 文本录入通过 MemoryWriteDialog；已接受回执与实际送达分开。
+- 编辑读取完整版本快照，保留结构字段并使用乐观锁；失败不覆盖用户输入。
+- 附件 OCR 录入表单尚未提供，不以旧图片预览控件证明 OCR 已实现。
+- 事件通道只读刷新，不触发确认或写入；通知使用固定脱敏文案。
+- ForgetPage 先获取绑定范围/命令的预览凭证，再显式确认；失败后核对并重新预览，
+  不自动重放。完整 outbox、崩溃恢复及跨设备遗忘仍须验证。
 
 ### Phase 5：记忆管理
 
-1. `MemoryPanel` 壳和 Tab 状态：`feat(frontend): add memory management panel`
-   - [x] 本地验收通过（2026-08-08：编译通过；ctest 6/6 通过；offscreen 冒烟正常）。
-2. [x] 偏好历史：`feat(frontend): add preference history view`
-   - 本地验收通过（2026-08-08：编译通过；ctest 8/8 通过；offscreen 冒烟正常）。
-   - 当前入口为偏好 ID 输入框；偏好列表接口落地后（Phase 5.4）改为列表选择。
-3. [x] 冲突审计：`feat(frontend): add conflict audit view`
-   - 本地验收通过（2026-08-08：编译通过；ctest 7/7 通过；offscreen 冒烟正常；
-     后端不可达时降级为日志，不崩溃）。
-4. [x] 偏好列表：`GET /preferences` 与列表选择已实现。
-5. [x] 证据原文：`GET /evidence/{id}` 与详情窗口已实现。
+MemoryAudit 展示偏好列表、所选记录历史及冲突双方，提取依据明确证据 ID，
+MANUAL 不等于人工裁决完成。DeliveryPage 展示后端实际洞察和按日简报，
+标题跳转同一阅读器，不以静态候选冒充洞察。
+PrivacyPage 先读取完整配置再显式保存，保留未知/未实现来源字段但不宣称可用；
+目录文本溯源已有原生样例，OCR、权限失败与停用竞态继续验证。
 
 ### Phase 6：设备同步管理
 
-该阶段后端契约已落地（2026-08-10 合入 main），除二维码展示外均已真实闭环
-（麒麟 V11 真机实测 `/sync/status`、`/sync/peers` 200，2026-08-11）。
-
-1. [x] `SyncClient` 数据模型和 transport：`feat(frontend): add sync client`
-   - transport 端点（pair/peers/status/revoke）已就绪，见
-     `HttpBackendTransport`；客户端状态机见 `SyncController`（2026-08-09）。
-2. [x] 节点列表：`feat(frontend): add peer list`
-   - 同步 Tab 渲染节点（本机/在线/离线/上次同步/待同步），`not_implemented`
-     如实呈现；真实数据已闭环（2026-08-11 麒麟 V11 实测）。
-3. [x] 同步状态：`feat(frontend): add sync status view`
-   - 同步摘要行渲染共享域/在线数/待同步/对账时间/累计同步；真实数据已闭环。
-4. [x] PIN 配对：`feat(frontend): add device PIN pairing`
-   - `PairDialog` 契约载荷与结果反馈已完成；真实闭环已通（PIN+令牌，
-     2026-08-11 麒麟 V11 实测）。
-5. [x] 二维码展示：`POST /sync/token` 返回令牌后由 `PairDialog` 展示 QR/PIN 备选流程。
-6. [x] 解绑确认：`feat(frontend): add peer revoke flow`
-   - `RevokeDialog` 二次确认 + `SyncController::revokePeer` 已就绪；真实闭环
-     已通（2026-08-11 麒麟 V11 实测）。
-
-前端只管理配对和展示状态，不参与 CRDT 或传输实现。
+DevicePage/PairingDialog 管理实际配置、节点、发现和信任；令牌方式及响应需匹配，
+QR 展示不是摄像头扫码。解除信任默认取消，本机不可解除；退出网络串行操作并
+重新读取核对，失败中止。界面成功不证明双端或三端数据一致性。
+继续进行真实多设备配对、传输、撤销、离线恢复及同步遗忘验证。
 
 ### Phase 7：UKUI/KylinSDK 桌面集成
 
-1. [x] Kylin 全局快捷键适配：`feat(frontend): integrate Kylin global shortcut`
-   - 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
-     编译通过；ctest 9/9 通过；offscreen 冒烟确认系统级全局快捷键注册、
-     残留注册更新（异常退出后 `EXISTED`→`set`）与第二实例激活通道正常；
-     退出清理与残留删除验证完成。
-   - 真实按键触发（桌面会话中按下 `Ctrl+Alt+P` 拉起应用并唤起主窗口）
-     仍需在带显示的麒麟桌面会话中人工复测。
-2. [x] Kylin 通知适配：`feat(frontend): integrate Kylin notifications`
-   - 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
-     编译通过；ctest 9/9 通过；无头冒烟 `KNotifier::notify()` 返回有效 id、
-     无崩溃（`isAvailable()=true`）；应用 offscreen 启动无回归。
-   - 真实弹窗展示仍需在带显示的麒麟桌面会话中人工复测。
-3. UKUI 主题实时跟随：`feat(frontend): follow UKUI theme changes`
-   - [x] 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
-     编译通过；OFF/ON 两路径 ctest 10/10 通过（新增 theme_service，固定测试
-     无 KYSDK 降级路径）；offscreen 冒烟 `themeMode()` 返回深色时应用 UKUI
-     深色 Palette、`UKUI theme following enabled`，应用无回归。
-   - 后续修复：该库版本 `initThemeStyle()` 不自动连接主题变化信号，已直连
-     `ThemeController::m_gsetting` 的 `changed` 信号并过滤 `styleName` 键后触发
-     `changeTheme()`；KYSDK 链接显式补齐 `gsettings-qt`
-     （`fix(frontend): connect UKUI theme switch signal`）。
-   - 追加修复（2026-08-08）：运行时探针确认 kysdk-qtwidgets 2.3.1.0 的
-     `themeMode()`/`widgetTheme()` 只在 `initThemeStyle()` 时缓存一次，
-     运行期切换主题不刷新（ukui-dark→ukui-light 后 `themeMode()` 仍为
-     DarkTheme）；`applyTheme()` 改读 QGSettings 实时 `styleName` 判定明暗
-     （含 dark/black/night 匹配，缺失时回退 `themeMode()`）
-     （`fix(frontend): read live style name for UKUI theme following`）。
-   - 真实桌面验证（2026-08-08，本机 Kylin V11 实时 UKUI 会话，XWayland）：
-     应用启动后 `gsettings set org.ukui.style style-name ukui-light` 触发
-     `restored system palette (light theme)`，切回 `ukui-dark` 再次应用
-     深色 Palette；日志与截图证据留存。
-4. UKUI 悬浮/拖动/窗口能力：`feat(frontend): integrate UKUI window helpers`
-   - [x] 本地验收通过（2026-08-08，Kylin V11 本机，`PIXIU_HAVE_KYSDK=ON`）：
-     编译通过；OFF/ON 两路径 ctest 11/11 通过（新增 ukui_window）；offscreen
-     冒烟 `UKUI window shadow applied, radius: 12`，应用无回归。
-   - 悬浮球保持自绘圆形实现（拖动/贴边依赖精确 56px 几何；`KDragWidget` 为
-     文件拖拽控件，不适用于窗口拖动），UKUI 窗口装饰收敛在 `UkuiWindow` 适配层。
-5. 高 DPI 与多屏：`fix(frontend): support high DPI and multiple screens`
-   - [x] 本地验收通过（2026-08-08，Kylin V11 本机）：
-     编译通过；OFF/ON 两路径 ctest 11/11 通过；offscreen 冒烟启动无回归；
-     悬浮球/聊天框定位按屏幕可用区域钳制（代码审查确认）。
-6. `.desktop`：`feat(frontend): add desktop entry`
-   - [x] 本地验收通过（2026-08-08，Kylin V11 本机）：
-     `desktop-file-validate` 无错误/提示；`cmake --install` 安装到临时前缀
-     验证 `bin/pixiu-frontend` 与 `share/applications/com.kylin.pixiu.desktop`
-     路径正确；OFF 路径 ctest 11/11 通过。
-7. `.deb` 打包：`build(frontend): add Debian packaging`
-   - [ ] 使用整包入口重新验收：独立前端包目标已删除，统一执行
-     `make -C build/release build-deb`，核对最终整包 control、安装入口和组件清单。
-     原独立包结果不能证明唯一宿主候选已验收。
-
-每项需在目标银河麒麟/UKUI 环境验证；不得以 Windows 降级路径代替适配结论。
+- 快捷键使用已有官方 SDK 接口，失败或服务未就绪时保留应用内降级。
+- 设置中的自定义组合与托盘提示共享注册状态；原生按键、重启和冲突须绑定候选。
+- NotifyService 复用 KNotifier；真实通知显示、交互和脱敏需实际桌面验证。
+- 宿主 ThemeManager 负责正式主题，旧 ThemeService/UkuiWindow 测试不替代它。
+- 完成各页主题、语言、键盘、DPI、多屏及目标架构矩阵，不以离屏启动证明视觉。
+- 桌面入口和安装规则归属整包；不再安装 pixiu-frontend 或前端单独 deb。
 
 ### Phase 8：验收与发布候选
 
-- 查询、写入、遗忘、冲突、同步的正常/空/离线/超时路径回归。
-- WebSocket 断线、重连、心跳、未知事件和重复事件回归。
-- 键盘可达、明暗主题、高 DPI、多屏和 x86/ARM 目标机验证。
-- 形成 D-08 麒麟适配记录、演示说明和已知问题清单。
-- 每类修复仍按一个可复现问题一个 commit，避免发布前大包提交。
-
-已完成的本地自动化基线：
-
-- `scripts/regression.sh`：OFF/ON 双路径 configure + build + ctest（offscreen）
-  + ON 路径冒烟 + `desktop-file-validate` + `.deb` 打包与 `dpkg-deb` 内容校验。
-- i18n 回归：`t_i18n` 校验内嵌 `pixiu_en_US.qm` 可从 qrc 加载并对
-  `ChatWindow`/`InputBar`/`ForgetDialog`/`MessageList` 等上下文生效。
-- WebSocket 重连回归：`t_websocket_client` 覆盖断线后按退避策略重连、心跳
-  与未知事件兼容（不崩溃）。
+完成正常、空、离线、超时、重连、重复/迟到响应及敏感/共享状态矩阵；
+核对安装、升级、签名、失败、回滚、重启和数据保留；清退全部旧界面材料。
+截图必须来自同版真实安装程序，合成示例明确标注，原生/通用证据分开。
+最终通过已授权的标签自动流程发布，不以手工上传安装包替代发布门。
 
 ## 6. 构建与验证门禁
 
+构建成功、组件测试、实际后端联调、原生桌面和多设备证据分别记录，不互相替代。
+
 ### 6.1 当前真实验证结果
 
-2026-08-07 在当前 Windows 环境探测：
-
-```text
-cmake=MISSING
-qmake=MISSING
-g++=MISSING
-clang++=MISSING
-cl=MISSING
-```
-
-以上仅为 2026-08-07 Windows 历史环境记录。此后已完成 Qt5 OFF/ON 编译、
-CTest 和麒麟桌面验证（见 §6.3）；最新候选以 GitHub CI / native 作业结果为准。
+已核对的局部证据包括：正式管理回归、宿主导出检查、V11 严格包构建/安装及
+SDK 生命周期门，以及同版阅读器的来源、分栏和 raw/正文切换。
+精确提交、作业、运行文件哈希和测试数量在根统一前端计划集中维护。
+完整语言、主题、升级、多设备及最终图库仍未完成；新版生产发布不能据此视为完成。
 
 ### 6.2 工具链补齐后的最小验证
 
-在仓库根目录执行：
+在具备 Qt5 Widgets/Network/WebSockets/Test/DBus 与 libqrencode 开发依赖的环境，
+于仓库根目录执行通用组件验证：
 
 ```bash
-cmake -S frontend -B frontend/build -DPIXIU_HAVE_KYSDK=OFF
-cmake --build frontend/build --parallel
+cmake -S frontend/management -B frontend/build/management-tests \
+  -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
+cmake --build frontend/build/management-tests --parallel 2
+ctest --test-dir frontend/build/management-tests --output-on-failure
 ```
 
-随后启动构建产物，检查应用事件循环和退出码。目标麒麟环境还需分别验证
-`PIXIU_HAVE_KYSDK=OFF` 与 `ON`。`frontend/build`、CMake 缓存和可执行文件不得提交。
+包含宿主和整包的回归入口：
 
-每个 feature 至少完成：
+```bash
+PIXIU_KYSDK=OFF bash frontend/scripts/regression.sh
+```
 
-- configure/build；若因环境缺失无法执行，明确写出命令、缺失依赖和未验证项；
-- 正常路径与至少一个错误/边界路径；
-- QObject 所有权、信号槽、异步取消和退出流程检查；
-- `git diff --check`、`git diff`、`git status`；
-- 确认只修改 `frontend/` 且没有生成物、缓存、`.env` 或绝对路径。
+在匹配麒麟画像、SDK 与桌面环境后另行运行 ON 路径。脚本每次选择一个画像，
+不是自动证明 OFF/ON 都通过；组件测试仍有确定性降级与 SDK 替身。
+根 frontend 构建不产出可启动产品，不能再执行 frontend/build/pixiu-frontend。
+测试/构建目录应被忽略，不能提交。
 
 ### 6.3 本地验证记录（2026-08-08，Linux + Qt 5.15）
 
-```text
-cmake --version       3.28.3
-Qt5WebSockets_DIR     /usr/lib/x86_64-linux-gnu/cmake/Qt5WebSockets
-链接库                libQt5WebSockets.so.5.15.19
-构建产物              frontend/build/pixiu-frontend（含 WebSocketClient.cpp.o）
-测试                  ctest 8/8 通过（websocket / floating_ball / notify /
-                     forget_controller / forget_dialog / memory_panel /
-                     conflict_controller / preference_controller）
-```
+保留章节标题，不保留旧小窗口的版本、尺寸、通知 ID、截图或累计测试数量。
+当前检查按以下证据层执行：
 
-2026-08-08 追加（Phase 7.1，本机银河麒麟 V11）：
+| 证据层 | 证明范围 | 不证明 |
+|---|---|---|
+| 管理组件测试 | 输入、状态、响应校验、退出保护和局部几何 | 真实桌面完整表现 |
+| 后端隔离联调 | 临时数据库中的真实契约/业务路径 | 用户环境和跨设备送达 |
+| SDK 函数替身 | 注册/失败/服务变化状态机 | 麒麟 SDK 实际注册成功 |
+| 原生自动作业 | 指定提交的严格构建、安装与 SDK 门 | 全部 GUI 操作 |
+| 真实桌面取证 | 指定运行程序的实际画面/交互 | 未操作的功能和其他平台 |
 
-```text
-PIXIU_HAVE_KYSDK=ON  configure 通过（pkg-config kysdk-shortcut 3.0.1.0）
-构建产物              frontend/build/kysdk/pixiu-frontend（链接 libkysdk-shortcut）
-测试                  ctest 9/9 通过（新增 shortcut_manager）
-冒烟                  offscreen 启动：registered/updated Kylin global shortcut
-                     Ctrl+Alt+P -> <binary>；第二实例 exit=1 并触发主实例激活；
-                     SIGTERM 残留后再次启动走 EXISTED→set 更新路径；
-                     退出后 kdk_shortcut_delete_global_shortcut 清理成功
-```
-
-2026-08-08 追加（Phase 7.2，本机银河麒麟 V11）：
-
-```text
-KYSDK 通知               kysdk-notification KNotifier（libkysdk-notification 3.0.1.0）
-无头冒烟                 NotifyService(KYSDK) notify() 返回有效 id、无崩溃；
-                         isAvailable()=true
-应用冒烟                 offscreen 启动无回归（快捷键注册 + 通知服务挂载正常）
-```
-
-2026-08-08 追加（Phase 7.3，本机银河麒麟 V11）：
-
-```text
-KYSDK 主题               kysdk-qtwidgets ThemeController（libkysdk-qtwidgets 2.3.1.0）
-OFF 路径                 configure/build 通过；ctest 10/10 通过（新增 theme_service）
-ON 路径                  configure/build 通过（链接 kysdk-qtwidgets）；ctest 10/10 通过
-无头冒烟                 offscreen 启动：themeMode() 返回深色时应用 UKUI 深色 Palette；
-                         pixiu.theme: UKUI theme following enabled；无回归
-```
-
-2026-08-08 追加（Phase 7.4，本机银河麒麟 V11）：
-
-```text
-KYSDK 窗口辅助           kysdk-qtwidgets KShadowHelper（libkysdk-qtwidgets 2.3.1.0）
-链接修复                 KYSDK 链接显式补齐 gsettings-qt（themeController 依赖）
-OFF 路径                 configure/build 通过；ctest 11/11 通过（新增 ukui_window）
-ON 路径                  configure/build 通过；ctest 11/11 通过
-无头冒烟                 offscreen 启动：UKUI window shadow applied（radius 12）；
-                         主题信号连接正常；无回归
-```
-
-2026-08-08 追加（Phase 7.5，本机银河麒麟 V11）：
-
-```text
-高 DPI                   入口启用 AA_EnableHighDpiScaling / AA_UseHighDpiPixmaps
-OFF 路径                 configure/build 通过；ctest 11/11 通过
-ON 路径                  configure/build 通过；ctest 11/11 通过
-无头冒烟                 offscreen 启动无回归；定位逻辑按屏幕可用区域钳制
-```
-
-2026-08-08 追加（Phase 7.6，本机银河麒麟 V11）：
-
-```text
-桌面入口                 resources/com.kylin.pixiu.desktop（desktop-file-validate 通过）
-安装规则                 GNUInstallDirs：bin/ + share/applications/
-安装验证                 cmake --install --prefix <temp> 产出两文件路径正确
-测试                     ctest 11/11 通过
-```
-
-2026-08-08 追加（Phase 7.7，本机银河麒麟 V11）：
-
-```text
-打包方式                 统一委托 build/release；独立前端包目标已删除
-产物                     整包 pixiu_<产品版本>-<revision>_<架构>.deb
-内容校验                 最终候选须重新检查，不能沿用独立包结果
-依赖声明                 由 build/release 画像与 control.in 生成
-```
-
-2026-08-08 追加（i18n + Phase 8 本地自动化基线，本机银河麒麟 V11）：
-
-```text
-i18n                     全部用户可见文案 tr() 包装；en_US.ts/.qm 内嵌 qrc；
-                         LANGUAGE/LANG/系统语言检测（main.cpp）
-翻译内容                 pixiu_en_US.ts：12 个上下文、0 个未完成条目
-回归脚本                 scripts/regression.sh（OFF/ON 构建+ctest+冒烟+deb 校验）
-OFF 路径                 configure/build 通过；ctest 20/20 通过（含新增 i18n）
-ON 路径                  configure/build 通过；ctest 20/20 通过
-ON 冒烟                  offscreen 启动：PIXIU application started；
-                         theme/ukui-window/shortcut 日志正常
-打包                     独立包目标已删除，整包候选需重新构建和验收
-```
-
-2026-08-08 追加（Phase 7.3 真实桌面验证 + Phase 8 真实桌面冒烟）：
-
-```text
-修复                      ThemeService::applyTheme() 改读 QGSettings 实时
-                          styleName 判定明暗（themeMode() 仅缓存启动值，
-                          运行期不刷新——运行时探针确认）
-真实桌面启动              DISPLAY=:0 QT_QPA_PLATFORM=xcb 启动成功：
-                          wmctrl -l 可见 "PIXIU" 窗口；托盘图标、UKUI 阴影
-                          （radius 12）、全局快捷键注册/更新日志正常
-主题实时跟随              ukui-dark -> ukui-light：restored system palette
-                          (light theme)；切回 ukui-dark：applied UKUI dark
-                          palette；旧临时截图不作为现行验收证据
-回归确认                  OFF/ON 双路径 configure/build 通过；ctest 20/20
-```
-
-2026-08-08 追加（ImportDialog 测试补强）：
-
-```text
-t_import_dialog           新增 5 例：OK 按钮门控、确认载荷与清空、取消/Esc
-                          隐藏、图片拖入预览与载荷；OFF/ON ctest 21/21
-```
-
-2026-08-08 追加（Phase 8 真实桌面收尾，本机 Kylin V11 实时 UKUI 会话）：
-
-```text
-第二实例激活              第二实例 exit=1；主实例日志 "activation requested
-                          by secondary instance"；wmctrl 出现两个 PIXIU
-                          窗口（悬浮球 + 聊天框）
-                          （旧截图不作为现行唯一宿主证据）
-通知弹窗                  测试专用 WS 桩（scripts/ws_smoke_server.py）驱动
-                          memory_ready："memory ready: knw_smoke_001" +
-                          "kysdk notification sent, id: 5"
-                          （旧截图不作为现行通知验收证据）
-窗口阴影                  "UKUI window shadow applied, radius: 12" +
-                          聊天框截图供人工确认视觉效果
-快捷键按键触发            注册 API 成功、dconf 配置正确（custom0 的
-                          name/binding/action），但运行期 kglobalaccel
-                          查询 Ctrl+Alt+P 返回 ENXIO（未加载 grab）；
-                          uinput 合成按键（合成器已挂载虚拟键盘）未触发；
-                          判定需全新登录会话/合成器重启后人工复测
-```
-
-以下段落是 2026-08-09 历史记录：当时 WebSocketClient 的 configure/build 已通过，
-真实 WS 曾受 `/events` 注册与类型导入问题阻塞。两项已于 2026-08-20 修复并完成
-真实连接复测；当前不得继续把它们列为阻塞项。测试专用 WS 桩仅保留作 UI 回归。
-
-2026-08-09 追加（同步管理 UI + WS 业务事件路由，OFF 路径本机验证）：
-
-```text
-同步管理                SyncController（peers/status/revoke 在途防重、占位/未知
-                        响应如实上报）；MemoryPanel 同步 Tab 节点列表/摘要/刷新/
-                        解绑入口；RevokeDialog 二次确认（默认取消、Esc 取消）
-事件路由                EventRouter：conflict_detected/forget_confirmation/
-                        sync_event → 通知/角标/面板刷新/远端遗忘确认；
-                        memory_ready 行为迁移至路由层且语义不变
-传输契约                BackendTransport::peersResult 携完整响应体，占位态
-                        {"status":"not_implemented"} 与成功态 {"peers":[...]}
-                        可在客户端正确区分（不伪造成功）
-i18n                    pixiu_en_US.ts 增补同步/解绑/事件路由文案（127 条，0 未完成）
-测试                    OFF 路径 ctest 26/26 通过（新增 t_sync_controller /
-                        t_revoke_dialog / t_event_router；扩展 t_memory_panel /
-                        t_forget_controller）
-冒烟                    offscreen 启动 "PIXIU application started" 无回归
-提交                    a330a6d feat(frontend): add sync peer list, status and
-                        revoke flow
-                        3fda460 feat(frontend): route websocket business events
-                        to UI actions
-```
-
-2026-08-09 追加（设置入口与界面语言偏好，OFF/ON 本机验证）：
-
-```text
-设置对话框             SettingsDialog：跟随系统/中文/English、OK/取消/
-                       Esc/关闭语义、关于与版本信息
-入口接入               聊天框顶栏 ⚙（settingsButton）与悬浮球右键菜单
-                       “设置”（settingsAction）→ PixiuApp::openSettings
-持久化                 AppSettings::keyLanguage 仅 accepted 后写入；
-                       main.cpp 启动时按 en_US / zh_CN / 跟随系统 选择翻译
-i18n                   pixiu_en_US.ts 增补 SettingsDialog/ChatWindow/
-                       FloatingBall 条目（142 条，0 未完成），.qm 重新生成
-测试                   OFF/ON 双路径 ctest 27/27 通过（新增
-                       t_settings_dialog 7 例；扩展 t_chat_window /
-                       t_floating_ball / t_i18n）
-冒烟                   offscreen 启动 "PIXIU application started" 无回归
-提交                   feat(frontend): add settings dialog and language
-                       preference（文档随 feature 提交一并更新）
-```
-
-2026-08-09 追加（加载失败态与重试，OFF/ON 本机验证）：
-
-```text
-失败态区分             MemoryPanel 冲突/偏好历史 Tab：空结果与加载失败
-                       分开呈现；失败原因 + “重试”按钮；成功加载自动隐藏
-应用层                  ConflictController::failed / PreferenceController::
-                       failed → setConflictsError / setPreferenceHistoryError；
-                       preferenceRetryRequested 以最近一次 ID 重发
-i18n                   pixiu_en_US.ts 增补 MemoryPanel/PixiuApp 条目
-                       （147 条，0 未完成），.qm 重新生成
-测试                   OFF/ON 双路径 ctest 27/27 通过（t_memory_panel
-                       新增失败态/重试/恢复 4 例；t_i18n 扩展）
-冒烟                   offscreen 启动 "PIXIU application started" 无回归
-提交                   feat(frontend): distinguish load failure from empty
-                       state with retry（文档随 feature 提交一并更新）
-```
-
-2026-08-09 追加（全局快捷键自定义，OFF/ON 本机验证）：
-
-```text
-设置页                 SettingsDialog 新增 QKeySequenceEdit（默认 Ctrl+Alt+P，
-                       需含 Ctrl/Alt/Meta 修饰键，否则“确定”禁用）
-注册                  ShortcutManager::registerToggleShortcut(sequence)：
-                       空序列回退默认；KYSDK 与 Qt 降级路径统一使用自定义序列
-持久化                 AppSettings::keyToggleShortcut（PortableText）
-应用时                 PixiuApp 启动按已存序列注册；设置确认后序列变化时
-                       释放旧注册并即时重注册
-i18n                   pixiu_en_US.ts 增补 SettingsDialog 条目
-                       （149 条，0 未完成），.qm 重新生成
-测试                   OFF/ON 双路径 ctest 27/27 通过（t_shortcut_manager
-                       新增自定义/回退/旧序列失效 3 例；t_settings_dialog
-                       新增默认/回退/门控 4 例；t_app_settings / t_i18n 扩展）
-冒烟                   offscreen 启动 "PIXIU application started" 无回归
-                       （offscreen 下 KYSDK 注册失败按设计降级 Qt）
-提交                   feat(frontend): make toggle shortcut customizable
-                       in settings（文档随 feature 提交一并更新）
-```
-
-2026-08-09 追加（管理面板加载态与写入在途防重，OFF/ON 本机验证）：
-
-```text
-加载态                 MemoryPanel 冲突/偏好历史 Tab：“正在加载…”与空态/
-                       失败态互斥；打开面板/刷新/重试/加载时进入，成功或
-                       失败后自动切换回空态/列表/错误行
-写入防重               WriteController::submit 在途返回 false；writeAccepted/
-                       errorOccurred（仅写入在途）后清空忙态；空闲时通用
-                       错误不再误报“录入失败”
-应用层                 重复提交时聊天框提示“上一条记忆仍在写入…已跳过”
-i18n                   pixiu_en_US.ts 增补 MemoryPanel/PixiuApp 条目
-                       （151 条，0 未完成），.qm 重新生成
-测试                   OFF/ON 双路径 ctest 27/27 通过（t_memory_panel
-                       新增加载态 2 例；t_write_controller 新增防重/忙态
-                       清理/空闲错误隔离 4 例；t_i18n 扩展）
-冒烟                   offscreen 启动 "PIXIU application started" 无回归
-提交                   feat(frontend): add management loading states and
-                       write in-flight guard（文档随 feature 提交一并更新）
-```
-
-2026-08-09 追加（管理控制器防重 + 后端离线引导，OFF/ON 本机验证）：
-
-```text
-控制器防重             ConflictController::refresh / PreferenceController::
-                       loadHistory 在途防重：重复调用被忽略；在途响应返回后
-                       放行下一次；偏好历史过期响应不再误配到新请求
-离线引导               后端 Disconnected/Error 时聊天框追加系统提示
-                       “后端服务未连接，请先启动 PIXIU 后端服务后重试。”；
-                       每次断线仅提示一次，恢复 Connected 后复位
-i18n                   pixiu_en_US.ts 增补 PixiuApp 条目
-                       （152 条，0 未完成），.qm 重新生成
-测试                   OFF/ON 双路径 ctest 27/27 通过（t_conflict_controller /
-                       t_preference_controller 各新增在途防重 1 例；
-                       t_i18n 扩展）
-冒烟                   offscreen 启动：连接探测失败 → connection state:
-                       error → "offline guidance shown"；应用无回归
-提交                   feat(frontend): guard management controllers against
-                       duplicate in-flight requests
-                       feat(frontend): guide user when backend service is
-                       offline
-                       docs(frontend): record management guards and offline
-                       guidance（文档独立提交）
-```
-
-2026-08-09 追加（聊天框拖动与位置记忆，OFF/ON 本机验证）：
-
-```text
-拖动                    无边框聊天框 mousePress/mouseMove/mouseRelease：
-                       按住空白区域拖动，子控件（顶栏按钮/输入栏）不干扰；
-                       leaveEvent 清除拖动状态防残留
-持久化                 拖动发射 moved(topLeft) → PixiuApp 写入
-                       AppSettings::keyWindowGeometry（QRect）
-恢复                    启动时读取并钳制到屏幕 availableGeometry
-                       （同悬浮球策略），无记录时保持右下默认位
-测试                   OFF/ON 双路径 ctest 27/27 通过（t_chat_window
-                       新增拖动移动与信号 1 例；offscreen 平台改用合成
-                       QMouseEvent 验证）
-冒烟                   offscreen 启动 "PIXIU application started" 无回归
-提交                   feat(frontend): make chat window draggable and
-                       remember position（文档随 feature 提交一并更新）
-```
-
-2026-08-09 追加（周期健康探测 + 断点恢复后真实桌面复验，OFF/ON 本机验证）：
-
-```text
-健康探测               HttpBackendTransport 独立静默周期探测：GET /conflicts
-                       （默认 10s，测试可注入短间隔）；仅 setConnectionState，
-                       不广播 conflictsResult/errorOccurred；在途防重；显式
-                       断开停止、连接恢复重启
-效果                   后端中途挂掉：无需用户操作，数个探测间隔内顶栏转
-                       “● 服务异常”并出现离线引导；后端事后启动：自动转回
-                       “● 在线”（此前两种状态都需等下一次用户请求）
-测试                   t_http_backend 新增 3 例（初始连接 / 掉线→自动恢复 /
-                       探测静默不干扰控制器）；OFF/ON 双路径 ctest 28/28
-冒烟                   offscreen 启动 "PIXIU application started" 无回归
-桌面验证               本机实时 UKUI 会话：后端在线→杀后端→约 10s 无交互
-                       自动转“服务异常”（OCR 与日志一致）→重启后端→约
-                       10s 无交互自动转回“● 在线”
-提交                   feat(frontend): probe backend health periodically
-                       （文档随 feature 提交一并更新）
-```
-
-2026-08-09 追加（断点恢复会话真实桌面复验：英文路径 + WS 通知链路）：
-
-```text
-英文路径               本机实时 UKUI 会话 LANGUAGE=en_US 启动：translation
-                       loaded for en_US；聊天框顶栏/状态/按钮/离线引导/
-                       输入占位均为英文（Service error / Memory /
-                       Backend service is offline… / Ask a question…），
-                       与中文字体同渲染正常
-WS 通知链路             scripts/ws_smoke_server.py 桩驱动 memory_ready：
-                       connected → ping → business event memory_ready →
-                       "memory ready: knw_smoke_reconn" →
-                       "kysdk notification sent, id: 3"；悬浮球角标出现
-                       （红点像素核对），与断线前验收行为一致，无回归
-```
+引用同一候选的安装清单与运行文件哈希；包更新不会自动使旧 GUI 进程成为新版本。
+诊断截图与最终展示截图分别管理，不保留失效展示归档。
 
 ## 7. Git 工作流
 
-所有工作遵循根目录 `AGENTS.md` 和 `HUMANS.md`：
-
-1. 开工前确认任务与分支；默认在个人特性分支，已获授权的集成维护可在当前本地分支进行。
-2. 同步前确认工作区干净；只使用不会产生额外 merge commit 的安全同步方式。
-3. 一个 feature 对应一个逻辑 commit，只精确暂存该 feature 的文件。
-4. commit 前后都检查 diff/status，禁止提交 build、缓存、密钥、`.env` 和 IDE 文件。
-5. 使用 `feat(frontend):`、`fix(frontend):`、`docs(frontend):`、
-   `build(frontend):` 等清晰前缀。
-6. 默认只完成本地 commit；push、合并和发布由 Human 决定，获当次明确授权后可自动执行。
-7. 不修改 `backend/`、`third_party` submodule 源码或根 API 契约。
+1. 遵守根 AGENTS.md，先核对分支、工作区和用户授权；不假定远程 staging/production 已存在。
+2. 逻辑变更独立提交，精确暂存；排除配置、缓存、构建产物和秘密。
+3. 提交后检查干净状态；对无关用户改动不回滚、不擅自删除。
+4. main 推送和生产发布需要当次明确授权；授权清晰时执行并复核远程提交。
+5. 不强制推送；网络观察失败先核对同一作业/远程状态，不重复发布。
+6. 模块实现不跨越文件归属；上游源码只读，契约调整须按项目协作约束处理。
 
 ## 8. 当前风险与依赖
 
-| 风险/依赖 | 当前影响 | 处理方式 |
-|---|---|---|
-| 非目标机工具链差异 | 本机失败不能替代目标平台判定 | CI 验证通用 Qt5，V11 runner 单独验证 KYSDK=ON |
-| 检索、同步、flow | 实现已接通，最终场景证据仍需绑定候选 | 不再使用“端点占位”作为当前结论 |
-| D-Bus | 后端已实现，前端无客户端 | 当前生产 UI 使用 HTTP/WS |
-| WS | 历史注册和导入缺陷已关闭 | 持续回归握手、心跳、六类事件及重连 |
-| 证据详情、偏好列表 | API 与 UI 已完成 | 持续回归离线、空、失败和列表选择路径 |
-| SDK/UKUI 版本与目标机差异 | Kylin 集成可能编译或行为不一致 | 使用适配层，并在真实 x86/ARM UKUI 环境留证 |
-| 根/模块部分状态文档仍可能写“前端未开始” | 进度认知不一致 | 本文件以提交 `9cebaa8` 为事实基线；其他文档由对应负责人另行对齐 |
+| 风险/依赖 | 当前影响与处理 |
+|---|---|
+| 旧实现/资源仍有残留 | 根据正式调用与替代测试逐组删除，不只删除入口 |
+| 范围/版本/能力状态 | 全宿主一致性仍需完善，不能隐式合并旧域或假装服务就绪 |
+| 真实 SDK 与架构差异 | OFF、ON、x86/ARM 分开记录，使用目标画像及真机证据 |
+| 语言/主题/多屏 | 完整覆盖未完成；tr()、链接成功和离屏测试不是验收 |
+| 多设备/遗忘/采集 | 真实双端/三端、恢复、权限及竞态仍需验证 |
+| 安装升级 | GUI 授权、失败、回滚、重启与用户数据保留须同版验证 |
+| 文档和截图 | 剩余非 README 文档及导出材料需更新，正式图库尚待完成 |
+| 生产发布 | 使用已授权标签触发自动 CI 与原生门，不跳过失败门或手工冒充自动发布 |
 
-2026-08-09 断点恢复结论：Module A 可独立完成的功能已全部完成（最后一项为聊天框
-拖动与位置记忆，提交 `4eb8377`）；剩余实现项全部被后端契约阻塞（偏好列表、证据
-详情、同步真实数据、二维码配对令牌、`/memory/flow/promote` 上下文、WS 真实事件，
-见 §1.2 与 `BACKEND_ISSUES.md`），不再为制造进度扩需求。下一阶段进入统一
-UI/UX polish，待办已全部登记于 `frontend/docs/UI_UX_POLISH.md`（颜色语义化、
-字号间距、图标、动效、布局），其后转人工验收项（全局快捷键新会话复测、
-HiDPI/多屏与 x86/ARM 目标机、通知点击行为、配对对话框视觉）。
-
-2026-08-10 追加（UI/UX Polish Round 2，OFF/ON 本机验证）：
-
-```text
-指针/焦点态             按钮与 Tab 统一 cursor:pointer；QPushButton:focus
-                        描边取主题高亮色（styles.qss），键盘焦点可见且
-                        明暗主题一致
-顶栏稳定                ChatWindow 状态文案按最宽项设最小宽度，在线/连接中/
-                        服务异常/离线切换不再引起右侧按钮抖动；设置/记忆/
-                        关闭补 tooltip 与 accessibleName
-危险对话框               ForgetDialog/RevokeDialog 打开默认聚焦“取消”，
-                        回车即取消（Esc/关闭语义不变），防误触不可逆操作
-导入提示                ImportDialog 占位文案改为“粘贴文本内容；也可拖入
-                        图片作为附件预览…”，i18n 同步（152 条，0 未完成）
-测试                    OFF/ON 双路径 ctest 28/28 通过（t_chat_window /
-                        t_memory_panel / t_forget_dialog / t_revoke_dialog
-                        扩展）；offscreen 冒烟无回归
-截图                    旧图已撤下；正式宿主需重新截图验收
-提交                    feat(frontend): unify pointer/focus states and
-                        stabilize chat top bar
-                        feat(frontend): focus cancel on danger dialogs and
-                        refresh import hint
-                        docs(frontend): record UI/UX polish round 2
-                        completion and screenshots
-```
-
-2026-08-10 追加（UI/UX Polish Round 3：长文案布局 + 指针/焦点收尾）：
-
-```text
-长文案换行                systemHint（离线引导/写入回执等）wordWrap + 300px
-                         上限，与答案气泡同宽；证据卡同宽，长证据 ID 元信息
-                         卡内换行——英文路径不再硬裁剪
-指针光标                  QSS cursor:pointer 在当前 Qt 不支持（启动刷警告且
-                         不生效），已移除；全部交互按钮显式 PointingHandCursor
-焦点可见性                QPushButton:flat:focus 主题高亮描边，扁平按钮键盘
-                         焦点不再丢失
-对话框尺寸                SettingsDialog 固定尺寸改默认+最小（英文需要时随
-                         sizeHint 增高，实测 en_US sizeHint 282 仍 400x330）；
-                         PairDialog 最小宽 280
-设备名省略                同步 Tab peerNameLabel 220px ElideRight，在线状态
-                         不被长名挤出
-测试                    OFF/ON 双路径 ctest 28/28 通过（t_message_list 新增
-                        长系统提示换行/证据卡同宽 2 例；t_memory_panel 长设备
-                        名省略 1 例；t_settings_dialog / t_pair_dialog /
-                        t_forget_dialog / t_revoke_dialog 指针光标断言）；
-                        offscreen 冒烟无回归，cursor QSS 警告清零
-截图                    旧图已撤下；正式宿主需重新截图验收
-桌面复验                 本机实时 UKUI 会话 xcb 启动：主题/托盘/阴影/英文
-                        i18n/离线引导/健康探测无回归；会话为 Wayland 合成器，
-                        wmctrl 不可枚举窗口（真实桌面截图按 offscreen 记录）
-提交                    feat(frontend): wrap long UI texts and complete
-                        pointer focus polish
-                        docs(frontend): record UI/UX polish round 3
-                        completion and screenshots
-```
-
-2026-08-10 追加（真实 UKUI 桌面 UI 演示，Round 4/展示轮）：
-
-```text
-方式        不修改代码；DISPLAY=:0 真实 UKUI 桌面会话启动最新 pixiu-frontend，
-            隔离演示桩 frontend/scripts/demo_stub_server.py 按 docs/API.md
-            契约填充偏好/冲突/同步/通知演示数据
-覆盖        悬浮球/角标/右键菜单、聊天（空/思考/答案+证据/失败重试/输入区）、
-            MemoryPanel（偏好/冲突/同步 的加载/已加载/空/失败重试）、配对/解绑/
-            遗忘/录入/设置对话框、系统通知（冲突检测/记忆已沉淀）、浅色+深色主题
-截图        旧演示图库已撤下；不得作为当前产品展示
-限制        Wayland 合成器下 UKUI 面板不渲染托盘图标，托盘菜单以悬浮球右键
-            菜单等价展示；其余人工复测/后端契约阻塞项维持原记录
-提交        feat(frontend): add demo stub server for visual UI demos
-            docs(frontend): add real-desktop UI demo screenshots (light and dark)
-            docs(frontend): record real-desktop UI demo completion and screenshots
-```
+开发工作继续以统一计划中的完整任务为目标，不再以“前端可做事项全部完成”
+或“仅等待后端契约”结束实施。
