@@ -223,6 +223,13 @@ HostCloseGuard 检查所属对话框、管理请求、会话在途请求、未�
 启动，等待或失败期间降级。SDK 配置缺失但 compositor 存在 PIXIU 自身残留时，
 仅在确定错误条件下做一次定向恢复，不清空其他应用绑定。屏外恢复保留正常位置和
 最大化/全屏状态；真实多屏和跨应用快捷键冲突仍须验收。
+正式应用设置提供快捷键编辑和显式应用，HostTray 共用唯一注册器与宿主 QSettings
+`pixiu/activationShortcut`（PortableText）。只接受单组字母/数字和 1～2 个控制键，
+且包含 Ctrl/Alt/Meta；非法输入保留旧绑定。损坏保存值本次回退默认而不覆盖，
+写入失败明确提示仅当前会话已应用。托盘和设置显示实际组合及全局/应用内范围；
+未应用或保存失败纳入退出保护。新增隔离配置测试目标 `host_shortcut`，无新增系统
+依赖，沿用现有 HostTray/SettingsWorkspace/HostCloseGuard 导出文件；原生自定义
+按键、重启与冲突矩阵仍须验证。
 
 服务诊断串行读取 /health、/version、/capabilities，使用独立传输，失败或矛盾响应
 不返回成功快照。周期健康探测校验实际 /health 就绪和数据库字段，不再探测冲突列表。

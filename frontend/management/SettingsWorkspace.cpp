@@ -2,11 +2,14 @@
 #include "PrivacyPage.h"
 #include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
+#include "HostTray.h"
 #include "widgets/CheckUpdateDialog.h"
 #include "widgets/InfoDialog.h"
 #include "app/ProductInformation.h"
 #include <QCoreApplication>
 #include <QLabel>
+#include <QKeySequenceEdit>
+#include <QHBoxLayout>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -25,6 +28,42 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     agent->setObjectName(QStringLiteral("agentSettings"));
     generalLayout->addWidget(agent);
     connect(agent, &QPushButton::clicked, this, &SettingsWorkspace::agentSettingsRequested);
+    auto *shortcutRow = new QHBoxLayout();
+    auto *shortcutLabel = new QLabel(tr("唤起快捷键"), general);
+    auto *shortcut = new QKeySequenceEdit(general);
+    m_activationShortcut = shortcut;
+    shortcut->setObjectName(QStringLiteral("activationShortcut"));
+    shortcut->setAccessibleName(tr("唤起 PIXIU 的快捷键"));
+    shortcutLabel->setBuddy(shortcut);
+    auto *applyShortcut = new QPushButton(tr("应用快捷键"), general);
+    applyShortcut->setObjectName(QStringLiteral("applyActivationShortcut"));
+    shortcutRow->addWidget(shortcutLabel);
+    shortcutRow->addWidget(shortcut, 1);
+    shortcutRow->addWidget(applyShortcut);
+    generalLayout->addLayout(shortcutRow);
+    auto *shortcutStatus = new QLabel(general);
+    shortcutStatus->setObjectName(QStringLiteral("activationShortcutStatus"));
+    shortcutStatus->setWordWrap(true);
+    shortcutStatus->setTextFormat(Qt::PlainText);
+    generalLayout->addWidget(shortcutStatus);
+    auto *tray = window()->findChild<HostTray *>(QString(), Qt::FindDirectChildrenOnly);
+    m_tray = tray;
+    shortcut->setEnabled(tray != nullptr);
+    applyShortcut->setEnabled(tray != nullptr);
+    if (tray) {
+        shortcut->setKeySequence(tray->activationShortcut());
+        shortcutStatus->setText(tray->shortcutStatus());
+        connect(tray, &HostTray::shortcutChanged, shortcutStatus,
+            [tray, shortcutStatus]() { shortcutStatus->setText(tray->shortcutStatus()); });
+        connect(applyShortcut, &QPushButton::clicked, tray, [this, tray, shortcut, shortcutStatus]() {
+            const QString error = tray->setActivationShortcut(shortcut->keySequence());
+            m_shortcutSaveFailed = !error.isEmpty() && tray->activationShortcut() == shortcut->keySequence();
+            shortcutStatus->setText(error.isEmpty() ? tray->shortcutStatus()
+                : error + QStringLiteral("\n") + tray->shortcutStatus());
+        });
+    } else {
+        shortcutStatus->setText(tr("宿主快捷键服务不可用，未修改配置。"));
+    }
     auto *version = new QLabel(tr("PIXIU %1").arg(QStringLiteral(PIXIU_VERSION)), general);
     version->setObjectName(QStringLiteral("productVersion"));
     generalLayout->addWidget(version);
@@ -59,5 +98,10 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     tabs->addTab(general, tr("应用与升级"));
     tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
     tabs->addTab(new ServiceStatusPage(tabs), tr("服务与能力"));
+}
+bool SettingsWorkspace::hasUnsavedChanges() const
+{
+    return m_tray && (m_shortcutSaveFailed
+        || m_activationShortcut->keySequence() != m_tray->activationShortcut());
 }
 }

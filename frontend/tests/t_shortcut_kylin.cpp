@@ -7,8 +7,9 @@
 static int createResult, updateResult, deletes, legacyDeletes, legacyResult;
 static QStringList calls;
 static QString registeredName;
-int kdk_shortcut_create_global_shortcut(const char *name, const char *, const char *)
-{ calls << QStringLiteral("create"); registeredName = QString::fromUtf8(name); return createResult; }
+static QString registeredKey;
+int kdk_shortcut_create_global_shortcut(const char *name, const char *key, const char *)
+{ calls << QStringLiteral("create"); registeredName = QString::fromUtf8(name); registeredKey = QString::fromUtf8(key); return createResult; }
 int kdk_shortcut_set_global_shortcut(const char *, const char *, const char *) { return updateResult; }
 int kdk_shortcut_delete_global_shortcut(const char *name)
 {
@@ -108,6 +109,23 @@ private slots:
             QCOMPARE(deletes, 1);
         }
         QCOMPARE(deletes, 2);
+    }
+    void customSequenceReplacesGlobalAndSurvivesServiceFallback()
+    {
+        QWidget host;
+        Probe manager(&host);
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(manager.registerToggleShortcut(QKeySequence("Ctrl+Alt+K")));
+        QCOMPARE(deletes, 1);
+        QCOMPARE(registeredKey, QString("Ctrl+Alt+K"));
+        QVERIFY(manager.isGlobal());
+        manager.serviceChanged(false);
+        QVERIFY(!manager.isGlobal());
+        QCOMPARE(manager.currentSequence(), QKeySequence("Ctrl+Alt+K"));
+        QVERIFY(host.findChild<QObject *>("toggleChatShortcut"));
+        manager.serviceChanged(true);
+        QVERIFY(manager.isGlobal());
+        QVERIFY(!host.findChild<QObject *>("toggleChatShortcut"));
     }
     void waitsForServiceAndFallsBackWhenItDisappears()
     {

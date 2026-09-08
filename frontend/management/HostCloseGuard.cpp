@@ -6,6 +6,7 @@
 #include "MemoryWorkspace.h"
 #include "DeliveryPage.h"
 #include "ServiceStatusPage.h"
+#include "SettingsWorkspace.h"
 #include "AgentEvidenceClient.h"
 #include <QPushButton>
 #include <QCloseEvent>
@@ -75,6 +76,8 @@ bool HostCloseGuard::confirmExit(const QDialog *initiatingDialog)
     for (auto *page : m_host->findChildren<DevicePage *>()) {
         unsaved |= page->hasUnsavedChanges();
     }
+    for (auto *page : m_host->findChildren<SettingsWorkspace *>())
+        unsaved |= page->hasUnsavedChanges();
     if (hasPendingOperation()) {
         QMessageBox::information(m_host, tr("暂不能退出"),
             tr("管理操作或 Agent 请求正在等待结果，请待操作完成或报告失败后再退出。关闭窗口不会取消已提交的后端操作。"));
