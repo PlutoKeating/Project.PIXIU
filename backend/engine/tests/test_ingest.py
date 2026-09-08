@@ -11,7 +11,7 @@ from backend.engine.ingest import IngestionService
 from backend.engine.ingest.cleaner import Cleaner
 from backend.engine.ingest.normalizer import Normalizer
 from backend.engine.ingest.quality import Quality, QualityError
-from backend.foundation.core.models import AgentProvenance, Evidence
+from backend.foundation.core.models import AgentProvenance, Evidence, FileCaptureSource
 from backend.foundation.core.repository import EvidenceRepository
 from backend.foundation.storage.repository import SqliteEvidenceRepo
 
@@ -251,3 +251,34 @@ async def test_ingest_rejects_empty_scope() -> None:
     service = IngestionService(evidence_repo=_FakeEvidenceRepo())
     with pytest.raises(ValueError, match="scope must be a non-empty string"):
         await service.ingest("OCR", {"title": "x"}, scope="")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("source_type,method", [
+    ("MANUAL_CONFIG", "text"), ("MANUAL_CONFIG", "ocr"), ("OCR", "ocr"),
+])
+async def test_ingest_capture_source_does_not_change_content(service, source_type, method):
+    raw = {"title": "example", "body": {"text": "synthetic note"}}
+    baseline = await service.ingest(source_type, raw, scope="user:alice")
+    source = FileCaptureSource(method=method, path="/data/private-marker/example.txt", captured_at=123)
+    captured = await service.ingest(source_type, raw, scope="user:alice", capture_source=source)
+    assert captured.raw == baseline.raw
+    assert captured.raw["content_hash"] == baseline.raw["content_hash"]
+    assert captured.quality_score == baseline.quality_score
+    assert captured.provenance is None
+    assert captured.capture_source == source
+    assert baseline.capture_source is None
+    assert await service._repo.get(captured.id) == captured
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("source_type,scope", [
+    ("MANUAL_CONFIG", "shared:home"), ("USER_BEHAVIOR", "user:alice"),
+])
+async def test_ingest_capture_source_rejected_before_save(source_type, scope):
+    repo = _FakeEvidenceRepo()
+    service = IngestionService(evidence_repo=repo)
+    source = FileCaptureSource(method="text", path="/data/example.txt", captured_at=123)
+    with pytest.raises(ValueError, match="file capture metadata requires"):
+        await service.ingest(source_type, {"title": "example"}, scope=scope, capture_source=source)
+    assert not repo.saved

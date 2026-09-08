@@ -34,6 +34,13 @@
 
 **入口**：`IngestionService`
 
+文件采集来源通过可选关键字参数 `capture_source: FileCaptureSource | None` 传入，
+直接写入 Evidence 的独立字段，不送入 Connector/Cleaner/Normalizer/Quality。
+相同正文的路径、采集方式和时间变化不改变内容指纹或质量分；不改变重复正文
+生成独立 evidence ID 的现有语义。共享域及不兼容 source_type 在仓储写入前被
+核心模型拒绝。目录监视器与正式界面尚未传入/展示该字段，旧调用默认 `None`；
+路径仅为调用方记录的采集来源，不是引擎读取原文件或校验原文件的证明。
+
 管线流程：
 
 ```
@@ -64,6 +71,7 @@ class Evidence(BaseModel):
     quality_score: float  # 0~1, 由 Quality 模块计算
     sensitivity: int      # 0~3, 由 Detector 计算（0=无敏感）
     provenance: AgentProvenance | None  # session/run/turn/tool-call/time/approval
+    capture_source: FileCaptureSource | None  # 独立私有文件来源，不参与正文处理
     scope: str            # "user:alice" | "shared:home"
     created_at: int
 ```
@@ -212,7 +220,9 @@ insert/upsert/delete/search 生命周期；删除接口只接受整数主键列�
 ```python
 class IngestionService:
     def __init__(self, evidence_repo: EvidenceRepository, ...): ...
-    async def ingest(self, source_type: str, raw: dict, scope: str) -> Evidence: ...
+    async def ingest(self, source_type: str, raw: dict, scope: str, *,
+                     sensitivity: int = 0, provenance: AgentProvenance | None = None,
+                     capture_source: FileCaptureSource | None = None) -> Evidence: ...
 
 class PreferenceService:
     def __init__(self, pref_repo: PreferenceRepository): ...

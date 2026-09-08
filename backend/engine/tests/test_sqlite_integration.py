@@ -18,7 +18,7 @@ from backend.engine.knowledge import KnowledgeService
 from backend.engine.preference import PreferenceService
 from backend.engine.security import SecurityService
 from backend.engine.tests.fakes import StubTextEmbedder
-from backend.foundation.core.models import KnowledgeStatus
+from backend.foundation.core.models import FileCaptureSource, KnowledgeStatus
 from backend.foundation.storage.repository import (
     SqliteConflictRepo,
     SqliteEntityRepo,
@@ -154,3 +154,40 @@ async def test_full_write_pipeline_on_sqlite(stack):
     forgotten = await repos["knowledge"].get(new_item.id)
     assert forgotten is not None
     assert forgotten.status == KnowledgeStatus.FORGOTTEN
+
+
+@pytest.mark.asyncio
+async def test_file_capture_metadata_stays_out_of_knowledge_and_indexes(stack, monkeypatch):
+    embedded_texts = []
+    original_embed = StubTextEmbedder.embed
+
+    def record_embed(self, text):
+        embedded_texts.append(text)
+        return original_embed(self, text)
+
+    monkeypatch.setattr(StubTextEmbedder, "embed", record_embed)
+    raw = {"title": "capture example", "text": "synthetic meeting note"}
+    sources = [None,
+               FileCaptureSource(method="text", path="/data/private-marker/a.txt", captured_at=123),
+               FileCaptureSource(method="text", path="/data/private-marker/b.txt", captured_at=456)]
+    items = []
+    for source in sources:
+        evidence = await stack["services"]["ingestion"].ingest(
+            "MANUAL_CONFIG", raw, scope="user:alice", capture_source=source,
+        )
+        stored = await stack["repos"]["evidence"].get(evidence.id)
+        assert stored.capture_source == source
+        item = await stack["services"]["knowledge"].structure(stored)
+        assert item.evidence_ids == [evidence.id]
+        assert "private-marker" not in item.model_dump_json()
+        items.append(item)
+    assert all(item.body == items[0].body for item in items)
+    assert len(embedded_texts) == 3
+    assert len(set(embedded_texts)) == 1
+    assert "private-marker" not in embedded_texts[0]
+    vectors = await stack["db"].execute_fetchall("SELECT vec FROM knowledge_vec")
+    assert len(vectors) == 3
+    assert len({row["vec"] for row in vectors}) == 1
+    fts_rows = await stack["db"].execute_fetchall("SELECT * FROM knowledge_fts")
+    assert len(fts_rows) == 3
+    assert all("private-marker" not in str(tuple(row)) for row in fts_rows)

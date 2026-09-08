@@ -9,7 +9,7 @@ import time
 from typing import Any, Optional
 
 from backend.foundation.core.idgen import gen_evidence_id
-from backend.foundation.core.models import AgentProvenance, Evidence
+from backend.foundation.core.models import AgentProvenance, Evidence, FileCaptureSource
 from backend.foundation.core.repository import EvidenceRepository
 
 from backend.engine.ingest.cleaner import Cleaner
@@ -41,6 +41,7 @@ class IngestionService:
         *,
         sensitivity: int = 0,
         provenance: AgentProvenance | None = None,
+        capture_source: FileCaptureSource | None = None,
     ) -> Evidence:
         if not isinstance(raw, dict):
             raise TypeError("raw must be a dict")
@@ -68,6 +69,7 @@ class IngestionService:
             quality_score=quality_score,
             sensitivity=max(0, min(3, int(sensitivity))),
             provenance=provenance,
+            capture_source=capture_source,
             scope=scope,
             created_at=int(time.time()),
         )
