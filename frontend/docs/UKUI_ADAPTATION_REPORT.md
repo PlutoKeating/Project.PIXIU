@@ -1,154 +1,122 @@
 # 麒麟桌面适配测试报告（D-08）
 
-> 模块：Module A · UKUI 桌面客户端（`frontend/`）
-> 分支：`feature/frontend`（提交基线见下文「验证记录」）
-> 日期：2026-08-08
-> 标题中的 D-08 为早期内部编号；现归属 D-02 下的 A-05 V11 适配附件。
-> 以下是 2026-08-08 阶段证据，不代表当前完整 Agent 包的最终适配矩阵。
+> 模块：Module A · 唯一 openKylin Agent 宿主及嵌入式 PIXIU 管理页。
+> 本文归属 D-02 下的 A-05 V11 适配附件；标题与章节定位保持不变。
+> 源码状态以当前 main 为准，具体原生证据绑定下文提交及作业，不将候选实现当成已安装版本。
+> 本报告不是完整平台矩阵通过声明；未完成项见根 `docs/UNIFIED_FRONTEND_PLAN.md`。
 
 ---
 
 ## 1. 测试环境
 
-| 项目 | 值 |
-|------|----|
-| 操作系统 | 银河麒麟 V11（桌面环境 UKUI） |
-| 架构 | x86_64（amd64） |
-| 编译器 | g++（C++17） |
-| Qt | Qt 5.15.19（Widgets / Network / WebSockets） |
-| CMake | 3.28.3 |
-| KylinSDK | kysdk-shortcut 3.0.1.0 · kysdk-notification 3.0.1.0 · kysdk-qtwidgets 2.3.1.0 |
-| 构建开关 | `PIXIU_HAVE_KYSDK=ON`（麒麟路径）/ `OFF`（开发降级路径） |
+| 项目 | 实际核对值与边界 |
+|------|------------------|
+| 操作系统 | Kylin V11，系统声明 VERSION_ID=v11、KYLIN_RELEASE_ID=2603 |
+| 架构 | amd64；不外推 ARM 验收 |
+| 桌面会话 | UKUI / Wayland；正式操作从系统菜单启动，离屏回归单独标注 |
+| Qt | 原生机 qmake 报告 5.15.19；本地兼容回归为另一构建环境 |
+| CMake | 原生机 3.28.3 |
+| SDK 运行包 | shortcut、notification：3.0.1.0-0k1.4；qtwidgets、waylandhelper：3.0.1.0-0k0.52 |
+| 构建开关 | 原生画像 KYSDK=ON；通用画像 OFF，不切换到另一套前端 |
+| 产品入口 | 系统菜单 PIXIU 或 pixiu 启动器，随包用户服务、宿主与 Runtime 协作 |
+
+版本通过目标机包管理器、Qt/CMake 命令重新读取，不把 pkg-config 元数据版本混作
+实际 Debian 包版本。新依赖由 `build/release/profiles/` 与自动 provision 声明，
+不以手工修改系统维持流水线成功。
 
 ## 2. 适配能力清单与结果
 
-| 编号 | 适配能力 | 实现 | 验证方式 | 结果 |
-|------|----------|------|----------|------|
-| A-1 | 全局快捷键注册链路 | `ShortcutManager`（kysdk-shortcut `Ctrl+Alt+P`） | 编译 + offscreen 冒烟 + 本机真实会话：注册 API 成功、dconf 配置正确、残留 `EXISTED→set` 更新 | ✅ 通过 |
-| A-1b | 全局快捷键真实按键触发 | 同上 | 本机 uinput 合成按键（合成器已挂载虚拟键盘）未触发；运行期 kglobalaccel 查询 `Ctrl+Alt+P` 返回 ENXIO（未加载 grab） | ⚠️ 需全新登录会话复测（第 4/5 节） |
-| A-1c | 第二实例激活唤起 | `SingleInstanceGuard` 激活通道 | 本机真实会话：第二实例 exit=1，主实例日志 `activation requested by secondary instance`，聊天框窗口出现（截图留证） | ✅ 通过 |
-| A-2 | 桌面通知 | `NotifyService`（kysdk-notification `KNotifier`） | 编译 + 无头冒烟 + 本机真实会话：WS 桩驱动 `memory_ready` → `kysdk notification sent, id: 5`（截图留证） | ✅ 通过 |
-| A-3 | 主题跟随 | `ThemeService`（kysdk-qtwidgets `ThemeController` + `QGSettings` 信号） | 编译 + offscreen 冒烟 + 本机真实桌面会话 dark→light→dark 实时跟随（2026-08-08，`dc7b0e3`） | ✅ 通过 |
-| A-4 | 窗口装饰 | `UkuiWindow`（kysdk-qtwidgets `KShadowHelper` 圆角阴影） | 编译 + offscreen 冒烟 + 本机真实会话日志 `UKUI window shadow applied, radius: 12`；截图供人工确认视觉效果 | ✅ 通过（视觉人工复核） |
-| A-5 | 高 DPI / 多屏 | 入口 `AA_EnableHighDpiScaling` / `AA_UseHighDpiPixmaps`；定位按屏幕可用区域钳制 | 编译 + 代码审查；x86/ARM 目标机多屏待人工 | ✅ 通过（人工复测项） |
-| A-6 | 桌面入口 | `com.kylin.pixiu.desktop` + CMake 安装规则 | `desktop-file-validate` 通过；`cmake --install` 路径校验 | ✅ 通过 |
-| A-7 | `.deb` 打包 | 唯一入口 `build/release/`，独立前端包目标已删除 | 对最终整包执行 `dpkg-deb -I/-c` 并核对画像依赖 | 待同版整包复验 |
+| 编号 | 适配能力 | 当前实现 | 已有证据 | 剩余边界 |
+|------|----------|----------|----------|----------|
+| A-1 | 全局快捷键注册链路 | ShortcutManager、HostTray 与正式设置，官方 SDK/会话服务优先 | cb13410 原生安装后实际配置与注册状态可见 | 首次默认注册曾返回 -2，根因未消除；失败显示仅应用内 |
+| A-1b | 全局快捷键真实按键触发 | 默认 Ctrl+Alt+P，可在设置更换 | cb13410 的自定义 K、正常重启恢复 K、恢复 P 后跨应用唤起同一进程 | 不外推其他按键冲突、全新会话及全部桌面环境 |
+| A-1c | 第二实例激活唤起 | 唯一宿主的既有单实例通道与 HostTray 恢复 | 正式宿主原生验证及恢复组件回归，见统一计划 U02 | 不引用已删除的独立应用守卫；完整退出与升级矩阵未完成 |
+| A-2 | 桌面通知 | NotifyService；HostTray 发出受限冲突/偏好文案 | 当前调用链与组件测试存在 | SDK 返回、桌面显示、点击行为和真实事件须分别验证；不以替身弹窗为通过证据 |
+| A-3 | 主题跟随 | 宿主 ThemeManager 与导出主题适配补丁 | 冲突 palette 下的浅/深/浅渲染回归、部分原生页面检查 | 全部选中/聚焦/错误状态和缩放仍需验收；不引用旧 ThemeService 的视觉结果 |
+| A-4 | 窗口装饰与置顶 | 同一宿主装饰；HostWindowPin 经 waylandhelper 读取并切换状态 | f2246f0 的替身与 Qt 回归、V11 真实头文件编译；原生只读查询可识别主窗口 | 新包真实置顶、遮挡、取消置顶尚待验证；不把 Qt 提示当成合成器已确认 |
+| A-5 | 高 DPI / 多屏 | 宿主缩放与 HostTray 可操作标题区恢复 | 组件测试覆盖屏外位置及最大化/全屏保持 | 多屏热拔插、实际缩放、长文本和小屏未全面验证，不能标为通过 |
+| A-6 | 桌面入口 | 随包 com.kylin.pixiu.desktop、pixiu 启动器 | 已安装正式宿主可从系统菜单启动；入口身份修正见统一计划 | 同版安装、任务栏关联与全部主题图标仍须结合最终包核对 |
+| A-7 | .deb 打包 | 根 build/release 的单一完整包 | 原生自动作业 cb13410 已成功安装；新候选 f2246f0 自动构建中 | 不以旧包成功替代新提交；尚未发布新的最终 Release |
 
 ## 3. 自动化回归（本机可复现）
 
 ### 3.1 测试套件
 
-两个构建路径均执行 QtTest（`QT_QPA_PLATFORM=offscreen`）：
+正式管理库：
 
-```text
-websocket_client / floating_ball / notify_service / forget_controller /
-forget_dialog / memory_panel / conflict_controller / preference_controller /
-shortcut_manager / theme_service / ukui_window / memory_atom / query_controller /
-write_controller / app_settings / chat_window / input_bar / message_list /
-import_dialog / evidence_card / i18n
+```bash
+cmake -S frontend/management -B <独立构建目录> \
+  -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
+cmake --build <独立构建目录>
+ctest --test-dir <独立构建目录> --output-on-failure
 ```
 
-结果：**ctest 21/21 通过**（`PIXIU_HAVE_KYSDK=OFF` 与 `ON` 两路径一致）。
+f2246f0 的管理套件为 18/18 通过，包含快捷键、窗口置顶、事件与传输、
+记忆工作区、来源、产品信息和升级相关检查。窗口置顶的 SDK 用例使用明确的
+函数/对象替身，不连接真实窗口管理器，不能据此声明原生操作成功。
+
+保留根前端回归为 32/32 通过；其残留旧管理控件测试仅支持清退检查，不代表产品仍
+包含相应旧窗口。测试数以对应源码和构建为准，不声称 ON/OFF 所有路径均已跑过。
+未启用实际安装的 upgrade_live 结果不能证明真实升级；临时升级文件隔离测试
+只验证进程间不误删产物，不验证生产安装结果。
 
 ### 3.2 冒烟
 
-```text
-pixiu.app: PIXIU application starting
-pixiu.single-instance: primary instance listening on ...
-pixiu.theme: applied UKUI dark palette
-pixiu.theme: UKUI theme following enabled
-pixiu.ukui-window: UKUI window shadow applied, radius: 12
-pixiu.shortcut: registered Kylin global shortcut Ctrl+Alt+P -> <binary>
-pixiu.app: PIXIU application started
-```
+正式冒烟须核对“源码提交 → 自动产物 → 已安装文件 → 运行进程”四者对应。
+不能只看启动日志，也不能在安装后继续对未退出的旧进程截取候选界面。
 
-后台服务未启动时，HTTP/WS 连接按预期进入离线/退避重连，无崩溃。
+当前已有原生证据包括：系统菜单启动唯一宿主、真实鼠标导航、快捷键恢复同一
+进程、部分来源/设置页操作及退出草稿保护。各项的提交范围见统一计划；
+未验证场景继续保留未完成，不复制退役窗口日志或旧截图路径。
 
-2026-08-08 追加：本机实时 UKUI 桌面会话（XWayland `:0`）真实冒烟：
-
-```text
-启动                      DISPLAY=:0 QT_QPA_PLATFORM=xcb 启动成功；
-                          wmctrl -l 可见 "PIXIU" 窗口
-主题实时跟随              ukui-dark -> ukui-light：
-                          "restored system palette (light theme)"
-                          ukui-light -> ukui-dark：
-                          "applied UKUI dark palette"
-桌面截图                  /tmp/pixiu-verified-dark.png / -light.png
-```
-
-说明：本机 kysdk-qtwidgets 2.3.1.0 的 `themeMode()` 仅在启动时缓存一次，
-运行期不刷新（运行时探针确认），`ThemeService::applyTheme()` 已改读
-QGSettings 实时 `styleName` 判定明暗（`dc7b0e3`）。
-
-2026-08-08 追加（Phase 8 真实桌面收尾，本机 Kylin V11 实时 UKUI 会话）：
-
-```text
-第二实例激活             启动第二实例 exit=1；主实例日志
-                         "activation requested by secondary instance"；
-                         wmctrl 出现两个 PIXIU 窗口（悬浮球 + 聊天框）
-                         （截图 /tmp/pixiu-phase8-04-second-activation.png）
-通知弹窗                 测试专用 WS 桩（frontend/scripts/ws_smoke_server.py）
-                         驱动 memory_ready：
-                         "memory ready: knw_smoke_001 Phase 8 冒烟记忆"
-                         "kysdk notification sent, id: 5"
-                         （截图 /tmp/pixiu-phase8-05-notification.png）
-窗口阴影                 启动日志 "UKUI window shadow applied, radius: 12"；
-                         聊天框截图供人工确认圆角阴影视觉效果
-全局快捷键真实按键       注册 API 成功且 dconf
-                         /com/kylin/kysdk/keybindings/custom0 配置正确
-                         （name/binding/action）；但当前运行会话中
-                         kylin-wlcom 的 kglobalaccel 查询 Ctrl+Alt+P 返回
-                         ENXIO（无活动 grab），uinput 合成按键未触发；
-                         判定为运行期未加载 kysdk 快捷键，需全新登录
-                         会话/合成器重启后复测（见第 5 节）
-```
+f2246f0 的置顶诊断先在 V11 通过无界面的只读 SDK 程序查询现有 PIXIU 进程，
+得到唯一、有效、未置顶的窗口；该程序未创建产品界面或修改桌面状态。
+此结果只证明窗口识别和状态读取，不证明新控件操作或双向置顶已经通过。
 
 ### 3.3 打包产物
 
-```text
-构建入口：make -C build/release build-deb（从仓库根执行）
-产物：build/release/out/pixiu_<产品版本>-<revision>_<架构>.deb
-独立前端包已停止构建；完整宿主候选的包内容与依赖须重新验收。
-```
+构建入口为根 `build/release/`；产物形状为
+`pixiu_<产品版本>-<revision>_<架构>.deb`。版本以根 VERSION 和构建清单派生，
+不得按本文手工改包名或拼装独立前端包。
+
+原生工作流负责画像依赖、回归、宿主及 Runtime 供应链、完整包构建、安装和 SDK
+生命周期验证。生产发布由版本标签驱动并经过通用 CI 与原生门，不手工上传包绕过门禁。
+自动安装成功后还需从正常桌面重启同一产品，再做界面、升级和数据保留验证。
 
 ## 4. 人工复测清单（带显示会话 / 目标机型）
 
-- 全新登录会话/合成器重启后，按下 `Ctrl+Alt+P` 唤起聊天框
-  （当前运行会话未加载 grab，见第 5 节；第二实例激活已在本机验证）。
-- UKUI 系统通知弹窗的展示时长、点击行为与后端真实 `memory_ready`
-  事件联调（弹窗已用测试专用 WS 桩截图留证）。
-- 聊天框阴影/圆角视觉效果（截图已留证）与悬浮球拖拽/右下角定位行为。
-- 高分屏（HiDPI）与多屏下悬浮球/聊天框位置与缩放。
-- `.deb` 在干净麒麟环境（含 x86/ARM）安装与启动。
+- 安装清单、运行文件哈希及包来源一致；从开始菜单、命令、托盘和快捷键恢复同一宿主。
+- 当前快捷键状态明确；跨应用实际触发、冲突与服务消失时如实降级，不停止共享系统服务。
+- 主窗口置顶/取消置顶、其他窗口遮挡、最小化恢复与请求未确认状态。
+- 正式冲突/偏好通知内容、桌面可见性及点击行为；不使用测试消息冒充业务事件。
+- 会话、记忆、设备、设置各页的浅/深主题、长文本、键盘焦点、缩放和多屏热拔插。
+- 未保存草稿、采集/同步配置、在途任务、对话框与升级重启的退出保护。
+- 当前完整包安装、授权、升级、失败、回滚、正常重启及用户数据保留。
+- 原生 SDK 与通用兼容结果分别记录；不同架构/设备必须实际运行后才签署对应结论。
+
+截图仅使用同版真实软件画面；素材目录未完整交付前不引用不存在的文件。
+旧界面截图不保留展示归档。隐私与采集设置在检查后恢复，不能用私人数据或有效
+配对令牌作公开示例。具体取景清单见 `DEMO_GUIDE.md`。
 
 ## 5. 已知限制
 
-- 真实桌面会话冒烟已在本机完成（应用启动、窗口、主题实时跟随）；快捷键
-  按键触发在当前运行会话未复现、通知弹窗点击行为、HiDPI/多屏与 x86/ARM
-  目标机仍需人工复测。
-- 全局快捷键注册与触发链路（2026-08-08 运行时探针）：
-  `kdk_shortcut_create/set_global_shortcut` API 返回成功并写入 dconf
-  （`/com/kylin/kysdk/keybindings/custom0`），
-  但运行中的 kylin-wlcom 会话未加载该键的 grab（`globalShortcutsByKey`
-  返回 ENXIO，kglobalaccel 组件列表无 pixiu）。可能原因：合成器在启动时
-  读取 kysdk 快捷键配置，运行期注册不热生效。复测步骤：注销并重新登录
-  桌面会话后再次按下 `Ctrl+Alt+P`；若仍无效，Module A 需评估改用
-  kglobalaccel 标准组件注册或 ukui 自定义快捷键机制，并在此报告更新结论。
-- 本机会话经 XWayland 运行，日志出现 `MESA: error: ZINK: failed to choose
-  pdev` / `glx: failed to create drisw screen`（软件 GL 降级提示），不影响
-  应用启动与功能，真机硬件 GL 环境应无此提示。
-- 后续已加入 `resources/pixiu.svg` 自定义图标；旧“无图标”限制关闭。
-- `/events` 注册与 WebSocket 导入已于 2026-08-20 修复并复测，
-  见 `frontend/docs/BACKEND_ISSUES.md`，不再列为当前阻塞。
+- 完整原生适配矩阵未完成。离屏测试、编译、API 返回与真实用户可见效果须分开汇报。
+- cb13410 首次默认快捷键注册曾返回 SDK -2；重新应用后恢复并未证明根因修复，
+  不能把“注销桌面即可解决”当成已证实结论。
+- 新置顶实现使用 SDK 状态反馈，目标不唯一或无效时拒绝操作，超时不自动重试
+  切换。Qt 兼容路径只是窗口提示，实际效果取决于窗口管理器。
+- 当前 ON 通知路径没有凭桌面真实显示回执完成验收；日志中的通知编号不等于
+  用户已经看到提示或点击动作已实现。
+- 完整语言、主题、HiDPI、多屏及 ARM 实机结果尚不充分；不能以源代码存在推断兼容。
+- API 或 WS 的契约回归不证明 Agent 完整任务、多设备传输或生产升级全部成功。
 
 ## 6. 验证记录（提交基线）
 
-```text
-cdc9edb feat(frontend): follow UKUI theme changes
-f418491 fix(frontend): connect UKUI theme switch signal
-d02ad64 feat(frontend): integrate UKUI window helpers
-248d985 fix(frontend): support high DPI and multiple screens
-45ed0ec feat(frontend): add desktop entry
-9e79f64 build(frontend): add Debian packaging
-dc7b0e3 fix(frontend): read live style name for UKUI theme following
-```
+| 基线 | 证据 | 可支持的结论 |
+|------|------|--------------|
+| cb13410 | 原生自动作业 34199398236 成功；已安装和运行宿主 SHA-256 为 357a91c5f4088d38274d00047ccfa99fcf1c9726300303332b7ab92924d92637；操作记录见统一计划 U02 | 该提交的安装与已记录快捷键操作，不覆盖后续功能 |
+| f2246f0 | 本地管理 18/18、保留回归 32/32、画像/导出检查通过，V11 实际开发头文件编译通过 | 单一宿主置顶实现及所列回归覆盖；不等于整包原生交互通过 |
+| f2246f0 | 原生作业 34207026274 正在执行，尚无安装完成结论 | 保持候选状态，完成后核对产物与运行进程再补实际界面证据 |
+
+本报告不保留已退役前端的提交展示、业务样例、测试日志或截图作为当前证据。
+后续验证覆盖新的提交时更新此表，不把失败、取消或运行中的作业记录为成功。
