@@ -263,3 +263,7 @@ D-Bus 新增 `ReviewedForget(s)→s`，复用 HTTP 遗忘编排及显式 DI；�
 | `tests/test_sync_convergence.py` | Phase 4 同步收敛验收测试 |
 
 > ✅ 第一阶段~第三阶段文件清单均已实现（功能冻结），保留作为实现明细参考。
+
+2026-09-09：修正 mDNS 两个浏览入口的 Zeroconf 关键字回调签名。三台独立
+V11 虚拟机由发现接口报错恢复为彼此发现；`test_discovery_pairable.py` 8 项通过。
+这是开发修复的联机证据，尚未重新构建正式安装包，不替代最终发布门。

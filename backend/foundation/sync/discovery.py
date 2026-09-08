@@ -221,13 +221,13 @@ class MdnsDiscovery:
                 return
             found[advertisement.device_id] = advertisement
 
-        def on_change(zc, service_type, service_name, state_change) -> None:
+        def on_change(zeroconf, service_type, name, state_change) -> None:
             if state_change not in (
                 ServiceStateChange.Added,
                 ServiceStateChange.Updated,
             ):
                 return
-            task = asyncio.create_task(load(service_type, service_name))
+            task = asyncio.create_task(load(service_type, name))
             tasks.add(task)
             task.add_done_callback(tasks.discard)
 
@@ -272,13 +272,13 @@ class MdnsDiscovery:
                 return
             found[advertisement.device_id] = advertisement
 
-        def on_change(zc, service_type, service_name, state_change) -> None:
+        def on_change(zeroconf, service_type, name, state_change) -> None:
             if state_change not in (
                 ServiceStateChange.Added,
                 ServiceStateChange.Updated,
             ):
                 return
-            task = asyncio.create_task(load(service_type, service_name))
+            task = asyncio.create_task(load(service_type, name))
             tasks.add(task)
             task.add_done_callback(tasks.discard)
 

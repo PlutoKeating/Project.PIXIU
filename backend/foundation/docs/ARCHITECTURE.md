@@ -39,6 +39,11 @@
 
 ## 1. 子包详解
 
+2026-09-09 视频采集三台 V11 虚拟机联机时发现，mDNS 浏览回调必须接受
+Zeroconf 的 `zeroconf/service_type/name/state_change` 关键字参数。
+`discover` 与 `list_advertisements` 已统一遵守该约定；回归同时覆盖两条入口，
+避免只用位置参数调用的测试替身掩盖实际局域网异常。没有协议或数据库变更。
+
 ### 1.1 core/ —— 共享契约
 
 `validate_scope` 对完整字符串校验 `user:`/`shared:` 加非空 ASCII 字母、数字、

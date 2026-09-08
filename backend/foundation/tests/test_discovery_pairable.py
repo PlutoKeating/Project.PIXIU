@@ -97,7 +97,8 @@ async def test_list_advertisements_returns_empty_without_socket():
 
 
 @pytest.mark.asyncio
-async def test_list_advertisements_browses_and_parses(monkeypatch):
+@pytest.mark.parametrize("method", ["discover", "list_advertisements"])
+async def test_list_advertisements_browses_and_parses(monkeypatch, method):
     import backend.foundation.sync.discovery as discovery_module
 
     valid = _info(DEV_A, pairable=True, name="Alpha")
@@ -121,8 +122,11 @@ async def test_list_advertisements_browses_and_parses(monkeypatch):
     class FakeBrowser:
         def __init__(self, zc, type_, handlers=None, **kwargs):
             for handler in handlers or []:
-                handler(zc, type_, valid.name, ServiceStateChange.Added)
-                handler(zc, type_, invalid.name, ServiceStateChange.Added)
+                # Zeroconf dispatches keyword arguments; positional calls hide
+                # incompatible callback parameter names in production.
+                for info in (valid, invalid):
+                    handler(zeroconf=zc, service_type=type_, name=info.name,
+                            state_change=ServiceStateChange.Added)
             self.cancelled = False
 
         async def async_cancel(self):
@@ -130,7 +134,7 @@ async def test_list_advertisements_browses_and_parses(monkeypatch):
 
     monkeypatch.setattr(discovery_module, "AsyncServiceBrowser", FakeBrowser)
     discovery = MdnsDiscovery(zeroconf=FakeAsyncZeroconf())
-    result = await discovery.list_advertisements(timeout_seconds=5)
+    result = await getattr(discovery, method)(timeout_seconds=0.5)
 
     assert [item.device_id for item in result] == [DEV_A]
     assert result[0].pairable is True
