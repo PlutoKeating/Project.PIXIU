@@ -25,11 +25,10 @@
   安装、升级/回滚、原生 SDK 探针、Agent 生命周期、三设备检查点、数据集冻结、
   逐样本性能与消融汇总、供应链记录与审计。Runtime 锁覆盖 58 个 wheel，
   bundled plugin YAML 与 DDGS 发现须在断网安装验证中通过。
-- 🟡 **实际边界**：`submission/` 为人工维护的交付实物区；旧 submission 总包、
-  源码 ZIP、七类证据 ZIP 和文档渲染门禁脚本已经不在当前代码树中，不能宣称仍有
-  自动最终归档器。最终仅按 `docs/DELIVERY_PLAN.md` §0 提交四项作品，分篇内容汇入
-  项目报告或技术方案，不另立主件或必交附件。
-  最终三机、完整 Agent、性能消融、GUI 安装升级和演示视频仍需同版真实输入与审核。
+- **材料整理**：`submission/` 只容纳按冻结要求生成的正式文件。编写源和截图在
+  `docs/delivery/`，中间导出在 `build/release/out/`。`export-documentation.py` 生成
+  项目报告和技术方案；`prepare-submission.py` 生成源码并校验目录、格式和摘要。
+  最终三机、完整 Agent、性能消融和 GUI 安装升级结论继续按真实证据记录。
 
 - 🟡 **历史测试基线（2026-08-11）**：foundation+engine 全量测试已由 A/C 模块补齐（麒麟 V11 真机
   pytest 377 passed）；`backend/.env.example` 已覆盖全部配置变量（含 `PIXIU_SYNC_*`，见
@@ -41,20 +40,14 @@
 - 🟡 **portable 回归已完成（2026-08-29），最终验收未完成**：自建测试数据集（`pixiu-family-expense-v1`：50 检索 +
   15 偏好 + 25 冲突）、性能压测（检索 P95 115ms ≤500ms）、验收评测报告
   `docs/acceptance/`（portable 管线达到数值阈值，非桩注入；不作为 H-01～H-03 证据）。
-- ❌ **Docker 容器化**：本项目交付物为原生 `.deb` 安装包，不依赖 Docker，相关文件已移除。
+- ❌ **Docker 容器化**：产品采用原生 `.deb` 安装方式，不依赖 Docker，相关文件已移除。
 
 ---
 
 ## 开工要求（本地环境准备）
 
-2026-09-08 交付实物复核：[审查记录](../../docs/delivery/DELIVERY_AUDIT_2026-09-08.md)。
-三类非视频作品均未就绪：匿名、完整内容、最新源码及实拍截图仍有缺口。
-V11 已安装 0.1.9-1，旧 GUI 进程正常退出后已启动与包内摘要一致的新进程。
-本次仅审查与运行版本纠正，不新增测试/采集依赖、构建目标或部署脚本。
-
-后续文字修订已同步交付分篇、主技术方案和 PPT，使用现有文档导出工具更新 PDF、
-Word 及摘要清单。验证包括源稿同步、冻结要求比对和逐页排版检查；导出仍使用
-`build/release/requirements-docs.txt` 与 LibreOffice。
+当前材料结构与检查结果见[材料检查记录](../../docs/delivery/PREPARATION_CHECK.md)。
+文档导出使用 `build/release/requirements-docs.txt` 与 LibreOffice，DOC 必须独立打开并逐页检查。
 
 开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
 
@@ -100,7 +93,7 @@ git submodule update --init --recursive
 > 产出 `foundation/evidence/` 报告），本岗位无需重复实现。
 
 正式截图已整理 38 张 0.1.9 V11 实拍，覆盖主要单机操作并记录未完成场景，见
-[截图素材索引](../../submission/00-原始记录/截图素材索引.md)。图片数不代表全部验收通过；工具安全检查运行
+[截图素材索引](../../docs/delivery/assets/operations/截图素材索引.md)。图片数不代表全部验收通过；工具安全检查运行
 `python3 -m unittest discover -s backend/scripts/tests -v`（7 项）。
 全屏截图使用 libvirt 原始帧，区域截图只限定真实采集范围；不拼接、重绘或伪造结果。
 原生 Wayland 的文本输入须检查实际字段，不能假定 X11 剪贴板已经跨协议同步。
@@ -118,8 +111,8 @@ git submodule update --init --recursive
 ### 3. 文档补全
 
 - 配合其他开发者更新 `docs/` 下的项目级文档
-- 编写效果/测试报告（D-02/A-02；旧内部编号 D-07）
-- 编写用户手册（D-02/A-01；旧内部编号 D-06）
+- 编写效果/测试报告（汇入技术方案）
+- 编写用户手册（汇入技术方案）
 
 ## 参考文档
 

@@ -5,7 +5,7 @@
 适用环境：银河麒麟桌面操作系统 V11 amd64。
 
 先从 [v0.1.8 Release](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.8)
-下载同版安装包和校验/签名资产，并按部署指南验证。仓库 submission 中旧包仅为历史归档。
+下载同版安装包和校验/签名资产，并按部署指南验证。安装说明见交付技术方案。
 
 ```bash
 # 在 Release 资产的下载目录运行

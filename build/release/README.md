@@ -1,8 +1,10 @@
 # PIXIU 发布流水线脚手架（build/release）
 
 赛事要求提交项目报告、技术方案、视频和源码各一份，唯一口径见
-`docs/DELIVERY_PLAN.md` 第 0 节。`submission/` 保存编写材料和交付文件，由团队逐项复核。
-本目录提供工程构建、测试和文档导出工具；文档导出会更新 `submission/` 中已有的 PDF、Word 和 PPT。
+`docs/DELIVERY_PLAN.md` 第 0 节。`submission/` 仅保存规定目录内的项目报告、技术方案、视频和源码。
+编写源与截图位于 `docs/delivery/`，中间导出位于 `build/release/out/`。
+运行 `export-documentation.py` 生成 PPTX 和真正的 DOC；运行 `prepare-submission.py build-source`
+生成完整源码包，再用 `prepare-submission.py check` 核对目录与文件。
 
 > 目标：把**整个 PIXIU 软件**（UKUI 前端 + FastAPI 后端 + 本地 SQLite 记忆/同步
 > 存储）打包成一个 `.deb`，让一台全新安装的麒麟 OS 机器能够 `dpkg -i` 直接安装
@@ -155,7 +157,7 @@ submodule，并在全新离线 venv 中验证 DDGS 清单、插件发现和活�
 `postinst` 对该哈希锁闭包使用 `--force-reinstall`，保证同一 Runtime 版本上的 PIXIU
 重装/升级也精确采用当前包内 wheel，而不是沿用旧文件集合。
 报告同时固定输出 `agent-supply-chain-audit` 证据类型、仓库 commit 和明确 pass/fail，
-供 D-07 原始证据归档做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
+供 内部原始证据记录做同版校验；`status=pass` 与 `ready=true` 必须同时成立。
 
 ## 完整 Agent 生命周期取证
 
@@ -187,7 +189,7 @@ python3 build/release/scripts/agent-lifecycle-evidence.py validate \
 Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定的环境变量传入，
 不得把密钥放到命令行或证据。审批必须在核对实际动作后手工输入与 run 绑定的确认语句，
 不支持自动批准。中间 state 含继续运行所需的随机标记和会话标识，必须按敏感临时文件
-保护且不得放入 D-07；最终 JSON 只保留哈希、计数、工具名和通过项。工具的通过只说明
+保护且不得放入 内部证据目录；最终 JSON 只保留哈希、计数、工具名和通过项。工具的通过只说明
 采集程序契约已验证，最终状态仍取决于同一候选包在 V11 上的真实输出。
 
 开发阶段可用 `build/release/testing/openai-compatible-mock.py` 启动确定性、无推理的
@@ -201,7 +203,7 @@ search/remember/update/forget 契约、最终模型请求按原顺序保留全�
 内容和工具结果持续回灌，并核对 OpenAI function schema 与五个 PIXIU 工具的关键参数。
 节点只保留消息与 schema 摘要、计数和契约布尔值，不保留原始提示、回复、工具结果或密钥；输出固定带 `suite`、
 `mock_only=true` 和 `not_release_evidence=true`。
-它不能替代官方云端模型运行，也不得作为 D-07 七类正式主记录之一。
+它不能替代官方云端模型运行，也不得作为 最终原生验证记录。
 
 在全新开发环境启用 `PIXIU_BACKEND_TESTS=1` 前，须同时安装
 `backend/requirements.txt` 与 `backend/foundation/requirements-sync.txt`；后者是
@@ -277,7 +279,7 @@ python3 build/release/scripts/final-performance-evidence.py validate \
 恰好包含 `no_memory`、`single_device_memory`、`distributed_memory`；每组
 `sample_count>=30`，`metrics` 恰好包含 0～1 的 `task_success_rate` 和正数
 `mean_turns`。汇总不要求结果必须单调变好，但不得删掉不利数据。五个输入及逐样本
-原始结果、固定任务集、配置快照和节点 manifest 仍须作为 D-07 去敏附件保存；汇总 JSON
+原始结果、固定任务集、配置快照和节点 manifest 仍须作为 内部去敏记录保存；汇总 JSON
 不能替代它们。当前仅完成采集/复算工具及契约测试，最终 V11 三组运行尚未执行。
 
 最终候选洁净且 strict 原生证据通过后，冻结 acceptance 数据集：
@@ -294,19 +296,11 @@ python3 build/release/scripts/final-dataset-manifest.py validate \
 
 生成器拒绝非当前 HEAD、脏工作树、非 strict 候选和官方赛题原文摘要漂移。输出固定
 标注为附录 A 派生的团队合成语料，而非官方/第三方数据集；全部 90 例为冻结 test split，
-无 train/validation 集。数据集 JSON 和 manifest 都进入 D-07，且不得覆盖已有输出。
+无 train/validation 集。数据集 JSON 和 manifest 都进入 内部证据目录，且不得覆盖已有输出。
 
-D-07 归档不是对这些输出的简单打包：`build_evidence_archive.py` 会直接加载 native、
-Agent、性能、数据集、安装/升级矩阵、三设备和 Agent 供应链的深度验证函数，并核对 Agent→native、performance→三主记录及
-两个原始附件、dataset manifest→冻结 JSON 的摘要关系。冻结 JSON 会再次规范化并
-检查 50/15/25 样本构成；逐样本报告与消融矩阵会重新评分且必须与性能摘要一致。
-三设备最终套件还会递归重建两份拓扑、四份场景，并从归档内节点清单/检查点重新运行
-原场景校验器；供应链会重读构建产物、对应源码、日志、wheel、锁文件、SBOM 与 NOTICE，
-核对摘要、固定 commit、离线性和许可证覆盖。同样检查会在 ZIP 解包复验时重跑。
-
-消融矩阵还会递归到固定任务集、三份逐任务报告、教学/召回配置快照和分布式节点
-manifest；归档器重新运行变体校验、复算指标并确认跨节点身份。Runtime 原始配置和
-`.env` 可能含密钥，禁止入档；只归档采集器产生的去敏快照及其原文件摘要。
+评测数据集、逐样本报告、消融矩阵和去敏配置快照在内部保存。使用各取证工具的
+验证命令检查摘要和计算结果，再把结论、方法和限制汇入技术方案。原始配置可能含
+密钥，不进入提交材料。
 
 ## 安装、升级、回滚与卸载矩阵取证
 
@@ -347,7 +341,7 @@ python3 build/release/scripts/install-update-evidence.py validate \
   --input install-update-matrix.json
 ```
 
-主记录、六条 operation、十二份快照和六份 proof 都必须作为 D-07 附件。归档器会按摘要
+主记录、六条 operation、十二份快照和六份 proof 在内部保存。验证器按摘要
 重新打开快照，核验状态转换和数据保留，再核对主记录引用的 strict 原生证据。当前工具
 测试通过不等于最终真机矩阵通过。
 
@@ -355,7 +349,7 @@ python3 build/release/scripts/install-update-evidence.py validate \
 
 严格原生取证成功文件固定标识 `evidence_schema=1`、
 `evidence_class=kylin-v11-native-sdk-product-lifecycle`、
-`real_device_evidence=true` 与 `status=pass`。这些字段用于 D-07 汇总器做类型判断；
+`real_device_evidence=true` 与 `status=pass`。这些字段用于 内部证据校验器做类型判断；
 脚本未成功完成全部 SDK/产品生命周期时不会输出这组成功声明。
 
 严格原生 SDK 取证通过且三台设备已完成双向配对、全部在线并等待同步队列归零后，
@@ -688,7 +682,7 @@ DER SHA-256 标识为 `30c0f74a074c6f11a475000503bef1c2cb73794a8dcee9d283ea662e3
   `.env`、Runtime 配置或 Gateway 激活失败会恢复原快照。模型驱动完整生命周期仍须
   在配置真实推理提供商后取证，不能用无模型 Gateway 健康替代。
 
-这些是团队发布门；逐项状态与赛事 D-01～D-10 文档台账见
+这些是团队发布门；逐项状态与四项作品台账见
 `docs/DELIVERY_PLAN.md`。未完成前，现有 `0.1.7` 只能称为功能基线，不能称为最终
 一键安装/升级交付。
 

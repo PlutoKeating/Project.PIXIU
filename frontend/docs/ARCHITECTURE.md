@@ -484,7 +484,7 @@ libqrencode 必需；PIXIU_HAVE_KYSDK=ON 另链接画像规定的 SDK 和 Qt DBu
 正式宿主链接管理静态库，PIXIU_MANAGEMENT_TESTS 只开启回归目标。
 包名以 build/release/profiles 和实际 CMake 为准，不重复维护依赖列表。
 通用 CI 覆盖 OFF，V11 门执行 ON 构建、安装与真实双 SDK 链路。
-用户服务、启动器、升级 helper 与供应链随单包交付；完整图形、多设备和 D-08 矩阵另行验收。
+用户服务、启动器、升级 helper 与供应链随单包交付；完整图形、多设备和 V11 适配矩阵另行验收。
 
 ## 13. 开发期降级方案
 

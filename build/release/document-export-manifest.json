@@ -2,288 +2,147 @@
   "schema": 1,
   "documents": [
     {
-      "source": "submission/02-技术方案及测试结果/01-用户手册/PIXIU用户手册.md",
-      "sha256": "68094d65b2e4f34ed7ed5b4025067cebd507ed9cb643f0ed6aa1cab1bd0022b2",
-      "images": [
+      "source": "docs/delivery/COMBINED_TECHNICAL.md",
+      "sha256": "5c2ff7efd00de31e522b812c8ac0784f47d118680a3cbc70d47b15cbfdf05d46",
+      "inputs": [
         {
-          "path": "submission/00-原始记录/01-图片记录/50-service-version.png",
-          "sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85"
+          "path": "docs/delivery/APPLICATION_CASES.md",
+          "sha256": "3a477135689928b704ce6f0ad71cf8cfb5d3c168beb621eed21bcd07a1f2d7d7"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/06-agent-remember.png",
-          "sha256": "7e3f4872f07dc3fd75642739c1ad76508c108025a4d8ec70327e0f7f34d9feb1"
+          "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
+          "sha256": "4f4989ac90c36092e7ffd5ad132128a67a6af0b210b884c828e104b192bb6e7b"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/16-agent-recall-result.png",
-          "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
+          "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
+          "sha256": "79e45a366ab05c9a3a49138c1dfd25597af78d0d231cc5a29917ffd0027d6bf4"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/17-agent-source.png",
-          "sha256": "446cadd9de3a536335d0c9aded6ee67cf2b76d7913eadfa91fadb8055ca27551"
+          "path": "docs/delivery/MEMORY_LIFECYCLE.md",
+          "sha256": "aa73fd0dd2dbaea12a2d4b9868d6841727a79217ea02f972607878a8342516ff"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/10-memory-input.png",
-          "sha256": "32d8720e6fc74b4c7ab0447ec94fa0504e72b3b7457d27041301a6cdbabd0597"
+          "path": "docs/delivery/SOURCE_AND_LICENSES.md",
+          "sha256": "abf15f46b617d063924677069979ac58172df2e95d6133886e4e2eab88b51858"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/12-memory-evidence.png",
-          "sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e"
+          "path": "docs/delivery/TECHNICAL_SOLUTION.md",
+          "sha256": "1f6e1075d829c0d901bfd7ea61e27ceecea7d0ef8a2a1634b7772ceeb086c24a"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/14-memory-edit.png",
-          "sha256": "fd5c1eb86600ae1bb2906b171376bc41ba15c05f35c0a75083e1fe051569bd98"
+          "path": "docs/delivery/TEST_REPORT.md",
+          "sha256": "6ba135aa943e8deb09cbfef264716dd36c99d1d1c75e7dcaef84f5eb1942487a"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/15-memory-version.png",
-          "sha256": "d49d7f3f0a9744324d1e2c6f98ef1b78d162a8795c3e9571452357a3a3b34274"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/64-edit-version-conflict.png",
-          "sha256": "4978152783dad68c9ecab7b7ac3a954a903827e1c17bdba0b67ce19daf5297a5"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/62-preference-changed.png",
-          "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/25-forget-target.png",
-          "sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/26-forget-cancel-ready.png",
-          "sha256": "bb0d53c907dd3d5a698ec4f9935d329e7d366509336dcbfec3c69dbfdaef435d"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/27-forget-complete.png",
-          "sha256": "20494b714fc45a01acdc5653aca38568d3963009c386b01561d38ba34d156657"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/30-privacy-enabled.png",
-          "sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/32-capture-log.png",
-          "sha256": "7e99b55676a09d7d1fb592193e962dbcee7c464cb84d735dc2aef2d6b519f98c"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/34-file-source.png",
-          "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/41-pair-dialog.png",
-          "sha256": "bc9486d35815ea3ee92039580c367740b80b77117da53c4e97268931a4fe46d7"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/54-model-check.png",
-          "sha256": "1b6758586a1b815c0976d154a44afc7416098740f32200cd791fbaa642cb66f2"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/51-update-check.png",
-          "sha256": "b5829fec233f3252796bcdd3db63ef9df1f8252e6dc42cedf8cc69088251b3f9"
+          "path": "docs/delivery/USER_MANUAL.md",
+          "sha256": "d24b9316bc2b59b496b99ef1f6950944862cd086a0a0f3a29933a3a79d1c442e"
         }
       ],
-      "exports": [
-        {
-          "path": "submission/02-技术方案及测试结果/01-用户手册/PIXIU用户手册.pdf",
-          "sha256": "abd6ed9cf80a6a88dcdc5c61d9e05062ea26866b73ccf9809905567ab2b0146d"
-        }
-      ]
-    },
-    {
-      "source": "submission/02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.md",
-      "sha256": "1d1a115f47a59087e8c8460a9120c508a3c2091f4ca853b0505325731f9aeaf8",
-      "images": [],
-      "exports": [
-        {
-          "path": "submission/02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.pdf",
-          "sha256": "2685127f122532f7879d28ec0dce8a45af0bce2e8887c5850e90a24e38a9176e"
-        }
-      ]
-    },
-    {
-      "source": "submission/02-技术方案及测试结果/03-记忆流转说明/PIXIU记忆流转说明.md",
-      "sha256": "aa73fd0dd2dbaea12a2d4b9868d6841727a79217ea02f972607878a8342516ff",
-      "images": [],
-      "exports": [
-        {
-          "path": "submission/02-技术方案及测试结果/03-记忆流转说明/PIXIU记忆流转说明.pdf",
-          "sha256": "a8322dc2862ae9d886c22d4602fb813db64cf6780b36c0d21a1105cf6e6e5644"
-        }
-      ]
-    },
-    {
-      "source": "submission/02-技术方案及测试结果/04-实际应用案例/PIXIU实际应用案例.md",
-      "sha256": "30aeedd5a96ce14b494f5c1ff2de8a1f527105338de8a734beb04f8b9658ddb1",
       "images": [
         {
-          "path": "submission/00-原始记录/01-图片记录/16-agent-recall-result.png",
-          "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
-        }
-      ],
-      "exports": [
-        {
-          "path": "submission/02-技术方案及测试结果/04-实际应用案例/PIXIU实际应用案例.pdf",
-          "sha256": "b07f1063f7c148b294285d8e32123eeba817ecd410a4bc5e9f9185070004e49f"
-        }
-      ]
-    },
-    {
-      "source": "submission/02-技术方案及测试结果/05-V11适配报告/PIXIU银河麒麟V11适配报告.md",
-      "sha256": "79e45a366ab05c9a3a49138c1dfd25597af78d0d231cc5a29917ffd0027d6bf4",
-      "images": [],
-      "exports": [
-        {
-          "path": "submission/02-技术方案及测试结果/05-V11适配报告/PIXIU银河麒麟V11适配报告.pdf",
-          "sha256": "fb814b7b9c2e591867631631fc2495c64eb3761e20de91fbd520dd71b9cec69c"
-        }
-      ]
-    },
-    {
-      "source": "submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.md",
-      "sha256": "bb24e3ed2165c3af939a802f725029bfd317875adb65abaf57a52eba07875151",
-      "images": [
-        {
-          "path": "submission/00-原始记录/01-图片记录/02-install-result.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/02-install-result.png",
           "sha256": "3ec1b2d767fc016917d1544888d1b4bf899715899c9375b802709a575c643507"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/78-command-and-window.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/78-command-and-window.png",
           "sha256": "df8a7aa178d26b6b3682ffa0a6332d1d68049f42a813f267670c4a74f05f69be"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/75-menu-launch.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/75-menu-launch.png",
           "sha256": "e9ee939221a5befff613b032754f9876d264e6fde28eaa01523d4a6e4e8552fb"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/50-service-version.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/50-service-version.png",
           "sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/06-agent-remember.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/06-agent-remember.png",
           "sha256": "7e3f4872f07dc3fd75642739c1ad76508c108025a4d8ec70327e0f7f34d9feb1"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/16-agent-recall-result.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
           "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/17-agent-source.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/17-agent-source.png",
           "sha256": "446cadd9de3a536335d0c9aded6ee67cf2b76d7913eadfa91fadb8055ca27551"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/10-memory-input.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/10-memory-input.png",
           "sha256": "32d8720e6fc74b4c7ab0447ec94fa0504e72b3b7457d27041301a6cdbabd0597"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/12-memory-evidence.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/12-memory-evidence.png",
           "sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/14-memory-edit.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/14-memory-edit.png",
           "sha256": "fd5c1eb86600ae1bb2906b171376bc41ba15c05f35c0a75083e1fe051569bd98"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/15-memory-version.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/15-memory-version.png",
           "sha256": "d49d7f3f0a9744324d1e2c6f98ef1b78d162a8795c3e9571452357a3a3b34274"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/64-edit-version-conflict.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/64-edit-version-conflict.png",
           "sha256": "4978152783dad68c9ecab7b7ac3a954a903827e1c17bdba0b67ce19daf5297a5"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/62-preference-changed.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/62-preference-changed.png",
           "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/25-forget-target.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/25-forget-target.png",
           "sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/26-forget-cancel-ready.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/26-forget-cancel-ready.png",
           "sha256": "bb0d53c907dd3d5a698ec4f9935d329e7d366509336dcbfec3c69dbfdaef435d"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/27-forget-complete.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/27-forget-complete.png",
           "sha256": "20494b714fc45a01acdc5653aca38568d3963009c386b01561d38ba34d156657"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/30-privacy-enabled.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/30-privacy-enabled.png",
           "sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/32-capture-log.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/32-capture-log.png",
           "sha256": "7e99b55676a09d7d1fb592193e962dbcee7c464cb84d735dc2aef2d6b519f98c"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/34-file-source.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/34-file-source.png",
           "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/41-pair-dialog.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/41-pair-dialog.png",
           "sha256": "bc9486d35815ea3ee92039580c367740b80b77117da53c4e97268931a4fe46d7"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/54-model-check.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/54-model-check.png",
           "sha256": "1b6758586a1b815c0976d154a44afc7416098740f32200cd791fbaa642cb66f2"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/51-update-check.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/51-update-check.png",
           "sha256": "b5829fec233f3252796bcdd3db63ef9df1f8252e6dc42cedf8cc69088251b3f9"
         },
         {
-          "path": "submission/00-原始记录/01-图片记录/16-agent-recall-result.png",
+          "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
           "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
         }
       ],
       "exports": [
         {
-          "path": "submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.pdf",
-          "sha256": "0d34bf030d07ab56b153041e1546e963f7b903bfade1b33a86337adf2c6ad31b"
-        },
-        {
-          "path": "submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.docx",
-          "sha256": "b42939bff70388d27fab7a51f0f86e0de92abbc667a6d14ddf741e3d57949ea2"
-        }
-      ]
-    },
-    {
-      "source": "submission/03-源代码及规范/源码规范与许可证.md",
-      "sha256": "f8f7affedfae2539da4b909898e155b4c3769638a520fe850de4f1125e48d321",
-      "images": [],
-      "exports": [
-        {
-          "path": "submission/03-源代码及规范/源码规范与许可证.pdf",
-          "sha256": "cba31bf86295b512537995f2075dbabc1024969a05db28e081cb4340dbda2067"
-        }
-      ]
-    },
-    {
-      "source": "submission/04-部署文档/PIXIU部署指南.md",
-      "sha256": "7c6e20abd7690f78038a03f230ee5ab5daa093a40fb806b6602a279bd6948976",
-      "images": [
-        {
-          "path": "submission/00-原始记录/01-图片记录/02-install-result.png",
-          "sha256": "3ec1b2d767fc016917d1544888d1b4bf899715899c9375b802709a575c643507"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/78-command-and-window.png",
-          "sha256": "df8a7aa178d26b6b3682ffa0a6332d1d68049f42a813f267670c4a74f05f69be"
-        },
-        {
-          "path": "submission/00-原始记录/01-图片记录/75-menu-launch.png",
-          "sha256": "e9ee939221a5befff613b032754f9876d264e6fde28eaa01523d4a6e4e8552fb"
-        }
-      ],
-      "exports": [
-        {
-          "path": "submission/04-部署文档/PIXIU部署指南.pdf",
-          "sha256": "bf8e3e46f7484e35648d8378085ba461eed5e81b24e85fb0c707a9fbeba2b850"
+          "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/技术方案.doc",
+          "sha256": "9c00f56a65ee78894898f614ce98c479d00d05b606f04907086b68c5aa435262"
         }
       ]
     }
   ],
   "presentation": {
-    "path": "submission/01-项目报告/PIXIU项目报告.pptx",
-    "sha256": "0ef8b01fcfe2ed4cb40e44dbff2725d3ec3e0ad4c3fe67cf24a16ce1d74477fa"
+    "source": "docs/delivery/assets/项目报告.pptx",
+    "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/项目报告.pptx",
+    "sha256": "4718b6b1d190e5e6834bd31d97d0c39ab835706d8dc733c0703659ba18e1f822"
   }
 }

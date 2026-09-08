@@ -36,21 +36,13 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 - 密钥、`.env`、用户数据库、日志、缓存和构建产物不得进入源码归档。
 - 一个逻辑变更对应一个本地 Git 提交，版本由根目录 `VERSION` 单一派生。
 
-## 可重建性
+## 源码交付与复现
 
-准备完整源码时，检出最终标签，并下载四个子模块所固定的版本。GitHub 自动源码压缩包缺少子模块文件，需要补齐这些构建依赖。
-`submission` 当前人工维护，仓库已无旧文档所称的源码/总提交 ZIP 自动归档器。
-严格安装包内的宿主对应源码、适配补丁、许可证、SPDX 与 Runtime 锁由供应链脚本
-生成和校验；最终赛事源码归档仍须核对完整文件集合、许可证、摘要和候选 commit。
+`源代码/PIXIU源代码.tar.gz` 包含产品版本对应的前端、后端、Agent 适配、构建配置、测试、技术规范和四个固定版本上游源码。源码清单记录文件摘要、可执行权限和上游提交；保留第三方许可证及版权声明。
 
-`submission/03-源代码及规范/Project.PIXIU-source.tar.gz` 保存的是 0.1.7 历史源码。交付新版时，请检出对应标签、初始化子模块，再按 `.github/workflows/release.yml` 的通用和 V11 构建流程验证。
+解压后先运行包内 `verify-source.py` 核对文件。后端测试使用 `backend/pyproject.toml` 的依赖，前端使用 CMake。严格安装包需在银河麒麟 V11 安装官方 SDK 和画像列出的开发依赖，按构建说明执行。依赖清单与源码一起提供，源码压缩包不包含预下载的系统软件或 Python wheels。
 
-文档导出使用独立可选依赖 `build/release/requirements-docs.txt`（Markdown）和
-LibreOffice；它们不进入产品运行依赖。原目录中的 Markdown 更新后执行
-`python build/release/scripts/export-documentation.py`，重导出已有 PDF/DOCX，
-并仅更新项目 PPT 的版本与已复核文本，保留幻灯片、形状和媒体。
-`--check` 校验 `build/release/document-export-manifest.json` 的源稿/导出物摘要；
-导出后还需逐页检查排版、内容和图片，按交付要求完成审核。
+当前发布脚本通过 Git 提交核验固定上游和供应链。源码包不携带开发历史或用户配置；发布构建需要按清单恢复对应源码检出，完整离线构建还需准备依赖闭包。源码文件完整性检查不等于已在全新机器重跑全部发布验证。
 
 ## 软件物料清单
 

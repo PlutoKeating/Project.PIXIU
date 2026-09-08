@@ -506,7 +506,7 @@ Project.PIXIU/
 ├── integrations/
 │   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配与契约测试
 
-├── submission/                     # 交付实物工作区；最终目录按 DELIVERY_PLAN.md §0
+├── submission/                     # 正式提交目录；两层同名结构见 DELIVERY_PLAN.md §0
 
 ├── third_party/                    # openKylin 官方源码/SDK submodule
 │   ├── kylin-agent/                # 官方桌面 Agent 参考/目标宿主

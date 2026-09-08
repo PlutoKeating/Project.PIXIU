@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Render existing submission Markdown beside its PDF/DOCX, preserving headings.
+"""Assemble the technical manuscript and export the two competition documents.
 
-Requires LibreOffice and requirements-docs.txt. No README or official source is
-touched; temporary HTML and the LibreOffice profile stay outside the repository.
+Requires LibreOffice and requirements-docs.txt. Intermediate files stay in out/.
 """
 from __future__ import annotations
 
@@ -21,6 +20,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import zipfile
 from urllib.parse import unquote, urlsplit
+from submission_layout import paths
 
 
 def digest(path: Path) -> str:
@@ -105,80 +105,72 @@ def embed_word_images(path: Path, root: Path) -> None:
             archive.writestr(name, data)
 
 
-def refresh_presentation(root: Path) -> dict:
-    """Update reviewed text runs only; retain all slides, shapes and media."""
-    path = root / "submission/01-项目报告/PIXIU项目报告.pptx"
-    replacements = {
-        ">0.1.7<": ">" + (root / "VERSION").read_text().strip() + "<",
-        ">确认、级联清理、墓碑传播<": ">确认、隐藏知识、墓碑传播<",
-        ">OCR<": ">OCR 文本<",
-        ">Module E 809 <": ">Module E 823 <",
-        ">量化指标为 <": ">历史量化基线：<",
-    }
-    with zipfile.ZipFile(path) as archive:
-        entries = [(item, archive.read(item)) for item in archive.infolist()]
-    with tempfile.TemporaryDirectory(prefix="pixiu-slides-export-") as temporary:
-        generated = Path(temporary) / path.name
-        with zipfile.ZipFile(generated, "w") as archive:
-            for item, data in entries:
-                if item.filename.startswith("ppt/slides/slide") and item.filename.endswith(".xml"):
-                    content = data.decode("utf-8")
-                    for old, new in replacements.items():
-                        content = content.replace(old, new)
-                    data = content.encode("utf-8")
-                archive.writestr(item, data)
-        shutil.copyfile(generated, path)
-    return {"path": path.relative_to(root).as_posix(), "sha256": digest(path)}
+def assemble(root: Path) -> Path:
+    directory = root / "docs/delivery"
+    names = ["TECHNICAL_SOLUTION", "DEPLOYMENT_GUIDE", "USER_MANUAL",
+             "MEMORY_LIFECYCLE", "APPLICATION_CASES", "TEST_REPORT",
+             "KYLIN_V11_ADAPTATION_REPORT", "SOURCE_AND_LICENSES"]
+    body = ["# PIXIU 技术方案\n\n版本：" + (root / "VERSION").read_text().strip()
+            + "\n\n平台：银河麒麟桌面操作系统 V11\n"]
+    for name in names:
+        content = (directory / (name + ".md")).read_text()
+        body.append(re.sub(r"^(#{1,5}) ", r"#\1 ", content, flags=re.M))
+    source = directory / "COMBINED_TECHNICAL.md"
+    source.write_text("\n\n".join(body))
+    return source
 
 
-def export(root: Path) -> list[dict]:
+def convert(source: Path, output: Path, format_name: str, profile: Path) -> Path:
+    subprocess.run(
+        ["libreoffice", "--headless", f"-env:UserInstallation={profile.as_uri()}",
+         "--convert-to", format_name, "--outdir", str(output), str(source)],
+        check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120,
+        env={**os.environ, "SAL_USE_VCLPLUGIN": "svp"},
+    )
+    generated = output / (source.stem + "." + format_name.split(":")[0])
+    if not generated.is_file() or not generated.stat().st_size:
+        raise RuntimeError("LibreOffice 未生成文档：" + format_name)
+    return generated
+
+
+def export(root: Path) -> tuple[list[dict], dict]:
     import markdown
-
-    records = []
-    for source in sorted((root / "submission").rglob("*.md")):
-        if source.name.lower() == "readme.md" or not source.with_suffix(".pdf").is_file():
-            continue
-        content = markdown.markdown(
-            source.read_text(encoding="utf-8"), extensions=["tables", "fenced_code"]
-        )
-        content, images = prepare_images(content, source, root)
-        with tempfile.TemporaryDirectory(prefix="pixiu-doc-export-") as temporary:
-            work = Path(temporary)
-            page = work / (source.stem + ".html")
-            page.write_text(
-                '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
-                f"<title>{html.escape(source.stem)}</title><style>"
-                "@page {size:A4; margin:20mm}"
-                "body {font-family:'Noto Sans CJK SC',sans-serif; font-size:11pt}"
-                "h1,h2,h3,h4 {page-break-after:avoid}"
-                "table {border-collapse:collapse; width:100%}"
-                "th,td {border:1px solid #bbb; padding:5px; text-align:left}"
-                "pre {white-space:pre-wrap; font-size:9pt}"
-                "img {max-width:100%; height:auto; page-break-inside:avoid}"
-                "</style></head><body>" + content + "</body></html>",
-                encoding="utf-8",
-            )
-            formats = ["pdf:writer_pdf_Export"]
-            if source.with_suffix(".docx").is_file():
-                formats.append("docx:Office Open XML Text")
-            record = {"source": source.relative_to(root).as_posix(), "sha256": digest(source), "images": images, "exports": []}
-            for format_name in formats:
-                subprocess.run(
-                    ["libreoffice", "--headless", f"-env:UserInstallation={(work / 'profile').as_uri()}",
-                     "--convert-to", format_name, "--outdir", str(work), str(page)],
-                    check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                    timeout=120, env={**os.environ, "SAL_USE_VCLPLUGIN": "svp"},
-                )
-                generated = page.with_suffix("." + format_name.split(":")[0])
-                if not generated.is_file() or not generated.stat().st_size:
-                    raise RuntimeError(f"LibreOffice produced no {format_name} for {source.name}")
-                if generated.suffix == ".docx":
-                    embed_word_images(generated, root)
-                target = source.with_suffix(generated.suffix)
-                shutil.copyfile(generated, target)
-                record["exports"].append({"path": target.relative_to(root).as_posix(), "sha256": digest(target)})
-            records.append(record)
-    return records
+    source = assemble(root)
+    _, materials, _ = paths(root)
+    materials.mkdir(parents=True, exist_ok=True)
+    output = root / "build/release/out/documents"
+    output.mkdir(parents=True, exist_ok=True)
+    content = markdown.markdown(source.read_text(), extensions=["tables", "fenced_code"])
+    content, images = prepare_images(content, source, root)
+    # A submitted document must not depend on internal manuscript hyperlinks.
+    content = re.sub(r'<a href="(?!https?://)[^"]*">(.*?)</a>', r"\1", content)
+    with tempfile.TemporaryDirectory(prefix="pixiu-doc-export-") as temporary:
+        work = Path(temporary)
+        page = work / "技术方案.html"
+        page.write_text(
+            '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
+            '<title>PIXIU 技术方案</title><style>'
+            '@page {size:A4; margin:20mm}'
+            "body {font-family:'Noto Sans CJK SC',sans-serif; font-size:11pt}"
+            'h1,h2,h3,h4 {page-break-after:avoid}'
+            'table {border-collapse:collapse; width:100%}'
+            'th,td {border:1px solid #bbb; padding:5px; text-align:left}'
+            'pre {white-space:pre-wrap; font-size:9pt}'
+            'img {max-width:100%; height:auto; page-break-inside:avoid}'
+            '</style></head><body>' + content + '</body></html>')
+        docx = convert(page, output, "docx:Office Open XML Text", work / "profile")
+        embed_word_images(docx, root)
+        doc = convert(docx, materials, "doc:MS Word 97", work / "profile")
+        # Inspect the actual delivered binary document, not only the intermediate.
+        pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")
+    template = root / "docs/delivery/assets/项目报告.pptx"
+    ppt = materials / "项目报告.pptx"
+    shutil.copyfile(template, ppt)
+    record = {"source": source.relative_to(root).as_posix(), "sha256": digest(source),
+              "inputs": [{"path": p.relative_to(root).as_posix(), "sha256": digest(p)} for p in sorted((root / "docs/delivery").glob("*.md")) if p.name in {"TECHNICAL_SOLUTION.md", "DEPLOYMENT_GUIDE.md", "USER_MANUAL.md", "MEMORY_LIFECYCLE.md", "APPLICATION_CASES.md", "TEST_REPORT.md", "KYLIN_V11_ADAPTATION_REPORT.md", "SOURCE_AND_LICENSES.md"}],
+              "images": images, "exports": [{"path": doc.relative_to(root).as_posix(), "sha256": digest(doc)}]}
+    presentation = {"source": template.relative_to(root).as_posix(), "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt)}
+    return [record], presentation
 
 
 def main() -> None:
@@ -194,16 +186,16 @@ def main() -> None:
             assert digest(root / record["source"]) == record["sha256"], record["source"]
             for item in record["exports"]:
                 assert digest(root / item["path"]) == item["sha256"], item["path"]
-            for item in record.get("images", []):
+            for item in record.get("images", []) + record.get("inputs", []):
                 assert digest(root / item["path"]) == item["sha256"], item["path"]
         presentation = data["presentation"]
         assert digest(root / presentation["path"]) == presentation["sha256"]
+        assert digest(root / presentation["source"]) == presentation["sha256"]
         print("documentation source/export digests: OK")
     else:
-        records = export(root)
-        presentation = refresh_presentation(root)
+        records, presentation = export(root)
         manifest.write_text(json.dumps({"schema": 1, "documents": records, "presentation": presentation}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(f"Exported {len(records)} existing Markdown documents")
+        print("已导出项目报告.pptx 和技术方案.doc；复核 PDF 位于 build/release/out/documents")
 
 
 if __name__ == "__main__":

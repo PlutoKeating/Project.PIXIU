@@ -14,7 +14,7 @@
 sha256sum -c pixiu_0.1.9-1_amd64.deb.sha256
 ```
 
-摘要用于检查文件是否完整，发布公钥和 Ed25519 签名用于验证文件来源。签名验证步骤见同版发布说明。当前 `submission` 中保存的 0.1.7 安装包属于历史归档。
+摘要用于检查文件是否完整，发布公钥和 Ed25519 签名用于验证文件来源。签名验证步骤见同版发布说明。安装包从同版发布资产获取。
 
 ## 安装与启动
 
@@ -26,7 +26,7 @@ sudo apt install ./pixiu_0.1.9-1_amd64.deb
 
 
 
-![安装实拍：重装 0.1.9-1 完成，命令退出码为 0。重装使用 apt-get install --reinstall。](../../submission/00-原始记录/01-图片记录/02-install-result.png)
+![安装实拍：重装 0.1.9-1 完成，命令退出码为 0。重装使用 apt-get install --reinstall。](assets/operations/01-图片记录/02-install-result.png)
 
 安装实拍：重装 0.1.9-1 完成，命令退出码为 0。重装使用 apt-get install --reinstall。
 
@@ -38,13 +38,13 @@ pixiu
 
 
 
-![命令启动实拍：终端执行 pixiu，前景打开主窗口，保留实际图形驱动警告。](../../submission/00-原始记录/01-图片记录/78-command-and-window.png)
+![命令启动实拍：终端执行 pixiu，前景打开主窗口，保留实际图形驱动警告。](assets/operations/01-图片记录/78-command-and-window.png)
 
 命令启动实拍：终端执行 pixiu，前景打开主窗口，保留实际图形驱动警告。
 
 
 
-![菜单启动实拍：点击 PIXIU 入口激活主窗口后，重新打开菜单定位入口。](../../submission/00-原始记录/01-图片记录/75-menu-launch.png)
+![菜单启动实拍：点击 PIXIU 入口激活主窗口后，重新打开菜单定位入口。](assets/operations/01-图片记录/75-menu-launch.png)
 
 菜单启动实拍：点击 PIXIU 入口激活主窗口后，重新打开菜单定位入口。
 

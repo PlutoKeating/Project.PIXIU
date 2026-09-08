@@ -16,7 +16,7 @@
 |------|--------|---------|------|
 | 关联检索 | F3-02 / SC-02 / SC-03 | `retrieval/` 三通道（BM25+ANN+Graph）混合检索；`test_e2e_stories.py::test_story_s1`（检索+证据回溯）；`test_retrieval.py`（14 项） | ✅ |
 | 轻量存储与性能 | F4-03～F4-05 / P-03 | portable/stub 压测 P95=19.18ms；生产向量仍未接系统 Vector Engine | 🔴 H-02 未通过；V11 双 SDK 待测 |
-| 记忆流转 | F6-01～F6-03 / D-05 | `flow/` promote/demote/TTL；`test_flow.py`；`/memory/flow/promote` 真实端点 | ✅ |
+| 记忆流转 | F6-01～F6-03 | `flow/` promote/demote/TTL；`test_flow.py`；`/memory/flow/promote` 真实端点 | ✅ |
 | 评测机制 | F7-01～F7-05 | `eval/` 评测引擎（Recall@1/3/5、P50/P95/P99、scope 隔离、聚合/追溯/冲突/偏好 12 指标）+ 基准框架（CRDT 收敛/同步耗时/DB/内存/CPU）+ CLI | ✅ |
 | 模糊检索 | SC-04 / SC-08 | BM25 长句滑动窗口回退 + ANN 语义通道（`retrieval/bm25.py`、`ann.py`） | ✅ |
 | 跨文档聚合 | SC-09 / SC-K3 | `retrieval/assembler.py` 金额聚合（`aggregation_accuracy`=1.0 门槛） | ✅ |
