@@ -1,0 +1,28 @@
+{
+  "status": "搜索动效素材已采集，尚未接入s13",
+  "query": "回答风格演示",
+  "sources": [
+    {
+      "path": "raw/20260909-高清检索空白起点.png",
+      "sha256": "0b67ac1b3c633a2daec5f224226c879818c5c0109fc909104bfaf39a45264d13"
+    },
+    {
+      "path": "raw/20260909-高清检索输入.png",
+      "sha256": "6c32f429eb2055d269b85cbfcac2378308912299695b1fb0b09408b252e267a4"
+    },
+    {
+      "path": "raw/20260909-高清检索结果.png",
+      "sha256": "51987dd35127a78d7cf757fb7bc816108b6829f31a3793d7d2efc29db1b3e20f"
+    },
+    {
+      "path": "raw/20260909-高清检索证据详情.png",
+      "sha256": "7e5c3e13379d4d6cad493ec1860014126c9fb76b13148cbd76b3c1d176e5d864"
+    }
+  ],
+  "recording": "raw/video/高清搜索操作/原始录屏.mp4",
+  "recording_boundary": "录屏仅覆盖点击检索与结果出现，详情选择在录屏结束后完成，另存真实静帧；输入使用真实剪贴板粘贴，不是逐字输入实录。",
+  "evidence": "evd_01M21EDEC4KPTK34W02XF8V14A",
+  "knowledge": "knw_01M21EDEC7KPKSGAB3BKY0SR9X",
+  "api_check": "raw/network/高清检索同源核对.json",
+  "decode_passed": true
+}
