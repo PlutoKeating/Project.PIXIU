@@ -1,0 +1,39 @@
+{
+  "gallery_revision": "bdd94be16d60fa8f",
+  "cards": [
+    {
+      "name": "deck-deal-flyin",
+      "source": "references/shots/ui-entrance/deck-deal-flyin.md",
+      "style_keys": [
+        "deck-deal-flyin"
+      ]
+    },
+    {
+      "name": "document-typewriter-reveal",
+      "source": "references/shots/typography/document-typewriter-reveal.md",
+      "style_keys": [
+        "document-typewriter-reveal"
+      ]
+    },
+    {
+      "name": "list-stack-press",
+      "source": "references/shots/ui-entrance/list-stack-press.md",
+      "style_keys": [
+        "list-stack-press"
+      ]
+    },
+    {
+      "name": "type-and-filter",
+      "source": "references/shots/interaction/type-and-filter.md",
+      "style_keys": [
+        "type-and-filter"
+      ]
+    }
+  ],
+  "document_reference": {
+    "source": "demos/ui-entrance/document-typewriter-reveal/DocumentTypewriterReveal.tsx",
+    "sha256": "ba67561fb578558ce70504bd6f84e826220fdaacdf9329023d3fd33004843493",
+    "read_complete": true
+  },
+  "status": "名称与默认变体已核对；四镜尚未实现。动态参考及九帧接触表只作制作比对，不作为产品内容。"
+}

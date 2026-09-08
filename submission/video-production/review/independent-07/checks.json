@@ -1,0 +1,36 @@
+{
+  "video_sha256": "610fa9c8ad7058c3afdc5bd619a8b7fa7d40f9e834151a1f6511606d3fa869ea",
+  "frames": [
+    11162,
+    11447,
+    11521,
+    11522,
+    11617,
+    11972,
+    12179,
+    12180,
+    12260,
+    12400
+  ],
+  "measurements": [
+    {
+      "frame": 11162,
+      "footer_ink_bottom": 925,
+      "caption_ink_top": 988,
+      "clear_rows": 62
+    },
+    {
+      "frame": 12260,
+      "footer_ink_bottom": 925,
+      "caption_ink_top": 988,
+      "clear_rows": 62
+    },
+    {
+      "frame": 12400,
+      "footer_ink_bottom": 925,
+      "caption_ink_top": 988,
+      "clear_rows": 62
+    }
+  ],
+  "method": "RGB max <180 footer ROI x130:1500 y880:950; RGB max <140 caption ROI y970:1060; raw output pixels"
+}

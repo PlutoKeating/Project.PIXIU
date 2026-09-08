@@ -155,7 +155,7 @@ row-embed 来自准确参考示例，飞行体是截图裁片，片中明确标�
 合成层，工作台新增七帧比对均零差异，保留旧失败记录。
 
 `scripts/prepare_evidence.py`（`npm run prepare:evidence`）将原始同步检查点与
-历史评测报告提取到两个src JSON，逐行显示原始正文、版本和采集时刻；
+历史评测报告提取到两个src JSON，逐行显示原始正文、版本和检查点记录时刻；
 `SyncTraceScene.tsx` 明确是检查点剪辑，不是实时UI录像。`EvaluationScene.tsx`
 分列历史软件值、阈值/样本量和最终V11双SDK待测状态。原始来源与SHA保留。
 这些工具只用Python标准库，不新增产品依赖。
@@ -167,6 +167,10 @@ row-embed 来自准确参考示例，飞行体是截图裁片，片中明确标�
 
 第六版有限独立复查后，s21/s22又修正了阶段脚注、恢复结果措辞和检查点时间口径，
 并加大表格到字幕的间距。两段解说原音新增到raw/audio，阶段时序读取字幕。
-第七版正在渲染，快照位于review/source-snapshots/full-draft-07。
+第七版已完成：554.154667秒、56615683字节，完整解码通过；快照位于
+review/source-snapshots/full-draft-07。实际抽帧确认断连结句、并发阶段脚注与字幕间距
+整改已进入成片，有限独立复核确认指定缺陷关闭（见review/independent-07/REPORT.md），
+三行表脚注到字幕留白62px；这不是全片放行。s21/s22/s28波形相关性均大于0.9999，
+相对音源声明起点偏移1.27–1.29帧；仍未进行主观听审。
 已下载六个Gallery动态参考，来源/摘要保存在reference/gallery-media/sources.json；
 仅用于制作比对，不作为产品视频内容。未完成项继续见独立审查整改台账。
