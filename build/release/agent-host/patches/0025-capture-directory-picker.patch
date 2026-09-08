@@ -1,0 +1,14 @@
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -12,1 +12,2 @@
+-#include "PrivacyPage.h"
++#include "PrivacyPage.h"
++#include "utils/kylinfiledialog.h"
+@@ -140,1 +141,6 @@
+-    auto *settings = new pixiu::SettingsWorkspace(workspaces);
++    auto *settings = new pixiu::SettingsWorkspace(workspaces);
++    if (auto *privacy = settings->findChild<pixiu::PrivacyPage *>()) {
++        privacy->setDirectoryPicker([](QWidget *parent) {
++            return KylinFileDialog::getExistingDirectory(parent, QObject::tr("选择允许采集的目录"));
++        });
++    }

@@ -37,6 +37,12 @@ PY
 grep -q 'src/services/pixiu_host_compat.cpp' "${fixture}/source/CMakeLists.txt"
 grep -q 'add_subdirectory(pixiu/frontend/management)' "${fixture}/source/CMakeLists.txt"
 grep -q 'new pixiu::MemoryWorkspace(workspaces)' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q 'privacy->setDirectoryPicker' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q 'KylinFileDialog::getExistingDirectory(parent,' "${fixture}/source/src/ui/mainwindow.cpp"
+for capture_source in PrivacyPage.h PrivacyPage.cpp; do
+    cmp "${repo_root}/frontend/management/${capture_source}" \
+        "${fixture}/source/pixiu/frontend/management/${capture_source}"
+done
 grep -q 'sessionMemorySources' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'titleLayout->insertWidget(titleLayout->count() - 1, sources)' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'memory->showAgentSources(result' "${fixture}/source/src/ui/mainwindow.cpp"

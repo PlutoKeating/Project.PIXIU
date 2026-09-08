@@ -27,6 +27,7 @@
     "build/release/agent-host/patches/0022-session-evidence-entry.patch",
     "build/release/agent-host/patches/0023-backend-event-status.patch",
     "build/release/agent-host/patches/0024-single-host-tray.patch",
+    "build/release/agent-host/patches/0025-capture-directory-picker.patch",
     "frontend/management/HostTray.h",
     "frontend/management/HostTray.cpp",
     "frontend/management/HostWindowPin.h",

@@ -1459,6 +1459,62 @@ private slots:
         QTest::qWait(600);
         QCOMPARE(transport.logReads, 4);
     }
+    void privacyDirectoryPickerOnlyEditsDraftAndHonorsCancellation()
+    {
+        Transport transport;
+        QWidget host;
+        pixiu::PrivacyPage page(&host, &transport);
+        pixiu::HostCloseGuard guard(&host);
+        host.show();
+        auto *browse = page.findChild<QPushButton *>("privacyBrowse");
+        auto *paths = page.findChild<QPlainTextEdit *>("privacyDirectories");
+        QVERIFY(browse);
+        QVERIFY(!browse->isEnabled());
+        QString selected;
+        int calls = 0;
+        bool blockedWhileChoosing = false;
+        bool closeBlockedWhileChoosing = false;
+        page.setDirectoryPicker([&](QWidget *parent) {
+            ++calls;
+            blockedWhileChoosing = parent == &page && page.hasPendingOperation()
+                && !browse->isEnabled() && !paths->isEnabled();
+            page.findChild<QPushButton *>("privacySave")->click();
+            QTimer::singleShot(0, &host, [&]() {
+                if (auto *box = host.findChild<QMessageBox *>()) box->accept();
+            });
+            closeBlockedWhileChoosing = !host.close();
+            return selected;
+        });
+        QVERIFY(!browse->isEnabled());
+        page.findChild<QPushButton *>("privacyLoad")->click();
+        emit transport.configResult({{"enabled", false}, {"sources", QJsonObject{
+            {"directory", false}, {"behavior", false}, {"clipboard", true}, {"screenshot", false}}},
+            {"directories", QJsonArray{}}});
+        paths->setPlainText("/existing-draft\n");
+        browse->click();
+        QVERIFY(blockedWhileChoosing);
+        QVERIFY(closeBlockedWhileChoosing);
+        QCOMPARE(paths->toPlainText(), QString("/existing-draft\n"));
+        selected = "/approved directory";
+        browse->click();
+        QCOMPARE(paths->toPlainText(), QString("/existing-draft\n/approved directory"));
+        browse->click();
+        QCOMPARE(paths->toPlainText(), QString("/existing-draft\n/approved directory"));
+        for (const QString &invalid : {QString("relative"), QString("/wrong\n/extra"), QString("/wrong ")}) {
+            selected = invalid;
+            browse->click();
+            QCOMPARE(paths->toPlainText(), QString("/existing-draft\n/approved directory"));
+        }
+        QCOMPARE(calls, 6);
+        QVERIFY(page.hasUnsavedChanges());
+        QVERIFY(!page.hasPendingOperation());
+        QCOMPARE(transport.configWrites, 0);
+        QVERIFY(!page.findChild<QCheckBox *>("privacyEnabled")->isChecked());
+        page.findChild<QPushButton *>("privacySave")->click();
+        QCOMPARE(transport.configWrites, 1);
+        QCOMPARE(transport.savedConfig.value("directories").toArray(), QJsonArray({"/existing-draft", "/approved directory"}));
+        QVERIFY(transport.savedConfig.value("sources").toObject().value("clipboard").toBool());
+    }
     void privacyLogsExposeTimeAndIdsWithoutInventingMissingValues()
     {
         Transport transport;

@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <QJsonObject>
+#include <functional>
 class BackendTransport;
 class QCheckBox;
 class QPlainTextEdit;
@@ -17,10 +18,11 @@ public:
     bool hasPendingOperation() const { return m_pending != Pending::None; }
     bool hasUnsavedChanges() const;
     void notifyDataChanged();
+    void setDirectoryPicker(std::function<QString(QWidget *)> picker);
 protected:
     void showEvent(QShowEvent *event) override;
 private:
-    enum class Pending { None, Load, Save, Logs };
+    enum class Pending { None, Load, Save, Logs, Directory };
     void controls();
     void loadLogs(int offset);
     void scheduleRefresh();
@@ -28,6 +30,8 @@ private:
     QCheckBox *m_enabled, *m_directory, *m_behavior;
     QPlainTextEdit *m_directories;
     QPushButton *m_load, *m_save, *m_logs, *m_previous, *m_next;
+    QPushButton *m_browse;
+    std::function<QString(QWidget *)> m_directoryPicker;
     QLabel *m_status;
     QListWidget *m_events;
     QJsonObject m_config;

@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <cmath>
+#include <utility>
 
 namespace pixiu {
 PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
@@ -45,6 +46,38 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     m_directories->setObjectName(QStringLiteral("privacyDirectories"));
     m_directories->setAccessibleName(tr("监视目录列表"));
     layout->addWidget(m_directories, 1);
+    m_browse = new QPushButton(tr("浏览并添加目录（保存后生效）…"), this);
+    m_browse->setObjectName(QStringLiteral("privacyBrowse"));
+    layout->addWidget(m_browse);
+    connect(m_browse, &QPushButton::clicked, this, [this]() {
+        if (!m_directoryPicker || !m_loaded || m_pending != Pending::None) return;
+        m_pending = Pending::Directory;
+        controls();
+        const QString selected = m_directoryPicker(this);
+        m_pending = Pending::None;
+        controls();
+        if (selected.isEmpty()) {
+            m_status->setText(tr("已取消选择，配置草稿未更改。"));
+            return;
+        }
+        // The backend and editor use trimmed, newline-separated paths. Refuse
+        // an unrepresentable path rather than silently authorizing another one.
+        if (!QDir::isAbsolutePath(selected) || selected != selected.trimmed()
+            || selected.contains(QLatin1Char('\n')) || selected.contains(QLatin1Char('\r'))) {
+            m_status->setText(tr("未添加：目录须为绝对路径，且不能含前后空白或换行。"));
+            return;
+        }
+        QString draft = m_directories->toPlainText();
+        for (const auto &line : draft.split(QLatin1Char('\n'))) {
+            if (line.trimmed() == selected) {
+                m_status->setText(tr("目录已在草稿中，未重复添加；尚未保存配置。"));
+                return;
+            }
+        }
+        if (!draft.isEmpty() && !draft.endsWith(QLatin1Char('\n'))) draft += QLatin1Char('\n');
+        m_directories->setPlainText(draft + selected);
+        m_status->setText(tr("目录已加入草稿；请核对范围后保存。未自动开启采集。"));
+    });
     m_load = new QPushButton(tr("读取已保存配置"), this);
     m_load->setObjectName(QStringLiteral("privacyLoad"));
     m_save = new QPushButton(tr("保存采集配置"), this);
@@ -191,12 +224,18 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     });
     controls();
 }
+void PrivacyPage::setDirectoryPicker(std::function<QString(QWidget *)> picker)
+{
+    m_directoryPicker = std::move(picker);
+    controls();
+}
 void PrivacyPage::controls()
 {
     const bool idle = m_pending == Pending::None;
     const bool editable = (idle || m_pending == Pending::Logs) && m_loaded;
     for (auto *check : {m_enabled, m_directory, m_behavior}) check->setEnabled(editable);
     m_directories->setEnabled(editable);
+    m_browse->setEnabled(idle && m_loaded && bool(m_directoryPicker));
     m_save->setEnabled(idle && m_loaded);
     m_load->setEnabled(idle);
     m_logs->setEnabled(idle);
