@@ -1,7 +1,8 @@
 # PIXIU 发布流水线脚手架（build/release）
 
-赛事五类交付物直接位于仓库根目录 `submission/`，由团队手工维护、逐项复核并提交。
-工程构建和测试位于本目录，不写入或改造 `submission/`。
+赛事要求提交项目报告、技术方案、视频和源码各一份，唯一口径见
+`docs/DELIVERY_PLAN.md` 第 0 节。`submission/` 保存编写材料和交付文件，由团队逐项复核。
+本目录提供工程构建、测试和文档导出工具；文档导出会更新 `submission/` 中已有的 PDF、Word 和 PPT。
 
 > 目标：把**整个 PIXIU 软件**（UKUI 前端 + FastAPI 后端 + 本地 SQLite 记忆/同步
 > 存储）打包成一个 `.deb`，让一台全新安装的麒麟 OS 机器能够 `dpkg -i` 直接安装
@@ -25,7 +26,7 @@
 make -C build/release governance
 ```
 
-该命令依据 `docs/OFFICIAL_SOURCES.sha256` 校验两份禁止修改的赛事原件，并拒绝
+该命令依据 `docs/OFFICIAL_SOURCES.sha256` 校验两份已按用户要求更新的赛事记录，并拒绝
 包含未提交修改或未跟踪文件的工作区；CI 也执行同一检查。开发中仅需单独核验原件
 时可运行 `build/release/scripts/verify-governance.sh --allow-dirty`，但该选项不得用于
 候选发布审计。版本一致性继续由 `build-deb.sh` 在任何打包前强制检查。
