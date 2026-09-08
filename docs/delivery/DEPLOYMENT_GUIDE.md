@@ -1,33 +1,27 @@
 # PIXIU 部署指南
 
-## 适用环境
+## 安装环境
 
-- 操作系统：银河麒麟桌面操作系统 V11
-- 架构：amd64
-- 软件包：`pixiu_0.1.8-1_amd64.deb`
-- 安装方式：图形软件安装器或 APT
-- 运行方式：桌面用户 systemd 服务
+本指南适用于银河麒麟桌面操作系统 V11、amd64 架构，以下命令使用 `pixiu_0.1.9-1_amd64.deb`。软件安装后在当前桌面用户的会话中运行。
 
-安装前请在“设置 → AI 模块管理”中启用系统 AI 能力，并确保系统软件源可提供 Kylin Embedding、Vector Engine 与桌面 KylinSDK 运行组件。
+安装前，在系统“设置 → AI 模块管理”中启用 AI 能力，并确认软件源提供 Kylin Embedding、Vector Engine 和桌面 KylinSDK 运行组件。
 
-## 校验安装包
+## 校验安装文件
+
+准备同一版本的软件包、摘要和签名文件，在下载目录运行：
 
 ```bash
-# 在同版 Release 六件套的下载目录运行
-sha256sum -c pixiu_0.1.8-1_amd64.deb.sha256
+sha256sum -c pixiu_0.1.9-1_amd64.deb.sha256
 ```
 
-下载入口：[v0.1.8 自动化发布](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.8)。
-摘要以同版 `.sha256` 与已签名 `.assets.json` 为准，不复用历史包的固定值。
-同时使用仓库固定发布公钥校验 Ed25519 签名；摘要匹配本身不证明发布者身份。
-`submission` 中原有安装包是历史归档，不随文档版本自动升级。
+摘要用于检查文件是否完整，发布公钥和 Ed25519 签名用于验证文件来源。签名验证步骤见同版发布说明。当前 `submission` 中保存的 0.1.7 安装包属于历史归档。
 
-## 安装
+## 安装与启动
 
-双击 `.deb` 并在图形安装器中确认，或运行：
+双击 `.deb` 文件并按系统安装器提示操作，或在终端运行：
 
 ```bash
-sudo apt install ./pixiu_0.1.8-1_amd64.deb
+sudo apt install ./pixiu_0.1.9-1_amd64.deb
 ```
 
 安装完成后，从应用菜单打开“PIXIU”，或运行：
@@ -36,9 +30,11 @@ sudo apt install ./pixiu_0.1.8-1_amd64.deb
 pixiu
 ```
 
-首次启动会为当前桌面用户创建配置与数据目录，启动 `pixiu-backend.service`，并激活包内 PIXIU MemoryProvider。严格画像会校验 KylinAgent 与 Runtime 版本。
+首次启动会创建当前用户的配置和数据目录，启动 `pixiu-backend.service`，并激活包内记忆插件。启动器会检查桌面程序和 Runtime 的版本是否兼容。
 
-## 验证服务
+## 检查服务
+
+在“设置 → 服务与能力”点击“读取服务与能力”，确认桌面与后端版本一致、数据库就绪，以及两个系统 SDK 正常运行。终端检查命令如下：
 
 ```bash
 systemctl --user status pixiu-backend.service
@@ -47,17 +43,18 @@ curl -s http://127.0.0.1:8765/health
 curl -s http://127.0.0.1:8765/capabilities
 ```
 
-验收时应确认：
+| 检查项 | 0.1.9 的预期结果 |
+|---|---|
+| 后台服务 | `active (running)`，属于当前桌面用户 |
+| 版本 | 产品 `0.1.9`、HTTP API `0.5.0`、数据库版本 `13` |
+| 健康状态 | `ready`、数据库 `ok` |
+| 系统 SDK | Embedding 与 Vector Engine 均为 `runtime=kylin` |
 
-- 服务为 `active (running)`，MainPID 属于当前桌面用户；
-- `/version` 返回产品版本 `0.1.8` 与 schema 版本；
-- `/health` 返回数据库就绪；
-- `/capabilities` 中 Embedding 与 Vector Engine 为 `runtime=kylin`；
-- `contest_ready=true`（仅当前运行时能力判断，不代表全部赛事场景验收通过）。
+能力接口中的 `contest_ready=true` 表示当前系统与 SDK 已就绪。业务功能、性能和多设备结果还需按验收方案测试。
 
-## 数据与配置
+## 配置与数据位置
 
-默认路径遵循 XDG 规范：
+软件按 XDG 约定保存当前用户的配置和数据：
 
 ```text
 $XDG_CONFIG_HOME/pixiu/pixiu.env
@@ -65,22 +62,19 @@ $XDG_DATA_HOME/pixiu/pixiu.db
 $XDG_STATE_HOME/pixiu/
 ```
 
-配置文件权限为 0600。模型密钥由 Agent Runtime 的隐藏认证入口保存，不应写入 `pixiu.env`、终端命令或交付日志。
-
-XDG 变量未设置时，分别回退到 `~/.config`、`~/.local/share`、`~/.local/state`。
-安装包不以 `/etc/pixiu/pixiu.env` 或专用 pixiu 系统账户作为当前运行配置。
+这些环境变量为空时，分别使用 `~/.config`、`~/.local/share` 和 `~/.local/state`。配置文件权限为 0600，仅供当前用户读写。模型密钥通过 Agent 设置界面交给 Runtime 保存。
 
 ## 多设备部署
 
-在每台设备安装同一版本和架构的软件包。启动后进入“同步与设备”，由一台设备生成配对请求，另一台设备核对名称与六位 PIN 后确认。
+每台设备安装与其架构匹配的同一版本软件。设备之间需要局域网互通，并允许 mDNS 发现和同步服务通信。按用户手册的令牌交换步骤建立双向信任。
 
-设备应位于可互访的局域网，并允许 mDNS 和 PIXIU 同步端口通信。配对后检查三台设备均在线、可信连接为完全图、待同步队列为零。
+三设备验证时，分别检查每台设备都信任另外两台，再完成共享写入、离线恢复和遗忘测试，记录各端结果。节点在线和队列为空只能说明当前连接及积压状态。
 
-## 更新
+## 升级
 
-在“设置 → 关于与更新”中检查新版本。客户端会依次完成资产选择、下载、SHA-256 与 Ed25519 签名校验、系统授权、安装和健康检查。
+在“设置 → 应用与升级”点击“检查更新”。软件依次下载文件、核对摘要和签名、请求系统授权、安装并检查服务。
 
-升级会备份原软件包、配置、SQLite 数据和同步身份。安装或健康检查失败时，系统恢复旧版本与数据，并在界面中显示恢复结果。
+升级会备份旧包、配置、数据库和同步身份。安装或健康检查失败时，系统尝试恢复备份并显示结果。升级成功后，保存工作并重启整个应用，让新程序生效。
 
 ## 卸载
 
@@ -88,25 +82,17 @@ XDG 变量未设置时，分别回退到 `~/.config`、`~/.local/share`、`~/.lo
 sudo apt remove pixiu
 ```
 
-普通卸载保留当前用户的配置与记忆数据，便于重新安装。需要彻底清理个人数据时，应先导出所需记忆，再按用户手册确认清理范围。
+普通卸载会保留当前用户的配置与记忆数据，重新安装后可继续使用。需要清理个人数据时，先备份所需内容，再核对要删除的数据目录。
 
 ## 故障排查
 
-### 后端未启动
+后端启动失败时，可重启服务并查看最近日志：
 
 ```bash
 systemctl --user restart pixiu-backend.service
 journalctl --user -u pixiu-backend.service -n 100 --no-pager
 ```
 
-### 双 SDK 未就绪
+SDK 未就绪时，检查系统 AI 模块、SDK 运行组件和用户会话服务。修复依赖后重新启动 PIXIU。麒麟严格配置会在必需依赖不可用时停止启动并报错。
 
-检查系统 AI 模块、SDK 运行包与用户会话服务，再重新启动 PIXIU。严格画像不会自动切换到 portable 实现。
-
-### Agent 未加载 PIXIU
-
-确认 KylinAgent Runtime 为受支持的 0.9.x 版本，并重新打开 PIXIU。启动器会幂等激活 Provider，不覆盖非 PIXIU 管理的同名插件。
-
-### 同步未收敛
-
-确认设备均在线、系统时间正确、同步未暂停，再查看节点状态与积压操作。离线恢复后反熵对账会自动继续。
+助手未加载记忆插件时，检查包内 Runtime 版本和启动错误，再重新打开 PIXIU。同步长时间没有完成时，检查设备连接、系统时间、暂停开关和待同步操作。

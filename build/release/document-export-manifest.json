@@ -3,91 +3,91 @@
   "documents": [
     {
       "source": "submission/02-技术方案及测试结果/01-用户手册/PIXIU用户手册.md",
-      "sha256": "abb7b91e0864d2a155bdc6f6c399dea7c304fdad5444b3c22a60eb59e4e90d84",
+      "sha256": "efd6ee693990318027d818bbfb1e18e5aca31a4691ff1cdb9e0b1c2e4b4de219",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/01-用户手册/PIXIU用户手册.pdf",
-          "sha256": "2f3c71a9faffaaec39b63d01e39702a3b0ce3a5ee7b61b5416590d38594792e3"
+          "sha256": "ec64afc20d20afd1ff8368987c0f012450a9ce6e5fb079c100557b08509d27b3"
         }
       ]
     },
     {
       "source": "submission/02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.md",
-      "sha256": "cd0c01acf7ca33313eed1844e1466d4f54f433b5adb4101149adb68a4dab1f85",
+      "sha256": "ba2cd954147fc34d0f165bf71fb179ecf8e2c50157d9d31d0edadd6229a5a156",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/02-效果与测试证据/PIXIU效果与测试报告.pdf",
-          "sha256": "da241f898e0c162b2acfbe9adb67780d254216ec9e227654a9d65efd423d3b6f"
+          "sha256": "99c29ae9605d5fb2a7b16769edef66580bca0728e1a8917bfccafcc6741658c0"
         }
       ]
     },
     {
       "source": "submission/02-技术方案及测试结果/03-记忆流转说明/PIXIU记忆流转说明.md",
-      "sha256": "347a2096c9209fc92e6e6555c88acbdab6e9605ca1dbe19ee5cd71a255cc97d5",
+      "sha256": "aa73fd0dd2dbaea12a2d4b9868d6841727a79217ea02f972607878a8342516ff",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/03-记忆流转说明/PIXIU记忆流转说明.pdf",
-          "sha256": "6c5ae884cc927894fa429302f7b98a2abcbaaafdc440d3e4825e5c795a738e03"
+          "sha256": "fb495e4ba2ada6dddbf754c955a9fada3a783a3521f5ec0ef72dbb864038e55d"
         }
       ]
     },
     {
       "source": "submission/02-技术方案及测试结果/04-实际应用案例/PIXIU实际应用案例.md",
-      "sha256": "55de0274ae2bdf6ee7b6768b32dfd3412b17670b353bc8b6d3acb587045f60c5",
+      "sha256": "e7c1e5d0e717dcc7be72b3bb856eeaff01718b4ea52c68e1d2396d247eab9a69",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/04-实际应用案例/PIXIU实际应用案例.pdf",
-          "sha256": "e3156a8fb9854f91d915e2e3f348c0342de133f0ca6235cb028f10bfad11f3be"
+          "sha256": "2ab71d7bec28f11a62be7c2fba3d22f7bd41ea6ebd0ac93de176d9c565e04433"
         }
       ]
     },
     {
       "source": "submission/02-技术方案及测试结果/05-V11适配报告/PIXIU银河麒麟V11适配报告.md",
-      "sha256": "09f307df12beaa75efd564ea660a193310cac1e18c93d293e085cceefa87c572",
+      "sha256": "79e45a366ab05c9a3a49138c1dfd25597af78d0d231cc5a29917ffd0027d6bf4",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/05-V11适配报告/PIXIU银河麒麟V11适配报告.pdf",
-          "sha256": "6c230483292bf7f20ab5a5e78c0ca2af62416b2d89e16ca026dd8825cddce66e"
+          "sha256": "a3d8d464ad2b846fe87ad8e031101b6b8c6051e99f6d8f7dce3d613908add25a"
         }
       ]
     },
     {
       "source": "submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.md",
-      "sha256": "d888589540739572ac57e20612e60529fda1ebb0d801ba7cc992538eb32d37b7",
+      "sha256": "1b33bd30b9a0f41d9f14b2145f1789225dff47847656c561a6c736b4231b4a7b",
       "exports": [
         {
           "path": "submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.pdf",
-          "sha256": "83ddaab4fb0a287c5cd04c12cabaaa5ba672a02d97aad54b027f54ae494b260c"
+          "sha256": "847042bd83480da4d3ba068c4e11d5175aa3c70c9633fa7b49645afaefabdb53"
         },
         {
           "path": "submission/02-技术方案及测试结果/PIXIU技术方案及测试结果.docx",
-          "sha256": "e442a498487ef67e116ae97be97a9afa5260b92d8326bc8f1c23e21b20b90010"
+          "sha256": "da025caf35652cf5548a9e2a30317a101acc0abe9f539afc9e85a802734f19b7"
         }
       ]
     },
     {
       "source": "submission/03-源代码及规范/源码规范与许可证.md",
-      "sha256": "81f68ed3b9591af7db0935148dd32c40f9fd6e68655df139a3fddc5df022d922",
+      "sha256": "f8f7affedfae2539da4b909898e155b4c3769638a520fe850de4f1125e48d321",
       "exports": [
         {
           "path": "submission/03-源代码及规范/源码规范与许可证.pdf",
-          "sha256": "3f965f172f209f3795424e53b3638101b388de3cc69b6398d03a404b9b1f9f20"
+          "sha256": "929667c60f368b9bac6a1c81108cdbc711c771f3f0197e69a72d07b0aaacce05"
         }
       ]
     },
     {
       "source": "submission/04-部署文档/PIXIU部署指南.md",
-      "sha256": "b008ef8d7abf9fb6414791c320ff5a76d99b5ed9fe325103ad65fbb26e6b84d7",
+      "sha256": "95379aaadc4f2d577bf7eccda3d391b3b49b5b94b8e8cc9cd50c743dfedce499",
       "exports": [
         {
           "path": "submission/04-部署文档/PIXIU部署指南.pdf",
-          "sha256": "e83d442757dcd8e61eaa8b0a0e4ac15468f7b1609b09a51d8e6ea0406786c677"
+          "sha256": "f59bed799b07cd2164bc176e500e600acc688aa572fd907bf3956a618f3fd52f"
         }
       ]
     }
   ],
   "presentation": {
     "path": "submission/01-项目报告/PIXIU项目报告.pptx",
-    "sha256": "1ee80b9935fc4543cbbc3e370eef519af33beea170fe292e195e2b4d90987338"
+    "sha256": "bb1fa924dce5abbc0a91d7c3ba45af5139ad628b59ae85524023a5f7cb9931f6"
   }
 }
