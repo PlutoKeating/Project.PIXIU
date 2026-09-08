@@ -27,8 +27,9 @@
 
 namespace pixiu {
 namespace {
-QString captureDetails(const QJsonObject &evidence)
+QString captureDetails(const QJsonObject &evidence, bool &valid)
 {
+    valid = false;
     const auto value = evidence.value("capture_source");
     if (value.isUndefined() || value.isNull())
         return MemoryWorkspace::tr("文件采集来源：未记录。不能根据文件名推断原始路径。");
@@ -48,6 +49,7 @@ QString captureDetails(const QJsonObject &evidence)
         || (type != "MANUAL_CONFIG" && type != "OCR"))
         return MemoryWorkspace::tr("文件采集来源数据无效，未展示路径；正文仍可阅读。");
     // JSON quoting keeps newlines and quotes in filenames distinct from UI labels.
+    valid = true;
     const QString quoted = QString::fromUtf8(QJsonDocument(QJsonArray{path}).toJson(QJsonDocument::Compact));
     return MemoryWorkspace::tr("文件采集方式：%1\n采集时路径：%2\n采集记录时间（UTC）：%3\n仅记录采集时来源，不保证原文件仍存在或内容未变化。")
         .arg(method == "text" ? MemoryWorkspace::tr("文本读取") : MemoryWorkspace::tr("图片 OCR"),
@@ -207,16 +209,24 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_answer->setObjectName(QStringLiteral("memoryAnswer"));
     m_answer->setReadOnly(true);
     m_answer->setAccessibleName(tr("记忆检索结果"));
-    layout->addWidget(m_answer, 2);
+    layout->addWidget(m_answer, 1);
     m_sources = new QListWidget(this);
     m_sources->setObjectName(QStringLiteral("memorySources"));
     m_sources->setAccessibleName(tr("结果来源，选择以阅读证据"));
-    m_sources->setMaximumHeight(100);
+    m_sources->setMaximumHeight(72);
     layout->addWidget(m_sources);
     m_detailMeta = new QLabel(this);
     m_detailMeta->setWordWrap(true);
     m_detailMeta->setTextFormat(Qt::PlainText);
     layout->addWidget(m_detailMeta);
+    m_captureStatus = new QLabel(this);
+    m_captureStatus->setObjectName(QStringLiteral("memoryCaptureStatus"));
+    m_captureStatus->setTextFormat(Qt::PlainText);
+    m_captureStatus->setWordWrap(true);
+    m_captureStatus->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    m_captureStatus->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    m_captureStatus->hide();
+    layout->addWidget(m_captureStatus);
     m_captureDetails = new QPlainTextEdit(this);
     m_captureDetails->setObjectName(QStringLiteral("memoryCaptureSource"));
     m_captureDetails->setAccessibleName(tr("文件采集来源，只读"));
@@ -232,7 +242,8 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_detail->setObjectName(QStringLiteral("memoryEvidence"));
     m_detail->setReadOnly(true);
     m_detail->setAccessibleName(tr("原始证据正文"));
-    layout->addWidget(m_detail, 2);
+    m_detail->setMinimumHeight(100);
+    layout->addWidget(m_detail, 3);
     connect(m_showRaw, &QCheckBox::toggled, this, [this](bool checked) {
         m_detail->setPlainText(checked ? m_evidenceRaw : m_evidenceText);
     });
@@ -313,8 +324,12 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
                  evidence.value(QStringLiteral("scope")).toString())
             .arg(evidence.value(QStringLiteral("quality_score")).toDouble(), 0, 'f', 2));
         m_evidenceText = readableEvidence(raw);
-        m_captureDetails->setPlainText(captureDetails(evidence));
-        m_captureDetails->show();
+        bool validCapture = false;
+        const QString captureText = captureDetails(evidence, validCapture);
+        m_captureDetails->setPlainText(validCapture ? captureText : QString());
+        m_captureDetails->setVisible(validCapture);
+        m_captureStatus->setText(validCapture ? QString() : captureText);
+        m_captureStatus->setVisible(!validCapture);
         m_evidenceRaw = QString::fromUtf8(QJsonDocument(raw).toJson(QJsonDocument::Indented));
         m_showRaw->setEnabled(!raw.isEmpty());
         m_detail->setPlainText(m_evidenceText);
@@ -373,6 +388,8 @@ void MemoryWorkspace::clearAgentSources()
 
 void MemoryWorkspace::clearEvidence()
 {
+    m_captureStatus->clear();
+    m_captureStatus->hide();
     m_captureDetails->clear();
     m_captureDetails->hide();
     m_evidenceText.clear();

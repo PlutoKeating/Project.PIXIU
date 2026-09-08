@@ -1726,11 +1726,19 @@ private slots:
         auto *search = page.findChild<QPushButton *>("memorySearch");
         auto *sources = page.findChild<QListWidget *>("memorySources");
         auto *capture = page.findChild<QPlainTextEdit *>("memoryCaptureSource");
+        auto *captureStatus = page.findChild<QLabel *>("memoryCaptureStatus");
         auto *body = page.findChild<QPlainTextEdit *>("memoryEvidence");
         QVERIFY(capture);
+        QVERIFY(captureStatus);
+        QVERIFY(captureStatus->isHidden());
+        QCOMPARE(captureStatus->textFormat(), Qt::PlainText);
+        QCOMPARE(captureStatus->sizePolicy().verticalPolicy(), QSizePolicy::Maximum);
         QVERIFY(capture->isReadOnly());
         QVERIFY(capture->isHidden());
         QVERIFY(capture->maximumHeight() <= 110);
+        page.resize(1200, 600);
+        page.show();
+        QCoreApplication::processEvents();
         query->setText("example");
         search->click();
         emit transport.queryResult(transport.sequence, {{"answer", "example"}, {"source_evidence", QJsonArray{"e1"}}});
@@ -1743,10 +1751,13 @@ private slots:
             sources->setCurrentRow(0);
             QVERIFY(capture->isHidden());
             QVERIFY(capture->toPlainText().isEmpty());
+            QVERIFY(captureStatus->isHidden());
+            QVERIFY(captureStatus->text().isEmpty());
             emit transport.evidenceDetailResult(value);
         };
         read(evidence);
         QVERIFY(!capture->isHidden());
+        QVERIFY(captureStatus->isHidden());
         QVERIFY(capture->toPlainText().contains("文本读取"));
         QVERIFY(capture->toPlainText().contains("<b>example</b>\\n.txt"));
         QVERIFY(capture->toPlainText().contains("1970-01-01T00:00:00Z"));
@@ -1762,17 +1773,31 @@ private slots:
         auto missing = evidence;
         missing.remove("capture_source");
         read(missing);
-        QVERIFY(capture->toPlainText().contains("未记录"));
+        QVERIFY(captureStatus->text().contains("未记录"));
+        QVERIFY(!captureStatus->isHidden());
+        QVERIFY(capture->isHidden());
+        QVERIFY(capture->toPlainText().isEmpty());
         missing["capture_source"] = QJsonValue::Null;
         read(missing);
-        QVERIFY(capture->toPlainText().contains("未记录"));
+        QVERIFY(captureStatus->text().contains("未记录"));
+        QCoreApplication::processEvents();
+        QVERIFY(captureStatus->height() <= captureStatus->fontMetrics().lineSpacing() * 2);
+        QVERIFY2(body->height() >= 100, qPrintable(QString("page=%1 body=%2 answer=%3 status=%4 sources=%5")
+            .arg(page.height()).arg(body->height())
+            .arg(page.findChild<QPlainTextEdit *>("memoryAnswer")->height())
+            .arg(captureStatus->height()).arg(sources->height())));
+        QVERIFY(body->height() > page.findChild<QPlainTextEdit *>("memoryAnswer")->height());
         for (const QJsonValue &bad : {QJsonValue("bad"), QJsonValue(QJsonObject{}),
                  QJsonValue(QJsonObject{{"kind", "directory"}, {"method", "text"},
                      {"path", "/private-marker"}, {"captured_at", -1}})}) {
             auto invalid = evidence;
             invalid["capture_source"] = bad;
             read(invalid);
-            QVERIFY(capture->toPlainText().contains("无效"));
+            QVERIFY(captureStatus->text().contains("无效"));
+            QVERIFY(!captureStatus->isHidden());
+            QVERIFY(capture->isHidden());
+            QVERIFY(capture->toPlainText().isEmpty());
+            QVERIFY(!captureStatus->text().contains("private-marker"));
             QVERIFY(!capture->toPlainText().contains("private-marker"));
             QCOMPARE(body->toPlainText(), QString("body only"));
         }
@@ -1788,19 +1813,24 @@ private slots:
             auto invalid = evidence;
             invalid["capture_source"] = invalidSource;
             read(invalid);
-            QVERIFY(capture->toPlainText().contains("无效"));
+            QVERIFY(captureStatus->text().contains("无效"));
+            QVERIFY(capture->isHidden());
             QCOMPARE(body->toPlainText(), QString("body only"));
         }
         auto shared = evidence;
         shared["scope"] = "shared:home";
         read(shared);
-        QVERIFY(capture->toPlainText().contains("无效"));
+        QVERIFY(captureStatus->text().contains("无效"));
         auto wrongType = evidence;
         wrongType["source_type"] = "CONVERSATION";
         read(wrongType);
-        QVERIFY(capture->toPlainText().contains("无效"));
+        QVERIFY(captureStatus->text().contains("无效"));
         read(evidence);
+        QVERIFY(captureStatus->isHidden());
+        QVERIFY(captureStatus->text().isEmpty());
         page.notifyDataChanged();
+        QVERIFY(captureStatus->isHidden());
+        QVERIFY(captureStatus->text().isEmpty());
         QVERIFY(capture->isHidden());
         QVERIFY(capture->toPlainText().isEmpty());
         emit transport.evidenceDetailResult(evidence);
