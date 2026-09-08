@@ -19,6 +19,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QTabWidget>
+#include <QSplitter>
 #include <QSet>
 #include <QRegularExpression>
 #include <QDateTime>
@@ -205,20 +206,34 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_status->setTextFormat(Qt::PlainText);
     m_status->setWordWrap(true);
     layout->addWidget(m_status);
+    auto *reader = new QSplitter(Qt::Horizontal, queryPage);
+    reader->setObjectName(QStringLiteral("memoryReaderSplit"));
+    reader->setChildrenCollapsible(false);
+    auto *results = new QWidget(reader);
+    results->setMinimumWidth(200);
+    auto *resultLayout = new QVBoxLayout(results);
+    resultLayout->setContentsMargins(0, 0, 0, 0);
+    auto *evidencePane = new QWidget(reader);
+    evidencePane->setMinimumWidth(400);
+    auto *evidenceLayout = new QVBoxLayout(evidencePane);
+    evidenceLayout->setContentsMargins(0, 0, 0, 0);
+    reader->setStretchFactor(0, 1);
+    reader->setStretchFactor(1, 2);
+    reader->setSizes({360, 760});
+    layout->addWidget(reader, 1);
     m_answer = new QPlainTextEdit(this);
     m_answer->setObjectName(QStringLiteral("memoryAnswer"));
     m_answer->setReadOnly(true);
     m_answer->setAccessibleName(tr("记忆检索结果"));
-    layout->addWidget(m_answer, 1);
+    resultLayout->addWidget(m_answer, 1);
     m_sources = new QListWidget(this);
     m_sources->setObjectName(QStringLiteral("memorySources"));
     m_sources->setAccessibleName(tr("结果来源，选择以阅读证据"));
-    m_sources->setMaximumHeight(72);
-    layout->addWidget(m_sources);
+    resultLayout->addWidget(m_sources, 2);
     m_detailMeta = new QLabel(this);
     m_detailMeta->setWordWrap(true);
     m_detailMeta->setTextFormat(Qt::PlainText);
-    layout->addWidget(m_detailMeta);
+    evidenceLayout->addWidget(m_detailMeta);
     m_captureStatus = new QLabel(this);
     m_captureStatus->setObjectName(QStringLiteral("memoryCaptureStatus"));
     m_captureStatus->setTextFormat(Qt::PlainText);
@@ -226,24 +241,24 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_captureStatus->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     m_captureStatus->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     m_captureStatus->hide();
-    layout->addWidget(m_captureStatus);
+    evidenceLayout->addWidget(m_captureStatus);
     m_captureDetails = new QPlainTextEdit(this);
     m_captureDetails->setObjectName(QStringLiteral("memoryCaptureSource"));
     m_captureDetails->setAccessibleName(tr("文件采集来源，只读"));
     m_captureDetails->setReadOnly(true);
     m_captureDetails->setMaximumHeight(110);
     m_captureDetails->hide();
-    layout->addWidget(m_captureDetails);
+    evidenceLayout->addWidget(m_captureDetails);
     m_showRaw = new QCheckBox(tr("查看原始数据（高级）"), this);
     m_showRaw->setObjectName("memoryEvidenceRaw");
     m_showRaw->setEnabled(false);
-    layout->addWidget(m_showRaw);
+    evidenceLayout->addWidget(m_showRaw);
     m_detail = new QPlainTextEdit(this);
     m_detail->setObjectName(QStringLiteral("memoryEvidence"));
     m_detail->setReadOnly(true);
     m_detail->setAccessibleName(tr("原始证据正文"));
     m_detail->setMinimumHeight(100);
-    layout->addWidget(m_detail, 3);
+    evidenceLayout->addWidget(m_detail, 1);
     connect(m_showRaw, &QCheckBox::toggled, this, [this](bool checked) {
         m_detail->setPlainText(checked ? m_evidenceRaw : m_evidenceText);
     });

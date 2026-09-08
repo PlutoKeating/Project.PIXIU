@@ -15,6 +15,7 @@
 #include "AgentEvidenceClient.h"
 #include <QTcpServer>
 #include <QTabWidget>
+#include <QSplitter>
 #include "PairingDialog.h"
 #include <QMessageBox>
 #include <QTimer>
@@ -1762,6 +1763,24 @@ private slots:
         QVERIFY(capture->toPlainText().contains("<b>example</b>\\n.txt"));
         QVERIFY(capture->toPlainText().contains("1970-01-01T00:00:00Z"));
         QCOMPARE(body->toPlainText(), QString("body only"));
+        QCoreApplication::processEvents();
+        QVERIFY2(body->height() >= 180, qPrintable(QString("valid source body height: %1").arg(body->height())));
+        QVERIFY(body->mapTo(&page, QPoint(0, body->height())).y() <= page.height());
+        QVERIFY(body->mapTo(&page, QPoint()).x()
+            > sources->mapTo(&page, QPoint(sources->width(), 0)).x());
+        QVERIFY(page.height() <= 600);
+        auto *split = page.findChild<QSplitter *>("memoryReaderSplit");
+        QVERIFY(split);
+        QCOMPARE(split->orientation(), Qt::Horizontal);
+        QVERIFY(!split->childrenCollapsible());
+        const auto normalSizes = split->sizes();
+        split->setSizes({0, 1200});
+        QCoreApplication::processEvents();
+        QVERIFY(split->widget(0)->width() >= 200);
+        split->setSizes({1200, 0});
+        QCoreApplication::processEvents();
+        QVERIFY(split->widget(1)->width() >= 400);
+        split->setSizes(normalSizes);
         page.findChild<QCheckBox *>("memoryEvidenceRaw")->setChecked(true);
         QVERIFY(!body->toPlainText().contains("/data/"));
         source["method"] = "ocr";
