@@ -84,33 +84,7 @@ class FoundationMaterializer:
             validate_shared_scope(item.scope)
             if item.id != entity_id:
                 raise ValueError("knowledge sync entity ID does not match payload")
-            available_evidence = [
-                evidence_id
-                for evidence_id in item.evidence_ids
-                if await self._evidence_repo.get(evidence_id) is not None
-            ]
-            missing_evidence = set(item.evidence_ids) - set(available_evidence)
-            if self._sync_store is not None:
-                for evidence_id in item.evidence_ids:
-                    key = _pending_evidence_key(evidence_id, item.id)
-                    if evidence_id in missing_evidence:
-                        await self._sync_store.set_meta(key, "1")
-                    else:
-                        await self._sync_store.delete_meta(key)
-            item = item.model_copy(update={"evidence_ids": available_evidence})
-            if self._conflict_service is None:
-                if self._knowledge_service is None:
-                    await self._knowledge_repo.save(item)
-                else:
-                    await self._knowledge_service.materialize(item)
-            else:
-                # A first-seen remote entity is a CRDT fast-forward, but it may
-                # still contradict another local knowledge ID semantically.
-                # Route it through the same engine policy as local writes.
-                await self._conflict_service.arbitrate(item, source="sync")
-            for evidence_id in missing_evidence:
-                if await self._evidence_repo.get(evidence_id) is not None:
-                    await self._resolve_pending_evidence(evidence_id)
+            await self._materialize_knowledge(item, source="sync")
             return
         if kind == "preference":
             preference = Preference.model_validate(record.payload)
@@ -118,3 +92,53 @@ class FoundationMaterializer:
             if preference.id != entity_id:
                 raise ValueError("preference sync entity ID does not match payload")
             await self._preference_repo.save(preference)
+
+    async def arbitrate(self, item: KnowledgeItem, *, source: str = "sync"):
+        """Arbitrate distinct knowledge; defer same-ID branches to CRDT selection.
+
+        The engine arbitrator excludes same-ID items from semantic comparison,
+        then saves the incoming item. Doing that before CRDT selection would
+        overwrite a winning local value or revive a forgotten item even when
+        the incoming operation loses. Only __call__ projects that winner.
+        """
+        if await self._knowledge_repo.get(item.id) is not None:
+            return None
+        return await self._materialize_knowledge(item, source=source)
+
+    async def _materialize_knowledge(self, item: KnowledgeItem, *, source: str):
+        """Materialize semantic decisions with the same late-evidence handling.
+
+        Mainline calls this adapter after batch signature validation. Keeping
+        citation preparation here avoids premature foreign-key writes through
+        the engine arbitrator when knowledge arrives before its evidence.
+        """
+        validate_shared_scope(item.scope)
+        available_evidence = [
+            evidence_id
+            for evidence_id in item.evidence_ids
+            if await self._evidence_repo.get(evidence_id) is not None
+        ]
+        missing_evidence = set(item.evidence_ids) - set(available_evidence)
+        if self._sync_store is not None:
+            for evidence_id in item.evidence_ids:
+                key = _pending_evidence_key(evidence_id, item.id)
+                if evidence_id in missing_evidence:
+                    await self._sync_store.set_meta(key, "1")
+                else:
+                    await self._sync_store.delete_meta(key)
+        item = item.model_copy(update={"evidence_ids": available_evidence})
+        resolution = None
+        if self._conflict_service is None:
+            if self._knowledge_service is None:
+                await self._knowledge_repo.save(item)
+            else:
+                await self._knowledge_service.materialize(item)
+        else:
+            # A first-seen remote entity is a CRDT fast-forward, but it may
+            # still contradict another local knowledge ID semantically.
+            # Route it through the same engine policy as local writes.
+            resolution = await self._conflict_service.arbitrate(item, source=source)
+        for evidence_id in missing_evidence:
+            if await self._evidence_repo.get(evidence_id) is not None:
+                await self._resolve_pending_evidence(evidence_id)
+        return resolution

@@ -1,4 +1,5 @@
 # Module C Phase 3 — Ed25519 identity and signing
+# Mainline/materializer ordering fixes add no dependency or schema migration.
 cryptography>=42.0.0
 # Browser handlers use the public keyword contract (zeroconf, service_type,
 # name, state_change); regression coverage must not call them positionally only.

@@ -315,20 +315,21 @@ async def get_sync_service(
         conflict_repo=SqliteConflictRepo(db),
         knowledge_writer=knowledge_service.materialize,
     )
+    materializer = FoundationMaterializer(
+        evidence_repo=SqliteEvidenceRepo(db),
+        knowledge_repo=SqliteKnowledgeRepo(db),
+        preference_repo=SqlitePreferenceRepo(db),
+        conflict_service=conflict_service,
+        knowledge_service=knowledge_service,
+        sync_store=store,
+    )
     return SyncService(
         store,
         device_name=settings.sync_device_name,
         domain=settings.sync_domain,
         key_passphrase=settings.sync_key_passphrase,
-        materializer=FoundationMaterializer(
-            evidence_repo=SqliteEvidenceRepo(db),
-            knowledge_repo=SqliteKnowledgeRepo(db),
-            preference_repo=SqlitePreferenceRepo(db),
-            conflict_service=conflict_service,
-            knowledge_service=knowledge_service,
-            sync_store=store,
-        ),
-        mainline=Mainline(store, conflict_service),
+        materializer=materializer,
+        mainline=Mainline(store, materializer),
         # SN-4：KV 未写时 enabled 回 env 默认（di 注入 settings 值，
         # 使测试/生产各自的 settings 替身生效）。
         runtime_enabled_default=settings.sync_network_enabled,

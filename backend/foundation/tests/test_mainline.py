@@ -22,9 +22,11 @@ import pytest_asyncio
 from backend.foundation.core.models import (
     ConflictRecord,
     ConflictResolution,
+    Evidence,
     KnowledgeItem,
     KnowledgeKind,
     KnowledgeStatus,
+    SourceType,
     SyncOp,
 )
 from backend.foundation.storage.repository import (
@@ -488,6 +490,7 @@ async def _receiving_node(root: Path, filename: str, name: str):
         knowledge_repo=knowledge_repo,
         preference_repo=SqlitePreferenceRepo(db),
         knowledge_service=knowledge_service,
+        conflict_service=conflict_service,
         sync_store=store,
     )
     svc = SyncService(
@@ -496,9 +499,72 @@ async def _receiving_node(root: Path, filename: str, name: str):
         domain=DOMAIN,
         key_passphrase=PASSPHRASE,
         materializer=materializer,
-        mainline=Mainline(store, conflict_service),
+        mainline=Mainline(store, materializer),
     )
     return svc, store, db
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("forgotten", [False, True])
+async def test_losing_concurrent_branch_does_not_overwrite_projection(tmp_path, forgotten):
+    sender, _, db_a = await _sender_node(tmp_path, "loser-a.db", "发送端")
+    receiver, _, db_b = await _receiving_node(tmp_path, "loser-b.db", "接收端")
+    repo = SqliteKnowledgeRepo(db_b)
+    try:
+        await _pair(sender, receiver)
+        value = _knowledge_value("loser", "较新的本地版本")
+        value["updated_at"] = NOW + 2
+        entity = "knowledge:" + value["id"]
+        await repo.save(KnowledgeItem.model_validate(value))
+        await receiver.record_local(entity, value, DOMAIN, now=NOW + 2)
+        if forgotten:
+            await repo.update_status(value["id"], KnowledgeStatus.FORGOTTEN)
+            await receiver.record_local(entity, {}, DOMAIN, deleted=True, now=NOW + 3)
+        old_value = {**value, "title": "过期远端版本", "updated_at": NOW + 1}
+        incoming = await sender.record_local(entity, old_value, DOMAIN, now=NOW + 1)
+        assert await receiver.receive_ops([incoming]) == 1
+        stored = await repo.get(value["id"])
+        assert stored.title == value["title"]
+        assert stored.status == (KnowledgeStatus.FORGOTTEN if forgotten else KnowledgeStatus.ACTIVE)
+    finally:
+        await db_a.close()
+        await db_b.close()
+
+
+def test_deleted_knowledge_has_no_semantic_candidate():
+    op = _op("delete", "knowledge:" + _knw("deleted"), {_dev("a"): 1}, value={})
+    op.payload["deleted"] = True
+    assert default_knowledge_from_op(op) is None
+
+
+@pytest.mark.asyncio
+async def test_concurrent_knowledge_waits_for_late_evidence(tmp_path):
+    sender, _, db_a = await _sender_node(tmp_path, "late-a.db", "发送端")
+    receiver, store_b, db_b = await _receiving_node(tmp_path, "late-b.db", "接收端")
+    repo = SqliteKnowledgeRepo(db_b)
+    try:
+        await _pair(sender, receiver)
+        value = _knowledge_value("latefork", "共享节能约定")
+        entity = "knowledge:" + value["id"]
+        await repo.save(KnowledgeItem.model_validate(value))
+        await receiver.record_local(entity, value, DOMAIN, now=NOW)
+        evidence = Evidence(id="evd_" + "E" * 26,
+                            source_type=SourceType.MANUAL_CONFIG,
+                            raw={"title": "新增约定来源"}, quality_score=1.0,
+                            sensitivity=0, scope=DOMAIN, created_at=NOW + 1)
+        value["evidence_ids"] = [evidence.id]
+        incoming = await sender.record_local(entity, value, DOMAIN, now=NOW + 1)
+        assert await receiver.receive_ops([incoming]) == 1
+        assert (await repo.get(value["id"])).evidence_ids == []
+        evidence_op = await sender.record_local(
+            "evidence:" + evidence.id, evidence.model_dump(mode="json"),
+            DOMAIN, now=NOW + 1)
+        assert await receiver.receive_ops([evidence_op]) == 1
+        assert (await repo.get(value["id"])).evidence_ids == [evidence.id]
+        assert await store_b.list_meta_keys("sync_pending_evidence:") == []
+    finally:
+        await db_a.close()
+        await db_b.close()
 
 
 @pytest.mark.asyncio

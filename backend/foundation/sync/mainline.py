@@ -47,6 +47,8 @@ def default_knowledge_from_op(op: SyncOp) -> KnowledgeItem | None:
     LWW 确定性收敛，返回 None 表示无需仲裁。空 entity id（``knowledge:``）
     同样返回 None——materializer 对空 id 直接 return，仲裁侧保持一致语义。
     """
+    if op.payload.get("deleted", False):
+        return None
     kind, separator, entity_id = op.entity.partition(":")
     if not separator or kind != "knowledge" or not entity_id:
         return None

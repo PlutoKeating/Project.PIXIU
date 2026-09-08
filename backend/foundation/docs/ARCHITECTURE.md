@@ -44,6 +44,11 @@ Zeroconf 的 `zeroconf/service_type/name/state_change` 关键字参数。
 `discover` 与 `list_advertisements` 已统一遵守该约定；回归同时覆盖两条入口，
 避免只用位置参数调用的测试替身掩盖实际局域网异常。没有协议或数据库变更。
 
+同日三端重连验证进一步发现主线提前仲裁会绕过证据补齐，并覆盖尚未胜出的同 ID
+分支。生产 DI 现把主线仲裁接到 `FoundationMaterializer.arbitrate`：同 ID 知识
+等待 CRDT 选胜后才物化；不同 ID 的语义仲裁仍调用引擎，但共用迟到证据补齐路径。
+删除标记不构造语义知识候选。该修复不修改 Module B 或同步线协议。
+
 ### 1.1 core/ —— 共享契约
 
 `validate_scope` 对完整字符串校验 `user:`/`shared:` 加非空 ASCII 字母、数字、
