@@ -46,6 +46,7 @@ protected:
     // Platform seam: SDK registration and the session service are distinct.
     virtual bool kylinServiceReady() const;
     virtual bool startKylinService();
+    virtual bool clearStaleKylinRegistration();
     void updateKylinServiceState();
 #endif
 

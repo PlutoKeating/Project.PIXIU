@@ -28,10 +28,17 @@ public:
     using ShortcutManager::ShortcutManager;
     bool ready = true, canStart = true;
     int starts = 0;
+    int recoveries = 0;
+    bool canRecover = false, conflictRemains = false;
     void serviceChanged(bool value) { ready = value; updateKylinServiceState(); }
 protected:
     bool kylinServiceReady() const override { return ready; }
     bool startKylinService() override { ++starts; return canStart; }
+    bool clearStaleKylinRegistration() override {
+        ++recoveries;
+        if (canRecover && !conflictRemains) createResult = KYSDK_SUCCESS;
+        return canRecover;
+    }
 };
 
 class TestShortcutKylin : public QObject
@@ -142,6 +149,48 @@ private slots:
         QVERIFY(manager.registerToggleShortcut());
         QVERIFY(manager.isGlobal());
         QCOMPARE(manager.starts, 0);
+    }
+    void recoversOnlyOwnedStaleCollisionOnce()
+    {
+        QWidget host;
+        Probe manager(&host);
+        createResult = updateResult = KYSDK_SHORTCUT_EXISTED;
+        manager.canRecover = true;
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(manager.isGlobal());
+        QCOMPARE(manager.recoveries, 1);
+        QCOMPARE(calls.count(QStringLiteral("create")), 2);
+    }
+    void remainingConflictDoesNotLoopOrClaimGlobal()
+    {
+        QWidget host;
+        Probe manager(&host);
+        createResult = updateResult = KYSDK_SHORTCUT_EXISTED;
+        manager.canRecover = manager.conflictRemains = true;
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(!manager.isGlobal());
+        QCOMPARE(manager.recoveries, 1);
+        QCOMPARE(calls.count(QStringLiteral("create")), 2);
+        QCOMPARE(manager.starts, 0);
+    }
+    void unrelatedSdkErrorDoesNotClearRegistrations()
+    {
+        QWidget host;
+        Probe manager(&host);
+        createResult = -2;
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(!manager.isGlobal());
+        QCOMPARE(manager.recoveries, 0);
+    }
+    void unsuccessfulCleanupDoesNotRetryRegistration()
+    {
+        QWidget host;
+        Probe manager(&host);
+        createResult = updateResult = KYSDK_SHORTCUT_EXISTED;
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(!manager.isGlobal());
+        QCOMPARE(manager.recoveries, 1);
+        QCOMPARE(calls.count(QStringLiteral("create")), 1);
     }
 };
 QTEST_MAIN(TestShortcutKylin)

@@ -10,6 +10,7 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusServiceWatcher>
+#include <QDBusMessage>
 #include <QFileInfo>
 #include <QProcess>
 #include <QTimer>
@@ -149,6 +150,25 @@ void ShortcutManager::updateKylinServiceState()
     setGlobalAvailable(ready);
 }
 
+bool ShortcutManager::clearStaleKylinRegistration()
+{
+    // V11 can retain compositor registrations after the SDK helper exits, even
+    // when its settings entry has been deleted. Only unregister PIXIU's names
+    // in the SDK component; never cleanUp the component or steal another key.
+    bool removed = false;
+    for (const QString &name : {QString::fromLatin1(kToggleShortcutName),
+                               QStringLiteral("pixiu-frontend.toggle-chat")}) {
+        auto request = QDBusMessage::createMethodCall(QStringLiteral("org.kde.kglobalaccel"),
+            QStringLiteral("/kglobalaccel"), QStringLiteral("org.kde.KGlobalAccel"),
+            QStringLiteral("unregister"));
+        request << QStringLiteral("kysdk-keybindings") << name;
+        const auto reply = QDBusConnection::sessionBus().call(request, QDBus::Block, 250);
+        if (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().size() == 1
+            && reply.arguments().first().toBool()) removed = true;
+    }
+    return removed;
+}
+
 bool ShortcutManager::registerKylinGlobalShortcut()
 {
     // Upgrade migration: this name belonged exclusively to the removed desktop
@@ -185,6 +205,16 @@ bool ShortcutManager::registerKylinGlobalShortcut()
         }
     }
 
+    if (result == KYSDK_SHORTCUT_EXISTED && clearStaleKylinRegistration()) {
+        result = kdk_shortcut_create_global_shortcut(name.constData(), key.constData(), action.constData());
+        if (result == KYSDK_SHORTCUT_EXISTED)
+            result = kdk_shortcut_set_global_shortcut(name.constData(), key.constData(), action.constData());
+        if (result == KYSDK_SUCCESS) {
+            m_globalRegistered = true;
+            qCInfo(lcShortcut) << "recovered stale PIXIU shortcut registration";
+            return true;
+        }
+    }
     qCWarning(lcShortcut) << "failed to register Kylin global shortcut" << key.constData()
                           << "error code:" << result;
     return false;
