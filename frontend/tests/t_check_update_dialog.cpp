@@ -17,6 +17,7 @@
 
 #include "app/UpgradeController.h"
 #include "widgets/CheckUpdateDialog.h"
+#include "IsolatedUpgradeTest.h"
 
 // ─── 本地假 HTTP server（TCP 桩），仿 t_upgrade_controller / t_http_backend ───
 // 以真实 QNetworkAccessManager 走全网络栈（不经 backend transport），路由按
@@ -620,5 +621,8 @@ void TestCheckUpdateDialog::cancelThenRedownloadResetsProgress()
     QTRY_COMPARE(controller.state(), UpgradeController::State::Cancelled);
 }
 
-QTEST_MAIN(TestCheckUpdateDialog)
+int main(int argc, char **argv)
+{
+    return runIsolatedUpgradeTest<TestCheckUpdateDialog>(argc, argv);
+}
 #include "t_check_update_dialog.moc"

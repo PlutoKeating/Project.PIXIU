@@ -111,4 +111,13 @@ if(PIXIU_MANAGEMENT_TESTS)
             ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
             RESOURCE_LOCK pixiu_upgrade_temp_files)
     endforeach()
+    foreach(isolation_test IN ITEMS upgrade_controller check_update_dialog)
+        target_sources(t_${isolation_test} PRIVATE ../tests/IsolatedUpgradeTest.h)
+    endforeach()
+    add_test(NAME upgrade_controller_temp_isolation COMMAND bash
+        "${CMAKE_CURRENT_SOURCE_DIR}/../tests/test-upgrade-temp-isolation.sh"
+        $<TARGET_FILE:t_upgrade_controller> initialStateIsIdle)
+    add_test(NAME check_update_dialog_temp_isolation COMMAND bash
+        "${CMAKE_CURRENT_SOURCE_DIR}/../tests/test-upgrade-temp-isolation.sh"
+        $<TARGET_FILE:t_check_update_dialog> upToDateDisablesUpgradeAndShowsLatest)
 endif()

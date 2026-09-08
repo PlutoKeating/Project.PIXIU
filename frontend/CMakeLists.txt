@@ -430,6 +430,16 @@ if(BUILD_TESTING)
     add_test(NAME i18n COMMAND t_i18n)
 
 
+    foreach(isolation_test IN ITEMS upgrade_controller check_update_dialog)
+        target_sources(t_${isolation_test} PRIVATE tests/IsolatedUpgradeTest.h)
+    endforeach()
+    add_test(NAME upgrade_controller_temp_isolation COMMAND bash
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/test-upgrade-temp-isolation.sh"
+        $<TARGET_FILE:t_upgrade_controller> initialStateIsIdle)
+    add_test(NAME check_update_dialog_temp_isolation COMMAND bash
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/test-upgrade-temp-isolation.sh"
+        $<TARGET_FILE:t_check_update_dialog> upToDateDisablesUpgradeAndShowsLatest)
+
     set_tests_properties(websocket_client floating_ball notify_service
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window

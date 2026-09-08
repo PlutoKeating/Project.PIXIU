@@ -352,6 +352,9 @@ SettingsWorkspace 复用宿主模型配置入口、升级状态机和 InfoDialog
 - 管理 HTTP 地址使用 `PIXIU_BACKEND_URL`，正式启动由 profile 引导器对齐；直接启动
   宿主不等于完成该配置检查。没有前端 D-Bus 自动回退。
 - 测试桩只验证契约或控件，不能用于最终截图、真实 SDK、安装或多设备验收。
+- 升级控制器和升级页测试通过 IsolatedUpgradeTest 在 Qt 初始化前分配进程私有
+  临时目录，失败即停止；不得清理调用者或其他进程的安装包。根回归与正式管理
+  CMake 都执行 temp_isolation 哨兵检查，不能只依赖同一个 CTest 的资源锁。
 
 ## 6. 参考文档
 

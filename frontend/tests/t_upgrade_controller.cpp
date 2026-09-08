@@ -14,6 +14,7 @@
 #include <functional>
 
 #include "app/UpgradeController.h"
+#include "IsolatedUpgradeTest.h"
 
 // ─── 本地假 HTTP server（TCP 桩），仿 t_http_backend / t_contract_fixtures ───
 // 以真实 QNetworkAccessManager 走全网络栈（不经 backend transport），路由按
@@ -912,5 +913,8 @@ void TestUpgradeController::oversizedChecksumIsRejected()
     QVERIFY(tempDebFiles().isEmpty());
 }
 
-QTEST_MAIN(TestUpgradeController)
+int main(int argc, char **argv)
+{
+    return runIsolatedUpgradeTest<TestUpgradeController>(argc, argv);
+}
 #include "t_upgrade_controller.moc"

@@ -266,6 +266,9 @@ MemoryScopes 保留本机采集域、家庭域及有效 Agent 域；MemoryScopeC
 凭证流程，未移植旧 EventRouter 的执行语义。PixiuApp、旧 SingleInstanceGuard、
 TrayIcon、EvidenceDetailDialog 及两项旧应用装配测试已删除；屏外恢复和退出
 保护由 HostTray/HostCloseGuard 测试覆盖，证据在 MemoryWorkspace 同页阅读。
+升级控制器和升级页回归使用 IsolatedUpgradeTest，在 Qt 初始化前创建并验证
+进程私有临时目录；目录持有期覆盖应用及控制器生命周期。根与管理测试入口均
+执行外层安装包哨兵检查，避免测试清理干扰其他进程；不改变生产升级实现。
 旧 SettingsDialog 及专属翻译、测试也已删除；有效信息页和升级页测试拆为
 product_dialogs，直接测试正式管理库保留的 InfoDialog/CheckUpdateDialog。
 快捷键由正式设置管理，采集由 PrivacyPage 管理；完整语言资源与切换仍待实现。
