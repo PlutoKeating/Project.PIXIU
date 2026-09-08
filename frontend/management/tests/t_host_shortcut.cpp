@@ -1,8 +1,10 @@
 #include "HostTray.h"
+#include "HostWindowPin.h"
 #include "SettingsWorkspace.h"
 #include "HostCloseGuard.h"
 #include "app/ShortcutManager.h"
 #include <QAction>
+#include <QCheckBox>
 #include <QKeySequenceEdit>
 #include <QLabel>
 #include <QPushButton>
@@ -66,6 +68,25 @@ private slots:
         QWidget restarted;
         pixiu::HostTray restored(&restarted);
         QCOMPARE(restarted.findChild<ShortcutManager *>()->currentSequence(), QKeySequence("Ctrl+Alt+K"));
+    }
+    void settingsPinUsesTheSameHostWithoutSavingConfiguration()
+    {
+        QWidget host;
+        pixiu::HostTray tray(&host);
+        pixiu::SettingsWorkspace settings(&host);
+        auto *pin = settings.findChild<QCheckBox *>("hostWindowPin");
+        auto *status = settings.findChild<QLabel *>("hostWindowPinStatus");
+        QVERIFY(pin); QVERIFY(status);
+        QCOMPARE(host.findChildren<pixiu::HostWindowPin *>().size(), 1);
+        const auto keys = QSettings().allKeys();
+        pin->click();
+        QVERIFY(host.windowFlags().testFlag(Qt::WindowStaysOnTopHint));
+        QVERIFY(pin->isChecked());
+        QVERIFY(status->text().contains(QStringLiteral("Qt 兼容路径")));
+        pin->click();
+        QVERIFY(!host.windowFlags().testFlag(Qt::WindowStaysOnTopHint));
+        QCOMPARE(QSettings().allKeys(), keys);
+        QVERIFY(!settings.hasUnsavedChanges());
     }
     void invalidInputKeepsBindingAndSavedValue()
     {

@@ -91,6 +91,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/HostCloseGuard.h management/HostCloseGuard.cpp \
     src/app/ProductInformation.h src/widgets/InfoDialog.h src/widgets/InfoDialog.cpp \
     management/HostTray.h management/HostTray.cpp \
+    management/HostWindowPin.h management/HostWindowPin.cpp \
     src/app/ShortcutManager.h src/app/ShortcutManager.cpp \
     src/services/NotifyService.h src/services/NotifyService.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \

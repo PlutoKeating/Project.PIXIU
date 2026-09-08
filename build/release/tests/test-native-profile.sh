@@ -52,12 +52,18 @@ case "${APT_BUILD_DEPS}" in
     *) echo "native build dependencies missing" >&2; exit 1 ;;
 esac
 for package in libgsettings-qt-dev libkysdk-shortcut-dev \
-        libkysdk-notification-dev libkysdk-qtwidgets-dev; do
+        libkysdk-notification-dev libkysdk-qtwidgets-dev \
+        libkysdk-waylandhelper-dev libkf5windowsystem-dev; do
     case " ${APT_BUILD_DEPS} " in
         *" ${package} "*) ;;
         *) echo "native desktop SDK build dependency missing: ${package}" >&2; exit 1 ;;
     esac
 done
+case " ${APT_RUNTIME_DEPS} " in
+    *" libkysdk-waylandhelper "*) ;;
+    *) echo "native window manager runtime dependency missing" >&2; exit 1 ;;
+esac
+printf '%s\n' "${PIXIU_DEBIAN_DEPENDS}" | grep -qF 'libkysdk-waylandhelper'
 grep -q 'PIXIU_VECTOR_STORE: portable' "${ROOT}/.github/workflows/ci.yml"
 grep -q 'PIXIU_PROFILE: generic-ubuntu' "${ROOT}/.github/workflows/ci.yml"
 grep -q 'uses: ./.github/workflows/ci.yml' "${ROOT}/.github/workflows/release.yml"

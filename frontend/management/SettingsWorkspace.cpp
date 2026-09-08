@@ -3,10 +3,13 @@
 #include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
 #include "HostTray.h"
+#include "HostWindowPin.h"
 #include "widgets/CheckUpdateDialog.h"
 #include "widgets/InfoDialog.h"
 #include "app/ProductInformation.h"
 #include <QCoreApplication>
+#include <QCheckBox>
+#include <QSignalBlocker>
 #include <QLabel>
 #include <QKeySequenceEdit>
 #include <QHBoxLayout>
@@ -63,6 +66,29 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
         });
     } else {
         shortcutStatus->setText(tr("宿主快捷键服务不可用，未修改配置。"));
+    }
+    auto *pin = new QCheckBox(tr("主窗口置顶（不更改启动配置）"), general);
+    pin->setObjectName(QStringLiteral("hostWindowPin"));
+    auto *pinStatus = new QLabel(general);
+    pinStatus->setObjectName(QStringLiteral("hostWindowPinStatus"));
+    pinStatus->setWordWrap(true);
+    pinStatus->setTextFormat(Qt::PlainText);
+    generalLayout->addWidget(pin);
+    generalLayout->addWidget(pinStatus);
+    auto *windowPin = window()->findChild<HostWindowPin *>(QString(), Qt::FindDirectChildrenOnly);
+    if (windowPin) {
+        auto updatePin = [windowPin, pin, pinStatus]() {
+            const QSignalBlocker blocker(pin);
+            pin->setEnabled(windowPin->available() && !windowPin->pending());
+            pin->setChecked(windowPin->available() && windowPin->pinned());
+            pinStatus->setText(windowPin->status());
+        };
+        connect(windowPin, &HostWindowPin::changed, pin, updatePin);
+        connect(pin, &QCheckBox::toggled, windowPin, &HostWindowPin::setPinned);
+        updatePin();
+    } else {
+        pin->setEnabled(false);
+        pinStatus->setText(tr("宿主窗口服务不可用，未更改置顶状态。"));
     }
     auto *version = new QLabel(tr("PIXIU %1").arg(QStringLiteral(PIXIU_VERSION)), general);
     version->setObjectName(QStringLiteral("productVersion"));

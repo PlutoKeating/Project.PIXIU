@@ -89,7 +89,8 @@ ctest --test-dir <build> --output-on-failure
 
 依赖以管理 CMake、`build/release/profiles/` 和后端 requirements 为准。Qt Widgets、
 Network、WebSockets 与 libqrencode 是管理库现有依赖；ON 另使用 Qt DBus 和画像
-声明的快捷键/通知 SDK。后端有可测试的 portable 路径，不能再写成无 SDK 必然不可用。
+声明的快捷键/通知 SDK，以及 kysdk-waylandhelper 和 KF5WindowSystem 开发接口。
+窗口管理依赖仅在 ON 路径要求；后端有可测试的 portable 路径，不能再写成无 SDK 必然不可用。
 正式 ON 验证还须准备麒麟 embedding/Vector Engine 绑定与真实桌面会话。
 
 ## 1. 模块概述
@@ -106,7 +107,9 @@ PixiuApp、FloatingBall、ChatWindow 及输入/消息展示链和专属测试已
 升级页的检查拆入 product_dialogs，并在正式管理库和根回归入口执行。
 快捷键已迁入正式设置；完整语言支持继续列为待办，不保留无实际资源的语言控件。
 旧欢迎页的 UserIdentity 姓名读取器及专属测试已删除，无调用者的图钉绘制也已清退；
-其他图标和正式升级公共工具保留，置顶能力按统一计划 U11 核对。
+其他图标和正式升级公共工具保留。正式设置新增同一主窗口的置顶控制，ON 等待
+窗口管理器确认且不自动重试 toggle；OFF 明示 Qt 兼容请求，不修改启动配置。
+原生整包交互仍按 U11 验收，不以替身测试或真实头文件编译替代桌面操作。
 
 ## 2. 源文件清单与实现优先级
 

@@ -11,6 +11,7 @@ endif()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1)
 add_library(pixiu-management STATIC
     HostTray.h HostTray.cpp
+    HostWindowPin.h HostWindowPin.cpp
     ../src/app/ShortcutManager.h ../src/app/ShortcutManager.cpp
     ../src/services/NotifyService.h ../src/services/NotifyService.cpp
     BackendEventStatus.h BackendEventStatus.cpp
@@ -49,15 +50,33 @@ if(PIXIU_HAVE_KYSDK)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(PIXIU_SHORTCUT REQUIRED IMPORTED_TARGET kysdk-shortcut)
     pkg_check_modules(PIXIU_NOTIFICATION REQUIRED IMPORTED_TARGET kysdk-notification)
+    pkg_check_modules(PIXIU_WINDOWMANAGER REQUIRED IMPORTED_TARGET kysdk-waylandhelper)
+    find_package(KF5WindowSystem REQUIRED)
     target_compile_definitions(pixiu-management PRIVATE PIXIU_HAVE_KYSDK=1)
     target_link_libraries(pixiu-management PRIVATE PkgConfig::PIXIU_SHORTCUT)
     target_link_libraries(pixiu-management PRIVATE PkgConfig::PIXIU_NOTIFICATION)
+    target_link_libraries(pixiu-management PRIVATE PkgConfig::PIXIU_WINDOWMANAGER KF5::WindowSystem)
     target_link_libraries(pixiu-management PRIVATE Qt5::DBus)
 endif()
 option(PIXIU_MANAGEMENT_TESTS "Build embedded management tests" OFF)
 if(PIXIU_MANAGEMENT_TESTS)
     enable_testing()
     find_package(Qt5 REQUIRED COMPONENTS Test)
+    foreach(pin_variant IN ITEMS qt kylin_fixture)
+        add_executable(t_host_window_pin_${pin_variant} tests/t_host_window_pin.cpp
+            HostWindowPin.h HostWindowPin.cpp)
+        target_include_directories(t_host_window_pin_${pin_variant} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+        target_link_libraries(t_host_window_pin_${pin_variant} PRIVATE Qt5::Widgets Qt5::Test)
+        if(pin_variant STREQUAL "kylin_fixture")
+            target_sources(t_host_window_pin_${pin_variant} PRIVATE tests/fixtures/windowmanager/windowmanager.h)
+            target_include_directories(t_host_window_pin_${pin_variant} PRIVATE tests/fixtures)
+            target_compile_definitions(t_host_window_pin_${pin_variant} PRIVATE PIXIU_HAVE_KYSDK=1)
+        else()
+            target_compile_options(t_host_window_pin_${pin_variant} PRIVATE -UPIXIU_HAVE_KYSDK)
+        endif()
+        add_test(NAME host_window_pin_${pin_variant} COMMAND t_host_window_pin_${pin_variant})
+        set_tests_properties(host_window_pin_${pin_variant} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    endforeach()
     # Deterministic fallback tests must not register desktop-global bindings.
     add_executable(t_shortcut_manager ../tests/t_shortcut_manager.cpp ../src/app/ShortcutManager.cpp)
     target_include_directories(t_shortcut_manager PRIVATE ../src)

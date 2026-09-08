@@ -1,4 +1,5 @@
 #include "HostTray.h"
+#include "HostWindowPin.h"
 #include "app/ShortcutManager.h"
 #include "services/NotifyService.h"
 #include <QAction>
@@ -31,6 +32,7 @@ bool validShortcut(const QKeySequence &sequence)
 }
 HostTray::HostTray(QWidget *host) : QObject(host)
 {
+    new HostWindowPin(host);
     auto *tray = new QSystemTrayIcon(host->windowIcon(), this);
     m_notify = new NotifyService(this);
     m_notify->setTrayIcon(tray);
