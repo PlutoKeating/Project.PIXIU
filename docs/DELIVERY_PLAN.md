@@ -354,7 +354,7 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 |----------|------------|------------|------|
 | 项目报告 | 1 份，ppt；目录示例 `项目报告.pptx` | `delivery/PRESENTATION_AND_VIDEO.md` | 已整理 12 页并逐页观察；同版量化证据仍待补 |
 | 技术方案 | 1 份，word、pdf；目录示例 `技术方案.doc` | `delivery/TECHNICAL_SOLUTION.md` 及同目录测试、用户手册、部署、流转、案例和适配内容 | 已合并八篇内容；实际结果与限制如实列出 |
-| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 第四版中文初剪已生成，9 分 14 秒、约 55 MB；真实跨端工具复用已入片，工作台六帧拆分比对一致；原生 4K 素材已补采，高清替换、功能镜头精修、终检及正式 ZIP 待完成 |
+| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 第五版中文初剪已生成，9 分 14 秒、约 55.1 MB；共享聚焦动效、跨端4K与同源账单证据已入片，整片解码通过；新版工作台一帧字幕/标记差异待修，其他功能精修、终检及正式 ZIP 待完成 |
 | 源代码 | 1 份，完整源代码及必要技术规范要素 | `delivery/SOURCE_AND_LICENSES.md` 与项目源码 | 按当前源码及四个固定上游生成，逐文件核对 |
 
 提交作品匿名；团队信息只用于平台信息核对与两层目录命名。内部保留版本和审核追踪。
