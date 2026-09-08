@@ -1,0 +1,125 @@
+{
+  "captured_at": "2026-09-08T17:22:19.257615+00:00",
+  "environment": "同一物理宿主的三台独立麒麟 V11 虚拟机，独立数据与身份，真实 mDNS 和 mTLS 网络",
+  "build": "0.1.9 安装版本加 discovery.py 回调修复；未重新打包，不是最终发布证据",
+  "request": {
+    "text": "家庭节能约定",
+    "scope": "shared:home"
+  },
+  "results": [
+    {
+      "device": "书房工作站",
+      "health": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "product_version": "0.1.9",
+          "component": "pixiu-memory-backend",
+          "database": "ok",
+          "schema_version": 13
+        }
+      },
+      "sync": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 4,
+          "enabled": true,
+          "paused": false
+        }
+      },
+      "query": {
+        "status": 200,
+        "body": {
+          "answer": "家庭节能约定",
+          "source_evidence": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR"
+          ],
+          "source_knowledge": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "confidence": 1.0,
+          "latency_ms": 29
+        }
+      }
+    },
+    {
+      "device": "随身笔记本",
+      "health": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "product_version": "0.1.9",
+          "component": "pixiu-memory-backend",
+          "database": "ok",
+          "schema_version": 13
+        }
+      },
+      "sync": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 4,
+          "enabled": true,
+          "paused": false
+        }
+      },
+      "query": {
+        "status": 200,
+        "body": {
+          "answer": "家庭节能约定",
+          "source_evidence": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR"
+          ],
+          "source_knowledge": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "confidence": 1.0,
+          "latency_ms": 31
+        }
+      }
+    },
+    {
+      "device": "客厅一体机",
+      "health": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "product_version": "0.1.9",
+          "component": "pixiu-memory-backend",
+          "database": "ok",
+          "schema_version": 13
+        }
+      },
+      "sync": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 4,
+          "enabled": true,
+          "paused": false
+        }
+      },
+      "query": {
+        "status": 200,
+        "body": {
+          "answer": "家庭节能约定",
+          "source_evidence": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR"
+          ],
+          "source_knowledge": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "confidence": 1.0,
+          "latency_ms": 30
+        }
+      }
+    }
+  ]
+}

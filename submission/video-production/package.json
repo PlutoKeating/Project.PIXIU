@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:timeline": "python3 scripts/prepare_timeline.py",
     "dev": "remotion studio src/index.ts",
     "check": "tsc --noEmit",
     "still": "remotion still src/index.ts PixiuOpeningReview",

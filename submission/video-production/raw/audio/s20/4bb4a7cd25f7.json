@@ -1,0 +1,175 @@
+{
+  "shot": "s20",
+  "request": {
+    "text": "在书房设备写入家庭节能约定，等同步完成后，到笔记本和客厅设备检索同一内容。这份记忆，可以被各端检索、追溯，并在后续继续更新。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "4bb4a7cd25f7ee4a714580e3b941e2b308dd01a9be2c2c789e0d996e7ff687e1",
+  "audio_sha256": "d2d4ed5015b2c290b2d3f41499acb12cc21a4b65c31f2a03f9cd0a2a6483a373",
+  "duration_seconds": 14.448,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2236660,
+      "text": "在"
+    },
+    {
+      "offset": 3394580,
+      "duration": 3552500,
+      "text": "书房"
+    },
+    {
+      "offset": 7078750,
+      "duration": 4868330,
+      "text": "设备"
+    },
+    {
+      "offset": 13000000,
+      "duration": 3947500,
+      "text": "写入"
+    },
+    {
+      "offset": 17210410,
+      "duration": 4078750,
+      "text": "家庭"
+    },
+    {
+      "offset": 21421250,
+      "duration": 2500000,
+      "text": "节能"
+    },
+    {
+      "offset": 24052500,
+      "duration": 3947500,
+      "text": "约定"
+    },
+    {
+      "offset": 31815830,
+      "duration": 2105410,
+      "text": "等"
+    },
+    {
+      "offset": 34052500,
+      "duration": 2763330,
+      "text": "同步"
+    },
+    {
+      "offset": 36947500,
+      "duration": 3026250,
+      "text": "完成"
+    },
+    {
+      "offset": 39973750,
+      "duration": 3157910,
+      "text": "后"
+    },
+    {
+      "offset": 45500000,
+      "duration": 1973750,
+      "text": "到"
+    },
+    {
+      "offset": 47605410,
+      "duration": 5000000,
+      "text": "笔记本"
+    },
+    {
+      "offset": 52868330,
+      "duration": 1578750,
+      "text": "和"
+    },
+    {
+      "offset": 54578750,
+      "duration": 3026250,
+      "text": "客厅"
+    },
+    {
+      "offset": 57736660,
+      "duration": 4736660,
+      "text": "设备"
+    },
+    {
+      "offset": 63526250,
+      "duration": 4473750,
+      "text": "检索"
+    },
+    {
+      "offset": 68263330,
+      "duration": 3552500,
+      "text": "同一"
+    },
+    {
+      "offset": 71947500,
+      "duration": 3815830,
+      "text": "内容"
+    },
+    {
+      "offset": 81842080,
+      "duration": 1973750,
+      "text": "这"
+    },
+    {
+      "offset": 83815830,
+      "duration": 1578750,
+      "text": "份"
+    },
+    {
+      "offset": 85526250,
+      "duration": 5526250,
+      "text": "记忆"
+    },
+    {
+      "offset": 93289580,
+      "duration": 2500000,
+      "text": "可以"
+    },
+    {
+      "offset": 95921250,
+      "duration": 1842080,
+      "text": "被"
+    },
+    {
+      "offset": 98026250,
+      "duration": 3684160,
+      "text": "各端"
+    },
+    {
+      "offset": 101842080,
+      "duration": 5263330,
+      "text": "检索"
+    },
+    {
+      "offset": 108947500,
+      "duration": 5789580,
+      "text": "追溯"
+    },
+    {
+      "offset": 118157910,
+      "duration": 1710410,
+      "text": "并"
+    },
+    {
+      "offset": 119868330,
+      "duration": 1052500,
+      "text": "在"
+    },
+    {
+      "offset": 121052500,
+      "duration": 5526250,
+      "text": "后续"
+    },
+    {
+      "offset": 126842080,
+      "duration": 3684160,
+      "text": "继续"
+    },
+    {
+      "offset": 130657910,
+      "duration": 4473750,
+      "text": "更新"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

@@ -1,0 +1,220 @@
+{
+  "shot": "s27",
+  "request": {
+    "text": "产品通过一个安装包部署桌面宿主、运行时与记忆服务。设置中可检测模型连接、检查更新。升级机制包含签名校验、安装后健康检查和失败恢复，实际展示以当前执行结果为准。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "e548637125254bbd4e66043d9915678cbc890eef812d21a9858ae2de558de46d",
+  "audio_sha256": "f5ba0c79dcf8d70df45b42ca99678a60d043f007087e0411668d557a5402ecbe",
+  "duration_seconds": 19.08,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 6052500,
+      "text": "产品"
+    },
+    {
+      "offset": 7342080,
+      "duration": 2894580,
+      "text": "通过"
+    },
+    {
+      "offset": 10368330,
+      "duration": 1578750,
+      "text": "一个"
+    },
+    {
+      "offset": 12078750,
+      "duration": 3157910,
+      "text": "安装"
+    },
+    {
+      "offset": 15236660,
+      "duration": 2500000,
+      "text": "包"
+    },
+    {
+      "offset": 18789580,
+      "duration": 3815830,
+      "text": "部署"
+    },
+    {
+      "offset": 22868330,
+      "duration": 3157910,
+      "text": "桌面"
+    },
+    {
+      "offset": 26157910,
+      "duration": 4473750,
+      "text": "宿主"
+    },
+    {
+      "offset": 33921250,
+      "duration": 3420830,
+      "text": "运行"
+    },
+    {
+      "offset": 37342080,
+      "duration": 3815830,
+      "text": "时"
+    },
+    {
+      "offset": 41421250,
+      "duration": 1578750,
+      "text": "与"
+    },
+    {
+      "offset": 43131660,
+      "duration": 3289580,
+      "text": "记忆"
+    },
+    {
+      "offset": 46552500,
+      "duration": 3947500,
+      "text": "服务"
+    },
+    {
+      "offset": 56578750,
+      "duration": 3947500,
+      "text": "设置"
+    },
+    {
+      "offset": 60526250,
+      "duration": 3552500,
+      "text": "中"
+    },
+    {
+      "offset": 65263330,
+      "duration": 2500000,
+      "text": "可"
+    },
+    {
+      "offset": 67763330,
+      "duration": 3815830,
+      "text": "检测"
+    },
+    {
+      "offset": 71842080,
+      "duration": 3421250,
+      "text": "模型"
+    },
+    {
+      "offset": 75394580,
+      "duration": 4605410,
+      "text": "连接"
+    },
+    {
+      "offset": 81842080,
+      "duration": 4078750,
+      "text": "检查"
+    },
+    {
+      "offset": 86052500,
+      "duration": 4605410,
+      "text": "更新"
+    },
+    {
+      "offset": 96710410,
+      "duration": 4868330,
+      "text": "升级"
+    },
+    {
+      "offset": 101710410,
+      "duration": 4605410,
+      "text": "机制"
+    },
+    {
+      "offset": 107368330,
+      "duration": 4342080,
+      "text": "包含"
+    },
+    {
+      "offset": 111973750,
+      "duration": 2894580,
+      "text": "签名"
+    },
+    {
+      "offset": 115000000,
+      "duration": 4342080,
+      "text": "校验"
+    },
+    {
+      "offset": 122763330,
+      "duration": 3947080,
+      "text": "安装"
+    },
+    {
+      "offset": 126710410,
+      "duration": 2368330,
+      "text": "后"
+    },
+    {
+      "offset": 129342080,
+      "duration": 4473750,
+      "text": "健康"
+    },
+    {
+      "offset": 133947500,
+      "duration": 5921250,
+      "text": "检查"
+    },
+    {
+      "offset": 140921250,
+      "duration": 2763330,
+      "text": "和"
+    },
+    {
+      "offset": 143815830,
+      "duration": 3684160,
+      "text": "失败"
+    },
+    {
+      "offset": 147631660,
+      "duration": 4342080,
+      "text": "恢复"
+    },
+    {
+      "offset": 155000000,
+      "duration": 4078750,
+      "text": "实际"
+    },
+    {
+      "offset": 159210410,
+      "duration": 5526250,
+      "text": "展示"
+    },
+    {
+      "offset": 165789580,
+      "duration": 1578750,
+      "text": "以"
+    },
+    {
+      "offset": 167500000,
+      "duration": 4078750,
+      "text": "当前"
+    },
+    {
+      "offset": 171710410,
+      "duration": 3289580,
+      "text": "执行"
+    },
+    {
+      "offset": 175131660,
+      "duration": 2894580,
+      "text": "结果"
+    },
+    {
+      "offset": 178157910,
+      "duration": 1447500,
+      "text": "为"
+    },
+    {
+      "offset": 179605410,
+      "duration": 2105410,
+      "text": "准"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

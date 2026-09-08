@@ -1,0 +1,190 @@
+{
+  "shot": "s04",
+  "request": {
+    "text": "现在进入实际产品。会话、记忆、设备和设置，都在同一个桌面窗口中。服务与能力页，可以核对当前版本，以及系统向量化和向量数据库的实际运行状态。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "c4eb086bd5ae0f24bdf096594f7181ad5858b2f66aba93df6127f962f0c911aa",
+  "audio_sha256": "125448b966b8adc26d370bcd3c320ee11cdaf5593f4cd4581b744c0640a2aab6",
+  "duration_seconds": 16.176,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 5526250,
+      "text": "现在"
+    },
+    {
+      "offset": 6684160,
+      "duration": 2894580,
+      "text": "进入"
+    },
+    {
+      "offset": 9842080,
+      "duration": 3421250,
+      "text": "实际"
+    },
+    {
+      "offset": 13394580,
+      "duration": 5657910,
+      "text": "产品"
+    },
+    {
+      "offset": 25000000,
+      "duration": 5657910,
+      "text": "会话"
+    },
+    {
+      "offset": 34342080,
+      "duration": 6578750,
+      "text": "记忆"
+    },
+    {
+      "offset": 44473750,
+      "duration": 4736660,
+      "text": "设备"
+    },
+    {
+      "offset": 49473750,
+      "duration": 1052500,
+      "text": "和"
+    },
+    {
+      "offset": 50657910,
+      "duration": 5394580,
+      "text": "设置"
+    },
+    {
+      "offset": 58289580,
+      "duration": 1578750,
+      "text": "都"
+    },
+    {
+      "offset": 59868330,
+      "duration": 1447500,
+      "text": "在"
+    },
+    {
+      "offset": 61578750,
+      "duration": 2500000,
+      "text": "同"
+    },
+    {
+      "offset": 64078750,
+      "duration": 1578750,
+      "text": "一个"
+    },
+    {
+      "offset": 65921250,
+      "duration": 2894580,
+      "text": "桌面"
+    },
+    {
+      "offset": 68947500,
+      "duration": 3815830,
+      "text": "窗口"
+    },
+    {
+      "offset": 72763330,
+      "duration": 2631660,
+      "text": "中"
+    },
+    {
+      "offset": 81315830,
+      "duration": 4078750,
+      "text": "服务"
+    },
+    {
+      "offset": 85657910,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 86842080,
+      "duration": 3026250,
+      "text": "能力"
+    },
+    {
+      "offset": 89868330,
+      "duration": 2894580,
+      "text": "页"
+    },
+    {
+      "offset": 95131660,
+      "duration": 2368330,
+      "text": "可以"
+    },
+    {
+      "offset": 97631660,
+      "duration": 3552500,
+      "text": "核对"
+    },
+    {
+      "offset": 101447500,
+      "duration": 3552500,
+      "text": "当前"
+    },
+    {
+      "offset": 105131660,
+      "duration": 4342080,
+      "text": "版本"
+    },
+    {
+      "offset": 112500000,
+      "duration": 2763330,
+      "text": "以及"
+    },
+    {
+      "offset": 115394580,
+      "duration": 4342080,
+      "text": "系统"
+    },
+    {
+      "offset": 120000000,
+      "duration": 2105410,
+      "text": "向"
+    },
+    {
+      "offset": 122236660,
+      "duration": 5526250,
+      "text": "量化"
+    },
+    {
+      "offset": 128947500,
+      "duration": 1842080,
+      "text": "和"
+    },
+    {
+      "offset": 130921250,
+      "duration": 3684160,
+      "text": "向量"
+    },
+    {
+      "offset": 134736660,
+      "duration": 4342080,
+      "text": "数据库"
+    },
+    {
+      "offset": 139078750,
+      "duration": 1710410,
+      "text": "的"
+    },
+    {
+      "offset": 141052500,
+      "duration": 4210410,
+      "text": "实际"
+    },
+    {
+      "offset": 145394580,
+      "duration": 2631660,
+      "text": "运行"
+    },
+    {
+      "offset": 148157910,
+      "duration": 4210410,
+      "text": "状态"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

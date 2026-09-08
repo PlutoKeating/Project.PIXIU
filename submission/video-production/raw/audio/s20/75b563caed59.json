@@ -1,0 +1,195 @@
+{
+  "shot": "s20",
+  "request": {
+    "text": "在设备甲写入共享账单，等同步完成后，到设备乙和设备丙检索同一内容。共享的不是一张聊天截图，而是可被各端检索、追溯和继续更新的记忆。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "75b563caed59ae551f2463982d9c366425939a3f95bdac4196149018667d6ceb",
+  "audio_sha256": "2f19257de12cb545a842188117a3e370bf891e8fe7a5a81a055342b43b1c5bcb",
+  "duration_seconds": 15.072,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2500000,
+      "text": "在"
+    },
+    {
+      "offset": 3657910,
+      "duration": 4078750,
+      "text": "设备"
+    },
+    {
+      "offset": 7736660,
+      "duration": 2894580,
+      "text": "甲"
+    },
+    {
+      "offset": 10894580,
+      "duration": 3815830,
+      "text": "写入"
+    },
+    {
+      "offset": 14973750,
+      "duration": 3421250,
+      "text": "共享"
+    },
+    {
+      "offset": 18526250,
+      "duration": 5131660,
+      "text": "账单"
+    },
+    {
+      "offset": 27736660,
+      "duration": 1973750,
+      "text": "等"
+    },
+    {
+      "offset": 29842080,
+      "duration": 2631660,
+      "text": "同步"
+    },
+    {
+      "offset": 32605410,
+      "duration": 3026250,
+      "text": "完成"
+    },
+    {
+      "offset": 35631660,
+      "duration": 3157910,
+      "text": "后"
+    },
+    {
+      "offset": 41289580,
+      "duration": 1710410,
+      "text": "到"
+    },
+    {
+      "offset": 43131660,
+      "duration": 5526250,
+      "text": "设备"
+    },
+    {
+      "offset": 49578750,
+      "duration": 1315830,
+      "text": "乙"
+    },
+    {
+      "offset": 50894580,
+      "duration": 1184160,
+      "text": "和"
+    },
+    {
+      "offset": 52210410,
+      "duration": 4078750,
+      "text": "设备"
+    },
+    {
+      "offset": 56421250,
+      "duration": 6184160,
+      "text": "丙检索"
+    },
+    {
+      "offset": 62868330,
+      "duration": 3947500,
+      "text": "同一"
+    },
+    {
+      "offset": 66947500,
+      "duration": 3947500,
+      "text": "内容"
+    },
+    {
+      "offset": 76973750,
+      "duration": 4605000,
+      "text": "共享"
+    },
+    {
+      "offset": 81578750,
+      "duration": 2105410,
+      "text": "的"
+    },
+    {
+      "offset": 83947500,
+      "duration": 2500000,
+      "text": "不是"
+    },
+    {
+      "offset": 86578750,
+      "duration": 1052500,
+      "text": "一"
+    },
+    {
+      "offset": 87631660,
+      "duration": 1184160,
+      "text": "张"
+    },
+    {
+      "offset": 89078750,
+      "duration": 3684160,
+      "text": "聊天"
+    },
+    {
+      "offset": 92894580,
+      "duration": 5000000,
+      "text": "截图"
+    },
+    {
+      "offset": 102236660,
+      "duration": 3026250,
+      "text": "而是"
+    },
+    {
+      "offset": 105394580,
+      "duration": 1315830,
+      "text": "可"
+    },
+    {
+      "offset": 106710410,
+      "duration": 1447500,
+      "text": "被"
+    },
+    {
+      "offset": 108421250,
+      "duration": 1710410,
+      "text": "各"
+    },
+    {
+      "offset": 110131660,
+      "duration": 1842080,
+      "text": "端"
+    },
+    {
+      "offset": 112105410,
+      "duration": 5263330,
+      "text": "检索"
+    },
+    {
+      "offset": 119868330,
+      "duration": 6052500,
+      "text": "追溯"
+    },
+    {
+      "offset": 127105410,
+      "duration": 5921250,
+      "text": "和继续"
+    },
+    {
+      "offset": 133157910,
+      "duration": 3289580,
+      "text": "更新"
+    },
+    {
+      "offset": 136447500,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 137368330,
+      "duration": 3947500,
+      "text": "记忆"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

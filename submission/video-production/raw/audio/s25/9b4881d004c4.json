@@ -1,0 +1,130 @@
+{
+  "shot": "s25",
+  "request": {
+    "text": "这里的遗忘，指知识失效和检索向量清理，不等于所有原始证据、关系和磁盘副本都已物理擦除。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "9b4881d004c47addf064ded595dbc5b941dc12fae72d2abc0e0ca5875a38e226",
+  "audio_sha256": "c0d37f875641dc6c6f6a2e6adbfd3dda0c282373576727f66857d1965a1604e0",
+  "duration_seconds": 10.032,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2763330,
+      "text": "这里"
+    },
+    {
+      "offset": 3789580,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 4710410,
+      "duration": 4736660,
+      "text": "遗忘"
+    },
+    {
+      "offset": 12473750,
+      "duration": 2763330,
+      "text": "指"
+    },
+    {
+      "offset": 15500000,
+      "duration": 3026250,
+      "text": "知识"
+    },
+    {
+      "offset": 18657910,
+      "duration": 5394580,
+      "text": "失效"
+    },
+    {
+      "offset": 25236660,
+      "duration": 2236660,
+      "text": "和"
+    },
+    {
+      "offset": 27605410,
+      "duration": 3684160,
+      "text": "检索"
+    },
+    {
+      "offset": 31552500,
+      "duration": 2763330,
+      "text": "向量"
+    },
+    {
+      "offset": 34447500,
+      "duration": 5000000,
+      "text": "清理"
+    },
+    {
+      "offset": 42736660,
+      "duration": 1578750,
+      "text": "不"
+    },
+    {
+      "offset": 44315830,
+      "duration": 2236660,
+      "text": "等于"
+    },
+    {
+      "offset": 46815830,
+      "duration": 3552500,
+      "text": "所有"
+    },
+    {
+      "offset": 50500000,
+      "duration": 2894580,
+      "text": "原始"
+    },
+    {
+      "offset": 53526250,
+      "duration": 4210410,
+      "text": "证据"
+    },
+    {
+      "offset": 61026250,
+      "duration": 6184160,
+      "text": "关系"
+    },
+    {
+      "offset": 68526250,
+      "duration": 1710410,
+      "text": "和"
+    },
+    {
+      "offset": 70368330,
+      "duration": 3421250,
+      "text": "磁盘"
+    },
+    {
+      "offset": 73921250,
+      "duration": 4078750,
+      "text": "副本"
+    },
+    {
+      "offset": 79052500,
+      "duration": 2105410,
+      "text": "都"
+    },
+    {
+      "offset": 81157910,
+      "duration": 1315830,
+      "text": "已"
+    },
+    {
+      "offset": 82736660,
+      "duration": 2763330,
+      "text": "物理"
+    },
+    {
+      "offset": 85631660,
+      "duration": 5394580,
+      "text": "擦除"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

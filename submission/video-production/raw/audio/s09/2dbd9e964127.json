@@ -1,0 +1,170 @@
+{
+  "shot": "s09",
+  "request": {
+    "text": "对话、工具结果、用户行为和手动配置，统一转成带来源的证据。接入时进行格式校验、清洗、质量评估和敏感检测，再形成可检索的知识。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "2dbd9e96412761d5cf4659b1d8120216e813dcb2433580c4474a1992bde80468",
+  "audio_sha256": "f14e5e508450286dc893444b7c81041f13735ede48fa711b1f1c29d4b4b15570",
+  "duration_seconds": 15.048,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 5263330,
+      "text": "对话"
+    },
+    {
+      "offset": 9842080,
+      "duration": 3684160,
+      "text": "工具"
+    },
+    {
+      "offset": 13657910,
+      "duration": 4605410,
+      "text": "结果"
+    },
+    {
+      "offset": 21026250,
+      "duration": 3552500,
+      "text": "用户"
+    },
+    {
+      "offset": 24710410,
+      "duration": 5131660,
+      "text": "行为"
+    },
+    {
+      "offset": 30894580,
+      "duration": 2105410,
+      "text": "和"
+    },
+    {
+      "offset": 33131660,
+      "duration": 3947500,
+      "text": "手动"
+    },
+    {
+      "offset": 37210410,
+      "duration": 4736660,
+      "text": "配置"
+    },
+    {
+      "offset": 44447500,
+      "duration": 4473750,
+      "text": "统一"
+    },
+    {
+      "offset": 49052500,
+      "duration": 4078750,
+      "text": "转成"
+    },
+    {
+      "offset": 53131660,
+      "duration": 1578750,
+      "text": "带"
+    },
+    {
+      "offset": 54842080,
+      "duration": 3026250,
+      "text": "来源"
+    },
+    {
+      "offset": 57868330,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 58657910,
+      "duration": 3947500,
+      "text": "证据"
+    },
+    {
+      "offset": 68684160,
+      "duration": 3684160,
+      "text": "接入"
+    },
+    {
+      "offset": 72368330,
+      "duration": 3947500,
+      "text": "时"
+    },
+    {
+      "offset": 77500000,
+      "duration": 3947500,
+      "text": "进行"
+    },
+    {
+      "offset": 81710410,
+      "duration": 3289580,
+      "text": "格式"
+    },
+    {
+      "offset": 85131660,
+      "duration": 4078750,
+      "text": "校验"
+    },
+    {
+      "offset": 91578750,
+      "duration": 6184160,
+      "text": "清洗"
+    },
+    {
+      "offset": 100789580,
+      "duration": 3815830,
+      "text": "质量"
+    },
+    {
+      "offset": 104736660,
+      "duration": 5526250,
+      "text": "评估"
+    },
+    {
+      "offset": 111447500,
+      "duration": 1973750,
+      "text": "和"
+    },
+    {
+      "offset": 113552500,
+      "duration": 3289580,
+      "text": "敏感"
+    },
+    {
+      "offset": 116973750,
+      "duration": 5000000,
+      "text": "检测"
+    },
+    {
+      "offset": 124605410,
+      "duration": 2105000,
+      "text": "再"
+    },
+    {
+      "offset": 126710410,
+      "duration": 3947500,
+      "text": "形成"
+    },
+    {
+      "offset": 130921250,
+      "duration": 1315830,
+      "text": "可"
+    },
+    {
+      "offset": 132368330,
+      "duration": 3684160,
+      "text": "检索"
+    },
+    {
+      "offset": 136052500,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 136973750,
+      "duration": 4210410,
+      "text": "知识"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

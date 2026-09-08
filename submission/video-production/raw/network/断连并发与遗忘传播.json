@@ -1,0 +1,358 @@
+{
+  "environment": "同宿主三台 V11 虚拟机；0.1.9 加 mDNS 回调源码修复",
+  "partition": "仅阻断客厅设备同步 TCP 端口；SSH 与设备广播保留",
+  "final_device_evidence": false,
+  "events": [
+    {
+      "time": "2026-09-08T17:28:43.056422+00:00",
+      "step": "三端初始版本一致",
+      "result": [
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 1,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR"
+            ],
+            "updated_at": 1788888051
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 1,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR"
+            ],
+            "updated_at": 1788888051
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 1,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR"
+            ],
+            "updated_at": 1788888051
+          }
+        }
+      ]
+    },
+    {
+      "time": "2026-09-08T17:28:43.635220+00:00",
+      "step": "阻断客厅同步连接",
+      "result": {
+        "rules": 2
+      }
+    },
+    {
+      "time": "2026-09-08T17:29:04.489579+00:00",
+      "step": "在线笔记本收到更新",
+      "result": {
+        "status": 200,
+        "body": {
+          "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "scope": "shared:home",
+          "version": 2,
+          "title": "家庭节能约定",
+          "body": {
+            "内容": "每天晚上九点半关闭书房空调，周末检查客厅灯具。"
+          },
+          "evidence_ids": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR",
+            "evd_01M21119334P2QA8W7P35HKSH6"
+          ],
+          "updated_at": 1788888523
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:29:04.785094+00:00",
+      "step": "断连客厅仍保留旧版本",
+      "result": {
+        "status": 200,
+        "body": {
+          "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "scope": "shared:home",
+          "version": 1,
+          "title": "家庭节能约定",
+          "body": {
+            "内容": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。"
+          },
+          "evidence_ids": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR"
+          ],
+          "updated_at": 1788888051
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:29:05.378343+00:00",
+      "step": "恢复客厅同步连接",
+      "result": {
+        "remaining_demo_rules": 0
+      }
+    },
+    {
+      "time": "2026-09-08T17:29:35.419667+00:00",
+      "step": "客厅重连补齐更新",
+      "result": {
+        "status": 200,
+        "body": {
+          "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "scope": "shared:home",
+          "version": 2,
+          "title": "家庭节能约定",
+          "body": {
+            "内容": "每天晚上九点半关闭书房空调，周末检查客厅灯具。"
+          },
+          "evidence_ids": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR",
+            "evd_01M21119334P2QA8W7P35HKSH6"
+          ],
+          "updated_at": 1788888523
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:29:35.935385+00:00",
+      "step": "阻断客厅同步连接",
+      "result": {
+        "rules": 2
+      }
+    },
+    {
+      "time": "2026-09-08T17:29:37.836010+00:00",
+      "step": "断连期间两端分别修改同一版本",
+      "result": [
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 3,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "书房方案：晚上九点关闭空调。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR",
+              "evd_01M21119334P2QA8W7P35HKSH6",
+              "evd_01M2112W3S4SSW0EPHSK7G4DZM"
+            ],
+            "updated_at": 1788888576
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 3,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "客厅方案：晚上九点四十五关闭空调。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR",
+              "evd_01M21119334P2QA8W7P35HKSH6",
+              "evd_01M2112WQ0D6NM6PYCEMM4ZY5B"
+            ],
+            "updated_at": 1788888576
+          }
+        }
+      ]
+    },
+    {
+      "time": "2026-09-08T17:29:38.484717+00:00",
+      "step": "恢复客厅同步连接",
+      "result": {
+        "remaining_demo_rules": 0
+      }
+    },
+    {
+      "time": "2026-09-08T17:30:07.163380+00:00",
+      "step": "并发修改三端正文收敛",
+      "result": [
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 3,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "书房方案：晚上九点关闭空调。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR",
+              "evd_01M21119334P2QA8W7P35HKSH6",
+              "evd_01M2112W3S4SSW0EPHSK7G4DZM"
+            ],
+            "updated_at": 1788888576
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 3,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "书房方案：晚上九点关闭空调。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR",
+              "evd_01M21119334P2QA8W7P35HKSH6",
+              "evd_01M2112W3S4SSW0EPHSK7G4DZM"
+            ],
+            "updated_at": 1788888576
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+            "scope": "shared:home",
+            "version": 3,
+            "title": "家庭节能约定",
+            "body": {
+              "内容": "书房方案：晚上九点关闭空调。"
+            },
+            "evidence_ids": [
+              "evd_01M210JW0KMSQM2KC3MM82G7HR",
+              "evd_01M21119334P2QA8W7P35HKSH6",
+              "evd_01M2112WQ0D6NM6PYCEMM4ZY5B"
+            ],
+            "updated_at": 1788888576
+          }
+        }
+      ]
+    },
+    {
+      "time": "2026-09-08T17:30:07.717614+00:00",
+      "step": "阻断客厅同步连接",
+      "result": {
+        "rules": 2
+      }
+    },
+    {
+      "time": "2026-09-08T17:30:08.072029+00:00",
+      "step": "预览遗忘范围",
+      "result": {
+        "status": 200,
+        "body": {
+          "targets": [
+            {
+              "type": "knowledge",
+              "id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+              "title": "家庭节能约定",
+              "version": 3,
+              "scope": "shared:home",
+              "score": 13.0,
+              "confidence": 1.0
+            }
+          ],
+          "cascade": {
+            "evidence_count": 3,
+            "relation_count": 0
+          },
+          "irreversible": true,
+          "expires_in_seconds": 120
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:30:08.547592+00:00",
+      "step": "确认遗忘",
+      "result": {
+        "status": 200,
+        "body": {
+          "status": "forgotten",
+          "forgotten_ids": [
+            "knw_01M210JW0XZEH1516FNJ2FTWES"
+          ],
+          "latency_ms": 86
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:30:38.691487+00:00",
+      "step": "在线笔记本不再返回有效条目",
+      "result": {
+        "status": 404,
+        "body": {
+          "error": "NOT_FOUND",
+          "message": "NOT_FOUND",
+          "request_id": "req_01M2114RZDDHYZRB8NWS673Q5T"
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:30:39.286167+00:00",
+      "step": "断连客厅尚未收到遗忘",
+      "result": {
+        "status": 200,
+        "body": {
+          "knowledge_id": "knw_01M210JW0XZEH1516FNJ2FTWES",
+          "scope": "shared:home",
+          "version": 3,
+          "title": "家庭节能约定",
+          "body": {
+            "内容": "书房方案：晚上九点关闭空调。"
+          },
+          "evidence_ids": [
+            "evd_01M210JW0KMSQM2KC3MM82G7HR",
+            "evd_01M21119334P2QA8W7P35HKSH6",
+            "evd_01M2112WQ0D6NM6PYCEMM4ZY5B"
+          ],
+          "updated_at": 1788888576
+        }
+      }
+    },
+    {
+      "time": "2026-09-08T17:30:39.950100+00:00",
+      "step": "恢复客厅同步连接",
+      "result": {
+        "remaining_demo_rules": 0
+      }
+    },
+    {
+      "time": "2026-09-08T17:34:48.392270+00:00",
+      "step": "失败核查",
+      "result": {
+        "error": "sqlite3.IntegrityError: FOREIGN KEY constraint failed",
+        "call_path": [
+          "SyncService.receive_ops",
+          "Mainline.try_fast_forward",
+          "ConflictService.arbitrate",
+          "KnowledgeService.materialize",
+          "SqliteKnowledgeRepo.save"
+        ],
+        "temporary_firewall_rules_removed": true,
+        "fix_status": "待回归复现与修复；不得作为通过素材"
+      }
+    }
+  ],
+  "result": "未通过：客厅重连后遗忘未在100秒内传播，三端日志出现知识引用外键失败"
+}

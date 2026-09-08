@@ -1,0 +1,180 @@
+{
+  "shot": "s07",
+  "request": {
+    "text": "以家庭账单为例：电费二百一十元，水费六十八元五角，燃气费一百五十六元。保存之后开启新会话，再询问水电燃气支出，就能找到这条长期记忆。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "a61783a282b26f0c42621e40a315df59b8df002afd1ac7ac818e3f97e77f650e",
+  "audio_sha256": "7ae43b135e3fc55ab38cf5a47534f830581ff03efd38578f1a129984630dad3e",
+  "duration_seconds": 15.816,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2236660,
+      "text": "以"
+    },
+    {
+      "offset": 3526250,
+      "duration": 4210410,
+      "text": "家庭"
+    },
+    {
+      "offset": 7868330,
+      "duration": 3815830,
+      "text": "账单"
+    },
+    {
+      "offset": 11815830,
+      "duration": 1842080,
+      "text": "为"
+    },
+    {
+      "offset": 13657910,
+      "duration": 2763330,
+      "text": "例"
+    },
+    {
+      "offset": 20500000,
+      "duration": 4605410,
+      "text": "电费"
+    },
+    {
+      "offset": 25368330,
+      "duration": 5657910,
+      "text": "二百一十"
+    },
+    {
+      "offset": 31026250,
+      "duration": 3157910,
+      "text": "元"
+    },
+    {
+      "offset": 36947500,
+      "duration": 5394580,
+      "text": "水费"
+    },
+    {
+      "offset": 42605410,
+      "duration": 4210410,
+      "text": "六十八"
+    },
+    {
+      "offset": 46815830,
+      "duration": 2105410,
+      "text": "元"
+    },
+    {
+      "offset": 49052500,
+      "duration": 1973750,
+      "text": "五"
+    },
+    {
+      "offset": 51026250,
+      "duration": 2894580,
+      "text": "角"
+    },
+    {
+      "offset": 57078750,
+      "duration": 6578750,
+      "text": "燃气费"
+    },
+    {
+      "offset": 63921250,
+      "duration": 7105000,
+      "text": "一百五十六"
+    },
+    {
+      "offset": 71026250,
+      "duration": 2763330,
+      "text": "元"
+    },
+    {
+      "offset": 79736660,
+      "duration": 3684160,
+      "text": "保存"
+    },
+    {
+      "offset": 83552500,
+      "duration": 5394580,
+      "text": "之后"
+    },
+    {
+      "offset": 90263330,
+      "duration": 4078750,
+      "text": "开启"
+    },
+    {
+      "offset": 94473750,
+      "duration": 2368330,
+      "text": "新"
+    },
+    {
+      "offset": 96842080,
+      "duration": 4605410,
+      "text": "会话"
+    },
+    {
+      "offset": 105131660,
+      "duration": 1842080,
+      "text": "再"
+    },
+    {
+      "offset": 107105410,
+      "duration": 3684160,
+      "text": "询问"
+    },
+    {
+      "offset": 111052500,
+      "duration": 4078750,
+      "text": "水电"
+    },
+    {
+      "offset": 115263330,
+      "duration": 3289580,
+      "text": "燃气"
+    },
+    {
+      "offset": 118684160,
+      "duration": 5131660,
+      "text": "支出"
+    },
+    {
+      "offset": 126184160,
+      "duration": 1710410,
+      "text": "就"
+    },
+    {
+      "offset": 127894580,
+      "duration": 1315830,
+      "text": "能"
+    },
+    {
+      "offset": 129342080,
+      "duration": 5131660,
+      "text": "找到"
+    },
+    {
+      "offset": 135526250,
+      "duration": 2105410,
+      "text": "这"
+    },
+    {
+      "offset": 137631660,
+      "duration": 1578750,
+      "text": "条"
+    },
+    {
+      "offset": 139473750,
+      "duration": 5000000,
+      "text": "长期"
+    },
+    {
+      "offset": 144605410,
+      "duration": 4342080,
+      "text": "记忆"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

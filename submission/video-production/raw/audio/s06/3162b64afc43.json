@@ -1,0 +1,190 @@
+{
+  "shot": "s06",
+  "request": {
+    "text": "在会话中提出一个具体任务。助手可以调用系统工具和联网搜索，把执行过程呈现在工作卡片中。值得保留的结果进入记忆，后续任务就能接着使用。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "3162b64afc43d2ba658cc7cf934f1e78891bda24db5d746be28c7969ef1247e9",
+  "audio_sha256": "f2c690c02c7d0191220db59eab8bf4a2ad4127419d1ac5c52a82949605fba080",
+  "duration_seconds": 15.408,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 1973750,
+      "text": "在"
+    },
+    {
+      "offset": 3131660,
+      "duration": 4078750,
+      "text": "会话"
+    },
+    {
+      "offset": 7210410,
+      "duration": 3815830,
+      "text": "中"
+    },
+    {
+      "offset": 12210410,
+      "duration": 3684160,
+      "text": "提出"
+    },
+    {
+      "offset": 16026250,
+      "duration": 1710410,
+      "text": "一个"
+    },
+    {
+      "offset": 18000000,
+      "duration": 3947500,
+      "text": "具体"
+    },
+    {
+      "offset": 22078750,
+      "duration": 3684160,
+      "text": "任务"
+    },
+    {
+      "offset": 31842080,
+      "duration": 5394580,
+      "text": "助手"
+    },
+    {
+      "offset": 37500000,
+      "duration": 2105410,
+      "text": "可以"
+    },
+    {
+      "offset": 39736660,
+      "duration": 3157910,
+      "text": "调用"
+    },
+    {
+      "offset": 43157910,
+      "duration": 3421250,
+      "text": "系统"
+    },
+    {
+      "offset": 46710410,
+      "duration": 4736660,
+      "text": "工具"
+    },
+    {
+      "offset": 52631660,
+      "duration": 2500000,
+      "text": "和"
+    },
+    {
+      "offset": 55263330,
+      "duration": 3552500,
+      "text": "联网"
+    },
+    {
+      "offset": 58947500,
+      "duration": 4868330,
+      "text": "搜索"
+    },
+    {
+      "offset": 68026250,
+      "duration": 1710410,
+      "text": "把"
+    },
+    {
+      "offset": 69868330,
+      "duration": 3684160,
+      "text": "执行"
+    },
+    {
+      "offset": 73684160,
+      "duration": 5263330,
+      "text": "过程"
+    },
+    {
+      "offset": 79210410,
+      "duration": 3815830,
+      "text": "呈现"
+    },
+    {
+      "offset": 83026250,
+      "duration": 1710410,
+      "text": "在"
+    },
+    {
+      "offset": 85000000,
+      "duration": 3026250,
+      "text": "工作"
+    },
+    {
+      "offset": 88157910,
+      "duration": 3947500,
+      "text": "卡片"
+    },
+    {
+      "offset": 92105410,
+      "duration": 2631660,
+      "text": "中"
+    },
+    {
+      "offset": 100657910,
+      "duration": 3157910,
+      "text": "值得"
+    },
+    {
+      "offset": 103947500,
+      "duration": 3157910,
+      "text": "保留"
+    },
+    {
+      "offset": 107105410,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 108421250,
+      "duration": 4473750,
+      "text": "结果"
+    },
+    {
+      "offset": 113157910,
+      "duration": 2894580,
+      "text": "进入"
+    },
+    {
+      "offset": 116184160,
+      "duration": 5394580,
+      "text": "记忆"
+    },
+    {
+      "offset": 125394580,
+      "duration": 4473750,
+      "text": "后续"
+    },
+    {
+      "offset": 130000000,
+      "duration": 4605410,
+      "text": "任务"
+    },
+    {
+      "offset": 134868330,
+      "duration": 1447500,
+      "text": "就"
+    },
+    {
+      "offset": 136315830,
+      "duration": 1315830,
+      "text": "能"
+    },
+    {
+      "offset": 137894580,
+      "duration": 2500000,
+      "text": "接着"
+    },
+    {
+      "offset": 140526250,
+      "duration": 4342080,
+      "text": "使用"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

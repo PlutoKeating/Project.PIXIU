@@ -1,0 +1,105 @@
+{
+  "shot": "s18",
+  "request": {
+    "text": "接下来，看貔貅最关键的能力：让多台设备上的智能体，共享知识与经验。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "9012691a699497ecf5f4aacd1723db6a0ba30b2d6db8f2f01ac840d0a81481da",
+  "audio_sha256": "23cc92a9a58f17fe965bf85e4340e89b56692bb86065c6a267fe64f54b889464",
+  "duration_seconds": 7.488,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 7105410,
+      "text": "接下来"
+    },
+    {
+      "offset": 10894580,
+      "duration": 2368330,
+      "text": "看"
+    },
+    {
+      "offset": 13263330,
+      "duration": 3552500,
+      "text": "貔貅"
+    },
+    {
+      "offset": 17078750,
+      "duration": 2236660,
+      "text": "最"
+    },
+    {
+      "offset": 19315830,
+      "duration": 3289580,
+      "text": "关键"
+    },
+    {
+      "offset": 22605410,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 23394580,
+      "duration": 4342080,
+      "text": "能力"
+    },
+    {
+      "offset": 31421250,
+      "duration": 2105000,
+      "text": "让"
+    },
+    {
+      "offset": 33526250,
+      "duration": 2236660,
+      "text": "多"
+    },
+    {
+      "offset": 35763330,
+      "duration": 1578750,
+      "text": "台"
+    },
+    {
+      "offset": 37473750,
+      "duration": 3157910,
+      "text": "设备"
+    },
+    {
+      "offset": 40631660,
+      "duration": 1447080,
+      "text": "上"
+    },
+    {
+      "offset": 42078750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 43000000,
+      "duration": 6578750,
+      "text": "智能体"
+    },
+    {
+      "offset": 51947500,
+      "duration": 4473750,
+      "text": "共享"
+    },
+    {
+      "offset": 56552500,
+      "duration": 3684160,
+      "text": "知识"
+    },
+    {
+      "offset": 60500000,
+      "duration": 921250,
+      "text": "与"
+    },
+    {
+      "offset": 61552500,
+      "duration": 4078750,
+      "text": "经验"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

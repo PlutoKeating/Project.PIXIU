@@ -1,0 +1,95 @@
+{
+  "shot": "s30",
+  "request": {
+    "text": "貔貅。面向麒麟操作系统智能体，让分布式集体记忆，成为下一次行动的起点。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "4cc0d0509f381ea98eaa429f9d24f5becafd282d9d5392d2b32086fc2ed8e247",
+  "audio_sha256": "9baf4dd30b16a4954f7cb059ced6d4926bc132325aa1cfeb7126f83c91bb92b2",
+  "duration_seconds": 8.328,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 6578750,
+      "text": "貔貅"
+    },
+    {
+      "offset": 13552500,
+      "duration": 4605410,
+      "text": "面向"
+    },
+    {
+      "offset": 18421250,
+      "duration": 3289580,
+      "text": "麒麟"
+    },
+    {
+      "offset": 21842080,
+      "duration": 7105410,
+      "text": "操作系统"
+    },
+    {
+      "offset": 29210410,
+      "duration": 6184160,
+      "text": "智能体"
+    },
+    {
+      "offset": 38421250,
+      "duration": 2105410,
+      "text": "让"
+    },
+    {
+      "offset": 40789580,
+      "duration": 3157910,
+      "text": "分布"
+    },
+    {
+      "offset": 43947500,
+      "duration": 2368330,
+      "text": "式"
+    },
+    {
+      "offset": 46578750,
+      "duration": 3552500,
+      "text": "集体"
+    },
+    {
+      "offset": 50263330,
+      "duration": 4473750,
+      "text": "记忆"
+    },
+    {
+      "offset": 56710410,
+      "duration": 3684160,
+      "text": "成为"
+    },
+    {
+      "offset": 60657910,
+      "duration": 1973750,
+      "text": "下"
+    },
+    {
+      "offset": 62763330,
+      "duration": 2236660,
+      "text": "一次"
+    },
+    {
+      "offset": 65263330,
+      "duration": 3420830,
+      "text": "行动"
+    },
+    {
+      "offset": 68684160,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 69605410,
+      "duration": 4342080,
+      "text": "起点"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

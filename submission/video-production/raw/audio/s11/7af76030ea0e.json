@@ -1,0 +1,190 @@
+{
+  "shot": "s11",
+  "request": {
+    "text": "需要自动记住文件时，进入采集与隐私，选择演示目录并显式开启。新增文本文件后，在活动日志核对实际入库结果，还能在来源区查看文件路径与采集时间。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "7af76030ea0eb05ed9916082cfec459fdb7b43cb02b98bba3b9eae8ece46ea8a",
+  "audio_sha256": "0f4e7117ecad32502b7c38080fbdb6912b5e38a12110a4417c1475d908f82af8",
+  "duration_seconds": 16.104,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 3947500,
+      "text": "需要"
+    },
+    {
+      "offset": 5236660,
+      "duration": 3289580,
+      "text": "自动"
+    },
+    {
+      "offset": 8657910,
+      "duration": 2368330,
+      "text": "记住"
+    },
+    {
+      "offset": 11157910,
+      "duration": 3026250,
+      "text": "文件"
+    },
+    {
+      "offset": 14184160,
+      "duration": 4078750,
+      "text": "时"
+    },
+    {
+      "offset": 21026250,
+      "duration": 3815830,
+      "text": "进入"
+    },
+    {
+      "offset": 25105410,
+      "duration": 4736660,
+      "text": "采集"
+    },
+    {
+      "offset": 30105410,
+      "duration": 921250,
+      "text": "与"
+    },
+    {
+      "offset": 31157910,
+      "duration": 5000000,
+      "text": "隐私"
+    },
+    {
+      "offset": 38789580,
+      "duration": 3552500,
+      "text": "选择"
+    },
+    {
+      "offset": 42605410,
+      "duration": 3289580,
+      "text": "演示"
+    },
+    {
+      "offset": 46026250,
+      "duration": 4210410,
+      "text": "目录"
+    },
+    {
+      "offset": 51421250,
+      "duration": 1842080,
+      "text": "并"
+    },
+    {
+      "offset": 53263330,
+      "duration": 2763330,
+      "text": "显式"
+    },
+    {
+      "offset": 56157910,
+      "duration": 4473750,
+      "text": "开启"
+    },
+    {
+      "offset": 66710410,
+      "duration": 5131660,
+      "text": "新增"
+    },
+    {
+      "offset": 72105410,
+      "duration": 5657910,
+      "text": "文本文件"
+    },
+    {
+      "offset": 77763330,
+      "duration": 3289580,
+      "text": "后"
+    },
+    {
+      "offset": 84078750,
+      "duration": 1710410,
+      "text": "在"
+    },
+    {
+      "offset": 85921250,
+      "duration": 3815830,
+      "text": "活动"
+    },
+    {
+      "offset": 89868330,
+      "duration": 5131660,
+      "text": "日志"
+    },
+    {
+      "offset": 96315830,
+      "duration": 3947500,
+      "text": "核对"
+    },
+    {
+      "offset": 100526250,
+      "duration": 3421250,
+      "text": "实际"
+    },
+    {
+      "offset": 104078750,
+      "duration": 2631660,
+      "text": "入库"
+    },
+    {
+      "offset": 106842080,
+      "duration": 4210410,
+      "text": "结果"
+    },
+    {
+      "offset": 114736660,
+      "duration": 1710410,
+      "text": "还"
+    },
+    {
+      "offset": 116447500,
+      "duration": 1447500,
+      "text": "能"
+    },
+    {
+      "offset": 118026250,
+      "duration": 1315830,
+      "text": "在"
+    },
+    {
+      "offset": 119605410,
+      "duration": 6052500,
+      "text": "来源区"
+    },
+    {
+      "offset": 126842080,
+      "duration": 4736660,
+      "text": "查看"
+    },
+    {
+      "offset": 131842080,
+      "duration": 3421250,
+      "text": "文件"
+    },
+    {
+      "offset": 135263330,
+      "duration": 4605410,
+      "text": "路径"
+    },
+    {
+      "offset": 140789580,
+      "duration": 1842080,
+      "text": "与"
+    },
+    {
+      "offset": 142763330,
+      "duration": 4078750,
+      "text": "采集"
+    },
+    {
+      "offset": 146973750,
+      "duration": 4868330,
+      "text": "时间"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

@@ -1,0 +1,190 @@
+{
+  "shot": "s12",
+  "request": {
+    "text": "行为采集用于汇总应用使用习惯，也受授权开关控制。图片识别依赖实际可用的识别适配；当前安装包尚未具备完整图片识别能力，剪贴板和自动截图也尚未实现。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "5abaac250c06fb1f8346598a2648b5404fd78d077d040875dc7ac08bf6a1caf3",
+  "audio_sha256": "16fc0654f80bd6f65a29eda1aee4b622348de1805448bdb7d2df4ecb25dbe695",
+  "duration_seconds": 17.328,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 3684160,
+      "text": "行为"
+    },
+    {
+      "offset": 4842080,
+      "duration": 6052500,
+      "text": "采集"
+    },
+    {
+      "offset": 11947500,
+      "duration": 2894580,
+      "text": "用于"
+    },
+    {
+      "offset": 14973750,
+      "duration": 5263330,
+      "text": "汇总"
+    },
+    {
+      "offset": 21157910,
+      "duration": 3157910,
+      "text": "应用"
+    },
+    {
+      "offset": 24447500,
+      "duration": 2894580,
+      "text": "使用"
+    },
+    {
+      "offset": 27473750,
+      "duration": 5263330,
+      "text": "习惯"
+    },
+    {
+      "offset": 36289580,
+      "duration": 1578750,
+      "text": "也"
+    },
+    {
+      "offset": 37868330,
+      "duration": 1973750,
+      "text": "受"
+    },
+    {
+      "offset": 40105410,
+      "duration": 4078750,
+      "text": "授权"
+    },
+    {
+      "offset": 44315830,
+      "duration": 3815830,
+      "text": "开关"
+    },
+    {
+      "offset": 48263330,
+      "duration": 4078750,
+      "text": "控制"
+    },
+    {
+      "offset": 58421250,
+      "duration": 3552500,
+      "text": "图片"
+    },
+    {
+      "offset": 62105410,
+      "duration": 6052500,
+      "text": "识别"
+    },
+    {
+      "offset": 69078750,
+      "duration": 2894580,
+      "text": "依赖"
+    },
+    {
+      "offset": 72236660,
+      "duration": 3684160,
+      "text": "实际"
+    },
+    {
+      "offset": 76052500,
+      "duration": 3421250,
+      "text": "可用"
+    },
+    {
+      "offset": 79473750,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 81052500,
+      "duration": 3684160,
+      "text": "识别"
+    },
+    {
+      "offset": 84868330,
+      "duration": 4868330,
+      "text": "适配"
+    },
+    {
+      "offset": 93815830,
+      "duration": 4342080,
+      "text": "当前"
+    },
+    {
+      "offset": 98289580,
+      "duration": 6184160,
+      "text": "安装包"
+    },
+    {
+      "offset": 105789580,
+      "duration": 4210410,
+      "text": "尚未"
+    },
+    {
+      "offset": 110131660,
+      "duration": 3026250,
+      "text": "具备"
+    },
+    {
+      "offset": 113421250,
+      "duration": 3552500,
+      "text": "完整"
+    },
+    {
+      "offset": 117105410,
+      "duration": 4736660,
+      "text": "图片"
+    },
+    {
+      "offset": 122894580,
+      "duration": 4605410,
+      "text": "识别"
+    },
+    {
+      "offset": 127631660,
+      "duration": 3947500,
+      "text": "能力"
+    },
+    {
+      "offset": 135131660,
+      "duration": 7368330,
+      "text": "剪贴板"
+    },
+    {
+      "offset": 142763330,
+      "duration": 1842080,
+      "text": "和"
+    },
+    {
+      "offset": 144736660,
+      "duration": 3157910,
+      "text": "自动"
+    },
+    {
+      "offset": 148026250,
+      "duration": 5394580,
+      "text": "截图"
+    },
+    {
+      "offset": 154473750,
+      "duration": 1710410,
+      "text": "也"
+    },
+    {
+      "offset": 156315830,
+      "duration": 3157910,
+      "text": "尚未"
+    },
+    {
+      "offset": 159605410,
+      "duration": 4473750,
+      "text": "实现"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

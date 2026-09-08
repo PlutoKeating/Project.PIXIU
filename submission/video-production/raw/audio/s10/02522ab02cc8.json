@@ -1,0 +1,200 @@
+{
+  "shot": "s10",
+  "request": {
+    "text": "在记忆页录入标题与正文，并选择保存范围。个人内容保留在私有范围；需要协作的内容，才明确放进已配置的共享范围。保存后可以马上检索和核对正文。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "02522ab02cc86e91b65d0cfac1eabc90bc11c6711e88af19a03ee6b688435b68",
+  "audio_sha256": "617cf2dd7412a69a01b788f09176187380f2ea77d0ad0385e451bcd7aeedae1a",
+  "duration_seconds": 15.24,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2500000,
+      "text": "在"
+    },
+    {
+      "offset": 3657910,
+      "duration": 2763330,
+      "text": "记忆"
+    },
+    {
+      "offset": 6421250,
+      "duration": 2763330,
+      "text": "页"
+    },
+    {
+      "offset": 9447500,
+      "duration": 2500000,
+      "text": "录入"
+    },
+    {
+      "offset": 12078750,
+      "duration": 4605410,
+      "text": "标题"
+    },
+    {
+      "offset": 16947500,
+      "duration": 789580,
+      "text": "与"
+    },
+    {
+      "offset": 17868330,
+      "duration": 4868330,
+      "text": "正文"
+    },
+    {
+      "offset": 25500000,
+      "duration": 1447500,
+      "text": "并"
+    },
+    {
+      "offset": 27078750,
+      "duration": 3289580,
+      "text": "选择"
+    },
+    {
+      "offset": 30631660,
+      "duration": 3289580,
+      "text": "保存"
+    },
+    {
+      "offset": 34052500,
+      "duration": 4078750,
+      "text": "范围"
+    },
+    {
+      "offset": 44210410,
+      "duration": 3289580,
+      "text": "个人"
+    },
+    {
+      "offset": 47631660,
+      "duration": 4078750,
+      "text": "内容"
+    },
+    {
+      "offset": 51973750,
+      "duration": 2894580,
+      "text": "保留"
+    },
+    {
+      "offset": 54868330,
+      "duration": 1052500,
+      "text": "在"
+    },
+    {
+      "offset": 56184160,
+      "duration": 3157910,
+      "text": "私有"
+    },
+    {
+      "offset": 59473750,
+      "duration": 5263330,
+      "text": "范围"
+    },
+    {
+      "offset": 69342080,
+      "duration": 3289580,
+      "text": "需要"
+    },
+    {
+      "offset": 72894580,
+      "duration": 3421250,
+      "text": "协作"
+    },
+    {
+      "offset": 76315830,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 77236660,
+      "duration": 5000000,
+      "text": "内容"
+    },
+    {
+      "offset": 83947500,
+      "duration": 2236660,
+      "text": "才"
+    },
+    {
+      "offset": 86184160,
+      "duration": 3421250,
+      "text": "明确"
+    },
+    {
+      "offset": 89736660,
+      "duration": 4210410,
+      "text": "放进"
+    },
+    {
+      "offset": 94210410,
+      "duration": 1447500,
+      "text": "已"
+    },
+    {
+      "offset": 95789580,
+      "duration": 3289160,
+      "text": "配置"
+    },
+    {
+      "offset": 99078750,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 100394580,
+      "duration": 3552500,
+      "text": "共享"
+    },
+    {
+      "offset": 104078750,
+      "duration": 4210410,
+      "text": "范围"
+    },
+    {
+      "offset": 114342080,
+      "duration": 3815830,
+      "text": "保存"
+    },
+    {
+      "offset": 118157910,
+      "duration": 3421250,
+      "text": "后"
+    },
+    {
+      "offset": 122763330,
+      "duration": 2500000,
+      "text": "可以"
+    },
+    {
+      "offset": 125394580,
+      "duration": 3289580,
+      "text": "马上"
+    },
+    {
+      "offset": 128815830,
+      "duration": 5000000,
+      "text": "检索"
+    },
+    {
+      "offset": 134078750,
+      "duration": 1578750,
+      "text": "和"
+    },
+    {
+      "offset": 135789580,
+      "duration": 2763330,
+      "text": "核对"
+    },
+    {
+      "offset": 138684160,
+      "duration": 4473750,
+      "text": "正文"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

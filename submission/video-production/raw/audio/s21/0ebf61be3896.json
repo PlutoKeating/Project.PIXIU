@@ -1,0 +1,170 @@
+{
+  "shot": "s21",
+  "request": {
+    "text": "暂时断开一台设备，其他设备继续工作。离线节点保留自己的本地副本；恢复连接后，通过增量传播和周期对账补齐缺失操作，最终回到一致状态。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "0ebf61be389687b801d78eea35a302100759baf9193800a358600d5d3f5c97b9",
+  "audio_sha256": "c2f994ab51f98f80e14075a9c4d802438030047ed25810f83eb30a2a4dc2b454",
+  "duration_seconds": 14.424,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 3815830,
+      "text": "暂时"
+    },
+    {
+      "offset": 4973750,
+      "duration": 3157910,
+      "text": "断开"
+    },
+    {
+      "offset": 8263330,
+      "duration": 789160,
+      "text": "一"
+    },
+    {
+      "offset": 9052500,
+      "duration": 1315830,
+      "text": "台"
+    },
+    {
+      "offset": 10500000,
+      "duration": 4868330,
+      "text": "设备"
+    },
+    {
+      "offset": 18394580,
+      "duration": 3947500,
+      "text": "其他"
+    },
+    {
+      "offset": 22473750,
+      "duration": 3684160,
+      "text": "设备"
+    },
+    {
+      "offset": 26421250,
+      "duration": 2631660,
+      "text": "继续"
+    },
+    {
+      "offset": 29184160,
+      "duration": 3947500,
+      "text": "工作"
+    },
+    {
+      "offset": 39210410,
+      "duration": 8947500,
+      "text": "离线节点"
+    },
+    {
+      "offset": 49210410,
+      "duration": 3552500,
+      "text": "保留"
+    },
+    {
+      "offset": 52894580,
+      "duration": 2236660,
+      "text": "自己"
+    },
+    {
+      "offset": 55131660,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 56710410,
+      "duration": 3026250,
+      "text": "本地"
+    },
+    {
+      "offset": 59868330,
+      "duration": 4078750,
+      "text": "副本"
+    },
+    {
+      "offset": 67368330,
+      "duration": 3289580,
+      "text": "恢复"
+    },
+    {
+      "offset": 70789580,
+      "duration": 3026250,
+      "text": "连接"
+    },
+    {
+      "offset": 73815830,
+      "duration": 3552500,
+      "text": "后"
+    },
+    {
+      "offset": 80526250,
+      "duration": 3947500,
+      "text": "通过"
+    },
+    {
+      "offset": 84736660,
+      "duration": 3289580,
+      "text": "增量"
+    },
+    {
+      "offset": 88157910,
+      "duration": 5263330,
+      "text": "传播"
+    },
+    {
+      "offset": 94605410,
+      "duration": 2105410,
+      "text": "和"
+    },
+    {
+      "offset": 96842080,
+      "duration": 3684160,
+      "text": "周期"
+    },
+    {
+      "offset": 100526250,
+      "duration": 3552500,
+      "text": "对账"
+    },
+    {
+      "offset": 104210410,
+      "duration": 3684160,
+      "text": "补齐"
+    },
+    {
+      "offset": 108157910,
+      "duration": 3421250,
+      "text": "缺失"
+    },
+    {
+      "offset": 111710410,
+      "duration": 4868330,
+      "text": "操作"
+    },
+    {
+      "offset": 119342080,
+      "duration": 4342080,
+      "text": "最终"
+    },
+    {
+      "offset": 123815830,
+      "duration": 3157910,
+      "text": "回到"
+    },
+    {
+      "offset": 127236660,
+      "duration": 3026250,
+      "text": "一致"
+    },
+    {
+      "offset": 130394580,
+      "duration": 4473750,
+      "text": "状态"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

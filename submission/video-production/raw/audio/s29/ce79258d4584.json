@@ -1,0 +1,135 @@
+{
+  "shot": "s29",
+  "request": {
+    "text": "面向家庭协作、办公交接和跨设备任务，貔貅让知识持续积累，让来源可以追溯，让共享边界由用户掌握。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "ce79258d45840cbd659deda718ca477fe33eefcc82134a24eb979992c0a694be",
+  "audio_sha256": "978d991ff511a87f205a909a308edfdf8b164aa4ab3f42e9cc2320704e739b73",
+  "duration_seconds": 10.8,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 4210410,
+      "text": "面向"
+    },
+    {
+      "offset": 5500000,
+      "duration": 3157910,
+      "text": "家庭"
+    },
+    {
+      "offset": 8789580,
+      "duration": 4868330,
+      "text": "协作"
+    },
+    {
+      "offset": 16026250,
+      "duration": 3815830,
+      "text": "办公"
+    },
+    {
+      "offset": 19973750,
+      "duration": 5131660,
+      "text": "交接"
+    },
+    {
+      "offset": 26289580,
+      "duration": 1578750,
+      "text": "和"
+    },
+    {
+      "offset": 28000000,
+      "duration": 1973750,
+      "text": "跨"
+    },
+    {
+      "offset": 29973750,
+      "duration": 2894580,
+      "text": "设备"
+    },
+    {
+      "offset": 33000000,
+      "duration": 3552500,
+      "text": "任务"
+    },
+    {
+      "offset": 40631660,
+      "duration": 3684160,
+      "text": "貔貅"
+    },
+    {
+      "offset": 44447500,
+      "duration": 1447500,
+      "text": "让"
+    },
+    {
+      "offset": 46026250,
+      "duration": 3815830,
+      "text": "知识"
+    },
+    {
+      "offset": 50105410,
+      "duration": 3815830,
+      "text": "持续"
+    },
+    {
+      "offset": 54052500,
+      "duration": 4078750,
+      "text": "积累"
+    },
+    {
+      "offset": 61684160,
+      "duration": 2236660,
+      "text": "让"
+    },
+    {
+      "offset": 64052500,
+      "duration": 3421250,
+      "text": "来源"
+    },
+    {
+      "offset": 67736660,
+      "duration": 1973750,
+      "text": "可以"
+    },
+    {
+      "offset": 69842080,
+      "duration": 4868330,
+      "text": "追溯"
+    },
+    {
+      "offset": 77868330,
+      "duration": 2105410,
+      "text": "让"
+    },
+    {
+      "offset": 80105410,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 83921250,
+      "duration": 4605410,
+      "text": "边界"
+    },
+    {
+      "offset": 88789580,
+      "duration": 1973750,
+      "text": "由"
+    },
+    {
+      "offset": 90894580,
+      "duration": 3157910,
+      "text": "用户"
+    },
+    {
+      "offset": 94184160,
+      "duration": 4473750,
+      "text": "掌握"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

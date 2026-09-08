@@ -1,0 +1,215 @@
+{
+  "shot": "s03",
+  "request": {
+    "text": "貔貅的关键创新，是把孤立的本地记忆，连接成可信设备之间的集体记忆网络。知识在端侧保存，在授权范围内共享，再由每台设备上的智能体检索和复用。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "dfbc03f700e77fb9d06f41d20d9a142682043cfdd801ecbf7ab67d9494e2673e",
+  "audio_sha256": "216d6a7f1946b5cacef26f2ece7b6f757760969610aa5a10276548859ba62e8f",
+  "duration_seconds": 15.24,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 3421250,
+      "text": "貔貅"
+    },
+    {
+      "offset": 4447500,
+      "duration": 1578750,
+      "text": "的"
+    },
+    {
+      "offset": 6289580,
+      "duration": 3552500,
+      "text": "关键"
+    },
+    {
+      "offset": 9973750,
+      "duration": 5657910,
+      "text": "创新"
+    },
+    {
+      "offset": 17210410,
+      "duration": 2105410,
+      "text": "是"
+    },
+    {
+      "offset": 19315830,
+      "duration": 1315830,
+      "text": "把"
+    },
+    {
+      "offset": 20894580,
+      "duration": 3289580,
+      "text": "孤立"
+    },
+    {
+      "offset": 24184160,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 25763330,
+      "duration": 4210410,
+      "text": "本地"
+    },
+    {
+      "offset": 30105410,
+      "duration": 4868330,
+      "text": "记忆"
+    },
+    {
+      "offset": 37605410,
+      "duration": 3815830,
+      "text": "连接"
+    },
+    {
+      "offset": 41421250,
+      "duration": 2500000,
+      "text": "成"
+    },
+    {
+      "offset": 44184160,
+      "duration": 3421250,
+      "text": "可信"
+    },
+    {
+      "offset": 47736660,
+      "duration": 3289580,
+      "text": "设备"
+    },
+    {
+      "offset": 51157910,
+      "duration": 2763330,
+      "text": "之间"
+    },
+    {
+      "offset": 53921250,
+      "duration": 1973750,
+      "text": "的"
+    },
+    {
+      "offset": 56157910,
+      "duration": 4342080,
+      "text": "集体"
+    },
+    {
+      "offset": 60631660,
+      "duration": 2894580,
+      "text": "记忆"
+    },
+    {
+      "offset": 63657910,
+      "duration": 4605410,
+      "text": "网络"
+    },
+    {
+      "offset": 74342080,
+      "duration": 4473750,
+      "text": "知识"
+    },
+    {
+      "offset": 79078750,
+      "duration": 1710410,
+      "text": "在"
+    },
+    {
+      "offset": 80789580,
+      "duration": 3552500,
+      "text": "端侧"
+    },
+    {
+      "offset": 84473750,
+      "duration": 6184160,
+      "text": "保存"
+    },
+    {
+      "offset": 92763330,
+      "duration": 2105410,
+      "text": "在"
+    },
+    {
+      "offset": 95000000,
+      "duration": 4210410,
+      "text": "授权"
+    },
+    {
+      "offset": 99342080,
+      "duration": 2500000,
+      "text": "范围"
+    },
+    {
+      "offset": 101842080,
+      "duration": 1052500,
+      "text": "内"
+    },
+    {
+      "offset": 103026250,
+      "duration": 5000000,
+      "text": "共享"
+    },
+    {
+      "offset": 110789580,
+      "duration": 1578750,
+      "text": "再"
+    },
+    {
+      "offset": 112368330,
+      "duration": 1447500,
+      "text": "由"
+    },
+    {
+      "offset": 114078750,
+      "duration": 1973750,
+      "text": "每"
+    },
+    {
+      "offset": 116052500,
+      "duration": 1710410,
+      "text": "台"
+    },
+    {
+      "offset": 117894580,
+      "duration": 3026250,
+      "text": "设备"
+    },
+    {
+      "offset": 120921250,
+      "duration": 1710410,
+      "text": "上"
+    },
+    {
+      "offset": 122631660,
+      "duration": 1447500,
+      "text": "的"
+    },
+    {
+      "offset": 124342080,
+      "duration": 3421250,
+      "text": "智能"
+    },
+    {
+      "offset": 127894580,
+      "duration": 5131660,
+      "text": "体检"
+    },
+    {
+      "offset": 134078750,
+      "duration": 3289580,
+      "text": "索"
+    },
+    {
+      "offset": 137368330,
+      "duration": 1447500,
+      "text": "和"
+    },
+    {
+      "offset": 138947500,
+      "duration": 4210410,
+      "text": "复用"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

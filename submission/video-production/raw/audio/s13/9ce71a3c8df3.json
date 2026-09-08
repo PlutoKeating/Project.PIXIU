@@ -1,0 +1,195 @@
+{
+  "shot": "s13",
+  "request": {
+    "text": "查询不要求记住原来的标题。关键词匹配、语义向量与实体关系共同召回，再做排名融合、条件过滤和结构化聚合。记忆检索本身无需额外的大模型生成步骤。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "9ce71a3c8df37aad87e89e4817049cb4047b4158d9506c93a1c5bc6ad42cdde2",
+  "audio_sha256": "404350e39a202408b9784dcba2112fe4f51c3441f11591204b2d6fcc43127b80",
+  "duration_seconds": 16.728,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 5657910,
+      "text": "查询"
+    },
+    {
+      "offset": 6947500,
+      "duration": 920830,
+      "text": "不"
+    },
+    {
+      "offset": 7868330,
+      "duration": 3289580,
+      "text": "要求"
+    },
+    {
+      "offset": 11289580,
+      "duration": 2763330,
+      "text": "记住"
+    },
+    {
+      "offset": 14315830,
+      "duration": 2762910,
+      "text": "原来"
+    },
+    {
+      "offset": 17078750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 18000000,
+      "duration": 6315830,
+      "text": "标题"
+    },
+    {
+      "offset": 30394580,
+      "duration": 5657910,
+      "text": "关键词"
+    },
+    {
+      "offset": 36184160,
+      "duration": 5000000,
+      "text": "匹配"
+    },
+    {
+      "offset": 44868330,
+      "duration": 2763330,
+      "text": "语义"
+    },
+    {
+      "offset": 47763330,
+      "duration": 5394580,
+      "text": "向量"
+    },
+    {
+      "offset": 54078750,
+      "duration": 1578750,
+      "text": "与"
+    },
+    {
+      "offset": 55789580,
+      "duration": 3947500,
+      "text": "实体"
+    },
+    {
+      "offset": 59868330,
+      "duration": 4605410,
+      "text": "关系"
+    },
+    {
+      "offset": 64736660,
+      "duration": 3815830,
+      "text": "共同"
+    },
+    {
+      "offset": 68684160,
+      "duration": 5394580,
+      "text": "召回"
+    },
+    {
+      "offset": 77763330,
+      "duration": 2236660,
+      "text": "再"
+    },
+    {
+      "offset": 80000000,
+      "duration": 1842080,
+      "text": "做"
+    },
+    {
+      "offset": 82105410,
+      "duration": 3421250,
+      "text": "排名"
+    },
+    {
+      "offset": 85657910,
+      "duration": 5394580,
+      "text": "融合"
+    },
+    {
+      "offset": 93157910,
+      "duration": 4342080,
+      "text": "条件"
+    },
+    {
+      "offset": 97631660,
+      "duration": 4605410,
+      "text": "过滤"
+    },
+    {
+      "offset": 103421250,
+      "duration": 2500000,
+      "text": "和"
+    },
+    {
+      "offset": 106052500,
+      "duration": 3289580,
+      "text": "结构"
+    },
+    {
+      "offset": 109342080,
+      "duration": 1710410,
+      "text": "化"
+    },
+    {
+      "offset": 111184160,
+      "duration": 4605410,
+      "text": "聚合"
+    },
+    {
+      "offset": 121710410,
+      "duration": 3026250,
+      "text": "记忆"
+    },
+    {
+      "offset": 124868330,
+      "duration": 5526250,
+      "text": "检索"
+    },
+    {
+      "offset": 131578750,
+      "duration": 4078750,
+      "text": "本身"
+    },
+    {
+      "offset": 135789580,
+      "duration": 3289580,
+      "text": "无需"
+    },
+    {
+      "offset": 139210410,
+      "duration": 3157910,
+      "text": "额外"
+    },
+    {
+      "offset": 142368330,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 143552500,
+      "duration": 1842080,
+      "text": "大"
+    },
+    {
+      "offset": 145394580,
+      "duration": 4473750,
+      "text": "模型"
+    },
+    {
+      "offset": 150131660,
+      "duration": 3947500,
+      "text": "生成"
+    },
+    {
+      "offset": 154210410,
+      "duration": 3815830,
+      "text": "步骤"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

@@ -1,0 +1,185 @@
+{
+  "shot": "s05",
+  "request": {
+    "text": "我们复用开放麒麟的智能体宿主和运行时，提供会话、规划与工具能力。原创的记忆适配层，把它连接到貔貅的接入、检索、安全和分布式同步引擎。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "f9b2b89c0d4fd8dc295d3d92e376028209fa9fbce897851fa26f19da71a104cc",
+  "audio_sha256": "b1e71390b02b0ed023010741a704640d8df5d0ab2bf0ca22b8945312bac2669c",
+  "duration_seconds": 14.712,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2894580,
+      "text": "我们"
+    },
+    {
+      "offset": 4052500,
+      "duration": 3421250,
+      "text": "复用"
+    },
+    {
+      "offset": 7736660,
+      "duration": 3815830,
+      "text": "开放"
+    },
+    {
+      "offset": 11684160,
+      "duration": 3157910,
+      "text": "麒麟"
+    },
+    {
+      "offset": 14842080,
+      "duration": 1710410,
+      "text": "的"
+    },
+    {
+      "offset": 16815830,
+      "duration": 4736660,
+      "text": "智能体"
+    },
+    {
+      "offset": 21684160,
+      "duration": 5131660,
+      "text": "宿主"
+    },
+    {
+      "offset": 27078750,
+      "duration": 1315830,
+      "text": "和"
+    },
+    {
+      "offset": 28526250,
+      "duration": 3552500,
+      "text": "运行"
+    },
+    {
+      "offset": 32078750,
+      "duration": 3552500,
+      "text": "时"
+    },
+    {
+      "offset": 39052500,
+      "duration": 3289580,
+      "text": "提供"
+    },
+    {
+      "offset": 42605410,
+      "duration": 4605410,
+      "text": "会话"
+    },
+    {
+      "offset": 49710410,
+      "duration": 5000000,
+      "text": "规划"
+    },
+    {
+      "offset": 54973750,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 56157910,
+      "duration": 3157910,
+      "text": "工具"
+    },
+    {
+      "offset": 59447500,
+      "duration": 3289580,
+      "text": "能力"
+    },
+    {
+      "offset": 68815830,
+      "duration": 4210410,
+      "text": "原创"
+    },
+    {
+      "offset": 73026250,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 74342080,
+      "duration": 2368330,
+      "text": "记忆"
+    },
+    {
+      "offset": 76710410,
+      "duration": 6973750,
+      "text": "适配层"
+    },
+    {
+      "offset": 85921250,
+      "duration": 1447080,
+      "text": "把"
+    },
+    {
+      "offset": 87368330,
+      "duration": 1052500,
+      "text": "它"
+    },
+    {
+      "offset": 88552500,
+      "duration": 2894580,
+      "text": "连接"
+    },
+    {
+      "offset": 91447500,
+      "duration": 1447500,
+      "text": "到"
+    },
+    {
+      "offset": 93157910,
+      "duration": 3684160,
+      "text": "貔貅"
+    },
+    {
+      "offset": 96842080,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 97763330,
+      "duration": 4473750,
+      "text": "接入"
+    },
+    {
+      "offset": 105263330,
+      "duration": 6184160,
+      "text": "检索"
+    },
+    {
+      "offset": 114078750,
+      "duration": 6842080,
+      "text": "安全"
+    },
+    {
+      "offset": 122105410,
+      "duration": 1578750,
+      "text": "和"
+    },
+    {
+      "offset": 123815830,
+      "duration": 3289580,
+      "text": "分布"
+    },
+    {
+      "offset": 127105410,
+      "duration": 1578750,
+      "text": "式"
+    },
+    {
+      "offset": 128947500,
+      "duration": 3684160,
+      "text": "同步"
+    },
+    {
+      "offset": 132763330,
+      "duration": 5000000,
+      "text": "引擎"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

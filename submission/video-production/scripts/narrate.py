@@ -66,7 +66,15 @@ async def main():
     if unknown:
         parser.error('未知镜头：' + ', '.join(sorted(unknown)))
     for shot_id in args.shots:
-        await generate(available[shot_id], args.voice, args.rate)
+        for attempt in range(1, 5):
+            try:
+                await asyncio.wait_for(generate(available[shot_id], args.voice, args.rate), 90)
+                break
+            except (OSError, asyncio.TimeoutError, edge_tts.exceptions.NoAudioReceived) as error:
+                print(shot_id, f'第 {attempt} 次请求失败：{type(error).__name__}', flush=True)
+                if attempt == 4:
+                    raise
+                await asyncio.sleep(attempt * 2)
 
 
 if __name__ == '__main__':

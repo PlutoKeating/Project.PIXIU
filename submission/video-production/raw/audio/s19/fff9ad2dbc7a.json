@@ -1,0 +1,195 @@
+{
+  "shot": "s19",
+  "request": {
+    "text": "设备之间先交换配对信息，建立双向信任。设备页区分附近发现、已信任节点和实际同步状态。只发现设备，或者只在一端配对成功，都不代表知识已经送达。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "fff9ad2dbc7ab8486df7b08cef46c2d86337a1e4891671a27fcdb1cc170ffcad",
+  "audio_sha256": "cf67953cc876296e244a1ad490868b8b521137b7569933cfec58ffd75a6d77fb",
+  "duration_seconds": 16.536,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 4078750,
+      "text": "设备"
+    },
+    {
+      "offset": 5236660,
+      "duration": 4736660,
+      "text": "之间"
+    },
+    {
+      "offset": 11157910,
+      "duration": 3157910,
+      "text": "先"
+    },
+    {
+      "offset": 14447500,
+      "duration": 3815830,
+      "text": "交换"
+    },
+    {
+      "offset": 18526250,
+      "duration": 2894580,
+      "text": "配对"
+    },
+    {
+      "offset": 21552500,
+      "duration": 4868330,
+      "text": "信息"
+    },
+    {
+      "offset": 28657910,
+      "duration": 4078750,
+      "text": "建立"
+    },
+    {
+      "offset": 33000000,
+      "duration": 3947500,
+      "text": "双向"
+    },
+    {
+      "offset": 37078750,
+      "duration": 4342080,
+      "text": "信任"
+    },
+    {
+      "offset": 47500000,
+      "duration": 4736660,
+      "text": "设备"
+    },
+    {
+      "offset": 52236660,
+      "duration": 2368330,
+      "text": "页"
+    },
+    {
+      "offset": 54868330,
+      "duration": 3815830,
+      "text": "区分"
+    },
+    {
+      "offset": 58947500,
+      "duration": 2368330,
+      "text": "附近"
+    },
+    {
+      "offset": 61447500,
+      "duration": 5000000,
+      "text": "发现"
+    },
+    {
+      "offset": 70394580,
+      "duration": 1842080,
+      "text": "已"
+    },
+    {
+      "offset": 72368330,
+      "duration": 4078750,
+      "text": "信任"
+    },
+    {
+      "offset": 76578750,
+      "duration": 4736660,
+      "text": "节点"
+    },
+    {
+      "offset": 82368330,
+      "duration": 1842080,
+      "text": "和"
+    },
+    {
+      "offset": 84342080,
+      "duration": 3815830,
+      "text": "实际"
+    },
+    {
+      "offset": 88289580,
+      "duration": 3289580,
+      "text": "同步"
+    },
+    {
+      "offset": 91710410,
+      "duration": 4605410,
+      "text": "状态"
+    },
+    {
+      "offset": 102368330,
+      "duration": 1710410,
+      "text": "只"
+    },
+    {
+      "offset": 104078750,
+      "duration": 2894580,
+      "text": "发现"
+    },
+    {
+      "offset": 107105410,
+      "duration": 5657910,
+      "text": "设备"
+    },
+    {
+      "offset": 116710410,
+      "duration": 2894580,
+      "text": "或者"
+    },
+    {
+      "offset": 119868330,
+      "duration": 1184160,
+      "text": "只"
+    },
+    {
+      "offset": 121052500,
+      "duration": 1184160,
+      "text": "在"
+    },
+    {
+      "offset": 122368330,
+      "duration": 3552500,
+      "text": "一端"
+    },
+    {
+      "offset": 126184160,
+      "duration": 2631660,
+      "text": "配对"
+    },
+    {
+      "offset": 128947500,
+      "duration": 5131660,
+      "text": "成功"
+    },
+    {
+      "offset": 136842080,
+      "duration": 1578750,
+      "text": "都"
+    },
+    {
+      "offset": 138421250,
+      "duration": 921250,
+      "text": "不"
+    },
+    {
+      "offset": 139473750,
+      "duration": 2763330,
+      "text": "代表"
+    },
+    {
+      "offset": 142500000,
+      "duration": 5394580,
+      "text": "知识"
+    },
+    {
+      "offset": 148157910,
+      "duration": 2500000,
+      "text": "已经"
+    },
+    {
+      "offset": 150789580,
+      "duration": 5263330,
+      "text": "送达"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

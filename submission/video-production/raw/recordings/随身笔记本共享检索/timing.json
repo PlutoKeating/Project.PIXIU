@@ -1,0 +1,247 @@
+{
+  "capture": "真实虚拟机像素；采样时刻范围已记录，编码为每秒三十帧",
+  "elapsed_seconds": 12.000125534948893,
+  "requested_fps": 4,
+  "frames": [
+    {
+      "file": "00000.png",
+      "started_seconds": 2.9779039323329926e-06,
+      "finished_seconds": 0.18693653598893434
+    },
+    {
+      "file": "00001.png",
+      "started_seconds": 0.2500809789635241,
+      "finished_seconds": 0.43225336400792
+    },
+    {
+      "file": "00002.png",
+      "started_seconds": 0.5002090859925374,
+      "finished_seconds": 0.7139126129914075
+    },
+    {
+      "file": "00003.png",
+      "started_seconds": 0.7501080569345504,
+      "finished_seconds": 0.9883977799909189
+    },
+    {
+      "file": "00004.png",
+      "started_seconds": 1.0000822079600766,
+      "finished_seconds": 1.207957275910303
+    },
+    {
+      "file": "00005.png",
+      "started_seconds": 1.2501074249157682,
+      "finished_seconds": 1.4896716369548813
+    },
+    {
+      "file": "00006.png",
+      "started_seconds": 1.5000949089881033,
+      "finished_seconds": 1.7191096439491957
+    },
+    {
+      "file": "00007.png",
+      "started_seconds": 1.750104037928395,
+      "finished_seconds": 1.9563613669015467
+    },
+    {
+      "file": "00008.png",
+      "started_seconds": 2.0001064549433067,
+      "finished_seconds": 2.216682444908656
+    },
+    {
+      "file": "00009.png",
+      "started_seconds": 2.2501065189717337,
+      "finished_seconds": 2.4417010869365185
+    },
+    {
+      "file": "00010.png",
+      "started_seconds": 2.5001840769546106,
+      "finished_seconds": 2.721757433959283
+    },
+    {
+      "file": "00011.png",
+      "started_seconds": 2.7500993189169094,
+      "finished_seconds": 2.9778071210021153
+    },
+    {
+      "file": "00012.png",
+      "started_seconds": 3.0000945819774643,
+      "finished_seconds": 3.1817462450126186
+    },
+    {
+      "file": "00013.png",
+      "started_seconds": 3.2501077339984477,
+      "finished_seconds": 3.496969535946846
+    },
+    {
+      "file": "00014.png",
+      "started_seconds": 3.5000769909238443,
+      "finished_seconds": 3.7194827089551836
+    },
+    {
+      "file": "00015.png",
+      "started_seconds": 3.750110593973659,
+      "finished_seconds": 3.967959764995612
+    },
+    {
+      "file": "00016.png",
+      "started_seconds": 4.000096887000836,
+      "finished_seconds": 4.228003246942535
+    },
+    {
+      "file": "00017.png",
+      "started_seconds": 4.2501151249744,
+      "finished_seconds": 4.461925879935734
+    },
+    {
+      "file": "00018.png",
+      "started_seconds": 4.500193823012523,
+      "finished_seconds": 4.719125743955374
+    },
+    {
+      "file": "00019.png",
+      "started_seconds": 4.750186494900845,
+      "finished_seconds": 4.966260890942067
+    },
+    {
+      "file": "00020.png",
+      "started_seconds": 5.000099812983535,
+      "finished_seconds": 5.200358423986472
+    },
+    {
+      "file": "00021.png",
+      "started_seconds": 5.250121854012832,
+      "finished_seconds": 5.4789554519811645
+    },
+    {
+      "file": "00022.png",
+      "started_seconds": 5.500153850996867,
+      "finished_seconds": 5.713041375973262
+    },
+    {
+      "file": "00023.png",
+      "started_seconds": 5.750133393914439,
+      "finished_seconds": 5.93558587890584
+    },
+    {
+      "file": "00024.png",
+      "started_seconds": 6.000113260932267,
+      "finished_seconds": 6.213173997937702
+    },
+    {
+      "file": "00025.png",
+      "started_seconds": 6.2501110369339585,
+      "finished_seconds": 6.4477151279570535
+    },
+    {
+      "file": "00026.png",
+      "started_seconds": 6.500115075963549,
+      "finished_seconds": 6.708290413953364
+    },
+    {
+      "file": "00027.png",
+      "started_seconds": 6.750126821920276,
+      "finished_seconds": 6.949898224906065
+    },
+    {
+      "file": "00028.png",
+      "started_seconds": 7.000108741922304,
+      "finished_seconds": 7.199165963917039
+    },
+    {
+      "file": "00029.png",
+      "started_seconds": 7.2510083159431815,
+      "finished_seconds": 7.528055279981345
+    },
+    {
+      "file": "00030.png",
+      "started_seconds": 7.528142657014541,
+      "finished_seconds": 7.746441551949829
+    },
+    {
+      "file": "00031.png",
+      "started_seconds": 7.750103827915154,
+      "finished_seconds": 7.991772237000987
+    },
+    {
+      "file": "00032.png",
+      "started_seconds": 8.000110533903353,
+      "finished_seconds": 8.21019836992491
+    },
+    {
+      "file": "00033.png",
+      "started_seconds": 8.250133806956,
+      "finished_seconds": 8.446479175938293
+    },
+    {
+      "file": "00034.png",
+      "started_seconds": 8.500121854012832,
+      "finished_seconds": 8.694419879931957
+    },
+    {
+      "file": "00035.png",
+      "started_seconds": 8.75013023999054,
+      "finished_seconds": 8.942285228986293
+    },
+    {
+      "file": "00036.png",
+      "started_seconds": 9.000119303935207,
+      "finished_seconds": 9.20492018898949
+    },
+    {
+      "file": "00037.png",
+      "started_seconds": 9.250150421983562,
+      "finished_seconds": 9.510516969952732
+    },
+    {
+      "file": "00038.png",
+      "started_seconds": 9.510614270926453,
+      "finished_seconds": 9.745657697902061
+    },
+    {
+      "file": "00039.png",
+      "started_seconds": 9.750092983944342,
+      "finished_seconds": 9.95793164591305
+    },
+    {
+      "file": "00040.png",
+      "started_seconds": 10.00008720101323,
+      "finished_seconds": 10.194133526994847
+    },
+    {
+      "file": "00041.png",
+      "started_seconds": 10.250128657906316,
+      "finished_seconds": 10.45724739995785
+    },
+    {
+      "file": "00042.png",
+      "started_seconds": 10.500114182941616,
+      "finished_seconds": 10.68471497995779
+    },
+    {
+      "file": "00043.png",
+      "started_seconds": 10.750081983976997,
+      "finished_seconds": 10.950113941915333
+    },
+    {
+      "file": "00044.png",
+      "started_seconds": 11.000119986012578,
+      "finished_seconds": 11.218345940927975
+    },
+    {
+      "file": "00045.png",
+      "started_seconds": 11.2500871559605,
+      "finished_seconds": 11.42629707697779
+    },
+    {
+      "file": "00046.png",
+      "started_seconds": 11.500217541004531,
+      "finished_seconds": 11.70977551699616
+    },
+    {
+      "file": "00047.png",
+      "started_seconds": 11.75008807296399,
+      "finished_seconds": 11.963955121929757
+    }
+  ]
+}
