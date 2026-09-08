@@ -7,6 +7,7 @@
 #include "DeliveryPage.h"
 #include "ServiceStatusPage.h"
 #include "AgentEvidenceClient.h"
+#include <QAbstractButton>
 #include <QCloseEvent>
 #include <QDialog>
 #include <QMessageBox>
@@ -83,6 +84,8 @@ bool HostCloseGuard::confirmExit(const QDialog *initiatingDialog)
         QMessageBox question(QMessageBox::Warning, tr("编辑尚未保存"),
             tr("配置有未保存的修改，或会话中有未发送的输入。是否放弃这些编辑并退出？不会发送草稿或修改后端已保存的配置。"),
             QMessageBox::Yes | QMessageBox::No, m_host);
+        question.button(QMessageBox::No)->setText(tr("保留编辑"));
+        question.button(QMessageBox::Yes)->setText(tr("放弃并退出"));
         question.setDefaultButton(QMessageBox::No);
         question.setEscapeButton(QMessageBox::No);
         if (question.exec() != QMessageBox::Yes) return false;

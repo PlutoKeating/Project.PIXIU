@@ -424,6 +424,36 @@ private slots:
         QVERIFY(host.isVisible());
         QCOMPARE(transport.writes, 0);
     }
+    void hostCloseUsesExplicitActionsAndSafeKeyboardDefaults()
+    {
+        QWidget host;
+        pixiu::HostCloseGuard guard(&host, []() { return false; }, []() { return true; });
+        host.show();
+        QString keepText, discardText;
+        bool safeDefault = false, safeEscape = false;
+        QTimer::singleShot(0, &host, [&]() {
+            auto *question = host.findChild<QMessageBox *>();
+            keepText = question->button(QMessageBox::No)->text();
+            discardText = question->button(QMessageBox::Yes)->text();
+            safeDefault = question->defaultButton() == question->button(QMessageBox::No);
+            safeEscape = question->escapeButton() == question->button(QMessageBox::No);
+            QTest::keyClick(question, Qt::Key_Return);
+        });
+        QVERIFY(!host.close());
+        QVERIFY(host.isVisible());
+        QVERIFY(safeDefault);
+        QVERIFY(safeEscape);
+        QCOMPARE(keepText, QStringLiteral("保留编辑"));
+        QCOMPARE(discardText, QStringLiteral("放弃并退出"));
+        QTimer::singleShot(0, &host, [&]() {
+            QTest::keyClick(host.findChild<QMessageBox *>(), Qt::Key_Escape);
+        });
+        QVERIFY(!host.close());
+        QTimer::singleShot(0, &host, [&]() {
+            host.findChild<QMessageBox *>()->button(QMessageBox::Yes)->click();
+        });
+        QVERIFY(host.close());
+    }
     void hostCloseUsesLiveAgentStateWithoutSubmittingOrCancelling()
     {
         QWidget host;
