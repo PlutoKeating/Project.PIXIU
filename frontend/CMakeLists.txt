@@ -61,15 +61,6 @@ if(BUILD_TESTING)
     target_link_libraries(t_contract_fixtures PRIVATE Qt5::Test Qt5::Network)
     add_test(NAME contract_fixtures COMMAND t_contract_fixtures)
 
-    add_executable(t_floating_ball
-        tests/t_floating_ball.cpp
-        src/widgets/FloatingBall.h
-        src/widgets/FloatingBall.cpp
-    )
-    target_include_directories(t_floating_ball PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_floating_ball PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME floating_ball COMMAND t_floating_ball)
-
     add_executable(t_notify_service
         tests/t_notify_service.cpp
         src/services/NotifyService.h
@@ -440,7 +431,7 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/test-upgrade-temp-isolation.sh"
         $<TARGET_FILE:t_check_update_dialog> upToDateDisablesUpgradeAndShowsLatest)
 
-    set_tests_properties(websocket_client floating_ball notify_service
+    set_tests_properties(websocket_client notify_service
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings

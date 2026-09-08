@@ -222,37 +222,6 @@
     </message>
 </context>
 <context>
-    <name>FloatingBall</name>
-    <message>
-        <source>打开聊天框</source>
-        <translation>Open chat window</translation>
-    </message>
-    <message>
-        <source>记忆面板</source>
-        <translation>Memory panel</translation>
-    </message>
-    <message>
-        <source>设置</source>
-        <translation>Settings</translation>
-    </message>
-    <message>
-        <source>退出</source>
-        <translation>Quit</translation>
-    </message>
-    <message>
-        <source>PIXIU 貔貅</source>
-        <translation>PIXIU</translation>
-    </message>
-    <message>
-        <source>监控中心</source>
-        <translation>Monitor Center</translation>
-    </message>
-    <message>
-        <source>暂停监控</source>
-        <translation>Pause monitoring</translation>
-    </message>
-</context>
-<context>
     <name>ForgetController</name>
     <message>
         <source>遗忘响应格式无法识别</source>

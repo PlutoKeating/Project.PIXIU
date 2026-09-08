@@ -44,12 +44,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
              QStringLiteral("Open sync panel"));
     QCOMPARE(QCoreApplication::translate("InputBar", "录入图片或文件"),
              QStringLiteral("Import image or file"));
-    QCOMPARE(QCoreApplication::translate("FloatingBall", "打开聊天框"),
-             QStringLiteral("Open chat window"));
-    QCOMPARE(QCoreApplication::translate("FloatingBall", "退出"),
-             QStringLiteral("Quit"));
-    QCOMPARE(QCoreApplication::translate("FloatingBall", "设置"),
-             QStringLiteral("Settings"));
     QCOMPARE(QCoreApplication::translate("InputBar", "打开设置"),
              QStringLiteral("Open settings"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),

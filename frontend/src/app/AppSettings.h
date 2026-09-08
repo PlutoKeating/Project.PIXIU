@@ -22,7 +22,6 @@ public:
     static inline const QString keyTheme = QStringLiteral("app/general/theme");
     static inline const QString keyToggleShortcut = QStringLiteral("app/shortcut/toggle");
     static inline const QString keyWindowGeometry = QStringLiteral("app/window/geometry");
-    static inline const QString keyBallPosition = QStringLiteral("app/floating_ball/position");
     static inline const QString keyMonitorEnabled =
         QStringLiteral("app/monitor/enabled");
     // 单向粘性标记：监控总闸首次开启后恒为 true（关闭不清除）。

@@ -53,7 +53,7 @@ void TestAppSettings::roundTripValues()
 void TestAppSettings::missingKeysReturnDefault()
 {
     AppSettings settings;
-    QVERIFY(settings.value(AppSettings::keyBallPosition).isNull());
+    QVERIFY(settings.value(QStringLiteral("test/missing")).isNull());
     QCOMPARE(settings.value(AppSettings::keyTheme, QStringLiteral("system")).toString(),
              QStringLiteral("system"));
 }
@@ -65,7 +65,6 @@ void TestAppSettings::keysAreStable()
     QVERIFY(!AppSettings::keyTheme.isEmpty());
     QVERIFY(!AppSettings::keyToggleShortcut.isEmpty());
     QVERIFY(!AppSettings::keyWindowGeometry.isEmpty());
-    QVERIFY(!AppSettings::keyBallPosition.isEmpty());
 }
 
 void TestAppSettings::cleanupTestCase()

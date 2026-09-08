@@ -9,7 +9,7 @@
 ## 代码基线与已知差距
 
 - 当前代码核查基线为 `a77eb8c507b2ee1f12d61f6d411e1d72a48a04a4`，产品版本 `0.1.8`；该提交不是新生产 Release。
-- `frontend/CMakeLists.txt` 仅构建保留的回归测试；独立 `pixiu-frontend` 目标、安装规则、旧 main 与 PixiuApp 装配层已删除。聊天和悬浮球等旧控件仍有专属回归，尚待逐项清理，不是第二个产品入口。
+- `frontend/CMakeLists.txt` 仅构建保留的回归测试；独立 `pixiu-frontend` 目标、安装规则、旧 main、PixiuApp 装配层及 FloatingBall 已删除。聊天等旧控件仍有专属回归，尚待逐项清理，不是第二个产品入口。
 - `build/release/debian/usr/bin/pixiu` 的通用与原生包入口均执行 `kylin-agent`，不再回退旧前端。当前宿主嵌入 `frontend/management/` 的记忆、设备及设置页。
 - Agent 构建使用固定 submodule 的导出副本及自有补丁；上游记忆设置源码被现有构建补丁排除，不能算已交付界面。
 - 旧查询入口仅调用记忆检索，不具备 Agent 循环。管理能力已接入唯一宿主，但范围配置、视觉、事件状态及全功能验收尚未统一，不能以导航接入证明迁移完成。
@@ -601,6 +601,17 @@ upgrade_controller 与 check_update_dialog 在 Qt 应用创建前各自建立 QT
 - 验收：通用 `KYSDK=OFF` 与 V11 `KYSDK=ON` 各自构建并完成真实基础操作，报告分开。
 
 ### U14：旧应用删除与残留清理
+
+FloatingBall 实现、专属回归、翻译上下文与位置键定义已删除；根构建清单与版本门
+同步清退并防止旧目标回归。AppSettings 的缺省值测试改用明确测试键，不以旧球
+位置字段维持测试。已有用户配置文件和其中数据不删除。
+替代关系：HostTray/ShortcutManager 唤起同一窗口，HostCloseGuard 保护退出，
+正式记忆与设置页面承接导航，PrivacyPage 以实际保存配置控制采集。旧角标仅为
+外部赋值的本地事件计数，不迁作可靠业务未读数量；保留正式事件失效提示及通知。
+拖动、呼吸动画与独立窗口位置不迁移；完整事件、采集和多屏矩阵仍须验收。
+重新配置、构建及资源生成通过，根回归 37/37 组通过（27.36 秒，真实升级未启用），
+正式管理 16/16 组通过（46.21 秒），宿主导出适配通过。前端/发布代码中剩余
+FloatingBall 引用仅为退役检查；四份受影响文档的全部章节标题与顺序保持不变。
 
 旧 SettingsDialog 的头文件、实现和专属测试已移除，快捷键由正式设置与 HostTray
 接管，采集入口由 PrivacyPage 接管。仍被正式宿主使用的 InfoDialog 与
