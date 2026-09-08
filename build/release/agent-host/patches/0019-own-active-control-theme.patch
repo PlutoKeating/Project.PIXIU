@@ -17,14 +17,14 @@
 +        }
 +        QCheckBox::indicator:unchecked:focus { border: 2px solid %7; }
 +        QCheckBox::indicator:unchecked:disabled { background-color: %3; border-color: %11; }
-+        QTabWidget#pixiuWorkspaces QListWidget { color: %4; background-color: %2; outline: 0; }
-+        QTabWidget#pixiuWorkspaces QListWidget::item { padding: 6px 8px; border: 1px solid transparent; }
-+        QTabWidget#pixiuWorkspaces QListWidget::item:selected {
++        QTabWidget#pixiuWorkspaces QListWidget, QFileDialog QAbstractItemView { color: %4; background-color: %2; outline: 0; }
++        QTabWidget#pixiuWorkspaces QListWidget::item, QFileDialog QAbstractItemView::item { padding: 6px 8px; border: 1px solid transparent; }
++        QTabWidget#pixiuWorkspaces QListWidget::item:selected, QFileDialog QAbstractItemView::item:selected {
 +            color: %4; background-color: %9; background-image: none;
 +            border: 1px solid %7; border-radius: 4px;
 +        }
-+        QTabWidget#pixiuWorkspaces QListWidget::item:hover:!selected { background-color: %3; }
-+        QTabWidget#pixiuWorkspaces QListWidget::item:disabled { color: %4; }
++        QTabWidget#pixiuWorkspaces QListWidget::item:hover:!selected, QFileDialog QAbstractItemView::item:hover:!selected { background-color: %3; }
++        QTabWidget#pixiuWorkspaces QListWidget::item:disabled, QFileDialog QAbstractItemView::item:disabled { color: %4; }
 +        QDateEdit {
 +            color: %4; background-color: %2;
 +            border: 1px solid %6; border-radius: 9px; padding: 8px 11px;

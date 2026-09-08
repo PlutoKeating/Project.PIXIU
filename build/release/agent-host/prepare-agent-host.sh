@@ -81,6 +81,8 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
     < "${script_dir}/patches/0024-single-host-tray.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${script_dir}/patches/0025-capture-directory-picker.patch"
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${script_dir}/patches/0026-qt-widget-translations.patch"
 install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
     "${target_source}/res/pixiu.svg"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \

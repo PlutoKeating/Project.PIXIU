@@ -1,0 +1,17 @@
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -6,1 +6,4 @@
+-#include <QIcon>
++#include <QIcon>
++#include <QLibraryInfo>
++#include <QLocale>
++#include <QTranslator>
+@@ -90,1 +93,7 @@
+-    ThemeManager::instance().applySavedTheme(&app);
++    QTranslator qtWidgetsTranslation;
++    if (qtWidgetsTranslation.load(QLocale::system(), QStringLiteral("qtbase"),
++                                  QStringLiteral("_"), QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
++        app.installTranslator(&qtWidgetsTranslation);
++    }
++
++    ThemeManager::instance().applySavedTheme(&app);

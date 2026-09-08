@@ -156,12 +156,14 @@ import sys
 source = Path(sys.argv[1]).read_text()
 # All embedded lists, including capture logs and devices, must own both
 # foreground and background even after keyboard focus moves elsewhere.
-rule = re.search(r'QTabWidget#pixiuWorkspaces QListWidget::item:selected\s*\{([^}]+)\}', source)
+rule = re.search(r'QTabWidget#pixiuWorkspaces QListWidget::item:selected, QFileDialog QAbstractItemView::item:selected\s*\{([^}]+)\}', source)
 assert rule, 'workspace-wide selected list rule is missing'
 assert 'color: %4;' in rule[1] and 'background-color: %9;' in rule[1]
 assert 'background-image: none;' in rule[1], 'native gradient may obscure selection'
 assert 'border: 1px solid %7;' in rule[1], 'selection boundary is missing'
 PY
+grep -q 'qtWidgetsTranslation.load(QLocale::system()' "${fixture}/source/src/main.cpp"
+grep -q 'app.installTranslator(&qtWidgetsTranslation)' "${fixture}/source/src/main.cpp"
 grep -q 'QWidget \*rowWidget = new QWidget(m_messagesContainer)' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'm_messagesLayout->insertWidget(qMax(0, m_messagesLayout->count() - 1), rowWidget)' "${fixture}/source/src/ui/chatwidget.cpp"
 ! grep -q 'insertLayout(qMax(0, m_messagesLayout->count() - 1), row)' "${fixture}/source/src/ui/chatwidget.cpp"
