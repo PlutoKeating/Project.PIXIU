@@ -82,15 +82,6 @@ if(BUILD_TESTING)
     target_link_libraries(t_forget_controller PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME forget_controller COMMAND t_forget_controller)
 
-    add_executable(t_forget_dialog
-        tests/t_forget_dialog.cpp
-        src/widgets/ForgetDialog.h
-        src/widgets/ForgetDialog.cpp
-    )
-    target_include_directories(t_forget_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_forget_dialog PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME forget_dialog COMMAND t_forget_dialog)
-
     add_executable(t_memory_panel
         tests/t_memory_panel.cpp
         src/widgets/MemoryPanel.h
@@ -326,7 +317,7 @@ if(BUILD_TESTING)
         $<TARGET_FILE:t_check_update_dialog> upToDateDisablesUpgradeAndShowsLatest)
 
     set_tests_properties(websocket_client notify_service
-        forget_controller forget_dialog memory_panel conflict_controller
+        forget_controller memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
         i18n

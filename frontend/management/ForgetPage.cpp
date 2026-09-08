@@ -87,6 +87,7 @@ ForgetPage::ForgetPage(QWidget *parent, BackendTransport *transport)
         if (m_pending == Pending::None) return;
         const bool preview = m_pending == Pending::Preview;
         m_pending = Pending::None;
+        bool focusCancel = false;
         if (preview) {
             const auto targets = response.value("targets").toArray();
             const auto token = response.value("confirmation_token").toString();
@@ -117,7 +118,7 @@ ForgetPage::ForgetPage(QWidget *parent, BackendTransport *transport)
                 m_token = token;
                 m_expiry->start(int(remaining));
                 m_status->setText(tr("请逐项核对后确认；取消不会发送写请求。"));
-                m_cancel->setFocus();
+                focusCancel = true;
             }
         } else if (response.value("status").toString() == "forgotten" && response.value("forgotten_ids").isArray()) {
             QStringList ids;
@@ -135,6 +136,8 @@ ForgetPage::ForgetPage(QWidget *parent, BackendTransport *transport)
             emit memoryForgotten();
         } else m_status->setText(tr("确认响应异常，结果未确认；请检索核对，不要重复确认。"));
         controls();
+        // The pending request disabled Cancel; restore it before moving focus.
+        if (focusCancel) m_cancel->setFocus();
     });
     connect(m_transport, &BackendTransport::errorOccurred, this, [this](const QString &, const QString &message, const QString &) {
         if (m_pending == Pending::None) return;

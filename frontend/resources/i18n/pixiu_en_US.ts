@@ -143,41 +143,6 @@
     </message>
 </context>
 <context>
-    <name>ForgetDialog</name>
-    <message>
-        <source>即将遗忘 %1 个目标。</source>
-        <translation>About to forget %1 target(s).</translation>
-    </message>
-    <message>
-        <source>即将遗忘：%1。</source>
-        <translation>About to forget: %1.</translation>
-    </message>
-    <message>
-        <source>
-将级联清理：证据 %1 条 · 关系 %2 条。</source>
-        <translation>
-Cascade cleanup: %1 evidence · %2 relations.</translation>
-    </message>
-    <message>
-        <source>
-此操作不可撤销。</source>
-        <translation>
-This action cannot be undone.</translation>
-    </message>
-    <message>
-        <source>确认遗忘</source>
-        <translation>Confirm forget</translation>
-    </message>
-    <message>
-        <source>取消</source>
-        <translation>Cancel</translation>
-    </message>
-    <message>
-        <source>取消遗忘</source>
-        <translation>Cancel forgetting</translation>
-    </message>
-</context>
-<context>
     <name>HttpBackendTransport</name>
     <message>
         <source>后端响应不是合法 JSON</source>

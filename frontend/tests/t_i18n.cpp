@@ -20,8 +20,6 @@ void TestI18n::englishTranslationLoadsAndApplies()
              "embedded en_US translation must be present in qrc");
     QCoreApplication::installTranslator(&translator);
 
-    QCOMPARE(QCoreApplication::translate("ForgetDialog", "取消"),
-             QStringLiteral("Cancel"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "重试"),
              QStringLiteral("Retry"));
     QCOMPARE(QCoreApplication::translate("MemoryPanel", "正在加载…"),

@@ -1016,6 +1016,36 @@ private slots:
             .contains(QStringLiteral("证据 0 条，关系 3 条")));
     }
 
+    void forgettingPreviewFocusAndKeyboardCannotImplicitlyConfirm()
+    {
+        Transport transport;
+        pixiu::ForgetPage page(nullptr, &transport);
+        page.show();
+        page.findChild<QLineEdit *>("forgetCommand")->setText("forget example");
+        auto *preview = page.findChild<QPushButton *>("forgetPreview");
+        auto *cancel = page.findChild<QPushButton *>("forgetCancel");
+        auto *confirm = page.findChild<QPushButton *>("forgetConfirm");
+        preview->setFocus();
+        preview->click();
+        QVERIFY(!cancel->isEnabled());
+        emit transport.forgetResult({{"targets", QJsonArray{QJsonObject{{"id", "k1"},
+            {"version", 1}, {"title", "<b>Example</b>"}, {"scope", "user:local"}}}},
+            {"confirmation_token", "token"}, {"expires_in_seconds", 120}});
+        QTRY_VERIFY(cancel->hasFocus());
+        QVERIFY(!confirm->autoDefault());
+        QVERIFY(!confirm->isDefault());
+        QVERIFY(page.findChild<QPlainTextEdit *>("forgetTargets")->toPlainText().contains("<b>Example</b>"));
+        for (const auto key : {Qt::Key_Return, Qt::Key_Enter, Qt::Key_Escape}) {
+            QTest::keyClick(cancel, key);
+            QCOMPARE(transport.forgetCalls, 1);
+            QVERIFY(!transport.forgetPayload.value("confirm").toBool());
+        }
+        cancel->click();
+        QCOMPARE(transport.forgetCalls, 1);
+        QVERIFY(!confirm->isEnabled());
+        QVERIFY(page.findChild<QPlainTextEdit *>("forgetTargets")->toPlainText().isEmpty());
+    }
+
     void forgettingRequiresFreshScopedPreview()
     {
         Transport transport;
