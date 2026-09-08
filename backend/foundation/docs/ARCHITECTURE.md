@@ -66,6 +66,7 @@ class Evidence(BaseModel):
     id: str; source_type: str; raw: dict
     quality_score: float; sensitivity: int
     provenance: AgentProvenance | None  # session/run/turn/tool-call/time/approval
+    capture_source: FileCaptureSource | None  # 私有文件采集元数据，与 raw 分离
     scope: str; created_at: int
 
 class KnowledgeItem(BaseModel):
@@ -207,13 +208,21 @@ FORGOTTEN，同时递增版本；任一目标缺失、状态或版本不匹配�
 完成态可安全重放，进行中/失败态保持 fail-closed。
 WAL + foreign_keys + busy_timeout 已启用。
 
+schema v13 为 `evidence` 增加独立 JSON 列 `capture_source`，旧记录默认 `{}`、
+模型回读为 `None`，不根据文件名或日志猜测路径。`FileCaptureSource` 包含
+`kind=directory`、`method=text|ocr`、绝对本地 `path` 和非负秒时间戳
+`captured_at`；仅允许私有 `user:*` 的 `MANUAL_CONFIG`/`OCR` 证据携带。
+仓储保存时再次校验，防止模型复制绕过私有域约束。字段不并入 `raw` 或知识正文。
+当前只完成模型、迁移和仓储；采集器传参与正式界面展示尚未接线，不能声称已经
+端到端保留文件来源，也不保证文件仍存在或内容未变化。无新增依赖。
+
 **Schema 概要**：
 
 ```sql
 -- 证据
 CREATE TABLE evidence (
   id TEXT PRIMARY KEY, source_type TEXT, raw JSON,
-  quality_score REAL, sensitivity INTEGER, provenance JSON,
+  quality_score REAL, sensitivity INTEGER, provenance JSON, capture_source JSON,
   scope TEXT, created_at INTEGER);
 
 CREATE TABLE agent_ingest_receipts (

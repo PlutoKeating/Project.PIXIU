@@ -28,6 +28,7 @@ SOURCE_DATE_EPOCH=0 \
 
 python3 - "${ROOT}" "${MANIFEST}" "${PRODUCT_VERSION}" <<'PY'
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -41,6 +42,9 @@ http_api = next(
     for line in version_source.splitlines()
     if line.startswith("API_VERSION = ")
 )
+
+schema_source = (root / "backend/foundation/storage/schema.py").read_text(encoding="utf-8")
+database_schema = int(re.search(r"^SCHEMA_VERSION\s*=\s*([0-9]+)", schema_source, re.MULTILINE).group(1))
 
 assert manifest["manifest_schema"] == 1
 assert manifest["product"] == {
@@ -62,7 +66,7 @@ assert manifest["build"]["git_commit"] == subprocess.check_output(
 assert manifest["interfaces"] == {
     "http_api": http_api,
     "agent_memory_api": 1,
-    "database_schema": 12,
+    "database_schema": database_schema,
 }
 assert manifest["provider"] == {"name": "pixiu", "version": product_version}
 assert manifest["host_compatibility"]["agent_runtime"]["supported"] == "0.9.x"

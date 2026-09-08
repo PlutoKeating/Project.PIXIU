@@ -122,7 +122,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
   "component": "pixiu-memory-backend",
   "api_version": "0.5.0",
   "agent_memory_api": 1,
-  "schema_version": 12
+  "schema_version": 13
 }
 ```
 
@@ -136,7 +136,7 @@ Module E 公共 API 客户端及上游 MemoryProvider 契约测试已贯通；�
   "product_version": "0.1.8",
   "component": "pixiu-memory-backend",
   "database": "ok",
-  "schema_version": 12
+  "schema_version": 13
 }
 ```
 
@@ -464,6 +464,12 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 
 按 evidence_id 获取原始证据详情，供前端 EvidenceCard「查看原文」。
 
+响应新增可空 `capture_source`，与 Agent `provenance` 独立；schema v13 已实现
+模型与存储，目录采集器及正式界面尚未接线，现有记录返回 `null`，不会补造来源。
+非空值结构为 `{"kind":"directory","method":"text","path":"/data/example.txt",
+"captured_at":1788800000}`，`method` 也可为 `ocr`；仅允许私有文件兼容来源。
+该字段不进入 `raw`，公开写入请求暂不接收该字段，也不保证原文件仍存在。
+
 **响应体（200）：**
 
 ```jsonc
@@ -474,6 +480,7 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
   "quality_score": 0.94,
   "sensitivity": 0,
   "provenance": null,
+  "capture_source": null,
   "scope": "shared:home",
   "created_at": 1714435200
 }

@@ -15,6 +15,7 @@ from backend.foundation.core.models import (
     ConflictResolution,
     Entity,
     Evidence,
+    FileCaptureSource,
     KnowledgeItem,
     KnowledgeKind,
     KnowledgeStatus,
@@ -31,6 +32,29 @@ from backend.foundation.core.models import (
 )
 
 NOW = int(time.time())
+
+
+@pytest.mark.parametrize("method", ["text", "ocr"])
+def test_file_capture_source_is_separate_private_metadata(method):
+    source = FileCaptureSource(method=method, path="/data/示例.txt", captured_at=NOW)
+    evidence = _valid_evidence(raw={"text": "example"}, capture_source=source)
+    assert evidence.capture_source == source
+    assert evidence.raw == {"text": "example"}
+    assert evidence.provenance is None
+    with pytest.raises(ValidationError, match="private evidence"):
+        _valid_evidence(scope="shared:home", capture_source=source)
+    with pytest.raises(ValidationError, match="file-compatible"):
+        _valid_evidence(source_type=SourceType.USER_BEHAVIOR, capture_source=source)
+
+
+@pytest.mark.parametrize("override", [
+    {"path": "relative.txt"}, {"path": "/"}, {"path": "/data/a\x00.txt"},
+    {"path": "/" + "x" * 4096}, {"method": "clipboard"},
+    {"kind": "screenshot"}, {"captured_at": -1}, {"invented": True},
+])
+def test_file_capture_source_rejects_invalid_metadata(override):
+    with pytest.raises(ValidationError):
+        FileCaptureSource(**({"method": "text", "path": "/data/a.txt", "captured_at": NOW} | override))
 
 # ══════════════════════════════════════════════════════════
 # Helpers

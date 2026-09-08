@@ -42,6 +42,7 @@ def _row_to_evidence(row: aiosqlite.Row) -> Evidence:
         quality_score=row["quality_score"],
         sensitivity=row["sensitivity"],
         provenance=provenance or None,
+        capture_source=json.loads(row["capture_source"] or "{}") or None,
         scope=row["scope"],
         created_at=row["created_at"],
     )
@@ -117,10 +118,13 @@ class SqliteEvidenceRepo(EvidenceRepository):
         self._db = db
 
     async def save(self, evidence: Evidence) -> str:
+        # Revalidate the private metadata rule even for copied/mutated models.
+        if evidence.capture_source is not None:
+            evidence = Evidence.model_validate(evidence.model_dump())
         await self._db.execute(
             """INSERT OR REPLACE INTO evidence (id, source_type, raw, quality_score,
-               sensitivity, provenance, scope, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+               sensitivity, provenance, capture_source, scope, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 evidence.id,
                 evidence.source_type.value,
@@ -131,6 +135,10 @@ class SqliteEvidenceRepo(EvidenceRepository):
                     evidence.provenance.model_dump(exclude_none=True)
                     if evidence.provenance
                     else {},
+                    ensure_ascii=False,
+                ),
+                json.dumps(
+                    evidence.capture_source.model_dump() if evidence.capture_source else {},
                     ensure_ascii=False,
                 ),
                 evidence.scope,

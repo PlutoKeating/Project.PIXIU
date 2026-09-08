@@ -100,6 +100,7 @@ def test_evidence_has_expected_columns(tmp_path: Path):
         "quality_score",
         "sensitivity",
         "provenance",
+        "capture_source",
         "scope",
         "created_at",
     }
@@ -321,7 +322,7 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY)")
     conn.commit()
 
-    assert apply_pending(conn) == 11
+    assert apply_pending(conn) == SCHEMA_VERSION - 1
     conn.commit()
     assert "knowledge_entities" in _table_names(conn)
     assert "memory_contexts" in _table_names(conn)
@@ -329,7 +330,7 @@ def test_pending_migrations_upgrade_v1_database(tmp_path: Path):
     assert "monitor_config" in _table_names(conn)
     assert "monitor_log" in _table_names(conn)
     assert "vector_id_map" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 12
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == SCHEMA_VERSION
     conn.close()
 
 
@@ -359,7 +360,7 @@ def test_pending_migrations_add_conflict_source_to_v6_database(tmp_path: Path):
     conn.execute("INSERT INTO _schema_version VALUES (6, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 6  # 迁移 #7 + #8 + #9 + #10 + #11 + #12
+    assert apply_pending(conn) == SCHEMA_VERSION - 6
     conn.commit()
 
     columns = {
@@ -423,7 +424,7 @@ def test_pending_migrations_add_conflict_severity_to_v7_database(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (7, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 5  # 迁移 #8 + #9 + #10 + #11 + #12
+    assert apply_pending(conn) == SCHEMA_VERSION - 7
     conn.commit()
 
     columns = {
@@ -479,7 +480,7 @@ def test_pending_migration_adds_agent_provenance_to_v9_evidence(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (9, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 3
+    assert apply_pending(conn) == SCHEMA_VERSION - 9
     conn.commit()
     row = conn.execute(
         "SELECT provenance FROM evidence WHERE id = ?",
@@ -487,7 +488,7 @@ def test_pending_migration_adds_agent_provenance_to_v9_evidence(tmp_path):
     ).fetchone()
     assert row[0] == "{}"
     assert "agent_ingest_receipts" in _table_names(conn)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 12
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == SCHEMA_VERSION
     conn.close()
 
 
@@ -513,7 +514,7 @@ def test_pending_migration_adds_retry_audit_to_v11_receipts(tmp_path):
     conn.execute("INSERT INTO _schema_version VALUES (11, 1)")
     conn.commit()
 
-    assert apply_pending(conn) == 1
+    assert apply_pending(conn) == SCHEMA_VERSION - 11
     conn.commit()
     row = conn.execute(
         """SELECT state, retry_authorized, recovery_count,
@@ -521,13 +522,35 @@ def test_pending_migration_adds_retry_audit_to_v11_receipts(tmp_path):
            FROM agent_ingest_receipts WHERE idempotency_key = 'turn-1'"""
     ).fetchone()
     assert row == ("FAILED", 0, 0, "", None)
-    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == 12
+    assert conn.execute("SELECT MAX(version) FROM _schema_version").fetchone()[0] == SCHEMA_VERSION
     conn.close()
 
 
 # ═══════════════════════════════════════════════════════
 # Group 6: no knowledge_fts / knowledge_vec tables
 # ═══════════════════════════════════════════════════════
+
+def test_v12_capture_migration_preserves_old_evidence(tmp_path: Path):
+    conn = create_connection(str(tmp_path / "test.db"))
+    conn.execute("CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL)")
+    conn.execute("INSERT INTO _schema_version VALUES (12, 1)")
+    conn.execute("""CREATE TABLE evidence (
+        id TEXT PRIMARY KEY, source_type TEXT NOT NULL, raw TEXT NOT NULL DEFAULT '{}',
+        quality_score REAL NOT NULL DEFAULT 0, sensitivity INTEGER NOT NULL DEFAULT 0,
+        provenance TEXT NOT NULL DEFAULT '{}', scope TEXT NOT NULL DEFAULT '',
+        created_at INTEGER NOT NULL)""")
+    original = ("evd_01KYSVDG0739TWR7179BEYETVT", "MANUAL_CONFIG",
+                '{"title":"example.txt","text":"example"}', 0.8, 0,
+                '{}', "user:alice", 1700000000)
+    conn.execute("INSERT INTO evidence VALUES (?, ?, ?, ?, ?, ?, ?, ?)", original)
+    conn.commit()
+    assert apply_pending(conn) == SCHEMA_VERSION - 12
+    conn.commit()
+    row = conn.execute("SELECT * FROM evidence").fetchone()
+    assert row == original + ("{}",)
+    assert apply_pending(conn) == 0
+    conn.close()
+
 
 def test_no_fts_or_vec_tables(tmp_path: Path):
     """knowledge_fts and knowledge_vec remain lazily created by repositories."""

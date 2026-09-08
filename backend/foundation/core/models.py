@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import re
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -118,6 +118,24 @@ class AgentProvenance(BaseModel):
         return self
 
 
+class FileCaptureSource(BaseModel):
+    """Private capture metadata, never part of normalized knowledge content."""
+
+    kind: Literal["directory"] = "directory"
+    method: Literal["text", "ocr"]
+    path: str = Field(min_length=2, max_length=4096)
+    captured_at: int = Field(ge=0)
+
+    @field_validator("path")
+    @classmethod
+    def _absolute_local_path(cls, value: str) -> str:
+        if not value.startswith("/") or "\x00" in value:
+            raise ValueError("capture path must be an absolute local path")
+        return value
+
+    model_config = {"extra": "forbid", "frozen": True}
+
+
 class Evidence(BaseModel):
     """原始证据（可追溯源）。
 
@@ -133,6 +151,7 @@ class Evidence(BaseModel):
     quality_score: float = Field(default=0.0, ge=0.0, le=1.0)
     sensitivity: int = Field(default=0, ge=0, le=10)
     provenance: AgentProvenance | None = None
+    capture_source: FileCaptureSource | None = None
     scope: str
     created_at: int
 
@@ -148,6 +167,11 @@ class Evidence(BaseModel):
 
     @model_validator(mode="after")
     def _validate_conversation_provenance(self) -> "Evidence":
+        if self.capture_source is not None:
+            if not self.scope.startswith("user:"):
+                raise ValueError("file capture metadata requires private evidence")
+            if self.source_type not in (SourceType.MANUAL_CONFIG, SourceType.OCR):
+                raise ValueError("file capture metadata requires a file-compatible source")
         if self.source_type == SourceType.CONVERSATION:
             provenance = self.provenance
             if provenance is None or not all(

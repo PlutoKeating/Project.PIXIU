@@ -253,6 +253,13 @@ def _add_agent_retry_audit(conn: sqlite3.Connection) -> None:
             )
 
 
+def _add_file_capture_source(conn: sqlite3.Connection) -> None:
+    """Add private file metadata without inventing provenance for existing rows."""
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(evidence)")}
+    if columns and "capture_source" not in columns:
+        conn.execute("ALTER TABLE evidence ADD COLUMN capture_source TEXT NOT NULL DEFAULT '{}'")
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -266,6 +273,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (10, "agent_provenance", _add_agent_provenance),
     (11, "agent_ingest_receipts", _add_agent_ingest_receipts),
     (12, "agent_retry_audit", _add_agent_retry_audit),
+    (13, "file_capture_source", _add_file_capture_source),
 ]
 
 

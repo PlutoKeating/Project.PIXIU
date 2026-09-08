@@ -10,7 +10,9 @@ import aiosqlite
 import pytest
 import pytest_asyncio
 
-from backend.foundation.core.models import AgentProvenance, Evidence, SourceType
+from pydantic import ValidationError
+
+from backend.foundation.core.models import AgentProvenance, Evidence, FileCaptureSource, SourceType
 from backend.foundation.storage.repository import SqliteEvidenceRepo
 from backend.foundation.storage.schema import init_db_on_connection
 
@@ -145,6 +147,35 @@ async def test_conversation_provenance_roundtrips(repo: SqliteEvidenceRepo):
 async def test_get_returns_none_for_missing_id(repo: SqliteEvidenceRepo):
     result = await repo.get("evd_" + "Z" * 26)
     assert result is None
+
+
+@pytest.mark.asyncio
+async def test_capture_source_roundtrip_is_separate_from_content(repo, tmp_path):
+    source = FileCaptureSource(method="text", path="/data/示例.txt", captured_at=NOW)
+    evd = _evd(source_type=SourceType.MANUAL_CONFIG, raw={"text": "example"}, capture_source=source)
+    await repo.save(evd)
+    fetched = [await repo.get(evd.id)]
+    fetched += await repo.get_many([evd.id])
+    fetched += await repo.list_by_scope(evd.scope)
+    async with aiosqlite.connect(str(tmp_path / "test.db")) as reopened:
+        reopened.row_factory = aiosqlite.Row
+        fetched.append(await SqliteEvidenceRepo(reopened).get(evd.id))
+    for item in fetched:
+        assert item == evd
+        assert item.raw == {"text": "example"}
+        assert item.provenance is None
+    rows = await repo._db.execute_fetchall("SELECT raw, capture_source FROM evidence")
+    assert json.loads(rows[0]["raw"]) == evd.raw
+    assert json.loads(rows[0]["capture_source"]) == source.model_dump()
+
+
+@pytest.mark.asyncio
+async def test_capture_source_cannot_be_copied_into_shared_evidence(repo):
+    evd = _evd(capture_source=FileCaptureSource(method="ocr", path="/data/a.png", captured_at=NOW))
+    await repo.save(evd)
+    with pytest.raises(ValidationError, match="private evidence"):
+        await repo.save(evd.model_copy(update={"scope": "shared:home"}))
+    assert await repo.get(evd.id) == evd
 
 
 # ═══════════════════════════════════════════════════════

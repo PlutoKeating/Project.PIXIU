@@ -96,6 +96,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
   "provenance": {"session_id": "...", "run_id": "...", "turn_id": "...",
                  "tool_call_id": null, "tool_name": null, "approved": null,
                  "occurred_at": 1788393600},
+  "capture_source": null,
   "scope": "user:alice", "created_at": "..." }
 
 // knowledge_item：结构化知识条目
@@ -278,7 +279,7 @@ query + context_hint
 
 详见 `backend/foundation/docs/ARCHITECTURE.md` 第 1.3 节。
 
-schema v12 基础表 20 张（由 `storage/schema.py` 创建）：记忆/流转类（`evidence`,
+schema v13 基础表 20 张（由 `storage/schema.py` 创建）：记忆/流转类（`evidence`,
 `knowledge_items`, `knowledge_evidence`, `knowledge_entities`, `preferences`,
 `preference_history`, `entities`, `relations`, `conflict_records`,
 `memory_contexts`）+ 同步类（`sync_identity`, `sync_peers`, `sync_state`,
