@@ -1,0 +1,29 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/全片初剪-03.mp4",
+  "video_sha256": "f1bf2a28b121177d2a5525a5abaa5edd97060603cf355de74e7aa827be9d57e9",
+  "peak_dbfs": -1.7708335895576324,
+  "probes": [
+    {
+      "declared_start_frame": 16007.0,
+      "measured_start_frame": 16008.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.7289638782145722,
+      "source_peak_frame": 16.35,
+      "source": "public/audio/s30.mp3",
+      "source_sha256": "9baf4dd30b16a4954f7cb059ced6d4926bc132325aa1cfeb7126f83c91bb92b2"
+    },
+    {
+      "declared_start_frame": 16025.0,
+      "measured_start_frame": 16026.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.458905776787738,
+      "source_peak_frame": 16.65,
+      "source": "public/audio/impact-deep-whoosh.mp3",
+      "source_sha256": "9854bff8a78fcebef95350ff0ec72a41ba449ab372bbd601b55d84de13bd626d"
+    }
+  ]
+}

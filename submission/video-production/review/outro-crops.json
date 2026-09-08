@@ -1,0 +1,119 @@
+[
+  {
+    "key": "nav",
+    "source": "raw/screenshots/50-service-version.png",
+    "source_sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85",
+    "crop": {
+      "x": 0,
+      "y": 38,
+      "w": 1440,
+      "h": 56
+    },
+    "output": "public/outro/nav.png",
+    "output_sha256": "a89245de42d667a3667c1082e7188e44811e0dc68ef7d91c3ce2f911de7bb6da"
+  },
+  {
+    "key": "task",
+    "source": "raw/screenshots/70-task-running.png",
+    "source_sha256": "158a2399dee438f83428b7999ca402876154258bc13127571104fb5e040715fe",
+    "crop": {
+      "x": 400,
+      "y": 260,
+      "w": 1000,
+      "h": 420
+    },
+    "output": "public/outro/task.png",
+    "output_sha256": "41843676ef118e6187c9c4b800dfa3ccdf5387771601a3c2599fceb4fe47ada5"
+  },
+  {
+    "key": "memory",
+    "source": "raw/screenshots/12-memory-evidence.png",
+    "source_sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e",
+    "crop": {
+      "x": 0,
+      "y": 270,
+      "w": 1440,
+      "h": 470
+    },
+    "output": "public/outro/memory.png",
+    "output_sha256": "2c2481e358a8eccadc5ffd19a78fbfc9257587632c0c801341e9a298a39c033a"
+  },
+  {
+    "key": "capture",
+    "source": "raw/screenshots/30-privacy-enabled.png",
+    "source_sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b",
+    "crop": {
+      "x": 0,
+      "y": 190,
+      "w": 1440,
+      "h": 420
+    },
+    "output": "public/outro/capture.png",
+    "output_sha256": "e2cbf4614bdd113d4f4b881b33489d6c02cf2e0d8d813a0af1564d06e636c8b9"
+  },
+  {
+    "key": "preference",
+    "source": "raw/screenshots/62-preference-changed.png",
+    "source_sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593",
+    "crop": {
+      "x": 0,
+      "y": 190,
+      "w": 1440,
+      "h": 585
+    },
+    "output": "public/outro/preference.png",
+    "output_sha256": "24e436251948610aef053535ad9d07584955d94cc9ca7b5f7525d9dfafdc0660"
+  },
+  {
+    "key": "forget",
+    "source": "raw/screenshots/25-forget-target.png",
+    "source_sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5",
+    "crop": {
+      "x": 0,
+      "y": 190,
+      "w": 1440,
+      "h": 594
+    },
+    "output": "public/outro/forget.png",
+    "output_sha256": "6e724026cfe54ce6a004cc50e2eb508cd034ef1cafbcc2693fd5fd78cc919b95"
+  },
+  {
+    "key": "shared",
+    "source": "raw/screenshots/20260909-随身笔记本共享证据.png",
+    "source_sha256": "ad66daad13e8b23da264c3a2a50f010913770fc41fecbf9192710b385b0e2a92",
+    "crop": {
+      "x": 120,
+      "y": 275,
+      "w": 1200,
+      "h": 500
+    },
+    "output": "public/outro/shared.png",
+    "output_sha256": "abcb0d7054e5d597df0714fddcceb4670da61963bf85cb76e02626a052f8fdc7"
+  },
+  {
+    "key": "insight",
+    "source": "raw/screenshots/60-insight-digest.png",
+    "source_sha256": "d6653f474c82886e8b24f3b177fac938c3c23fdb5fb9b87dfe244543e353af9c",
+    "crop": {
+      "x": 0,
+      "y": 190,
+      "w": 1440,
+      "h": 300
+    },
+    "output": "public/outro/insight.png",
+    "output_sha256": "c5c156f3ceb40ae3bae61815f5cf85aedc052e0aeae056bbf9888771119b3075"
+  },
+  {
+    "key": "devices",
+    "source": "raw/screenshots/40-device-status.png",
+    "source_sha256": "0b78fd1d8db78e4526e60dde05f8519c8e83c64b14dca19a726e3e5b68df8d85",
+    "crop": {
+      "x": 0,
+      "y": 300,
+      "w": 1440,
+      "h": 390
+    },
+    "output": "public/outro/devices.png",
+    "output_sha256": "364a17a985b1e0539de8a9e42eb6dbb37b346beb659170ab3fa4327828e807f7"
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "source_log_sha256": "3ec8128033e8e9338d017af7dc815bd6ae3466a82b00d789bcf1bec66bd0af55",
+  "session_id": "37d7d030-675b-49c2-93e5-182dc836185d",
+  "model": "kylin-default",
+  "request_roles": [
+    "system",
+    "user"
+  ],
+  "model_call_count": 1,
+  "fact_present": false,
+  "memory_fence_present": false,
+  "provider_scope_instruction_present": true,
+  "pixiu_tool_names": [
+    "pixiu_memory_search",
+    "pixiu_memory_remember",
+    "pixiu_memory_update",
+    "pixiu_memory_forget",
+    "pixiu_sync_status"
+  ],
+  "assistant_tool_call_count": 0,
+  "model_duration_seconds": 7.495316028594971,
+  "agent_creation_seconds": 985.565,
+  "boundary": "从实际请求日志提取匹配标志与时序；不导出完整系统提示、私有路径或凭据。"
+}

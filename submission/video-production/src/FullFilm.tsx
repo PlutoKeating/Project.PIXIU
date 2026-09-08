@@ -5,10 +5,22 @@ import {BrandInkOpen} from './BrandInkOpen';
 import {PaperTitleCard} from './PaperTitleCard';
 import {TimedCaption} from './NarratedChapter';
 import {PageCam} from './PageCam';
+import {SceneOutroLive} from './SceneOutro';
 
 type Shot = typeof timeline.shots[number];
 const INK = '#172033', BLUE = '#1456b8', MUTED = '#526477';
 export const FILM_DURATION = timeline.duration;
+export const OUTRO_SHOT = timeline.shots.find((shot) => shot.id === 's30')!;
+// Measured on this Remotion 4.0.484 / AAC 48 kHz / MP4 pipeline;
+// independent impact and narration probes agree within 0.01 frame.
+export const OUTPUT_AUDIO_OFFSET_F = 1.28;
+const peakStart = (target: number, sourcePeak: number) =>
+  Math.max(0, Math.round(target - sourcePeak - OUTPUT_AUDIO_OFFSET_F));
+export const SFX = [
+  {shot: 's30', offset: Math.round(5 - OUTPUT_AUDIO_OFFSET_F), src: 'audio/riser-cine.mp3', volume: 0.20},
+  {shot: 's30', offset: peakStart(50, 16.65), src: 'audio/impact-deep-whoosh.mp3', volume: 0.35},
+  {shot: 's30', offset: peakStart(70, 44.25), src: 'audio/sparkle.mp3', volume: 0.18},
+];
 const SCREENS: Record<string, string[]> = {
   s04: ['50-service-version.png'],
   s06: ['70-task-running.png', '72-task-stop-result.png'],
@@ -78,7 +90,7 @@ const ScreenScene: React.FC<{shot: Shot}> = ({shot}) => {
   const segment = Math.min(files.length-1, Math.floor(frame / (shot.duration / files.length)));
   const file = files[segment];
   const floating = file.startsWith('20260909-');
-  const crop = shot.id === 's24' ? {x: 0, y: 190, w: 1440, h: 598}
+  const crop = shot.id === 's24' ? {x: 0, y: 190, w: 1440, h: 594}
     : {x: floating ? 120 : 0, y: 38, w: floating ? 1200 : 1440, h: 740};
   const pageH = 1920 * crop.h / crop.w;
   const zoom = Math.min(0.77, 750 / pageH);
@@ -114,16 +126,24 @@ const RecordedScene: React.FC<{shot: Shot}> = ({shot}) => {
 const ShotScene: React.FC<{shot: Shot}> = ({shot}) => {
   const title = ['s02', 's18', 's29', 's30'].includes(shot.id);
   return <AbsoluteFill style={{background: '#f6f7f9', color: INK, fontFamily: '"Noto Sans CJK SC", sans-serif'}}>
-    {shot.id === 's01' ? <BrandInkOpen /> : title ? <PaperTitleCard duration={shot.duration} fontSize={76}
+    {shot.id === 's30' ? <SceneOutroLive duration={shot.duration} />
+      : shot.id === 's01' ? <BrandInkOpen /> : title ? <PaperTitleCard duration={shot.duration} fontSize={76}
       words={[{text: shot.title.split('，')[0], accent: true}, {text: shot.title.split('，').slice(1).join('，')}]}
       sub={shot.id === 's30' ? 'PIXIU · 面向麒麟智能体的分布式集体记忆' : shot.chapter} />
       : ['s20', 's25'].includes(shot.id) ? <RecordedScene shot={shot} />
       : SCREENS[shot.id] ? <ScreenScene shot={shot} /> : <PanelScene shot={shot} />}
     {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: 45, fontWeight: 700}}>{shot.title}</div> : null}
-    <Sequence from={shot.audio_from}><Audio src={staticFile(shot.audio)} /></Sequence>
+    <Sequence from={Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F))}>
+      <Audio src={staticFile(shot.audio)} />
+    </Sequence>
+    {SFX.filter((sfx) => sfx.shot === shot.id).map((sfx) => <Sequence key={sfx.src} from={sfx.offset}>
+      <Audio src={staticFile(sfx.src)} volume={sfx.volume} />
+    </Sequence>)}
     <TimedCaption captions={shot.captions} />
   </AbsoluteFill>;
 };
+
+export const OutroReview: React.FC = () => <AbsoluteFill><Fonts /><ShotScene shot={OUTRO_SHOT} /></AbsoluteFill>;
 
 export const FullFilmDraft: React.FC = () => <AbsoluteFill>
   <Fonts />

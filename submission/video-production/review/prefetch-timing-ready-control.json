@@ -1,0 +1,8 @@
+{
+  "scenario": "新会话缓存读取时序对照",
+  "query_ready_before_read": true,
+  "first_turn_context": "周六上午九点一起整理书房，书籍按主题分类。",
+  "after_completion_context": "",
+  "first_turn_has_memory": true,
+  "boundary": "真实 provider 与受控 API 响应；不是实际模型请求追踪或端到端回答验证。"
+}

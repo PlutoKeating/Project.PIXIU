@@ -1,0 +1,38 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/片尾组装审阅-02.mp4",
+  "video_sha256": "25906ee8aa18d2e4ed484d661e51f228b56a23cb2479f367e5a59e2eddbf26c1",
+  "peak_dbfs": -4.963744979898136,
+  "probes": [
+    {
+      "declared_start_frame": 32.0,
+      "measured_start_frame": 33.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.4588195633437935,
+      "source_peak_frame": 16.65,
+      "source": "public/audio/impact-deep-whoosh.mp3",
+      "source_sha256": "9854bff8a78fcebef95350ff0ec72a41ba449ab372bbd601b55d84de13bd626d"
+    },
+    {
+      "declared_start_frame": 24.0,
+      "measured_start_frame": 25.28,
+      "pipeline_offset_frames": 1.28,
+      "normalized_correlation": 0.05243419391012627,
+      "source_peak_frame": 44.25,
+      "source": "public/audio/sparkle.mp3",
+      "source_sha256": "c4ee1a64554bd413082173cd2045aacd5a65189a43c9d8f309530744e86098ad"
+    },
+    {
+      "declared_start_frame": 14.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.7291692729707699,
+      "source_peak_frame": 16.35,
+      "source": "public/audio/s30.mp3",
+      "source_sha256": "9baf4dd30b16a4954f7cb059ced6d4926bc132325aa1cfeb7126f83c91bb92b2"
+    }
+  ]
+}

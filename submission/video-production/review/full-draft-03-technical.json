@@ -1,0 +1,29 @@
+{
+  "programs": [],
+  "stream_groups": [],
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 1080,
+      "r_frame_rate": "30/1",
+      "side_data_list": [
+        {}
+      ]
+    },
+    {
+      "codec_name": "aac",
+      "r_frame_rate": "0/0"
+    }
+  ],
+  "format": {
+    "duration": "543.146667",
+    "size": "40689930"
+  },
+  "full_decode": "passed",
+  "source_sha256": {
+    "FullFilm.tsx": "897142d2b437a413f6f971513ee1d4714028d4257d3b3fcfacf69d167746f094",
+    "SceneOutro.tsx": "096477e15b4a53f1c58245368743bc93e6a018533c1ae5a5865e6014740e9c89",
+    "timeline.json": "efa528c61ef326fc2fe7264f6b1503e655d749dca78e0acf4264628dd20271c1"
+  }
+}

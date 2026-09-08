@@ -1,0 +1,31 @@
+{
+  "status": 200,
+  "body": {
+    "id": "evd_01M213Y0HPR60443KRHJ4BA5A9",
+    "source_type": "CONVERSATION",
+    "raw": {
+      "title": "从已有的家庭共享记忆中，周六书房有什么安排？请用中文一句话回答，并标注记忆来源。",
+      "body": {
+        "user": "从已有的家庭共享记忆中，周六书房有什么安排？请用中文一句话回答，并标注记忆来源。",
+        "assistant": "周六（9月5日）福山书院城市书房安排了朗诵主持课，时间为13:30–15:30和14:30–16:00[1]；文登区图书馆举办朗诵艺术沙龙《不负韶华，向阳而生》，时间为14:30–16:30[2]；观云山居城市书房开展“追梦赤子”系列观影活动，时间为18:30[2]；圣经山路碧桂园·珺悦府北门有阅读文化传统故事活动，时间为9:00–10:00[2]；文登区米山路171号有儿童绘本阅读活动，时间为8:40–9:40[2]。"
+      },
+      "entities": [],
+      "relations": [],
+      "content_hash": "bf0c124ee57b8e5ce8aef90a3c3f31b7ac39ff7784a11633a3ccd857635fc821"
+    },
+    "quality_score": 0.76,
+    "sensitivity": 0,
+    "provenance": {
+      "session_id": "37d7d030-675b-49c2-93e5-182dc836185d",
+      "run_id": "run-13a6fbec6d5f48339882a318774f09a2",
+      "turn_id": "turn-000001",
+      "tool_call_id": null,
+      "tool_name": null,
+      "approved": null,
+      "occurred_at": 1788891562
+    },
+    "capture_source": null,
+    "scope": "shared:home",
+    "created_at": 1788891562
+  }
+}
