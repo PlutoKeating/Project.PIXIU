@@ -1,0 +1,52 @@
+{
+  "source_counts": [
+    [
+      "MANUAL_CONFIG",
+      4
+    ]
+  ],
+  "monitor_config_restored": {
+    "enabled": false,
+    "sources": {
+      "directory": false,
+      "clipboard": false,
+      "behavior": false,
+      "screenshot": false
+    },
+    "directories": []
+  },
+  "private_environment_restored": true,
+  "demo_backend_restarted": true,
+  "assessment": "未取得USER_BEHAVIOR自动落库证据；不得作为成功素材。三次公开窗口已结束。",
+  "observations": [
+    "启动日志确认Behavior collector started",
+    "服务进程DISPLAY=:0，PIXIU_MONITOR_ENABLED=true",
+    "服务同等环境可运行xprop",
+    "公开窗口活动ID可读，关闭后为0x0",
+    "两次额外25秒及15秒窗口复核后仍无行为证据",
+    "本次没有调用memory/write伪造行为来源"
+  ],
+  "health_after_restore": {
+    "status": 200,
+    "body": {
+      "status": "ready",
+      "product_version": "0.1.9",
+      "component": "pixiu-memory-backend",
+      "database": "ok",
+      "schema_version": 13
+    }
+  },
+  "config_after_restart": {
+    "status": 200,
+    "body": {
+      "enabled": false,
+      "sources": {
+        "directory": false,
+        "clipboard": false,
+        "behavior": false,
+        "screenshot": false
+      },
+      "directories": []
+    }
+  }
+}

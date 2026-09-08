@@ -1,0 +1,36 @@
+{
+  "environment": "V11演示机新增x11-utils 7.7+6-ok1k0.1；X11示例窗口；隔离演示服务临时启用monitor运行时",
+  "before": {
+    "status": 200,
+    "body": {
+      "enabled": false,
+      "sources": {
+        "directory": false,
+        "clipboard": false,
+        "behavior": false,
+        "screenshot": false
+      },
+      "directories": []
+    }
+  },
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ready",
+      "product_version": "0.1.9",
+      "component": "pixiu-memory-backend",
+      "database": "ok",
+      "schema_version": 13
+    }
+  },
+  "enabled": {
+    "enabled": true,
+    "sources": {
+      "directory": false,
+      "clipboard": false,
+      "behavior": true,
+      "screenshot": false
+    },
+    "directories": []
+  }
+}
