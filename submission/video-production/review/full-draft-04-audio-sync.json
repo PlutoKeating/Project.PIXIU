@@ -1,0 +1,29 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/全片初剪-04.mp4",
+  "video_sha256": "3176af2a932762dbfecee32730b3909826da264d79699a48fe92bc8bf614d073",
+  "peak_dbfs": -1.7708335895576324,
+  "probes": [
+    {
+      "declared_start_frame": 10231.0,
+      "measured_start_frame": 10232.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.9999618747631963,
+      "source_peak_frame": 582.75,
+      "source": "public/audio/s20.mp3",
+      "source_sha256": "5e2dc80ac832685cec3a79095dd1244e64a7cbdbb719592b1a2d0de233498173"
+    },
+    {
+      "declared_start_frame": 11131.0,
+      "measured_start_frame": 11132.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.9999669588902347,
+      "source_peak_frame": 358.35,
+      "source": "public/audio/s21.mp3",
+      "source_sha256": "abce4f51bbd30aeb8e47b1fede6dc02cce301e5a03b98ea82fbc5a09297ff333"
+    }
+  ]
+}
