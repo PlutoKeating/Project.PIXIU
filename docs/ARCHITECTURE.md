@@ -210,20 +210,26 @@ query + context_hint
 
 ### 3.7 被动监控（目录监视 + 行为采集）
 
-✅ **已实现**（批次①掌控层 2026-08-26 / 批次②目录监视 2026-08-26 / 批次③行为采集
-2026-08-29，均合入 main）：
+当前实现与验收边界如下，不能以旧独立前端的通过记录代表唯一宿主：
 
-- **掌控层**：前端 MonitorController + 监控中心双 Tab 面板、托盘/悬浮球/设置三处
-  暂停入口与 ⏸ 徽标；`/monitor/config` 读写 + `/monitor/log` 分页 + `capture_event`
-  WS 广播；配置持久化并热生效（GET/PUT 全量提交）。
-- **目录监视**：后端常驻 monitor daemon（Module C，独立于前端生命周期）；
-  watchdog 防抖 + 稳定性检查 → 图片走麒麟 OCR 管线、文本走 ingest 管线入库；
-  敏感条目按 detector 结果以 `sensitive_quarantined` 广播，不入 `shared:*`。
-- **行为采集**：BehaviorCollector 轮询窗口焦点 + 应用活跃时长，产出 USER_BEHAVIOR
-  evidence（`{"app","title","focus_seconds","hour_bucket","day_type"}`），敏感标题
-  fail-closed 丢弃；无 X 环境降级不采集。
-- **默认状态**：`PIXIU_MONITOR_ENABLED` 代码默认关，随包 `pixiu.env` 置 1（产品
-  默认开）；`config.enabled` 为独立门控。
+- **掌控层**：唯一宿主“设置 → 采集与隐私”的 `PrivacyPage` 消费
+  `/monitor/config`、`/monitor/log` 和事件失效通知。先读取完整配置，再显式全量
+  保存；配置由后端 SQLite 持久化，不使用旧 MonitorController 的 QSettings 镜像。
+  目录浏览只改草稿，不开启采集；旧监控中心及其专属测试仍待清退，不是产品入口。
+  剪贴板与自动截图明确未实现，保存时保留既有字段，不提供虚假可用开关。
+- **目录监视**：后端组件独立于 GUI 生命周期，非递归监视经防抖和稳定性检查后
+  捕获；文本直读与图片 OCR 依赖不同，图片成功必须核对实际 OCR 适配结果。
+  入库只接受私有 `user:*` 范围；`sensitive_quarantined` 条目仍可能已经保存，
+  不等于拒绝入库或独立隔离库。日志摘要含文件名，不可视为已脱敏。
+- **行为采集**：BehaviorCollector 经 xprop 读取活动窗口并聚合应用活跃时长，
+  产出 USER_BEHAVIOR evidence；敏感标题拒绝捕获。xprop 失败、无活动窗口时降级
+  不采集，不能把 X11 路径称为已覆盖全部原生 Wayland 窗口或麒麟 SDK 验收。
+- **默认状态**：随包 `PIXIU_MONITOR_ENABLED=1` 允许启动后台组件，不代表采集授权。
+  持久化配置尚未创建时，总闸和四来源均关闭、目录为空。有效采集同时受授权开关
+  门控；保存成功不等于 watcher 已成功应用，关闭也不保证所有在途写入已经撤销。
+- **日志与验收**：正式页分页显示 UTC、来源、状态、摘要及关联 ID，允许显式复制；
+  WS 只通知页面重读，不把广播帧拼成权威历史。中文目录选择和基本复制已有原生
+  实测；主题修复、完整 OCR/行为/权限/停止竞态仍按统一计划继续验收。
 
 ### 3.8 主动递送（洞察流 / 定时简报 / 相关性提醒）
 
