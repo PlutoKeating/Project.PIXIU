@@ -1006,6 +1006,12 @@ async def forget(
             expected = forget_previews.consume(body.confirmation_token, body.command, body.scope)
         except ValueError as exc:
             raise HTTPException(status_code=409, detail="FORGET_PREVIEW_REQUIRED") from exc
+        # Validate every reviewed target before any local deletion. An unscoped
+        # preview can include several domains; never infer scope from the request.
+        for knowledge_id in expected:
+            item = await knowledge_repo.get(knowledge_id)
+            if item is not None:
+                await _require_writable_shared_scope(item.scope, sync)
     try:
         result = await security.forget(body.command, confirm=body.confirm,
                                        scope=body.scope, expected_targets=expected)

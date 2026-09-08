@@ -157,6 +157,32 @@ def test_wrong_shared_domain_update_preserves_record_and_receipts(client):
         assert list(db.iterdump()) == before
 
 
+@pytest.mark.parametrize("scope", [None, "shared:home"])
+def test_wrong_shared_domain_forget_preserves_records_and_consumes_preview(client, scope):
+    knowledge_id = _write_knowledge_id(client, title="shared forget domain guard",
+                                      scope="shared:home")
+    private_id = _write_knowledge_id(client, title="shared forget domain guard",
+                                    scope="user:private")
+    request = {"command": "忘记shared forget domain guard", "scope": scope}
+    preview_response = client.post("/forget", json=request)
+    assert preview_response.status_code == 200
+    preview = preview_response.json()
+    expected_ids = {knowledge_id, private_id} if scope is None else {knowledge_id}
+    assert {item["id"] for item in preview["targets"]} == expected_ids
+    di_module.settings.sync_domain = "shared:new-domain"
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        before = list(db.iterdump())
+    client._transport.raise_server_exceptions = False
+    payload = {**request, "confirm": True,
+               "confirmation_token": preview["confirmation_token"]}
+    response = client.post("/forget", json=payload)
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        assert list(db.iterdump()) == before, "failed confirmation changed stored memory"
+    assert response.status_code == 403
+    assert response.json()["error"] == "SHARED_SCOPE_MISMATCH"
+    assert client.post("/forget", json=payload).status_code == 409
+
+
 def test_capabilities_exposes_actual_noncompliant_portable_runtime(client):
     response = client.get("/capabilities")
 
@@ -1396,7 +1422,7 @@ def _write_knowledge_id(client, *, title: str, scope: str) -> str:
     )
     assert written.status_code == 200
     queried = client.post(
-        "/memory/query", json={"text": title, "context_hint": {"top_k": 1}}
+        "/memory/query", json={"text": title, "context_hint": {"top_k": 1, "scope": scope}}
     )
     assert queried.status_code == 200
     knowledge_id = queried.json()["source_knowledge"]
