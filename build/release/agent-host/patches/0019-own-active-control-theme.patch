@@ -17,14 +17,14 @@
 +        }
 +        QCheckBox::indicator:unchecked:focus { border: 2px solid %7; }
 +        QCheckBox::indicator:unchecked:disabled { background-color: %3; border-color: %11; }
-+        QListWidget#memorySources, QListWidget#auditRecords { color: %4; background-color: %2; outline: 0; }
-+        QListWidget#memorySources::item, QListWidget#auditRecords::item { padding: 6px 8px; border: 1px solid transparent; }
-+        QListWidget#memorySources::item:selected, QListWidget#auditRecords::item:selected {
++        QTabWidget#pixiuWorkspaces QListWidget { color: %4; background-color: %2; outline: 0; }
++        QTabWidget#pixiuWorkspaces QListWidget::item { padding: 6px 8px; border: 1px solid transparent; }
++        QTabWidget#pixiuWorkspaces QListWidget::item:selected {
 +            color: %4; background-color: %9; background-image: none;
 +            border: 1px solid %7; border-radius: 4px;
 +        }
-+        QListWidget#memorySources::item:hover:!selected, QListWidget#auditRecords::item:hover:!selected { background-color: %3; }
-+        QListWidget#memorySources::item:disabled, QListWidget#auditRecords::item:disabled { color: %4; }
++        QTabWidget#pixiuWorkspaces QListWidget::item:hover:!selected { background-color: %3; }
++        QTabWidget#pixiuWorkspaces QListWidget::item:disabled { color: %4; }
 +        QDateEdit {
 +            color: %4; background-color: %2;
 +            border: 1px solid %6; border-radius: 9px; padding: 8px 11px;
