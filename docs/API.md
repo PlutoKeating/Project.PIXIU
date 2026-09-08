@@ -455,13 +455,21 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 {
   "id": "evd_01H...",
   "source_type": "OCR",
-  "raw": { "...": "写入时的原始结构化内容" },
+  "raw": { "...": "经接入管线清洗和标准化的证据内容" },
   "quality_score": 0.94,
   "sensitivity": 0,
+  "provenance": null,
   "scope": "shared:home",
   "created_at": 1714435200
 }
 ```
+
+`raw` 是 connector、清洗和标准化后的证据载荷，并非原始文件字节。
+`provenance` 为可空的 `AgentProvenance`，承载 session/run/turn、工具调用、审批
+及发生时间，不承载目录路径。当前目录桥接默认以 `MANUAL_CONFIG` 入库文本或
+OCR 结果，保留文件名标题和正文，未保存原始文件定位；该枚举不能单独证明内容
+由用户手工输入，也不能因 provenance 为空就判定目录采集失败。目录来源及其
+证据关联可从 `/monitor/log` 核对，当前接口不提供由 evidence 打开原文件的保证。
 
 ### 3.4 POST /memory/ocr
 
@@ -917,7 +925,7 @@ inotify 监视点），无需重启。每次成功写入追加一条 `state_chan
       "ts": 1756080000,
       "source": "directory|clipboard|behavior|screenshot|system",
       "status": "ingested|sensitive_quarantined|ignored|state_changed",
-      "summary": "记住文件 支出清单.xlsx",
+      "summary": "记住文件 支出清单.txt",
       "evidence_id": "evd_...",
       "knowledge_id": "knw_..."
     }
@@ -928,8 +936,10 @@ inotify 监视点），无需重启。每次成功写入追加一条 `state_chan
 字段说明：`ts` Unix 秒时间戳；`source` 含 `system`（监控自身状态变更，
 如总闸开闭）；`status` 四态（ingested / sensitive_quarantined / ignored /
 state_changed）；`evidence_id`/`knowledge_id` 事件未产生入库时允许缺失或为
-null。`summary` 由服务端生成用户可读文案，**不含敏感原文全文**（隔离类条目
-只给脱敏摘要）。
+null。目录桥接的 `summary` 不包含文件正文，但包含未经脱敏的文件名；敏感条目
+同样使用 `隔离敏感文件 <文件名>`，不能将其称为已脱敏摘要。不得把可能含有
+私人信息的文件名直接用于公开截图或系统通知。当前文本直读支持 `.txt/.md/.csv`，
+不支持的后缀产生 `ignored`，不能以 `.xlsx` 示例暗示已支持表格解析。
 
 ### 3.21 POST /sync/pair/request
 
