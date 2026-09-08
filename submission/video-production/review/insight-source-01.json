@@ -1,0 +1,50 @@
+{
+  "status": "洞察来源链素材已补齐，尚未接入s26",
+  "sources": [
+    {
+      "path": "raw/20260909-洞察进入-4K.png",
+      "sha256": "a1a2a9a8ead05703fa8160e9e644af34e78fed78e81673a5df09359b5d901625"
+    },
+    {
+      "path": "raw/20260909-洞察与当日简报-4K.png",
+      "sha256": "9860f7f7de3b7f1cbb92cf35235c03787a446c6527f9cc12dfab498186f18e5e"
+    },
+    {
+      "path": "raw/20260909-洞察标题检索-4K.png",
+      "sha256": "2d903d897e342d5c2f0ec75013f1872c266d9a1924ccf8e03fa3b910a51c105c"
+    },
+    {
+      "path": "raw/20260909-洞察来源正文-4K.png",
+      "sha256": "2f8c104d449fd5b2cc3de48095366e61ae1adfdb0a694b711c7b486671346847"
+    },
+    {
+      "path": "raw/video/洞察到来源-4K/原始录屏.mp4",
+      "sha256": "bb53e9e70739aa9a1258edf75854e361e9bf7ab54069d7c94a68283137ef2d20"
+    },
+    {
+      "path": "raw/video/洞察到来源-4K-02/原始录屏.mp4",
+      "sha256": "e999a3f2c4850ba1534dce7d7e46f738f88cd9fbf47a7305250177735300df54"
+    }
+  ],
+  "api": "raw/network/洞察来源链路-01.json",
+  "knowledge": "knw_01M21H88A584HTG7N7KCMJJAFW",
+  "evidence": "evd_01M21H88A1JV13PSB16GREG3DQ",
+  "recordings": [
+    {
+      "path": "raw/video/洞察到来源-4K",
+      "boundary": "28.511秒，47帧；包括刷新洞察、简报读取、标题检索，不包括来源点击。末帧右侧仍为空。"
+    },
+    {
+      "path": "raw/video/洞察到来源-4K-02",
+      "boundary": "18.089秒，31帧；包含刷新、重新选择候选、按标题检索、来源点击与正文。已检查原始0、7、12、30帧。"
+    }
+  ],
+  "decode_passed": true,
+  "meaning": [
+    "合成示例写入隔离演示库user:local；非真实用户资料",
+    "API再次查询同一标题返回相同知识ID和关联证据",
+    "候选分数0.775，UI四舍五入显示0.78",
+    "当日简报为当日无新记忆；手动写入不等于monitor_log采集计数",
+    "选择洞察是按标题检索，不是按知识ID直接打开"
+  ]
+}

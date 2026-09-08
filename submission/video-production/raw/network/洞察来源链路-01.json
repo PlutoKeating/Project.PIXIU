@@ -1,0 +1,88 @@
+{
+  "records": [
+    {
+      "label": "写入前候选",
+      "path": "/delivery/insights?limit=3",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "insights": []
+        }
+      }
+    },
+    {
+      "label": "写入合成月末流程",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "scope": "user:local",
+        "idempotency_key": "video-insight-source-01",
+        "raw": {
+          "title": "家庭月末归档步骤",
+          "body": {
+            "内容": "先核对本月水电燃气账单，再按月份归档凭证，最后同步家庭共同约定。仅用于公开操作演示。"
+          }
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M21H88A1JV13PSB16GREG3DQ",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 819
+        }
+      }
+    },
+    {
+      "label": "写入后候选",
+      "path": "/delivery/insights?limit=3",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "insights": [
+            {
+              "title": "家庭月末归档步骤",
+              "summary": "家庭月末归档步骤",
+              "knowledge_id": "knw_01M21H88A584HTG7N7KCMJJAFW",
+              "score": 0.775,
+              "kind": "recent"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "当日采集简报",
+      "path": "/delivery/digest",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "date": "2026-09-09",
+          "summary": "当日无新记忆"
+        }
+      }
+    },
+    {
+      "label": "标题检索再次同源核对",
+      "output": {
+        "status": 200,
+        "body": {
+          "answer": "家庭月末归档步骤",
+          "source_evidence": [
+            "evd_01M21H88A1JV13PSB16GREG3DQ"
+          ],
+          "source_knowledge": "knw_01M21H88A584HTG7N7KCMJJAFW",
+          "confidence": 1.0,
+          "latency_ms": 0
+        }
+      }
+    }
+  ]
+}
