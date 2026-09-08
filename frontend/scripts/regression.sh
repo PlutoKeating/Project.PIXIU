@@ -1,72 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# PIXIU 前端自动化回归（Phase 8 本地基线）。
-#
-# 覆盖：
-#   - PIXIU_HAVE_KYSDK=OFF / ON 两路径 configure + build
-#   - ctest 全量（offscreen）
-#   - KYSDK 路径 offscreen 冒烟（应用成功启动并挂载主题/窗口/快捷键）
-#   - desktop-file-validate
-#   - 委托 build/release 执行整包构建
-#
-# 用法：
-#   scripts/regression.sh
-#   OFF_BUILD=/tmp/pixiu-off ON_BUILD=/tmp/pixiu-on scripts/regression.sh
+# One product host; run each platform independently (OFF by default).
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+BUILD_ROOT="${PIXIU_REGRESSION_BUILD_DIR:-${ROOT}/frontend/build/regression}"
+KYSDK_MODE="${PIXIU_KYSDK:-OFF}"
+case "${KYSDK_MODE}" in ON|OFF) ;; *) echo "PIXIU_KYSDK must be ON or OFF" >&2; exit 2 ;; esac
+mkdir -p "${BUILD_ROOT}"
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OFF_BUILD="${OFF_BUILD:-${ROOT}/build/regression-off}"
-ON_BUILD="${ON_BUILD:-${ROOT}/build/regression-on}"
+cmake -S "${ROOT}/frontend" -B "${BUILD_ROOT}/contracts" -G Ninja -DBUILD_TESTING=ON
+cmake --build "${BUILD_ROOT}/contracts" --parallel 2
+QT_QPA_PLATFORM=offscreen ctest --test-dir "${BUILD_ROOT}/contracts" --output-on-failure
+cmake -S "${ROOT}/frontend/management" -B "${BUILD_ROOT}/management" -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
+cmake --build "${BUILD_ROOT}/management" --parallel 2
+QT_QPA_PLATFORM=offscreen ctest --test-dir "${BUILD_ROOT}/management" --output-on-failure
 
-run_off() {
-    echo "==> [OFF] configure + build"
-    cmake -S "${ROOT}" -B "${OFF_BUILD}" \
-        -DPIXIU_HAVE_KYSDK=OFF -DCMAKE_BUILD_TYPE=Debug >/dev/null
-    cmake --build "${OFF_BUILD}" -j"$(nproc)" >/dev/null
-    echo "==> [OFF] ctest"
-    (cd "${OFF_BUILD}" && ctest --output-on-failure)
-}
-
-run_on() {
-    echo "==> [ON] configure + build"
-    cmake -S "${ROOT}" -B "${ON_BUILD}" \
-        -DPIXIU_HAVE_KYSDK=ON -DCMAKE_BUILD_TYPE=Debug >/dev/null
-    cmake --build "${ON_BUILD}" -j"$(nproc)" >/dev/null
-    echo "==> [ON] ctest"
-    (cd "${ON_BUILD}" && ctest --output-on-failure)
-
-    echo "==> [ON] offscreen smoke"
-    local smoke_log
-    smoke_log="$(mktemp /tmp/pixiu-smoke.XXXXXX)"
-    local rc=0
-    QT_QPA_PLATFORM=offscreen timeout 4 "${ON_BUILD}/pixiu-frontend" \
-        >"${smoke_log}" 2>&1 || rc=$?
-    if [[ ${rc} -ne 0 && ${rc} -ne 124 ]]; then
-        echo "smoke failed (rc=${rc})" >&2
-        cat "${smoke_log}" >&2
-        exit 1
-    fi
-    if ! rg -q "PIXIU application started" "${smoke_log}"; then
-        echo "smoke failed: app did not reach started state" >&2
-        cat "${smoke_log}" >&2
-        exit 1
-    fi
-    rg "pixiu\.(theme|ukui-window|shortcut):" "${smoke_log}" | head -5
-}
-
-validate_desktop() {
-    echo "==> desktop-file-validate"
-    desktop-file-validate "${ROOT}/resources/com.kylin.pixiu.desktop"
-}
-
-run_deb() {
-    echo "==> PIXIU 完整安装包（画像由 PIXIU_PROFILE 选择）"
-    make -C "${ROOT}/../build/release" build-deb
-}
-
-run_off
-run_on
-validate_desktop
-run_deb
-
-echo "==> regression passed"
+# The export preparer refuses nonempty directories. Never overwrite an old tree.
+host_source="$(mktemp -d "${BUILD_ROOT}/host-source.XXXXXX")"
+bash "${ROOT}/build/release/agent-host/prepare-agent-host.sh" "${host_source}"
+cmake -S "${host_source}" -B "${host_source}/build" -G Ninja \
+    -DPIXIU_HAVE_KYSDK="${KYSDK_MODE}" -DCMAKE_BUILD_TYPE=Release
+cmake --build "${host_source}/build" --parallel 2
+desktop-file-validate "${ROOT}/frontend/resources/com.kylin.pixiu.desktop"
+# Actual desktop startup, SDK registration and input require native acceptance.
+PIXIU_KYSDK="${KYSDK_MODE}" make -C "${ROOT}/build/release" build-deb

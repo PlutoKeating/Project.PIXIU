@@ -164,6 +164,9 @@ PR 不进入自托管 runner。后续发布必须由同一候选提交自动重�
 采用 SemVer `MAJOR.MINOR.PATCH`，Debian 包版本为 `MAJOR.MINOR.PATCH-REVISION`。
 发布标签、CMake `applicationVersion`、Debian control、Release 资产与更新清单必须
 由一个发布版本输入派生；CI 在不一致时失败。
+前端根 CMake 仅构建保留的回归测试，不再生成或安装独立小窗口程序；包体中的
+桌面文件和图标由统一打包脚本安装，正式应用来自 Agent 宿主导出构建。旧浮球
+首击脚本已删除，其历史结果不能作为当前桌面入口验收。
 
 最终版本清单至少包含：
 

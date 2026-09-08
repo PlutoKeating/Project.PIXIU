@@ -7,6 +7,11 @@ ROOT="$(cd "${SOURCE_DIR}/.." && pwd)"
 EXPECTED="$(tr -d '\r\n' < "${ROOT}/VERSION")"
 
 grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${SOURCE_DIR}/CMakeLists.txt"
+test ! -e "${SOURCE_DIR}/src/main.cpp"
+if cmake --build "${BUILD_DIR}" --target pixiu-frontend >/dev/null 2>&1; then
+    echo "retired standalone application target must not be buildable" >&2
+    exit 1
+fi
 if grep -qE 'project\(pixiu-frontend VERSION [0-9]+\.[0-9]+\.[0-9]+' \
         "${SOURCE_DIR}/CMakeLists.txt"; then
     echo "frontend CMake must not duplicate the product version" >&2

@@ -1,175 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PIXIU_PRODUCT_VERSION
-    LIMIT_COUNT 1)
+# Regression-only build. The product executable is the exported KylinAgent host.
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PIXIU_PRODUCT_VERSION LIMIT_COUNT 1)
 if(NOT PIXIU_PRODUCT_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
-    message(FATAL_ERROR "Invalid or missing product VERSION: ${PIXIU_PRODUCT_VERSION}")
+    message(FATAL_ERROR "Invalid product VERSION: ${PIXIU_PRODUCT_VERSION}")
 endif()
-project(pixiu-frontend VERSION "${PIXIU_PRODUCT_VERSION}" LANGUAGES CXX)
-
-# PIXIU_VERSION 编译宏：由 project VERSION（${PROJECT_VERSION}）派生，与
-# main.cpp setApplicationVersion / HttpBackendTransport.cpp User-Agent
-# 共用单一事实源，防止发布版本二次漂移。
-# 字符串引号经 CMake 变量间接传入——直接写 PIXIU_VERSION="\\\"${PROJECT_VERSION}\\\""
-# 在 CMake 3.28 + Ninja 下会双重转义、宏值残留字面引号（实测不可用）。
-# 发布前由 build/release/scripts/build-deb.sh 核对根 VERSION、CMake 派生关系、
-# main.cpp / HttpBackendTransport.cpp 的宏消费及 Module E 模板渲染关系。
+project(PixiuRegression VERSION "${PIXIU_PRODUCT_VERSION}" LANGUAGES CXX)
 set(PIXIU_VERSION_STR "\"${PROJECT_VERSION}\"")
-
-option(PIXIU_HAVE_KYSDK "Build with KylinSDK integration" OFF)
-option(PIXIU_HAVE_QRENCODE "Build QR pairing rendering with libqrencode" ON)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
 find_package(Qt5 5.9 REQUIRED COMPONENTS Widgets Network WebSockets Test)
-
-add_executable(pixiu-frontend
-    src/main.cpp
-    src/app/PixiuApp.h
-    src/app/PixiuApp.cpp
-    src/app/SingleInstanceGuard.h
-    src/app/SingleInstanceGuard.cpp
-    src/app/UserIdentity.h
-    src/app/UserIdentity.cpp
-    src/app/TrayIcon.h
-    src/app/TrayIcon.cpp
-    src/app/AppSettings.h
-    src/app/AppSettings.cpp
-    src/app/MonitorController.h
-    src/app/MonitorController.cpp
-    src/app/ShortcutManager.h
-    src/app/ShortcutManager.cpp
-    src/app/QueryController.h
-    src/app/QueryController.cpp
-    src/app/WriteController.h
-    src/app/WriteController.cpp
-    src/widgets/FloatingBall.h
-    src/widgets/FloatingBall.cpp
-    src/widgets/ChatWindow.h
-    src/widgets/ChatWindow.cpp
-    src/widgets/InputBar.h
-    src/widgets/InputBar.cpp
-    src/widgets/MessageList.h
-    src/widgets/MessageList.cpp
-    src/widgets/ThinkingSkeleton.h
-    src/widgets/ThinkingSkeleton.cpp
-    src/widgets/EvidenceCard.h
-    src/widgets/EvidenceCard.cpp
-    src/widgets/EvidenceDetailDialog.h
-    src/widgets/EvidenceDetailDialog.cpp
-    src/widgets/ImportDialog.h
-    src/widgets/ImportDialog.cpp
-    src/models/ChatMessage.h
-    src/models/MemoryAtom.h
-    src/services/BackendTypes.h
-    src/services/BackendTransport.h
-    src/services/BackendTransport.cpp
-    src/services/HttpBackendTransport.h
-    src/services/HttpBackendTransport.cpp
-    src/services/WebSocketClient.h
-    src/services/WebSocketClient.cpp
-    src/services/NotifyService.h
-    src/services/NotifyService.cpp
-    src/app/ForgetController.h
-    src/app/ForgetController.cpp
-    src/widgets/ForgetDialog.h
-    src/widgets/ForgetDialog.cpp
-    src/widgets/MemoryPanel.h
-    src/widgets/MemoryPanel.cpp
-    src/widgets/MonitorCenterDialog.h
-    src/widgets/MonitorCenterDialog.cpp
-    src/widgets/PairDialog.h
-    src/widgets/PairDialog.cpp
-    src/widgets/SettingsDialog.h
-    src/widgets/SettingsDialog.cpp
-    src/widgets/InfoDialog.h
-    src/widgets/InfoDialog.cpp
-    src/widgets/CheckUpdateDialog.h
-    src/widgets/CheckUpdateDialog.cpp
-    src/app/ConflictController.h
-    src/app/ConflictController.cpp
-    src/app/PreferenceController.h
-    src/app/PreferenceController.cpp
-    src/app/SyncController.h
-    src/app/SyncController.cpp
-    src/app/EventRouter.h
-    src/app/EventRouter.cpp
-    src/app/DeliveryController.h
-    src/app/DeliveryController.cpp
-    src/app/ThemeService.h
-    src/app/ThemeService.cpp
-    src/app/UkuiWindow.h
-    src/app/UkuiWindow.cpp
-    src/app/UpgradeUtils.h
-    src/app/UpgradeUtils.cpp
-    src/app/UpgradeController.h
-    src/app/UpgradeController.cpp
-    resources/resources.qrc
-)
-
-target_compile_definitions(pixiu-frontend PRIVATE PIXIU_VERSION=${PIXIU_VERSION_STR})
-
-target_link_libraries(pixiu-frontend
-    PRIVATE
-        Qt5::Widgets
-        Qt5::Network
-        Qt5::WebSockets
-)
-
-target_include_directories(pixiu-frontend
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-include(GNUInstallDirs)
-install(TARGETS pixiu-frontend
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-install(FILES resources/com.kylin.pixiu.desktop
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-)
-install(FILES resources/icons/pixiu.svg
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
-)
-
-if(PIXIU_HAVE_QRENCODE)
-    # 配对二维码渲染：libqrencode 可选依赖，缺失时 PairDialog 降级为令牌文本。
-    find_library(QRENCODE_LIBRARY NAMES qrencode)
-    if(QRENCODE_LIBRARY)
-        target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_QRENCODE=1)
-        target_link_libraries(pixiu-frontend PRIVATE ${QRENCODE_LIBRARY})
-        message(STATUS "libqrencode found: QR pairing rendering enabled")
-    else()
-        message(STATUS "libqrencode not found: QR pairing falls back to token text")
-    endif()
-endif()
-
-if(PIXIU_HAVE_KYSDK)
-    # Phase 7：麒麟桌面能力适配。当前接入 kysdk-shortcut（全局快捷键）与
-    # kysdk-notification（桌面通知）。
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(KYSDK_SHORTCUT REQUIRED kysdk-shortcut)
-    pkg_check_modules(KYSDK_NOTIFY REQUIRED kysdk-notification)
-    pkg_check_modules(KYSDK_QTWIDGETS REQUIRED kysdk-qtwidgets)
-    pkg_check_modules(KYSDK_QGSETTINGS REQUIRED gsettings-qt)
-    target_compile_definitions(pixiu-frontend PRIVATE PIXIU_HAVE_KYSDK=1)
-    target_include_directories(pixiu-frontend PRIVATE
-        ${KYSDK_SHORTCUT_INCLUDE_DIRS}
-        ${KYSDK_NOTIFY_INCLUDE_DIRS}
-        ${KYSDK_QTWIDGETS_INCLUDE_DIRS}
-        ${KYSDK_QGSETTINGS_INCLUDE_DIRS}
-    )
-    target_link_libraries(pixiu-frontend PRIVATE
-        ${KYSDK_SHORTCUT_LIBRARIES}
-        ${KYSDK_NOTIFY_LIBRARIES}
-        ${KYSDK_QTWIDGETS_LIBRARIES}
-        ${KYSDK_QGSETTINGS_LIBRARIES}
-    )
-endif()
 
 # ─── 测试（Qt Test，offscreen 平台运行）──────────────────────
 include(CTest)

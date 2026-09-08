@@ -80,9 +80,8 @@
 
 - 第一阶段~第三阶段及第四阶段的 i18n 已完成：全部用户可见文案经 Qt `tr()` 包装，
   `resources/i18n/pixiu_en_US.ts`/`.qm` 内嵌，应用入口按 `LANGUAGE`/系统语言加载英文翻译。
-- 双路径（`PIXIU_HAVE_KYSDK=OFF/ON`）ctest 21/21 通过；自动化回归脚本
-  `scripts/regression.sh`（OFF/ON 构建+测试、offscreen 冒烟、desktop 校验、`.deb` 校验）
-  已纳入 Phase 8 本地基线。
+- `scripts/regression.sh` 已改为保留回归测试、管理测试及单一宿主所选 OFF/ON
+  画像构建；旧应用 offscreen 冒烟已移除，不能作为现有产品运行证据。
 - 查询失败提示行已带“重试”按钮（点击以原输入重新提交，输入保留），
   对应 `MessageList::appendQueryError`/`retryRequested` 与 `t_message_list` 用例。
 - 键盘可达补强：ForgetDialog Esc/关闭触发取消（默认按钮为“取消”）、
@@ -143,9 +142,8 @@
   （跟随系统/中文/English 三选、OK/取消/Esc/窗口关闭语义、关于与版本信息），
   聊天框顶栏新增 ⚙ 设置按钮、悬浮球右键菜单新增“设置”项，统一经
   `PixiuApp::openSettings` 打开；语言偏好持久化到 `AppSettings::keyLanguage`
-  （仅 accepted 后写入），`main.cpp` 启动时按显式偏好选择翻译（`en_US`
-  强制英文、`zh_CN` 强制中文、未设置时按 LANGUAGE/系统语言回退），切换在
-  下次启动时生效（对话框内如实提示）。新增 `t_settings_dialog`（7 例），
+  （仅 accepted 后写入）。旧 main 已删除，其启动翻译机制不再是产品入口；
+  统一宿主语言行为与设置迁移仍需单独验证。保留 `t_settings_dialog`（7 例），
   扩展 `t_chat_window`/`t_floating_ball`/`t_i18n`，套件增至 27 例全绿
   （OFF/ON 双路径）；i18n `.ts` 增至 142 条、0 未完成，`.qm` 已重新生成。
 - 冲突/偏好历史“加载失败 vs 空结果”区分与重试已完成（2026-08-09）：
@@ -299,7 +297,7 @@ PIXIU 前端是运行在银河麒麟桌面（UKUI）上的原生交互入口。�
 
 | 文件 | 优先级 | 说明 |
 |------|--------|------|
-| `src/main.cpp` | ★★★ | 应用入口，注册全局快捷键，常驻托盘 |
+| `CMakeLists.txt` | ★★★ | 仅保留回归目标；产品入口由统一宿主导出构建 |
 | `CMakeLists.txt` | ★★★ | 构建文件，find_package Qt5 + pkg_check_modules KYSDK |
 | `src/app/PixiuApp.{h,cpp}` | ★★★ | 应用生命周期管理、单例守护 |
 | `src/app/ShortcutManager.{h,cpp}` | ★★★ | kysdk-shortcut 封装（全局快捷键唤起聊天框） |
@@ -535,7 +533,9 @@ QMP 点击/普通键盘切页仍出现失败，X11 与截图指针坐标不一�
 
 升级辅助脚本已迁入 `build/release/debian/usr/lib/pixiu/`，旧源码位置移除。
 整包引用该唯一来源，安装后的路径及协议不变；独立前端包脚本及 Debian 元数据已删除。
-`scripts/regression.sh` 的打包步骤委托根 `build/release`，版本测试检查旧包目标不可重现。
+`scripts/regression.sh` 运行保留测试与管理测试，按 `PIXIU_KYSDK=OFF/ON` 编译统一
+宿主，再委托根 `build/release` 打包；不执行旧程序冒烟。版本测试检查旧可执行目标
+不可构建、旧 main 不存在。旧浮球坐标首击脚本已删除，真实首击仍须在新宿主验证。
 发布版本检查已改为实际管理库和统一宿主的派生链，隔离回归不包含旧应用入口，
 并验证管理库宏和宿主 applicationVersion 漂移会被拒绝；旧应用源码退役仍未完成。
 升级辅助与 Agent 安装集成测试验证新路径；此迁移不是新版 GUI 升级矩阵验收。

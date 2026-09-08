@@ -426,6 +426,8 @@ ADR-0006 已替代独立控制台的产品定位。应用生命周期归唯一�
 宿主复用 `ShortcutManager` 的 Ctrl+Alt+P 适配：ON 显式链接 kysdk-shortcut 并注册
 `pixiu.activate`；OFF 或注册失败使用应用内 QShortcut，菜单标明非全局降级。
 注册更新先释放旧绑定，析构只删除成功取得的全局注册，激活恢复同一窗口。
+`frontend/CMakeLists.txt` 现仅为保留的回归测试入口，没有产品可执行及安装目标；
+旧 `src/main.cpp` 已删除。正式应用只由导出的宿主构建；旧类仍因测试引用待清理。
 `HostCloseGuard` 在唯一主窗口处理关闭事件：已有可见对话框
 先完成各自保存/取消流程；管理请求在途时拒绝关闭，包括记忆检索、来源证据、洞察
 与简报读取；采集与同步设置按有效响应快照
@@ -552,7 +554,6 @@ transport 信号互相串扰；偏好可按范围过滤，冲突接口无范围�
 ```
 frontend/
 ├── src/
-│   ├── main.cpp                 # 应用入口，注册全局快捷键，常驻托盘
 │   ├── app/
 │   │   ├── PixiuApp.{h,cpp}     # 应用生命周期、主题监听、单例守护
 │   │   ├── ShortcutManager.*    # kysdk-shortcut 唤起聊天框

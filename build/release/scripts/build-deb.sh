@@ -160,9 +160,8 @@ rm -rf "${STAGE}" "${OUT}"
 mkdir -p "${STAGE}" "${OUT}"
 
 # ── 1/5 前端：构建 + 安装到 stage ──────────────────────────────
-log "[1/5] frontend build (KYSDK=${PIXIU_KYSDK})"
+log "[1/5] retained frontend regression tests (no product executable)"
 cmake -S "${PIXIU_ROOT}/frontend" -B "${PIXIU_FRONTEND_BUILD_DIR}" \
-    -DPIXIU_HAVE_KYSDK="${PIXIU_KYSDK}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_TESTING=ON \
     -G Ninja
@@ -173,7 +172,7 @@ if [ "${PIXIU_SKIP_TESTS}" != "1" ]; then
     (cd "${PIXIU_FRONTEND_BUILD_DIR}" && QT_QPA_PLATFORM=offscreen ctest --output-on-failure)
 fi
 
-# Keep legacy behavior tests during migration, but never ship its executable.
+# Regression helpers are not product executables; install only shared assets.
 install -D -m 0644 "${PIXIU_ROOT}/frontend/resources/com.kylin.pixiu.desktop" \
     "${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"
 sed -i 's/^Exec=.*/Exec=pixiu/' "${STAGE}/usr/share/applications/com.kylin.pixiu.desktop"

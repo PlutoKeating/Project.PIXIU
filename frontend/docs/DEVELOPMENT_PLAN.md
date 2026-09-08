@@ -81,7 +81,7 @@
 - 已建立独立的 Qt5/CMake 应用骨架，提交为 `9cebaa8 chore(frontend): scaffold Qt5 application`。
 - 已建立 `frontend/src/app`、`frontend/src/models`、`frontend/src/services`、
   `frontend/src/widgets` 和 `frontend/resources` 基础目录。
-- 已建立 `frontend/src/main.cpp`，完成最小 `QApplication` 入口及应用元数据设置。
+- 独立 `frontend/src/main.cpp` 与产品目标已删除；QApplication 与应用元数据由统一宿主负责，旧 CMake 仅保留回归测试。
 - 已建立 `frontend/CMakeLists.txt`，设置 C++17、Qt5 Widgets 和
   `PIXIU_HAVE_KYSDK` 构建选项。
 - 已确认构建产物、缓存、`.env` 和 IDE 临时文件不得进入 Git。
