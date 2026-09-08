@@ -12,6 +12,44 @@
 class BackendEventsTest : public QObject {
     Q_OBJECT
 private slots:
+    void invalidFramesCannotDriveWorkspaceActions() {
+        QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
+        QVERIFY(server.listen(QHostAddress::LocalHost, 0));
+        pixiu::BackendEventStatus status(QString("http://127.0.0.1:%1").arg(server.serverPort()));
+        QSignalSpy changed(&status, &pixiu::BackendEventStatus::dataChanged);
+        QSignalSpy attention(&status, &pixiu::BackendEventStatus::conflictAttentionRequested);
+        QTRY_VERIFY(server.hasPendingConnections());
+        auto *peer = server.nextPendingConnection();
+        QSignalSpy commands(peer, &QWebSocket::textMessageReceived);
+        QTRY_VERIFY(!changed.isEmpty());
+        changed.clear();
+        status.findChild<QPushButton *>("eventDismiss")->click();
+        const QStringList invalid{
+            QStringLiteral("not-json"), QStringLiteral("[]"),
+            QStringLiteral(R"({"data":{"severity":"high"}})"),
+            QStringLiteral(R"({"event":"capture_event"})"),
+            QStringLiteral(R"({"event":"conflict_detected","data":null})"),
+            QStringLiteral(R"({"event":"sync_event","data":[]})"),
+            QStringLiteral(R"({"event":"pair_request","data":"private-secret"})"),
+            QStringLiteral(R"({"event":"future_private_event","data":{"severity":"high"}})"),
+            QStringLiteral(R"({"event":"forget_request","data":{"command":"private-secret"}})")};
+        for (const auto &frame : invalid) peer->sendTextMessage(frame);
+        // Same socket, ordered frames: the valid event is a processing barrier.
+        peer->sendTextMessage(R"({"event":"capture_event","data":{}})");
+        QTRY_COMPARE(changed.count(), 1);
+        QCOMPARE(changed.first().first().toString(), QStringLiteral("capture_event"));
+        QCOMPARE(attention.count(), 0);
+        QCOMPARE(commands.count(), 0);
+        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        const QString notice = status.findChild<QLabel *>("eventChanges")->text();
+        QVERIFY(notice.contains(QStringLiteral("采集与隐私")));
+        QVERIFY(!notice.contains(QStringLiteral("设备")));
+        QVERIFY(!notice.contains(QStringLiteral("记忆")));
+        QVERIFY(!notice.contains(QStringLiteral("审计")));
+        QVERIFY(!notice.contains(QStringLiteral("private")));
+        peer->close();
+        peer->deleteLater();
+    }
     void captureChangesDoNotInferRelationsOrExposeSourceText() {
         QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
         QVERIFY(server.listen(QHostAddress::LocalHost, 0));

@@ -184,6 +184,12 @@ WebSocket 回归覆盖普通/未知级别不弹、严重事件限流和无敏感
 
 ### U03：公共通信与状态处理
 
+旧事件路由清退前，正式 BackendEventStatus 回归已补真实 WebSocket 链验证：
+非法 JSON、非对象根、缺失事件名、缺失/null/数组/字符串 data、未知事件及旧
+forget_request 均不得驱动页面失效或高危提醒，也不得弹对话框、发回业务命令。
+同一连接尾部发送合法 capture_event 作为有序处理确认，验证防护后合法通知仍可用。
+该用例覆盖 WebSocketClient 到正式提示组件，不以仅调用旧 EventRouter 的测试代替。
+
 唯一宿主新增 `BackendEventStatus`，使用 HTTP 传输相同配置的基址订阅 `/events`，
 复用 WebSocket 客户端及退避重连，不接入旧 `EventRouter` 的遗忘确认对话框接线。
 状态栏仅提示受影响页面；重复事件按页面合并，不显示事件正文/命令/凭证，不执行
