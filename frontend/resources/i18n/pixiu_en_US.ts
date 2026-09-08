@@ -1138,14 +1138,6 @@ Your input is kept; edit and retry.</translation>
         <translation>Remembered file %1 (related to your recent %2)</translation>
     </message>
     <message>
-        <source>偏好提醒</source>
-        <translation>Preference reminder</translation>
-    </message>
-    <message>
-        <source>已学习您的偏好：%1</source>
-        <translation>Learned your preference: %1</translation>
-    </message>
-    <message>
         <source>关于 PIXIU</source>
         <translation>About PIXIU</translation>
     </message>

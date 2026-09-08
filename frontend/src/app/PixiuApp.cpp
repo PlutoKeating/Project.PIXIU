@@ -830,8 +830,6 @@ bool PixiuApp::start()
     connect(m_preferenceController, &PreferenceController::listLoaded, this,
             [this](const QJsonArray &preferences) {
                 m_memoryPanel->setPreferenceList(preferences);
-                // B4-3：偏好列表版本对比轻提醒（版本提升/基线后新增）。
-                notifyPreferenceChanges(preferences);
             });
 
     // WebSocket 事件通道：订阅 /events 推送（memory_ready 等业务事件）。
@@ -1330,40 +1328,6 @@ void PixiuApp::maybeNotifyRelevance(const QString &source, const QString &status
     }
 }
 
-void PixiuApp::notifyPreferenceChanges(const QJsonArray &preferences)
-{
-    if (!m_notify) {
-        return;
-    }
-    // 偏好提醒无每日上限（spec 节制原则仅点名相关性提醒/目录事件两类提醒）：
-    // 豁免理由——偏好变更低频（设置面板手动触发，非事件流）+ 首载只建基线
-    // 不提醒 + 版本未变不重复提醒，通知量天然受控，无需再叠加上限。
-    QHash<QString, int> seen;
-    for (const QJsonValue &value : preferences) {
-        const QJsonObject obj = value.toObject();
-        const QString key = obj.value(QStringLiteral("key")).toString();
-        if (key.trimmed().isEmpty()) {
-            continue;
-        }
-        const int version = obj.value(QStringLiteral("version")).toInt(0);
-        seen.insert(key, version);
-        // 首次列表只建基线（避免首次打开面板时的通知风暴）；此后版本提升或
-        // 基线后新增偏好才轻提醒，版本未变不重复提醒（不误报）。
-        if (!m_prefBaselineEstablished) {
-            continue;
-        }
-        const auto it = m_prefVersions.constFind(key);
-        if (it == m_prefVersions.constEnd()) {
-            m_notify->notify(tr("偏好提醒"),
-                             tr("已学习您的偏好：%1").arg(key));
-        } else if (version > it.value()) {
-            m_notify->notify(tr("偏好提醒"),
-                             tr("已学习您的偏好：%1").arg(key));
-        }
-    }
-    m_prefVersions = seen;
-    m_prefBaselineEstablished = true;
-}
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)
 {

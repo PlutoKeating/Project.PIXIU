@@ -424,7 +424,6 @@ private slots:
     void insightsLoadedRenderIntoChatWindow();
     void relevanceReminderMatchesTopicAndSkipsUnrelated();
     void relevanceReminderDailyCap();
-    void preferenceChangeNotifiesOnVersionBumpOnly();
     void digestEntryNotifiesSummary();
 
 private:
@@ -1568,69 +1567,6 @@ void TestAppNavigation::relevanceReminderDailyCap()
     app.shutdown();
 }
 
-void TestAppNavigation::preferenceChangeNotifiesOnVersionBumpOnly()
-{
-    // B4-3：preferencesList 版本对比——首次列表为基线（不提醒，避免首开
-    // 面板通知风暴）；版本提升或基线后新增偏好 → 轻提醒一次；版本未变不
-    // 重复提醒（不误报）。
-    qputenv("USER", QStringLiteral("pixiu-nav-pref-%1")
-                        .arg(QCoreApplication::applicationPid()).toUtf8());
-    FakeTransport *fake = new FakeTransport(this);
-    fake->autoEchoPreferences = true;
-    RecordingNotifyService *notify = new RecordingNotifyService(this);
-
-    PixiuApp app;
-    app.setTransportForTest(fake);
-    app.setNotifyServiceForTest(notify);
-    QVERIFY(app.start());
-
-    PreferenceController *pc = app.findChild<PreferenceController *>();
-    QVERIFY(pc != nullptr);
-
-    // 基线：首次列表不提醒。
-    fake->preferencesPayload = QJsonArray{
-        QJsonObject{
-            {QStringLiteral("id"), QStringLiteral("pref_1")},
-            {QStringLiteral("key"), QStringLiteral("output_style.compact")},
-            {QStringLiteral("version"), 1},
-            {QStringLiteral("scope"), QStringLiteral("user:local")}}};
-    pc->loadList();
-    QCOMPARE(notify->notifyCalls, 0);
-
-    // 版本提升：提醒一次。
-    fake->preferencesPayload = QJsonArray{
-        QJsonObject{
-            {QStringLiteral("id"), QStringLiteral("pref_1")},
-            {QStringLiteral("key"), QStringLiteral("output_style.compact")},
-            {QStringLiteral("version"), 2},
-            {QStringLiteral("scope"), QStringLiteral("user:local")}}};
-    pc->loadList();
-    QCOMPARE(notify->notifyCalls, 1);
-    QCOMPARE(notify->titles.last(), QStringLiteral("偏好提醒"));
-    QCOMPARE(notify->bodies.last(),
-             QStringLiteral("已学习您的偏好：output_style.compact"));
-
-    // 版本未变：不重复提醒（不误报）。
-    pc->loadList();
-    QCOMPARE(notify->notifyCalls, 1);
-
-    // 基线后新出现的偏好：提醒一次。
-    fake->preferencesPayload = QJsonArray{
-        QJsonObject{
-            {QStringLiteral("id"), QStringLiteral("pref_1")},
-            {QStringLiteral("key"), QStringLiteral("output_style.compact")},
-            {QStringLiteral("version"), 2},
-            {QStringLiteral("scope"), QStringLiteral("user:local")}},
-        QJsonObject{
-            {QStringLiteral("id"), QStringLiteral("pref_2")},
-            {QStringLiteral("key"), QStringLiteral("security_policy.screen_lock")},
-            {QStringLiteral("version"), 1},
-            {QStringLiteral("scope"), QStringLiteral("user:local")}}};
-    pc->loadList();
-    QCOMPARE(notify->notifyCalls, 2);
-
-    app.shutdown();
-}
 
 void TestAppNavigation::digestEntryNotifiesSummary()
 {
