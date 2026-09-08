@@ -40,6 +40,26 @@ class LayoutTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             layout.validate(self.root)
 
+    def test_authorized_video_workspace_excluded_from_formal_tree(self):
+        work = self.root / "submission/video-production/raw/screenshots"
+        work.mkdir(parents=True)
+        (work / "sample.png").write_bytes(b"production-only")
+        self.assertEqual(len(layout.validate(self.root)), 1)
+        # Excluding the workspace must not allow extra content in the submission.
+        (self.materials / "sample.png").write_bytes(b"not-a-deliverable")
+        with self.assertRaises(ValueError):
+            layout.validate(self.root)
+
+    def test_unexpected_sibling_rejected(self):
+        (self.root / "submission/extra").mkdir()
+        with self.assertRaises(ValueError):
+            layout.validate(self.root)
+
+    def test_video_workspace_symlink_rejected(self):
+        (self.root / "submission/video-production").symlink_to(self.outer, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            layout.validate(self.root)
+
     def test_empty_extra_directory_rejected(self):
         (self.outer / "原始截图").mkdir()
         with self.assertRaises(ValueError):

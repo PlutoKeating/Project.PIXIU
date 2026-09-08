@@ -26,3 +26,5 @@ submission/video-production/**/*.wav filter=lfs diff=lfs merge=lfs -text
 submission/video-production/**/*.webm filter=lfs diff=lfs merge=lfs -text
 submission/video-production/**/*.ttf filter=lfs diff=lfs merge=lfs -text
 submission/video-production/**/*.otf filter=lfs diff=lfs merge=lfs -text
+# Preserve the speech service's original SRT block separator at EOF.
+submission/video-production/raw/**/*.srt whitespace=-blank-at-eof

@@ -14,6 +14,14 @@ def paths(root: Path) -> tuple[Path, Path, Path]:
 
 def validate(root: Path, require_video: bool = False) -> list[str]:
     outer, materials, source = paths(root)
+    # The user authorized this sibling workspace for video production. It is
+    # never part of the formal submission tree; every other sibling is rejected.
+    production = root / "submission" / "video-production"
+    siblings = set((root / "submission").iterdir())
+    if siblings - {outer, production}:
+        raise ValueError("提交根目录包含未授权的额外文件或目录")
+    if production.exists() and (production.is_symlink() or not production.is_dir()):
+        raise ValueError("视频制作工作区必须是独立目录")
     expected = {
         materials / "项目报告.pptx", materials / "技术方案.doc",
         source / "PIXIU源代码.tar.gz",
@@ -21,15 +29,15 @@ def validate(root: Path, require_video: bool = False) -> list[str]:
     video = materials / "演示视频.zip"
     if require_video or video.exists():
         expected.add(video)
-    actual = {p for p in (root / "submission").rglob("*") if p.is_file()}
+    actual = {p for p in outer.rglob("*") if p.is_file()}
     if actual != expected:
         missing = sorted(str(p.relative_to(root)) for p in expected - actual)
         extra = sorted(str(p.relative_to(root)) for p in actual - expected)
         raise ValueError(f"提交文件集合错误：缺少 {len(missing)} 项 {missing[:5]}；多出 {len(extra)} 项 {extra[:5]}")
-    directories = {p for p in (root / "submission").rglob("*") if p.is_dir()}
+    directories = {outer} | {p for p in outer.rglob("*") if p.is_dir()}
     if directories != {outer, materials, source}:
         raise ValueError("提交目录层级错误或包含多余目录")
-    if any(p.is_symlink() for p in (root / "submission").rglob("*")):
+    if outer.is_symlink() or any(p.is_symlink() for p in outer.rglob("*")):
         raise ValueError("提交目录不允许符号链接")
     if (materials / "技术方案.doc").read_bytes()[:8] != bytes.fromhex("d0cf11e0a1b11ae1"):
         raise ValueError("技术方案.doc 必须是真正的 Word 二进制文档")
