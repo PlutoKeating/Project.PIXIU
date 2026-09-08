@@ -101,6 +101,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     });
     connect(m_transport, &BackendTransport::preferencesListResult, this, [this](const QJsonArray &records) {
         if (m_pending != Pending::Preferences) return;
+        trackPreferences(records);
         m_pending = Pending::None;
         updateControls();
         for (const auto &value : records) {
@@ -189,6 +190,35 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
         m_status->setText(tr("操作失败：%1。可刷新列表或重新选择记录重试。").arg(message));
     });
     updateControls();
+}
+void MemoryAudit::trackPreferences(const QJsonArray &records)
+{
+    const QString scope = m_scope->currentData().toString();
+    if (m_baselineScope != scope) {
+        m_havePreferenceBaseline = false;
+        m_preferenceVersions.clear();
+        m_baselineScope = scope;
+    }
+    QHash<QPair<QString, QString>, int> next;
+    int changed = 0;
+    for (const auto &value : records) {
+        const auto record = value.toObject();
+        const auto key = qMakePair(record.value("scope").toString(), record.value("id").toString());
+        const int version = record.value("version").toInt(-1);
+        if (key.first.isEmpty() || key.second.isEmpty() || version < 1
+            || (!scope.isEmpty() && key.first != scope) || next.contains(key)) {
+            // An incomplete/ambiguous response cannot establish changes.
+            m_havePreferenceBaseline = false;
+            m_preferenceVersions.clear();
+            return;
+        }
+        const int previous = m_preferenceVersions.value(key, 0);
+        if (m_havePreferenceBaseline && version > previous) ++changed;
+        next.insert(key, qMax(version, previous));
+    }
+    m_preferenceVersions = next; // bounded by the current list, not lifetime history
+    m_havePreferenceBaseline = true;
+    if (changed > 0) emit preferencesChanged(changed);
 }
 void MemoryAudit::setEvidenceIds(const QStringList &ids)
 {

@@ -1233,6 +1233,48 @@ private slots:
         emit transport.monitorLogResult({QJsonObject{{"source", "directory"}, {"status", "ingested"}, {"summary", "example"}}});
         QCOMPARE(page.findChild<QListWidget *>("privacyEvents")->count(), 1);
     }
+    void preferenceRemindersUseScopedVersionBaselines()
+    {
+        Transport transport;
+        pixiu::MemoryAudit audit(nullptr, &transport);
+        QSignalSpy reminders(&audit, SIGNAL(preferencesChanged(int)));
+        QVERIFY(reminders.isValid());
+        auto *refresh = audit.findChild<QPushButton *>("auditRefresh");
+        auto *scope = audit.findChild<QComboBox *>("auditScope");
+        QJsonObject record{{"id", "p1"}, {"scope", "user:local"}, {"version", 2},
+                           {"key", "private-key"}, {"value", "private-value"}};
+        auto respond = [&](const QJsonArray &records) {
+            refresh->click();
+            emit transport.preferencesListResult(records);
+        };
+        respond({record}); // first snapshot is not a learning event
+        respond({record});
+        QCOMPARE(reminders.count(), 0);
+        record["version"] = 1;
+        respond({record});
+        record["version"] = 2;
+        respond({record});
+        QCOMPARE(reminders.count(), 0); // a rollback does not lower the baseline
+        record["version"] = 3;
+        respond({record});
+        QCOMPARE(reminders.count(), 1);
+        QCOMPARE(reminders.at(0), QList<QVariant>{QVariant(1)}); // count only
+        record["scope"] = "shared:home";
+        respond({record}); // same ID in another scope cannot reuse a baseline
+        QCOMPARE(reminders.count(), 2);
+        scope->setCurrentIndex(scope->findData(QStringLiteral("shared:home")));
+        emit transport.preferencesListResult({record});
+        QCOMPARE(reminders.count(), 2); // changing the filter establishes a baseline
+        respond({QJsonObject{{"id", "malformed"}}});
+        record["version"] = 4;
+        respond({record});
+        QCOMPARE(reminders.count(), 2); // malformed snapshot is not a deletion/change
+        respond({record, record}); // ambiguous duplicate invalidates tracking
+        respond({record});
+        QCOMPARE(reminders.count(), 2);
+        QCOMPARE(transport.writes, 0);
+        QCOMPARE(transport.extractionRequests, 0);
+    }
     void auditEventsCoalesceAndWaitForPendingHistory()
     {
         Transport transport;

@@ -14,3 +14,10 @@
 +    connect(events, &pixiu::BackendEventStatus::conflictAttentionRequested,
 +            findChild<pixiu::HostTray *>(), &pixiu::HostTray::notifyConflict);
 +    // Desktop notifications never carry event payload or confirmation actions.
+@@ -148,1 +153,5 @@
+-    workspaces->addTab(memory, tr("记忆"));
++    workspaces->addTab(memory, tr("记忆"));
++    for (auto *audit : workspaces->findChildren<pixiu::MemoryAudit *>()) {
++        connect(audit, &pixiu::MemoryAudit::preferencesChanged,
++                findChild<pixiu::HostTray *>(), &pixiu::HostTray::notifyPreferences);
++    }

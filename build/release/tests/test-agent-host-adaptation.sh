@@ -60,6 +60,8 @@ grep -q 'PkgConfig::PIXIU_SHORTCUT' "${fixture}/source/pixiu/frontend/management
 grep -q 'Qt5::DBus' "${fixture}/source/pixiu/frontend/management/CMakeLists.txt"
 grep -q '/usr/bin/kdkshortcut' "${fixture}/source/pixiu/frontend/src/app/ShortcutManager.cpp"
 grep -q 'ShortcutManager::availabilityChanged' "${fixture}/source/pixiu/frontend/management/HostTray.cpp"
+grep -q 'MemoryAudit::preferencesChanged' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q 'HostTray::notifyPreferences' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION))' "${fixture}/source/src/main.cpp"
 grep -q 'PIXIU_PRODUCT_VERSION' "${fixture}/source/CMakeLists.txt"
 python3 - "${fixture}/source/src/main.cpp" "${repo_root}" <<'PY'

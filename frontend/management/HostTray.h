@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <QElapsedTimer>
 
 class QWidget;
 class NotifyService;
@@ -11,7 +12,9 @@ class HostTray : public QObject
 public:
     explicit HostTray(QWidget *host);
     void notifyConflict();
+    void notifyPreferences(int count);
 private:
     NotifyService *m_notify;
+    QElapsedTimer m_lastPreferenceNotice;
 };
 }

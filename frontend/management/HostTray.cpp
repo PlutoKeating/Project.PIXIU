@@ -50,4 +50,11 @@ void HostTray::notifyConflict()
     m_notify->notify(tr("PIXIU 冲突提醒"),
         tr("检测到高严重度记忆冲突，请打开“记忆 → 偏好与审计”核对。此提醒不会执行修改或删除。"));
 }
+void HostTray::notifyPreferences(int count)
+{
+    if (count < 1 || (m_lastPreferenceNotice.isValid() && m_lastPreferenceNotice.elapsed() < 60000)) return;
+    m_lastPreferenceNotice.start();
+    m_notify->notify(tr("PIXIU 偏好变化提醒"),
+        tr("偏好列表出现新增记录或版本变化，请打开“记忆 → 偏好与审计”核对。此提醒不会修改偏好。"));
+}
 }
