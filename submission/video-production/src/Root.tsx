@@ -2,6 +2,7 @@ import {AbsoluteFill, Audio, Composition, Sequence, staticFile, useCurrentFrame}
 import {BrandInkOpen} from './BrandInkOpen';
 import {Fonts} from './Fonts';
 import {NarratedChapter, SHARED_CHAPTER} from './NarratedChapter';
+import {FullFilmDraft, FILM_DURATION} from './FullFilm';
 
 // Opening review only. Full film remains governed by storyboard/shots.json.
 export const OpeningReview: React.FC = () => {
@@ -29,4 +30,6 @@ export const Root: React.FC = () => <>
     durationInFrames={330} fps={30} width={1920} height={1080} />
   <Composition id="PixiuSharedChapterReview" component={NarratedChapter}
     durationInFrames={SHARED_CHAPTER.duration} fps={30} width={1920} height={1080} />
+  <Composition id="PixiuFullDraft" component={FullFilmDraft}
+    durationInFrames={FILM_DURATION} fps={30} width={1920} height={1080} />
 </>;

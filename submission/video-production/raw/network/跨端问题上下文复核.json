@@ -1,0 +1,38 @@
+{
+  "status": 200,
+  "body": {
+    "session_id": "video-recall-diagnosis",
+    "turn_id": "query-01",
+    "context": "- 从已有的家庭共享记忆中，周六书房有什么安排？请用中文一句话回答，并标注记忆来源。: {\"assistant\":\"周六（9月5日）福山书院城市书房安排了朗诵主持课，时间为13:30–15:30和14:30–16:00[1]；文登区图书馆举办朗诵艺术沙龙《不负韶华，向阳而生》，时间为14:30–16:30[2]；观云山居城市书房开展“追梦赤子”系列观影活动，时间为18:30[2]；圣经山路碧桂园·珺悦府北门有阅读文化传统故事活动，时间为9:00–10:00[2]；文登区米山路171号有儿童绘本阅读活动，时间为8:40–9:40[2]。\",\"user\":\"从已有的家庭共享记忆中，周六书房有什么安排？请用中文一句话回答，并标注记忆来源。\"} [knowledge=knw_01M213Y0J4871HY7FY71MAN3A7; evidence=evd_01M213Y0HPR60443KRHJ4BA5A9]\n- 请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。: {\"assistant\":\"已使用 PIXIU 记忆工具记录该家庭共享约定：「周六上午九点一起整理书房，书籍按主题分类」[7]。\",\"user\":\"请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。\"} [knowledge=knw_01M212PEJJ5EBTG8FAXS7JKZEX; evidence=evd_01M212PEJ67F2PJ3KQWEBZZ9BM]",
+    "items": [
+      {
+        "knowledge_id": "knw_01M213Y0J4871HY7FY71MAN3A7",
+        "version": 1,
+        "title": "从已有的家庭共享记忆中，周六书房有什么安排？请用中文一句话回答，并标注记忆来源。",
+        "scope": "shared:home",
+        "evidence_ids": [
+          "evd_01M213Y0HPR60443KRHJ4BA5A9"
+        ],
+        "confidence": 1.0,
+        "updated_at": 1788891562,
+        "freshness": "fresh",
+        "conflict_status": "none"
+      },
+      {
+        "knowledge_id": "knw_01M212PEJJ5EBTG8FAXS7JKZEX",
+        "version": 1,
+        "title": "请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。",
+        "scope": "shared:home",
+        "evidence_ids": [
+          "evd_01M212PEJ67F2PJ3KQWEBZZ9BM"
+        ],
+        "confidence": 0.501008064516129,
+        "updated_at": 1788890266,
+        "freshness": "fresh",
+        "conflict_status": "none"
+      }
+    ],
+    "truncated": false,
+    "latency_ms": 47
+  }
+}

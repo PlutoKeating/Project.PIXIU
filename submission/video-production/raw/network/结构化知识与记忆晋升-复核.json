@@ -1,0 +1,68 @@
+{
+  "environment": "V11 虚拟机，公共 API 合成数据实测",
+  "records": [
+    {
+      "label": "写入家庭公共物品位置",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "raw": {
+          "title": "家庭公共物品位置",
+          "body": {
+            "内容": "备用电池放在书房左侧抽屉。"
+          }
+        },
+        "scope": "user:video-structure-v2"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M2130RA7NQK741CPV5C7DD99",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 149
+        }
+      }
+    },
+    {
+      "label": "检索家庭公共物品位置",
+      "path": "/agent/context",
+      "input": {
+        "query": "家庭公共物品位置",
+        "scope": "user:video-structure-v2",
+        "session_id": "video-kinds",
+        "turn_id": "kind-FACT",
+        "top_k": 1,
+        "max_chars": 2000
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "session_id": "video-kinds",
+          "turn_id": "kind-FACT",
+          "context": "- 家庭公共物品位置: {\"内容\":\"备用电池放在书房左侧抽屉。\"} [knowledge=knw_01M2130RAN4FVYFE42FF5N18ZZ; evidence=evd_01M2130RA7NQK741CPV5C7DD99]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M2130RAN4FVYFE42FF5N18ZZ",
+              "version": 1,
+              "title": "家庭公共物品位置",
+              "scope": "user:video-structure-v2",
+              "evidence_ids": [
+                "evd_01M2130RA7NQK741CPV5C7DD99"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788890603,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 21
+        }
+      }
+    }
+  ]
+}

@@ -9,7 +9,7 @@
 `build/release/scripts/submission_layout.py` 只把该命名的兄弟目录排除在正式材料核对之外；正式同名目录内仍严格限制四项作品，其他额外兄弟目录仍拒绝。
 
 - `brief/`：制作依据、颜色与功能覆盖要求。
-- `storyboard/shots.json`：30 镜中文解说草案，预计 8 分 51 秒；须按实际配音长度和操作结果校准。
+- `storyboard/shots.json`：30 镜中文解说草案，初始预计 8 分 51 秒；当前按配音校准为 543.100 秒。
 - `raw/`：原始截图、录屏、配音与来源摘要；不改写原素材。
 - `public/`：渲染使用的素材，裁切与取舍必须可追溯到原素材。
 - `src/`、`scripts/`：视频时间线与制作工具。
@@ -46,12 +46,29 @@
 新增 `PixiuSharedChapterReview` 章节审阅合成：
 `npx remotion render src/index.ts PixiuSharedChapterReview renders/集体记忆章节审阅.mp4`。
 此镜沿用 Ink Press 的 PaperTitleCard/DigitRoll 实现，替换为蓝白主题和中文字体，
-接入词级字幕草稿。输出 8.7 秒，只是章节引导片段，完整成片尚未生成。
+接入词级字幕草稿。输出 8.7 秒，只是章节引导片段。
 
-安装：本目录运行 `npm ci`（锁文件生成后）；Python 在独立虚拟环境安装 `pip install -r requirements.txt`。音频采用 [edge-tts](https://github.com/rany2/edge-tts) 的中文语音，逐句生成原音和时间信息，仅提交公开合成演示讲稿。完整时间线与渲染命令仍在制作中，不能把模板源文件当成产品视频。
+安装：本目录运行 `npm ci`（锁文件生成后）；Python 在独立虚拟环境安装 `pip install -r requirements.txt`。音频采用 [edge-tts](https://github.com/rany2/edge-tts) 的中文语音，逐句生成原音和时间信息，仅提交公开合成演示讲稿。完整初剪使用 `npm run render:full -- <新输出.mp4>`，静帧使用 `npm run still:full -- <新输出.png> --frame=<帧号>`。不能把初剪当成最终视频。
 
 当前已生成 `renders/开场审阅样片.mp4`：11 秒的中文配音与字幕开场，供制作检查，不能提交为比赛视频。运行 `npm run check` 做类型检查，`npm run still -- review/new-frame.png --frame=80` 出新静帧；完整重渲使用 `npx remotion render src/index.ts PixiuOpeningReview <新输出.mp4>`。默认不覆盖已有素材。`scripts/narrate.py --shots s01 s02` 生成所选讲稿的中文原音与逐词时间信息，按请求和音频摘要核对后复用；须在上述 Python 环境运行。
 
 中文字体固定保存于 `public/fonts/`，来自系统 Noto CJK 字库的简体中文字体面，许可证随文件保存。当前无背景音乐，只有中文解说与模板转场音效。
 
 依赖、缓存和临时运行数据库必须忽略；讲稿、采集脚本、原始素材、配音、字幕、审查关键帧及最终压缩包纳入 Git。大型二进制通过 LFS 保存。用户已授权本次制作提交后立即推送；不创建产品发布标签。
+
+## 全片初剪（2026-09-09）
+
+`renders/全片初剪-01.mp4` 已生成：1920×1080、30 帧、H.264/AAC，
+容器时长 543.146667 秒，39129425 字节。`src/FullFilm.tsx` 接入全部 30 镜、
+中文解说和字幕，真实截图经 `PageCam` 裁切展示；解释图明确标注为示意或接口观测。
+当前仍有审阅标记，主要由截图和解释图构成，不能当作完整操作录像或最终交付。
+
+`scripts/capture_memory_features.py` 通过公共 API 写入/检索四类知识、显式晋升
+短期与中期记忆，另外只读查询演示数据库核对知识类型。成功证据为
+`raw/network/结构化知识与记忆晋升-有效记录.json`；其他三份同前缀 JSON 是
+脚本开发期间的未完成采集，见 `review/全片初剪-01.md`，不能依据文件名判定通过。
+Agent 自动回合沉淀和跨端证据已保存，但客厅端随后的会话回答未通过，失败素材单独保留。模型回复声称调用记忆工具，但该条记录
+来源是 CONVERSATION，不能据此认定显式工具调用成功。
+
+下一版需接入实际操作视频、强化局部可读性、补齐 Ink Press 特征镜头及片尾，
+逐段试听并核对字幕；重建安装包与正式源码保持一致后再做独立终检和正式打包。

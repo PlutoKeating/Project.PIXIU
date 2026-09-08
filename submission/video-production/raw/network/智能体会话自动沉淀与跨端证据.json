@@ -1,0 +1,75 @@
+{
+  "captured_at": "2026-09-08T18:10:57.397887+00:00",
+  "claim": "同一会话证据已跨设备可读；这是自动轮次沉淀，不证明回复中声称的显式工具调用",
+  "source_device": "随身笔记本",
+  "results": [
+    {
+      "device": "随身笔记本",
+      "evidence": {
+        "status": 200,
+        "body": {
+          "id": "evd_01M212PEJ67F2PJ3KQWEBZZ9BM",
+          "source_type": "CONVERSATION",
+          "raw": {
+            "title": "请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。",
+            "body": {
+              "user": "请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。",
+              "assistant": "已使用 PIXIU 记忆工具记录该家庭共享约定：「周六上午九点一起整理书房，书籍按主题分类」[7]。"
+            },
+            "entities": [],
+            "relations": [],
+            "content_hash": "a6378037cb2cb55af6ced86a3451216c020184aa8dde529855fa1893ede56edf"
+          },
+          "quality_score": 0.76,
+          "sensitivity": 0,
+          "provenance": {
+            "session_id": "7b695b8d-4e77-4ae4-a750-3ecd879579b7",
+            "run_id": "run-f26a2ef4fbf6471288a3358281a5fa39",
+            "turn_id": "turn-000001",
+            "tool_call_id": null,
+            "tool_name": null,
+            "approved": null,
+            "occurred_at": 1788890265
+          },
+          "capture_source": null,
+          "scope": "shared:home",
+          "created_at": 1788890266
+        }
+      }
+    },
+    {
+      "device": "客厅一体机",
+      "evidence": {
+        "status": 200,
+        "body": {
+          "id": "evd_01M212PEJ67F2PJ3KQWEBZZ9BM",
+          "source_type": "CONVERSATION",
+          "raw": {
+            "body": {
+              "assistant": "已使用 PIXIU 记忆工具记录该家庭共享约定：「周六上午九点一起整理书房，书籍按主题分类」[7]。",
+              "user": "请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。"
+            },
+            "content_hash": "a6378037cb2cb55af6ced86a3451216c020184aa8dde529855fa1893ede56edf",
+            "entities": [],
+            "relations": [],
+            "title": "请用记忆工具记住这条家庭共享约定：周六上午九点一起整理书房，书籍按主题分类。请简短回复。"
+          },
+          "quality_score": 0.76,
+          "sensitivity": 0,
+          "provenance": {
+            "session_id": "7b695b8d-4e77-4ae4-a750-3ecd879579b7",
+            "run_id": "run-f26a2ef4fbf6471288a3358281a5fa39",
+            "turn_id": "turn-000001",
+            "tool_call_id": null,
+            "tool_name": null,
+            "approved": null,
+            "occurred_at": 1788890265
+          },
+          "capture_source": null,
+          "scope": "shared:home",
+          "created_at": 1788890266
+        }
+      }
+    }
+  ]
+}

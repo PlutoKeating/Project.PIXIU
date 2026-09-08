@@ -1,0 +1,439 @@
+{
+  "environment": "V11 虚拟机，公共 API 合成数据实测",
+  "records": [
+    {
+      "label": "写入家庭公共物品位置",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "raw": {
+          "title": "家庭公共物品位置",
+          "body": {
+            "内容": "备用电池放在书房左侧抽屉。"
+          }
+        },
+        "scope": "user:video-structure-v4"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M21329M8VXESFA55M08X9XVC",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 175
+        }
+      }
+    },
+    {
+      "label": "检索家庭公共物品位置",
+      "path": "/agent/context",
+      "input": {
+        "query": "家庭公共物品位置",
+        "scope": "user:video-structure-v4",
+        "session_id": "video-kinds",
+        "turn_id": "kind-FACT",
+        "top_k": 1,
+        "max_chars": 2000
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "session_id": "video-kinds",
+          "turn_id": "kind-FACT",
+          "context": "- 家庭公共物品位置: {\"内容\":\"备用电池放在书房左侧抽屉。\"} [knowledge=knw_01M21329MNST1MG3RF24FGXM3P; evidence=evd_01M21329M8VXESFA55M08X9XVC]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M21329MNST1MG3RF24FGXM3P",
+              "version": 1,
+              "title": "家庭公共物品位置",
+              "scope": "user:video-structure-v4",
+              "evidence_ids": [
+                "evd_01M21329M8VXESFA55M08X9XVC"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788890654,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 16
+        }
+      }
+    },
+    {
+      "label": "只读数据库类型核对",
+      "expected": "FACT",
+      "actual": "FACT"
+    },
+    {
+      "label": "写入月末账单核对流程",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "raw": {
+          "title": "月末账单核对流程",
+          "body": {
+            "steps": [
+              "整理账单",
+              "核对金额",
+              "汇总支出"
+            ]
+          }
+        },
+        "scope": "user:video-structure-v4"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M2132AW67J11APBZZTT8GMAF",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 199
+        }
+      }
+    },
+    {
+      "label": "检索月末账单核对流程",
+      "path": "/agent/context",
+      "input": {
+        "query": "月末账单核对流程",
+        "scope": "user:video-structure-v4",
+        "session_id": "video-kinds",
+        "turn_id": "kind-WORKFLOW",
+        "top_k": 1,
+        "max_chars": 2000
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "session_id": "video-kinds",
+          "turn_id": "kind-WORKFLOW",
+          "context": "- 月末账单核对流程: {\"steps\":[\"整理账单\",\"核对金额\",\"汇总支出\"]} [knowledge=knw_01M2132AWMG74B1ZG9N3PK8PFA; evidence=evd_01M2132AW67J11APBZZTT8GMAF]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M2132AWMG74B1ZG9N3PK8PFA",
+              "version": 1,
+              "title": "月末账单核对流程",
+              "scope": "user:video-structure-v4",
+              "evidence_ids": [
+                "evd_01M2132AW67J11APBZZTT8GMAF"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788890655,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 1
+        }
+      }
+    },
+    {
+      "label": "只读数据库类型核对",
+      "expected": "WORKFLOW",
+      "actual": "WORKFLOW"
+    },
+    {
+      "label": "写入投影连接故障案例",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "raw": {
+          "title": "投影连接故障案例",
+          "body": {
+            "case": {
+              "问题": "投影没有画面",
+              "处理": "重新选择输入源",
+              "结果": "画面恢复"
+            }
+          }
+        },
+        "scope": "user:video-structure-v4"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M2132C4C9VWFYVXR1FGM5BCW",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 193
+        }
+      }
+    },
+    {
+      "label": "检索投影连接故障案例",
+      "path": "/agent/context",
+      "input": {
+        "query": "投影连接故障案例",
+        "scope": "user:video-structure-v4",
+        "session_id": "video-kinds",
+        "turn_id": "kind-CASE",
+        "top_k": 1,
+        "max_chars": 2000
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "session_id": "video-kinds",
+          "turn_id": "kind-CASE",
+          "context": "- 投影连接故障案例: {\"case\":{\"处理\":\"重新选择输入源\",\"结果\":\"画面恢复\",\"问题\":\"投影没有画面\"}} [knowledge=knw_01M2132C4R3GD1E0KX3AC9ZEMP; evidence=evd_01M2132C4C9VWFYVXR1FGM5BCW]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M2132C4R3GD1E0KX3AC9ZEMP",
+              "version": 1,
+              "title": "投影连接故障案例",
+              "scope": "user:video-structure-v4",
+              "evidence_ids": [
+                "evd_01M2132C4C9VWFYVXR1FGM5BCW"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788890656,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 16
+        }
+      }
+    },
+    {
+      "label": "只读数据库类型核对",
+      "expected": "CASE",
+      "actual": "CASE"
+    },
+    {
+      "label": "写入家庭周计划模板",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "raw": {
+          "title": "家庭周计划模板",
+          "body": {
+            "template": {
+              "本周事项": "",
+              "负责人": "",
+              "完成时间": ""
+            }
+          }
+        },
+        "scope": "user:video-structure-v4"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M2132D9TBWWT5VS1KZHP0FX4",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 194
+        }
+      }
+    },
+    {
+      "label": "检索家庭周计划模板",
+      "path": "/agent/context",
+      "input": {
+        "query": "家庭周计划模板",
+        "scope": "user:video-structure-v4",
+        "session_id": "video-kinds",
+        "turn_id": "kind-TEMPLATE",
+        "top_k": 1,
+        "max_chars": 2000
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "session_id": "video-kinds",
+          "turn_id": "kind-TEMPLATE",
+          "context": "- 家庭周计划模板: {\"template\":{}} [knowledge=knw_01M2132DABEC5C10W95TGRXYHP; evidence=evd_01M2132D9TBWWT5VS1KZHP0FX4]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M2132DABEC5C10W95TGRXYHP",
+              "version": 1,
+              "title": "家庭周计划模板",
+              "scope": "user:video-structure-v4",
+              "evidence_ids": [
+                "evd_01M2132D9TBWWT5VS1KZHP0FX4"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788890658,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 2
+        }
+      }
+    },
+    {
+      "label": "只读数据库类型核对",
+      "expected": "TEMPLATE",
+      "actual": "TEMPLATE"
+    },
+    {
+      "label": "本轮任务要点",
+      "path": "/agent/lifecycle",
+      "input": {
+        "event": "TURN_END",
+        "scope": "user:video-structure-v4",
+        "session_id": "video-lifecycle",
+        "run_id": "video-run",
+        "turn_id": "video-turn",
+        "occurred_at": 1788890659,
+        "idempotency_key": "video-lifecycle-TURN_END",
+        "data": {
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "本轮任务要点",
+            "body": {
+              "内容": "已核对账单，接下来按月份归档。"
+            }
+          }
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "event": "TURN_END",
+          "context_id": "ctx_01M2132EG10EJRVPVB0N5BTW1D",
+          "tier": "SHORT_TERM",
+          "status": "ACTIVE",
+          "expires_at": 1788892459
+        }
+      }
+    },
+    {
+      "label": "本轮任务要点显式晋升",
+      "path": "/memory/flow/promote",
+      "input": {
+        "source": "SHORT_TERM",
+        "scope": "user:video-structure-v4",
+        "context_ids": [
+          "ctx_01M2132EG10EJRVPVB0N5BTW1D"
+        ]
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "promoted_count": 1,
+          "knowledge_ids": [
+            "knw_01M2132EVRY5HQC8PD0S313MRD"
+          ],
+          "latency_ms": 325
+        }
+      }
+    },
+    {
+      "label": "本轮任务要点长期检索",
+      "path": "/memory/query",
+      "input": {
+        "text": "本轮任务要点",
+        "context_hint": {
+          "scope": "user:video-structure-v4"
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "answer": "manual_config",
+          "source_evidence": [
+            "evd_01M2132EV98WC3EFR11NCN41B8"
+          ],
+          "source_knowledge": "knw_01M2132EVRY5HQC8PD0S313MRD",
+          "confidence": 1.0,
+          "latency_ms": 19
+        }
+      }
+    },
+    {
+      "label": "本次会话整理摘要",
+      "path": "/agent/lifecycle",
+      "input": {
+        "event": "PRE_COMPRESS",
+        "scope": "user:video-structure-v4",
+        "session_id": "video-lifecycle",
+        "run_id": "video-run",
+        "turn_id": "video-turn",
+        "occurred_at": 1788890660,
+        "idempotency_key": "video-lifecycle-PRE_COMPRESS",
+        "data": {
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "本次会话整理摘要",
+            "body": {
+              "内容": "已核对账单，接下来按月份归档。"
+            }
+          }
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "event": "PRE_COMPRESS",
+          "context_id": "ctx_01M2132FVMA63QD0H3W2YZ95TY",
+          "tier": "MID_TERM",
+          "status": "ACTIVE",
+          "expires_at": 1789495460
+        }
+      }
+    },
+    {
+      "label": "本次会话整理摘要显式晋升",
+      "path": "/memory/flow/promote",
+      "input": {
+        "source": "MID_TERM",
+        "scope": "user:video-structure-v4",
+        "context_ids": [
+          "ctx_01M2132FVMA63QD0H3W2YZ95TY"
+        ]
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "promoted_count": 1,
+          "knowledge_ids": [
+            "knw_01M2132G6Y36EX3BYAYJASCC08"
+          ],
+          "latency_ms": 146
+        }
+      }
+    },
+    {
+      "label": "本次会话整理摘要长期检索",
+      "path": "/memory/query",
+      "input": {
+        "text": "本次会话整理摘要",
+        "context_hint": {
+          "scope": "user:video-structure-v4"
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "answer": "manual_config",
+          "source_evidence": [
+            "evd_01M2132G6S11F51HCSBR9DB3EQ"
+          ],
+          "source_knowledge": "knw_01M2132G6Y36EX3BYAYJASCC08",
+          "confidence": 1.0,
+          "latency_ms": 18
+        }
+      }
+    }
+  ]
+}

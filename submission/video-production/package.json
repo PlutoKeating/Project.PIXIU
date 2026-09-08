@@ -6,6 +6,8 @@
     "prepare:timeline": "python3 scripts/prepare_timeline.py",
     "dev": "remotion studio src/index.ts",
     "check": "tsc --noEmit",
+    "render:full": "remotion render src/index.ts PixiuFullDraft",
+    "still:full": "remotion still src/index.ts PixiuFullDraft",
     "still": "remotion still src/index.ts PixiuOpeningReview",
     "render": "remotion render src/index.ts PixiuOpeningReview renders/开场审阅样片.mp4"
   },
