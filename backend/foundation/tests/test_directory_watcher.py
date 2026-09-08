@@ -122,6 +122,19 @@ def _config(env, *, enabled: bool = True, directory: bool = True) -> dict:
     return cfg
 
 
+@pytest.mark.parametrize("scope", ["shared:home", "shared:project.2025", "user:x\n", "", "admin:x"])
+def test_directory_bridge_rejects_nonprivate_or_invalid_scope(scope):
+    # Reject configuration before opening files, invoking services or capturing data.
+    with pytest.raises(ValueError):
+        IngestBridge(None, None, scope=scope)
+
+
+@pytest.mark.parametrize("scope", ["user:local", "user:project.2025"])
+def test_directory_bridge_accepts_exact_private_scope(scope):
+    bridge = IngestBridge(None, None, scope=scope)
+    assert bridge._scope == scope
+
+
 def _wait_until(predicate, timeout: float = 8.0, interval: float = 0.05) -> bool:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:

@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from ..core.logger import get_logger
+from ..core.models import validate_scope
 
 log = get_logger(__name__)
 
@@ -100,7 +101,9 @@ class IngestBridge:
         self._security = security
         self._ocr = ocr
         #: 捕获落库 scope —— 监视写入默认本机 user:*，敏感条目绝不入 shared:*。
-        self._scope = scope
+        self._scope = validate_scope(scope)
+        if not self._scope.startswith("user:"):
+            raise ValueError("directory capture requires a private user:* scope")
         self._max_text_bytes = max_text_bytes
         #: 入库 source_type（对齐计划：目录捕获组装 MANUAL 风格证据）。
         self._source_type = source_type

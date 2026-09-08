@@ -109,6 +109,11 @@ class ConflictRepository(ABC): ...
 
 ### 1.2 api/ —— API 网关
 
+目录采集的 `IngestBridge` 在构造时校验完整 scope 并强制 `user:`，非法格式或
+共享域在读取文件/调用入库前拒绝；默认仍为 `user:local`。当前文件路径不能
+直接加入 raw：MANUAL_CONFIG 连接器会将额外字段转入知识正文。独立文件来源
+元数据及正式展示仍需实现，不从旧文件名推测历史路径。
+
 HTTP 记忆写入/更新、遗忘、Agent context/lifecycle 和流转请求复用核心范围
 校验；查询的 `context_hint.scope` 拒绝非字符串或非法格式，详情及偏好列表也
 校验查询参数。非法范围返回既有 `400 INVALID_REQUEST`，不进入端点业务操作；
