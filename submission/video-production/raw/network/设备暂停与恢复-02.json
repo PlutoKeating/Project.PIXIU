@@ -1,0 +1,71 @@
+{
+  "events": [
+    {
+      "label": "操作前",
+      "seconds_from_orchestrator_start": 1.1180606660200283,
+      "time": "2026-09-08T23:41:52.960601+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/sync/status"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 38,
+          "enabled": true,
+          "paused": false
+        }
+      }
+    },
+    {
+      "label": "原生UI保存暂停",
+      "seconds_from_orchestrator_start": 10.36107532598544,
+      "time": "2026-09-08T23:42:02.203609+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/sync/status"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 38,
+          "enabled": true,
+          "paused": true
+        }
+      }
+    },
+    {
+      "label": "原生UI保存恢复",
+      "seconds_from_orchestrator_start": 19.35384044703096,
+      "time": "2026-09-08T23:42:11.196373+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/sync/status"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 38,
+          "enabled": true,
+          "paused": false
+        }
+      }
+    }
+  ],
+  "scope": "UI保存状态变化；没有制造待发数据验证传输抑制"
+}

@@ -1,0 +1,48 @@
+{
+  "environment": "同宿主V11隔离演示机；原生UI保存暂停设置；仅记录非敏感公共状态",
+  "before": {
+    "status": 200,
+    "body": {
+      "domain": "shared:home",
+      "peers_online": 3,
+      "peers_total": 3,
+      "pending_outgoing_ops": 0,
+      "last_anti_entropy_ts": null,
+      "total_ops_synced": 38,
+      "enabled": true,
+      "paused": false
+    }
+  },
+  "paused": {
+    "time": "2026-09-08T23:39:29.330024+00:00",
+    "response": {
+      "status": 200,
+      "body": {
+        "domain": "shared:home",
+        "peers_online": 3,
+        "peers_total": 3,
+        "pending_outgoing_ops": 0,
+        "last_anti_entropy_ts": null,
+        "total_ops_synced": 38,
+        "enabled": true,
+        "paused": true
+      }
+    }
+  },
+  "restored": {
+    "time": "2026-09-08T23:40:00.627423+00:00",
+    "response": {
+      "status": 200,
+      "body": {
+        "domain": "shared:home",
+        "peers_online": 3,
+        "peers_total": 3,
+        "pending_outgoing_ops": 0,
+        "last_anti_entropy_ts": null,
+        "total_ops_synced": 38,
+        "enabled": true,
+        "paused": false
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "recordings": [
+    {
+      "path": "raw/video/设备暂停与恢复-4K/原始录屏.mp4",
+      "sha256": "bca2d97fa2e3cb949c6deb87fe030b431b6cabca5d346ecdd60c0da240587177",
+      "frames": 59,
+      "elapsed_seconds": 35.39252810610924,
+      "decode_passed": true
+    },
+    {
+      "path": "raw/video/设备暂停与恢复-4K-02/原始录屏.mp4",
+      "sha256": "a7b67f7d4077029e6624d8ee51065e0c429077999973ca7fbe3ce98b8df679a6",
+      "frames": 43,
+      "elapsed_seconds": 25.09575128101278,
+      "decode_passed": true
+    }
+  ],
+  "viewed_raw_frames": {
+    "设备暂停与恢复-4K": [
+      58
+    ],
+    "设备暂停与恢复-4K-02": [
+      0,
+      18,
+      42
+    ]
+  },
+  "scope": "原生UI开关保存及状态回读；不是有待发数据的暂停传输验证",
+  "pairing": "只拍空白入口，没有生成或截图令牌，不证明新配对完成",
+  "revocation": "确认框随后选否，未执行解除",
+  "restored": "同步网络保持启用，paused恢复false",
+  "next": "裁切放大并接入s19/s23；配对和解除的完整结果仍需后续补证"
+}
