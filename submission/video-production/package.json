@@ -10,7 +10,8 @@
     "still:full": "remotion still src/index.ts PixiuFullDraft",
     "render:outro": "remotion render src/index.ts PixiuOutroReview",
     "still": "remotion still src/index.ts PixiuOpeningReview",
-    "render": "remotion render src/index.ts PixiuOpeningReview renders/开场审阅样片.mp4"
+    "render": "remotion render src/index.ts PixiuOpeningReview renders/开场审阅样片.mp4",
+    "render:shared-agent": "remotion render src/index.ts PixiuSharedAgentReview"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

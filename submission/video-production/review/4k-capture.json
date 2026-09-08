@@ -1,0 +1,33 @@
+{
+  "status": "真实4K截图与录屏已取得，尚未替换第四版全片",
+  "environment": "客厅演示克隆机，原生 Wayland",
+  "configuration": {
+    "before": {
+      "mode": "1440x900@60",
+      "scale": 1
+    },
+    "capture": {
+      "mode": "3840x2160@60",
+      "scale": 2,
+      "logical_size": [
+        1920,
+        1080
+      ]
+    }
+  },
+  "tool": "kscreen-doctor",
+  "commands": [
+    "output.Virtual-1.mode.3840x2160@60 output.Virtual-1.scale.2"
+  ],
+  "observation": "切换后旧客户端表面仍模糊；重启演示客户端后重新绘制。记录为原生采集，不是离线放大。",
+  "recording": {
+    "file": "raw/recordings/客厅智能体共享记忆工具核对-4K/原始录屏.mp4",
+    "sha256": "236f92ef1bbc8594f6f9a0b17997875bd041d71753d9cbb03ec30b62ca77da66",
+    "width": 3840,
+    "height": 2160,
+    "seconds": 10.133333,
+    "decode_passed": true,
+    "sampling_note": "实际15张截图，采样区间见原始 timing.json；编码30fps不等于30fps采集。"
+  },
+  "recovery_command": "kscreen-doctor output.Virtual-1.mode.1440x900@60 output.Virtual-1.scale.1"
+}

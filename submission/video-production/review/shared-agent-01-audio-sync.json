@@ -1,0 +1,20 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/跨端智能体审阅-01.mp4",
+  "video_sha256": "a768125fe5f101f24b9fbcb9f42758963ccb77c7f3057670ab16db13ee3a0ace",
+  "peak_dbfs": -3.2536611655569807,
+  "probes": [
+    {
+      "declared_start_frame": 14.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.9999619130266302,
+      "source_peak_frame": 582.75,
+      "source": "public/audio/s20.mp3",
+      "source_sha256": "5e2dc80ac832685cec3a79095dd1244e64a7cbdbb719592b1a2d0de233498173"
+    }
+  ]
+}

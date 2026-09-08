@@ -1,0 +1,270 @@
+{
+  "shot": "s20",
+  "request": {
+    "text": "在笔记本的会话里，记下周六上午九点整理书房、书籍按主题分类的约定。换到客厅，请智能体调用记忆检索工具。它找回这份共享记忆，回答时间和分类方式，并注明同一条知识的来源。这里展示的是显式工具检索。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "74fe7457c7f1aff1f8015881454d1631758e4da4088200cc14815f24b8626c6f",
+  "audio_sha256": "5e2dc80ac832685cec3a79095dd1244e64a7cbdbb719592b1a2d0de233498173",
+  "duration_seconds": 22.584,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 1973750,
+      "text": "在"
+    },
+    {
+      "offset": 3131660,
+      "duration": 3815830,
+      "text": "笔记本"
+    },
+    {
+      "offset": 6947500,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 7868330,
+      "duration": 3684160,
+      "text": "会话"
+    },
+    {
+      "offset": 11552500,
+      "duration": 3684160,
+      "text": "里"
+    },
+    {
+      "offset": 19315830,
+      "duration": 1973750,
+      "text": "记"
+    },
+    {
+      "offset": 21289580,
+      "duration": 1578750,
+      "text": "下"
+    },
+    {
+      "offset": 23131660,
+      "duration": 3684160,
+      "text": "周六"
+    },
+    {
+      "offset": 26947500,
+      "duration": 9210410,
+      "text": "上午九点"
+    },
+    {
+      "offset": 37210410,
+      "duration": 3157910,
+      "text": "整理"
+    },
+    {
+      "offset": 40500000,
+      "duration": 5394580,
+      "text": "书房"
+    },
+    {
+      "offset": 48921250,
+      "duration": 6710410,
+      "text": "书籍"
+    },
+    {
+      "offset": 56684160,
+      "duration": 2105410,
+      "text": "按"
+    },
+    {
+      "offset": 58921250,
+      "duration": 2894580,
+      "text": "主题"
+    },
+    {
+      "offset": 61947500,
+      "duration": 2631250,
+      "text": "分类"
+    },
+    {
+      "offset": 64578750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 65500000,
+      "duration": 3289580,
+      "text": "约定"
+    },
+    {
+      "offset": 74868330,
+      "duration": 3815830,
+      "text": "换到"
+    },
+    {
+      "offset": 78815830,
+      "duration": 5921250,
+      "text": "客厅"
+    },
+    {
+      "offset": 87500000,
+      "duration": 2763330,
+      "text": "请"
+    },
+    {
+      "offset": 90394580,
+      "duration": 3157910,
+      "text": "智能"
+    },
+    {
+      "offset": 93552500,
+      "duration": 5131660,
+      "text": "体调"
+    },
+    {
+      "offset": 98947500,
+      "duration": 2894580,
+      "text": "用"
+    },
+    {
+      "offset": 101973750,
+      "duration": 3684160,
+      "text": "记忆"
+    },
+    {
+      "offset": 105921250,
+      "duration": 3157910,
+      "text": "检索"
+    },
+    {
+      "offset": 109210410,
+      "duration": 3947500,
+      "text": "工具"
+    },
+    {
+      "offset": 119210410,
+      "duration": 1578750,
+      "text": "它"
+    },
+    {
+      "offset": 120921250,
+      "duration": 5789580,
+      "text": "找回"
+    },
+    {
+      "offset": 127763330,
+      "duration": 2105000,
+      "text": "这"
+    },
+    {
+      "offset": 129868330,
+      "duration": 1578750,
+      "text": "份"
+    },
+    {
+      "offset": 131710410,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 135526250,
+      "duration": 4605410,
+      "text": "记忆"
+    },
+    {
+      "offset": 143157910,
+      "duration": 3421250,
+      "text": "回答"
+    },
+    {
+      "offset": 146710410,
+      "duration": 5263330,
+      "text": "时间"
+    },
+    {
+      "offset": 152236660,
+      "duration": 1184160,
+      "text": "和"
+    },
+    {
+      "offset": 153552500,
+      "duration": 2894580,
+      "text": "分类"
+    },
+    {
+      "offset": 156578750,
+      "duration": 5263330,
+      "text": "方式"
+    },
+    {
+      "offset": 164210410,
+      "duration": 1973750,
+      "text": "并"
+    },
+    {
+      "offset": 166315830,
+      "duration": 4868330,
+      "text": "注明"
+    },
+    {
+      "offset": 171447500,
+      "duration": 1973750,
+      "text": "同"
+    },
+    {
+      "offset": 173552500,
+      "duration": 2500000,
+      "text": "一条"
+    },
+    {
+      "offset": 176315830,
+      "duration": 3289580,
+      "text": "知识"
+    },
+    {
+      "offset": 179605410,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 180789580,
+      "duration": 5000000,
+      "text": "来源"
+    },
+    {
+      "offset": 191842080,
+      "duration": 3421250,
+      "text": "这里"
+    },
+    {
+      "offset": 195394580,
+      "duration": 3026250,
+      "text": "展示"
+    },
+    {
+      "offset": 198421250,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 199473750,
+      "duration": 3552500,
+      "text": "是"
+    },
+    {
+      "offset": 204210410,
+      "duration": 3684160,
+      "text": "显式"
+    },
+    {
+      "offset": 208026250,
+      "duration": 3421250,
+      "text": "工具"
+    },
+    {
+      "offset": 211578750,
+      "duration": 5000000,
+      "text": "检索"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

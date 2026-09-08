@@ -5,16 +5,12 @@ import timeline from './timeline.json';
 
 export const SHARED_CHAPTER = timeline.shots.find((shot) => shot.id === 's18')!;
 
-export const CaptionText: React.FC<{text?: string; fontSize?: number; color?: string; bottom?: number}> =
-  ({text = '', fontSize = 38, color = '#172033', bottom = 68}) =>
-    <div style={{position: 'absolute', left: 100, right: 100, bottom,
-      fontFamily: '"Noto Sans CJK SC", sans-serif', fontSize, lineHeight: 1.5,
-      color, textAlign: 'center'}}>{text}</div>;
-
 export const TimedCaption: React.FC<{captions: typeof SHARED_CHAPTER.captions}> = ({captions}) => {
   const frame = useCurrentFrame();
   const cue = captions.find((caption) => frame >= caption.from && frame < caption.to);
-  return <CaptionText text={cue?.text ?? ''} />;
+  return <div style={{position: 'absolute', left: 100, right: 100, bottom: 68,
+    fontFamily: '"Noto Sans CJK SC", sans-serif', fontSize: 38, lineHeight: 1.5,
+    color: '#172033', textAlign: 'center'}}>{cue?.text ?? ''}</div>;
 };
 
 export const NarratedChapter: React.FC = () => <AbsoluteFill>

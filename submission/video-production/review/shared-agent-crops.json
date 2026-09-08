@@ -1,0 +1,37 @@
+[
+  {
+    "source": "raw/screenshots/20260909-智能体保存家庭约定.png",
+    "output": "public/clips/shared-agent-user-request.png",
+    "crop": {
+      "x": 688,
+      "y": 286,
+      "width": 570,
+      "height": 74
+    },
+    "purpose": "仅截取真实用户请求；会话来源为 CONVERSATION，不能据助手自述认定调用工具",
+    "source_sha256": "07a496799cf5740f26f3484542eef505d001e33c2152a16690aedaed2b1f8490",
+    "output_sha256": "4d010bdb48d435472111fa1c030268fa385e8f3d5359fa26b0b1d0c149d2b5d3"
+  },
+  {
+    "source": "raw/screenshots/20260909-客厅智能体记忆工具完成.png",
+    "output": "public/screens/20260909-客厅智能体记忆工具完成.png",
+    "render_crop": {
+      "x": 408,
+      "y": 190,
+      "width": 895,
+      "height": 400
+    },
+    "purpose": "实际工具完成卡及回答；原始1440×900素材局部放大，不是2x采集",
+    "source_sha256": "b485deb459ef77eee834128f7b76447374f4827f18a9163e9a74be14b5f44d2c",
+    "output_sha256": "b485deb459ef77eee834128f7b76447374f4827f18a9163e9a74be14b5f44d2c"
+  },
+  {
+    "source": "raw/recordings/客厅智能体共享记忆工具核对/原始录屏.mp4",
+    "output": "public/clips/shared-agent-result.mp4",
+    "sha256": "1e517c83d0c694bd090c62588438e95a2dae71ead34e7e57e4735f2fbc49667a",
+    "duration_seconds": 10,
+    "replay_from_frame": 239,
+    "replay_end_frame_exclusive": 539,
+    "purpose": "完成后展开工作卡；原速播放一次，不代表请求至回答耗时"
+  }
+]

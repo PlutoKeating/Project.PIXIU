@@ -124,9 +124,7 @@ const RecordedScene: React.FC<{shot: Shot}> = ({shot}) => {
   </>;
 };
 
-export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCaptions?: boolean;
-  headingSize?: number; headingColor?: string}> =
-  ({shot, includeAudio = true, includeCaptions = true, headingSize = 45, headingColor = INK}) => {
+const ShotScene: React.FC<{shot: Shot}> = ({shot}) => {
   const title = ['s02', 's18', 's29', 's30'].includes(shot.id);
   return <AbsoluteFill style={{background: '#f6f7f9', color: INK, fontFamily: '"Noto Sans CJK SC", sans-serif'}}>
     {shot.id === 's30' ? <SceneOutroLive duration={shot.duration} />
@@ -136,27 +134,25 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
       : shot.id === 's20' ? <SharedAgentScene />
       : shot.id === 's25' ? <RecordedScene shot={shot} />
       : SCREENS[shot.id] ? <ScreenScene shot={shot} /> : <PanelScene shot={shot} />}
-    {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: headingSize, color: headingColor, fontWeight: 700}}>{shot.title}</div> : null}
-    {includeAudio ? <><Sequence from={Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F))}>
+    {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: 45, fontWeight: 700}}>{shot.title}</div> : null}
+    <Sequence from={Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F))}>
       <Audio src={staticFile(shot.audio)} />
     </Sequence>
     {SFX.filter((sfx) => sfx.shot === shot.id).map((sfx) => <Sequence key={sfx.src} from={sfx.offset}>
       <Audio src={staticFile(sfx.src)} volume={sfx.volume} />
-    </Sequence>)}</> : null}
-    {includeCaptions ? <TimedCaption captions={shot.captions} /> : null}
+    </Sequence>)}
+    <TimedCaption captions={shot.captions} />
   </AbsoluteFill>;
 };
 
 export const OutroReview: React.FC = () => <AbsoluteFill><Fonts /><ShotScene shot={OUTRO_SHOT} /></AbsoluteFill>;
 export const SharedAgentReview: React.FC = () => <AbsoluteFill><Fonts /><ShotScene shot={SHARED_AGENT_SHOT} /></AbsoluteFill>;
 
-export const DraftOverlay: React.FC = () => <div style={{position: 'absolute', top: 25, right: 35,
-  fontFamily: '"Noto Sans CJK SC", sans-serif', fontSize: 20, color: MUTED}}>初剪审阅 · 尚未最终验收</div>;
-
 export const FullFilmDraft: React.FC = () => <AbsoluteFill>
   <Fonts />
   {timeline.shots.map((shot) => <Sequence key={shot.id} from={shot.from} durationInFrames={shot.duration}>
     <ShotScene shot={shot} />
   </Sequence>)}
-  <DraftOverlay />
+  <div style={{position: 'absolute', top: 25, right: 35, fontFamily: '"Noto Sans CJK SC", sans-serif',
+    fontSize: 20, color: MUTED}}>初剪审阅 · 尚未最终验收</div>
 </AbsoluteFill>;
