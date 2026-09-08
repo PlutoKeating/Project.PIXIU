@@ -62,7 +62,7 @@ jobs:
         run: |
           test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
           cmake -S frontend/management -B "$RUNNER_TEMP/pixiu-native-dialog-tests" \
-            -DBUILD_TESTING=ON -DPIXIU_HAVE_KYSDK=OFF
+            -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
           cmake --build "$RUNNER_TEMP/pixiu-native-dialog-tests" --target t_memory_workspace --parallel 2
           mkdir -p "$RUNNER_TEMP/pixiu-native-dialog-config"
           XDG_CONFIG_HOME="$RUNNER_TEMP/pixiu-native-dialog-config" \
