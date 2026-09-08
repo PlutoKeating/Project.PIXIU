@@ -1,5 +1,7 @@
 #include "BackendEventStatus.h"
 #include <QDialog>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QPushButton>
 #include <QSignalSpy>
@@ -10,6 +12,46 @@
 class BackendEventsTest : public QObject {
     Q_OBJECT
 private slots:
+    void captureChangesDoNotInferRelationsOrExposeSourceText() {
+        QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
+        QVERIFY(server.listen(QHostAddress::LocalHost, 0));
+        pixiu::BackendEventStatus status(QString("http://127.0.0.1:%1").arg(server.serverPort()));
+        QSignalSpy changed(&status, &pixiu::BackendEventStatus::dataChanged);
+        QSignalSpy attention(&status, &pixiu::BackendEventStatus::conflictAttentionRequested);
+        QTRY_VERIFY(server.hasPendingConnections());
+        auto *peer = server.nextPendingConnection();
+        QSignalSpy sentCommands(peer, &QWebSocket::textMessageReceived);
+        QTRY_VERIFY(!changed.isEmpty());
+        changed.clear();
+        auto *notice = status.findChild<QLabel *>("eventChanges");
+        auto *dismiss = status.findChild<QPushButton *>("eventDismiss");
+        dismiss->click();
+        const QStringList states{QStringLiteral("ingested"), QStringLiteral("sensitive_quarantined"),
+                                 QStringLiteral("ignored"), QStringLiteral("state_changed")};
+        for (const QString &state : states) {
+            const QJsonObject data{{"source", "directory"}, {"status", state},
+                {"summary", "private-filename.txt"}, {"title", "private-topic"},
+                {"severity", "high"}, {"evidence_id", "private-evidence"}};
+            peer->sendTextMessage(QString::fromUtf8(QJsonDocument(QJsonObject{
+                {"event", "capture_event"}, {"data", data}}).toJson(QJsonDocument::Compact)));
+        }
+        QTRY_COMPARE(changed.count(), states.size());
+        for (const auto &args : changed) {
+            QCOMPARE(args.size(), 1);
+            QCOMPARE(args.first().toString(), QStringLiteral("capture_event"));
+        }
+        QCOMPARE(notice->text().count(QStringLiteral("采集与隐私")), 1);
+        QVERIFY(!notice->text().contains("private"));
+        QVERIFY(!notice->text().contains(QStringLiteral("相关")));
+        QCOMPARE(attention.count(), 0);
+        QCOMPARE(sentCommands.count(), 0);
+        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        dismiss->click();
+        QVERIFY(notice->text().isEmpty());
+        QCOMPARE(changed.count(), states.size());
+        peer->close();
+        peer->deleteLater();
+    }
     void onlySevereConflictsRequestBoundedPayloadFreeAttention() {
         QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
         QVERIFY(server.listen(QHostAddress::LocalHost, 0));

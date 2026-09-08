@@ -7,7 +7,7 @@
 
 **Goal:** 让「一次配置、永久监控」沉淀的记忆转化为主动递上——洞察流（聊天窗欢迎页动态建议）、定时简报（按日汇总）、相关性提醒（目录事件/偏好变更的轻提醒），兑现产品愿景「主动服务」半句。
 
-**Architecture:** 后端新增 `backend/engine/delivery/`（insights + digest 规则化生成器，无 LLM 依赖）+ `backend/foundation/api/delivery.py`（两个 GET 端点）；前端改造 ChatWindow 欢迎页（动态建议卡）+ PixiuApp（captureEvent 相关主题轻提醒 + 偏好变更提醒 + 简报入口）。
+**Architecture:** 后端 `backend/engine/delivery/` 提供规则化生成器，`backend/foundation/api/delivery.py` 提供两个 GET 端点；正式前端使用 `frontend/management/DeliveryPage`、`BackendEventStatus`、`MemoryAudit` 与 `HostTray`。不再将 PixiuApp 的文件名字串匹配通知作为目标实现。
 
 **Tech Stack:** Python 3.12 · FastAPI · SQLite（既有仓储） | C++17 · Qt5 · QtTest(offscreen)
 
@@ -17,7 +17,7 @@
 - **隐私铁律**：summary/简报/洞察均为服务端生成中文文案，**不含敏感原文全文**；sensitivity>0 的知识不进洞察候选。
 - **无 LLM 依赖**：insights/digest 均为规则化模板生成，离线可运行；不做系统推送（仅应用内通知/角标）。
 - **验收口径**：后端全量 pytest 绿；前端 OFF/ON 双路径 ctest + regression.sh 绿；GET /delivery/insights 与 /delivery/digest 契约测试通过。
-- **节制原则**：相关性提醒每类每天上限 3 条；MANUAL 冲突待处理时不递送相关洞察。
+- **节制原则**：采集仅提示受影响页面，不推断相关性；偏好变化通知固定文案并限流。MANUAL 冲突抑制按实际洞察服务规则处理。
 - 提交前缀 `feat(delivery)/feat(frontend)/test(...)/docs(...)`；禁止 push；个人分支同步 `--ff-only`。
 - 依赖批次①-③已合入（main @ bc8d18d）。
 
@@ -192,20 +192,20 @@ def _summarize(item: dict) -> str:
 **Files:**
 - Modify: `frontend/src/services/BackendTransport.h/.cpp`（deliveryInsights() 默认空实现 → 信号 insightsResult(QJsonArray)）
 - Modify: `frontend/src/services/HttpBackendTransport.cpp`（GET /delivery/insights）
-- Modify: `frontend/src/widgets/ChatWindow.h/.cpp`（欢迎页动态建议卡：接 insightsResult 渲染 suggestionCard 列表；点击 → 信号 insightActivated(knowledge_id)）
-- Modify: `frontend/src/app/PixiuApp.h/.cpp`（启动/打开聊天窗时拉 insights；captureEvent 相关主题轻提醒——文件名 token vs 近期 knowledge title token 交集 + 每日上限 3；偏好变更提醒——preferencesList 对比版本；今日简报入口）
-- Modify: `frontend/src/app/SyncController.h/.cpp` 或新建 DeliveryController（insights 状态机——仿 SyncController 模式，PixiuApp 增长已多次评估，倾向新建 DeliveryController 独立职责）
-- Test: `frontend/tests/t_chat_window.cpp`、`frontend/tests/t_app_navigation.cpp`
+- Maintain: `frontend/management/DeliveryPage.h/.cpp`（洞察候选、标题检索、日期及简报正文）
+- Maintain: `frontend/management/BackendEventStatus.cpp`、`PrivacyPage.cpp`（无正文变化提示、日志刷新及草稿保护）
+- Maintain: `frontend/management/MemoryAudit.cpp`、`HostTray.cpp`（范围隔离的偏好版本基线、固定通知与限流）
+- Test: `frontend/management/tests/t_memory_workspace.cpp`、`t_backend_events.cpp`
 
 **Interfaces:**
-- Consumes: `BackendTransport::deliveryInsights()`（新虚方法默认空实现 + insightsResult 信号）、既有 captureEvent（EventRouter）、preferencesList、悬浮球/角标
-- Produces: `DeliveryController(transport)` — `loadInsights()` → `insightsLoaded(QJsonArray)`；ChatWindow 欢迎页动态建议卡（objectName=suggestionCard 复用既有样式）；PixiuApp captureEvent 相关主题判断（token 交集 + 每日上限）+ 偏好变更提醒；简报入口（悬浮球菜单或欢迎页卡）
+- Consumes: 既有 BackendTransport 的洞察/简报/偏好接口与 WebSocket `capture_event`，不增加模型依赖。
+- Produces: 同一宿主内候选及摘要展示、采集变化提示和偏好列表版本变化通知；不产生文件名与标题相关性的推断。
 
-- [ ] **Step 1: 写失败测试**（ChatWindow 动态卡渲染 + 点击信号、PixiuApp 相关主题提醒触发/抑制/上限、DeliveryController 状态机）
+- [ ] **Step 1: 写失败测试**（正式洞察展示/标题检索、日期与迟到响应、采集提示隐私边界、偏好版本基线）
 - [ ] **Step 2: 运行验证失败**（ctest 红）
-- [ ] **Step 3: 实现**（transport 方法 + DeliveryController + ChatWindow 欢迎页 + PixiuApp 接线）
-- [ ] **Step 4: 运行验证通过**（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 32+ 绿）
-- [ ] **Step 5: 提交** `git commit -m "feat(frontend): delivery insights and relevance reminders"`
+- [ ] **Step 3: 实现**（正式管理模块与唯一宿主接线；删除旧字串推断、专用缓存、计数及通知翻译）
+- [ ] **Step 4: 运行验证通过**（正式管理模块及保留回归测试；原生界面与真实数据另行验收，不以 offscreen 结果替代）
+- [ ] **Step 5: 提交**（以实际改动为准，不使用已删除功能的提交描述）
 
 ---
 
@@ -214,7 +214,7 @@ def _summarize(item: dict) -> str:
 **Covers:** [S4, S6]
 
 **Files:**
-- Modify: `frontend/resources/i18n/pixiu_en_US.ts/.qm`（新文案「今日简报」「已记住 文件 %1（与您近期的 %2 相关）」等）
+- Modify: `frontend/resources/i18n/pixiu_en_US.ts`（清除已删除通知的孤立翻译；构建资源与实际源码一致）
 - Modify: `docs/API.md`（若 B4-1/2 已写则核对一致性）、`README.md`（主动服务亮点更新）
 - Test: 回归
 

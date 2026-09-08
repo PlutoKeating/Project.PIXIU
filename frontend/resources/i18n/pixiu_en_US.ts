@@ -1126,14 +1126,6 @@ Your input is kept; edit and retry.</translation>
         <translation>Memory updated</translation>
     </message>
     <message>
-        <source>相关主题提醒</source>
-        <translation>Related topic reminder</translation>
-    </message>
-    <message>
-        <source>已记住 文件 %1（与您近期的 %2 相关）</source>
-        <translation>Remembered file %1 (related to your recent %2)</translation>
-    </message>
-    <message>
         <source>关于 PIXIU</source>
         <translation>About PIXIU</translation>
     </message>

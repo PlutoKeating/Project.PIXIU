@@ -412,8 +412,6 @@ private slots:
     void severityParsingNormalizesCaseAndUnknown();
     void pairRequestDialogShowsAndConfirms();
     void insightsLoadedRenderIntoChatWindow();
-    void relevanceReminderMatchesTopicAndSkipsUnrelated();
-    void relevanceReminderDailyCap();
 
 private:
     template <typename T>
@@ -1466,97 +1464,6 @@ void TestAppNavigation::insightsLoadedRenderIntoChatWindow()
 
     app.shutdown();
 }
-
-void TestAppNavigation::relevanceReminderMatchesTopicAndSkipsUnrelated()
-{
-    // B4-3：目录捕获且已入库时，文件名 token 与近期洞察 title token 交集
-    // 命中 → 相关主题轻提醒；不同主题 / 非目录 / 非 ingested 不触发。
-    qputenv("USER", QStringLiteral("pixiu-nav-rel-%1")
-                        .arg(QCoreApplication::applicationPid()).toUtf8());
-    FakeTransport *fake = new FakeTransport(this);
-    fake->autoEchoInsights = true;
-    fake->insightsPayload = QJsonArray{
-        QJsonObject{
-            {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
-            {QStringLiteral("summary"), QStringLiteral("s")},
-            {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")}}};
-    RecordingNotifyService *notify = new RecordingNotifyService(this);
-
-    PixiuApp app;
-    app.setTransportForTest(fake);
-    app.setNotifyServiceForTest(notify);
-    QVERIFY(app.start());
-
-    EventRouter *router = app.findChild<EventRouter *>();
-    QVERIFY(router != nullptr);
-    const int baseline = notify->notifyCalls;
-    QCOMPARE(baseline, 0);   // 启动路径不产生通知
-
-    // 同主题：命中 → 轻提醒。
-    emit router->captureEvent(QStringLiteral("directory"),
-                              QStringLiteral("ingested"),
-                              QStringLiteral("记住文件 2026年4月家庭支出清单.xlsx"),
-                              1756080000);
-    QCOMPARE(notify->notifyCalls, baseline + 1);
-    QCOMPARE(notify->titles.last(), QStringLiteral("相关主题提醒"));
-    QVERIFY(notify->bodies.last().contains(QStringLiteral("2026年4月家庭支出清单")));
-
-    // 不同主题：不触发。
-    emit router->captureEvent(QStringLiteral("directory"),
-                              QStringLiteral("ingested"),
-                              QStringLiteral("记住文件 会议记录.txt"),
-                              1756080060);
-    QCOMPARE(notify->notifyCalls, baseline + 1);
-
-    // 非目录来源 / 非 ingested 状态：不触发。
-    emit router->captureEvent(QStringLiteral("clipboard"),
-                              QStringLiteral("ingested"),
-                              QStringLiteral("记住剪贴板内容"),
-                              1756080120);
-    emit router->captureEvent(QStringLiteral("directory"),
-                              QStringLiteral("ignored"),
-                              QStringLiteral("忽略超大文件 x"),
-                              1756080180);
-    QCOMPARE(notify->notifyCalls, baseline + 1);
-
-    app.shutdown();
-}
-
-void TestAppNavigation::relevanceReminderDailyCap()
-{
-    // B4-3：相关主题轻提醒每日上限 3，第 4 次同主题命中不再提醒。
-    qputenv("USER", QStringLiteral("pixiu-nav-relcap-%1")
-                        .arg(QCoreApplication::applicationPid()).toUtf8());
-    FakeTransport *fake = new FakeTransport(this);
-    fake->autoEchoInsights = true;
-    fake->insightsPayload = QJsonArray{
-        QJsonObject{
-            {QStringLiteral("title"), QStringLiteral("2026年4月家庭支出清单")},
-            {QStringLiteral("summary"), QStringLiteral("s")},
-            {QStringLiteral("knowledge_id"), QStringLiteral("knw_1")}}};
-    RecordingNotifyService *notify = new RecordingNotifyService(this);
-
-    PixiuApp app;
-    app.setTransportForTest(fake);
-    app.setNotifyServiceForTest(notify);
-    QVERIFY(app.start());
-
-    EventRouter *router = app.findChild<EventRouter *>();
-    QVERIFY(router != nullptr);
-
-    for (int i = 0; i < 4; ++i) {
-        emit router->captureEvent(
-            QStringLiteral("directory"), QStringLiteral("ingested"),
-            QStringLiteral("记住文件 2026年4月家庭支出清单-%1.txt").arg(i),
-            1756080000 + i);
-    }
-    // 前 3 次命中提醒，第 4 次被每日上限截断。
-    QCOMPARE(notify->notifyCalls, 3);
-
-    app.shutdown();
-}
-
-
 
 QTEST_MAIN(TestAppNavigation)
 #include "t_app_navigation.moc"

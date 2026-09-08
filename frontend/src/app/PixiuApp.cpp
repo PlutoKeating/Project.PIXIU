@@ -47,56 +47,11 @@
 #include <QPushButton>
 #include <QRect>
 #include <QScreen>
-#include <QSet>
 #include <QStringList>
 #include <QTimer>
 #include <QVBoxLayout>
 
 Q_LOGGING_CATEGORY(lcApp, "pixiu.app")
-
-namespace {
-
-// 简单 token 化（B4-3 MVP）：按「非字母/数字」字符切分；CJK 汉字属字母，
-// 连续 CJK/ASCII 串成为单个 token（中文无空格分词，整段短语即一个 token）。
-// 过滤长度 < 2 的碎片（单字符/单数字噪声）。
-QSet<QString> tokenizeForRelevance(const QString &text)
-{
-    QSet<QString> tokens;
-    QString current;
-    for (const QChar &ch : text) {
-        if (ch.isLetterOrNumber()) {
-            current.append(ch);
-        } else {
-            if (current.size() >= 2) {
-                tokens.insert(current);
-            }
-            current.clear();
-        }
-    }
-    if (current.size() >= 2) {
-        tokens.insert(current);
-    }
-    return tokens;
-}
-
-// 两个 token 是否“相关”：相等（大小写不敏感），或一方包含另一方
-// （长度 ≥ 2 才参与包含匹配，避免短串/单字符过度命中；CJK 大小写
-// 转换是 no-op，不受影响）。
-bool tokensRelated(const QString &a, const QString &b)
-{
-    if (a.compare(b, Qt::CaseInsensitive) == 0) {
-        return true;
-    }
-    if (a.size() >= 2 && b.contains(a, Qt::CaseInsensitive)) {
-        return true;
-    }
-    if (b.size() >= 2 && a.contains(b, Qt::CaseInsensitive)) {
-        return true;
-    }
-    return false;
-}
-
-} // namespace
 
 // 私有实现：后续 feature（单实例、托盘、设置、服务与窗口）在此挂载。
 struct PixiuApp::Private
@@ -455,7 +410,6 @@ bool PixiuApp::start()
     m_deliveryController = new DeliveryController(m_transport, this);
     connect(m_deliveryController, &DeliveryController::insightsLoaded, this,
             [this](const QJsonArray &insights) {
-                m_deliveryInsights = insights;
                 if (m_chatWindow) {
                     m_chatWindow->setInsights(insights);
                 }
@@ -924,8 +878,6 @@ bool PixiuApp::start()
                     && m_notify) {
                     m_notify->notify(tr("监控隔离"), summary);
                 }
-                // B4-3：目录捕获且已入库时做相关主题轻提醒（每日上限 3）。
-                maybeNotifyRelevance(source, status, summary);
             });
     // 聊天窗口可见时视为已读，清除悬浮球角标；同时刷新洞察（欢迎页
     // 动态建议卡每次打开都拿最新数据，在途防重由控制器保证）。
@@ -1254,67 +1206,6 @@ void PixiuApp::applyMonitorConfig(const QJsonObject &config)
         m_monitorCenter->setOfflineHint(false);
     }
 }
-
-void PixiuApp::maybeNotifyRelevance(const QString &source, const QString &status,
-                                    const QString &summary)
-{
-    // 仅目录捕获且已入库（ingested）参与相关主题判断：敏感隔离/忽略/剪贴板
-    // 内容不打扰（隔离另有「监控隔离」通知，且敏感条目不应被回显）。
-    if (source != QStringLiteral("directory")
-        || status != QStringLiteral("ingested")
-        || !m_notify || m_deliveryInsights.isEmpty()) {
-        return;
-    }
-    // 目录捕获 summary 形如「记住文件 NAME」，取 NAME 作为文件名（展示与
-    // token 化均用文件名；前缀 token 对命中无贡献，反而会污染展示文案）。
-    QString fileName = summary;
-    const QString prefix = QStringLiteral("记住文件 ");
-    if (fileName.startsWith(prefix)) {
-        fileName = fileName.mid(prefix.size()).trimmed();
-    }
-    if (fileName.isEmpty()) {
-        return;
-    }
-    // 每日上限：跨日复位（轻提醒避免刷屏打扰）。
-    const QDate today = QDate::currentDate();
-    if (m_relevanceReminderDay != today) {
-        m_relevanceReminderDay = today;
-        m_relevanceReminderCount = 0;
-    }
-    if (m_relevanceReminderCount >= kRelevanceReminderDailyCap) {
-        return;
-    }
-    // 文件名 token vs 近期洞察 title token 交集（按 score 降序返回，取首个命中）。
-    const QSet<QString> fileTokens = tokenizeForRelevance(fileName);
-    for (const QJsonValue &value : m_deliveryInsights) {
-        const QJsonObject obj = value.toObject();
-        const QString title = obj.value(QStringLiteral("title")).toString();
-        if (title.trimmed().isEmpty()) {
-            continue;
-        }
-        const QSet<QString> titleTokens = tokenizeForRelevance(title);
-        bool related = false;
-        for (const QString &ft : fileTokens) {
-            for (const QString &tt : titleTokens) {
-                if (tokensRelated(ft, tt)) {
-                    related = true;
-                    break;
-                }
-            }
-            if (related) {
-                break;
-            }
-        }
-        if (related) {
-            ++m_relevanceReminderCount;
-            m_notify->notify(tr("相关主题提醒"),
-                             tr("已记住 文件 %1（与您近期的 %2 相关）")
-                                 .arg(fileName, title));
-            return;
-        }
-    }
-}
-
 
 void PixiuApp::handleBackendEvent(const QJsonObject &event)
 {

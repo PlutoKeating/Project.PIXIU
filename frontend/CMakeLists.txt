@@ -433,6 +433,8 @@ if(BUILD_TESTING)
 
     # Remaining legacy lifecycle checks only. Preference reminders and digest
     # presentation are tested in management/tests/t_memory_workspace.cpp.
+    # Filename-based relevance guesses are retired; capture notices are covered
+    # by management/tests/t_backend_events.cpp without inferring relationships.
     add_executable(t_app_navigation
         tests/t_app_navigation.cpp
         src/app/PixiuApp.h

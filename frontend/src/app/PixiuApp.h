@@ -1,7 +1,6 @@
 #ifndef PIXIU_APP_H
 #define PIXIU_APP_H
 
-#include <QDate>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
@@ -117,11 +116,6 @@ private:
     UpgradeController *m_upgradeController = nullptr;
     // 递送层（B4-3）：洞察流 + 今日简报请求与结果上抛。
     DeliveryController *m_deliveryController = nullptr;
-    // 最近一次洞察（相关主题提醒的 title token 来源）。
-    QJsonArray m_deliveryInsights;
-    // 相关主题轻提醒每日计数（跨日复位，上限 kRelevanceReminderDailyCap）。
-    QDate m_relevanceReminderDay;
-    int m_relevanceReminderCount = 0;
     // 配对请求在途标记：仅将配对相关错误路由到同步 Tab 状态行，
     // 避免与其他端点（写入/遗忘/冲突/偏好）的通用错误互相干扰。
     bool m_pairPending = false;
@@ -193,12 +187,6 @@ private:
     void startLeaveNetwork();
     void revokeNextPeer();
     void finishLeaveNetwork();
-    // B4-3：目录捕获相关主题轻提醒（文件名 token vs 洞察 title token 交集 +
-    // 每日上限）。
-    void maybeNotifyRelevance(const QString &source, const QString &status,
-                              const QString &summary);
-    // 相关主题轻提醒每日上限。
-    static constexpr int kRelevanceReminderDailyCap = 3;
 };
 
 #endif // PIXIU_APP_H
