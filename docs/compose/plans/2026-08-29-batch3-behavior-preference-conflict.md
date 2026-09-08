@@ -7,7 +7,7 @@
 
 **Goal:** 行为采集器（窗口焦点+应用活跃时长）供数 → 偏好提取规则补齐使 `preference_accuracy` 从 0.33 达 0.85 → 冲突打扰按 Arbiter 三态分级（MERGE 静默 / NEW_WINS 通知 / MANUAL 角标+切 Tab）。
 
-**Architecture:** 后端 monitor 模块新增 `behavior.py`（采集器，复用批次② runtime 生命周期与 /memory/write 同进程管线）；`preference/rules.py` 补行为规则并修正既有规则与评测 evidence 形状的对齐；`conflict_detected` 帧与 /conflicts 响应加 `severity`；前端 EventRouter/PixiuApp 按 severity 分流打扰。
+**Architecture:** 后端 monitor 模块新增 `behavior.py`（采集器，复用批次② runtime 生命周期与 /memory/write 同进程管线）；`preference/rules.py` 补行为规则并修正既有规则与评测 evidence 形状的对齐；`conflict_detected` 帧与 /conflicts 响应加 `severity`；前端 BackendEventStatus/HostTray 对明确严重冲突发出限频无载荷提醒，不自动切页。
 
 **Tech Stack:** Python 3.12 · FastAPI · xprop（焦点轮询，无 X 环境降级） | C++17 · Qt5 · QtTest(offscreen)
 
@@ -404,21 +404,14 @@ git commit -m "feat(preference): align extraction rules to evaluation labels"
 
 **Covers:** [S3.2]
 
-**Files:**
-- Modify: `frontend/src/app/EventRouter.h/.cpp`（conflictDetected 加 `QString severity` 参数或 data 透传——先读现有签名 `conflictDetected(knowledgeTitle, field, oldValue, newValue)` 决定扩展方式）
-- Modify: `frontend/src/app/PixiuApp.cpp`（按 severity 分流：low 静默计数 / medium 温和通知+角标 / high 现状全动作）
-- Modify: `frontend/src/widgets/MemoryPanel.cpp`（冲突 Tab 条目 severity 标记：low 灰 / medium 蓝 / high 红——ui::UiTokens 语义色）
-- Test: `frontend/tests/t_event_router.cpp`、`frontend/tests/t_app_navigation.cpp`
 
-**Interfaces:**
-- Consumes: EventRouter::conflictDetected（severity 参数）、ui::UiTokens（Role::Muted/Info/Warning 或等价）
-- Produces: 分流逻辑——severity=="low" → 仅内存计数；"medium" → notify(tr("记忆已更新"), title) + 角标+1；缺省/"high" → 现状（「检测到记忆冲突」+ 角标+1 + refresh + 切 Tab）；冲突 Tab 条目 severity 样式
+正式实现为 BackendEventStatus → HostTray，冲突列表由 MemoryAudit 消费公开接口。
+旧 EventRouter/PixiuApp 及专属路由测试已删除，不恢复自动切 Tab 或正文通知。
 
-- [ ] **Step 1: 写失败测试**（EventRouter severity 参数断言 + PixiuApp 三态分流 + MemoryPanel severity 标记）
-- [ ] **Step 2: 运行验证失败**（ctest event_router / app_navigation 红）
-- [ ] **Step 3: 实现**
-- [ ] **Step 4: 运行验证通过**（`QT_QPA_PLATFORM=offscreen ctest --test-dir build/frontend --output-on-failure` → 33+ 绿）
-- [ ] **Step 5: 提交** `git commit -m "feat(frontend): grade conflict notifications by severity"`
+- low、medium、未知或缺失 severity 仅使审计数据需要核对，不触发系统提醒。
+- 明确 high/critical 触发无载荷提醒信号，组件内限频；不传递标题、旧值、新值或内部 ID。
+- 通知点击及广播不构成人类确认，不执行删除、配对批准或人工冲突裁决。
+- 正式 t_backend_events 通过真实 WebSocket 验证非法帧过滤、限频、隐私和无回发命令；真实原生通知仍需单独验收。
 
 ---
 

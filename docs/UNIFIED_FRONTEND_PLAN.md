@@ -674,6 +674,14 @@ upgrade_controller 与 check_update_dialog 在 Qt 应用创建前各自建立 QT
 
 ### U14：旧应用删除与残留清理
 
+旧 EventRouter 和专属信号分流测试已删除，CMake 不再构建该子链。正式事件处理
+继续使用 WebSocketClient → BackendEventStatus；真实连接上的非法帧过滤、
+严重冲突限频、无载荷提醒和不执行确认已由正式管理回归覆盖。保留 WebSocketClient、
+HTTP transport、HostTray 和其他仍有调用者的严重程度工具；相关旧实施文档已改为
+当前通知边界，不恢复正文通知、自动切页或广播执行。
+此项根回归 28/28 通过（26.34 秒），正式事件测试 8/8 通过（6.37 秒），
+宿主导出适配及文档章节对比通过；代码中无被删除路由的剩余引用。
+
 旧 ImportDialog、专属图片预览/信号测试和翻译已清退，根 CMake 不再构建该目标。
 它原先仅发送文本与本地图片路径并立即清空表单，没有 OCR 或上传实现，且已无
 正式调用者。正式 MemoryWriteDialog 保留标题/正文/范围、忙碌门控、失败输入及

@@ -122,8 +122,8 @@ signals:
     void devicesLoaded(const QJsonObject &response);
     // 配对请求响应（POST /sync/pair/request → request_id/pin/target_device_id/
     // expires_at；4xx/5xx 走 errorOccurred）。
-    // 命名遵循 XxxResult 惯例，与 EventRouter::pairingRequested（WS pair_request
-    // 事件帧）区分——两者同名不同类、载荷相似，SN-6 接线时按本信号名连接。
+    // HTTP 响应与 WS pair_request 数据变化通知分开处理；事件通知不代表
+    // 远端批准，也不能再次触发本地配对确认请求。
     void pairRequestResult(const QJsonObject &response);
     // 配对确认响应（POST /sync/pair/confirm → {"status": accepted|rejected|
     // expired}；404 REQUEST_NOT_FOUND 走 errorOccurred）。

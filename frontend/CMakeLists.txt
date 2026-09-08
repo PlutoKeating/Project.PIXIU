@@ -145,17 +145,6 @@ if(BUILD_TESTING)
     set_tests_properties(sync_controller PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
-    add_executable(t_event_router
-        tests/t_event_router.cpp
-        src/app/EventRouter.h
-        src/app/EventRouter.cpp
-    )
-    target_include_directories(t_event_router PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_event_router PRIVATE Qt5::Test Qt5::Core)
-    add_test(NAME event_router COMMAND t_event_router)
-    set_tests_properties(event_router PROPERTIES
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-
     add_executable(t_app_icon
         tests/t_app_icon.cpp
         resources/resources.qrc
@@ -341,7 +330,7 @@ if(BUILD_TESTING)
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
         i18n
-        sync_controller event_router product_dialogs
+        sync_controller product_dialogs
         upgrade_utils
         upgrade_controller
         check_update_dialog

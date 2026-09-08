@@ -19,7 +19,7 @@
 //     models.py）。
 //
 // 本文件独立于 UiTokens.h 放置：severity 是领域语义（wire 契约值归一化），
-// 不属于视觉设计令牌；且本头文件只依赖 QString，纯数据层（如 EventRouter）
+// 不属于视觉设计令牌；且本头文件只依赖 QString，纯数据层
 // 也可安全消费，不会把 QApplication 拖进其依赖图，无 include 环。
 namespace ui {
 

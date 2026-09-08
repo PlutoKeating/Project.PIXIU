@@ -68,9 +68,9 @@ Steps: 桩测试先行红 → transport 实现 → 契约用例绿 → 提交 `f
 
 ### Task A-2: EventRouter 路由 capture_event
 
-**Files:** Modify `frontend/src/app/EventRouter.h/.cpp`（isKnownBusinessEvent 加 capture_event；信号 `captureEvent(QString source, QString status, QString summary, qint64 ts)`）；Modify `frontend/src/services/WebSocketClient.cpp` kKnownEvents 集合同步；Test 扩展 `frontend/tests/t_event_router.cpp`（正常帧/未知帧/data 缺失三态）
+**Files:** 正式 WebSocketClient 与 frontend/management/BackendEventStatus，回归在管理测试 t_backend_events.cpp。旧 EventRouter 及专属测试已删除。
 
-Steps: 红 → 实现 → 绿 → 提交 `feat(frontend): route capture_event frames`。
+验证真实连接上的非法/未知帧过滤与合法通知；capture_event 只标记页面数据变化，不直接拼接权威日志、发回命令或弹出确认。
 
 ### Task A-3: 远端配置优先 + 活动日志接入 UI
 

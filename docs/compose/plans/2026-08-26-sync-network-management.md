@@ -879,12 +879,12 @@ git commit -m "feat(sync): default-on runtime sync settings"
 - Modify: `frontend/src/services/BackendTransport.h/.cpp`（虚函数 discoverDevices/requestPairing/confirmPairing/updateSyncSettings/syncNow；信号 devicesLoaded/pairRequestResult/pairConfirmResult/settingsResult）
 - Modify: `frontend/src/services/HttpBackendTransport.h/.cpp`（GET /sync/discover、POST /sync/pair/request、POST /sync/pair/confirm、PUT /sync/settings、POST /sync/now）
 - Modify: `frontend/src/app/SyncController.h/.cpp`（discover/request/confirm/updateSettings 状态机 + 信号）
-- Modify: `frontend/src/services/EventRouter.h/.cpp`、`WebSocketClient.cpp`（pair_request 帧路由 → 信号 pairingRequested）
+- 正式事件入口：WebSocketClient → BackendEventStatus；pair_request 只触发设备页核对，不代表远端批准，不执行确认。旧 EventRouter 已删除。
 - Test: `frontend/tests/t_sync_controller.cpp`（新）或扩展 t_contract_fixtures.cpp
 
 **Interfaces:**
-- Consumes: 既有 HttpBackendTransport.postJson/getJson/putJson（存在 putJson？实现时查——若无则补）、EventRouter 既有 isKnownBusinessEvent
-- Produces: `SyncController::discover() -> 信号 discoveredDevices(QJsonArray)`；`requestPairing(QString targetId)`；`confirmPairing(QString requestId, bool accept)`；`updateSettings(bool enabled, bool paused)`；`EventRouter::pairingRequested(QJsonObject)` 信号
+- Consumes: 现有 HttpBackendTransport 公共方法及 BackendEventStatus::dataChanged；响应与通知分开处理。
+- 正式消费方为 DevicePage/PairingDialog；发现、请求、确认、设置响应分别处理，真实双端批准和送达须独立核验。
 - 契约形状与 docs/API.md Task 1/2/4 一致。
 
 - [ ] **Step 1: 写失败测试**（t_sync_controller.cpp，offscreen，仿 t_app_navigation 隔离配方）

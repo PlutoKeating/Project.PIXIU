@@ -48,12 +48,11 @@
 - WS 帧与 GET /conflicts 的 ConflictRecord 同步加 `severity` 字段（repository 序列化兼容默认）。
 
 ### [S3.2] 前端：分级打扰
-- `EventRouter::conflictDetected` 扩展 severity 参数（或 data 透传）；
-- PixiuApp conflictDetected 处理器按 severity 分流：
-  - low：不通知、不加角标、不切 Tab（可加内存级计数供面板角标聚合）；
-  - medium：`m_notify->notify(tr("记忆已更新"), title)`（温和文案）+ 角标+1；
-  - high：现状行为（「检测到记忆冲突」+ 角标+1 + 刷新冲突列表 + 切 Tab）；
-- 冲突 Tab 条目按 severity 着色/标记（low 灰、medium 蓝、high 红——用 ui::UiTokens 语义色）。
+
+- 正式 BackendEventStatus 只对明确 high/critical 发出限频、无事件载荷的提醒信号；HostTray 使用固定安全文案。
+- low、medium、未知及缺失严重程度仍可通知审计页数据变化，但不自动切页或发送系统提醒。
+- MemoryAudit 展示后端实际结果，不提供未实现的人工裁决或回滚。
+- 旧 EventRouter/PixiuApp 已删除；真实连接测试保留非法帧、隐私及不执行确认边界。
 
 ## [S4] 契约与文档
 - `docs/API.md`：conflict_detected 帧与 /conflicts 响应补 severity 字段说明；

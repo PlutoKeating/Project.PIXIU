@@ -139,7 +139,7 @@
 
 | 更新位置 | 内容 |
 |----------|------|
-| `frontend/src/`（70 个文件） | Qt5 应用全量实现：悬浮球（自由拖拽/角标/右键菜单）、侧边聊天窗（欢迎页/建议卡/多行输入/证据卡/骨架屏）、记忆面板（偏好/冲突/同步三 Tab）、遗忘/录入/设置/配对/解绑对话框、EventRouter、SyncController、健康探测、主题感知图标 |
+| `frontend/src/` | 正式复用的 HTTP/WS、快捷键、通知、升级及信息组件；仍有部分旧管理控件待清退。正式页面位于 `frontend/management/`，旧聊天、悬浮球、监控中心、录入预览及 EventRouter 已删除，不按旧文件数描述交付 |
 | `frontend/tests/`（30 个文件 + 契约套件） | QtTest 双路径（KYSDK OFF/ON）31/31 全绿；端到端回归（首击、窗口恢复等）与后端契约一致性测试；自动回归脚本 `scripts/regression.sh` |
 | `frontend/resources/` | 设计令牌/全局 QSS/主题感知图标/内嵌 pixiu.svg/i18n（en_US 180 条 0 未完成） |
 | `frontend/docs/`（85 个文件） | 任务书/架构/执行计划/UI_UX_POLISH/适配报告更新 + 真实桌面截图（明暗主题、UI 演示 36 张） |

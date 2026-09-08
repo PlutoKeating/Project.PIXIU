@@ -113,6 +113,8 @@ PixiuApp、FloatingBall、ChatWindow 及输入/消息展示链和专属测试已
 窗口管理器确认且不自动重试 toggle；OFF 明示 Qt 兼容请求，不修改启动配置。
 旧 ImportDialog 及专属预览测试、翻译已删除；正式 MemoryWriteDialog 继续负责
 文本录入和失败重试，不将图片预览当作 OCR 实现。
+旧 EventRouter 及专属信号测试已删除；正式 BackendEventStatus 的真实 WebSocket
+回归继续覆盖非法帧、无载荷限频提醒与不执行确认，公共客户端未删除。
 f2246f0 原生自动安装后已实际验证置顶/取消、跨应用遮挡和最小化后快捷键恢复；
 完整矩阵仍按 U11 验收，不以这几项成功覆盖未测平台或失败路径。
 
