@@ -35,7 +35,7 @@
       "planned_start_seconds": 25,
       "planned_duration_seconds": 20,
       "narration": "貔貅的关键创新，是把孤立的本地记忆，连接成可信设备之间的集体记忆网络。知识在端侧保存，在授权范围内共享，再由每台设备上的智能体检索和复用。",
-      "visual": "共享网络示意＋产品真实页",
+      "visual": "蓝白共享记忆能力示意；spotlight-hero-card 聚焦、悬浮、归位后展示对等设备网络",
       "status": "capture-needed"
     },
     {
@@ -79,7 +79,7 @@
       "planned_start_seconds": 100,
       "planned_duration_seconds": 20,
       "narration": "以家庭账单为例：电费二百一十元，水费六十八元五角，燃气费一百五十六元。保存之后开启新会话，再询问水电燃气支出，就能找到这条长期记忆。",
-      "visual": "06-agent-remember.png → 16-agent-recall-result.png",
+      "visual": "原生4K实拍：账单录入、保存成功、新会话实际工具检索回答；三项金额210/68.50/156",
       "status": "available"
     },
     {
@@ -90,7 +90,7 @@
       "planned_start_seconds": 120,
       "planned_duration_seconds": 15,
       "narration": "合计四百三十四元五角。点击本会话记忆来源，可以查看实际命中的证据。让回答可复核，而不只是得到一句看起来正确的结论。",
-      "visual": "17-agent-source.png",
+      "visual": "同一账单回答434.50元 → 原始证据详情；row-embed 只强调截图真实槽位",
       "status": "available"
     },
     {
@@ -222,7 +222,7 @@
       "planned_start_seconds": 332,
       "planned_duration_seconds": 30,
       "narration": "在笔记本的会话里，记下周六上午九点整理书房、书籍按主题分类的约定。换到客厅，请智能体调用记忆检索工具。它找回这份共享记忆，回答时间和分类方式，并注明同一条知识的来源。这里展示的是显式工具检索。",
-      "visual": "笔记本原始会话请求局部（对话自动沉淀）；客厅 Agent 显式检索成功后的真实工具卡与回答核对录屏；保留实际知识来源。",
+      "visual": "原生4K用户请求裁片 → 客厅完成后核对工具与回答原速录屏 → 来源结果定格",
       "status": "真实跨端工具调用、共享知识 ID 与最终回答已核对，待成片检查"
     },
     {

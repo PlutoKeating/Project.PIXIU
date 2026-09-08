@@ -11,7 +11,10 @@
     "render:outro": "remotion render src/index.ts PixiuOutroReview",
     "still": "remotion still src/index.ts PixiuOpeningReview",
     "render": "remotion render src/index.ts PixiuOpeningReview renders/开场审阅样片.mp4",
-    "render:shared-agent": "remotion render src/index.ts PixiuSharedAgentReview"
+    "render:shared-agent": "remotion render src/index.ts PixiuSharedAgentReview",
+    "render:spotlight": "remotion render src/index.ts PixiuSpotlightReview",
+    "prepare:concept": "python3 scripts/outline_concept.py",
+    "render:bill": "remotion render src/index.ts PixiuBillReview"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

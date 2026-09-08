@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "body": {
+    "answer": "2026年4月家庭水电燃气账单",
+    "source_evidence": [
+      "evd_01M21878ZXAKQPRAXJ2ME5TZBZ"
+    ],
+    "source_knowledge": "knw_01M2187901RZWK8YXN29K0B79M",
+    "confidence": 1.0,
+    "latency_ms": 26
+  }
+}

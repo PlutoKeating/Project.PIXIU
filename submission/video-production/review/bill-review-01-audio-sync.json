@@ -1,0 +1,29 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "submission/video-production/renders/账单与来源审阅-01.mp4",
+  "video_sha256": "011bc720be27391a4a11ac64e7bdb651ffb3b607795bbceaf5e22c2f35101ac8",
+  "peak_dbfs": -2.463471155547618,
+  "probes": [
+    {
+      "declared_start_frame": 14.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.9999603054421942,
+      "source_peak_frame": 243.75,
+      "source": "submission/video-production/public/audio/s07.mp3",
+      "source_sha256": "7ae43b135e3fc55ab38cf5a47534f830581ff03efd38578f1a129984630dad3e"
+    },
+    {
+      "declared_start_frame": 614.0,
+      "measured_start_frame": 615.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.999959347381131,
+      "source_peak_frame": 282.75,
+      "source": "submission/video-production/public/audio/s08.mp3",
+      "source_sha256": "25568581e5235e6a9c1b791de96d212cde705815cd429ed628dce38cbebeda1a"
+    }
+  ]
+}

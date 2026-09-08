@@ -1,0 +1,37 @@
+{
+  "video": "renders/账单与来源审阅-01.mp4",
+  "sha256": "011bc720be27391a4a11ac64e7bdb651ffb3b607795bbceaf5e22c2f35101ac8",
+  "full_decode_passed": true,
+  "extracted_frames": [
+    100,
+    280,
+    400,
+    620,
+    722,
+    797
+  ],
+  "status": "35秒账单章节审阅；未主观试听",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "35.050667",
+      "size": "2718902"
+    }
+  }
+}

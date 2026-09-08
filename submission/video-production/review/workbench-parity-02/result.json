@@ -1,0 +1,19 @@
+{
+  "status": "未通过；5帧一致，1帧字幕/审阅标记光栅存在差异",
+  "frames": {
+    "847": 0,
+    "912": 0,
+    "3517": 0,
+    "3839": 5940,
+    "3914": 0,
+    "10837": 0
+  },
+  "total_pixels": 2073600,
+  "failed_frame": 3839,
+  "failed_regions": {
+    "heading_status": 2332,
+    "product_content": 0,
+    "caption_footer": 3608
+  },
+  "initial_failure": "concept顶层目录未链接造成404；重新open.mjs后素材加载恢复"
+}

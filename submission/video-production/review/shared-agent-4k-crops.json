@@ -1,0 +1,30 @@
+{
+  "request": {
+    "source": "raw/screenshots/20260909-笔记本会话重启后-4K.png",
+    "source_sha256": "c45e2bfa08a5e2b01e95d0aaa17a908cb715d6990e58972ba7b5c96912eb7efc",
+    "output": "public/clips/shared-agent-user-request-4k.png",
+    "crop": {
+      "x": 1850,
+      "y": 725,
+      "width": 1140,
+      "height": 150
+    },
+    "display_width": 1140
+  },
+  "result": {
+    "source": "raw/screenshots/20260909-客厅工具展开-4K.png",
+    "source_sha256": "a94ac03f0bae764e9d78ae16bcebf1f6baa0f5a3b43ec2418fdd315aa09e26bb",
+    "crop": {
+      "x": 1296,
+      "y": 536,
+      "width": 1790,
+      "height": 800
+    },
+    "display_width": 1440
+  },
+  "recording": {
+    "source": "raw/recordings/客厅智能体共享记忆工具核对-4K/原始录屏.mp4",
+    "replay_frames": 304,
+    "note": "真实10.133秒录屏，采样15帧；无生成过程，仅核对已完成的工具与结果"
+  }
+}

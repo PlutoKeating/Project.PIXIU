@@ -1,0 +1,38 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/共享记忆聚焦审阅-01.mp4",
+  "video_sha256": "0e5c79b25d7ae1c27b96db9f837a7311a76648d850116ab8f87d3bc7f8142ee7",
+  "peak_dbfs": -5.570501811374555,
+  "probes": [
+    {
+      "declared_start_frame": 14.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.9974589772350967,
+      "source_peak_frame": 148.65,
+      "source": "public/audio/s03.mp3",
+      "source_sha256": "216d6a7f1946b5cacef26f2ece7b6f757760969610aa5a10276548859ba62e8f"
+    },
+    {
+      "declared_start_frame": 25.0,
+      "measured_start_frame": 26.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.12062326261826474,
+      "source_peak_frame": 21.45,
+      "source": "public/audio/whoosh-big.mp3",
+      "source_sha256": "8af9843a636d3b4961f0c8b3545a21e674bd43d59f97d5c38d3f9a3f04674fd2"
+    },
+    {
+      "declared_start_frame": 125.0,
+      "measured_start_frame": 126.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.07315089282890515,
+      "source_peak_frame": 3.45,
+      "source": "public/audio/transition-snap.mp3",
+      "source_sha256": "9f7e4edb094569f9cb40e8dbb987a5fc20926b30326a1a9d827236960980f070"
+    }
+  ]
+}

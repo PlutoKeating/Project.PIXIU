@@ -1,0 +1,46 @@
+[
+  {
+    "source": "raw/screenshots/20260909-账单保存前-4K.png",
+    "sha256": "aebb086553e431598ca8a2995a251fd681006aeeebc92c42af94d71bc0e68006",
+    "crop_xyxy": [
+      1330,
+      510,
+      2470,
+      1475
+    ],
+    "output": "public/clips/bill-input-4k.png"
+  },
+  {
+    "source": "raw/screenshots/20260909-账单保存结果-4K.png",
+    "sha256": "52bbe086e007fba72cb70cc272b3e5e2f375fe6b4dfbff3ba53ffbd708a18021",
+    "crop_xyxy": [
+      1330,
+      510,
+      2470,
+      1475
+    ],
+    "output": "public/clips/bill-saved-4k.png"
+  },
+  {
+    "source": "raw/screenshots/20260909-账单智能体回答检查-4K.png",
+    "sha256": "070c3da2ad353280d5aa615e39c94e1049e400ec0299c1111e83444a9b52d8c0",
+    "crop_xyxy": [
+      1420,
+      1030,
+      3060,
+      1470
+    ],
+    "output": "public/clips/bill-answer-4k.png"
+  },
+  {
+    "source": "raw/screenshots/20260909-账单原始证据-4K.png",
+    "sha256": "cb0c4ef121325146d937ce2a9123d6e5ffba22e8325f49e1ff924fd2256c49df",
+    "crop_xyxy": [
+      1500,
+      930,
+      3080,
+      1480
+    ],
+    "output": "public/clips/bill-source-4k.png"
+  }
+]
