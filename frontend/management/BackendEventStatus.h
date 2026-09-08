@@ -1,6 +1,7 @@
 #pragma once
 #include <QSet>
 #include <QWidget>
+#include <QElapsedTimer>
 
 class QLabel;
 class QPushButton;
@@ -15,10 +16,12 @@ public:
 signals:
     // Allowlisted event name, or "reconnected"; carries no command or credential.
     void dataChanged(const QString &eventName);
+    void conflictAttentionRequested();
 private:
     void updateNotice();
     QLabel *m_notice;
     QPushButton *m_dismiss;
     QSet<QString> m_changed;
+    QElapsedTimer m_lastAttention;
 };
 }

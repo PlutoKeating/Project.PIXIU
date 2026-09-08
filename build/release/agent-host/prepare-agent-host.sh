@@ -90,6 +90,7 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     management/HostCloseGuard.h management/HostCloseGuard.cpp \
     management/HostTray.h management/HostTray.cpp \
     src/app/ShortcutManager.h src/app/ShortcutManager.cpp \
+    src/services/NotifyService.h src/services/NotifyService.cpp \
     management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
     management/MemoryEditDialog.h management/MemoryEditDialog.cpp \
     management/MemoryAudit.h management/MemoryAudit.cpp \

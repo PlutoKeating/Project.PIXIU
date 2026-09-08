@@ -10,6 +10,31 @@
 class BackendEventsTest : public QObject {
     Q_OBJECT
 private slots:
+    void onlySevereConflictsRequestBoundedPayloadFreeAttention() {
+        QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
+        QVERIFY(server.listen(QHostAddress::LocalHost, 0));
+        pixiu::BackendEventStatus status(QString("http://127.0.0.1:%1").arg(server.serverPort()));
+        QSignalSpy attention(&status, &pixiu::BackendEventStatus::conflictAttentionRequested);
+        QSignalSpy changed(&status, &pixiu::BackendEventStatus::dataChanged);
+        QTRY_VERIFY(server.hasPendingConnections());
+        auto *peer = server.nextPendingConnection();
+        QTRY_VERIFY(!changed.isEmpty());
+        changed.clear();
+        peer->sendTextMessage(R"({"event":"conflict_detected","data":{"severity":"medium"}})");
+        peer->sendTextMessage(R"({"event":"conflict_detected","data":{"severity":"unknown"}})");
+        peer->sendTextMessage(R"({"event":"forget_confirmation","data":{"severity":"high"}})");
+        QTRY_COMPARE(changed.count(), 3);
+        QCOMPARE(attention.count(), 0);
+        for (int i = 0; i < 20; ++i)
+            peer->sendTextMessage(R"({"event":"conflict_detected","data":{"severity":" HIGH ","old_value":"private-secret"}})");
+        QTRY_COMPARE(changed.count(), 23);
+        QCOMPARE(attention.count(), 1);
+        QVERIFY(attention.first().isEmpty());
+        QVERIFY(!status.findChild<QLabel *>("eventChanges")->text().contains("private-secret"));
+        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        peer->close();
+        peer->deleteLater();
+    }
     void notificationsNeverBecomeConfirmation() {
         QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
         QVERIFY(server.listen(QHostAddress::LocalHost, 0));

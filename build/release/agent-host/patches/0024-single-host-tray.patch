@@ -8,3 +8,9 @@
 -    setWindowTitle(QStringLiteral("PIXIU"));
 +    setWindowTitle(QStringLiteral("PIXIU"));
 +    new pixiu::HostTray(this);
+@@ -128,1 +130,4 @@
+-    rootLayout->addWidget(events);
++    rootLayout->addWidget(events);
++    connect(events, &pixiu::BackendEventStatus::conflictAttentionRequested,
++            findChild<pixiu::HostTray *>(), &pixiu::HostTray::notifyConflict);
++    // Desktop notifications never carry event payload or confirmation actions.

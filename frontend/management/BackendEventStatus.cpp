@@ -57,6 +57,12 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
         else if (name == "sync_event" || name == "pair_request") page = tr("设备");
         else if (name == "capture_event") page = tr("采集与隐私");
         if (page.isEmpty()) return;
+        const QString severity = event.value("data").toObject().value("severity").toString().trimmed().toLower();
+        if (name == "conflict_detected" && (severity == "high" || severity == "critical")
+            && (!m_lastAttention.isValid() || m_lastAttention.elapsed() >= 60000)) {
+            m_lastAttention.start();
+            emit conflictAttentionRequested(); // no event text, values or IDs cross this boundary
+        }
         m_changed.insert(page);
         updateNotice();
         emit dataChanged(name);

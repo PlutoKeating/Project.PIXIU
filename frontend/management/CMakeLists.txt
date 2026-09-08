@@ -12,6 +12,7 @@ file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" PIXIU_MANAGEMENT_VERSIO
 add_library(pixiu-management STATIC
     HostTray.h HostTray.cpp
     ../src/app/ShortcutManager.h ../src/app/ShortcutManager.cpp
+    ../src/services/NotifyService.h ../src/services/NotifyService.cpp
     BackendEventStatus.h BackendEventStatus.cpp
     ../src/services/WebSocketClient.h ../src/services/WebSocketClient.cpp
     AgentEvidence.h AgentEvidence.cpp
@@ -43,8 +44,10 @@ target_link_libraries(pixiu-management PRIVATE "${PIXIU_QRENCODE_LIBRARY}")
 if(PIXIU_HAVE_KYSDK)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(PIXIU_SHORTCUT REQUIRED IMPORTED_TARGET kysdk-shortcut)
+    pkg_check_modules(PIXIU_NOTIFICATION REQUIRED IMPORTED_TARGET kysdk-notification)
     target_compile_definitions(pixiu-management PRIVATE PIXIU_HAVE_KYSDK=1)
     target_link_libraries(pixiu-management PRIVATE PkgConfig::PIXIU_SHORTCUT)
+    target_link_libraries(pixiu-management PRIVATE PkgConfig::PIXIU_NOTIFICATION)
 endif()
 option(PIXIU_MANAGEMENT_TESTS "Build embedded management tests" OFF)
 if(PIXIU_MANAGEMENT_TESTS)

@@ -31,6 +31,8 @@
     "frontend/management/HostTray.cpp",
     "frontend/src/app/ShortcutManager.h",
     "frontend/src/app/ShortcutManager.cpp",
+    "frontend/src/services/NotifyService.h",
+    "frontend/src/services/NotifyService.cpp",
     "frontend/management/BackendEventStatus.h",
     "frontend/management/BackendEventStatus.cpp",
     "frontend/src/services/WebSocketClient.h",
