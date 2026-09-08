@@ -66,14 +66,14 @@
 | 4 | 完整 Agent 闭环 | E + D | 多轮→自主召回→工具/Shell/搜索→结果回写→新会话复用 |
 | 5 | 分布式创新实证 | C + D | 至少三设备完成离线/并发/重连/冲突/遗忘/收敛矩阵 |
 | 6 | 单一安装包与版本/升级闭环 | A + C + E + D | V11 图形安装；GUI 签名升级、健康检查、恢复和数据保留通过；Agent 宿主默认浅色、设置页双主题切换、PIXIU 正向身份、离线富消息渲染与完整 SSE 工作流可见 |
-| 7 | 最终文档与答辩 | D + Human | D-01～D-05、A-01～A-05、源码、PPT、视频、许可证和原创边界证据同版且审核完成 |
+| 7 | 最终文档与答辩 | D + Human | 项目报告、技术方案、功能演示视频、源代码四项作品同版且匿名审核完成 |
 
 不得用“适配器已创建”替代第 4 步端到端结果，也不得在第 1～2 步失败时宣称赛题
 验收通过。各工作包的证据编号以 `AcceptanceTestSpecification.md` 为准。
 
 ### 1.4 交付治理入口
 
-单一 `.deb`、GUI 一键升级、版本/兼容矩阵、恢复策略和 D-01～D-05/A-01～A-05 文档状态统一
+单一 `.deb`、GUI 一键升级、版本/兼容矩阵、恢复策略和 四项作品 文档状态统一
 维护在 `DELIVERY_PLAN.md` 与 `delivery/`。所有最终材料必须绑定同一候选 commit；
 工作稿结构完成不等于最终证据已审核。
 
@@ -448,7 +448,7 @@ Project.PIXIU/
 │   ├── AcceptanceTestSpecification.md  # 验收规范
 │   ├── OS_AGENT_INTEGRATION_ASSESSMENT.md # Agent 选型与赛题差距
 │   ├── DELIVERY_PLAN.md           # 安装、版本、升级和赛事交付文档台账
-│   ├── delivery/                  # D-01～D-05 与 D-02 附件 A-01～A-05 工作源
+│   ├── delivery/                  # 四项作品及技术方案各章节的内部编写源
 │   ├── 完整赛题要求.pptx            # 2026.05 权威宣讲材料
 │   └── kylin_sdk_docs/             # KylinSDK 参考（不动）
 │
@@ -506,7 +506,7 @@ Project.PIXIU/
 ├── integrations/
 │   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配与契约测试
 
-├── submission/                     # 00 说明 + 官方 01～05 五类手工维护交付实物
+├── submission/                     # 交付实物工作区；最终目录按 DELIVERY_PLAN.md §0
 
 ├── third_party/                    # openKylin 官方源码/SDK submodule
 │   ├── kylin-agent/                # 官方桌面 Agent 参考/目标宿主
@@ -596,7 +596,7 @@ Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契�
 |------|------|------|
 | 验收规范 | `docs/AcceptanceTestSpecification.md` | 全部验收条目 |
 | 赛题原文 | `docs/OriginProblemDescription.md` | 比赛要求与附录 A 场景 |
-| 最终交付计划 | `docs/DELIVERY_PLAN.md` | 单一安装包、版本/升级与 D-01～D-05/A-01～A-05 台账 |
+| 最终交付计划 | `docs/DELIVERY_PLAN.md` | 单一安装包、版本/升级与 四项作品 台账 |
 
 ### 模块 E 开发者必读
 

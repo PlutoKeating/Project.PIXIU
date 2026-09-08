@@ -24,17 +24,21 @@
 - `docs/OriginProblemDescription.md` —— 赛题原文与附录 A 场景
 - `docs/AcceptanceTestSpecification.md` —— 功能/性能/交付验收条目
 - `docs/IMPLEMENTATION_MASTER_PLAN.md` —— 完整交付关键路径、阶段门与实施台账
-- `docs/DELIVERY_PLAN.md` —— 单一安装包、版本/升级与 D-01～D-10 文档门禁
+- `docs/DELIVERY_PLAN.md` —— 单一安装包、版本/升级与四项作品要求
 - `docs/完整赛题要求.pptx` —— 2026.05 赛方完整宣讲材料与硬门槛（必须实际读取，不得仅依赖摘要）
 - `docs/OS_AGENT_INTEGRATION_ASSESSMENT.md` —— 完整 Agent 接入决策、代码事实与赛题差距
 - `docs/decisions/0001-use-openkylin-agent-host.md` —— 已批准的 Agent 宿主与适配边界
 
-`docs/OriginProblemDescription.md` 与 `docs/完整赛题要求.pptx` 两份赛事官方
-材料是只读权威原件，**禁止编辑、增删、重排或在文件内部追加
-解释**。任何合并解读、差异说明和工程映射只能写入派生文档。当前归档校验值：
+`docs/OriginProblemDescription.md` 与 `docs/完整赛题要求.pptx` 的交付条款已于
+2026-09-08 按 Human 最新明确要求覆盖更新；这是更新后的赛题记录，不再称未修改原件。
+交付作品内容、份数、格式、目录命名和匿名要求唯一以
+[DELIVERY_PLAN.md §0](docs/DELIVERY_PLAN.md#0-赛方交付作品要求唯一权威永久冻结)
+为准，该节永久冻结，禁止后续修改。新要求未要求的交付物不得另列为必交件；
+冲突内容必须删除或替换，不得保留并行口径。赛题其余技术条款继续适用。
+当前文档校验值与 `docs/OFFICIAL_SOURCES.sha256` 一致：
 
-- `docs/OriginProblemDescription.md`：SHA-256 `e8f35ef4d537d2f85c338111d8f88e64fe9538eb8073681d78c36479c3a147bf`
-- `docs/完整赛题要求.pptx`：SHA-256 `d4f1e5de1afe7b759e52d62fe74d6183d3cfc25368af69073318350ff2c39ce0`
+- `docs/OriginProblemDescription.md`：SHA-256 `0a354e333bb00c36d0f5e70510334a765b374ead7704ea276cdb816ff3d4bdb8`
+- `docs/完整赛题要求.pptx`：SHA-256 `c4940381e1f134791ddff0e217a4a3bb60e1a3fadb1a1d0112cbda9e2d0f472d`
 
 ### 1.2 必读模块文档
 
