@@ -1,0 +1,36 @@
+{
+  "tolerance": 0,
+  "status": "五帧一致，非全帧证明",
+  "frames": [
+    {
+      "frame": 7823,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    },
+    {
+      "frame": 7895,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    },
+    {
+      "frame": 7960,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    },
+    {
+      "frame": 11617,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    },
+    {
+      "frame": 12260,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    }
+  ]
+}

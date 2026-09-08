@@ -1,0 +1,124 @@
+{
+  "scope": "user:video-preference-4k-v1",
+  "stage": 3,
+  "method": "合成配置经公共接口写入；事件逐项区分写入提取与显式重复提取",
+  "events": [
+    {
+      "label": "提取前读取偏好",
+      "recorded_at": "2026-09-08T21:22:33.907385+00:00",
+      "path": "/preferences?scope=user%3Avideo-preference-4k-v1",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "preferences": [
+            {
+              "id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+              "category": "OUTPUT_STYLE",
+              "key": "output_style.verbosity",
+              "value": {
+                "verbosity": "compact"
+              },
+              "confidence": 0.9,
+              "version": 2,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788902312,
+              "updated_at": 1788902313
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "写入回答风格配置",
+      "recorded_at": "2026-09-08T21:22:34.544683+00:00",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "scope": "user:video-preference-4k-v1",
+        "raw": {
+          "title": "回答风格演示",
+          "body": {
+            "detail_level": "详细说明"
+          }
+        },
+        "idempotency_key": "video-preference-4k-v1:3"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M21EDEC4KPTK34W02XF8V14A",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 1,
+          "conflict_detected": true,
+          "latency_ms": 264
+        }
+      }
+    },
+    {
+      "label": "读取提取后的偏好",
+      "recorded_at": "2026-09-08T21:22:34.810641+00:00",
+      "path": "/preferences?scope=user%3Avideo-preference-4k-v1",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "preferences": [
+            {
+              "id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+              "category": "OUTPUT_STYLE",
+              "key": "output_style.verbosity",
+              "value": {
+                "verbosity": "verbose"
+              },
+              "confidence": 0.9,
+              "version": 3,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788902312,
+              "updated_at": 1788902554
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "读取版本历史",
+      "recorded_at": "2026-09-08T21:22:35.155645+00:00",
+      "path": "/preference/pref_01M21E626SWQNVJ96Y7PNZ298T/history",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+          "key": "output_style.verbosity",
+          "current_version": 3,
+          "history": [
+            {
+              "version": 1,
+              "value": {
+                "verbosity": "compact"
+              },
+              "updated_at": 1788902312
+            },
+            {
+              "version": 2,
+              "value": {
+                "verbosity": "compact"
+              },
+              "updated_at": 1788902313
+            },
+            {
+              "version": 3,
+              "value": {
+                "verbosity": "verbose"
+              },
+              "updated_at": 1788902554
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

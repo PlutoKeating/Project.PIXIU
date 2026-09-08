@@ -1,0 +1,67 @@
+{
+  "status": "高清替换完成，有限独立镜头复核无阻断项；非全片验收",
+  "sources": [
+    {
+      "path": "raw/20260909-高清偏好版本二.png",
+      "sha256": "221ecc52f31daca83aa34cd1b4f684e2b93379dfbb1363fcb21eba8adbdc2bd7",
+      "dimensions": [
+        3840,
+        2160
+      ]
+    },
+    {
+      "path": "raw/20260909-高清偏好版本三.png",
+      "sha256": "d6d08740fe8bd651017fa2178098e59d0cf9d57a805e9e4d6564050f449e235c",
+      "dimensions": [
+        3840,
+        2160
+      ]
+    }
+  ],
+  "scope": "user:video-preference-4k-v1",
+  "preference_id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+  "history_values": [
+    "compact",
+    "compact",
+    "verbose"
+  ],
+  "trace": [
+    "raw/network/高清偏好提取-阶段1.json",
+    "raw/network/高清偏好提取-阶段3.json"
+  ],
+  "current_crop": {
+    "x": 734,
+    "y": 832,
+    "w": 1170,
+    "h": 177,
+    "scale": 1.28
+  },
+  "history_crops": [
+    {
+      "x": 755,
+      "y": 1364,
+      "w": 780,
+      "h": 100,
+      "scale": 1.3
+    },
+    {
+      "x": 755,
+      "y": 1496,
+      "w": 780,
+      "h": 100,
+      "scale": 1.3
+    },
+    {
+      "x": 755,
+      "y": 1628,
+      "w": 780,
+      "h": 100,
+      "scale": 1.3
+    }
+  ],
+  "capture_note": "笔记本原生4K/scale2；刷新与选中历史录屏17原始帧，10.336秒；30帧编码不代表30帧真实采集。",
+  "extraction_note": "首次写入已提取版本1，显式重提取形成版本2；第二次写入详细配置形成版本3，未再次重提取。",
+  "chapter_decode_passed": true,
+  "chapter_sha256": "0222df8c1f67f07cd2c22fb002db807503fecd0e8adca16c8465cf2dee05b2fd",
+  "independent_review": "independent-preference-02/REPORT.md"
+}

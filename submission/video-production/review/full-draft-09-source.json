@@ -1,0 +1,85 @@
+{
+  "status": "偏好高清替换，未最终验收",
+  "files": [
+    {
+      "path": "src/BillScene.tsx",
+      "sha256": "f515c2574e314d4a9748f54c82e6c1639fb1d19ad98360e34baafdcff403c980"
+    },
+    {
+      "path": "src/BrandInkOpen.tsx",
+      "sha256": "341d1451f67249c481942180edc8c419119602e7ccd7f14a31a00ed40677b085"
+    },
+    {
+      "path": "src/DigitRoll.tsx",
+      "sha256": "cd23e46e46ca32bb633cb703f08ccb332bfa0bf1b0fe857355ad4d154ada0ea0"
+    },
+    {
+      "path": "src/EvaluationScene.tsx",
+      "sha256": "255338ae4ab211229776c999cc3e2825397613f09fbd5e51104e6da07cdb1dd4"
+    },
+    {
+      "path": "src/Fonts.tsx",
+      "sha256": "dbfed4eccc20199a92bd9fe900b41d3af3760a61310576778dd187c6c33f9ce3"
+    },
+    {
+      "path": "src/FullFilm.tsx",
+      "sha256": "c84de1c91d05f70b1adf8979a6f537a04bc8e12fbdbfff52863d80d937d747b7"
+    },
+    {
+      "path": "src/NarratedChapter.tsx",
+      "sha256": "b932877cfd1e42c8797249e19f243ff92b21907c257ce9d58f59f02be7253c3d"
+    },
+    {
+      "path": "src/PageCam.tsx",
+      "sha256": "f8efe781653d20bd415f02e82846d118fba4bdeaaef86df6fe40da4d96a7cc21"
+    },
+    {
+      "path": "src/PaperTitleCard.tsx",
+      "sha256": "82e0814046ec56cdbe343b3cdb7805c94d74534c553920aa2a7ef02249227cf7"
+    },
+    {
+      "path": "src/PreferenceHistoryScene.tsx",
+      "sha256": "66f54ee178768be35427969c94d84b9781ade40177de0b407b18775823d763bc"
+    },
+    {
+      "path": "src/Root.tsx",
+      "sha256": "0e67782cfaf9a01e36b4175dfb7122e95699b62145773911cecf8bc2fcfabdf1"
+    },
+    {
+      "path": "src/SceneOutro.tsx",
+      "sha256": "3efc9353acc528126c96d05f67710f20204caa672d5b162fc0e5690ca56ee342"
+    },
+    {
+      "path": "src/SharedAgentScene.tsx",
+      "sha256": "5c2372853b78505ab7b5defeb9382812f1804ceb0e1abbd74e0d788b535cda7d"
+    },
+    {
+      "path": "src/SpotlightHeroCard.tsx",
+      "sha256": "b43094d445fb5b7fbf186dd827a1f5aaaf2d016b0921286ec22d5585207c109c"
+    },
+    {
+      "path": "src/SyncTraceScene.tsx",
+      "sha256": "4c4489ac83409e0b1636c14da384a7cb30e73f8f3e5cedd79e415cceaa3301a4"
+    },
+    {
+      "path": "src/evaluation-baseline.json",
+      "sha256": "9214a1dab78c251e02af201598c4089b6ebecb8d74b7f1ee3f588c49b1f6c6b9"
+    },
+    {
+      "path": "src/index.ts",
+      "sha256": "2e0e358282a1b998a65387c653b97c2bb2eb7aae94cf200fc0b8d919f7be73a6"
+    },
+    {
+      "path": "src/sync-trace.json",
+      "sha256": "99ed455fe6dd21dc57d2940cc35da784216c6fff9121b67dc3ecb501d3863e30"
+    },
+    {
+      "path": "src/timeline.json",
+      "sha256": "029887e7475b453564783ccc7d2a97dc4fe7dcc59103702e44104270933773c3"
+    },
+    {
+      "path": "src/workbench.ts",
+      "sha256": "3b0054378e29aac269b7cc08141d4bb0acec1621a3ecf06b4cafefa9a4140137"
+    }
+  ]
+}

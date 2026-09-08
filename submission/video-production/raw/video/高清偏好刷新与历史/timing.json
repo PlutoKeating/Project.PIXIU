@@ -1,0 +1,92 @@
+{
+  "capture": "真实虚拟机像素；采样时刻范围已记录，编码为每秒三十帧",
+  "elapsed_seconds": 10.336437274003401,
+  "requested_fps": 2.0,
+  "frames": [
+    {
+      "file": "00000.png",
+      "started_seconds": 3.051944077014923e-06,
+      "finished_seconds": 0.593360441038385
+    },
+    {
+      "file": "00001.png",
+      "started_seconds": 0.5934479220304638,
+      "finished_seconds": 1.171943717985414
+    },
+    {
+      "file": "00002.png",
+      "started_seconds": 1.1720093849580735,
+      "finished_seconds": 1.7610836420208216
+    },
+    {
+      "file": "00003.png",
+      "started_seconds": 1.7611596509814262,
+      "finished_seconds": 2.34536008303985
+    },
+    {
+      "file": "00004.png",
+      "started_seconds": 2.3454419260378927,
+      "finished_seconds": 2.8875306940171868
+    },
+    {
+      "file": "00005.png",
+      "started_seconds": 2.8876058539608493,
+      "finished_seconds": 3.4701454340247437
+    },
+    {
+      "file": "00006.png",
+      "started_seconds": 3.4702407070435584,
+      "finished_seconds": 4.026683839969337
+    },
+    {
+      "file": "00007.png",
+      "started_seconds": 4.026771703036502,
+      "finished_seconds": 4.5741671200376
+    },
+    {
+      "file": "00008.png",
+      "started_seconds": 4.574241535970941,
+      "finished_seconds": 5.143435209989548
+    },
+    {
+      "file": "00009.png",
+      "started_seconds": 5.143504775944166,
+      "finished_seconds": 5.718620605999604
+    },
+    {
+      "file": "00010.png",
+      "started_seconds": 5.718704762053676,
+      "finished_seconds": 6.300778376986273
+    },
+    {
+      "file": "00011.png",
+      "started_seconds": 6.300852679996751,
+      "finished_seconds": 6.906313008978032
+    },
+    {
+      "file": "00012.png",
+      "started_seconds": 6.906392400036566,
+      "finished_seconds": 8.027683399035595
+    },
+    {
+      "file": "00013.png",
+      "started_seconds": 8.027750542969443,
+      "finished_seconds": 8.602633333997801
+    },
+    {
+      "file": "00014.png",
+      "started_seconds": 8.602715631946921,
+      "finished_seconds": 9.173154897987843
+    },
+    {
+      "file": "00015.png",
+      "started_seconds": 9.173236040049233,
+      "finished_seconds": 9.748905014013872
+    },
+    {
+      "file": "00016.png",
+      "started_seconds": 9.748992522945628,
+      "finished_seconds": 10.336352559970692
+    }
+  ]
+}
