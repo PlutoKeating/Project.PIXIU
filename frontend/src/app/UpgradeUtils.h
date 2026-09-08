@@ -6,12 +6,8 @@
 
 // 版本比较 + sha256 校验 + GitHub release 解析（纯函数，无 UI / 无网络）。
 //
-// 命名空间选择：沿用应用层 `ui`（与 UserIdentity / Severity / UiTokens 一致）。
-// 设计与计划文档（docs/compose/plans/2026-09-01-in-app-upgrade.md）曾以
-// `pixiu` 命名这些函数，但仓库中 `pixiu` 命名空间目前专用于 UkuiWindow 的
-// 平台/窗口装饰（decorateUkuiWindow / ukuiWindowAvailable），而版本比较与
-// 哈希这类纯工具与 ui::parseSeverity、ui::displayUserName 同族（均为 app/ 下
-// 无 UI 依赖的纯函数），故归 `ui` 以便后续 UpgradeController 统一引用。
+// 保留现有 `ui` 命名空间供正式宿主的 UpgradeController 复用；
+// 不依赖旧窗口装配层或系统账户姓名读取。
 namespace ui {
 
 // 去掉版本 tag 的前缀 `v`："v0.1.6" → "0.1.6"；无 `v` 前缀则原样返回。

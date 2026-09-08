@@ -286,15 +286,6 @@ if(BUILD_TESTING)
     target_link_libraries(t_monitor_center PRIVATE Qt5::Test Qt5::Widgets)
     add_test(NAME monitor_center COMMAND t_monitor_center)
 
-    add_executable(t_user_identity
-        tests/t_user_identity.cpp
-        src/app/UserIdentity.h
-        src/app/UserIdentity.cpp
-    )
-    target_include_directories(t_user_identity PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_user_identity PRIVATE Qt5::Test Qt5::Core)
-    add_test(NAME user_identity COMMAND t_user_identity)
-
     add_executable(t_upgrade_utils
         tests/t_upgrade_utils.cpp
         src/app/UpgradeUtils.h
@@ -416,7 +407,6 @@ if(BUILD_TESTING)
         input_bar message_list import_dialog evidence_card i18n
         sync_controller event_router product_dialogs
         monitor_controller monitor_center
-        user_identity
         upgrade_utils
         upgrade_controller
         check_update_dialog

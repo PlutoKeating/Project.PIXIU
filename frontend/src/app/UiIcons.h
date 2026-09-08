@@ -112,33 +112,6 @@ inline QIcon gearIcon(const QPalette &palette)
     return gearIcon(palette.color(QPalette::Text));
 }
 
-// 置顶（图钉）：未置顶为线框、已置顶为实心。
-inline QIcon pinIcon(const QColor &color, bool filled)
-{
-    return detail::makeIcon([color, filled](QPainter &painter, const QRectF &rect) {
-        detail::beginIconFrame(&painter, rect);
-        QPainterPath path;
-        path.addEllipse(QPointF(12.0, 9.0), 4.6, 4.6);
-        QPolygonF tip;
-        tip << QPointF(7.4, 9.0) << QPointF(12.0, 21.0) << QPointF(16.6, 9.0);
-        path.addPolygon(tip);
-        if (filled) {
-            painter.setPen(Qt::NoPen);
-            painter.setBrush(color);
-        } else {
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(detail::iconPen(color));
-        }
-        painter.drawPath(path);
-        painter.restore();
-    });
-}
-
-inline QIcon pinIcon(const QPalette &palette, bool filled)
-{
-    return pinIcon(palette.color(QPalette::Text), filled);
-}
-
 // 更多（三个圆点）。
 inline QIcon moreIcon(const QColor &color)
 {
