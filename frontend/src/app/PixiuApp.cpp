@@ -449,7 +449,7 @@ bool PixiuApp::start()
                 }
             });
 
-    // 递送层（B4-3）：欢迎页动态洞察 + 今日简报。
+    // Remaining legacy insight checks; digest presentation belongs to DeliveryPage.
     // 洞察加载 → 聊天窗渲染动态建议卡（静态兜底保留）；加载时机：启动时
     // 一次 + 聊天窗每次可见时刷新（见 ChatWindow::shown 接线）。
     m_deliveryController = new DeliveryController(m_transport, this);
@@ -460,25 +460,12 @@ bool PixiuApp::start()
                     m_chatWindow->setInsights(insights);
                 }
             });
-    connect(m_deliveryController, &DeliveryController::digestLoaded, this,
-            [this](const QJsonObject &response) {
-                if (m_notify) {
-                    m_notify->notify(
-                        tr("今日简报"),
-                        response.value(QStringLiteral("summary")).toString());
-                }
-            });
     connect(m_deliveryController, &DeliveryController::failed, this,
             [](const QString &code, const QString &message) {
-                // 洞察/简报失败不打扰用户：欢迎页保留静态兜底，仅记日志。
+                // 洞察失败不打扰用户：欢迎页保留静态兜底，仅记日志。
                 qCWarning(lcApp) << "delivery request failed:"
                                  << code << message;
             });
-    connect(m_chatWindow, &ChatWindow::digestRequested, this, [this]() {
-        if (m_deliveryController) {
-            m_deliveryController->loadDigest();
-        }
-    });
     m_deliveryController->loadInsights();
 
     // 同步管理：总开关/暂停/发现/确认式配对/退出网络（SN-6）。

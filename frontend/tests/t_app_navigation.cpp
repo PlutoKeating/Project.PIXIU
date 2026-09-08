@@ -202,13 +202,10 @@ public:
     // ── B4-3 递送层测试缝 ──
     // 默认不回包（模拟后端静默）；需要回包的用例置 autoEcho* 并填充载荷。
     bool autoEchoInsights = false;        // deliveryInsights → insightsResult
-    bool autoEchoDigest = false;          // deliveryDigest → digestResult
     bool autoEchoPreferences = false;     // preferencesList → preferencesListResult
     QJsonArray insightsPayload;
-    QJsonObject digestPayload;
     QJsonArray preferencesPayload;
     int insightsCalls = 0;
-    int digestCalls = 0;
     int preferencesListCalls = 0;
 
     void deliveryInsights() override
@@ -216,13 +213,6 @@ public:
         ++insightsCalls;
         if (autoEchoInsights) {
             emit insightsResult(insightsPayload);
-        }
-    }
-    void deliveryDigest(const QString & = QString()) override
-    {
-        ++digestCalls;
-        if (autoEchoDigest) {
-            emit digestResult(digestPayload);
         }
     }
     void preferencesList(const QString &) override
@@ -424,7 +414,6 @@ private slots:
     void insightsLoadedRenderIntoChatWindow();
     void relevanceReminderMatchesTopicAndSkipsUnrelated();
     void relevanceReminderDailyCap();
-    void digestEntryNotifiesSummary();
 
 private:
     template <typename T>
@@ -1568,37 +1557,6 @@ void TestAppNavigation::relevanceReminderDailyCap()
 }
 
 
-void TestAppNavigation::digestEntryNotifiesSummary()
-{
-    // B4-3：聊天窗「今日简报」建议卡 → digestRequested → DeliveryController
-    // 拉取 GET /delivery/digest → 摘要经系统通知展示。
-    qputenv("USER", QStringLiteral("pixiu-nav-digest-%1")
-                        .arg(QCoreApplication::applicationPid()).toUtf8());
-    FakeTransport *fake = new FakeTransport(this);
-    fake->autoEchoDigest = true;
-    fake->digestPayload = QJsonObject{
-        {QStringLiteral("date"), QStringLiteral("2026-08-29")},
-        {QStringLiteral("summary"),
-         QStringLiteral("当日新增 2 条记忆（目录 2），另有 1 条敏感内容已隔离")}};
-    RecordingNotifyService *notify = new RecordingNotifyService(this);
-
-    const auto chatsBefore = topLevels<ChatWindow>();
-    PixiuApp app;
-    app.setTransportForTest(fake);
-    app.setNotifyServiceForTest(notify);
-    QVERIFY(app.start());
-
-    ChatWindow *chat = newTopLevels(chatsBefore).value(0);
-    QVERIFY(chat != nullptr);
-    emit chat->digestRequested();
-    QCOMPARE(fake->digestCalls, 1);
-    QCOMPARE(notify->notifyCalls, 1);
-    QCOMPARE(notify->titles.last(), QStringLiteral("今日简报"));
-    QCOMPARE(notify->bodies.last(),
-             QStringLiteral("当日新增 2 条记忆（目录 2），另有 1 条敏感内容已隔离"));
-
-    app.shutdown();
-}
 
 QTEST_MAIN(TestAppNavigation)
 #include "t_app_navigation.moc"

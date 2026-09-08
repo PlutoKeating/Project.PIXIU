@@ -1126,10 +1126,6 @@ Your input is kept; edit and retry.</translation>
         <translation>Memory updated</translation>
     </message>
     <message>
-        <source>今日简报</source>
-        <translation>Today&apos;s Briefing</translation>
-    </message>
-    <message>
         <source>相关主题提醒</source>
         <translation>Related topic reminder</translation>
     </message>

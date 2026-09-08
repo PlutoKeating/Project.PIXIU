@@ -431,8 +431,8 @@ if(BUILD_TESTING)
     target_link_libraries(t_i18n PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME i18n COMMAND t_i18n)
 
-    # Remaining legacy lifecycle checks only. Preference reminder regressions
-    # now belong to management/tests/t_memory_workspace.cpp in the formal host.
+    # Remaining legacy lifecycle checks only. Preference reminders and digest
+    # presentation are tested in management/tests/t_memory_workspace.cpp.
     add_executable(t_app_navigation
         tests/t_app_navigation.cpp
         src/app/PixiuApp.h
