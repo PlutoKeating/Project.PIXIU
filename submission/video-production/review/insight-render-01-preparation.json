@@ -1,0 +1,6 @@
+{
+  "status": "首次复制缺少public/recordings目录，失败后创建目录并重新接入",
+  "incorrect_render": "renders/洞察文档展开-01.mp4",
+  "meaning": "首次准备中断，未接入新场景；该文件保留为失败过程，不用于审阅。",
+  "corrected_render": "renders/洞察文档展开-02.mp4"
+}

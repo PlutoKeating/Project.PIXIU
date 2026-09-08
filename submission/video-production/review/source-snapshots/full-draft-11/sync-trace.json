@@ -1,0 +1,129 @@
+{
+  "source": "raw/network/第二轮断连并发与遗忘传播.json",
+  "sha256": "f40d0444f6442bf1455dcad096be8f54dd4441c878d927f7afa7e45e8949e631",
+  "offline": [
+    {
+      "label": "同一条节能约定，三端均为版本一",
+      "rows": [
+        {
+          "device": "书房工作站",
+          "time": "2026-09-08T17:45:02.117577+00:00",
+          "version": 1,
+          "text": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "随身笔记本",
+          "time": "2026-09-08T17:45:02.117577+00:00",
+          "version": 1,
+          "text": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "客厅一体机",
+          "time": "2026-09-08T17:45:02.117577+00:00",
+          "version": 1,
+          "text": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "label": "同步中断期间：在线端更新，客厅保留旧版",
+      "rows": [
+        {
+          "device": "随身笔记本",
+          "time": "2026-09-08T17:45:30.148495+00:00",
+          "version": 2,
+          "text": "每天晚上九点半关闭书房空调，周末检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "客厅一体机",
+          "time": "2026-09-08T17:45:30.408949+00:00",
+          "version": 1,
+          "text": "每天晚上十点关闭书房空调，周末离家前检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "label": "恢复同步后：客厅读到版本二",
+      "rows": [
+        {
+          "device": "随身笔记本",
+          "time": "2026-09-08T17:45:30.148495+00:00",
+          "version": 2,
+          "text": "每天晚上九点半关闭书房空调，周末检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "客厅一体机",
+          "time": "2026-09-08T17:45:34.493929+00:00",
+          "version": 2,
+          "text": "每天晚上九点半关闭书房空调，周末检查客厅灯具。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "concurrent": [
+    {
+      "label": "从同一版本分别修改，形成两个版本三",
+      "rows": [
+        {
+          "device": "书房工作站",
+          "time": "2026-09-08T17:45:36.761054+00:00",
+          "version": 3,
+          "text": "书房方案：晚上九点关闭空调。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "客厅一体机",
+          "time": "2026-09-08T17:45:36.761054+00:00",
+          "version": 3,
+          "text": "客厅方案：晚上九点四十五关闭空调。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "label": "恢复连接后：三端正文收敛",
+      "rows": [
+        {
+          "device": "书房工作站",
+          "time": "2026-09-08T17:46:09.507270+00:00",
+          "version": 3,
+          "text": "客厅方案：晚上九点四十五关闭空调。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "随身笔记本",
+          "time": "2026-09-08T17:46:09.507270+00:00",
+          "version": 3,
+          "text": "客厅方案：晚上九点四十五关闭空调。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        },
+        {
+          "device": "客厅一体机",
+          "time": "2026-09-08T17:46:09.507270+00:00",
+          "version": 3,
+          "text": "客厅方案：晚上九点四十五关闭空调。",
+          "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

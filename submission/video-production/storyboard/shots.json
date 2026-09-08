@@ -286,10 +286,10 @@
       "title": "从记住，到主动提供线索",
       "motion": "document-typewriter-reveal",
       "planned_start_seconds": 461,
-      "planned_duration_seconds": 16,
+      "planned_duration_seconds": 20,
       "narration": "洞察与简报，把近期高质量记忆整理为可继续检索的线索，并按日期汇总采集情况。用户可以顺着洞察回到正文，检查今天新沉淀了什么。",
-      "visual": "60-insight-digest.png＋跳转录制",
-      "status": "available"
+      "visual": "真实候选与采集简报逐行揭示；连续标题检索与来源录像，最终同源正文",
+      "status": "implemented-motion-review-pending"
     },
     {
       "id": "s27",

@@ -1,0 +1,9 @@
+{
+  "status": "片尾混音与第十版移位后对照",
+  "shift_seconds": 4,
+  "comparison_seconds": 9,
+  "correlation": 0.999877789898047,
+  "source_to_mix_correlation": 0.7288175584856601,
+  "explanation": "片尾包含三层SFX，单配音与混音相关性较低；额外对照既有完整混音，未据较低相关性宣称纯配音验证通过。",
+  "limits": "波形对照，不是主观听审"
+}

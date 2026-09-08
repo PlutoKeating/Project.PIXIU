@@ -1,0 +1,24 @@
+{
+  "tolerance": 0,
+  "status": "三帧零差异，非全帧证明",
+  "frames": [
+    {
+      "frame": 14304,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    },
+    {
+      "frame": 14454,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    },
+    {
+      "frame": 14514,
+      "different_pixels": 0,
+      "total_pixels": 2073600,
+      "max_channel_difference": 0
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "status": "第十一版保留；独立复核发现日期字号不达标，后续第十二版修正",
+  "sha256": "6e126d8cca0a0c25829dd09ea968b3788daa8b40658badd582bb5db15d44a929",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "558.144000",
+      "size": "55634628"
+    }
+  },
+  "full_decode_passed": true,
+  "source_manifest": "full-draft-11-source.json",
+  "changed_shots": [
+    "s26"
+  ],
+  "limits": [
+    "日期27-28px未达标",
+    "来源正文出现滞后",
+    "非最终放行"
+  ]
+}

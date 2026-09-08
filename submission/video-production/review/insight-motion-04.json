@@ -1,0 +1,14 @@
+{
+  "status": "针对03独立复核的日期字号与时序修正，待04复核",
+  "scene": "s26",
+  "from": 14124,
+  "duration": 600,
+  "source_record": "review/insight-source-01.json",
+  "changes": [
+    "日期裁片由1.25倍增至1.5倍，150帧出现",
+    "录像210帧起从3秒按2倍速播放，340-370帧移向正文，400帧转静帧",
+    "实际330帧已出现来源正文，390帧完整正文可读"
+  ],
+  "chapter_sha256": "e885412c72e47f33b22df852e04c216244b4b42d1c0d17cb3562f8834038048d",
+  "previous": "insight-motion-03.json"
+}

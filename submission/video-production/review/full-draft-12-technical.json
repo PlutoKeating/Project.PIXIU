@@ -1,0 +1,37 @@
+{
+  "status": "第十二版初剪，非最终放行",
+  "sha256": "a06c8bec3c25fde5fe05850c1fd88e0dea27526e59d460f8da5a6eb09a751bb8",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "558.144000",
+      "size": "55729660"
+    }
+  },
+  "full_decode_passed": true,
+  "source_manifest": "full-draft-12-source.json",
+  "changed_shots": [
+    "s26"
+  ],
+  "limits": [
+    "日期与阶段时序有限复核通过，不代表全片终检",
+    "低频采样、接棒切镜和其他功能余项保留",
+    "未进行主观听审"
+  ]
+}
