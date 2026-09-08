@@ -121,7 +121,7 @@ Project.PIXIU/
 ├── backend/tests/                    # 自动化测试
 ├── build/release/                    # Debian/银河麒麟构建、发布画像与交付校验工具
 ├── docs/                             # 架构、API、赛题、验收与报告
-├── submission/                       # 打开即见 00 说明和官方 01～05 五类交付实物
+├── submission/                       # 历史交付工作稿；四项作品要求见 docs/DELIVERY_PLAN.md §0
 └── third_party/
     ├── kylin-agent/                  # openKylin 官方 Agent 桌面端（submodule）
     ├── kylin-agent-runtime/          # openKylin 官方 Agent 运行时（submodule）
