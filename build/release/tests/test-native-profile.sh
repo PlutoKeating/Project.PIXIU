@@ -11,6 +11,17 @@ if PIXIU_PROFILE=generic-ubuntu PIXIU_BUNDLE_WHEELS=0 \
     exit 1
 fi
 for PROFILE in generic-ubuntu kylin-v11-x86_64 kylin-v11-native-x86_64; do
+    # Exercise the actual profile parser, not only Bash's more permissive source.
+    # Stop at the explicit offline-closure gate before any build/install writes.
+    if parser_output="$(PIXIU_PROFILE="${PROFILE}" PIXIU_BUNDLE_WHEELS=0 \
+            bash "${ROOT}/build/release/scripts/build-deb.sh" 2>&1)"; then
+        echo "complete package unexpectedly accepted missing wheels" >&2
+        exit 1
+    fi
+    if [[ "${parser_output}" != *"Complete packages require PIXIU_BUNDLE_WHEELS=1"* ]]; then
+        printf 'profile parser did not reach the expected gate (%s):\n%s\n' "${PROFILE}" "${parser_output}" >&2
+        exit 1
+    fi
     (
         . "${ROOT}/build/release/profiles/${PROFILE}.env"
         test "${PIXIU_PYTHON_VERSION}" = 312
