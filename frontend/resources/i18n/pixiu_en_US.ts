@@ -185,45 +185,6 @@ This action cannot be undone.</translation>
     </message>
 </context>
 <context>
-    <name>ImportDialog</name>
-    <message>
-        <source>录入记忆</source>
-        <translation>Import memory</translation>
-    </message>
-    <message>
-        <source>标题</source>
-        <translation>Title</translation>
-    </message>
-    <message>
-        <source>如：2026年4月家庭支出清单</source>
-        <translation>e.g. 2026 April household expense list</translation>
-    </message>
-    <message>
-        <source>内容</source>
-        <translation>Content</translation>
-    </message>
-    <message>
-        <source>粘贴文本内容；也可拖入图片作为附件预览…</source>
-        <translation>Paste text content; you can also drag in an image as an attachment preview…</translation>
-    </message>
-    <message>
-        <source>作用域</source>
-        <translation>Scope</translation>
-    </message>
-    <message>
-        <source>本机（user:local）</source>
-        <translation>This device (user:local)</translation>
-    </message>
-    <message>
-        <source>家庭共享（shared:home）</source>
-        <translation>Home share (shared:home)</translation>
-    </message>
-    <message>
-        <source>可拖入图片，录入时附带附件预览（OCR 接入后自动识别）</source>
-        <translation>Drag in an image; attachment preview is attached on import (OCR pending)</translation>
-    </message>
-</context>
-<context>
     <name>InfoDialog</name>
     <message>
         <source>关闭</source>

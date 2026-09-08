@@ -317,16 +317,6 @@ if(BUILD_TESTING)
 
 
 
-    add_executable(t_import_dialog
-        tests/t_import_dialog.cpp
-        src/widgets/ImportDialog.h
-        src/widgets/ImportDialog.cpp
-    )
-    target_include_directories(t_import_dialog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_import_dialog PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME import_dialog COMMAND t_import_dialog)
-
-
     add_executable(t_i18n
         tests/t_i18n.cpp
         resources/resources.qrc
@@ -350,7 +340,7 @@ if(BUILD_TESTING)
         forget_controller forget_dialog memory_panel conflict_controller
         preference_controller shortcut_manager theme_service ukui_window
         memory_atom query_controller write_controller app_settings
-        import_dialog i18n
+        i18n
         sync_controller event_router product_dialogs
         upgrade_utils
         upgrade_controller
