@@ -228,8 +228,10 @@ HostCloseGuard 检查所属对话框、管理请求、会话在途请求、未�
 且包含 Ctrl/Alt/Meta；非法输入保留旧绑定。损坏保存值本次回退默认而不覆盖，
 写入失败明确提示仅当前会话已应用。托盘和设置显示实际组合及全局/应用内范围；
 未应用或保存失败纳入退出保护。新增隔离配置测试目标 `host_shortcut`，无新增系统
-依赖，沿用现有 HostTray/SettingsWorkspace/HostCloseGuard 导出文件；原生自定义
-按键、重启与冲突矩阵仍须验证。
+依赖，沿用现有 HostTray/SettingsWorkspace/HostCloseGuard 导出文件。cb13410 的
+V11 实测已验证自定义 Ctrl+Alt+K 全局唤起、正常退出后菜单重启恢复配置，以及
+通过设置恢复默认 Ctrl+Alt+P 后的全局唤起。首次启动默认 P 曾返回 SDK -2 并
+降级为应用内，重新应用后恢复；根因及完整冲突矩阵仍须验证，详见统一前端计划 U02。
 
 服务诊断串行读取 /health、/version、/capabilities，使用独立传输，失败或矛盾响应
 不返回成功快照。周期健康探测校验实际 /health 就绪和数据库字段，不再探测冲突列表。
