@@ -1,0 +1,26 @@
+[
+  {
+    "file": "caption-64-long.png",
+    "caption_dark_ink_y_min": 988,
+    "caption_dark_ink_y_max": 1046,
+    "ink_height": 59
+  },
+  {
+    "file": "sync-trace-01-offline.png",
+    "caption_dark_ink_y_min": 988,
+    "caption_dark_ink_y_max": 1046,
+    "ink_height": 59
+  },
+  {
+    "file": "sync-trace-01-converged.png",
+    "caption_dark_ink_y_min": 988,
+    "caption_dark_ink_y_max": 1046,
+    "ink_height": 59
+  },
+  {
+    "file": "evaluation-01.png",
+    "caption_dark_ink_y_min": 988,
+    "caption_dark_ink_y_max": 1046,
+    "ink_height": 59
+  }
+]

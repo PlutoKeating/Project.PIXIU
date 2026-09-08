@@ -1,0 +1,44 @@
+[
+  {
+    "file": "deck-deal-flyin.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/deck-deal-flyin.mp4",
+    "sha256": "8fa29aa13a4a79642aad296ee461645913f2e6a03bfcea9fdede801b0c8e2f0f",
+    "bytes": 4188921,
+    "decode": "passed"
+  },
+  {
+    "file": "document-typewriter-reveal.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/document-typewriter-reveal.mp4",
+    "sha256": "d332ea767e28d4a68c89cd64f38ebf5b11fbd7357dc5c63e0e892f7f14c59041",
+    "bytes": 503819,
+    "decode": "passed"
+  },
+  {
+    "file": "list-stack-press.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/list-stack-press.mp4",
+    "sha256": "7751ec4ae8a137411f1e6f53fbb3f6ebcdc05263595bca36138e62315ec25243",
+    "bytes": 513261,
+    "decode": "passed"
+  },
+  {
+    "file": "row-embed.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/row-embed.mp4",
+    "sha256": "6bbf9be7faef244dc6434b21abc89c154d7ddcd5f777d7551af4d94388f0bc86",
+    "bytes": 326810,
+    "decode": "passed"
+  },
+  {
+    "file": "spotlight-hero-card.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/spotlight-hero-card.mp4",
+    "sha256": "79aabe034a24546a2404b49046e0386149c77f5238707be090be429fb95fd205",
+    "bytes": 984601,
+    "decode": "passed"
+  },
+  {
+    "file": "type-and-filter.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/type-and-filter.mp4",
+    "sha256": "f27f2965be5279dff17f5d90982cb97fda70a2deffb5dde67673c35065a4489c",
+    "bytes": 180160,
+    "decode": "passed"
+  }
+]

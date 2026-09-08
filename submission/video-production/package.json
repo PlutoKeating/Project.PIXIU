@@ -14,7 +14,8 @@
     "render:shared-agent": "remotion render src/index.ts PixiuSharedAgentReview",
     "render:spotlight": "remotion render src/index.ts PixiuSpotlightReview",
     "prepare:concept": "python3 scripts/outline_concept.py",
-    "render:bill": "remotion render src/index.ts PixiuBillReview"
+    "render:bill": "remotion render src/index.ts PixiuBillReview",
+    "prepare:evidence": "python3 scripts/prepare_evidence.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

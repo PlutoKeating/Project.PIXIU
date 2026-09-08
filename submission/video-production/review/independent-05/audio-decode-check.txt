@@ -1,0 +1,46 @@
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'submission/video-production/renders/全片初剪-05.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf61.7.100
+    comment         : Made with Remotion 4.0.484
+  Duration: 00:09:14.15, start: 0.000000, bitrate: 795 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuvj420p(pc, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 469 kb/s, 30 fps, 30 tbr, 90k tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+    Side data:
+      ICC Profile
+  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 317 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+      vendor_id       : [0][0][0][0]
+[Parsed_volumedetect_0 @ 0x5c3dddecd380] n_samples: 0
+Stream mapping:
+  Stream #0:1 -> #0:0 (aac (native) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    comment         : Made with Remotion 4.0.484
+    encoder         : Lavf62.3.100
+  Stream #0:0(und): Audio: pcm_s16le, 48000 Hz, stereo, s16, 1536 kb/s (default)
+    Metadata:
+      encoder         : Lavc62.11.100 pcm_s16le
+      handler_name    : SoundHandler
+      vendor_id       : [0][0][0][0]
+[Parsed_volumedetect_0 @ 0x73cc48004280] n_samples: 53198848
+[Parsed_volumedetect_0 @ 0x73cc48004280] mean_volume: -28.3 dB
+[Parsed_volumedetect_0 @ 0x73cc48004280] max_volume: -4.8 dB
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_4db: 6
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_5db: 146
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_6db: 1132
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_7db: 3898
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_8db: 8404
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_9db: 16200
+[Parsed_volumedetect_0 @ 0x73cc48004280] histogram_10db: 29039
+[out#0/null @ 0x5c3dde144280] video:0KiB audio:103904KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:09:14.15 bitrate=N/A speed=2.11e+03x elapsed=0:00:00.26    

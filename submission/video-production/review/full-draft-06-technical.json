@@ -1,0 +1,213 @@
+{
+  "status": "第六版初剪，未独立放行",
+  "video": "renders/全片初剪-06.mp4",
+  "sha256": "356ac31e6ad9298b15ec4ab2403cdca9a56d7fdecab51244740993469341ed6c",
+  "full_decode_passed": true,
+  "source_manifest": "full-draft-06-source.json",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "554.154667",
+      "size": "56618279"
+    }
+  },
+  "caption_measurements": [
+    {
+      "shot": "s01",
+      "frame": 207,
+      "caption": "让每一台设备的记忆，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s02",
+      "frame": 488,
+      "caption": "却又要重新解释。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s03",
+      "frame": 1031,
+      "caption": "知识在端侧保存，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s04",
+      "frame": 1644,
+      "caption": "服务与能力页，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s05",
+      "frame": 2134,
+      "caption": "原创的记忆适配层，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s06",
+      "frame": 2628,
+      "caption": "把执行过程呈现在工作卡片中。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s07",
+      "frame": 3405,
+      "caption": "保存之后开启新会话，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s08",
+      "frame": 3908,
+      "caption": "可以查看实际命中的证据。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s09",
+      "frame": 4469,
+      "caption": "接入时进行格式校验、清洗、质量评估和敏感检测，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s10",
+      "frame": 4951,
+      "caption": "需要协作的内容，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s11",
+      "frame": 5485,
+      "caption": "新增文本文件后，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s12",
+      "frame": 6086,
+      "caption": "图片识别依赖实际可用的识别适配；",
+      "ink_height": 58
+    },
+    {
+      "shot": "s13",
+      "frame": 6710,
+      "caption": "再做排名融合、条件过滤和结构化聚合。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s14",
+      "frame": 7269,
+      "caption": "逐步阅读具体操作；",
+      "ink_height": 58
+    },
+    {
+      "shot": "s15",
+      "frame": 7908,
+      "caption": "提取后查看当前版本与历史，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s16",
+      "frame": 8532,
+      "caption": "旧版本提交会被拒绝，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s17",
+      "frame": 9119,
+      "caption": "再经晋升进入统一知识管线。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s18",
+      "frame": 9463,
+      "caption": "看貔貅最关键的能力：让多台设备上的智能体，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s19",
+      "frame": 9956,
+      "caption": "只发现设备，",
+      "ink_height": 57
+    },
+    {
+      "shot": "s20",
+      "frame": 10622,
+      "caption": "它找回这份共享记忆，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s21",
+      "frame": 11447,
+      "caption": "客厅保留自己的本地副本；",
+      "ink_height": 58
+    },
+    {
+      "shot": "s22",
+      "frame": 12207,
+      "caption": "再按确定性规则合并。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s23",
+      "frame": 12818,
+      "caption": "敏感内容拒绝写入共享范围。",
+      "ink_height": 59
+    },
+    {
+      "shot": "s24",
+      "frame": 13350,
+      "caption": "系统让知识失效并删除检索向量，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s25",
+      "frame": 13881,
+      "caption": "指知识失效和检索向量清理，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s26",
+      "frame": 14342,
+      "caption": "并按日期汇总采集情况。",
+      "ink_height": 58
+    },
+    {
+      "shot": "s27",
+      "frame": 14993,
+      "caption": "升级机制包含签名校验、安装后健康检查和失败恢复，",
+      "ink_height": 59
+    },
+    {
+      "shot": "s28",
+      "frame": 15528,
+      "caption": "与麒麟原生结果分别标注；",
+      "ink_height": 58
+    },
+    {
+      "shot": "s29",
+      "frame": 16184,
+      "caption": "让来源可以追溯，",
+      "ink_height": 58
+    },
+    {
+      "shot": "s30",
+      "frame": 16479,
+      "caption": "让分布式集体记忆，",
+      "ink_height": 58
+    }
+  ],
+  "caption_measurement_method": "Each shot mid-caption dark ink in y985..1069; samples do not prove all frames or absence of other overlap"
+}

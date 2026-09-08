@@ -1,0 +1,40 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "submission/video-production/renders/全片初剪-06.mp4",
+  "video_sha256": "356ac31e6ad9298b15ec4ab2403cdca9a56d7fdecab51244740993469341ed6c",
+  "peak_dbfs": -4.78113317489624,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": -1.7708335895576324,
+  "probes": [
+    {
+      "declared_start_frame": 11131.0,
+      "measured_start_frame": 11132.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.9999669588902347,
+      "source_peak_frame": 358.35,
+      "source": "submission/video-production/public/audio/s21.mp3",
+      "source_sha256": "abce4f51bbd30aeb8e47b1fede6dc02cce301e5a03b98ea82fbc5a09297ff333"
+    },
+    {
+      "declared_start_frame": 11941.0,
+      "measured_start_frame": 11942.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.9999603997601834,
+      "source_peak_frame": 452.85,
+      "source": "submission/video-production/public/audio/s22.mp3",
+      "source_sha256": "207794bc2d702022e0eab1f1a3a78243ba294e079b078e8461966ff65c57b1e4"
+    },
+    {
+      "declared_start_frame": 15227.0,
+      "measured_start_frame": 15228.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.9999588365763922,
+      "source_peak_frame": 15.45,
+      "source": "submission/video-production/public/audio/s28.mp3",
+      "source_sha256": "74adef5829c55491f52670a4a4c9095c2fc4baa5a6af997664a07fd8f82b244e"
+    }
+  ]
+}

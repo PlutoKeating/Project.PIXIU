@@ -1,0 +1,225 @@
+{
+  "shot": "s22",
+  "request": {
+    "text": "两台设备从同一版本同时修改，会形成不同分支。版本向量判断先后与并发，再按确定性规则合并。本次记录显示：重连后，三台设备都读到相同的版本三与同一正文。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "840a4a6b71f61b660c4688863744f06fe4e7ec4c9a3907e49b96b54ed8a2494c",
+  "audio_sha256": "7b3b467b1b945069033083ba23857f302a0ad66153620388538ddb9605d12233",
+  "duration_seconds": 17.28,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2500000,
+      "text": "两"
+    },
+    {
+      "offset": 3526250,
+      "duration": 1447500,
+      "text": "台"
+    },
+    {
+      "offset": 5105410,
+      "duration": 5000000,
+      "text": "设备"
+    },
+    {
+      "offset": 10368330,
+      "duration": 1973750,
+      "text": "从"
+    },
+    {
+      "offset": 12473750,
+      "duration": 2236660,
+      "text": "同"
+    },
+    {
+      "offset": 14710410,
+      "duration": 921250,
+      "text": "一"
+    },
+    {
+      "offset": 15763330,
+      "duration": 4210410,
+      "text": "版本"
+    },
+    {
+      "offset": 20236660,
+      "duration": 3815830,
+      "text": "同时"
+    },
+    {
+      "offset": 24184160,
+      "duration": 4736660,
+      "text": "修改"
+    },
+    {
+      "offset": 31815830,
+      "duration": 1710410,
+      "text": "会"
+    },
+    {
+      "offset": 33657910,
+      "duration": 4210410,
+      "text": "形成"
+    },
+    {
+      "offset": 38131660,
+      "duration": 3421250,
+      "text": "不同"
+    },
+    {
+      "offset": 41684160,
+      "duration": 4473750,
+      "text": "分支"
+    },
+    {
+      "offset": 52236660,
+      "duration": 4078750,
+      "text": "版本"
+    },
+    {
+      "offset": 56578750,
+      "duration": 2894580,
+      "text": "向量"
+    },
+    {
+      "offset": 59605410,
+      "duration": 5263330,
+      "text": "判断"
+    },
+    {
+      "offset": 65921250,
+      "duration": 4736660,
+      "text": "先后"
+    },
+    {
+      "offset": 70789580,
+      "duration": 921250,
+      "text": "与"
+    },
+    {
+      "offset": 71842080,
+      "duration": 4868330,
+      "text": "并发"
+    },
+    {
+      "offset": 79473750,
+      "duration": 2105000,
+      "text": "再"
+    },
+    {
+      "offset": 81578750,
+      "duration": 1842080,
+      "text": "按"
+    },
+    {
+      "offset": 83684160,
+      "duration": 5131660,
+      "text": "确定性"
+    },
+    {
+      "offset": 88947500,
+      "duration": 3157910,
+      "text": "规则"
+    },
+    {
+      "offset": 92236660,
+      "duration": 4078750,
+      "text": "合并"
+    },
+    {
+      "offset": 102368330,
+      "duration": 1973750,
+      "text": "本"
+    },
+    {
+      "offset": 104342080,
+      "duration": 1315830,
+      "text": "次"
+    },
+    {
+      "offset": 105789580,
+      "duration": 2105410,
+      "text": "记录"
+    },
+    {
+      "offset": 108026250,
+      "duration": 5789580,
+      "text": "显示"
+    },
+    {
+      "offset": 117631660,
+      "duration": 3684160,
+      "text": "重连"
+    },
+    {
+      "offset": 121315830,
+      "duration": 3289580,
+      "text": "后"
+    },
+    {
+      "offset": 127631660,
+      "duration": 4342080,
+      "text": "三台"
+    },
+    {
+      "offset": 132105410,
+      "duration": 4736660,
+      "text": "设备"
+    },
+    {
+      "offset": 137105410,
+      "duration": 1710410,
+      "text": "都"
+    },
+    {
+      "offset": 138815830,
+      "duration": 1578750,
+      "text": "读"
+    },
+    {
+      "offset": 140394580,
+      "duration": 1315830,
+      "text": "到"
+    },
+    {
+      "offset": 141973750,
+      "duration": 3157910,
+      "text": "相同"
+    },
+    {
+      "offset": 145131660,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 145921250,
+      "duration": 4605410,
+      "text": "版本"
+    },
+    {
+      "offset": 151578750,
+      "duration": 2894580,
+      "text": "三"
+    },
+    {
+      "offset": 154473750,
+      "duration": 921250,
+      "text": "与"
+    },
+    {
+      "offset": 155526250,
+      "duration": 3552500,
+      "text": "同一"
+    },
+    {
+      "offset": 159210410,
+      "duration": 4342080,
+      "text": "正文"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

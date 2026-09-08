@@ -1,0 +1,21 @@
+{
+  "Fonts.tsx": "dbfed4eccc20199a92bd9fe900b41d3af3760a61310576778dd187c6c33f9ce3",
+  "BillScene.tsx": "f515c2574e314d4a9748f54c82e6c1639fb1d19ad98360e34baafdcff403c980",
+  "DigitRoll.tsx": "cd23e46e46ca32bb633cb703f08ccb332bfa0bf1b0fe857355ad4d154ada0ea0",
+  "index.ts": "2e0e358282a1b998a65387c653b97c2bb2eb7aae94cf200fc0b8d919f7be73a6",
+  "FullFilm.tsx": "63e12600c2e7ecc8f7501b0180b246b3b34a5c3124be1800368649d1f35c2adc",
+  "timeline.json": "44923f064fc6a9525200bdfbcf08cabc4141041b821e7166a67f5772559e88cb",
+  "NarratedChapter.tsx": "b932877cfd1e42c8797249e19f243ff92b21907c257ce9d58f59f02be7253c3d",
+  "SyncTraceScene.tsx": "4c4489ac83409e0b1636c14da384a7cb30e73f8f3e5cedd79e415cceaa3301a4",
+  "SharedAgentScene.tsx": "5c2372853b78505ab7b5defeb9382812f1804ceb0e1abbd74e0d788b535cda7d",
+  "workbench.ts": "3b0054378e29aac269b7cc08141d4bb0acec1621a3ecf06b4cafefa9a4140137",
+  "evaluation-baseline.json": "9214a1dab78c251e02af201598c4089b6ebecb8d74b7f1ee3f588c49b1f6c6b9",
+  "sync-trace.json": "99ed455fe6dd21dc57d2940cc35da784216c6fff9121b67dc3ecb501d3863e30",
+  "Root.tsx": "0e67782cfaf9a01e36b4175dfb7122e95699b62145773911cecf8bc2fcfabdf1",
+  "BrandInkOpen.tsx": "341d1451f67249c481942180edc8c419119602e7ccd7f14a31a00ed40677b085",
+  "SceneOutro.tsx": "3efc9353acc528126c96d05f67710f20204caa672d5b162fc0e5690ca56ee342",
+  "PageCam.tsx": "f8efe781653d20bd415f02e82846d118fba4bdeaaef86df6fe40da4d96a7cc21",
+  "PaperTitleCard.tsx": "82e0814046ec56cdbe343b3cdb7805c94d74534c553920aa2a7ef02249227cf7",
+  "SpotlightHeroCard.tsx": "b43094d445fb5b7fbf186dd827a1f5aaaf2d016b0921286ec22d5585207c109c",
+  "EvaluationScene.tsx": "255338ae4ab211229776c999cc3e2825397613f09fbd5e51104e6da07cdb1dd4"
+}

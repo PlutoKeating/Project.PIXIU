@@ -1,6 +1,6 @@
 {
   "count": 30,
-  "total_seconds": 456.408,
+  "total_seconds": 456.096,
   "status": "当前稿对应音频已核对摘要，未逐段试听校准",
   "shots": [
     {
@@ -105,13 +105,13 @@
     },
     {
       "shot": "s21",
-      "seconds": 18.024,
-      "audio": "raw/audio/s21/d674a862f001.mp3"
+      "seconds": 17.88,
+      "audio": "raw/audio/s21/08a6dd7ab639.mp3"
     },
     {
       "shot": "s22",
-      "seconds": 17.448,
-      "audio": "raw/audio/s22/1a5eafc52d07.mp3"
+      "seconds": 17.28,
+      "audio": "raw/audio/s22/840a4a6b71f6.mp3"
     },
     {
       "shot": "s23",

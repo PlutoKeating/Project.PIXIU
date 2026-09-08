@@ -1,0 +1,9 @@
+{
+  "video_sha256": "356ac31e6ad9298b15ec4ab2403cdca9a56d7fdecab51244740993469341ed6c",
+  "raw_trace_sha256": "f40d0444f6442bf1455dcad096be8f54dd4441c878d927f7afa7e45e8949e631",
+  "baseline_sha256": "16d4b4a832134be992691abee7fed5cf9d79795de2d0e5f5cb718388e1e8f0c4",
+  "latency_count": 1000,
+  "recomputed_nearest_rank_p95": 115.151,
+  "minimum_caption_ink_height": 59,
+  "maximum_caption_ink_height": 64
+}

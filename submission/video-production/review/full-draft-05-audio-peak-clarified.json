@@ -1,0 +1,22 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "submission/video-production/renders/全片初剪-05.mp4",
+  "video_sha256": "cee52f1e706ef9e3ee87603af033c0c605b166c28bc8defbc31d904c06379854",
+  "peak_dbfs": -4.78113317489624,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": -1.7708335895576324,
+  "probes": [
+    {
+      "declared_start_frame": 781.0,
+      "measured_start_frame": 782.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.9974698132202738,
+      "source_peak_frame": 148.65,
+      "source": "submission/video-production/public/audio/s03.mp3",
+      "source_sha256": "216d6a7f1946b5cacef26f2ece7b6f757760969610aa5a10276548859ba62e8f"
+    }
+  ]
+}

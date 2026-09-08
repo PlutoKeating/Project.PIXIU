@@ -47,7 +47,7 @@ for shot in story['shots']:
         # Avoid long lines: split on the actual word boundary, never split a word.
         groups = [[]]
         for word in selected:
-            if groups[-1] and word['end'] - groups[-1][0]['at'] > 26:
+            if groups[-1] and word['end'] - groups[-1][0]['at'] > 24:
                 groups.append([])
             groups[-1].append(word)
         for group in groups:

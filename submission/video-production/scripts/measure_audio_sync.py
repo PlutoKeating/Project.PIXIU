@@ -57,10 +57,15 @@ def main():
         result = measure(rendered, decode(source), float(frame))
         result.update(source=str(source), source_sha256=hashlib.sha256(source.read_bytes()).hexdigest())
         results.append(result)
+    native_raw = subprocess.check_output(['ffmpeg', '-v', 'error', '-i', str(args.video),
+                                          '-vn', '-ar', str(RATE), '-f', 'f32le', '-'])
+    native = np.frombuffer(native_raw, dtype='<f4')
     report = {'method': 'normalized waveform correlation; not a listening review',
               'rate': RATE, 'fps': FPS, 'numpy': np.__version__,
               'video': str(args.video), 'video_sha256': hashlib.sha256(args.video.read_bytes()).hexdigest(),
-              'peak_dbfs': float(20 * np.log10(max(1e-12, np.max(np.abs(rendered))))),
+              'peak_dbfs': float(20 * np.log10(max(1e-12, np.max(np.abs(native))))),
+              'peak_definition': 'maximum decoded sample across original channels; no mono downmix',
+              'mono_downmix_peak_dbfs': float(20 * np.log10(max(1e-12, np.max(np.abs(rendered))))),
               'probes': results}
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
     print(json.dumps(report, ensure_ascii=False, indent=2))

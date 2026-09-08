@@ -232,9 +232,9 @@
       "motion": "live",
       "planned_start_seconds": 362,
       "planned_duration_seconds": 27,
-      "narration": "接着，用家庭节能约定验证断连恢复。暂时断开客厅设备的同步连接，其他设备继续工作。客厅保留自己的本地副本；恢复连接后，缺失的修改会逐步补齐，三端重新得到一致结果。",
-      "visual": "隔离、更新、重连、核对三端录制",
-      "status": "capture-needed"
+      "narration": "接着，用家庭节能约定验证断连恢复。暂时断开客厅设备的同步连接，其他设备继续工作。客厅保留自己的本地副本；恢复连接后，缺失的修改会逐步补齐，客厅也读到更新后的约定。",
+      "visual": "公共接口原始检查点回放：断连前版本一、在线端版本二/客厅版本一、重连后客厅版本二",
+      "status": "recorded-api-checkpoints"
     },
     {
       "id": "s22",
@@ -243,9 +243,9 @@
       "motion": "live",
       "planned_start_seconds": 389,
       "planned_duration_seconds": 22,
-      "narration": "两台设备从同一版本同时修改，会形成不同分支。版本向量判断先后与并发，再按确定性规则合并。远端结果重新建立检索索引，避免数据已更新、搜索仍停留在旧版本。",
-      "visual": "并发分支与恢复后结果录制",
-      "status": "capture-needed"
+      "narration": "两台设备从同一版本同时修改，会形成不同分支。版本向量判断先后与并发，再按确定性规则合并。本次记录显示：重连后，三台设备都读到相同的版本三与同一正文。",
+      "visual": "公共接口原始检查点回放：同一知识版本三的两个正文分支、恢复连接后三端正文一致",
+      "status": "recorded-api-checkpoints"
     },
     {
       "id": "s23",
@@ -310,8 +310,8 @@
       "planned_start_seconds": 495,
       "planned_duration_seconds": 25,
       "narration": "评测关注偏好准确率、知识召回率、检索延迟和冲突正确率。历史软件兼容路径的结果，与麒麟原生结果分别标注；最终性能结论必须由同版原生实测支撑，不能把一次演示速度当作百分之九十五分位时延。",
-      "visual": "现有测试报告与新增实际证据；阈值和结果分栏",
-      "status": "capture-needed"
+      "visual": "历史软件路径评测四项数值、阈值、样本数与最终V11双SDK待测栏；698测试独立列出",
+      "status": "historical-report"
     },
     {
       "id": "s29",
