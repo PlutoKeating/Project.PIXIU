@@ -21,10 +21,40 @@
 #include <QTabWidget>
 #include <QSet>
 #include <QRegularExpression>
+#include <QDateTime>
+#include <cmath>
 #include <functional>
 
 namespace pixiu {
 namespace {
+QString captureDetails(const QJsonObject &evidence)
+{
+    const auto value = evidence.value("capture_source");
+    if (value.isUndefined() || value.isNull())
+        return MemoryWorkspace::tr("文件采集来源：未记录。不能根据文件名推断原始路径。");
+    const auto source = value.toObject();
+    const QString path = source.value("path").toString();
+    const QString method = source.value("method").toString();
+    const double seconds = source.value("captured_at").toDouble(-1);
+    const QRegularExpression privateScope(QStringLiteral("\\Auser:[A-Za-z0-9._-]+\\z"));
+    const QString type = evidence.value("source_type").toString();
+    if (!value.isObject() || source.size() != 4 || source.value("kind") != "directory"
+        || (method != "text" && method != "ocr")
+        || !path.startsWith('/') || path.size() < 2 || path.size() > 8192
+        || path.toUcs4().size() > 4096 || path.contains(QChar(0))
+        || !source.value("captured_at").isDouble() || !std::isfinite(seconds)
+        || seconds < 0 || seconds > 253402300799.0 || std::floor(seconds) != seconds
+        || !privateScope.match(evidence.value("scope").toString()).hasMatch()
+        || (type != "MANUAL_CONFIG" && type != "OCR"))
+        return MemoryWorkspace::tr("文件采集来源数据无效，未展示路径；正文仍可阅读。");
+    // JSON quoting keeps newlines and quotes in filenames distinct from UI labels.
+    const QString quoted = QString::fromUtf8(QJsonDocument(QJsonArray{path}).toJson(QJsonDocument::Compact));
+    return MemoryWorkspace::tr("文件采集方式：%1\n采集时路径：%2\n采集记录时间（UTC）：%3\n仅记录采集时来源，不保证原文件仍存在或内容未变化。")
+        .arg(method == "text" ? MemoryWorkspace::tr("文本读取") : MemoryWorkspace::tr("图片 OCR"),
+             quoted.mid(1, quoted.size() - 2),
+             QDateTime::fromSecsSinceEpoch(static_cast<qint64>(seconds), Qt::UTC).toString(Qt::ISODate));
+}
+
 QString readableEvidence(const QJsonObject &raw)
 {
     QJsonObject fields = raw;
@@ -187,6 +217,13 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_detailMeta->setWordWrap(true);
     m_detailMeta->setTextFormat(Qt::PlainText);
     layout->addWidget(m_detailMeta);
+    m_captureDetails = new QPlainTextEdit(this);
+    m_captureDetails->setObjectName(QStringLiteral("memoryCaptureSource"));
+    m_captureDetails->setAccessibleName(tr("文件采集来源，只读"));
+    m_captureDetails->setReadOnly(true);
+    m_captureDetails->setMaximumHeight(110);
+    m_captureDetails->hide();
+    layout->addWidget(m_captureDetails);
     m_showRaw = new QCheckBox(tr("查看原始数据（高级）"), this);
     m_showRaw->setObjectName("memoryEvidenceRaw");
     m_showRaw->setEnabled(false);
@@ -276,6 +313,8 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
                  evidence.value(QStringLiteral("scope")).toString())
             .arg(evidence.value(QStringLiteral("quality_score")).toDouble(), 0, 'f', 2));
         m_evidenceText = readableEvidence(raw);
+        m_captureDetails->setPlainText(captureDetails(evidence));
+        m_captureDetails->show();
         m_evidenceRaw = QString::fromUtf8(QJsonDocument(raw).toJson(QJsonDocument::Indented));
         m_showRaw->setEnabled(!raw.isEmpty());
         m_detail->setPlainText(m_evidenceText);
@@ -334,6 +373,8 @@ void MemoryWorkspace::clearAgentSources()
 
 void MemoryWorkspace::clearEvidence()
 {
+    m_captureDetails->clear();
+    m_captureDetails->hide();
     m_evidenceText.clear();
     m_evidenceRaw.clear();
     m_showRaw->setChecked(false);

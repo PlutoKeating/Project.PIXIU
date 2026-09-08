@@ -41,6 +41,7 @@ private:
     QPlainTextEdit *m_answer;
     QListWidget *m_sources;
     QLabel *m_detailMeta;
+    QPlainTextEdit *m_captureDetails;
     QPlainTextEdit *m_detail;
     QCheckBox *m_showRaw;
     QString m_evidenceText;

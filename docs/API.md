@@ -465,7 +465,7 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 按 evidence_id 获取原始证据详情，供前端 EvidenceCard「查看原文」。
 
 响应新增可空 `capture_source`，与 Agent `provenance` 独立；schema v13 已实现
-模型、存储、引擎独立入库参数及目录采集器传参；正式界面尚未接线。未保存来源的
+模型、存储、引擎独立入库参数、目录采集器传参及正式阅读器独立展示。未保存来源的
 旧记录仍返回 `null`，不会补造来源。
 非空值结构为 `{"kind":"directory","method":"text","path":"/data/example.txt",
 "captured_at":1788800000}`，`method` 也可为 `ocr`；仅允许私有文件兼容来源。

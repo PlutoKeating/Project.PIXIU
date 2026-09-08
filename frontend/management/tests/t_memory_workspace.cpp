@@ -1718,6 +1718,95 @@ private slots:
         QCOMPARE(transport.edits, 0);
         QCOMPARE(transport.forgetCalls, 0);
     }
+    void fileCaptureSourceIsSeparateBoundedAndCleared()
+    {
+        Transport transport;
+        pixiu::MemoryWorkspace page(nullptr, &transport);
+        auto *query = page.findChild<QLineEdit *>("memoryQuery");
+        auto *search = page.findChild<QPushButton *>("memorySearch");
+        auto *sources = page.findChild<QListWidget *>("memorySources");
+        auto *capture = page.findChild<QPlainTextEdit *>("memoryCaptureSource");
+        auto *body = page.findChild<QPlainTextEdit *>("memoryEvidence");
+        QVERIFY(capture);
+        QVERIFY(capture->isReadOnly());
+        QVERIFY(capture->isHidden());
+        QVERIFY(capture->maximumHeight() <= 110);
+        query->setText("example");
+        search->click();
+        emit transport.queryResult(transport.sequence, {{"answer", "example"}, {"source_evidence", QJsonArray{"e1"}}});
+        QJsonObject source{{"kind", "directory"}, {"method", "text"},
+            {"path", "/data/<b>example</b>\n.txt"}, {"captured_at", 0}};
+        QJsonObject evidence{{"id", "e1"}, {"source_type", "MANUAL_CONFIG"},
+            {"scope", "user:local"}, {"capture_source", source}, {"raw", QJsonObject{{"text", "body only"}}}};
+        auto read = [&] (const QJsonObject &value) {
+            sources->setCurrentRow(-1);
+            sources->setCurrentRow(0);
+            QVERIFY(capture->isHidden());
+            QVERIFY(capture->toPlainText().isEmpty());
+            emit transport.evidenceDetailResult(value);
+        };
+        read(evidence);
+        QVERIFY(!capture->isHidden());
+        QVERIFY(capture->toPlainText().contains("文本读取"));
+        QVERIFY(capture->toPlainText().contains("<b>example</b>\\n.txt"));
+        QVERIFY(capture->toPlainText().contains("1970-01-01T00:00:00Z"));
+        QCOMPARE(body->toPlainText(), QString("body only"));
+        page.findChild<QCheckBox *>("memoryEvidenceRaw")->setChecked(true);
+        QVERIFY(!body->toPlainText().contains("/data/"));
+        source["method"] = "ocr";
+        source["path"] = "/" + QString(4095, 'x');
+        evidence["capture_source"] = source;
+        read(evidence);
+        QVERIFY(capture->toPlainText().contains("图片 OCR"));
+        QVERIFY(capture->toPlainText().contains(source["path"].toString()));
+        auto missing = evidence;
+        missing.remove("capture_source");
+        read(missing);
+        QVERIFY(capture->toPlainText().contains("未记录"));
+        missing["capture_source"] = QJsonValue::Null;
+        read(missing);
+        QVERIFY(capture->toPlainText().contains("未记录"));
+        for (const QJsonValue &bad : {QJsonValue("bad"), QJsonValue(QJsonObject{}),
+                 QJsonValue(QJsonObject{{"kind", "directory"}, {"method", "text"},
+                     {"path", "/private-marker"}, {"captured_at", -1}})}) {
+            auto invalid = evidence;
+            invalid["capture_source"] = bad;
+            read(invalid);
+            QVERIFY(capture->toPlainText().contains("无效"));
+            QVERIFY(!capture->toPlainText().contains("private-marker"));
+            QCOMPARE(body->toPlainText(), QString("body only"));
+        }
+        const QList<QJsonObject> invalidFields = {
+            {{"kind", "clipboard"}}, {{"method", "unknown"}}, {{"path", "relative.txt"}},
+            {{"path", "/"}}, {{"path", "/" + QString(4096, 'x')}},
+            {{"path", QString("/bad") + QChar(0)}}, {{"captured_at", 0.5}},
+            {{"captured_at", "123"}}, {{"captured_at", 253402300800.0}}, {{"extra", true}}
+        };
+        for (const auto &fields : invalidFields) {
+            auto invalidSource = source;
+            for (auto it = fields.begin(); it != fields.end(); ++it) invalidSource[it.key()] = it.value();
+            auto invalid = evidence;
+            invalid["capture_source"] = invalidSource;
+            read(invalid);
+            QVERIFY(capture->toPlainText().contains("无效"));
+            QCOMPARE(body->toPlainText(), QString("body only"));
+        }
+        auto shared = evidence;
+        shared["scope"] = "shared:home";
+        read(shared);
+        QVERIFY(capture->toPlainText().contains("无效"));
+        auto wrongType = evidence;
+        wrongType["source_type"] = "CONVERSATION";
+        read(wrongType);
+        QVERIFY(capture->toPlainText().contains("无效"));
+        read(evidence);
+        page.notifyDataChanged();
+        QVERIFY(capture->isHidden());
+        QVERIFY(capture->toPlainText().isEmpty());
+        emit transport.evidenceDetailResult(evidence);
+        QVERIFY(capture->isHidden());
+        QVERIFY(capture->toPlainText().isEmpty());
+    }
     void searchAndEvidence()
     {
         Transport transport;
