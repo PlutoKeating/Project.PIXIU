@@ -1,4 +1,5 @@
 #include <QTest>
+#include <QSignalSpy>
 #include <QWidget>
 #include "app/ShortcutManager.h"
 #include <kysdk/desktop/libkyshortcut.h>
@@ -21,6 +22,18 @@ int kdk_shortcut_delete_global_shortcut(const char *name)
     return KYSDK_SUCCESS;
 }
 
+class Probe : public ShortcutManager
+{
+public:
+    using ShortcutManager::ShortcutManager;
+    bool ready = true, canStart = true;
+    int starts = 0;
+    void serviceChanged(bool value) { ready = value; updateKylinServiceState(); }
+protected:
+    bool kylinServiceReady() const override { return ready; }
+    bool startKylinService() override { ++starts; return canStart; }
+};
+
 class TestShortcutKylin : public QObject
 {
     Q_OBJECT
@@ -33,7 +46,7 @@ private slots:
     void removesLegacyBindingBeforeRegisteringReplacement()
     {
         QWidget host;
-        ShortcutManager manager(&host);
+        Probe manager(&host);
         QVERIFY(manager.registerToggleShortcut());
         QCOMPARE(calls, QStringList({QStringLiteral("remove-legacy"), QStringLiteral("create")}));
         manager.releaseToggleShortcut();
@@ -43,7 +56,7 @@ private slots:
     {
         legacyResult = -3;
         QWidget host;
-        ShortcutManager manager(&host);
+        Probe manager(&host);
         QVERIFY(manager.registerToggleShortcut());
         QVERIFY(manager.isGlobal());
         QCOMPARE(legacyDeletes, 1);
@@ -53,7 +66,7 @@ private slots:
     {
         QWidget host;
         {
-            ShortcutManager manager(&host);
+            Probe manager(&host);
             QVERIFY(manager.registerToggleShortcut());
             QVERIFY(manager.isGlobal());
             QCOMPARE(registeredName, QStringLiteral("pixiu.activate"));
@@ -70,7 +83,7 @@ private slots:
         createResult = KYSDK_SHORTCUT_EXISTED;
         updateResult = -2;
         {
-            ShortcutManager manager(&host);
+            Probe manager(&host);
             QVERIFY(manager.registerToggleShortcut()); // Qt fallback
             QVERIFY(!manager.isGlobal());
         }
@@ -81,13 +94,54 @@ private slots:
         QWidget host;
         createResult = KYSDK_SHORTCUT_EXISTED;
         {
-            ShortcutManager manager(&host);
+            Probe manager(&host);
             QVERIFY(manager.registerToggleShortcut());
             QVERIFY(manager.isGlobal());
             QVERIFY(manager.registerToggleShortcut());
             QCOMPARE(deletes, 1);
         }
         QCOMPARE(deletes, 2);
+    }
+    void waitsForServiceAndFallsBackWhenItDisappears()
+    {
+        QWidget host;
+        Probe manager(&host);
+        manager.ready = false;
+        QSignalSpy changes(&manager, &ShortcutManager::availabilityChanged);
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(!manager.isGlobal());
+        QCOMPARE(manager.starts, 1);
+        QVERIFY(host.findChild<QObject *>(QStringLiteral("toggleChatShortcut")));
+        manager.ready = true;
+        QTRY_VERIFY(manager.isGlobal());
+        QVERIFY(!host.findChild<QObject *>(QStringLiteral("toggleChatShortcut")));
+        QCOMPARE(changes.count(), 1);
+        manager.serviceChanged(false);
+        QVERIFY(!manager.isGlobal());
+        QVERIFY(host.findChild<QObject *>(QStringLiteral("toggleChatShortcut")));
+        QCOMPARE(manager.starts, 1);
+        manager.releaseToggleShortcut();
+        manager.serviceChanged(true);
+        QVERIFY(!manager.isGlobal());
+        QVERIFY(!host.findChild<QObject *>(QStringLiteral("toggleChatShortcut")));
+    }
+    void startupFailureRemainsExplicitlyLocal()
+    {
+        QWidget host;
+        Probe manager(&host);
+        manager.ready = manager.canStart = false;
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(!manager.isGlobal());
+        QCOMPARE(manager.starts, 1);
+        QVERIFY(host.findChild<QObject *>(QStringLiteral("toggleChatShortcut")));
+    }
+    void existingServiceIsNotStartedAgain()
+    {
+        QWidget host;
+        Probe manager(&host);
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(manager.isGlobal());
+        QCOMPARE(manager.starts, 0);
     }
 };
 QTEST_MAIN(TestShortcutKylin)

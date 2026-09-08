@@ -27,9 +27,13 @@ HostTray::HostTray(QWidget *host) : QObject(host)
     connect(show, &QAction::triggered, this, restore);
     auto *shortcut = new ShortcutManager(host, this);
     connect(shortcut, &ShortcutManager::toggleRequested, this, restore);
+    auto updateShortcutLabel = [this, show](bool global) {
+        show->setText(global ? tr("显示 PIXIU（Ctrl+Alt+P，全局）")
+                            : tr("显示 PIXIU（Ctrl+Alt+P，仅应用内）"));
+    };
+    connect(shortcut, &ShortcutManager::availabilityChanged, this, updateShortcutLabel);
     shortcut->registerToggleShortcut();
-    show->setText(shortcut->isGlobal() ? tr("显示 PIXIU（Ctrl+Alt+P，全局）")
-                                    : tr("显示 PIXIU（Ctrl+Alt+P，仅应用内）"));
+    updateShortcutLabel(shortcut->isGlobal());
     connect(quit, &QAction::triggered, this, [host, restore]() {
         restore();
         host->close(); // HostCloseGuard owns pending work and unsaved draft checks.

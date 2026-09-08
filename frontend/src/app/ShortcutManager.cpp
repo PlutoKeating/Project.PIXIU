@@ -7,6 +7,12 @@
 
 #ifdef PIXIU_HAVE_KYSDK
 #include <kysdk/desktop/libkyshortcut.h>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusServiceWatcher>
+#include <QFileInfo>
+#include <QProcess>
+#include <QTimer>
 #endif
 
 Q_LOGGING_CATEGORY(lcShortcut, "pixiu.shortcut")
@@ -15,6 +21,7 @@ namespace {
 #ifdef PIXIU_HAVE_KYSDK
 // 系统级全局快捷键名称：全局唯一，用于创建/更新/删除。
 const char kToggleShortcutName[] = "pixiu.activate";
+const char kShortcutService[] = "com.kylin.kysdk.shortcut";
 #endif
 
 } // namespace
@@ -23,6 +30,18 @@ ShortcutManager::ShortcutManager(QWidget *contextWidget, QObject *parent)
     : QObject(parent)
     , m_contextWidget(contextWidget)
 {
+#ifdef PIXIU_HAVE_KYSDK
+    m_servicePoll = new QTimer(this);
+    m_servicePoll->setInterval(100);
+    connect(m_servicePoll, &QTimer::timeout, this, [this]() {
+        updateKylinServiceState();
+        if (++m_serviceChecks >= 50) m_servicePoll->stop();
+    });
+    auto *watcher = new QDBusServiceWatcher(QString::fromLatin1(kShortcutService),
+        QDBusConnection::sessionBus(), QDBusServiceWatcher::WatchForOwnerChange, this);
+    connect(watcher, &QDBusServiceWatcher::serviceOwnerChanged, this,
+        [this]() { updateKylinServiceState(); });
+#endif
 }
 
 ShortcutManager::~ShortcutManager()
@@ -41,10 +60,21 @@ bool ShortcutManager::registerToggleShortcut(const QKeySequence &sequence)
     // 优先使用 kysdk 系统级全局快捷键；失败（按键冲突、无桌面服务等）时
     // 降级到 Qt ApplicationShortcut，保证唤起功能可用。
     if (registerKylinGlobalShortcut()) {
+        updateKylinServiceState();
+        if (!isGlobal() && startKylinService()) {
+            m_serviceChecks = 0;
+            m_servicePoll->start();
+        }
         return true;
     }
 #endif
 
+    return installFallback();
+}
+
+bool ShortcutManager::installFallback()
+{
+    if (m_shortcut) return true;
     if (!m_contextWidget) {
         qCWarning(lcShortcut) << "no context widget; shortcut not registered";
         return false;
@@ -68,6 +98,7 @@ QKeySequence ShortcutManager::currentSequence() const
 void ShortcutManager::releaseToggleShortcut()
 {
 #ifdef PIXIU_HAVE_KYSDK
+    m_servicePoll->stop();
     const int result = m_globalRegistered ? kdk_shortcut_delete_global_shortcut(kToggleShortcutName)
                                           : KYSDK_SHORTCUT_NOT_EXISTS;
     m_globalRegistered = false;
@@ -77,6 +108,7 @@ void ShortcutManager::releaseToggleShortcut()
         qCWarning(lcShortcut) << "failed to remove Kylin global shortcut, error code:" << result;
     }
 #endif
+    setGlobalAvailable(false);
 
     if (m_shortcut) {
         // 释放调用发生在退出路径，不存在快捷键事件处理中的再入删除，
@@ -87,6 +119,36 @@ void ShortcutManager::releaseToggleShortcut()
 }
 
 #ifdef PIXIU_HAVE_KYSDK
+bool ShortcutManager::kylinServiceReady() const
+{
+    auto *bus = QDBusConnection::sessionBus().interface();
+    return bus && bus->isServiceRegistered(QString::fromLatin1(kShortcutService)).value();
+}
+
+bool ShortcutManager::startKylinService()
+{
+    // Official SDK autostart entry. The shared desktop service outlives PIXIU;
+    // do not parent it to the app or terminate it when the window closes.
+    const QString program = QStringLiteral("/usr/bin/kdkshortcut");
+    const bool started = QFileInfo(program).isExecutable() && QProcess::startDetached(program, {});
+    if (!started) qCWarning(lcShortcut) << "Kylin shortcut service unavailable; using application shortcut";
+    return started;
+}
+
+void ShortcutManager::updateKylinServiceState()
+{
+    if (!m_globalRegistered) return;
+    const bool ready = kylinServiceReady();
+    if (ready) {
+        m_servicePoll->stop();
+        delete m_shortcut;
+        m_shortcut = nullptr;
+    } else {
+        installFallback();
+    }
+    setGlobalAvailable(ready);
+}
+
 bool ShortcutManager::registerKylinGlobalShortcut()
 {
     // Upgrade migration: this name belonged exclusively to the removed desktop
@@ -128,3 +190,10 @@ bool ShortcutManager::registerKylinGlobalShortcut()
     return false;
 }
 #endif
+
+void ShortcutManager::setGlobalAvailable(bool available)
+{
+    if (m_globalAvailable == available) return;
+    m_globalAvailable = available;
+    emit availabilityChanged(available);
+}
