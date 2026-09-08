@@ -7,7 +7,7 @@
 #include "DeliveryPage.h"
 #include "ServiceStatusPage.h"
 #include "AgentEvidenceClient.h"
-#include <QAbstractButton>
+#include <QPushButton>
 #include <QCloseEvent>
 #include <QDialog>
 #include <QMessageBox>
@@ -83,12 +83,17 @@ bool HostCloseGuard::confirmExit(const QDialog *initiatingDialog)
     if (unsaved) {
         QMessageBox question(QMessageBox::Warning, tr("编辑尚未保存"),
             tr("配置有未保存的修改，或会话中有未发送的输入。是否放弃这些编辑并退出？不会发送草稿或修改后端已保存的配置。"),
-            QMessageBox::Yes | QMessageBox::No, m_host);
-        question.button(QMessageBox::No)->setText(tr("保留编辑"));
-        question.button(QMessageBox::Yes)->setText(tr("放弃并退出"));
-        question.setDefaultButton(QMessageBox::No);
-        question.setEscapeButton(QMessageBox::No);
-        if (question.exec() != QMessageBox::Yes) return false;
+            QMessageBox::NoButton, m_host);
+        // UKUI's native helper recreates standard Yes/No captions when shown.
+        // Custom actions retain their meaning across the native dialog boundary.
+        auto *keep = question.addButton(tr("保留编辑"), QMessageBox::RejectRole);
+        auto *discard = question.addButton(tr("放弃并退出"), QMessageBox::AcceptRole);
+        keep->setObjectName(QStringLiteral("hostExitKeep"));
+        discard->setObjectName(QStringLiteral("hostExitDiscard"));
+        question.setDefaultButton(keep);
+        question.setEscapeButton(keep);
+        question.exec();
+        if (question.clickedButton() != discard) return false;
     }
     // A modal confirmation runs an event loop: consult all live request state again.
     return !hasPendingOperation();

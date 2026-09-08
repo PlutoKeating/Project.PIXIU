@@ -32,6 +32,7 @@
 #include <QTest>
 #include <QSignalSpy>
 #include <QScreen>
+#include <QStyle>
 
 class Transport : public HttpBackendTransport
 {
@@ -448,14 +449,14 @@ private slots:
         workspace.findChild<QLineEdit *>("memoryQuery")->setText("test");
         QTimer::singleShot(0, &host, [&]() {
             workspace.findChild<QPushButton *>("memorySearch")->click();
-            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+            host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click();
         });
         QVERIFY(!guard.confirmExit(&restartDialog));
         QVERIFY(host.isVisible());
         QVERIFY(workspace.hasPendingOperation());
         emit transport.queryResult(transport.sequence, {{"answer", "test"}});
         QTimer::singleShot(0, &host, [&]() {
-            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+            host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click();
         });
         QVERIFY(guard.confirmExit(&restartDialog));
         QVERIFY(host.isVisible());
@@ -463,23 +464,27 @@ private slots:
     }
     void hostCloseUsesExplicitActionsAndSafeKeyboardDefaults()
     {
+        if (qgetenv("QT_QPA_PLATFORMTHEME") == "ukui")
+            QVERIFY(QApplication::style()->objectName().contains(QStringLiteral("ukui"), Qt::CaseInsensitive));
         QWidget host;
         pixiu::HostCloseGuard guard(&host, []() { return false; }, []() { return true; });
         host.show();
         QString keepText, discardText;
-        bool safeDefault = false, safeEscape = false;
+        bool safeDefault = false, safeEscape = false, customActions = false;
         QTimer::singleShot(0, &host, [&]() {
             auto *question = host.findChild<QMessageBox *>();
-            keepText = question->button(QMessageBox::No)->text();
-            discardText = question->button(QMessageBox::Yes)->text();
-            safeDefault = question->defaultButton() == question->button(QMessageBox::No);
-            safeEscape = question->escapeButton() == question->button(QMessageBox::No);
+            keepText = question->findChild<QPushButton *>("hostExitKeep")->text();
+            discardText = question->findChild<QPushButton *>("hostExitDiscard")->text();
+            safeDefault = question->defaultButton() == question->findChild<QPushButton *>("hostExitKeep");
+            safeEscape = question->escapeButton() == question->findChild<QPushButton *>("hostExitKeep");
+            customActions = question->standardButtons() == QMessageBox::NoButton;
             QTest::keyClick(question, Qt::Key_Return);
         });
         QVERIFY(!host.close());
         QVERIFY(host.isVisible());
         QVERIFY(safeDefault);
         QVERIFY(safeEscape);
+        QVERIFY(customActions); // UKUI must not rebuild these as standard Yes/No.
         QCOMPARE(keepText, QStringLiteral("保留编辑"));
         QCOMPARE(discardText, QStringLiteral("放弃并退出"));
         QTimer::singleShot(0, &host, [&]() {
@@ -487,7 +492,11 @@ private slots:
         });
         QVERIFY(!host.close());
         QTimer::singleShot(0, &host, [&]() {
-            host.findChild<QMessageBox *>()->button(QMessageBox::Yes)->click();
+            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+        });
+        QVERIFY(!host.close()); // A numeric result without the discard action is not consent.
+        QTimer::singleShot(0, &host, [&]() {
+            host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click();
         });
         QVERIFY(host.close());
     }
@@ -507,19 +516,19 @@ private slots:
         bool defaultCancel = false;
         QTimer::singleShot(0, &host, [&]() {
             auto *question = host.findChild<QMessageBox *>();
-            defaultCancel = question->defaultButton() == question->button(QMessageBox::No);
-            question->done(QMessageBox::No);
+            defaultCancel = question->defaultButton() == question->findChild<QPushButton *>("hostExitKeep");
+            question->findChild<QPushButton *>("hostExitKeep")->click();
         });
         QVERIFY(!host.close());
         QVERIFY(defaultCancel);
         QCOMPARE(draft, QStringLiteral("unsent input"));
         QTimer::singleShot(0, &host, [&]() {
             pending = true; // State may change in the confirmation's event loop.
-            host.findChild<QMessageBox *>()->done(QMessageBox::Yes);
+            host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click();
         });
         QVERIFY(!host.close());
         pending = false;
-        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click(); });
         QVERIFY(host.close());
         QCOMPARE(draft, QStringLiteral("unsent input")); // Guard only authorizes close, no state mutation.
         draft.clear();
@@ -551,11 +560,11 @@ private slots:
         QTimer::singleShot(0, &host, [&]() {
             auto *question = host.findChild<QMessageBox *>();
             QVERIFY(question);
-            defaultCancel = question->defaultButton() == question->button(QMessageBox::No);
+            defaultCancel = question->defaultButton() == question->findChild<QPushButton *>("hostExitKeep");
             QCloseEvent nested;
             QApplication::sendEvent(&host, &nested);
             nestedRejected = !nested.isAccepted();
-            question->done(QMessageBox::No);
+            question->findChild<QPushButton *>("hostExitKeep")->click();
         });
         QVERIFY(!host.close());
         QVERIFY(defaultCancel);
@@ -601,7 +610,7 @@ private slots:
         emit transport.errorOccurred("TIMEOUT", "unknown result", "test");
         QVERIFY(page.hasUnsavedChanges()); // Disabling Save after an error must not lose the draft.
         const auto submitted = transport.syncSettings;
-        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->done(QMessageBox::Yes); });
+        QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click(); });
         QVERIFY(host.close());
         QCOMPARE(transport.syncSettings, submitted); // Discard does not send another write.
     }

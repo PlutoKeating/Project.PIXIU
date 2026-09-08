@@ -53,6 +53,21 @@ jobs:
           python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
       - name: Rebuild Agent and verify offline supply chain
         run: PIXIU_KYSDK=ON bash build/release/scripts/prepare-agent-supply-chain.sh
+      - name: Verify exit actions with the native UKUI dialog helper
+        timeout-minutes: 10
+        env:
+          QT_QPA_PLATFORM: wayland
+          QT_QPA_PLATFORMTHEME: ukui
+          WAYLAND_DISPLAY: wayland-0
+        run: |
+          test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
+          cmake -S frontend/management -B "$RUNNER_TEMP/pixiu-native-dialog-tests" \
+            -DBUILD_TESTING=ON -DPIXIU_HAVE_KYSDK=OFF
+          cmake --build "$RUNNER_TEMP/pixiu-native-dialog-tests" --target t_memory_workspace --parallel 2
+          mkdir -p "$RUNNER_TEMP/pixiu-native-dialog-config"
+          XDG_CONFIG_HOME="$RUNNER_TEMP/pixiu-native-dialog-config" \
+            timeout 60s "$RUNNER_TEMP/pixiu-native-dialog-tests/t_memory_workspace" \
+              hostCloseUsesExplicitActionsAndSafeKeyboardDefaults
       - name: Build strict native package
         env:
           PIXIU_PROFILE: kylin-v11-native-x86_64
