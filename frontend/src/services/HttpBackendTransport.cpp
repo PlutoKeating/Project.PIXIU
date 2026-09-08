@@ -139,15 +139,6 @@ void HttpBackendTransport::updateMemory(const QJsonObject &payload)
              [this](quint64, const QJsonObject &obj) { emit memoryUpdated(obj); });
 }
 
-void HttpBackendTransport::forget(const QString &command, bool confirm)
-{
-    QJsonObject body;
-    body.insert(QStringLiteral("command"), command);
-    body.insert(QStringLiteral("confirm"), confirm);
-    postJson(QStringLiteral("/forget"), body,
-             [this](quint64, const QJsonObject &obj) { emit forgetResult(obj); });
-}
-
 void HttpBackendTransport::listConflicts()
 {
     getJson(QStringLiteral("/conflicts"),

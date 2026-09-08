@@ -18,7 +18,6 @@ public:
         return ++nextRequestId;
     }
     void writeMemory(const QJsonObject &) override {}
-    void forget(const QString &, bool) override {}
     void listConflicts() override {}
     void preferenceHistory(const QString &) override {}
     void promoteMemory(const QJsonObject &) override {}

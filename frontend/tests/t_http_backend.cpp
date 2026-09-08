@@ -247,7 +247,7 @@ void TestHttpBackend::mapsFastApiDetailErrors()
     HttpBackendTransport *transport = makeTransport();
     QSignalSpy errorSpy(transport, &BackendTransport::errorOccurred);
 
-    transport->forget(QStringLiteral("x"), false);
+    transport->reviewedForget({{"command", "x"}, {"scope", "user:local"}, {"confirm", false}});
 
     QTRY_COMPARE_WITH_TIMEOUT(errorSpy.count(), 1, 3000);
     const QList<QVariant> args = errorSpy.takeFirst();
@@ -317,7 +317,7 @@ void TestHttpBackend::disconnectRejectsPendingReplies()
     auto *transport = makeTransport(10000);
     QSignalSpy errors(transport, &BackendTransport::errorOccurred);
     transport->connectToBackend();
-    transport->forget("test", false);
+    transport->reviewedForget({{"command", "test"}, {"scope", "user:local"}, {"confirm", false}});
     QTRY_COMPARE_WITH_TIMEOUT(m_requests, 2, 3000);
     transport->disconnectFromBackend();
     QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
@@ -334,7 +334,7 @@ void TestHttpBackend::startsHealthAfterBusinessReachability()
     m_healthBody = "{}";
     auto *transport = makeTransport(10000);
     QSignalSpy errors(transport, &BackendTransport::errorOccurred);
-    transport->forget("test", false);
+    transport->reviewedForget({{"command", "test"}, {"scope", "user:local"}, {"confirm", false}});
     QTRY_COMPARE_WITH_TIMEOUT(errors.count(), 1, 3000);
     QCOMPARE(transport->connectionState(), ConnectionState::Connected);
     transport->connectToBackend();

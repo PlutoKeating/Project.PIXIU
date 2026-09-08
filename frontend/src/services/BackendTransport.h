@@ -32,7 +32,6 @@ public:
     virtual void memoryContext(const QJsonObject &payload);
     virtual void updateMemory(const QJsonObject &payload);
     virtual void memoryItem(const QString &knowledgeId, const QString &scope);
-    virtual void forget(const QString &command, bool confirm) = 0;
     virtual void reviewedForget(const QJsonObject &payload);
     virtual void listConflicts() = 0;
     virtual void preferenceHistory(const QString &preferenceId) = 0;

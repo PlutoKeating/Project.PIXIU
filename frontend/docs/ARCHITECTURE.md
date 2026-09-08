@@ -363,6 +363,9 @@ Agent 版本误用于 PIXIU Release 比较；上游组件版本仍由供应链�
 读取管理库版本派生关系。隔离测试覆盖旧入口缺失及管理库/宿主版本漂移拒绝。
 管理库测试同时链接共用 HTTP 契约回归；遗忘请求使用 `reviewedForget` 的显式范围与
 一次性凭证，替身按错域即消耗处理，不再将旧 confirm 布尔值视为充分授权。
+旧 ForgetController、专属测试/翻译及 transport 的 `forget(command, confirm)`
+方法已删除。公共 `/forget` 后端端点和凭证校验不变，错误映射与断连回归改用
+`reviewedForget`，不因旧接口删除而降低通信验证覆盖。
 `MemoryWorkspace::notifyDataChanged()` 清除过期查询、来源和正文而不改变检索输入、
 范围或编辑对话框。查询编号失效后忽略迟到结果；证据读取无编号，因此保留忙碌
 门控直到响应结束并丢弃内容，不并发打开另一份证据。广播不触发查询或写入。

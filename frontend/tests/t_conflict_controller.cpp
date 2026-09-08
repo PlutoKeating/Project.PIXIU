@@ -14,7 +14,6 @@ public:
     void disconnectFromBackend() override {}
     quint64 queryMemory(const QString &, const QJsonObject &) override { return 0; }
     void writeMemory(const QJsonObject &) override {}
-    void forget(const QString &, bool) override {}
     void listConflicts() override { ++listConflictsCalls; }
     void preferenceHistory(const QString &) override {}
     void promoteMemory(const QJsonObject &) override {}

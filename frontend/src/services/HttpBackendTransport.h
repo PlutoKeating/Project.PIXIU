@@ -38,7 +38,6 @@ public:
     void memoryContext(const QJsonObject &payload) override;
     void updateMemory(const QJsonObject &payload) override;
     void memoryItem(const QString &knowledgeId, const QString &scope) override;
-    void forget(const QString &command, bool confirm) override;
     void reviewedForget(const QJsonObject &payload) override;
     void listConflicts() override;
     void preferenceHistory(const QString &preferenceId) override;

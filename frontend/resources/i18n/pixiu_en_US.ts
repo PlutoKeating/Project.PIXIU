@@ -136,13 +136,6 @@
     </message>
 </context>
 <context>
-    <name>ForgetController</name>
-    <message>
-        <source>遗忘响应格式无法识别</source>
-        <translation>Unrecognized forget response format</translation>
-    </message>
-</context>
-<context>
     <name>HttpBackendTransport</name>
     <message>
         <source>后端响应不是合法 JSON</source>

@@ -190,7 +190,8 @@ D-Bus/HTTP 切换。下面保留原接口章节标题，但不再描述不存在
 | `listConflicts` | GET /conflicts，只读后端仲裁记录 |
 
 方法、信号及参数以 `src/services/BackendTransport.h` 和 `docs/API.md` 为准。
-旧 `forget(command, confirm)` 残留不是正式安全遗忘页的调用路径。
+旧 `forget(command, confirm)` 方法和无凭证的 ForgetController 已删除，前端仅保留
+`reviewedForget`；HTTP 错误映射、断连和健康恢复回归也使用正式范围化请求。
 
 ### SyncClient 接口
 
