@@ -13,7 +13,8 @@
 - 设计时偏好提取 `preference_accuracy=0.33`（FAIL，target=0.85；B3-2 对齐后实测
   1.0，见上方实施注记）——赛题硬指标缺口，主因是提取规则与评测语料标签
   （OP_HABIT / OUTPUT_STYLE / SECURITY_POLICY 三类）未对齐；
-- 行为采集缺失：MonitorController 的 `behavior` 源开关已存在但无真实数据供给；
+- 当前行为来源由正式 PrivacyPage 消费后端配置；BehaviorCollector 已有 xprop 焦点聚合，
+  但不能以开关存在证明全部桌面环境可采集。旧 MonitorController 已删除；
 - 冲突打扰一刀切：任何冲突都弹通知+角标+切 Tab，MERGE/NEW_WINS 的自动处理也打扰用户。
 
 目标：行为采集器（焦点+启动时长）→ 复用 /memory/write 管线 → 偏好提取规则补齐（0.33→0.85）→ 冲突按三态分级打扰（MERGE 静默 / NEW_WINS 通知 / MANUAL 角标+通知+切 Tab）。

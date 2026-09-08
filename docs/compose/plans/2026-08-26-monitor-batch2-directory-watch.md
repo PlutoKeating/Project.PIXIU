@@ -7,7 +7,7 @@
 
 **Goal:** 打通「用户指定目录 → 新文件落地 → 自动识别入库 → 捕获事件推送 → 前端活动记录/通知」的被动监控核心闭环，对齐赛题附录 A 的 T0 场景（清单图片落地即入库）。
 
-**Architecture:** 后端新增常驻 monitor 服务（Module B/C 边界内）：`MonitorConfigStore`（持久化+热生效）+ `DirectoryWatcher`（inotify 经 watchdog，图片走既有 OCR 管线、文本走 ingest 管线）+ `/monitor/*` 三契约端点 + `capture_event` WS 广播。前端扩展 BackendTransport（三个方法默认空实现）、EventRouter（capture_event 路由）、PixiuApp/MonitorCenterDialog（远端配置优先、本地键降级为离线缓存；活动日志接远端分页）。敏感条目按既有 detector 结果以 `sensitive_quarantined` 状态广播，不入 shared:*。
+**Architecture:** 后端 MonitorConfigStore、DirectoryWatcher 和公开 monitor 接口提供配置、采集及日志；正式前端为唯一宿主 PrivacyPage，使用 HttpBackendTransport 和 BackendEventStatus。配置只由后端持久化，失败保留未保存草稿，不再使用已删除的 PixiuApp/旧监控中心或本地授权镜像。敏感捕获只写私有 user:*，仍可能已经入库。
 
 **Tech Stack:** Python 3.12 · FastAPI · watchdog(inotify) · SQLite(既有 storage 层) | C++17 · Qt5 · QtTest(offscreen)
 
@@ -18,7 +18,7 @@
 - **隐私铁律**：sensitivity>0 的捕获不落 shared:*、summary 不含原文全文；daemon 关停配置持久；前端离线时展示本地缓存的上次配置。
 - **effective 开关语义**：采集器层自行实现 effective = 总闸 && 单源开关（控制器/UI 故意不做门控）。
 - 提交前缀 `feat(monitor)/feat(frontend)/test(...)`；禁止 force-push；个人分支同步一律 `--ff-only`。
-- 本计划依赖批次①已合入的 MonitorController/MonitorCenterDialog/契约文档（867547f..a1318c3 已在本地 main）。
+- 前端按 ADR-0006 的唯一宿主实现对接，旧监控控制器及双 Tab 面板已删除；当前契约见 docs/API.md 和 frontend/docs/MONITOR_API_REQUIREMENTS.md。
 
 ---
 
@@ -74,9 +74,9 @@ Steps: 红 → 实现 → 绿 → 提交 `feat(frontend): route capture_event fr
 
 ### Task A-3: 远端配置优先 + 活动日志接入 UI
 
-**Files:** Modify `frontend/src/app/PixiuApp.{h,cpp}`（启动拉 GET /monitor/config 成功则覆盖 MonitorController 状态并标记 remote-authoritative；MonitorCenterDialog 任一改动经 PUT 上送，失败回退本地键并在面板状态行提示「离线，仅本地生效」；captureEvent→角标可选+活动记录追加+sensitive_quarantined 弹 NotifyService 通知）；Modify `frontend/src/widgets/MonitorCenterDialog.{h,cpp}`（新增 appendRemoteLog(entries) 渲染服务端分页记录，打开 Tab 时懒加载首页）；Test 扩展 t_monitor_center/t_app_navigation
+**Files:** frontend/management/PrivacyPage.{h,cpp}、BackendEventStatus.{h,cpp} 与正式管理回归。配置须读取后显式保存；日志按公共接口分页，事件只触发过期标记，不自动拼接为权威历史、不覆盖草稿。剪贴板/自动截图明确未实现；敏感事件不额外触发未接入的隔离区通知。
 
-Steps: 红 → 实现（注意批次①遗留：QSignalBlocker 镜像模式沿用）→ 绿 → 提交 `feat(frontend): wire remote monitor config and activity log`。
+验证：保留配置门控、来源字段保留、失败草稿、目录选择、日志和退出保护的正式用例；旧 t_monitor_center/t_app_navigation 不再存在，不恢复相应目标。
 
 ### Task A-4: i18n 再生成 + 双路径回归 + 真机联调记录
 

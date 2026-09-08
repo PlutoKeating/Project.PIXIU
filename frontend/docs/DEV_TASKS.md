@@ -103,6 +103,8 @@ Module A 维护 `frontend/management/` 嵌入页、必要公共适配及测试�
 公共接口提供。管理模块不实现另一个 Agent 循环，不直接访问后端数据库。
 PixiuApp、FloatingBall、ChatWindow 及输入/消息展示链和专属测试已删除；旧管理面板、
 录入等控件仍被独立回归引用，待按调用关系清退，其存在不是产品入口或恢复旧交互的理由。
+旧 MonitorController/MonitorCenterDialog、本地监控键常量、专属回归及翻译已删除；
+正式 PrivacyPage 的配置、目录浏览和日志回归保留，不删除用户配置文件。
 旧 SettingsDialog 实现与专属翻译已删除；其混合测试里仍适用于正式信息页和
 升级页的检查拆入 product_dialogs，并在正式管理库和根回归入口执行。
 快捷键已迁入正式设置；完整语言支持继续列为待办，不保留无实际资源的语言控件。

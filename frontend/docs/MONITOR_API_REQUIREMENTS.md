@@ -117,8 +117,8 @@ WS 没有重放游标。断线重连会提示各页重新核对，不证明期�
 ## 5. 与前端现有实现的衔接
 
 正式界面是 `frontend/management/PrivacyPage.{h,cpp}`，位于“设置 → 采集与隐私”。
-旧 MonitorController/MonitorCenterDialog 仍有清退回归，不属于正式运行路径，
-也不作为新增功能的扩展基础。
+旧 MonitorController/MonitorCenterDialog 及其专属回归、翻译已删除；
+正式管理回归和公共 HTTP/WS 契约测试保留，不恢复本地授权镜像。
 
 现有异步 transport 契约已实现：
 

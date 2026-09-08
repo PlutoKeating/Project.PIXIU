@@ -668,6 +668,15 @@ upgrade_controller 与 check_update_dialog 在 Qt 应用创建前各自建立 QT
 
 ### U14：旧应用删除与残留清理
 
+旧监控子链已清退：MonitorController、MonitorCenterDialog 及两组专属测试、
+AppSettings 中无其他调用者的监控键常量和专属翻译上下文删除。目录浏览、日志
+时间/ID/复制已由正式 PrivacyPage 承接，配置/草稿/事件与退出保护回归保留；
+不迁移旧本地授权镜像，也不删除用户配置文件或后端数据。根回归剩余 30/30
+通过（26.21 秒）。监控掌控层旧计划保留实际章节结构，删除重建旧前端的代码步骤，
+并更新相关架构及契约引用；其他旧管理子链仍须继续按调用关系清退。
+正式管理回归 18/18 通过（46.94 秒），宿主导出适配通过；删除前后实际文档
+章节标题一致，代码/构建/翻译中不再引用被删除的监控子链。
+
 旧 MessageList、ThinkingSkeleton、EvidenceCard 和 frontend/src/models/ChatMessage.h
 及两项专属测试已删除；根 CMake、版本门及翻译资源同步清退。上游宿主同名消息
 类型和正式 AgentEvidence/MemoryWorkspace 来源阅读器未改动。

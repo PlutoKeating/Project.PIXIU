@@ -21,17 +21,6 @@ public:
     static inline const QString keyLanguage = QStringLiteral("app/general/language");
     static inline const QString keyTheme = QStringLiteral("app/general/theme");
     static inline const QString keyToggleShortcut = QStringLiteral("app/shortcut/toggle");
-    static inline const QString keyMonitorEnabled =
-        QStringLiteral("app/monitor/enabled");
-    // 单向粘性标记：监控总闸首次开启后恒为 true（关闭不清除）。
-    // 供 UI 区分「从未启用过监控」与「启用后暂停」，避免新用户常驻
-    // 看到“⏸ 已暂停”徽标。
-    static inline const QString keyMonitorEverEnabled =
-        QStringLiteral("app/monitor/ever_enabled");
-    static inline const QString keyMonitorSourcePrefix =
-        QStringLiteral("app/monitor/source/");
-    static inline const QString keyMonitorDirectories =
-        QStringLiteral("app/monitor/directories");
 
     explicit AppSettings(QObject *parent = nullptr);
     ~AppSettings() override;

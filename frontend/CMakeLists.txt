@@ -262,30 +262,6 @@ if(BUILD_TESTING)
     target_link_libraries(t_app_settings PRIVATE Qt5::Test Qt5::Core)
     add_test(NAME app_settings COMMAND t_app_settings)
 
-    add_executable(t_monitor_controller
-        tests/t_monitor_controller.cpp
-        src/app/AppSettings.h
-        src/app/AppSettings.cpp
-        src/app/MonitorController.h
-        src/app/MonitorController.cpp
-    )
-    target_include_directories(t_monitor_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_monitor_controller PRIVATE Qt5::Test Qt5::Core)
-    add_test(NAME monitor_controller COMMAND t_monitor_controller)
-
-    add_executable(t_monitor_center
-        tests/t_monitor_center.cpp
-        src/app/AppSettings.h
-        src/app/AppSettings.cpp
-        src/app/MonitorController.h
-        src/app/MonitorController.cpp
-        src/widgets/MonitorCenterDialog.h
-        src/widgets/MonitorCenterDialog.cpp
-    )
-    target_include_directories(t_monitor_center PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_link_libraries(t_monitor_center PRIVATE Qt5::Test Qt5::Widgets)
-    add_test(NAME monitor_center COMMAND t_monitor_center)
-
     add_executable(t_upgrade_utils
         tests/t_upgrade_utils.cpp
         src/app/UpgradeUtils.h
@@ -376,7 +352,6 @@ if(BUILD_TESTING)
         memory_atom query_controller write_controller app_settings
         import_dialog i18n
         sync_controller event_router product_dialogs
-        monitor_controller monitor_center
         upgrade_utils
         upgrade_controller
         check_update_dialog
