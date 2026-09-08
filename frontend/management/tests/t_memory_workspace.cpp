@@ -475,12 +475,20 @@ private slots:
         bool safeDefault = false, safeEscape = false, customActions = false;
         QTimer::singleShot(0, &host, [&]() {
             auto *question = host.findChild<QMessageBox *>();
-            keepText = question->findChild<QPushButton *>("hostExitKeep")->text();
-            discardText = question->findChild<QPushButton *>("hostExitDiscard")->text();
-            safeDefault = question->defaultButton() == question->findChild<QPushButton *>("hostExitKeep");
-            safeEscape = question->escapeButton() == question->findChild<QPushButton *>("hostExitKeep");
+            // UKUI reparents these same buttons into its visible native dialog.
+            auto *visible = QApplication::activeModalWidget();
+            auto *keep = visible ? visible->findChild<QPushButton *>("hostExitKeep") : nullptr;
+            auto *discard = visible ? visible->findChild<QPushButton *>("hostExitDiscard") : nullptr;
+            if (!question || !keep || !discard || !visible) {
+                if (question) question->reject();
+                QFAIL("Exit dialog and its actual native actions must exist");
+            }
+            keepText = keep->text();
+            discardText = discard->text();
+            safeDefault = question->defaultButton() == keep && keep->isDefault();
+            safeEscape = question->escapeButton() == keep;
             customActions = question->standardButtons() == QMessageBox::NoButton;
-            QTest::keyClick(question, Qt::Key_Return);
+            QTest::keyClick(visible, Qt::Key_Return);
         });
         QVERIFY(!host.close());
         QVERIFY(host.isVisible());
@@ -490,7 +498,12 @@ private slots:
         QCOMPARE(keepText, QStringLiteral("保留编辑"));
         QCOMPARE(discardText, QStringLiteral("放弃并退出"));
         QTimer::singleShot(0, &host, [&]() {
-            QTest::keyClick(host.findChild<QMessageBox *>(), Qt::Key_Escape);
+            auto *visible = QApplication::activeModalWidget();
+            if (!visible) {
+                if (auto *question = host.findChild<QMessageBox *>()) question->reject();
+                QFAIL("Exit dialog must be modal before sending Escape");
+            }
+            QTest::keyClick(visible, Qt::Key_Escape);
         });
         QVERIFY(!host.close());
         QTimer::singleShot(0, &host, [&]() {
@@ -498,7 +511,14 @@ private slots:
         });
         QVERIFY(!host.close()); // A numeric result without the discard action is not consent.
         QTimer::singleShot(0, &host, [&]() {
-            host.findChild<QMessageBox *>()->findChild<QPushButton *>("hostExitDiscard")->click();
+            // Earlier native helpers can retain hidden buttons until deferred deletion.
+            auto *visible = QApplication::activeModalWidget();
+            auto *discard = visible ? visible->findChild<QPushButton *>("hostExitDiscard") : nullptr;
+            if (!discard) {
+                if (auto *question = host.findChild<QMessageBox *>()) question->reject();
+                QFAIL("The actual discard action must exist");
+            }
+            discard->click();
         });
         QVERIFY(host.close());
     }
