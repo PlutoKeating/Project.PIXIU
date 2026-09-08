@@ -254,3 +254,21 @@ test('static output excludes test reports and maintainer documents', async () =>
   );
   expect(html).toHaveLength(20);
 });
+
+test('all generated pages and sitemap use the sole production origin', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs');
+  const { resolve } = await import('node:path');
+  const output = resolve('.vitepress/dist');
+  const origin = 'https://pixiu.arr2018.dpdns.org';
+  for (const name of readdirSync(output, { recursive: true })) {
+    if (!String(name).endsWith('.html')) continue;
+    const html = readFileSync(resolve(output, String(name)), 'utf8');
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/);
+    expect(canonical, String(name)).not.toBeNull();
+    expect(new URL(canonical![1]).origin, String(name)).toBe(origin);
+  }
+  const sitemap = readFileSync(resolve(output, 'sitemap.xml'), 'utf8');
+  const locations = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)];
+  expect(locations.length).toBeGreaterThan(0);
+  for (const [, location] of locations) expect(new URL(location).origin).toBe(origin);
+});

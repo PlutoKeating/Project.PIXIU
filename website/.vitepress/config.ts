@@ -4,7 +4,7 @@ import footnote from 'markdown-it-footnote';
 import tasks from 'markdown-it-task-lists';
 const env = { ...loadEnv('', process.cwd(), ''), ...process.env };
 const repo = env.VITE_GITHUB_REPOSITORY || 'PlutoKeating/Project.PIXIU';
-const origin = env.VITE_SITE_URL?.replace(/\/$/, '');
+const origin = 'https://pixiu.arr2018.dpdns.org';
 export default defineConfig({
   lang: 'zh-CN',
   title: 'PIXIU · 貔貅',
@@ -17,9 +17,8 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#f8f7f4' }],
     ['meta', { property: 'og:type', content: 'website' }],
   ],
-  ...(origin ? { sitemap: { hostname: origin } } : {}),
+  sitemap: { hostname: origin },
   transformHead({ pageData }) {
-    if (!origin) return [];
     const path = pageData.relativePath.replace(/index\.md$/, '').replace(/\.md$/, '');
     return [['link', { rel: 'canonical', href: `${origin}/${path}` }]];
   },

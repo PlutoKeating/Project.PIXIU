@@ -114,7 +114,6 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 
 ```
 Project.PIXIU/
-├── website/                          # 官网、分类手册与 GitHub 实时下载（Cloudflare Pages）
 ├── frontend/                         # PIXIU 记忆控制台（Qt5/UKUI）
 ├── integrations/kylin_agent/         # Module E：原创 Agent/MemoryProvider 适配与契约测试
 ├── backend/engine/                   # 记忆业务引擎
@@ -129,12 +128,6 @@ Project.PIXIU/
     ├── kylin-coreai-embedding/       # 指定文本向量化 SDK（submodule）
     └── libkysdk-vector-engine-client/# 指定向量数据库客户端（submodule）
 ```
-
-## 项目官网
-
-官网地址：[pixiu-website.pages.dev](https://pixiu-website.pages.dev)。
-
-官网源码位于 [`website/`](website/README.md)，使用 VitePress 构建独立静态站。根路径为产品介绍，`/docs/` 提供分类手册、图表和网页交互演示，下载与版本记录由浏览器实时读取 GitHub Releases。Cloudflare Pages 根目录设为 `website`，构建命令 `npm ci && npm run build`，输出目录 `.vitepress/dist`；完整配置与内容维护说明见 [官网 README](website/README.md)。
 
 ## 文档导航
 

@@ -369,9 +369,3 @@ Project.PIXIU/
 
 详细架构见 `backend/engine/docs/ARCHITECTURE.md`、`backend/foundation/docs/ARCHITECTURE.md`、
 `frontend/docs/ARCHITECTURE.md` 和 `decisions/0001-use-openkylin-agent-host.md`。
-
-## 9. 独立项目官网
-
-`website/` 使用 VitePress/Vue 生成 Cloudflare Pages 静态产物，属于产品介绍与手册站点，不属于桌面宿主或记忆服务。首页、分类文档、公式与 Mermaid 图表在该目录独立维护；网页记忆练习仅使用浏览器合成数据，不连接本机 API，不作为原生功能验收证据。
-
-下载和版本页在浏览器通过 GitHub REST Releases 获取当前公开发布与分页历史，发布名称、说明、附件和下载地址均来自响应。代码只配置公共仓库身份，不保存固定版本清单或构建期下载快照。远端发布说明关闭 HTML 并净化输出；超时、限流和空数据有显式状态。构建、部署和依赖说明见 [`website/README.md`](../website/README.md)。
