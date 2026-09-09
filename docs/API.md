@@ -1304,3 +1304,5 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 - `/forget` 可带 `handoff: true`：预览需确认时发送 `forget_requested {command, scope}`。桌面按钮重新获取预览，仍需用户确认；事件本身不执行删除。
 
 `/agent/context` 增加可选 `trace`、`consumed`。启用 trace 返回 `trace_id`；后台预取默认未使用，Provider 真正注入时调用 `POST /agent/sources/{trace_id}/consume`。`GET /agent/sources?session_id=...&scope=...` 返回实际使用的来源引用，按当前授权与有效知识过滤。引用保留 30 天，不列入可保留的阶段记忆。
+
+图片账单：`/memory/ocr` 返回 `text`、`text_lines` 和可编辑 `items` 草稿，不写入记忆。用户确认后通过 `/memory/write` 的 OCR raw.body.items 保存；raw.original_image 支持 PNG/JPEG 的 base64 与文件名（最多 2 MiB），保留于证据，知识和助手上下文只使用文字/明细。

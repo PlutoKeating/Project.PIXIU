@@ -63,3 +63,7 @@ Python 工作线程安全排队，但是否创建多个 session 以提升吞吐�
 `get_embedder("auto")` 优先加载这里构建的真实扩展，缺失时使用独立的 Debian
 软件向量器；`get_embedder("kylin")` 与 `VectorEngineClient()` 在 SDK/服务不
 可用时抛出 `KylinSDKUnavailableError`。只有严格 `kylin` 路径可用于 SDK 验收。
+
+## OCR 图片账单绑定
+
+`_kylin_ocr` 使用目标系统官方 libkysdk-ocr-dev 的 `kysdk/kysdk-system/libkyocr.hpp` 和 libkyocr，运行依赖 libkysdk-ocr。严格原生画像必须构建并装入此扩展。识别时释放 Python GIL；无 SDK 的 Debian 环境继续明确返回 OCR_UNAVAILABLE。此接口与文档中的 coreai vision 接口不同，不混称为后者的验收。

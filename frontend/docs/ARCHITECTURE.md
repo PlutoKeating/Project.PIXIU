@@ -512,3 +512,5 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 工作台补充：MemoryAudit 调用冲突 review/resolve；MemoryWorkspace 的阶段记忆页调用 flow contexts/promote；BackendEventStatus 的助手遗忘按钮将意图交给 ForgetPage 重新预览。按钮不代替删除确认。隐私页说明监控授权目录的直接子文件及格式/大小范围，日报说明实际覆盖文件与应用采集。
 
 正式宿主的本会话来源入口调用 AgentEvidenceClient.loadMemorySources，从记忆后端读取自动注入及显式搜索的引用；使用独立请求，不转发 Runtime 认证头。旧 Runtime 事件解析接口保留兼容测试。
+
+MemoryWriteDialog 支持 PNG/JPEG 图片识别与明细表编辑；OCR 网络等待为 60 秒，普通请求不变。识别失败可手动填写并保留原图。MemoryWorkspace 来源提供原图查看，正常文本阅读不展开 base64。

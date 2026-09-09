@@ -24,6 +24,8 @@
 #include <QRegularExpression>
 #include <QDateTime>
 #include <QMessageBox>
+#include <QScrollArea>
+#include <QPixmap>
 #include <cmath>
 #include <functional>
 
@@ -62,6 +64,7 @@ QString captureDetails(const QJsonObject &evidence, bool &valid)
 QString readableEvidence(const QJsonObject &raw)
 {
     QJsonObject fields = raw;
+    fields.remove("original_image");
     const QJsonValue body = fields.value("body");
     QString text = body.toString();
     if (body.isObject()) {
@@ -292,6 +295,19 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_detailMeta->setWordWrap(true);
     m_detailMeta->setTextFormat(Qt::PlainText);
     evidenceLayout->addWidget(m_detailMeta);
+    m_originalImage = new QPushButton(tr("查看账单原图"), this);
+    m_originalImage->setObjectName("viewOriginalBillImage");
+    m_originalImage->hide();
+    evidenceLayout->addWidget(m_originalImage);
+    connect(m_originalImage, &QPushButton::clicked, this, [this] {
+        QPixmap picture;
+        if (!picture.loadFromData(m_originalImage->property("data").toByteArray())) return;
+        QDialog dialog(this); dialog.setWindowTitle(tr("账单原图")); dialog.resize(800, 600);
+        auto *layout = new QVBoxLayout(&dialog);
+        auto *scroll = new QScrollArea(&dialog); auto *label = new QLabel;
+        label->setPixmap(picture); scroll->setWidget(label); layout->addWidget(scroll);
+        dialog.exec();
+    });
     m_captureStatus = new QLabel(this);
     m_captureStatus->setObjectName(QStringLiteral("memoryCaptureStatus"));
     m_captureStatus->setTextFormat(Qt::PlainText);
@@ -396,6 +412,10 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
                  evidence.value(QStringLiteral("source_type")).toString(),
                  evidence.value(QStringLiteral("scope")).toString())
             .arg(evidence.value(QStringLiteral("quality_score")).toDouble(), 0, 'f', 2));
+        const auto original = raw.value("original_image").toObject();
+        const QByteArray imageData = QByteArray::fromBase64(original.value("base64").toString().toLatin1());
+        m_originalImage->setProperty("data", imageData);
+        m_originalImage->setVisible(!imageData.isEmpty());
         m_evidenceText = readableEvidence(raw);
         bool validCapture = false;
         const QString captureText = captureDetails(evidence, validCapture);
@@ -461,6 +481,8 @@ void MemoryWorkspace::clearAgentSources()
 
 void MemoryWorkspace::clearEvidence()
 {
+    m_originalImage->hide();
+    m_originalImage->setProperty("data", QByteArray());
     m_captureStatus->clear();
     m_captureStatus->hide();
     m_captureDetails->clear();

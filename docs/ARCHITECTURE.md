@@ -375,3 +375,5 @@ Project.PIXIU/
 正式桌面代码按 `frontend/src/shell` 和 `frontend/src/workspaces/{memory,devices,settings,delivery}` 组织。`frontend/cmake/Management.cmake` 定义正式管理库，统一从 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON` 构建测试。宿主使用 `frontend-sources.json` 导出清单及生成的兼容 CMake 入口，只有一个正式桌面程序。Agent 位于 `backend/agent`，平台运行实现位于 `backend/platform`，不新增依赖。完整迁移与用户场景台账见 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。
 
 用户处理入口：记忆工作台提供阶段记忆查看与长期保留，冲突审计提供候选来源和版本选择；聊天遗忘请求通过事件提示进入桌面预览确认。应用使用统计在定时采样时累计当前应用，采集记录进入同一日志和日报来源。
+
+图片账单沿既有 OCR → 用户核对 → 证据/知识写入 → 检索来源运行。原图放在证据原始字段中随既有共享/遗忘处理，不复制到知识正文和向量输入。

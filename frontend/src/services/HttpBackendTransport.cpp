@@ -356,7 +356,7 @@ void HttpBackendTransport::postJson(const QString &path,
     request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
     request.setHeader(QNetworkRequest::KnownHeaders::UserAgentHeader,
                       QStringLiteral("PIXIU-Frontend/") + QStringLiteral(PIXIU_VERSION));
-    request.setTransferTimeout(kTransferTimeoutMs);
+    request.setTransferTimeout(path == "/memory/ocr" ? 60000 : kTransferTimeoutMs);
     const QByteArray payload = QJsonDocument(body).toJson(QJsonDocument::Compact);
     QNetworkReply *reply = m_network->post(request, payload);
     handleReply(reply, onSuccess, QStringLiteral("NETWORK_ERROR"), tag);
@@ -489,4 +489,9 @@ void HttpBackendTransport::resolveConflict(const QString &id, const QJsonObject 
 {
     postJson("/conflicts/" + QString::fromUtf8(QUrl::toPercentEncoding(id)) + "/resolve", payload,
         [this](quint64, const QJsonObject &value) { emit conflictResolved(value); });
+}
+
+void HttpBackendTransport::recognizeImage(const QJsonObject &payload)
+{
+    postJson("/memory/ocr", payload, [this](quint64, const QJsonObject &value) { emit imageRecognized(value); });
 }

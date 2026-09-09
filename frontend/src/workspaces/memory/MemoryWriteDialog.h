@@ -5,6 +5,7 @@ class BackendTransport;
 class QLineEdit;
 class QPlainTextEdit;
 class QComboBox;
+class QTableWidget;
 class QLabel;
 class QPushButton;
 namespace pixiu {
@@ -26,6 +27,10 @@ private:
     QLabel *m_status;
     QPushButton *m_save;
     QPushButton *m_cancel;
+    QTableWidget *m_items;
+    QPushButton *m_image;
+    QJsonObject m_originalImage;
+    bool m_ocrBusy = false;
     bool m_busy = false;
     QJsonObject m_lastPayload;
     QString m_idempotencyKey;

@@ -267,10 +267,14 @@ if [ "${PIXIU_KYSDK}" = "ON" ]; then
         -name '_kylin_text_embedding*.so' -print -quit)"
     VECTOR_MODULE="$(find "${NATIVE_BUILD_DIR}" -maxdepth 1 -type f \
         -name '_kylin_vector_client*.so' -print -quit)"
+    OCR_MODULE="$(find "${NATIVE_BUILD_DIR}" -maxdepth 1 -type f \
+        -name '_kylin_ocr*.so' -print -quit)"
+    [ -n "${OCR_MODULE}" ] || die "OCR native module was not built; install libkysdk-ocr-dev"
     [ -n "${EMBEDDING_MODULE}" ] || die "embedding native module was not built"
     [ -n "${VECTOR_MODULE}" ] || die "vector native module was not built"
     install -m 0755 "${EMBEDDING_MODULE}" "${BK}/engine/kylin/"
     install -m 0755 "${VECTOR_MODULE}" "${BK}/engine/kylin/"
+    install -m 0755 "${OCR_MODULE}" "${BK}/engine/kylin/"
 fi
 
 # ── 3/5 必需离线 wheels（目标 Python 版本；含 sync 额外依赖）─────

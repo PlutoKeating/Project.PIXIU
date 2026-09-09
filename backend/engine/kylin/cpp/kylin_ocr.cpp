@@ -32,5 +32,5 @@ PYBIND11_MODULE(_kylin_ocr, m) {
     py::class_<KylinOcr>(m, "KylinOcr")
         .def(py::init<>())
         .def("recognize", &KylinOcr::recognize, py::arg("image_path"),
-             py::arg("nums") = 4);
+             py::arg("nums") = 4, py::call_guard<py::gil_scoped_release>());
 }

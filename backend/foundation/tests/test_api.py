@@ -1800,3 +1800,29 @@ def test_automatic_sources_only_show_consumed_context_and_active_memories(client
     with sqlite3.connect(di_module.settings.db_path) as db:
         db.execute("UPDATE knowledge_items SET status = 'SUPERSEDED' WHERE id = ?", (sources[0]["knowledge_id"],))
     assert client.get("/agent/sources", params=params).json()["references"] == []
+
+
+def test_confirmed_image_bill_keeps_image_and_uses_edited_amount(client):
+    from backend.foundation.api.di import get_ocr_service
+    image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aSAAAAABJRU5ErkJggg=="
+    class Ocr:
+        def recognize(self, path):
+            return ["2026年4月家庭账单", "燃气费 156元", "电费 210元", "合计 366元"]
+    _install_ocr_override(Ocr())
+    try:
+        draft = client.post("/memory/ocr", json={"image_base64": image}).json()
+    finally:
+        app.dependency_overrides.pop(get_ocr_service, None)
+    assert len(draft["items"]) == 2
+    # User corrects the OCR draft before explicitly saving it.
+    draft["items"][0]["amount"] = 186
+    saved = client.post("/memory/write", json={"scope": "user:alice", "source_type": "OCR", "raw": {
+        "title": "2026年4月家庭账单", "body": {"text": draft["text"], "items": draft["items"]},
+        "original_image": {"name": "bill.png", "base64": image}}})
+    assert saved.status_code == 200, saved.text
+    evidence = client.get("/evidence/" + saved.json()["evidence_id"])
+    assert evidence.status_code == 200, evidence.text
+    assert evidence.json()["raw"]["original_image"]["base64"] == image
+    result = client.post("/memory/query", json={"text": "2026年4月燃气费多少", "context_hint": {"scope": "user:alice"}})
+    assert result.status_code == 200
+    assert "186" in result.json()["answer"]
