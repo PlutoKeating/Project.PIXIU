@@ -1,18 +1,18 @@
 {
   "status": "按语音时间生成，待逐段试听和画面校准",
   "fps": 30,
-  "duration": 11686,
-  "seconds": 389.53333333333336,
+  "duration": 11706,
+  "seconds": 390.2,
   "shots": [
     {
       "id": "s01",
       "chapter": "品牌",
-      "title": "让每一台设备，记住彼此",
-      "motion": "brand-ink-open",
+      "title": "让每一台设备的记忆，彼此相通",
+      "motion": "outro-group-photo-launch",
       "planned_start_seconds": 0,
       "planned_duration_seconds": 10,
       "narration": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
-      "visual": "品牌抽象画面",
+      "visual": "真实页面卡片聚合、品牌字标与统一介绍",
       "status": "revision-in-progress",
       "from": 0,
       "duration": 257,
@@ -1412,40 +1412,41 @@
     {
       "id": "s30",
       "chapter": "收束",
-      "title": "聚财守忆，彼此相通",
+      "title": "让每一台设备的记忆，彼此相通",
       "motion": "outro-group-photo-launch",
       "planned_start_seconds": 532,
       "planned_duration_seconds": 10,
-      "narration": "貔貅。面向麒麟操作系统智能体，让分布式集体记忆，成为下一次行动的起点。",
-      "visual": "真实页面组装＋品牌压印",
+      "narration": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
+      "visual": "真实页面卡片聚合、品牌字标与统一介绍",
       "status": "revision-in-progress",
+      "audio_reuse": "s01",
       "from": 11449,
-      "duration": 237,
-      "audio": "audio/s30.mp3",
+      "duration": 257,
+      "audio": "audio/s01.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s30/0ce68970d289.mp3",
-      "speech_end_frame": 222,
+      "audio_source": "raw/audio/s01/da881c4670c4.mp3",
+      "speech_end_frame": 242,
       "tail_frames": 15,
       "captions": [
         {
-          "text": "貔貅。",
+          "text": "貔貅，",
           "from": 16,
-          "to": 45
+          "to": 34
         },
         {
-          "text": "面向麒麟操作系统智能体，",
-          "from": 58,
-          "to": 121
+          "text": "面向麒麟操作系统智能体的去中心化记忆系统。",
+          "from": 41,
+          "to": 147
         },
         {
-          "text": "让分布式集体记忆，",
-          "from": 124,
-          "to": 168
+          "text": "让每一台设备的记忆，",
+          "from": 161,
+          "to": 207
         },
         {
-          "text": "成为下一次行动的起点。",
-          "from": 170,
-          "to": 237
+          "text": "彼此相通。",
+          "from": 213,
+          "to": 257
         }
       ]
     }

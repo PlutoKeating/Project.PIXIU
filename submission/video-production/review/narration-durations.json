@@ -1,6 +1,6 @@
 {
   "count": 29,
-  "total_seconds": 390.192,
+  "total_seconds": 390.864,
   "status": "当前稿对应音频已核对摘要，未逐段试听校准",
   "shots": [
     {
@@ -145,8 +145,8 @@
     },
     {
       "shot": "s30",
-      "seconds": 7.704,
-      "audio": "raw/audio/s30/0ce68970d289.mp3"
+      "seconds": 8.376,
+      "audio": "raw/audio/s01/da881c4670c4.mp3"
     }
   ]
 }

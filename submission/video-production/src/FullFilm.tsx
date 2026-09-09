@@ -5,7 +5,6 @@ import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, useCurr
 import timeline from './timeline.json';
 import {ArchitectureScene} from './ArchitectureScene';
 import {Fonts} from './Fonts';
-import {BrandInkOpen} from './BrandInkOpen';
 import {PaperTitleCard} from './PaperTitleCard';
 import {TimedCaption} from './NarratedChapter';
 import {PageCam} from './PageCam';
@@ -45,12 +44,10 @@ const preferenceHistoryStart = timeline.shots.find((shot) => shot.id === 's15')!
 type SoundCue = {shot: string; offset: number; src: string; volume: number;
   duration?: number; label?: string};
 export const SFX: SoundCue[] = [
-  // SearchEvidenceScene: four letters at local 10/13/16/19, then click at the source-opening narration cue.
+  // SearchEvidenceScene: keep four typing sounds; source-opening click removed.
   ...[10, 13, 16, 19].map((target, i) => ({shot: 's13', offset: peakStart(target, 0.6),
     src: `audio/typewriter-hit-${i % 2 ? 'soft' : 'hard'}-action.wav`, volume: 0.18,
     duration: 3, label: '搜索输入拟音'})),
-  {shot: 's13', offset: peakStart(cue('s13','打开来源'), 0.15), src: 'audio/switch-click-quick-action.wav',
-    volume: 0.24, duration: 8, label: '来源点击拟音'},
   // PreferenceHistoryScene: cue 6/18/30 + 22-frame flight, tied to caption start.
   ...[28, 40, 52].map((landing, i) => ({shot: 's15',
     offset: peakStart(preferenceHistoryStart + landing, 4.65), src: 'audio/paper-slide-action.wav',
@@ -65,9 +62,9 @@ export const SFX: SoundCue[] = [
   {shot: 's03', offset: peakStart(48, 21.45), src: 'audio/whoosh-big.mp3', volume: 0.10},
   {shot: 's03', offset: peakStart(60, 44.25), src: 'audio/sparkle.mp3', volume: 0.06},
   {shot: 's03', offset: peakStart(130, 3.45), src: 'audio/transition-snap.mp3', volume: 0.12},
-  {shot: 's30', offset: Math.round(5 - OUTPUT_AUDIO_OFFSET_F), src: 'audio/riser-cine.mp3', volume: 0.20},
-  {shot: 's30', offset: peakStart(50, 16.65), src: 'audio/impact-deep-whoosh.mp3', volume: 0.35},
-  {shot: 's30', offset: peakStart(70, 44.25), src: 'audio/sparkle.mp3', volume: 0.18},
+  {shot: 's30', offset: Math.round(5 - OUTPUT_AUDIO_OFFSET_F), src: 'audio/riser-cine.mp3', volume: 0.05},
+  {shot: 's30', offset: peakStart(50, 16.65), src: 'audio/impact-deep-whoosh.mp3', volume: 0.35 / 3},
+  {shot: 's30', offset: peakStart(70, 44.25), src: 'audio/sparkle.mp3', volume: 0.18 / 3},
 ];
 const SCREENS: Record<string, string[]> = {
   s12: ['33-capture-disabled.png', '50-service-version.png'],
@@ -170,10 +167,10 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
   const title = ['s02', 's18', 's29', 's30'].includes(shot.id);
   const frame = useCurrentFrame();
   return <AbsoluteFill style={{background: '#f6f7f9', color: INK, fontFamily: '"Noto Sans CJK SC", sans-serif'}}>
-    {shot.id === 's30' ? <SceneOutroLive duration={shot.duration} />
-      : shot.id === 's01' ? <BrandInkOpen /> : title ? <PaperTitleCard duration={shot.duration} fontSize={76}
+    {['s01', 's30'].includes(shot.id) ? <SceneOutroLive duration={shot.duration} />
+      : title ? <PaperTitleCard duration={shot.duration} fontSize={76}
       words={[{text: shot.title.split('，')[0], accent: true}, {text: shot.title.split('，').slice(1).join('，')}]}
-      sub={shot.id === 's30' ? 'PIXIU · 面向麒麟智能体的分布式集体记忆' : shot.chapter} />
+      sub={shot.chapter} />
       : shot.id === 's03' ? <>
         <div style={{position: 'absolute', left: 240, top: 140, width: 1440, height: 810, overflow: 'hidden'}}>
           <div style={{position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.75)', transformOrigin: '0 0'}}><SpotlightHeroCard /></div>

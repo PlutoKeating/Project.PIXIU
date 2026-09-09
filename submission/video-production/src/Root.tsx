@@ -1,32 +1,15 @@
-import {AbsoluteFill, Audio, Composition, Sequence, staticFile, useCurrentFrame} from 'remotion';
-import {BrandInkOpen} from './BrandInkOpen';
+import {AbsoluteFill, Composition} from 'remotion';
+import timeline from './timeline.json';
 import {Fonts} from './Fonts';
-import {NarratedChapter, SHARED_CHAPTER, CaptionText} from './NarratedChapter';
-import {FullFilmFinal, FullFilmDraft, BillReview, BILL_DURATION, FILM_DURATION, OutroReview, OUTRO_SHOT, SharedAgentReview, SpotlightReview, SPOTLIGHT_SHOT} from './FullFilm';
+import {NarratedChapter, SHARED_CHAPTER} from './NarratedChapter';
+import {ShotScene, FullFilmFinal, FullFilmDraft, BillReview, BILL_DURATION, FILM_DURATION, OutroReview, OUTRO_SHOT, SharedAgentReview, SpotlightReview, SPOTLIGHT_SHOT} from './FullFilm';
 import {SHARED_AGENT_SHOT} from './SharedAgentScene';
 
-// Opening review only. Full film remains governed by storyboard/shots.json.
-export const OpeningReview: React.FC = () => {
-  const frame = useCurrentFrame();
-  const caption = frame >= 18 && frame < 179
-    ? '貔貅，面向麒麟操作系统智能体的去中心化记忆系统。'
-    : frame >= 179 && frame < 295 ? '让每一台设备的记忆，彼此相通。' : '';
-  return <AbsoluteFill style={{background: '#f6f7f9'}}>
-    <Fonts />
-    <BrandInkOpen />
-    <Sequence from={15} durationInFrames={285}>
-      <Audio src={staticFile('audio/voice-sample.mp3')} />
-    </Sequence>
-    <Sequence from={12} durationInFrames={60}>
-      <Audio src={staticFile('audio/transition-soft.mp3')} volume={0.12} />
-    </Sequence>
-    <CaptionText text={caption} />
-  </AbsoluteFill>;
-};
+export const OpeningReview: React.FC = () => <AbsoluteFill><Fonts /><ShotScene shot={timeline.shots[0]} /></AbsoluteFill>;
 
 export const Root: React.FC = () => <>
   <Composition id="PixiuOpeningReview" component={OpeningReview}
-    durationInFrames={330} fps={30} width={1920} height={1080} />
+    durationInFrames={timeline.shots[0].duration} fps={30} width={1920} height={1080} />
   <Composition id="PixiuSharedChapterReview" component={NarratedChapter}
     durationInFrames={SHARED_CHAPTER.duration} fps={30} width={1920} height={1080} />
   <Composition id="PixiuFullDraft" component={FullFilmDraft}

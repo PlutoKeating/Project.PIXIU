@@ -1,0 +1,37 @@
+{
+  "method": "decoded waveform correlation, not a listening review",
+  "shared_source": "public/audio/narration-170/s01.wav",
+  "shared_source_sha256": "f321cd759029adc080a9aeab58f3e72c7c2cf2188c45c0dd67aa3ab0de1e202f",
+  "probed_seconds": 7.7,
+  "opening": {
+    "declared_start_frame": 14,
+    "measured_start_frame": 14.01,
+    "pipeline_offset_frames": 0.01,
+    "normalized_correlation": 0.9999999999998292,
+    "source_peak_frame": 150.75,
+    "gain_fit": 1.0
+  },
+  "ending": {
+    "declared_start_frame": 11463,
+    "measured_start_frame": 11463.0,
+    "pipeline_offset_frames": 0.0,
+    "normalized_correlation": 0.9857828351849032,
+    "source_peak_frame": 150.75,
+    "gain_fit": 1.0019245751943016
+  },
+  "middle_27_timeline_objects_unchanged": true,
+  "total_frames": 11706,
+  "fps": 30,
+  "duration_seconds": 390.2,
+  "animation_cues": {
+    "wordmark": 0,
+    "description": 41,
+    "slogan": 161
+  },
+  "outro_sfx_gains": {
+    "riser": 0.05,
+    "impact": 0.11666666666666665,
+    "sparkle": 0.06
+  },
+  "mux_delay_samples": 2048
+}

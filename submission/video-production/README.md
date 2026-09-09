@@ -1,12 +1,18 @@
 # PIXIU 中文演示视频制作工程
 
-当前配乐15%字幕7px版：`renders/演示视频-配乐15字幕07版.mp4`。29段云枫口白为原音量的1.7倍，ZENI — With You背景音乐为15%；音乐从源15秒对应视频0秒，最后1秒淡出，视频时长389.533333秒。画面、字幕、语速、口白起点及音效音量沿用已审核版本。字幕为60px粗体纯白、7px黑描边、向下3px/模糊2px/alpha 0.3阴影，底部57px。正式ZIP已同步，当前无配乐版本为 `renders/演示视频-口白170字幕07无配乐版.mp4`；历史导出保留。
+当前首尾统一版：`renders/演示视频-首尾统一版.mp4`，390.2秒；无配乐版本为`renders/演示视频-首尾统一无配乐版.mp4`。首尾共用片头完整云枫音频`audio/s01.mp3`对应的170% PCM，无重新合成、变速或变调。项目名为“PIXIU · 貔貅”，介绍为“面向麒麟操作系统智能体的去中心化记忆系统”，slogan为“让每一台设备的记忆，彼此相通”。共享画面文案定义在`src/brandCopy.ts`。
 
-`src/narration-volume.json`记录1.7倍口白增益，`public/audio/narration-170/`保存由原始音频转成的立体声PCM，浏览器使用volume=1播放，避免浏览器把超过1的音量参数截断。主片、章节预览及工作台通过`narrationAudio.ts`使用相同素材；无TTS调用。`scripts/rebalance_audio.py`以原1倍无配乐白字版为基准，按波形测得的原始起点加入额外0.7倍口白，保留原音效，再混入配置指定的音乐增益，并直接复制画面流。此前45%配乐版只有一个线性混音样本超过满量程（约0.04dB），配乐导出采用关闭自动增益、补偿延迟的0.98峰值限制；编码后峰值约−0.18dBFS。此前音量检查记录为`review/audio-rebalance-technical.json`。当前15%版本无需峰值限制，直接沿用170%口白无配乐音轨，以`mix:bgm`混入15%音乐，检查记录为`review/mix15-caption07-technical.json`。
+首尾均使用用户选定的 video-shotcraft `outro-group-photo-launch` 卡片聚合模板，保留片尾的卡片飞入、落定光晕、字标登场和运镜；项目名从第0秒随卡片同时登场，介绍从第41帧、slogan从第161帧对应口白依次展出。用户明确要求首尾复用同套文案和模板。两镜均257帧，片尾从11449帧开始；中间27镜的文案、字幕、起点和时长逐项保持一致。`storyboard/shots.json`的`audio_reuse: "s01"`让时间轴生成器直接引用片头素材，字幕也来自同一份词边界。OpeningReview、OutroReview、完整视频及工作台共用实际镜头组件。
 
-复现入口：`npm run mix:levels -- --baseline renders/演示视频-云枫白字无配乐版.mp4 --output renders/新的音量版.mp4 --no-bgm renders/新的口白版.mp4 --report review/新的音量检查.json`。必须使用原1倍口白、无配乐基准；输出文件使用新名称。依赖沿用现有NumPy与FFmpeg。
+音量沿用口白170%、背景音乐15%。音乐从源15秒对应视频0秒，按新总时长重新截取，在389.2–390.2秒渐退。片尾riser为5%，另外两条音效分别为0.35/3和0.18/3；“打开来源”点击音效已移除。字幕仍为60px粗体纯白、7px黑描边、向下3px/模糊2px/alpha 0.3阴影，底部57px。此前未选用的短句合成保存在`raw/audio/s30-brand-retake/`，不进入当前播放链路。
 
-配乐配置为 `src/bgm.json`。`scripts/mix_bgm.py` 从原音乐生成包含截取与淡出的无增益WAV，再统一应用0.7增益；Remotion和工作台使用同一WAV与增益。全片组件支持 `bgm: false` 关闭音乐。时间轴变化后必须重新执行混音脚本以更新WAV长度。脚本使用已有NumPy及FFmpeg依赖，以已审核的无配乐MP4为输入，复制视频流，仅重编码混合音轨，不自动归一化或压低音乐。
+复现：`prepare:timeline`后渲染`PixiuFinalFull`静音画面与`bgm:false`的WAV；WAV补偿2048个48kHz样本并裁到18,729,600样本，与画面封装为无配乐版本；再运行`mix:bgm`（不传`--reuse-stem`）更新音乐长度与最终混音。当前检查为`review/bookends-technical.json`与`review/bookends-package.json`；原音复用、编码音轨同步与独立画面审查分别见`bookends-source-check.json`、`bookends-export-sync.json`、`bookends-independent-review.json`。最终编码峰值−1.75dBFS，首尾音轨起点偏差均小于0.3帧。沿用已有依赖，无新增运行依赖。
+
+`src/narration-volume.json`记录1.7倍口白增益，`public/audio/narration-170/`保存由原始音频转成的立体声PCM，浏览器使用volume=1播放，避免浏览器把超过1的音量参数截断。主片、章节预览及工作台通过`narrationAudio.ts`使用相同素材；音量调整阶段无TTS调用，当前首尾直接共用片头完整口白。`scripts/rebalance_audio.py`以原1倍无配乐白字版为基准，按波形测得的原始起点加入额外0.7倍口白，保留原音效，再混入配置指定的音乐增益，并直接复制画面流。此前45%配乐版只有一个线性混音样本超过满量程（约0.04dB），配乐导出采用关闭自动增益、补偿延迟的0.98峰值限制；编码后峰值约−0.18dBFS。此前音量检查记录为`review/audio-rebalance-technical.json`。此前15%版本无需峰值限制，直接沿用170%口白无配乐音轨，以`mix:bgm`混入15%音乐，检查记录为`review/mix15-caption07-technical.json`。
+
+历史音量调整复现入口（不包含后续片尾修订）：`npm run mix:levels -- --baseline renders/演示视频-云枫白字无配乐版.mp4 --output renders/新的音量版.mp4 --no-bgm renders/新的口白版.mp4 --report review/新的音量检查.json`。必须使用原1倍口白、无配乐基准；输出文件使用新名称。依赖沿用现有NumPy与FFmpeg。
+
+配乐配置为 `src/bgm.json`。`scripts/mix_bgm.py` 从原音乐生成包含截取与淡出的无增益WAV，再统一应用配置中的0.15增益；Remotion和工作台使用同一WAV与增益。全片组件支持 `bgm: false` 关闭音乐。时间轴变化后必须重新执行混音脚本以更新WAV长度。脚本使用已有NumPy及FFmpeg依赖，以已审核的无配乐MP4为输入，复制视频流，仅重编码混合音轨，不自动归一化或压低音乐。
 
 复现：`npm run mix:bgm -- --video renders/演示视频-云枫02.mp4 --output renders/新的配乐版.mp4 --report review/新的配乐检查.json`。输出与报告须选新文件名。此前白字版检查见 `review/caption-white-technical.json`，全片以静音画面重新渲染后复制已验证配乐音轨，音轨压缩数据摘要相同。配乐检查见 `review/zeni-bgm-technical.json`：全片解码通过，视频流摘要一致，混合峰值约−1.09 dBFS、编码后约−1.11 dBFS。
 
@@ -19,7 +25,7 @@
 `build/release/scripts/submission_layout.py` 只把该命名的兄弟目录排除在正式材料核对之外；正式同名目录内仍严格限制四项作品，其他额外兄弟目录仍拒绝。
 
 - `brief/`：制作依据、颜色与功能覆盖要求。
-- `storyboard/shots.json`：当前29镜中文解说，实际时间轴389.533333秒；历史30镜脚本及媒体通过Git与快照保留。
+- `storyboard/shots.json`：当前29镜中文解说，实际时间轴390.2秒；历史30镜脚本及媒体通过Git与快照保留。
 - `raw/`：原始截图、录屏、配音与来源摘要；不改写原素材。
 - `public/`：渲染使用的素材，裁切与取舍必须可追溯到原素材。
 - `src/`、`scripts/`：视频时间线与制作工具。

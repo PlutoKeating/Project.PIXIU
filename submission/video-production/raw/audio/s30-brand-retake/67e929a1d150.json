@@ -1,0 +1,24 @@
+{
+  "shot": "s30-brand-retake",
+  "request": {
+    "text": "貔貅。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "67e929a1d150a42175c1981a127099f50996407b8a68604c1504961da5791e61",
+  "audio_sha256": "e6321cf8562a85fdf5891b458c0c66d7ed61789a0e5f462a38f1c28754a6bed2",
+  "duration_seconds": 1.776,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 8157910,
+      "text": "貔貅"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

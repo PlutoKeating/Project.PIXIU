@@ -22,8 +22,9 @@ start = 0
 timeline = []
 measurements = []
 for shot in story['shots']:
+    source_id = shot.get('audio_reuse', shot['id'])
     matches = []
-    for path in (ROOT / 'raw/audio' / shot['id']).glob('*.json'):
+    for path in (ROOT / 'raw/audio' / source_id).glob('*.json'):
         meta = json.loads(path.read_text())
         if meta['request']['text'] == shot['narration'] and all(meta['request'].get(k) == v for k, v in settings.items()):
             matches.append((path, meta))
@@ -75,7 +76,7 @@ for shot in story['shots']:
     captions[-1]['to'] = duration
 
     assert all(0 <= cue['from'] < cue['to'] <= duration for cue in captions)
-    output = ROOT / 'public/audio' / (shot['id'] + '.mp3')
+    output = ROOT / 'public/audio' / (source_id + '.mp3')
     shutil.copyfile(path.with_suffix('.mp3'), output)
     timeline.append({**shot, 'from': start, 'duration': duration,
                      'audio': 'audio/' + output.name, 'audio_from': 15,

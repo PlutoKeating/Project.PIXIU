@@ -8,12 +8,12 @@
     {
       "id": "s01",
       "chapter": "品牌",
-      "title": "让每一台设备，记住彼此",
-      "motion": "brand-ink-open",
+      "title": "让每一台设备的记忆，彼此相通",
+      "motion": "outro-group-photo-launch",
       "planned_start_seconds": 0,
       "planned_duration_seconds": 10,
       "narration": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
-      "visual": "品牌抽象画面",
+      "visual": "真实页面卡片聚合、品牌字标与统一介绍",
       "status": "revision-in-progress"
     },
     {
@@ -316,13 +316,14 @@
     {
       "id": "s30",
       "chapter": "收束",
-      "title": "聚财守忆，彼此相通",
+      "title": "让每一台设备的记忆，彼此相通",
       "motion": "outro-group-photo-launch",
       "planned_start_seconds": 532,
       "planned_duration_seconds": 10,
-      "narration": "貔貅。面向麒麟操作系统智能体，让分布式集体记忆，成为下一次行动的起点。",
-      "visual": "真实页面组装＋品牌压印",
-      "status": "revision-in-progress"
+      "narration": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
+      "visual": "真实页面卡片聚合、品牌字标与统一介绍",
+      "status": "revision-in-progress",
+      "audio_reuse": "s01"
     }
   ]
 }

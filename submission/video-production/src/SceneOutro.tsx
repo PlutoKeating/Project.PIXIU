@@ -1,14 +1,18 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { PageCam, CamKey } from './PageCam';
+import {BRAND_COPY} from './brandCopy';
+import timeline from './timeline.json';
 
 
 const SERIF = '"Noto Sans CJK SC", sans-serif';
 const MONO = '"Noto Sans CJK SC", sans-serif';
 /** Context-level defaults (copy / sizes / palette), editable per clip in the workbench. */
 export const SCENE_OUTRO_DEFAULTS = {
-  wordmark: '貔貅',
+  wordmark: BRAND_COPY.wordmark,
   wordmarkSize: 138,
-  tagline: '让经验，成为下一次行动的起点',
+  description: BRAND_COPY.description,
+  descriptionSize: 38,
+  tagline: BRAND_COPY.slogan,
   taglineSize: 40,
   ink: '#172033',    // oklch(18% 0.006 82)
   amber: '#1456b8',  // oklch(52% 0.115 65)
@@ -71,8 +75,11 @@ const DUST = Array.from({ length: 20 }, (_, i) => ({
  * trails + landing glows on the fly-ins, a stage light behind the wordmark,
  * gold dust and a single opening light sweep for atmosphere. */
 export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
-  const { wordmark, wordmarkSize, tagline, taglineSize, ink, amber, muted } = { ...SCENE_OUTRO_DEFAULTS, ...props };
+  const { wordmark, wordmarkSize, description, descriptionSize, tagline, taglineSize, ink, amber, muted } = { ...SCENE_OUTRO_DEFAULTS, ...props };
   const LETTERS = wordmark.split('');
+  const captions = timeline.shots[0].captions;
+  const descriptionAt = captions.find(cue => cue.text.startsWith('面向'))!.from;
+  const sloganAt = captions.find(cue => cue.text.startsWith('让每一台'))!.from;
   const frame = useCurrentFrame();
   const duration = props.duration ?? 300;
 
@@ -86,7 +93,7 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
     extrapolateRight: 'clamp',
     easing: Easing.bezier(0.3, 0, 0.2, 1),
   });
-  const tag = interpolate(frame, [68, 80], [0, 1], {
+  const tag = interpolate(frame, [descriptionAt, descriptionAt + 12], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -357,7 +364,7 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontFamily: SERIF, fontSize: wordmarkSize, fontWeight: 600, color: ink, letterSpacing: `${wordSpacing}em`, display: 'flex', justifyContent: 'center' }}>
             {LETTERS.map((ch, i) => {
-              const delay = Math.round(42 + i * 1.8);
+              const delay = Math.round(i * 1.2);
               const t = interpolate(frame, [delay, delay + 8], [0, 1], {
                 extrapolateLeft: 'clamp',
                 extrapolateRight: 'clamp',
@@ -389,7 +396,10 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
               </>
             ) : null}
           </div>
-          <div style={{ fontFamily: MONO, fontSize: taglineSize, letterSpacing: '0.14em', color: muted, marginTop: 30, opacity: tag, textTransform: 'uppercase' }}>
+          <div style={{ fontFamily: MONO, fontSize: descriptionSize, letterSpacing: '0.04em', color: muted, marginTop: 30, opacity: tag, textTransform: 'uppercase' }}>
+            {description}
+          </div>
+          <div style={{fontFamily: MONO, fontSize: taglineSize, fontWeight: 600, color: ink, marginTop: 24, opacity: interpolate(frame, [sloganAt, sloganAt + 12], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>
             {tagline}
           </div>
         </div>

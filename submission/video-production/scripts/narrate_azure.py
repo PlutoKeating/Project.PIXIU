@@ -19,18 +19,27 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--shots', nargs='+')
     parser.add_argument('--region', required=True)
+    parser.add_argument('--phrase', help='Synthesize only this short replacement phrase')
+    parser.add_argument('--phrase-id', help='New asset folder for the replacement phrase')
     args = parser.parse_args()
+    if args.phrase and (args.shots or not args.phrase_id or not args.phrase_id.replace('-', '').isalnum()):
+        parser.error('A phrase requires a safe phrase-id and cannot be combined with shots')
     settings = json.loads((ROOT / 'storyboard/narration.json').read_text())
     shots = json.loads((ROOT / 'storyboard/shots.json').read_text())['shots']
     if args.shots:
         assert set(args.shots) <= {s['id'] for s in shots}
         shots = [s for s in shots if s['id'] in args.shots]
+    if args.phrase:
+        shots = [{'id': args.phrase_id, 'narration': args.phrase}]
     key = getpass.getpass('Speech key (hidden, memory only): ')
     config = sdk.SpeechConfig(subscription=key, region=args.region)
     config.set_speech_synthesis_output_format(sdk.SpeechSynthesisOutputFormat.Audio24Khz96KBitRateMonoMp3)
     config.set_property(sdk.PropertyId.SpeechServiceResponse_RequestWordBoundary, 'true')
     # One request at a time; successful assets are never regenerated.
     for shot in shots:
+        if shot.get('audio_reuse'):
+            print(f"{shot['id']}: reuses {shot['audio_reuse']}; synthesis skipped", flush=True)
+            continue
         request = {'text': shot['narration'], **settings}
         request_hash = digest(json.dumps(request, ensure_ascii=False, sort_keys=True).encode())
         folder = ROOT / 'raw/audio' / shot['id']
