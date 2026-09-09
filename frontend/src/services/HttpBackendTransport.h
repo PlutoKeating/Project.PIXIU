@@ -61,6 +61,9 @@ public:
     void deliveryDigest(const QString &date = QString()) override;
     void backendDiagnostics() override;
 
+    void reviewConflict(const QString &id);
+    void resolveConflict(const QString &id, const QJsonObject &payload);
+    void flowContexts(const QString &scope);
     void agentMemorySettings();
     void saveAgentMemorySettings(const QJsonObject &payload);
 
@@ -70,6 +73,9 @@ public:
     QString baseUrl() const override;
 
 signals:
+    void conflictReviewResult(const QJsonObject &review);
+    void conflictResolved(const QJsonObject &result);
+    void flowContextsResult(const QJsonObject &contexts);
     void agentMemorySettingsResult(const QJsonObject &settings);
 
 private:

@@ -134,7 +134,12 @@ private slots:
         QCOMPARE(changed.takeFirst().at(0).toString(), QStringLiteral("forget_confirmation"));
         QVERIFY(!notice->text().contains("secret"));
         QVERIFY(status.findChildren<QDialog *>().isEmpty());
-        QCOMPARE(status.findChildren<QPushButton *>().size(), 1);
+        auto *review = status.findChild<QPushButton *>("reviewAgentForget");
+        QVERIFY(review);
+        QVERIFY(review->isHidden());
+        peer->sendTextMessage(R"({"event":"forget_requested","data":{"command":"忘记测试记忆","scope":"user:default"}})");
+        QTRY_VERIFY(!review->isHidden());
+        QVERIFY(status.findChildren<QDialog *>().isEmpty());
         QCOMPARE(sentCommands.count(), 0);
         peer->sendTextMessage(R"({"event":"forget_confirmation","data":{}})");
         peer->sendTextMessage(R"({"event":"capture_event","data":{}})");

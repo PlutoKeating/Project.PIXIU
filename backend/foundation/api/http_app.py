@@ -28,7 +28,7 @@ from ..agent_access import AgentMemorySettings, load_settings, save_settings, re
 from ..core.logger import get_logger
 from ..core.models import AgentProvenance, KnowledgeStatus, SourceType, validate_scope
 from ..core.repository import KnowledgeVersionConflict
-from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier
+from ..flow import FlowContextNotFound, InvalidFlowTransition, MemoryTier, SqliteFlowStore
 from ..monitor.config_store import InvalidMonitorConfig
 from ..storage.idempotency import (
     ClaimStatus,
@@ -306,6 +306,7 @@ class MemoryUpdateRequest(BaseModel):
 
 
 class ForgetRequest(BaseModel):
+    handoff: bool = False
     command: str = Field(min_length=1, max_length=4096)
     confirm: bool = False
     scope: ScopeValue | None = Field(default=None, min_length=1, max_length=256)
@@ -1033,6 +1034,8 @@ async def forget(
     except KnowledgeVersionConflict as exc:
         raise HTTPException(status_code=409, detail="FORGET_PREVIEW_CHANGED") from exc
     if result.status == "pending":
+        if body.handoff:
+            await ws_manager.broadcast("forget_requested", {"command": body.command, "scope": body.scope})
         try:
             token = forget_previews.issue(body.command, body.scope,
                 {target["id"]: target["version"] for target in result.targets})
@@ -1085,13 +1088,56 @@ async def conflicts(conflict_repo=Depends(get_conflict_repo)):
     return {"conflicts": [r.model_dump(mode="json") for r in records]}
 
 
+class ManualConflictChoice(BaseModel):
+    keep_id: str
+    versions: dict[str, int]
+
+
+@app.get("/conflicts/{conflict_id}/review", tags=["Conflict"])
+async def review_conflict(conflict_id: str, service=Depends(get_conflict_service)):
+    try:
+        items = await service.review_candidates(conflict_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail="CONFLICT_REVIEW_CHANGED") from exc
+    return {"candidates": [item.model_dump(mode="json") for item in items]}
+
+
+@app.post("/conflicts/{conflict_id}/resolve", tags=["Conflict"])
+async def resolve_conflict(conflict_id: str, body: ManualConflictChoice,
+                           service=Depends(get_conflict_service), sync=Depends(get_optional_sync_service)):
+    try:
+        candidates = await service.review_candidates(conflict_id)
+        for item in candidates:
+            await _require_writable_shared_scope(item.scope, sync)
+        resolved = await service.resolve_manual(conflict_id, body.keep_id, body.versions)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail="CONFLICT_REVIEW_CHANGED") from exc
+    if sync is not None:
+        for item in resolved:
+            if item.scope.startswith("shared:"):
+                await sync.publish_manual_resolution(item)
+    await ws_manager.broadcast("memory_ready", {"knowledge_id": body.keep_id})
+    return {"status": "resolved", "knowledge_id": body.keep_id}
+
+
 # ─── 记忆流转 ───────────────────────────────────────────
+
+@app.get("/memory/flow/contexts", tags=["Flow"])
+async def flow_contexts(scope: ScopeValue, db=Depends(get_db), flow=Depends(get_flow_service)):
+    await flow.sweep_expired()
+    contexts = await SqliteFlowStore(db).list_active(scope)
+    return {"contexts": [entry.model_dump(mode="json") for entry in contexts[:100]]}
+
 
 @app.post("/memory/flow/promote", tags=["Flow"], summary="短/中期记忆沉淀到长期")
 async def flow_promote(
     body: FlowPromoteRequest,
     flow=Depends(get_flow_service),
+    knowledge_repo=Depends(get_knowledge_repo),
+    evidence_repo=Depends(get_evidence_repo),
+    sync=Depends(get_optional_sync_service),
 ):
+    await _require_writable_shared_scope(body.scope, sync)
     started = time.monotonic()
     try:
         knowledge_ids = await flow.promote(
@@ -1103,6 +1149,14 @@ async def flow_promote(
         raise HTTPException(status_code=404, detail="NOT_FOUND") from exc
     except InvalidFlowTransition as exc:
         raise HTTPException(status_code=400, detail="INVALID_REQUEST") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail="PROMOTION_REJECTED") from exc
+    if sync is not None and body.scope.startswith("shared:"):
+        for knowledge_id in knowledge_ids:
+            item = await knowledge_repo.get(knowledge_id)
+            for evidence in await evidence_repo.get_many(item.evidence_ids):
+                await sync.record_local(f"evidence:{evidence.id}", evidence.model_dump(mode="json"), body.scope)
+            await sync.record_local(f"knowledge:{item.id}", item.model_dump(mode="json"), body.scope)
     return {
         "promoted_count": len(knowledge_ids),
         "knowledge_ids": knowledge_ids,

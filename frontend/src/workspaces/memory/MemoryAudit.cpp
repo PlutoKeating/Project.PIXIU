@@ -4,6 +4,8 @@
 #include "services/HttpBackendTransport.h"
 #include <QComboBox>
 #include <QDateTime>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QJsonArray>
 #include <QLabel>
@@ -88,6 +90,65 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     m_details->setReadOnly(true);
     m_details->setAccessibleName(tr("历史与审计详情"));
     layout->addWidget(m_details, 1);
+    auto *review = new QPushButton(tr("处理所选冲突"), this);
+    review->setObjectName("reviewManualConflict");
+    layout->addWidget(review);
+    auto *reviewHttp = new HttpBackendTransport(this);
+    connect(review, &QPushButton::clicked, this, [=]() {
+        auto *row = m_records->currentItem();
+        if (m_pending != Pending::None || m_mode->currentIndex() != 1 || !row) return;
+        const auto record = row->data(Qt::UserRole).toJsonObject();
+        if (record.value("resolution") != "MANUAL") return;
+        review->setProperty("conflictId", record.value("id").toString());
+        m_pending = Pending::Review; updateControls();
+        reviewHttp->reviewConflict(record.value("id").toString());
+    });
+    connect(reviewHttp, &HttpBackendTransport::conflictReviewResult, this, [=](const QJsonObject &result) {
+        QDialog dialog(this);
+        dialog.setWindowTitle(tr("确认采用哪份记忆"));
+        auto *layout = new QVBoxLayout(&dialog);
+        auto *list = new QListWidget(&dialog);
+        auto *detail = new QPlainTextEdit(&dialog); detail->setReadOnly(true);
+        auto *source = new QPushButton(tr("查看所选版本的原始来源"), &dialog);
+        QJsonObject versions;
+        for (const auto &value : result.value("candidates").toArray()) {
+            const auto entry = value.toObject();
+            versions.insert(entry.value("id").toString(), entry.value("version"));
+            auto *row = new QListWidgetItem(entry.value("title").toString()
+                + tr(" · 版本 %1").arg(entry.value("version").toInt()), list);
+            row->setData(Qt::UserRole, entry);
+        }
+        layout->addWidget(list); layout->addWidget(detail); layout->addWidget(source);
+        connect(list, &QListWidget::currentItemChanged, &dialog, [=](QListWidgetItem *row) {
+            detail->setPlainText(row ? readable(row->data(Qt::UserRole).toJsonObject().value("body")) : QString());
+        });
+        connect(source, &QPushButton::clicked, &dialog, [=]() {
+            if (!list->currentItem()) return;
+            const auto ids = list->currentItem()->data(Qt::UserRole).toJsonObject().value("evidence_ids").toArray();
+            if (!ids.isEmpty()) reviewHttp->evidenceDetail(ids.first().toString());
+        });
+        connect(reviewHttp, &BackendTransport::evidenceDetailResult, &dialog, [=](const QJsonObject &evidence) {
+            detail->setPlainText(readable(evidence.value("raw")));
+        });
+        auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+        buttons->button(QDialogButtonBox::Ok)->setText(tr("保留所选版本"));
+        layout->addWidget(buttons);
+        connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        dialog.resize(620, 460); list->setCurrentRow(0);
+        if (dialog.exec() == QDialog::Accepted && list->currentItem()) {
+            m_pending = Pending::Resolve;
+            reviewHttp->resolveConflict(review->property("conflictId").toString(),
+                {{"keep_id", list->currentItem()->data(Qt::UserRole).toJsonObject().value("id")}, {"versions", versions}});
+        } else { m_pending = Pending::None; updateControls(); }
+    });
+    connect(reviewHttp, &HttpBackendTransport::conflictResolved, this, [=](const QJsonObject &) {
+        m_pending = Pending::None; refresh();
+    });
+    connect(reviewHttp, &BackendTransport::errorOccurred, this, [=](const QString &, const QString &, const QString &) {
+        m_pending = Pending::None; updateControls();
+        m_status->setText(tr("处理未完成，记忆可能已经变化。请刷新后重新核对。"));
+    });
     connect(m_refresh, &QPushButton::clicked, this, &MemoryAudit::refresh);
     connect(m_mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() { refresh(); });
     connect(m_scope, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() { refresh(); });
@@ -124,10 +185,10 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
             auto *item = new QListWidgetItem(tr("%1\n%2 · %3\n处理结果：%4")
                 .arg(title.isEmpty() ? tr("未提供关联记忆标题") : title,
                      record.value("field").toString(), severityText(record.value("severity").toString()),
-                     resolutionText(record.value("resolution").toString())), m_records);
+                     (record.value("source") == "manual" ? tr("人工已确认") : resolutionText(record.value("resolution").toString()))), m_records);
             item->setData(Qt::UserRole, record);
         }
-        m_status->setText(records.isEmpty() ? tr("暂无冲突记录。") : tr("全部范围的只读审计记录；不提供人工裁决操作。"));
+        m_status->setText(records.isEmpty() ? tr("暂无冲突记录。") : tr("选择待人工确认的冲突，点击“处理所选冲突”查看并选择保留版本。"));
         restoreSelection();
     });
     connect(m_records, &QListWidget::currentItemChanged, this, [this](QListWidgetItem *item) {

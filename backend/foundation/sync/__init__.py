@@ -13,7 +13,7 @@ from backend.foundation.core.config import settings as _env_settings
 from backend.foundation.core.idgen import gen_sync_op_id
 from backend.foundation.core.models import SyncOp
 
-from .crdt import LWWElementSet, increment_clock, record_from_op
+from .crdt import LWWElementSet, increment_clock, record_from_op, merge_clocks
 from .discovery import (
     DiscoveryError,
     MdnsDiscovery,
@@ -168,6 +168,7 @@ class SyncService:
         scope: str,
         *,
         deleted: bool = False,
+        observed_clock: dict[str, int] | None = None,
         now: int | None = None,
     ) -> SyncOp:
         if not isinstance(value, dict):
@@ -177,7 +178,7 @@ class SyncService:
             raise InvalidSyncOperation("operation value scope does not match envelope")
 
         current = await self._store.get_state(entity)
-        clock = increment_clock(current.vclock if current else {}, identity.id)
+        clock = increment_clock(merge_clocks(current.vclock if current else {}, observed_clock or {}), identity.id)
         op = SyncOp(
             op_id=gen_sync_op_id(),
             entity=entity,
@@ -202,6 +203,14 @@ class SyncService:
         await self._store.append_op(op)
         await self._store.save_state(self._crdt.resolve(current, op))
         return op
+
+    async def publish_manual_resolution(self, item) -> None:
+        entity = f"knowledge:{item.id}"
+        clock = await self._store.get_meta("sync_blocked_clock:" + entity)
+        await self.record_local(entity, item.model_dump(mode="json"), item.scope,
+                                observed_clock=json.loads(clock) if clock else None)
+        await self._store.delete_meta("sync_blocked:" + entity)
+        await self._store.delete_meta("sync_blocked_clock:" + entity)
 
     async def receive_ops(self, operations: list[SyncOp]) -> int:
         identity = await self.initialize()

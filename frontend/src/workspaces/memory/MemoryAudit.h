@@ -24,7 +24,7 @@ signals:
 protected:
     void showEvent(QShowEvent *event) override;
 private:
-    enum class Pending { None, Preferences, History, Conflicts, Extract };
+    enum class Pending { None, Preferences, History, Conflicts, Extract, Review, Resolve };
     void refresh(bool preserveSelection = false);
     void scheduleRefresh();
     void restoreSelection();

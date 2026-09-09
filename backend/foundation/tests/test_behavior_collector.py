@@ -405,3 +405,15 @@ async def test_di_wiring_creates_collector_with_real_services(tmp_path, monkeypa
         finally:
             di_module._monitor_config_store = None
             di_module._behavior_collector = None
+
+
+def test_continuous_focus_is_counted_on_flush_without_switch(monkeypatch):
+    collector, _, ingestion, _ = _make_collector()
+    collector._current_app = 'writer'
+    collector._current_title = '采购计划'
+    collector._last_flip = 10.0
+    monkeypatch.setattr('backend.foundation.monitor.behavior.time.monotonic', lambda: 128.0)
+    collector._flush()
+    assert ingestion.evidence[-1][1]['focus_seconds'] == 118
+    collector._flush()
+    assert len(ingestion.evidence) == 1

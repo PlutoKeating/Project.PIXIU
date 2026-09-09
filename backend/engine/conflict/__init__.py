@@ -100,6 +100,39 @@ class ConflictService:
         await self._save(new_item)
         return None
 
+    async def review_candidates(self, conflict_id: str) -> list[KnowledgeItem]:
+        record = await self._conflict_repo.get(conflict_id)
+        if record is None or record.resolution != ConflictResolution.MANUAL:
+            raise ValueError("Conflict is not awaiting review")
+        target = await self._knw_repo.get(record.target_knowledge)
+        if target is None or target.status != "ACTIVE":
+            raise ValueError("Conflict target has changed")
+        candidates = [target]
+        for item in await self._knw_repo.list_active():
+            if await self._is_candidate(item, target):
+                difference = self._arbiter.detect(target, item)
+                if difference is not None and difference.field == record.field:
+                    candidates.append(item)
+        return candidates
+
+    async def resolve_manual(self, conflict_id: str, keep_id: str, versions: dict[str, int]):
+        candidates = await self.review_candidates(conflict_id)
+        if {item.id: item.version for item in candidates} != versions or keep_id not in versions:
+            raise ValueError("Reviewed memories changed; refresh before choosing")
+        now = int(time.time())
+        for item in candidates:
+            item.status = "ACTIVE" if item.id == keep_id else "SUPERSEDED"
+            item.version += 1
+            item.updated_at = now
+            await self._save(item)
+        record = await self._conflict_repo.get(conflict_id)
+        record.resolution = ConflictResolution.NEW_WINS
+        record.target_knowledge = keep_id
+        record.source = "manual"
+        record.severity = "low"
+        await self._conflict_repo.save(record)
+        return candidates
+
     async def _is_candidate(
         self,
         new_item: KnowledgeItem,

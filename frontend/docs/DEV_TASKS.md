@@ -383,3 +383,5 @@ SettingsWorkspace 复用宿主模型配置入口、升级状态机和 InfoDialog
 | 官方通知模块 | `docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.2_Notification_Module.md` |
 | 官方主题模块 | `docs/kylin_sdk_docs/8_Desktop_Environment_SDK/8.5_Theme_Module.md` |
 | 只读赛题原件 | `docs/OriginProblemDescription.md` 与 `docs/完整赛题要求.pptx` |
+
+2026-09-10：人工冲突候选选择、阶段记忆保留、助手遗忘意图接入和采集边界文案已实现。正式 Qt 工作台编译验证，事件测试覆盖遗忘提示不会直接执行操作。

@@ -78,11 +78,13 @@ class BehaviorCollector:
         ingestion: Any,
         knowledge: Any,
         security: Any | None = None,
+        on_capture=None,
     ) -> None:
         self._config = config_store
         self._ingestion = ingestion
         self._knowledge = knowledge
         self._security = security
+        self._on_capture = on_capture
 
         self._running = False
         self._thread: threading.Thread | None = None
@@ -233,6 +235,11 @@ class BehaviorCollector:
             self._titles.clear()
             return
 
+        now = time.monotonic()
+        if self._current_app is not None:
+            self._focus[self._current_app] = self._focus.get(self._current_app, 0.0) + max(0.0, now - self._last_flip)
+            self._titles[self._current_app] = self._current_title
+            self._last_flip = now
         aggregates = [
             (app, self._titles.get(app, ""), int(seconds))
             for app, seconds in self._focus.items()
@@ -326,7 +333,11 @@ class BehaviorCollector:
             evidence = await self._ingestion.ingest(
                 SOURCE_TYPE_BEHAVIOR, raw, BEHAVIOR_SCOPE, sensitivity=0
             )
-            await self._knowledge.structure(evidence)
+            item = await self._knowledge.structure(evidence)
+            if self._on_capture is not None:
+                self._on_capture(source="behavior", status="ingested",
+                    summary=f"应用 {raw['app']} 使用 {raw['focus_seconds']} 秒",
+                    evidence_id=evidence.id, knowledge_id=item.id, ts=int(time.time()))
         except Exception:
             log.exception("behavior persist failed")
 

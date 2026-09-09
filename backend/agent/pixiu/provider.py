@@ -523,7 +523,7 @@ class PixiuMemoryProvider(MemoryProvider):
             return {"error": "HUMAN_REVIEW_REQUIRED"}
         started = time.monotonic()
         preview = self._client.request("POST", "/forget", {
-            "command": command, "confirm": False, "scope": self._scope})
+            "command": command, "confirm": False, "scope": self._scope, "handoff": True})
         ttl = preview.get("expires_in_seconds")
         targets = preview.get("targets")
         if (not isinstance(preview.get("confirmation_token"), str) or not preview["confirmation_token"]
@@ -538,7 +538,7 @@ class PixiuMemoryProvider(MemoryProvider):
         return {
             "status": "human_review_required",
             "preview": {key: preview[key] for key in ("targets", "cascade", "irreversible") if key in preview},
-            "instruction": "Open PIXIU desktop: Memory > Safe forgetting. Review a fresh preview and confirm there. This tool cannot execute deletion.",
+            "instruction": "Click the desktop banner “确认助手遗忘请求” to review a fresh preview, then confirm. This tool cannot execute deletion.",
         }
 
     def _enqueue_context(self, query: str, session_id: str, turn_id: str) -> None:

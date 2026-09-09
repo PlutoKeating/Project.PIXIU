@@ -472,3 +472,21 @@ void HttpBackendTransport::saveAgentMemorySettings(const QJsonObject &payload)
 {
     putJson("/agent/settings", payload, [this](quint64, const QJsonObject &value) { emit agentMemorySettingsResult(value); });
 }
+
+void HttpBackendTransport::flowContexts(const QString &scope)
+{
+    QUrlQuery query; query.addQueryItem("scope", scope);
+    getJson("/memory/flow/contexts?" + query.toString(QUrl::FullyEncoded),
+        [this](quint64, const QJsonObject &value) { emit flowContextsResult(value); });
+}
+
+void HttpBackendTransport::reviewConflict(const QString &id)
+{
+    getJson("/conflicts/" + QString::fromUtf8(QUrl::toPercentEncoding(id)) + "/review",
+        [this](quint64, const QJsonObject &value) { emit conflictReviewResult(value); });
+}
+void HttpBackendTransport::resolveConflict(const QString &id, const QJsonObject &payload)
+{
+    postJson("/conflicts/" + QString::fromUtf8(QUrl::toPercentEncoding(id)) + "/resolve", payload,
+        [this](quint64, const QJsonObject &value) { emit conflictResolved(value); });
+}

@@ -1737,3 +1737,48 @@ def test_conversation_preference_applies_in_new_session_and_updates(client):
         assert ('简洁回答' if style == 'compact' else '详细回答') in result['context']
     history = client.get('/preference/' + result['preferences'][0]['id'] + '/history').json()
     assert history
+
+
+def test_stage_memory_can_be_reviewed_and_kept(client):
+    response = client.post('/agent/lifecycle', json={'event': 'PRE_COMPRESS', 'scope': 'user:alice',
+        'session_id': 'stage-session', 'run_id': 'run-1', 'turn_id': 'turn-1',
+        'occurred_at': 1700000020, 'idempotency_key': 'stage-promote',
+        'data': {'summary': '采购流程：确认预算，再比较报价'}})
+    assert response.status_code == 200
+    contexts = client.get('/memory/flow/contexts', params={'scope': 'user:alice'}).json()['contexts']
+    entry = next(x for x in contexts if x['id'] == response.json()['context_id'])
+    kept = client.post('/memory/flow/promote', json={'source': entry['tier'],
+        'scope': 'user:alice', 'context_ids': [entry['id']]})
+    assert kept.status_code == 200
+    context = client.post('/agent/context', json={'query': '采购流程', 'scope': 'user:alice',
+        'session_id': 'another-session', 'turn_id': 'turn-1'}).json()
+    assert '比较报价' in context['context']
+
+
+def test_manual_conflict_review_retains_chosen_memory(client):
+    ids = []
+    for amount in (156, 186):
+        response = client.post("/memory/write", json={
+            "source_type": "OCR", "scope": "user:alice",
+            "raw": {"title": "燃气账单待确认", "body": {
+                "items": [{"vendor": "新奥燃气", "amount": amount}]}},
+        })
+        assert response.status_code == 200, response.text
+    records = client.get("/conflicts").json()["conflicts"]
+    record = next(item for item in records if item["resolution"] == "MANUAL")
+    path = "/conflicts/" + record["id"]
+    review = client.get(path + "/review")
+    assert review.status_code == 200, review.text
+    candidates = review.json()["candidates"]
+    assert len(candidates) == 2
+    keep = next(item for item in candidates if item["body"]["items"][0]["amount"] == 186)
+    versions = {item["id"]: item["version"] for item in candidates}
+    stale = dict(versions)
+    stale[keep["id"]] += 1
+    assert client.post(path + "/resolve", json={"keep_id": keep["id"], "versions": stale}).status_code == 409
+    resolved = client.post(path + "/resolve", json={"keep_id": keep["id"], "versions": versions})
+    assert resolved.status_code == 200, resolved.text
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        active = db.execute("SELECT id FROM knowledge_items WHERE status = 'ACTIVE' AND scope = 'user:alice'").fetchall()
+    assert active == [(keep["id"],)]
+    assert client.get(path + "/review").status_code == 409

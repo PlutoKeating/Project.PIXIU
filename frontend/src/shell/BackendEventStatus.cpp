@@ -4,6 +4,9 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QUrl>
+#include <QTabWidget>
+#include <QRegularExpression>
+#include "ForgetPage.h"
 
 namespace pixiu {
 BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) : QWidget(parent)
@@ -35,6 +38,23 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
         connection->setText(tr("事件地址无效，未连接；请检查后端配置。"));
         return;
     }
+    auto *reviewForget = new QPushButton(tr("确认助手遗忘请求"), this);
+    reviewForget->setObjectName("reviewAgentForget");
+    reviewForget->hide();
+    layout->addWidget(reviewForget);
+    connect(reviewForget, &QPushButton::clicked, this, [this, reviewForget]() {
+        auto *page = window()->findChild<ForgetPage *>();
+        if (!page || !page->setAgentIntent(reviewForget->property("command").toString(),
+                                           reviewForget->property("scope").toString())) return;
+        QWidget *child = page;
+        for (auto *parent = child->parentWidget(); parent; child = parent, parent = parent->parentWidget()) {
+            if (auto *tabs = qobject_cast<QTabWidget *>(parent->parentWidget())) {
+                const int index = tabs->indexOf(child);
+                if (index >= 0) tabs->setCurrentIndex(index);
+            }
+        }
+        reviewForget->hide();
+    });
     auto *client = new WebSocketClient(this);
     connect(client, &WebSocketClient::connectionStateChanged, this, [this, connection](ConnectionState state) {
         if (state == ConnectionState::Connected) {
@@ -49,8 +69,20 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
             connection->setText(tr("事件通道未连接，将自动重试；页面可能不是最新数据。"));
         }
     });
-    connect(client, &WebSocketClient::eventReceived, this, [this](const QJsonObject &event) {
+    connect(client, &WebSocketClient::eventReceived, this, [this, reviewForget](const QJsonObject &event) {
         const QString name = event.value("event").toString();
+        if (name == "forget_requested") {
+            const auto data = event.value("data").toObject();
+            const auto command = data.value("command").toString();
+            const auto scope = data.value("scope").toString();
+            if (!command.isEmpty() && command.size() <= 4096
+                && QRegularExpression("^(user|shared):[A-Za-z0-9._-]+$").match(scope).hasMatch()) {
+                reviewForget->setProperty("command", command);
+                reviewForget->setProperty("scope", scope);
+                reviewForget->show();
+            }
+            return;
+        }
         QString page;
         if (name == "memory_ready" || name == "forget_confirmation") page = tr("记忆");
         else if (name == "conflict_detected") page = tr("偏好与审计");

@@ -166,4 +166,15 @@ void ForgetPage::controls()
     m_confirm->setEnabled(idle && !m_token.isEmpty());
     m_cancel->setEnabled(idle);
 }
+bool ForgetPage::setAgentIntent(const QString &command, const QString &scope)
+{
+    if (hasPendingOperation() || command.trimmed().isEmpty()) return false;
+    int index = m_scope->findData(scope);
+    if (index < 0) { m_scope->addItem(scope, scope); index = m_scope->count() - 1; }
+    m_scope->setCurrentIndex(index);
+    m_command->setText(command);
+    m_preview->click(); // Fresh preview only. Confirmation remains a separate human click.
+    return true;
+}
+
 }

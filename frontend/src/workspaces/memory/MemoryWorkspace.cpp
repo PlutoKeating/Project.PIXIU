@@ -23,6 +23,7 @@
 #include <QSet>
 #include <QRegularExpression>
 #include <QDateTime>
+#include <QMessageBox>
 #include <cmath>
 #include <functional>
 
@@ -157,6 +158,63 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     tabs->addTab(m_audit, tr("偏好与审计"));
     auto *forget = new ForgetPage(tabs);
     tabs->addTab(forget, tr("安全遗忘"));
+    auto *stages = new QWidget(tabs);
+    auto *stageLayout = new QVBoxLayout(stages);
+    auto *stageNotice = new QLabel(tr("当前轮次保存为短期上下文；会话压缩和切换保存为阶段记录。选择值得复用的内容，确认后保存为长期记忆。完整对话与显式记忆仍按现有规则留存。"), stages);
+    stageNotice->setWordWrap(true);
+    stageLayout->addWidget(stageNotice);
+    auto *stageScope = new QComboBox(stages);
+    populateMemoryScopes(stageScope, false, true);
+    stageLayout->addWidget(new MemoryScopeControl(stageScope));
+    auto *stageRefresh = new QPushButton(tr("读取短期与阶段记忆"), stages);
+    stageLayout->addWidget(stageRefresh);
+    auto *stageItems = new QListWidget(stages);
+    stageItems->setObjectName("memoryStageItems");
+    stageLayout->addWidget(stageItems, 1);
+    auto *stageDetails = new QPlainTextEdit(stages);
+    stageDetails->setReadOnly(true);
+    stageLayout->addWidget(stageDetails, 1);
+    auto *keepStage = new QPushButton(tr("将所选内容保存为长期记忆"), stages);
+    stageLayout->addWidget(keepStage);
+    auto *stageHttp = new HttpBackendTransport(stages);
+    connect(stageRefresh, &QPushButton::clicked, stages, [=]() {
+        stageHttp->flowContexts(stageScope->currentData().toString());
+    });
+    connect(stageHttp, &HttpBackendTransport::flowContextsResult, stages, [=](const QJsonObject &result) {
+        stageItems->clear(); stageDetails->clear();
+        for (const auto &value : result.value("contexts").toArray()) {
+            auto entry = value.toObject();
+            const auto payload = entry.value("payload").toObject();
+            const auto data = payload.value("data").toObject();
+            QString text = data.value("summary").toString();
+            if (text.isEmpty()) text = data.value("message").toString();
+            if (text.isEmpty()) text = data.value("assistant").toString();
+            if (text.isEmpty()) text = QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Indented));
+            entry.insert("display_text", text);
+            auto *row = new QListWidgetItem((entry.value("tier") == "SHORT_TERM" ? tr("短期 · ") : tr("阶段 · "))
+                + text.left(100), stageItems);
+            row->setData(Qt::UserRole, entry);
+        }
+    });
+    connect(stageItems, &QListWidget::currentItemChanged, stages, [=](QListWidgetItem *row) {
+        stageDetails->setPlainText(row ? row->data(Qt::UserRole).toJsonObject().value("display_text").toString() : QString());
+    });
+    connect(keepStage, &QPushButton::clicked, stages, [=]() {
+        auto *row = stageItems->currentItem();
+        if (!row || QMessageBox::question(stages, tr("保留阶段记忆"), tr("将已查看的内容保存为长期记忆？")) != QMessageBox::Yes) return;
+        const auto entry = row->data(Qt::UserRole).toJsonObject();
+        keepStage->setEnabled(false);
+        stageHttp->promoteMemory({{"source", entry.value("tier")}, {"scope", entry.value("scope")},
+            {"context_ids", QJsonArray{entry.value("id")}}});
+    });
+    connect(stageHttp, &BackendTransport::promoteResult, stages, [=](const QJsonObject &) {
+        keepStage->setEnabled(true); stageDetails->setPlainText(tr("已保存为长期记忆，可以跨会话检索。"));
+        stageHttp->flowContexts(stageScope->currentData().toString());
+    });
+    connect(stageHttp, &BackendTransport::errorOccurred, stages, [=](const QString &, const QString &, const QString &) {
+        keepStage->setEnabled(true); stageDetails->setPlainText(tr("操作未完成，请检查连接或刷新后重试。"));
+    });
+    tabs->addTab(stages, tr("短期与阶段记忆"));
     connect(forget, &ForgetPage::memoryForgotten, this, &MemoryWorkspace::clearResult);
     layout->setContentsMargins(20, 16, 20, 16);
     auto *title = new QLabel(tr("记忆工作区"), this);

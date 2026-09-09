@@ -41,7 +41,7 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     auto *unavailable = new QLabel(tr("剪贴板与自动截图：当前版本未实现采集。保存时保留已有配置字段，不将其宣称为可用能力。"), this);
     unavailable->setWordWrap(true);
     layout->addWidget(unavailable);
-    layout->addWidget(new QLabel(tr("监视目录：每行一个绝对路径；请只添加允许采集的目录。"), this));
+    layout->addWidget(new QLabel(tr("监视所选目录的直接子文件，不包含子目录。文本支持 TXT、Markdown、CSV（不超过 1 MB）；图片识别依赖可用的 OCR 服务。每行填写一个授权目录。"), this));
     m_directories = new QPlainTextEdit(this);
     m_directories->setObjectName(QStringLiteral("privacyDirectories"));
     m_directories->setAccessibleName(tr("监视目录列表"));

@@ -19,6 +19,7 @@ ConflictRecord。标记在人工裁决落地（ConflictRecord 裁决端点）前
 from __future__ import annotations
 
 from typing import NamedTuple
+import json
 
 from pydantic import ValidationError
 
@@ -150,6 +151,7 @@ class Mainline:
                         # 持久化 blocked 标记使后续（含跨轮重试）并发 op 粘性拦截。
                         blocked_op_id = op.op_id
                         await self._store.set_meta(blocked_key(entity), op.op_id)
+                        await self._store.set_meta("sync_blocked_clock:" + entity, json.dumps(op.vclock))
                         continue
                     if record is not None:
                         arbitrated.add(op.op_id)

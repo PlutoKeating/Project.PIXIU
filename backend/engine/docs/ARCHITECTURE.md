@@ -266,3 +266,5 @@ class SecurityService:
 ## 2026-09-10 偏好与账单使用
 
 普通 CONVERSATION 从用户原话提取输出风格，不从助手回答反向推断；沿用稳定偏好 ID、版本和历史。Agent 上下文返回 preferences 并优先放入当前有效回答风格；首次会话预取未完成时在既有 HTTP 超时内读取当前问题，避免漏掉已保存偏好。金额查询按账单明细类别/标签及日期筛选，汇总同范围的多份有效账单；指定类别没有记录时不再退回整份总额。未改变依赖和数据库 schema。
+
+ConflictService 提供 review_candidates/resolve_manual：按当前同范围实体冲突返回候选，校验用户看到的全部版本，保留选择并将其余候选标记 SUPERSEDED，复用既有知识物化写入。审计 source=manual 表示人工已确认。

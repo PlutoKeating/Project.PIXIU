@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import sqlite3 as _sqlite3
 import time
 from pathlib import Path
@@ -289,11 +290,21 @@ async def get_flow_service(
 
     async def _promote_context(context):
         payload = dict(context.payload)
+        if "event" in payload and "data" in payload:
+            data = payload["data"]
+            title = str(data.get("summary") or data.get("message") or "会话阶段记录")[:80]
+            text = str(data.get("summary") or data.get("message") or data.get("assistant")
+                       or json.dumps(data, ensure_ascii=False))
+            payload = {"raw": {"title": title, "body": {"text": text}}}
         source_type = str(payload.pop("source_type", "MANUAL_CONFIG"))
         raw = payload.pop("raw", payload)
         if not isinstance(raw, dict):
             raise ValueError("flow context raw payload must be an object")
-        evidence = await ingestion.ingest(source_type, raw, context.scope)
+        security = await get_security_service(db)
+        sensitivity = await security.detect_sensitivity(raw)
+        if context.scope.startswith("shared:") and sensitivity > 0:
+            raise ValueError("Sensitive stage memory must remain private")
+        evidence = await ingestion.ingest(source_type, raw, context.scope, sensitivity=sensitivity)
         item = await knowledge.structure(evidence)
         return item.id
 
@@ -593,6 +604,7 @@ async def get_behavior_collector() -> BehaviorCollector:
             ingestion=await get_ingestion_service(db),
             knowledge=await get_knowledge_service(db),
             security=await get_security_service(db),
+            on_capture=_make_capture_callback(get_monitor_log_store()),
         )
         _log.info("Behavior collector created")
     return _behavior_collector

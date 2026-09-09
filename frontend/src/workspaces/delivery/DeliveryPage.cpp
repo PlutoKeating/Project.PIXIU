@@ -14,7 +14,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
 {
     auto *http = transport ? transport : new HttpBackendTransport(this);
     auto *layout = new QVBoxLayout(this);
-    auto *intro = new QLabel(tr("洞察来自本机个人域最近 24 小时的记忆候选，最多显示 3 条；待处理人工冲突可能抑制推荐。简报按后端本地日期汇总采集日志，不是全部记忆统计或模型生成报告。"), this);
+    auto *intro = new QLabel(tr("洞察来自本机个人域最近 24 小时的记忆候选，最多显示 3 条；待处理人工冲突可能抑制推荐。简报按日期汇总文件采集与应用使用记录；聊天和手工录入不计入采集数量。"), this);
     intro->setWordWrap(true);
     layout->addWidget(intro);
     auto *insights = new QPushButton(tr("刷新记忆洞察"), this);

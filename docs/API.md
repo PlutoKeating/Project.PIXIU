@@ -1296,3 +1296,9 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 ## 2026-09-10 偏好与账单使用
 
 普通 CONVERSATION 从用户原话提取输出风格，不从助手回答反向推断；沿用稳定偏好 ID、版本和历史。Agent 上下文返回 preferences 并优先放入当前有效回答风格；首次会话预取未完成时在既有 HTTP 超时内读取当前问题，避免漏掉已保存偏好。金额查询按账单明细类别/标签及日期筛选，汇总同范围的多份有效账单；指定类别没有记录时不再退回整份总额。未改变依赖和数据库 schema。
+
+### 用户处理记忆（2026-09-10）
+
+- `GET /conflicts/{id}/review` 返回当前待人工确认的候选记忆；`POST /conflicts/{id}/resolve` 接收 `keep_id` 和全部候选的 `versions`，版本变化返回 409。共享选择沿同步服务发布并解除该实体的人工阻塞。
+- `GET /memory/flow/contexts?scope=...` 返回有效短期/阶段记忆并清理过期内容；既有 `/memory/flow/promote` 保存用户选择为长期记忆，共享范围遵循写权限与敏感内容检查。
+- `/forget` 可带 `handoff: true`：预览需确认时发送 `forget_requested {command, scope}`。桌面按钮重新获取预览，仍需用户确认；事件本身不执行删除。

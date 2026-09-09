@@ -20,6 +20,7 @@ bool isKnownBusinessEvent(const QString &name)
         QStringLiteral("memory_ready"),
         QStringLiteral("conflict_detected"),
         QStringLiteral("forget_confirmation"),
+        QStringLiteral("forget_requested"),
         QStringLiteral("sync_event"),
         QStringLiteral("capture_event"),
         QStringLiteral("pair_request"),
