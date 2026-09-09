@@ -80,11 +80,16 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     m_records->setWordWrap(true);
     m_records->setAccessibleName(tr("偏好或冲突记录"));
     layout->addWidget(m_records, 1);
+    m_records->hide();
     m_details = new QPlainTextEdit(this);
     m_details->setObjectName(QStringLiteral("auditDetails"));
     m_details->setReadOnly(true);
     m_details->setAccessibleName(tr("历史与审计详情"));
     layout->addWidget(m_details, 1);
+    m_details->hide();
+    connect(m_details, &QPlainTextEdit::textChanged, this, [this]() {
+        m_details->setVisible(!m_details->toPlainText().isEmpty());
+    });
     auto *review = new QPushButton(tr("处理所选冲突"), this);
     review->setObjectName("reviewManualConflict");
     layout->addWidget(review);
@@ -163,6 +168,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
             item->setData(Qt::UserRole, record);
         }
         m_status->setText(records.isEmpty() ? tr("此范围暂无偏好。") : tr("选择偏好查看版本历史。"));
+        m_records->setVisible(m_records->count() > 0);
         restoreSelection();
     });
     connect(m_transport, &BackendTransport::conflictsResult, this, [this](const QJsonArray &records) {
@@ -179,6 +185,7 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
             item->setData(Qt::UserRole, record);
         }
         m_status->setText(records.isEmpty() ? tr("暂无冲突记录。") : tr("选择待人工确认的冲突，点击“处理所选冲突”查看并选择保留版本。"));
+        m_records->setVisible(m_records->count() > 0);
         restoreSelection();
     });
     connect(m_records, &QListWidget::currentItemChanged, this, [this](QListWidgetItem *item) {
@@ -305,6 +312,7 @@ void MemoryAudit::refresh(bool preserveSelection)
     m_refreshNeeded = false;
     m_refreshTimer->stop();
     m_records->clear();
+    m_records->hide();
     m_details->clear();
     m_pending = m_mode->currentIndex() == 0 ? Pending::Preferences : Pending::Conflicts;
     updateControls();

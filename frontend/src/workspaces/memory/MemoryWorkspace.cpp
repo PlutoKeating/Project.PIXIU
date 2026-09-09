@@ -21,6 +21,7 @@
 #include <QTabWidget>
 #include <QToolButton>
 #include <QMenu>
+#include <QWidgetAction>
 #include <QSplitter>
 #include <QSet>
 #include <QRegularExpression>
@@ -234,36 +235,52 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     manage->setMenu(menu);
     tabs->setCornerWidget(manage);
     connect(forget, &ForgetPage::memoryForgotten, this, &MemoryWorkspace::clearResult);
-    layout->setContentsMargins(20, 16, 20, 16);
-    auto *title = new QLabel(tr("记忆工作区"), this);
-    title->setObjectName(QStringLiteral("brandTitle"));
-    layout->addWidget(title);
-    auto *intro = new QLabel(tr("直接检索已保存的记忆并查看来源，无需配置大模型。"), this);
+    layout->setContentsMargins(32, 28, 32, 24);
+    layout->setSpacing(16);
+    m_searchIntroduction = new QWidget(queryPage);
+    auto *introduction = new QVBoxLayout(m_searchIntroduction);
+    introduction->setContentsMargins(0, 0, 0, 0);
+    introduction->setSpacing(8);
+    layout->addWidget(m_searchIntroduction);
+    auto *title = new QLabel(tr("资料与记忆"), this);
+    title->setObjectName(QStringLiteral("memoryPageTitle"));
+    QFont heading = title->font();
+    heading.setPointSize(22);
+    heading.setWeight(QFont::DemiBold);
+    title->setFont(heading);
+    title->setStyleSheet("font-size: 22pt; font-weight: 600;");
+    title->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    introduction->addWidget(title);
+    auto *intro = new QLabel(tr("查找已保存的内容；日常记录也可以直接告诉助手。"), this);
     intro->setWordWrap(true);
-    layout->addWidget(intro);
+    intro->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    introduction->addWidget(intro);
     auto *row = new QHBoxLayout;
     m_query = new QLineEdit(this);
     m_query->setObjectName(QStringLiteral("memoryQuery"));
-    m_query->setPlaceholderText(tr("输入想查找的内容"));
+    m_query->setPlaceholderText(tr("搜索资料，或描述你想找的事情…"));
+    m_query->setMinimumHeight(42);
     m_query->setAccessibleName(tr("记忆检索内容"));
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("memoryScope"));
     m_scope->setAccessibleName(tr("检索范围"));
     populateMemoryScopes(m_scope, true);
-    m_search = new QPushButton(tr("检索"), this);
+    m_search = new QPushButton(tr("搜索"), this);
     m_search->setObjectName(QStringLiteral("memorySearch"));
     row->addWidget(m_query, 1);
-    row->addWidget(new MemoryScopeControl(m_scope));
+    menu->addSeparator();
+    menu->addSection(tr("筛选范围"));
+    auto *scopeFilter = new QWidgetAction(menu);
+    scopeFilter->setDefaultWidget(new MemoryScopeControl(m_scope));
+    menu->addAction(scopeFilter);
     row->addWidget(m_search);
-    auto *write = new QPushButton(tr("录入记忆"), this);
-    write->setObjectName(QStringLiteral("memoryWrite"));
-    row->addWidget(write);
     auto *writeDialog = new MemoryWriteDialog(this);
     m_writeDialog = writeDialog;
-    m_edit = new QPushButton(tr("编辑命中记忆"), this);
+    m_edit = new QPushButton(tr("修改内容"), this);
     m_edit->setObjectName("memoryEdit");
     m_edit->setToolTip(tr("选择个人或家庭共享范围并检索后，编辑主要命中的记忆。"));
     m_edit->setEnabled(false);
+    m_edit->hide();
     row->addWidget(m_edit);
     auto *editor = new MemoryEditDialog(this);
     connect(m_edit, &QPushButton::clicked, this, [this, editor]() {
@@ -274,7 +291,8 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         clearResult();
         m_status->setText(tr("记忆已更新，请重新检索查看当前结果。"));
     });
-    connect(write, &QPushButton::clicked, writeDialog, &QDialog::show);
+    menu->insertAction(menu->actions().first(), new QAction(tr("记一条内容…"), menu));
+    connect(menu->actions().first(), &QAction::triggered, writeDialog, &QDialog::show);
     connect(writeDialog, &MemoryWriteDialog::memoryAccepted, m_audit,
             [this](const QString &) { m_audit->notifyDataChanged(); });
     layout->addLayout(row);
@@ -282,8 +300,13 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     m_status->setObjectName(QStringLiteral("memoryStatus"));
     m_status->setTextFormat(Qt::PlainText);
     m_status->setWordWrap(true);
+    m_status->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     layout->addWidget(m_status);
+    m_emptySpace = new QWidget(queryPage);
+    layout->addWidget(m_emptySpace, 1);
     auto *reader = new QSplitter(Qt::Horizontal, queryPage);
+    m_reader = reader;
+    reader->hide();
     reader->setObjectName(QStringLiteral("memoryReaderSplit"));
     reader->setChildrenCollapsible(false);
     auto *results = new QWidget(reader);
@@ -365,6 +388,10 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_search->setEnabled(true);
         m_knowledge = result.value("source_knowledge").toString();
         m_edit->setEnabled(!m_knowledge.isEmpty() && !m_scope->currentData().toString().isEmpty());
+        m_edit->setVisible(m_edit->isEnabled());
+        m_searchIntroduction->hide();
+        m_emptySpace->hide();
+        m_reader->show();
         const QString answer = result.value(QStringLiteral("answer")).toString();
         m_answer->setPlainText(answer);
         m_status->setText(answer.isEmpty() ? tr("没有找到匹配的记忆。") : tr("检索完成，选择来源查看证据。"));
@@ -470,6 +497,9 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
     clearResult();
     m_query->clear();
     m_agentSources = true;
+    m_reader->setVisible(!result.references.isEmpty());
+    m_emptySpace->setVisible(result.references.isEmpty());
+    m_searchIntroduction->setVisible(result.references.isEmpty());
     m_answer->hide();
     m_tabs->setCurrentIndex(0);
     m_status->setText(result.references.isEmpty()
@@ -519,10 +549,14 @@ void MemoryWorkspace::notifyDataChanged()
 
 void MemoryWorkspace::clearResult()
 {
+    m_reader->hide();
+    m_emptySpace->show();
+    m_searchIntroduction->show();
     m_agentSources = false;
     m_answer->show();
     m_knowledge.clear();
     m_edit->setEnabled(false);
+    m_edit->hide();
     m_request = 0;
     m_evidence.clear();
     m_answer->clear();

@@ -42,6 +42,9 @@ private:
     QPushButton *m_edit;
     QString m_knowledge;
     QLabel *m_status;
+    QWidget *m_searchIntroduction = nullptr;
+    QWidget *m_emptySpace = nullptr;
+    QWidget *m_reader;
     QPlainTextEdit *m_answer;
     QListWidget *m_sources;
     QLabel *m_detailMeta;
