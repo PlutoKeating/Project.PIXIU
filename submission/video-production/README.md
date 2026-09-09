@@ -371,3 +371,7 @@ s09 新增真实来源发牌章节，源码为 `DeckDealMotion.tsx`、`DeckCamer
 依赖与渲染入口已核对，无新增软件依赖；npm run check与prepare:evidence通过。
 
 提交检查发现DeckCamera空白行尾随空格，已清理当前源码；固定历史源码与审查副本保持原字节以保留摘要对应关系。该变更不影响渲染。
+
+行为结果已补录两张原生4K截图：本机个人记忆检索“公开行为演示”，点击来源后
+显示USER_BEHAVIOR、user:local和focus_seconds 118。原生质量显示0.71，
+公共接口精确值0.715；二者分别按原样保留。素材已查看，尚未接入完整影片。

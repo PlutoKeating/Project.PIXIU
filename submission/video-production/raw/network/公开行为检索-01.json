@@ -1,0 +1,24 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/memory/query",
+    "body": {
+      "text": "公开行为演示",
+      "context_hint": {
+        "scope": "user:local"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "answer": "公开行为演示",
+      "source_evidence": [
+        "evd_01M21MH7S9RGADE7XP7XM852N7"
+      ],
+      "source_knowledge": "knw_01M21MH7SMKMT7JSNDJT9BSFVP",
+      "confidence": 1.0,
+      "latency_ms": 804
+    }
+  }
+}
