@@ -60,6 +60,27 @@ class KnowledgeService:
         """Index and upsert a trusted structured item received from synchronization."""
         return await self._persist(item)
 
+    async def merge(self, item: KnowledgeItem, *, expected_versions: dict[str, int]) -> KnowledgeItem:
+        """Apply a reviewed private consolidation and remove obsolete vectors.
+
+        The repository checks every source in one conditional write. Generate
+        the new embedding first so a model/SDK failure cannot supersede sources.
+        Approval and sensitivity checks belong to the calling API.
+        """
+        if self._vector_store is None:
+            raise RuntimeError("reviewed merge requires a production vector store")
+        item = self._embed_writer.write(item)
+        vector = self._embed_writer.vector(item)
+        if not vector:
+            raise ValueError("merged memory has no embedding")
+        if not await self._knw_repo.merge_if_versions(item, expected_versions):
+            raise KnowledgeVersionConflict(item.id)
+        await self._vector_store.upsert(item.id, vector)
+        for identifier in expected_versions:
+            if identifier != item.id:
+                await self._vector_store.delete(identifier)
+        return await self._knw_repo.get(item.id)
+
     async def forget(self, knowledge_id: str) -> None:
         """Hide a synchronized tombstone and remove its production vector."""
         await self._knw_repo.update_status(knowledge_id, KnowledgeStatus.FORGOTTEN)

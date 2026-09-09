@@ -127,6 +127,27 @@ class _FakeVectorStore(VectorStore):
         self.vectors.pop(knowledge_id, None)
 
 
+@pytest.mark.asyncio
+async def test_reviewed_merge_reindexes_target_and_removes_source_vectors(db):
+    repo = SqliteKnowledgeRepo(db)
+    vectors = _FakeVectorStore()
+    service = KnowledgeService(repo, SqliteEntityRepo(db), embedder=StubTextEmbedder(), vector_store=vectors)
+    first = KnowledgeItem(id=gen_knowledge_id(), kind="FACT", title="Energy budget", scope="user:local", created_at=1, updated_at=1)
+    second = first.model_copy(update={"id": gen_knowledge_id(), "title": "Gas budget"})
+    await service.materialize(first)
+    await service.materialize(second)
+    previous = list(vectors.vectors[first.id])
+    merged = first.model_copy(update={"version": 2, "body": {"content": "Combined electricity and gas budget"}})
+    result = await service.merge(merged, expected_versions={first.id: 1, second.id: 1})
+    assert result.id == first.id and result.version == 2
+    assert set(vectors.vectors) == {first.id}
+    assert vectors.vectors[first.id] != previous
+    assert (await repo.get(second.id)).status == KnowledgeStatus.SUPERSEDED
+    with pytest.raises(KnowledgeVersionConflict):
+        await service.merge(merged, expected_versions={first.id: 1, second.id: 1})
+    assert (await repo.get(first.id)).version == 2
+
+
 def _evidence(
     *,
     source_type: str = "OCR",

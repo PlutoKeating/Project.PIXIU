@@ -89,6 +89,15 @@ class KnowledgeRepository(ABC):
         """
         raise NotImplementedError("atomic forget is not implemented by this repository")
 
+    async def merge_if_versions(self, item: KnowledgeItem, expected: dict[str, int]) -> bool:
+        """Replace one ACTIVE item and supersede all other reviewed IDs together.
+
+        All sources must match their reviewed version and the target's private
+        scope. Preserve source evidence. Production vector maintenance belongs
+        to the service, not the repository.
+        """
+        raise NotImplementedError("reviewed merge is not implemented by this repository")
+
     async def link_evidence(self, knowledge_id: str, evidence_id: str) -> None:
         """Attach late-arriving evidence to an existing knowledge item."""
         raise NotImplementedError(

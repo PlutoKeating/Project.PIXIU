@@ -270,3 +270,5 @@ class SecurityService:
 ConflictService 提供 review_candidates/resolve_manual：按当前同范围实体冲突返回候选，校验用户看到的全部版本，保留选择并将其余候选标记 SUPERSEDED，复用既有知识物化写入。审计 source=manual 表示人工已确认。
 
 多模态知识草稿由 backend/agent/runtime/image_draft.py 通过模型服务产生，用户确认后 MANUAL_CONFIG connector 保留原图到证据顶层；Structurer 不把图片加入知识正文。expense_draft 仅保留聊天金额更正逻辑，不从 OCR 文本推断知识。
+
+2026-09-10：受审批合并的底层接口 `KnowledgeService.merge` / `KnowledgeRepository.merge_if_versions` 已实现：固定私人范围、整批 ACTIVE 版本条件更新、保留所有来源证据与实体关联、旧记录 SUPERSEDED 并移出全文检索，目标重新向量化并删除旧记录生产向量。嵌入失败发生在知识更新前；向量存储与 SQLite 不构成跨组件事务。50 项知识服务/仓储测试通过。API、模型工具与桌面审批的合并接线尚未完成，不能据此宣称 Dreaming 合并可供用户使用。无新依赖/schema，沿用现有后端目录打包和 CI 测试入口。

@@ -531,6 +531,56 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
         await self._db.commit()
         return changed == len(expected)
 
+    async def merge_if_versions(self, item: KnowledgeItem, expected: dict[str, int]) -> bool:
+        if (len(expected) < 2 or item.id not in expected or not item.scope.startswith("user:")
+                or item.status != KnowledgeStatus.ACTIVE
+                or any(type(v) is not int or v < 1 for v in expected.values())
+                or item.version != expected[item.id] + 1):
+            raise ValueError("merge requires reviewed active private memories")
+        await self._ensure_fts()
+        snapshot = json.dumps(expected)
+        try:
+            # One statement checks the entire snapshot before changing any item.
+            # A stale source cannot leave a partially merged target behind.
+            cursor = await self._db.execute(
+                """UPDATE knowledge_items SET
+                   title=CASE WHEN id=? THEN ? ELSE title END,
+                   body=CASE WHEN id=? THEN ? ELSE body END,
+                   status=CASE WHEN id=? THEN 'ACTIVE' ELSE 'SUPERSEDED' END,
+                   version=version+1, updated_at=?
+                   WHERE id IN (SELECT key FROM json_each(?))
+                     AND (SELECT COUNT(*) FROM knowledge_items AS current
+                          JOIN json_each(?) AS expected ON current.id=expected.key
+                          WHERE current.version=expected.value AND current.status='ACTIVE'
+                            AND current.scope=?)=?""",
+                (item.id, item.title, item.id, json.dumps(item.body, ensure_ascii=False),
+                 item.id, item.updated_at, snapshot, snapshot, item.scope, len(expected)))
+            if cursor.rowcount != len(expected):
+                await self._db.rollback()
+                return False
+            await self._db.execute(
+                """INSERT OR IGNORE INTO knowledge_evidence(knowledge_id,evidence_id)
+                   SELECT ?,evidence_id FROM knowledge_evidence
+                   WHERE knowledge_id IN (SELECT key FROM json_each(?))""", (item.id, snapshot))
+            await self._db.executemany(
+                "INSERT OR IGNORE INTO knowledge_evidence(knowledge_id,evidence_id) VALUES(?,?)",
+                [(item.id, eid) for eid in item.evidence_ids])
+            await self._db.execute(
+                """INSERT OR IGNORE INTO knowledge_entities(knowledge_id,entity_id)
+                   SELECT ?,entity_id FROM knowledge_entities
+                   WHERE knowledge_id IN (SELECT key FROM json_each(?))""", (item.id, snapshot))
+            await self._db.execute(
+                "DELETE FROM knowledge_fts WHERE rowid IN (SELECT rowid FROM knowledge_items WHERE id IN (SELECT key FROM json_each(?)))",
+                (snapshot,))
+            await self._db.execute(
+                "INSERT INTO knowledge_fts(rowid,title,body_text) SELECT rowid,?,? FROM knowledge_items WHERE id=?",
+                (item.title, _knowledge_search_text(item), item.id))
+            await self._db.commit()
+            return True
+        except Exception:
+            await self._db.rollback()
+            raise
+
     async def link_evidence(self, knowledge_id: str, evidence_id: str) -> None:
         await self._db.execute(
             "INSERT OR IGNORE INTO knowledge_evidence (knowledge_id, evidence_id) VALUES (?, ?)",

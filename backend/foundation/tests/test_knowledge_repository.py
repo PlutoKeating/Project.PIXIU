@@ -81,6 +81,43 @@ def _knw(**kwargs) -> KnowledgeItem:
 # ═══════════════════════════════════════════════════════
 
 @pytest.mark.asyncio
+async def test_reviewed_merge_preserves_evidence_and_removes_duplicate_search_hits(repo):
+    kr, er, _ = repo
+    evidence = Evidence(id=_evd_id("merge"), source_type=SourceType.MANUAL_CONFIG,
+                        raw={"text": "original"}, scope="user:local", created_at=NOW)
+    await er.save(evidence)
+    first = _knw(id=_id("first"), scope="user:local", title="Energy bills")
+    second = _knw(id=_id("second"), scope="user:local", title="Energy bills", evidence_ids=[evidence.id])
+    await kr.save(first)
+    await kr.save(second)
+    merged = first.model_copy(update={"version": 2, "body": {"content": "Combined energy bills"}})
+    assert await kr.merge_if_versions(merged, {first.id: 1, second.id: 1})
+    assert evidence.id in (await kr.get(first.id)).evidence_ids
+    assert (await kr.get(second.id)).status == KnowledgeStatus.SUPERSEDED
+    assert (await kr.get(second.id)).version == 2
+    assert [item.id for item in await kr.search_fts("Energy")] == [first.id]
+
+
+@pytest.mark.asyncio
+async def test_reviewed_merge_rejects_changed_or_wrong_scope_source_without_changing_target(repo):
+    kr, _, db_path = repo
+    first = _knw(id=_id("first"), scope="user:local")
+    second = _knw(id=_id("second"), scope="user:local")
+    await kr.save(first)
+    await kr.save(second)
+    merged = first.model_copy(update={"version": 2, "title": "Merged"})
+    async with aiosqlite.connect(db_path) as other:
+        await other.execute("UPDATE knowledge_items SET version=2 WHERE id=?", (second.id,))
+        await other.commit()
+    assert not await kr.merge_if_versions(merged, {first.id: 1, second.id: 1})
+    assert (await kr.get(first.id)).version == 1
+    second.scope = "user:other"
+    await kr.save(second)
+    assert not await kr.merge_if_versions(merged, {first.id: 1, second.id: 1})
+    assert (await kr.get(first.id)).title == first.title
+
+
+@pytest.mark.asyncio
 async def test_atomic_forget_rejects_whole_batch_on_version_drift(repo):
     kr, _, db_path = repo
     first = _knw(id=_id("first"))
