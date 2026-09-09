@@ -1,3 +1,4 @@
+import music from './bgm.json';
 import {cue} from './PresentationMotion';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame, staticFile, Easing} from 'remotion';
 import timeline from './timeline.json';
@@ -216,15 +217,16 @@ export const SpotlightReview: React.FC = () => <AbsoluteFill><Fonts /><ShotScene
 export const DraftOverlay: React.FC = () => <div style={{position: 'absolute', top: 25, right: 35,
   fontFamily: '"Noto Sans CJK SC", sans-serif', fontSize: 20, color: MUTED, transform: 'translateZ(0)'}}>制作审阅</div>;
 
-export const FullFilmDraft: React.FC<{reviewOverlay?: boolean}> = ({reviewOverlay = true}) => <AbsoluteFill>
+export const FullFilmDraft: React.FC<{reviewOverlay?: boolean; bgm?: boolean}> = ({reviewOverlay = true, bgm = true}) => <AbsoluteFill>
   <Fonts />
   {timeline.shots.map((shot) => <Sequence key={shot.id} from={shot.from} durationInFrames={shot.duration}>
     <ShotScene shot={shot} />
   </Sequence>)}
+  {bgm ? <Audio src={staticFile(music.prepared)} volume={music.volume} /> : null}
   {reviewOverlay ? <DraftOverlay /> : null}
 </AbsoluteFill>;
 
-export const FullFilmFinal: React.FC = () => <FullFilmDraft reviewOverlay={false} />;
+export const FullFilmFinal: React.FC<{bgm?: boolean}> = ({bgm = true}) => <FullFilmDraft reviewOverlay={false} bgm={bgm} />;
 
 const BILL_SHOTS = timeline.shots.filter((s) => ['s07', 's08'].includes(s.id));
 export const BILL_DURATION = BILL_SHOTS.reduce((total, shot) => total + shot.duration, 0);

@@ -1,3 +1,4 @@
+import music from './bgm.json';
 import {createElement, Fragment} from 'react';
 import timeline from './timeline.json';
 import {Fonts} from './Fonts';
@@ -45,6 +46,7 @@ export const WORKBENCH = {
   }))),
   overlays: [],
   sfx: [
+    {from: 0, duration: timeline.duration, src: music.prepared, volume: music.volume, label: '背景音乐 · ZENI — With You'},
     ...timeline.shots.map((shot) => {
       const offset = Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F));
       return {from: shot.from + offset, duration: shot.duration - offset,
