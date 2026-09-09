@@ -1,5 +1,7 @@
 # PIXIU 中文演示视频制作工程
 
+最终交付：`renders/演示视频-最终封面版.mp4`。用户提供的`raw/cover/approved-cover.png`替换第0帧并作为MP4内嵌封面；总计11706帧、390.2秒，完整AAC音轨直接复制。仅为替换第一帧重新编码首个250帧GOP，其余11456帧直接复制并核对解码像素一致。已验收剪辑工程保持原样。检查见`review/cover-technical.json`，复现工具为`scripts/set_video_cover.py`（`--video`、`--cover`、`--output`、`--report`），沿用FFmpeg与Python标准库，无新增依赖。
+
 当前首尾统一版：`renders/演示视频-首尾统一版.mp4`，390.2秒；无配乐版本为`renders/演示视频-首尾统一无配乐版.mp4`。首尾共用片头完整云枫音频`audio/s01.mp3`对应的170% PCM，无重新合成、变速或变调。项目名为“PIXIU · 貔貅”，介绍为“面向麒麟操作系统智能体的去中心化记忆系统”，slogan为“让每一台设备的记忆，彼此相通”。共享画面文案定义在`src/brandCopy.ts`。
 
 首尾均使用用户选定的 video-shotcraft `outro-group-photo-launch` 卡片聚合模板，保留片尾的卡片飞入、落定光晕、字标登场和运镜；项目名从第0秒随卡片同时登场，介绍从第41帧、slogan从第161帧对应口白依次展出。用户明确要求首尾复用同套文案和模板。两镜均257帧，片尾从11449帧开始；中间27镜的文案、字幕、起点和时长逐项保持一致。`storyboard/shots.json`的`audio_reuse: "s01"`让时间轴生成器直接引用片头素材，字幕也来自同一份词边界。OpeningReview、OutroReview、完整视频及工作台共用实际镜头组件。
