@@ -1,0 +1,16 @@
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -1,4 +1,5 @@
+ #include "ui/chatwidget.h"
++#include "widgets/CitationDialog.h"
+ #include "services/MediaInputClient.h"
+ #include <QFileDialog>
+ #include <QFileInfo>
+@@ -47,6 +48,7 @@
+     bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override
+     {
+         if (type == QWebEnginePage::NavigationTypeLinkClicked && isMainFrame) {
++            if (pixiu::openCitation(url, qobject_cast<QWidget *>(parent()))) return false;
+             if (url.scheme() == QStringLiteral("https") || url.scheme() == QStringLiteral("http"))
+                 QDesktopServices::openUrl(url);
+             return false;

@@ -419,3 +419,5 @@ SettingsWorkspace 复用宿主模型配置入口、升级状态机和 InfoDialog
 2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并实现见下文最新记录。
 
 2026-09-10：Dreaming 合并已接入方案 API、MCP 和桌面审批。模型必须先读取全部目标，merge_ids 与冻结版本进入持久方案；桌面展示全部原记录与合并结果，用户批准后执行私人范围合并。旧记录转为 SUPERSEDED，来源保留，生产向量清理。模型工具不提供批准入口。无新增依赖、schema 或源目录变化，已有 CMake/宿主导出清单包含审批组件。真实模型、V11 同包验收尚未完成。
+
+2026-09-10：回答中的 pixiu://citation 来源链接由宿主补丁 0030 在应用内打开 CitationDialog，读取受核验的引用 API，显示原文和原图；普通网络链接沿用现有行为。已删除的全局来源按钮不恢复。新组件登记于 Management.cmake、宿主导出清单和供应链补丁清单，无新依赖。通用宿主编译通过；真实模型生成链接与 V11 同包点击验收仍待完成。

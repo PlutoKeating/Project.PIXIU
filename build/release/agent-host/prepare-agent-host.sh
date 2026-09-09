@@ -116,3 +116,6 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
 
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${repo_root}/frontend/host/patches/0029-stable-message-rendering.patch"
+
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${repo_root}/frontend/host/patches/0030-answer-citations.patch"

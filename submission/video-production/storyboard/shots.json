@@ -89,7 +89,7 @@
       "motion": "row-embed",
       "planned_start_seconds": 120,
       "planned_duration_seconds": 15,
-      "narration": "合计四百三十四元五角。点击本会话记忆来源，展开命中的账单，逐项核对金额。回答与依据连在一起，复核更方便。",
+      "narration": "合计四百三十四元五角。点击回答中的来源链接，查看引用的账单，逐项核对金额。回答与依据连在一起，复核更方便。",
       "visual": "同一账单回答434.50元 → 原始证据详情；row-embed 只强调截图真实槽位",
       "status": "revision-in-progress"
     },
