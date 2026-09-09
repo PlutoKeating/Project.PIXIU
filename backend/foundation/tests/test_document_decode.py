@@ -60,3 +60,37 @@ def test_file_version_tracks_original_content():
     second = decode_document(b"second", "same.txt")
     assert first.version != second.version
     assert first.version == decode_document(b"first", "renamed.txt").version
+
+
+def test_workbook_keeps_formula_comment_chart_and_embedded_image():
+    import io
+    from openpyxl import Workbook
+    from openpyxl.chart import BarChart, Reference
+    from openpyxl.comments import Comment
+    from openpyxl.drawing.image import Image
+    from PIL import Image as Raster
+
+    book = Workbook()
+    sheet = book.active
+    sheet.title = "家庭开支"
+    sheet.append(["项目", "金额"])
+    sheet.append(["电费", 50])
+    sheet.append(["燃气费", 30])
+    sheet["B4"] = "=SUM(B2:B3)"
+    sheet["B4"].comment = Comment("家庭能源支出合计", "用户")
+    image = io.BytesIO()
+    Raster.new("RGB", (12, 12), "blue").save(image, format="PNG")
+    sheet.add_image(Image(image), "D2")
+    chart = BarChart()
+    chart.title = "能源开支比较"
+    chart.add_data(Reference(sheet, min_col=2, min_row=1, max_row=3), titles_from_data=True)
+    sheet.add_chart(chart, "F2")
+    source = io.BytesIO()
+    book.save(source)
+    result = decode_document(source.getvalue(), "开支.xlsx")
+    text = "\n".join(block.text for block in result.blocks)
+    assert "=SUM(B2:B3)" in text and "家庭能源支出合计" in text
+    assert "能源开支比较" in text and "$B$2:$B$3" in text
+    images = [block for block in result.blocks if block.kind == "image"]
+    assert len(images) == 1 and "家庭开支" in images[0].location
+    assert not result.warnings

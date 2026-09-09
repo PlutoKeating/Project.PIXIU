@@ -26,6 +26,7 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 | `kylin-agent` | 桌面 Agent 宿主 | AGPL-3.0-only |
 | `agent-runtime` | Agent 运行时与 MemoryProvider 接口 | MIT |
 | `kylin-coreai-embedding` | 指定文本向量接口 | GPL-3.0-or-later |
+| `openpyxl` / `Pillow` | XLSX 图片、公式、批注和图表内容 | MIT / HPND（许可证随 wheel 安装） |
 | `kreuzberg` 4.10.3 | headless Office/PDF 解码，禁用知识 OCR | MIT（安装包附带本地组件许可证） |
 | `libkysdk-vector-engine-client` | 指定系统向量数据库客户端 | Apache-2.0 |
 

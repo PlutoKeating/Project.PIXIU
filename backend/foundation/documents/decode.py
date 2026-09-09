@@ -76,6 +76,9 @@ def _extract(document: DecodedDocument, data: bytes, suffix: str):
             image_pages.add(page)
         if suffix != ".pdf":
             document.image(f"第 {page or '?'} 页/幻灯片，图片 {index + 1}", item["data"])
+    if suffix == ".xlsx":
+        from .spreadsheets import supplement_workbook
+        supplement_workbook(document, data)
     if suffix == ".pdf":
         # Native PDFium is included in the wheel. No external executable, OCR,
         # office installation, network download or display server is involved.

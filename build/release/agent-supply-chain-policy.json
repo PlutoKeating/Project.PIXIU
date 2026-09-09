@@ -192,7 +192,9 @@
     "aiohttp",
     "ddgs",
     "mcp",
-    "kreuzberg"
+    "kreuzberg",
+    "openpyxl",
+    "pillow"
   ],
   "upstream_reference_scan_paths": [
     "third_party/kylin-agent/scripts",

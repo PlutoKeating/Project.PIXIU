@@ -26,3 +26,5 @@ Runtime 上游随 wheel 安装的若干可选 GitHub/Scrapling skill 会构造 u
 精确放行。裁剪后出现任何额外命中都会在构建 wheel 前失败。
 
 预构建扫描覆盖实际打包源码与数据；上游测试和未使用的可选资源不进入 wheel。
+
+XLSX 补充解码依赖 openpyxl 3.1.5、Pillow 12.1.1 和 et-xmlfile 2.0.0，同样在固定离线 wheelhouse 内提供。
