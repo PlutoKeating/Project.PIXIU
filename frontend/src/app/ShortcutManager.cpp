@@ -195,8 +195,22 @@ bool ShortcutManager::registerKylinGlobalShortcut()
 
     // 名称已存在（上次异常退出残留或重复注册）：更新按键与动作。
     if (result == KYSDK_SHORTCUT_EXISTED) {
+        // V11 rejects setting an unchanged key as a conflict (-2), including
+        // when that key belongs to this very binding. An empty key updates
+        // only the action, which also replaces an obsolete executable path.
+        bool sameKey = false;
+        auto *bindings = kdk_shortcut_get_global_shortcuts_by_key(key.constData());
+        for (auto *entry = bindings; entry; entry = entry->next) {
+            const auto *binding = entry->data;
+            if (binding && QByteArray(binding->compenteName) == "kysdk-keybindings"
+                && QByteArray(binding->name) == name) {
+                sameKey = true;
+                break;
+            }
+        }
+        if (bindings) kdk_shortcut_destroy_info_list(bindings);
         result = kdk_shortcut_set_global_shortcut(name.constData(),
-                                                  key.constData(),
+                                                  sameKey ? "" : key.constData(),
                                                   action.constData());
         if (result == KYSDK_SUCCESS) {
             m_globalRegistered = true;
