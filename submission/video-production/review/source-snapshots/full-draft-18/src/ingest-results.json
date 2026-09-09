@@ -1,0 +1,16 @@
+{
+  "source": "raw/network/接入清洗与质量-01.json",
+  "sha256": "c39f49cf9f966b7e5198146e4b48c8b102e1a757f46aa8720ed36e6925c529f1",
+  "title": "家庭物品整理演示",
+  "items": [
+    "核对书目",
+    "归还原位"
+  ],
+  "input_items": [
+    "核对书目",
+    "核对书目",
+    "归还原位"
+  ],
+  "quality": 0.775,
+  "sensitivity": 0
+}
