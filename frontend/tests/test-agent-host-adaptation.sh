@@ -21,6 +21,11 @@ if bash "${repo_root}/build/release/agent-host/prepare-agent-host.sh" "${fixture
     exit 1
 fi
 
+if rg -q 'sessionMemorySources|resetSources|toggleSidebar' "${fixture}/source/src/ui/mainwindow.cpp"; then
+    echo "removed desktop controls remain in the prepared host" >&2
+    exit 1
+fi
+
 # Independent postcondition scan, not a second copy of source preparation.
 python3 - "${fixture}/source" <<'PY'
 from pathlib import Path
@@ -40,9 +45,6 @@ grep -q 'new pixiu::MemoryWorkspace(workspaces)' "${fixture}/source/src/ui/mainw
 grep -q 'privacy->setDirectoryPicker' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'KylinFileDialog::getExistingDirectory(parent,' "${fixture}/source/src/ui/mainwindow.cpp"
 
-grep -q 'sessionMemorySources' "${fixture}/source/src/ui/mainwindow.cpp"
-grep -q 'titleLayout->insertWidget(titleLayout->count() - 1, sources)' "${fixture}/source/src/ui/mainwindow.cpp"
-grep -q 'memory->showAgentSources(result' "${fixture}/source/src/ui/mainwindow.cpp"
 python3 - "${fixture}/source/src/ui/chatwidget.cpp" <<'PY'
 from pathlib import Path
 import sys
@@ -117,7 +119,7 @@ grep -q 'emit segmentBoundary' "${fixture}/source/src/services/pixiu_host_compat
 grep -q 'setWindowTitle(QStringLiteral("PIXIU"))' "${fixture}/source/src/ui/mainwindow.cpp"
 cmp "${repo_root}/frontend/resources/icons/pixiu.svg" "${fixture}/source/res/pixiu.svg"
 grep -q '<file alias="pixiu.svg">pixiu.svg</file>' "${fixture}/source/res/res.qrc"
-grep -q '分布式记忆工作台' "${fixture}/source/src/ui/mainwindow.cpp"
+grep -q '个人记忆助手' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q '选择云端模型' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q '麒灵系统云模型' "${fixture}/source/src/services/modelservice.cpp"
 grep -q 'QStringLiteral("kylin-genai")' "${fixture}/source/src/services/modelservice.cpp"

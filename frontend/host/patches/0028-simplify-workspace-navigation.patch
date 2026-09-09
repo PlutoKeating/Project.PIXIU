@@ -1,6 +1,12 @@
 --- a/src/ui/mainwindow.cpp
 +++ b/src/ui/mainwindow.cpp
-@@ -18,6 +18,8 @@
+@@ -1,5 +1,4 @@
+ #include "ui/mainwindow.h"
+-#include "AgentEvidenceClient.h"
+ 
+ #include "services/apiservice.h"
+ #include "services/databaseservice.h"
+@@ -18,6 +17,8 @@
  #include "DevicePage.h"
  #include "SettingsWorkspace.h"
  #include <QTabWidget>
@@ -9,7 +15,7 @@
  
  #include <QHBoxLayout>
  #include <QInputDialog>
-@@ -74,9 +76,6 @@
+@@ -74,9 +75,6 @@
      titleLayout->setContentsMargins(18, 0, 14, 0);
      titleLayout->setSpacing(10);
  
@@ -19,7 +25,7 @@
  
      QLabel *brandMark = new QLabel(QStringLiteral("P"), titleBar);
      brandMark->setObjectName(QStringLiteral("brandMark"));
-@@ -89,18 +88,32 @@
+@@ -89,18 +87,32 @@
      brandLayout->setSpacing(0);
      QLabel *title = new QLabel(QStringLiteral("PIXIU"), titleBar);
      title->setObjectName(QStringLiteral("brandTitle"));
@@ -58,20 +64,67 @@
  
      rootLayout->addWidget(titleBar);
  
-@@ -204,7 +217,8 @@
-             }
-             workspaces->setCurrentWidget(memory);
-         });
+@@ -158,55 +170,6 @@
+         connect(audit, &pixiu::MemoryAudit::preferencesChanged,
+                 findChild<pixiu::HostTray *>(), &pixiu::HostTray::notifyPreferences);
+     }
+-    auto *sources = new QPushButton(tr("本会话记忆来源"), titleBar);
+-    sources->setObjectName(QStringLiteral("sessionMemorySources"));
+-    sources->setAccessibleName(tr("读取本会话记忆来源，再选择查看当前证据"));
+-    titleLayout->insertWidget(titleLayout->count() - 1, sources);
+-    auto *evidenceClient = new pixiu::AgentEvidenceClient(this);
+-    auto resetSources = [this, sources, evidenceClient]() {
+-        evidenceClient->cancel();
+-        sources->setText(tr("本会话记忆来源"));
+-    };
+-    auto contextChanged = [memory, resetSources]() {
+-        resetSources();
+-        memory->clearAgentSources();
+-    };
+-    connect(m_chatWidget, &ChatWidget::sessionChanged, this, contextChanged);
+-    connect(m_chatWidget, &ChatWidget::sessionActivated, this, contextChanged);
+-    connect(&ApiService::instance(), &ApiService::backendChanged, this, contextChanged);
+-    connect(sources, &QPushButton::clicked, this, [this, sources, evidenceClient, resetSources, workspaces]() {
+-        if (evidenceClient->busy()) { resetSources(); return; }
+-        if (m_chatWidget->currentSessionId().isEmpty()) {
+-            statusBar()->showMessage(tr("请先选择一个会话。"), 5000);
+-            return;
+-        }
+-        workspaces->setCurrentIndex(0);
+-        sources->setText(tr("取消读取来源"));
+-        evidenceClient->loadMemorySources(ApiService::instance().sessionEvidenceRequest(),
+-            m_chatWidget->currentSessionId(), qEnvironmentVariable("PIXIU_AGENT_SCOPE"));
+-    });
+-    connect(evidenceClient, &pixiu::AgentEvidenceClient::failed, this,
+-        [this, resetSources](const QString &session, const QString &message) {
+-            resetSources();
+-            if (session == m_chatWidget->currentSessionId()) statusBar()->showMessage(message, 10000);
+-        });
+-    connect(evidenceClient, &pixiu::AgentEvidenceClient::loaded, this,
+-        [this, resetSources, memory, workspaces](const QString &session, const pixiu::AgentEvidenceResult &result) {
+-            resetSources();
+-            if (session != m_chatWidget->currentSessionId() || workspaces->currentIndex() != 0) return;
+-            if (result.status != pixiu::AgentEvidenceResult::Ready) {
+-                statusBar()->showMessage(tr("会话来源记录不完整、无效或超过上限，未展示来源。"), 10000);
+-                return;
+-            }
+-            if (!memory->showAgentSources(result, qEnvironmentVariable("PIXIU_AGENT_SCOPE"))) {
+-                statusBar()->showMessage(tr("记忆操作尚未结束或范围不匹配，请稍后重试。"), 10000);
+-                return;
+-            }
+-            workspaces->setCurrentWidget(memory);
+-        });
 -    connect(workspaces, &QTabWidget::currentChanged, this, [resetSources](int index) {
-+    connect(workspaces, &QTabWidget::currentChanged, this, [resetSources, sources](int index) {
-+        sources->setVisible(index == 0);
-         if (index != 0) resetSources();
-     });
+-        if (index != 0) resetSources();
+-    });
      workspaces->addTab(new pixiu::DevicePage(workspaces), tr("设备"));
-@@ -219,6 +233,24 @@
+     auto *settings = new pixiu::SettingsWorkspace(workspaces);
+     if (auto *privacy = settings->findChild<pixiu::PrivacyPage *>()) {
+@@ -218,6 +181,24 @@
+     connect(settings, &pixiu::SettingsWorkspace::agentSettingsRequested, this, [this]() {
          SettingsDialog dialog(this);
          dialog.exec();
-     });
++    });
 +    workspaces->tabBar()->hide();
 +    workspaces->setStyleSheet(QStringLiteral(
 +        "QTabWidget#pixiuWorkspaces::pane { border: 0; }"
@@ -89,11 +142,10 @@
 +    }
 +    connect(workspaces, &QTabWidget::currentChanged, this, [navigation](int index) {
 +        navigation->button(index)->setChecked(true);
-+    });
+     });
      rootLayout->addWidget(workspaces, 1);
      workspaces->setCurrentIndex(0);
- 
-@@ -240,15 +272,6 @@
+@@ -240,15 +221,6 @@
      button->setCursor(Qt::PointingHandCursor);
      button->setObjectName(QStringLiteral("titleIconButton"));
      return button;
