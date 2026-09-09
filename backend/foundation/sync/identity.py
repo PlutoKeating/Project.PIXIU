@@ -81,6 +81,10 @@ class IdentityManager:
     def sign(self, identity: DeviceIdentity, message: bytes) -> bytes:
         return self._load_private(identity).sign(message)
 
+    def tls_certificate(self, identity: DeviceIdentity) -> str:
+        from .tls_identity import create_certificate
+        return create_certificate(self._load_private(identity), identity)
+
     @staticmethod
     def verify(public_key: bytes, signature: bytes, message: bytes) -> None:
         Ed25519PublicKey.from_public_bytes(public_key).verify(signature, message)

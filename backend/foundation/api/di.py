@@ -420,6 +420,13 @@ async def get_sync_discovery() -> MdnsDiscovery:
     return runtime.discovery
 
 
+async def refresh_sync_runtime_trust() -> None:
+    """Replace TLS contexts after pairing or revocation; never enable a disabled service."""
+    if _sync_runtime is not None:
+        await stop_sync_runtime()
+        await start_sync_runtime()
+
+
 async def stop_sync_runtime() -> None:
     global _sync_runtime
     if _sync_runtime is not None:

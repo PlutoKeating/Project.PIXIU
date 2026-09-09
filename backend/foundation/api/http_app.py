@@ -65,6 +65,7 @@ from .di import (
     get_vector_store,
     preflight_strict_capabilities,
     apply_sync_runtime_settings,
+    refresh_sync_runtime_trust,
     start_behavior_collector,
     start_monitor_runtime,
     start_sync_runtime,
@@ -1281,6 +1282,7 @@ async def sync_pair(body: SyncPairRequest, sync=Depends(get_sync_service)):
         peer = await sync.pair(body.method, body.token, pin=body.pin)
     except PairingError as exc:
         raise HTTPException(status_code=422, detail="PAIRING_FAILED") from exc
+    await refresh_sync_runtime_trust()
     await ws_manager.broadcast(
         "sync_event",
         {
@@ -1405,6 +1407,7 @@ async def sync_revoke(id: str, sync=Depends(get_sync_service)):
         peer = await sync.revoke(id)
     except PeerNotFound as exc:
         raise HTTPException(status_code=404, detail="PEER_NOT_FOUND") from exc
+    await refresh_sync_runtime_trust()
     await ws_manager.broadcast(
         "sync_event",
         {

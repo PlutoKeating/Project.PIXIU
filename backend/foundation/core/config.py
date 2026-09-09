@@ -154,11 +154,8 @@ class Settings:
         # 监视服务环境总闸（代码默认关，产品默认开由打包 pixiu.env 置 1，
         # 对齐 PIXIU_SYNC_NETWORK_ENABLED 先例；config.enabled 独立门控捕获）。
         self._monitor_enabled = _env_bool("PIXIU_MONITOR_ENABLED")
-        # SN-4 默认开启：advertise 地址与 TLS 证书均允许缺省，避免无配置机器
-        # 启动即崩溃。空 advertise 由 runtime 层自动取本机 LAN IP（回退
-        # 127.0.0.1 告警）；缺证书由 di 层降级（log warning，不阻塞 API）。
-        # TLS 文件路径的要求保留在 sync_certfile/sync_keyfile/sync_cafile
-        # 属性级校验，于 runtime 装配期触发。
+        # 未提供 TLS 路径时复用加密设备身份自动生成证书，配对建立信任。
+        # 显式外部 TLS 配置仍需完整提供三个路径；空 advertise 自动选择 LAN。
 
     @property
     def db_path(self) -> str:
@@ -255,6 +252,10 @@ class Settings:
             "PIXIU_SYNC_KEYFILE": self._sync_keyfile,
             "PIXIU_SYNC_CAFILE": self._sync_cafile,
         }
+
+    @property
+    def sync_tls_configured(self) -> bool:
+        return any(self._sync_tls_values().values())
 
     @property
     def sync_certfile(self) -> str:

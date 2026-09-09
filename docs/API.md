@@ -724,7 +724,7 @@ Module E 的本地 `Outbox` 已用于后台 `/memory/write` 和 `/agent/lifecycl
 
 ### 3.11 POST /sync/token
 
-生成设备配对令牌（QR/PIN），供前端 PairDialog 展示二维码或 PIN 码。
+生成设备配对令牌（QR/PIN），供前端 PairDialog 展示二维码或 PIN 码。令牌 v2 将设备 TLS 证书纳入签名；接收端验证其身份公钥、设备名和有效期，配对成功后自动更新 TLS 信任。无需手工配置证书。旧版令牌需在新版重新生成。
 注意：`method=PIN` 时必须提供 6 位数字 `pin`；`method=QR` 时无需 pin。
 
 **请求体：**

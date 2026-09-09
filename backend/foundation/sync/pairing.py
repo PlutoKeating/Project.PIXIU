@@ -13,8 +13,9 @@ from cryptography.exceptions import InvalidSignature
 
 from .identity import IdentityManager
 from .models import DeviceIdentity, PairingMethod, Peer, PeerStatus
+from .tls_identity import validate_certificate
 
-_TOKEN_VERSION = 1
+_TOKEN_VERSION = 2
 _MAX_TOKEN_BYTES = 16 * 1024
 _PIN_ROUNDS = 200_000
 
@@ -84,6 +85,7 @@ class PairingManager:
             "device_name": self._identity.name,
             "domain": self._identity.domain,
             "public_key": _b64(self._identity.public_key),
+            "tls_certificate": self._identity_manager.tls_certificate(self._identity),
             "expires_at": timestamp + ttl_seconds,
             "nonce": _b64(os.urandom(16)),
             "pin_salt": _b64(salt),
@@ -116,6 +118,7 @@ class PairingManager:
             "version", "method", "device_id", "device_name", "domain",
             "public_key", "expires_at", "nonce", "pin_salt", "pin_digest",
             "signature",
+            "tls_certificate",
         }
         if not isinstance(payload, dict) or set(payload) != required:
             raise PairingError("pairing token fields are invalid")
@@ -152,6 +155,11 @@ class PairingManager:
         except (InvalidSignature, ValueError) as exc:
             raise PairingError("pairing token signature is invalid") from exc
 
+        try:
+            validate_certificate(payload["tls_certificate"], public_key, payload["device_id"], timestamp)
+        except (ValueError, InvalidSignature, UnicodeError) as exc:
+            raise PairingError("pairing certificate is invalid") from exc
+
         if method == PairingMethod.PIN:
             expected = _unb64(payload["pin_digest"] or "")
             actual = _pin_digest(_validate_pin(pin), _unb64(payload["pin_salt"]))
@@ -171,5 +179,6 @@ class PairingManager:
             last_seen_ts=timestamp,
         )
         await self._store.save_peer(peer)
+        await self._store.set_meta("tls_peer_certificate:" + peer.id, payload["tls_certificate"])
         await self._store.set_meta(nonce_key, str(timestamp))
         return peer

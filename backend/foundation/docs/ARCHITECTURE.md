@@ -355,7 +355,7 @@ TTL：短期默认 30 分钟，中期默认 7 天；到期保留审计行、清�
 ### 1.6 sync/ —— P2P CRDT 同步
 
 > ✅ **Phase 3 已实现**；SN-4（2026-08-29）起网络运行时默认开启
-> （`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），缺 advertise/TLS 证书自动降级不阻塞 API。
+> （`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），未指定 advertise 时自动选择局域网地址；未指定 TLS 文件时自动生成设备证书。
 
 **核心创新**：去中心化多设备记忆网络。
 
@@ -365,7 +365,8 @@ TTL：短期默认 30 分钟，中期默认 7 天；到期保留审计行、清�
 sync/
 ├── identity.py     # Ed25519 身份；私钥口令加密
 ├── discovery.py    # mDNS 广告解析 + 已配对 peer 信任目录
-├── pairing.py      # 扫码/PIN、签名、公钥交换、防重放
+├── pairing.py      # 扫码/PIN、签名、公钥与证书交换、防重放
+├── tls_identity.py # 加密设备身份派生 TLS 证书与配对信任文件
 ├── transport.py    # TLS 1.3 mTLS + 1 MiB JSON 帧
 ├── protocol.py     # 仅接受已配对 sender 的签名 SyncOp
 ├── gossip.py       # 有界 fanout、持久化重传和 ACK
@@ -415,9 +416,9 @@ knowledge op；否则 MERGE 会把仲裁前的新输入广播出去，导致发�
 
 **安全与运行边界**：
 
-- 网络默认开启（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true，SN-4）；地址、证书、CA 允许
-  缺省——空 advertise 自动取本机 LAN IP（回退 loopback 并告警），缺证书由 di 层降级
-  （log warning，不阻塞 API）；显式 `false` 或运行时 `enabled=false` 时停止广播与监听。
+- 网络默认开启（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true）；空 advertise 自动取本机 LAN IP。未配置 TLS 文件时，使用已有加密 Ed25519 身份生成自签证书，私钥文件仍加密且权限 0600，保存于数据库旁的 sync-tls/设备 ID。托管模式监听所通告的 LAN 接口，兼容旧安装包的 loopback 默认值。
+- 配对令牌 v2 将证书纳入原有签名，接收时核对公钥、设备名、有效期与签名。仅已配对且未撤销设备进入 TLS 信任列表；配对/解绑后重建 TLS 上下文。继续强制 TLS 1.3、双向证书与主机名校验，不使用共享私钥或关闭校验。旧令牌不支持此证书交换，须由新版生成。
+- 显式外部 TLS 配置仍要求证书、密钥、CA 三项齐全。`enabled=false` 停止广播与监听。
 - mDNS 结果必须与本地已配对、未撤销 peer 的设备 ID、`shared:*` 域和 Ed25519 公钥完全匹配。
 - `user:*` 不进入 oplog；嵌套 payload scope 必须与签名 envelope scope 一致。
 - `/sync/state/knowledge/{knowledge_id}` 只读暴露 present/tombstone、版本计数、时间和

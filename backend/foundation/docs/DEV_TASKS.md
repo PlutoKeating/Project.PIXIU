@@ -213,7 +213,7 @@ D-Bus 新增 `ReviewedForget(s)→s`，复用 HTTP 遗忘编排及显式 DI；�
 | `sync/protocol.py` | ★★ | 已配对 sender + 签名 SyncOp 协议 |
 | `sync/gossip.py` | ★★ | 有界 fanout、ACK 与持久化重传 |
 | `sync/materializer.py` | ★★ | CRDT 胜者物化到本地仓储 |
-| `sync/runtime.py` | ★ | 默认开启的 mDNS/mTLS 生命周期（缺配置自动降级）；停机取消当前轮次并完成资源清理 |
+| `sync/runtime.py` | ★ | 默认开启的 mDNS/mTLS 生命周期（自动设备证书与配对信任）；停机取消当前轮次并完成资源清理 |
 | `sync/scheduler.py` | ★ | 同步轮次调度 + 退避 |
 
 ### eval/ —— 评测框架
@@ -291,3 +291,5 @@ XLSX 补充适配复用固定 openpyxl 3.1.5 与 Pillow 12.1.1：读取嵌入图
 2026-09-10：Dreaming 合并已接入方案 API、MCP 和桌面审批。模型必须先读取全部目标，merge_ids 与冻结版本进入持久方案；桌面展示全部原记录与合并结果，用户批准后执行私人范围合并。旧记录转为 SUPERSEDED，来源保留，生产向量清理。模型工具不提供批准入口。无新增依赖、schema 或源目录变化，已有 CMake/宿主导出清单包含审批组件。真实模型、V11 同包验收尚未完成。
 
 2026-09-10：实际使用的记忆引用增加 `GET /agent/citations/{context_id}/{knowledge_id}`。只读取已消费、未过期的 MEMORY_SOURCES 记录，重新检查知识 ACTIVE 状态、当前读取授权及证据敏感级别，返回当时引用的证据与版本信息。trace 上下文附加 pixiu://citation 链接并遵守原字符预算，普通无记忆回答不增加链接。桌面消息链接处理尚未接通；不能宣称回答内查看已经完成。无新增依赖、数据库或构建输入。
+
+自动同步证书已接入 tls_identity.py：复用既有 cryptography 与加密设备身份；令牌 v2 携带签名证书，配对/解绑重载信任，未配对拒绝握手。test_sync_managed_tls.py 使用真实 TLS 验证拒绝、双向信任与撤销；108 项相关 API/配对/服务检查通过。同包多机验收待完成。既有递归后端打包包含新模块，无新依赖。

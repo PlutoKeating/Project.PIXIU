@@ -110,6 +110,9 @@ class SyncService:
             self._store, self._identity_manager, identity
         ).create_token(method, pin=pin, ttl_seconds=ttl_seconds, now=now)
 
+    async def tls_certificate(self) -> str:
+        return self._identity_manager.tls_certificate(await self.initialize())
+
     async def pair(
         self,
         method: PairingMethod,

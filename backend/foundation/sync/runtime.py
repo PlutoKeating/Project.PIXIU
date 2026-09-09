@@ -235,25 +235,29 @@ async def create_sync_runtime(
     identity = await service.initialize()
     discovery = MdnsDiscovery()
     directory = TrustedPeerDirectory(store, identity.domain)
-    server_context = create_mtls_context(
-        certfile=settings.sync_certfile,
-        keyfile=settings.sync_keyfile,
-        cafile=settings.sync_cafile,
-        server_side=True,
-        key_password=settings.sync_tls_key_password,
-    )
-    client_context = create_mtls_context(
-        certfile=settings.sync_certfile,
-        keyfile=settings.sync_keyfile,
-        cafile=settings.sync_cafile,
-        server_side=False,
-        key_password=settings.sync_tls_key_password,
-    )
+    managed = not getattr(settings, "sync_tls_configured", True)
+    addresses = _resolve_advertise_addresses(settings)
+    bind_host = settings.sync_bind_host
+    advertised_name = settings.sync_server_name
+    if managed:
+        from .tls_identity import prepare_credentials, server_name
+        credentials = await prepare_credentials(service, store, settings)
+        advertised_name = server_name(identity.id)
+        # Older packages configured loopback even while advertising the LAN.
+        # Managed synchronization listens on the advertised private interface.
+        if bind_host == "127.0.0.1":
+            bind_host = addresses[0]
+    else:
+        credentials = dict(certfile=settings.sync_certfile,
+                           keyfile=settings.sync_keyfile, cafile=settings.sync_cafile,
+                           key_password=settings.sync_tls_key_password)
+    server_context = create_mtls_context(**credentials, server_side=True)
+    client_context = create_mtls_context(**credentials, server_side=False)
     protocol = SyncProtocol(service, store)
 
     async def start_server() -> TlsJsonServer:
         return await start_tls_json_server(
-            host=settings.sync_bind_host,
+            host=bind_host,
             port=settings.sync_port,
             context=server_context,
             handler=protocol.handle,
@@ -270,9 +274,9 @@ async def create_sync_runtime(
         name=identity.name,
         domain=identity.domain,
         public_key=identity.public_key,
-        addresses=_resolve_advertise_addresses(settings),
+        addresses=addresses,
         port=settings.sync_port,
-        server_name=settings.sync_server_name,
+        server_name=advertised_name,
         pairable=True,  # SN-4 运行时开关细化前默认可配对
     )
     return SyncRuntime(
