@@ -1,0 +1,22 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/编辑与语义冲突-01.mp4",
+  "video_sha256": "535c14354c97a01cd63da0cd9e65e26484d794b5764bebcebce9d8d92abe5fca",
+  "peak_dbfs": -7.283806324005127,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": -4.273506437678584,
+  "probes": [
+    {
+      "declared_start_frame": 15.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999589671599886,
+      "source_peak_frame": 241.05,
+      "source": "raw/audio/s16/64ef520e06bc.mp3",
+      "source_sha256": "bb8dbbc0f9818f3167b6e40bbf58ac9b1aa5746ee491b2d0cfae57767c20d430"
+    }
+  ]
+}

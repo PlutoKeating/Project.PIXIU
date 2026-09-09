@@ -177,3 +177,25 @@ for example, kind, quote in zip(examples, kinds, quotes):
     'sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'examples': output,
 }, ensure_ascii=False, indent=2) + '\n')
 print('已核对四类知识的正文、摘录、类型与来源ID')
+
+source = ROOT / 'raw/network/语义冲突审计-01.json'
+record = json.loads(source.read_text())
+assert record['status'] == 'verified' and record['audit']['http_status'] == 200
+assert all(c['response']['status'] == 200 for c in record['calls'])
+old, new = [record['calls'][i]['response']['body']['items'][0] for i in (1, 4)]
+audit = record['audit']['records'][0]
+assert audit['target_knowledge'] == old['knowledge_id'] != new['knowledge_id']
+for index, item in ((0, old), (3, new)):
+    evidence = record['calls'][index]['response']['body']['evidence_id']
+    assert item['evidence_ids'] == [evidence]
+    detail = record['calls'][index + 2]['response']['body']
+    assert detail['id'] == evidence
+    assert detail['raw']['body'] == record['calls'][index]['request']['body']['raw']['body']
+    assert detail['raw']['body']['层数'] == (3 if index == 0 else 4)
+assert audit['old_value'] == 3 and audit['new_value'] == 4
+assert audit['resolution'] == 'NEW_WINS' and audit['severity'] == 'medium'
+(ROOT / 'src/semantic-conflict.json').write_text(json.dumps({
+    'source': str(source.relative_to(ROOT)),
+    'sha256': hashlib.sha256(source.read_bytes()).hexdigest(), **audit,
+}, ensure_ascii=False, indent=2) + '\n')
+print('已核对语义冲突原值、裁决与新旧知识来源')

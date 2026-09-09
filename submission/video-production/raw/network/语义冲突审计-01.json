@@ -1,0 +1,236 @@
+{
+  "environment": "V11虚拟机公共接口；公开合成资料，本机个人范围",
+  "title": "家庭书架层数核对",
+  "scope": "user:local",
+  "status": "verified",
+  "calls": [
+    {
+      "recorded_at": 1788929068.0463676,
+      "request": {
+        "method": "POST",
+        "path": "/memory/write",
+        "body": {
+          "source_type": "MANUAL_CONFIG",
+          "scope": "user:local",
+          "idempotency_key": "video-semantic-v1-3",
+          "raw": {
+            "title": "家庭书架层数核对",
+            "body": {
+              "entity": "演示书房公共书架",
+              "层数": 3
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M227PJBHEP0QB8DHQWHW3KP2",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 381
+        }
+      }
+    },
+    {
+      "recorded_at": 1788929068.4193578,
+      "request": {
+        "method": "POST",
+        "path": "/agent/context",
+        "body": {
+          "query": "家庭书架层数核对",
+          "scope": "user:local",
+          "session_id": "video-semantic-v1",
+          "turn_id": "3",
+          "top_k": 1,
+          "max_chars": 2000
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "session_id": "video-semantic-v1",
+          "turn_id": "3",
+          "context": "- 家庭书架层数核对: {\"entity\":\"演示书房公共书架\",\"层数\":3} [knowledge=knw_01M227PJBMWA9F29RSC0R0XK85; evidence=evd_01M227PJBHEP0QB8DHQWHW3KP2]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M227PJBMWA9F29RSC0R0XK85",
+              "version": 1,
+              "title": "家庭书架层数核对",
+              "scope": "user:local",
+              "evidence_ids": [
+                "evd_01M227PJBHEP0QB8DHQWHW3KP2"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788929067,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 21
+        }
+      }
+    },
+    {
+      "recorded_at": 1788929068.713748,
+      "request": {
+        "method": "GET",
+        "path": "/evidence/evd_01M227PJBHEP0QB8DHQWHW3KP2",
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "evd_01M227PJBHEP0QB8DHQWHW3KP2",
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "家庭书架层数核对",
+            "body": {
+              "entity": "演示书房公共书架",
+              "层数": 3
+            },
+            "entities": [],
+            "relations": [],
+            "content_hash": "f3c2883539d0acbc9559017d373a74e5291d30b5f5f6ff80a514dac5315c2166"
+          },
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "provenance": null,
+          "capture_source": null,
+          "scope": "user:local",
+          "created_at": 1788929067
+        }
+      }
+    },
+    {
+      "recorded_at": 1788929069.3206322,
+      "request": {
+        "method": "POST",
+        "path": "/memory/write",
+        "body": {
+          "source_type": "MANUAL_CONFIG",
+          "scope": "user:local",
+          "idempotency_key": "video-semantic-v1-4",
+          "raw": {
+            "title": "家庭书架层数核对",
+            "body": {
+              "entity": "演示书房公共书架",
+              "层数": 4
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M227PKQV21MGCN1WCNF1HTE2",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": true,
+          "latency_ms": 239
+        }
+      }
+    },
+    {
+      "recorded_at": 1788929069.666871,
+      "request": {
+        "method": "POST",
+        "path": "/agent/context",
+        "body": {
+          "query": "家庭书架层数核对",
+          "scope": "user:local",
+          "session_id": "video-semantic-v1",
+          "turn_id": "4",
+          "top_k": 1,
+          "max_chars": 2000
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "session_id": "video-semantic-v1",
+          "turn_id": "4",
+          "context": "- 家庭书架层数核对: {\"entity\":\"演示书房公共书架\",\"层数\":4} [knowledge=knw_01M227PKQZ71J3S3AT6RMEH908; evidence=evd_01M227PKQV21MGCN1WCNF1HTE2]",
+          "items": [
+            {
+              "knowledge_id": "knw_01M227PKQZ71J3S3AT6RMEH908",
+              "version": 2,
+              "title": "家庭书架层数核对",
+              "scope": "user:local",
+              "evidence_ids": [
+                "evd_01M227PKQV21MGCN1WCNF1HTE2"
+              ],
+              "confidence": 1.0,
+              "updated_at": 1788929068,
+              "freshness": "fresh",
+              "conflict_status": "none"
+            }
+          ],
+          "truncated": false,
+          "latency_ms": 22
+        }
+      }
+    },
+    {
+      "recorded_at": 1788929069.960372,
+      "request": {
+        "method": "GET",
+        "path": "/evidence/evd_01M227PKQV21MGCN1WCNF1HTE2",
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "evd_01M227PKQV21MGCN1WCNF1HTE2",
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "家庭书架层数核对",
+            "body": {
+              "entity": "演示书房公共书架",
+              "层数": 4
+            },
+            "entities": [],
+            "relations": [],
+            "content_hash": "2f5e769350115abe81721db934b6291efff076c574136dbefb1f2def2081fbc0"
+          },
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "provenance": null,
+          "capture_source": null,
+          "scope": "user:local",
+          "created_at": 1788929068
+        }
+      }
+    }
+  ],
+  "audit": {
+    "request": {
+      "method": "GET",
+      "path": "/conflicts"
+    },
+    "http_status": 200,
+    "records": [
+      {
+        "id": "cfl_01M227PKTSPC91EPXJGAA1PAZ1",
+        "target_knowledge": "knw_01M227PJBMWA9F29RSC0R0XK85",
+        "field": "演示书房公共书架.层数",
+        "old_value": 3,
+        "new_value": 4,
+        "resolution": "NEW_WINS",
+        "created_at": 1788929068,
+        "source": "write",
+        "severity": "medium"
+      }
+    ],
+    "response_filter": {
+      "target_knowledge": "knw_01M227PJBMWA9F29RSC0R0XK85",
+      "omitted_unrelated_count": 1
+    }
+  }
+}
