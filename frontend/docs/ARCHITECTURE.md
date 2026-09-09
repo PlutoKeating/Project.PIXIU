@@ -504,3 +504,7 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 ## 2026-09-10 正式源码目录
 
 正式桌面代码按 `frontend/src/shell` 和 `frontend/src/workspaces/{memory,devices,settings,delivery}` 组织。`frontend/cmake/Management.cmake` 定义正式管理库，统一从 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON` 构建测试。宿主使用 `frontend-sources.json` 导出清单及生成的兼容 CMake 入口，只有一个正式桌面程序。Agent 位于 `backend/agent`，平台运行实现位于 `backend/platform`，不新增依赖。完整迁移与用户场景台账见 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。
+
+## 2026-09-10 助手记忆范围
+
+`GET/PUT /agent/settings` 读取/保存 include_capture（默认 true）、shared_scopes（默认空数组，仅 shared:*）、write_scope（默认 null，沿用当前 Agent）。设置保存于本机安全偏好，不随记忆共享同步。`POST /agent/context` 的可选 use_settings 默认 false；Agent 设置为 true 时，默认个人 user:default/user:local 可读取授权采集，另外查询用户选择的共享空间，返回 read_scopes。自定义个人范围保持隔离。显式记忆工具按 write_scope 保存，普通会话保存范围不变；设置页面分别控制读取与保存，不迁移已有数据。不新增依赖或数据库 schema。

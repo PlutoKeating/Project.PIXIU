@@ -53,9 +53,14 @@ AgentEvidenceResult parseAgentEvidence(const QByteArray &response, const QString
         if (result.value("session_id").toString() != sessionId ||
             !safeSession.match(result.value("turn_id").toString()).hasMatch() ||
             !result.value("items").isArray()) return {};
+        for (const auto &selected : result.value("read_scopes").toArray()) {
+            if (!safeScope.match(selected.toString()).hasMatch()) return {};
+            if (!parsed.readScopes.contains(selected.toString())) parsed.readScopes.append(selected.toString());
+        }
         for (const auto &value : result.value("items").toArray()) {
             const auto item = value.toObject();
-            if (item.value("scope").toString() != scope) continue;
+            if (item.value("scope").toString() != scope
+                && !result.value("read_scopes").toArray().contains(item.value("scope"))) continue;
             const auto knowledge = item.value("knowledge_id").toString();
             if (!knowledgeId.match(knowledge).hasMatch() || !item.value("evidence_ids").isArray()) return {};
             QSet<QString> seen;
@@ -66,7 +71,7 @@ AgentEvidenceResult parseAgentEvidence(const QByteArray &response, const QString
                 seen.insert(id);
                 if (parsed.references.size() == 256) return {AgentEvidenceResult::TooLarge, {}};
                 parsed.references.append({id, knowledge, item.value("title").toString().left(512),
-                    scope, result.value("turn_id").toString(), call});
+                    item.value("scope").toString(), result.value("turn_id").toString(), call});
             }
         }
     }

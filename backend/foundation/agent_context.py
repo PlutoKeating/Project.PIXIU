@@ -34,12 +34,15 @@ class AgentContextService:
         top_k: int,
         max_chars: int,
         freshness_seconds: int,
+        read_scopes: list[str] | None = None,
     ) -> dict[str, Any]:
         started = time.monotonic()
-        ranked = await self._retrieval.ranked(
-            query,
-            {"scope": scope, "top_k": top_k},
-        )
+        scopes = read_scopes or [scope]
+        candidates = []
+        for selected in scopes:
+            candidates.extend(await self._retrieval.ranked(query, {"scope": selected, "top_k": top_k}))
+        ranked = sorted({item.id: (item, score) for item, score in candidates}.values(),
+                        key=lambda pair: pair[1], reverse=True)[:top_k]
         conflicts = await self._conflict_repo.list()
         conflict_by_knowledge: dict[str, str] = {}
         for record in conflicts:
@@ -90,6 +93,7 @@ class AgentContextService:
                 break
 
         return {
+            "read_scopes": scopes,
             "session_id": session_id,
             "turn_id": turn_id,
             "context": context,

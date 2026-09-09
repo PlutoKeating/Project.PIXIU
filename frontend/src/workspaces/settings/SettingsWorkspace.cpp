@@ -7,6 +7,10 @@
 #include "widgets/CheckUpdateDialog.h"
 #include "widgets/InfoDialog.h"
 #include "app/ProductInformation.h"
+#include "services/HttpBackendTransport.h"
+#include <QComboBox>
+#include <QLineEdit>
+#include <QJsonArray>
 #include <QCoreApplication>
 #include <QCheckBox>
 #include <QSignalBlocker>
@@ -31,6 +35,57 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     agent->setObjectName(QStringLiteral("agentSettings"));
     generalLayout->addWidget(agent);
     connect(agent, &QPushButton::clicked, this, &SettingsWorkspace::agentSettingsRequested);
+    auto *memoryHttp = new HttpBackendTransport(this);
+    auto *capture = new QCheckBox(tr("允许助手使用本机已授权采集的记忆"), general);
+    capture->setObjectName("agentReadCapture");
+    auto *shared = new QCheckBox(tr("允许助手查询共享空间"), general);
+    shared->setObjectName("agentReadShared");
+    auto *space = new QLineEdit(QStringLiteral("shared:home"), general);
+    space->setAccessibleName(tr("共享空间名称"));
+    auto *saveTo = new QComboBox(general);
+    saveTo->setObjectName("agentSaveDestination");
+    saveTo->addItem(tr("新记忆仅自己可用"), QStringLiteral("user:local"));
+    saveTo->addItem(tr("新记忆保存到上面的共享空间"), QStringLiteral("shared"));
+    auto *saveMemory = new QPushButton(tr("保存助手记忆设置"), general);
+    auto *memoryStatus = new QLabel(tr("正在读取记忆设置…"), general);
+    memoryStatus->setWordWrap(true);
+    for (auto *widget : QList<QWidget *>{capture, shared, space, saveTo, saveMemory, memoryStatus})
+        generalLayout->addWidget(widget);
+    saveMemory->setEnabled(false);
+    connect(memoryHttp, &HttpBackendTransport::agentMemorySettingsResult, this, [=](const QJsonObject &value) {
+        capture->setChecked(value.value("include_capture").toBool(true));
+        const auto scopes = value.value("shared_scopes").toArray();
+        shared->setChecked(!scopes.isEmpty());
+        if (!scopes.isEmpty()) {
+            QStringList names;
+            for (const auto &entry : scopes) names << entry.toString();
+            space->setText(names.join(","));
+        }
+        const auto write = value.value("write_scope").toString();
+        if (write.startsWith("shared:")) saveTo->setCurrentIndex(1);
+        else {
+            saveTo->setCurrentIndex(0);
+            saveTo->setItemData(0, write.isEmpty()
+                ? qEnvironmentVariable("PIXIU_AGENT_SCOPE", "user:default") : write);
+        }
+        saveMemory->setEnabled(true);
+        memoryStatus->setText(tr("已生效。读取范围与新记忆保存位置分别设置；已有记录不会搬动。"));
+    });
+    connect(saveMemory, &QPushButton::clicked, this, [=]() {
+        QJsonArray scopes;
+        const auto names = space->text().split(',', Qt::SkipEmptyParts);
+        if (shared->isChecked()) for (const auto &name : names) scopes.append(name.trimmed());
+        const QString destination = saveTo->currentIndex() == 1
+            ? (names.isEmpty() ? QString() : names.first().trimmed()) : saveTo->currentData().toString();
+        saveMemory->setEnabled(false);
+        memoryHttp->saveAgentMemorySettings({{"include_capture", capture->isChecked()},
+            {"shared_scopes", scopes}, {"write_scope", destination}});
+    });
+    connect(memoryHttp, &BackendTransport::errorOccurred, this, [=](const QString &, const QString &, const QString &) {
+        saveMemory->setEnabled(true);
+        memoryStatus->setText(tr("记忆设置未保存，请检查服务连接及共享空间名称后重试。"));
+    });
+    memoryHttp->agentMemorySettings();
     auto *shortcutRow = new QHBoxLayout();
     auto *shortcutLabel = new QLabel(tr("唤起快捷键"), general);
     auto *shortcut = new QKeySequenceEdit(general);

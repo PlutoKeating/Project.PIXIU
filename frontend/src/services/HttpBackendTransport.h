@@ -61,10 +61,16 @@ public:
     void deliveryDigest(const QString &date = QString()) override;
     void backendDiagnostics() override;
 
+    void agentMemorySettings();
+    void saveAgentMemorySettings(const QJsonObject &payload);
+
     ConnectionState connectionState() const override;
 
     // 后端基础地址（测试/诊断用）。
     QString baseUrl() const override;
+
+signals:
+    void agentMemorySettingsResult(const QJsonObject &settings);
 
 private:
     QUrl endpoint(const QString &path) const;

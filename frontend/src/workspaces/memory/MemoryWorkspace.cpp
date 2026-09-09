@@ -368,7 +368,7 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
         return false;
     const QRegularExpression validId(QStringLiteral("\\Aevd_[A-Za-z0-9_-]{8,128}\\z"));
     for (const auto &source : result.references) {
-        if (source.scope != scope || !validId.match(source.evidenceId).hasMatch()) return false;
+        if ((source.scope != scope && !result.readScopes.contains(source.scope)) || !validId.match(source.evidenceId).hasMatch()) return false;
     }
     m_scope->setCurrentIndex(m_scope->findData(scope));
     clearResult();
@@ -387,7 +387,7 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
         auto *item = new QListWidgetItem(source.title.isEmpty()
             ? tr("查看来源 %1").arg(m_sources->count() + 1) : source.title.left(512), m_sources);
         item->setData(Qt::UserRole, source.evidenceId);
-        item->setData(Qt::UserRole + 1, scope);
+        item->setData(Qt::UserRole + 1, source.scope);
         ids << source.evidenceId;
     }
     m_audit->setEvidenceIds(ids);

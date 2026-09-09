@@ -101,3 +101,7 @@ python3 -m pytest -q backend/agent/tests
 
 Provider 现只接受 HTTP API 0.5.x，拒绝不具备后端预览凭证协议的 0.3/0.4 以及
 未经验证的后续 minor。产品版本和 Agent Memory API v1 不随 HTTP minor 混用。
+
+## 2026-09-10 助手记忆范围
+
+`GET/PUT /agent/settings` 读取/保存 include_capture（默认 true）、shared_scopes（默认空数组，仅 shared:*）、write_scope（默认 null，沿用当前 Agent）。设置保存于本机安全偏好，不随记忆共享同步。`POST /agent/context` 的可选 use_settings 默认 false；Agent 设置为 true 时，默认个人 user:default/user:local 可读取授权采集，另外查询用户选择的共享空间，返回 read_scopes。自定义个人范围保持隔离。显式记忆工具按 write_scope 保存，普通会话保存范围不变；设置页面分别控制读取与保存，不迁移已有数据。不新增依赖或数据库 schema。

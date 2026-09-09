@@ -463,3 +463,12 @@ void HttpBackendTransport::setConnectionState(ConnectionState state)
     qCInfo(lcHttp) << "connection state:" << connectionStateName(state);
     emit connectionStateChanged(state);
 }
+
+void HttpBackendTransport::agentMemorySettings()
+{
+    getJson("/agent/settings", [this](quint64, const QJsonObject &value) { emit agentMemorySettingsResult(value); });
+}
+void HttpBackendTransport::saveAgentMemorySettings(const QJsonObject &payload)
+{
+    putJson("/agent/settings", payload, [this](quint64, const QJsonObject &value) { emit agentMemorySettingsResult(value); });
+}

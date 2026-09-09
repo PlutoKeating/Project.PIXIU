@@ -24,6 +24,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import AfterValidator, BaseModel, Field, ValidationError, model_validator
 
+from ..agent_access import AgentMemorySettings, load_settings, save_settings, read_scopes
 from ..core.logger import get_logger
 from ..core.models import AgentProvenance, KnowledgeStatus, SourceType, validate_scope
 from ..core.repository import KnowledgeVersionConflict
@@ -326,6 +327,7 @@ class MemoryQueryRequest(BaseModel):
 
 
 class AgentContextRequest(BaseModel):
+    use_settings: bool = False
     query: str = Field(min_length=1, max_length=16 * 1024)
     scope: ScopeValue
     session_id: str = Field(
@@ -802,10 +804,22 @@ async def memory_query(
     return atom.model_dump(mode="json")
 
 
+@app.get("/agent/settings", tags=["Agent"])
+async def agent_settings(preferences=Depends(get_preference_repo)):
+    return (await load_settings(preferences)).model_dump()
+
+
+@app.put("/agent/settings", tags=["Agent"])
+async def update_agent_settings(body: AgentMemorySettings, preferences=Depends(get_preference_repo)):
+    await save_settings(preferences, body)
+    return body.model_dump()
+
+
 @app.post("/agent/context", tags=["Agent"], summary="构建 Agent 轮次记忆上下文")
 async def agent_context(
     body: AgentContextRequest,
     service=Depends(get_agent_context_service),
+    preferences=Depends(get_preference_repo),
 ):
     """返回受 scope、敏感度和字符预算约束且可追溯的记忆上下文。"""
     return await service.build(
@@ -816,6 +830,7 @@ async def agent_context(
         top_k=body.top_k,
         max_chars=body.max_chars,
         freshness_seconds=body.freshness_seconds,
+        read_scopes=read_scopes(body.scope, await load_settings(preferences)) if body.use_settings else None,
     )
 
 

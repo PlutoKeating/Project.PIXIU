@@ -1696,3 +1696,26 @@ def test_sync_knowledge_state_exposes_tombstone_without_payload(client):
     encoded = json.dumps(deleted.json(), ensure_ascii=False)
     assert "shared state marker" not in encoded
     assert "shared:home" not in encoded
+
+
+def test_agent_authorized_capture_and_shared_spaces(client):
+    for scope in ('user:local', 'shared:home', 'user:other'):
+        response = client.post('/memory/write', json={
+            'source_type': 'MANUAL_CONFIG',
+            'raw': {'title': '家庭会议安排', 'body': {'text': '周五讨论采购'}},
+            'scope': scope,
+        })
+        assert response.status_code == 200
+    request = {'query': '家庭会议安排', 'scope': 'user:default',
+               'session_id': 'session-access', 'turn_id': 'turn-1', 'use_settings': True}
+    result = client.post('/agent/context', json=request).json()
+    assert {item['scope'] for item in result['items']} == {'user:local'}
+    saved = client.put('/agent/settings', json={
+        'include_capture': True, 'shared_scopes': ['shared:home'], 'write_scope': 'user:local'})
+    assert saved.status_code == 200
+    result = client.post('/agent/context', json=request).json()
+    assert {item['scope'] for item in result['items']} == {'user:local', 'shared:home'}
+    # Explicit low-level calls preserve the original one-space contract.
+    request['use_settings'] = False
+    assert client.post('/agent/context', json=request).json()['items'] == []
+    assert client.put('/agent/settings', json={'shared_scopes': ['user:other']}).status_code == 400
