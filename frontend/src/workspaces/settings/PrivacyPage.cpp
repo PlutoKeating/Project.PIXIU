@@ -56,7 +56,7 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     m_directories->setObjectName(QStringLiteral("privacyDirectories"));
     m_directories->setAccessibleName(tr("监视目录列表"));
     layout->addWidget(m_directories, 1);
-    m_browse = new QPushButton(tr("浏览并添加目录（保存后生效）…"), this);
+    m_browse = new QPushButton(tr("添加文件夹…"), this);
     m_browse->setObjectName(QStringLiteral("privacyBrowse"));
     layout->addWidget(m_browse);
     connect(m_browse, &QPushButton::clicked, this, [this]() {
@@ -88,9 +88,9 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
         m_directories->setPlainText(draft + selected);
         m_status->setText(tr("目录已加入草稿；请核对范围后保存。未自动开启采集。"));
     });
-    m_load = new QPushButton(tr("读取已保存配置"), this);
+    m_load = new QPushButton(tr("重试读取设置"), this);
     m_load->setObjectName(QStringLiteral("privacyLoad"));
-    m_save = new QPushButton(tr("保存采集配置"), this);
+    m_save = new QPushButton(tr("保存设置"), this);
     m_save->setObjectName(QStringLiteral("privacySave"));
     auto *buttons = new QHBoxLayout;
     buttons->addWidget(m_load);
@@ -190,7 +190,7 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
         QStringList paths;
         for (const auto &path : config.value("directories").toArray()) paths << path.toString();
         m_directories->setPlainText(paths.join(QLatin1Char('\n')));
-        m_status->setText(tr("已读取后端保存的配置。实际采集情况请查看日志；目录权限及桌面能力可能影响采集。"));
+        m_status->setText(tr("隐私设置已更新。"));
         controls();
     });
     connect(m_logs, &QPushButton::clicked, this, [this]() { loadLogs(0); });
@@ -248,6 +248,7 @@ void PrivacyPage::controls()
     m_browse->setEnabled(idle && m_loaded && bool(m_directoryPicker));
     m_save->setEnabled(idle && m_loaded);
     m_load->setEnabled(idle);
+    m_load->setVisible(!m_loaded && idle);
     m_logs->setEnabled(idle);
     m_previous->setEnabled(idle && m_offset > 0);
     m_next->setEnabled(idle && m_more);
@@ -266,6 +267,7 @@ void PrivacyPage::scheduleRefresh()
 void PrivacyPage::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
+    if (!m_loaded && m_pending == Pending::None) m_load->click();
     scheduleRefresh();
 }
 bool PrivacyPage::hasUnsavedChanges() const

@@ -5,6 +5,7 @@ class BackendTransport;
 class QListWidget;
 class QPlainTextEdit;
 class QLabel;
+class QTimer;
 namespace pixiu {
 class DeliveryPage : public QWidget
 {
@@ -13,9 +14,15 @@ public:
     explicit DeliveryPage(QWidget *parent, BackendTransport *transport = nullptr);
     bool hasPendingOperation() const { return m_pending != None; }
     void notifyDataChanged();
+protected:
+    void showEvent(QShowEvent *event) override;
 signals:
     void searchRequested(const QString &text);
 private:
+    void scheduleRefresh();
+    QTimer *m_refreshTimer;
+    bool m_refreshNeeded = true;
+    bool m_autoDigest = false;
     enum Pending { None, Insights, Digest };
     Pending m_pending = None;
     QString m_digestDate;

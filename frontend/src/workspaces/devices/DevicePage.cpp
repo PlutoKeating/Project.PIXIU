@@ -38,7 +38,7 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     layout->addWidget(m_enabled);
     layout->addWidget(m_paused);
     auto *buttons = new QHBoxLayout;
-    m_refresh = new QPushButton(tr("刷新状态与节点"), this);
+    m_refresh = new QPushButton(tr("重试连接"), this);
     m_refresh->setObjectName(QStringLiteral("deviceRefresh"));
     m_save = new QPushButton(tr("保存同步设置"), this);
     m_save->setObjectName(QStringLiteral("deviceSave"));
@@ -51,13 +51,13 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     m_peers->setAccessibleName(tr("本机与本地信任节点"));
     m_peers->setWordWrap(true);
     layout->addWidget(m_peers, 1);
-    m_revoke = new QPushButton(tr("解除所选设备的本地信任…"), this);
+    m_revoke = new QPushButton(tr("移除所选设备…"), this);
     m_revoke->setObjectName(QStringLiteral("deviceRevoke"));
     layout->addWidget(m_revoke);
-    m_leave = new QPushButton(tr("解除全部本地信任并关闭网络…"), this);
+    m_leave = new QPushButton(tr("断开所有设备…"), this);
     m_leave->setObjectName(QStringLiteral("deviceLeave"));
     layout->addWidget(m_leave);
-    auto *pair = new QPushButton(tr("交换配对令牌…"), this);
+    auto *pair = new QPushButton(tr("添加设备…"), this);
     pair->setObjectName(QStringLiteral("devicePair"));
     layout->addWidget(pair);
     auto *pairing = new PairingDialog(this);
@@ -70,7 +70,7 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     connect(pairing, &PairingDialog::localTrustEstablished, this, [this]() {
         m_status->setText(tr("配对页已建立本地信任，请刷新节点；对端信任及实际传输仍须核对。"));
     });
-    m_discover = new QPushButton(tr("读取附近设备广播"), this);
+    m_discover = new QPushButton(tr("查找附近设备"), this);
     m_discover->setObjectName(QStringLiteral("deviceDiscover"));
     layout->addWidget(m_discover);
     m_discovered = new QListWidget(this);
@@ -324,6 +324,7 @@ void DevicePage::controls()
 {
     const bool idle = m_pending == Pending::None;
     m_refresh->setEnabled(idle);
+    m_refresh->setVisible(!m_loaded && idle);
     m_discover->setEnabled(idle);
     m_leave->setEnabled(idle);
     if (auto *pair = findChild<QPushButton *>(QStringLiteral("devicePair"))) pair->setEnabled(idle);

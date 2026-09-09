@@ -36,7 +36,7 @@ private:
     QString m_revoking;
     QStringList m_leaveQueue;
     QTimer *m_refreshTimer;
-    bool m_refreshNeeded = false;
+    bool m_refreshNeeded = true;
     QString m_restorePeer;
 };
 }

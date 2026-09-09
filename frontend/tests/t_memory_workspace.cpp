@@ -1128,6 +1128,27 @@ private slots:
         QCOMPARE(transport.writes, 0);
         QCOMPARE(date->date(), QDate(2024, 2, 29));
     }
+    void deliveryReadsOnOpenAndDateChangeWithoutButtons()
+    {
+        Transport transport;
+        pixiu::DeliveryPage page(nullptr, &transport);
+        QCOMPARE(transport.insightReads, 0);
+        page.show();
+        QTRY_COMPARE(transport.insightReads, 1);
+        emit transport.insightsResult({});
+        QCOMPARE(transport.digestReads, 1);
+        emit transport.digestResult({{"date", QDate::currentDate().toString(Qt::ISODate)}, {"summary", "今天的简报"}});
+        QVERIFY(page.findChild<QPushButton *>("deliveryInsights")->isHidden());
+        QVERIFY(page.findChild<QPushButton *>("deliveryDigest")->isHidden());
+        page.findChild<QDateEdit *>("deliveryDate")->setDate(QDate(2024, 2, 29));
+        QTRY_COMPARE(transport.insightReads, 2);
+        emit transport.insightsResult({});
+        QCOMPARE(transport.digestDate, QStringLiteral("2024-02-29"));
+        emit transport.digestResult({{"date", "2024-02-29"}, {"summary", "所选日期的简报"}});
+        QVERIFY(page.findChild<QPlainTextEdit *>("deliveryBody")->toPlainText().contains("所选日期的简报"));
+        QCOMPARE(transport.writes, 0);
+        QCOMPARE(transport.configWrites, 0);
+    }
     void deliveryDistinguishesErrorsAndSupportsSearch()
     {
         Transport transport;
@@ -1147,12 +1168,12 @@ private slots:
         QVERIFY(!digest->isEnabled());
         QVERIFY(!date->isEnabled());
         emit transport.insightsResult({});
-        QVERIFY(status->text().contains("不代表记忆库为空"));
+        QVERIFY(status->text().contains("最近没有新的建议"));
         insights->click();
         emit transport.insightsResult({QJsonObject{{"title", "Example"}, {"summary", "Summary"}, {"knowledge_id", "k1"}, {"score", 0.7}}});
         QCOMPARE(items->count(), 1);
         QVERIFY(items->item(0)->text().contains("Example\nSummary"));
-        QVERIFY(items->item(0)->text().contains("0.70"));
+        QVERIFY(!items->item(0)->text().contains("0.70"));
         items->setCurrentRow(0);
         QSignalSpy requested(&page, &pixiu::DeliveryPage::searchRequested);
         search->click();
@@ -1574,6 +1595,9 @@ private slots:
         copy->trigger();
         QCOMPARE(QApplication::clipboard()->text(), text);
         page.show();
+        emit transport.configResult({{"enabled", false}, {"directories", QJsonArray{}},
+            {"sources", QJsonObject{{"directory", false}, {"behavior", false},
+                {"clipboard", false}, {"screenshot", false}}}});
         page.activateWindow();
         list->setFocus();
         QVERIFY(QTest::qWaitForWindowActive(&page));

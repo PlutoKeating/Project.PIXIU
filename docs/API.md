@@ -1319,3 +1319,5 @@ Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，�
 后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
 
 偏好管理界面不再调用 `/preference/extract`：正式写入管线自动执行偏好提取，页面显示与相关事件触发只读列表更新。该调整不改变既有写入或审批契约。
+
+简报、隐私与设备页面的首次自动加载复用既有只读 API；日期切换与数据事件不会提交配置或执行写入，不新增 API、依赖或 schema。

@@ -8,16 +8,18 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QTimer>
+#include <QShowEvent>
 
 namespace pixiu {
 DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidget(parent)
 {
     auto *http = transport ? transport : new HttpBackendTransport(this);
     auto *layout = new QVBoxLayout(this);
-    auto *intro = new QLabel(tr("洞察来自本机个人域最近 24 小时的记忆候选，最多显示 3 条；待处理人工冲突可能抑制推荐。简报按日期汇总文件采集与应用使用记录；聊天和手工录入不计入采集数量。"), this);
+    auto *intro = new QLabel(tr("近期值得关注的资料，以及每天整理的文件和应用使用情况。"), this);
     intro->setWordWrap(true);
     layout->addWidget(intro);
-    auto *insights = new QPushButton(tr("刷新记忆洞察"), this);
+    auto *insights = new QPushButton(tr("重试读取建议"), this);
     insights->setObjectName(QStringLiteral("deliveryInsights"));
     layout->addWidget(insights);
     auto *items = new QListWidget(this);
@@ -26,10 +28,10 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     items->setWordWrap(true);
     items->setAccessibleName(tr("记忆洞察候选"));
     layout->addWidget(items, 1);
-    auto *search = new QPushButton(tr("按所选标题检索记忆"), this);
+    auto *search = new QPushButton(tr("查看相关资料"), this);
     search->setObjectName(QStringLiteral("deliverySearch"));
     layout->addWidget(search);
-    auto *dateLabel = new QLabel(tr("简报日期（按后端本地时区；初始值为本机今天）"), this);
+    auto *dateLabel = new QLabel(tr("日期"), this);
     layout->addWidget(dateLabel);
     auto *datePicker = new QDateEdit(QDate::currentDate(), this);
     datePicker->setObjectName(QStringLiteral("deliveryDate"));
@@ -38,7 +40,7 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     datePicker->setAccessibleName(tr("采集简报日期"));
     dateLabel->setBuddy(datePicker);
     layout->addWidget(datePicker);
-    auto *digest = new QPushButton(tr("读取所选日期采集简报"), this);
+    auto *digest = new QPushButton(tr("重试读取简报"), this);
     digest->setObjectName(QStringLiteral("deliveryDigest"));
     layout->addWidget(digest);
     auto *body = new QPlainTextEdit(this);
@@ -46,13 +48,26 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     body->setObjectName(QStringLiteral("deliveryBody"));
     body->setReadOnly(true);
     layout->addWidget(body, 1);
-    auto *status = new QLabel(tr("请选择读取洞察或简报。"), this);
+    auto *status = new QLabel(tr("正在准备简报…"), this);
     m_status = status;
     status->setObjectName(QStringLiteral("deliveryStatus"));
     status->setTextFormat(Qt::PlainText);
     status->setWordWrap(true);
     layout->addWidget(status);
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setSingleShot(true);
+    m_refreshTimer->setInterval(500);
+    connect(m_refreshTimer, &QTimer::timeout, this, [=]() {
+        if (!isVisible() || m_pending != None || !m_refreshNeeded) return;
+        m_refreshNeeded = false;
+        m_autoDigest = true;
+        insights->click();
+    });
     auto controls = [=]() {
+        insights->setVisible(insights->property("retryNeeded").toBool());
+        digest->setVisible(digest->property("retryNeeded").toBool());
+        search->setVisible(items->currentItem());
+        scheduleRefresh();
         insights->setEnabled(m_pending == None);
         digest->setEnabled(m_pending == None);
         datePicker->setEnabled(m_pending == None);
@@ -61,7 +76,8 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     };
     connect(datePicker, &QDateEdit::dateChanged, this, [=]() {
         body->clear();
-        if (m_pending == None) status->setText(tr("日期已更改，请读取所选日期的简报。"));
+        m_refreshNeeded = true;
+        scheduleRefresh();
     });
     connect(items, &QListWidget::currentRowChanged, this, [=]() { controls(); });
     connect(search, &QPushButton::clicked, this, [=]() {
@@ -70,6 +86,8 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     });
     connect(insights, &QPushButton::clicked, this, [=]() {
         if (m_pending != None) return;
+        m_refreshNeeded = false;
+        insights->setProperty("retryNeeded", false);
         m_pending = Insights;
         m_invalidated = false;
         items->clear();
@@ -79,6 +97,8 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
     });
     connect(digest, &QPushButton::clicked, this, [=]() {
         if (m_pending != None) return;
+        m_refreshNeeded = false;
+        digest->setProperty("retryNeeded", false);
         m_pending = Digest;
         m_invalidated = false;
         m_digestDate = datePicker->date().toString(Qt::ISODate);
@@ -96,17 +116,19 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
             if (item.value("title").toString().isEmpty() || !item.value("summary").isString()
                 || item.value("knowledge_id").toString().isEmpty() || !item.value("score").isDouble()) {
                 items->clear();
-                status->setText(tr("洞察响应包含无效记录，请重试。"));
+                insights->setProperty("retryNeeded", true);
+                status->setText(tr("建议暂时未能读取，请重试。"));
                 controls();
                 return;
             }
-            auto *row = new QListWidgetItem(tr("%1\n%2\n质量分：%3").arg(item.value("title").toString(),
-                item.value("summary").toString()).arg(item.value("score").toDouble(), 0, 'f', 2), items);
+            auto *row = new QListWidgetItem(tr("%1\n%2").arg(item.value("title").toString(),
+                item.value("summary").toString()), items);
             row->setData(Qt::UserRole, item.value("title").toString());
         }
-        status->setText(result.isEmpty() ? tr("暂无洞察候选；可能没有近期候选或推荐被冲突抑制，不代表记忆库为空。")
-            : tr("洞察已读取。标题检索可能返回多条匹配，不等同于直接打开此知识。"));
+        status->setText(result.isEmpty() ? tr("最近没有新的建议。")
+            : tr("选择一条建议查看相关资料。"));
         controls();
+        if (m_autoDigest) { m_autoDigest = false; digest->click(); }
     });
     connect(http, &BackendTransport::digestResult, this, [=](const QJsonObject &result) {
         if (m_pending != Digest) return;
@@ -114,30 +136,45 @@ DeliveryPage::DeliveryPage(QWidget *parent, BackendTransport *transport) : QWidg
         if (m_invalidated) { controls(); return; }
         const auto date = result.value("date").toString();
         if (!QDate::fromString(date, Qt::ISODate).isValid() || !result.value("summary").isString()) {
-            status->setText(tr("简报响应不完整，请重试。"));
+            digest->setProperty("retryNeeded", true);
+            status->setText(tr("简报暂时未能读取，请重试。"));
         } else if (date != m_digestDate || datePicker->date().toString(Qt::ISODate) != m_digestDate) {
-            status->setText(tr("简报返回日期与所选日期不一致，未显示内容，请重试。"));
+            digest->setProperty("retryNeeded", true);
+            status->setText(tr("简报日期不一致，请重试。"));
         } else {
             body->setPlainText(date + QLatin1Char('\n') + result.value("summary").toString());
-            status->setText(tr("已读取后端日期对应的采集简报。"));
+            status->setText(tr("简报已更新。"));
         }
         controls();
     });
     connect(http, &BackendTransport::errorOccurred, this, [=](const QString &, const QString &message, const QString &) {
         if (m_pending == None) return;
+        (m_pending == Insights ? insights : digest)->setProperty("retryNeeded", true);
+        m_autoDigest = false;
         m_pending = None;
         if (m_invalidated) { controls(); return; }
-        status->setText(tr("读取失败：%1。可重试。未将错误显示为空数据。").arg(message));
+        status->setText(tr("暂时未能读取：%1，请重试。").arg(message));
         controls();
     });
     controls();
 }
 void DeliveryPage::notifyDataChanged()
 {
-    if (m_pending == None && m_items->count() == 0 && m_body->toPlainText().isEmpty()) return;
+    m_refreshNeeded = true;
     m_invalidated = true;
     m_items->clear();
     m_body->clear();
-    m_status->setText(tr("记忆或采集数据已变化，旧洞察与简报已清除。请重新读取；所选日期已保留。"));
+    m_status->setText(tr("正在更新简报…"));
+    scheduleRefresh();
+}
+void DeliveryPage::scheduleRefresh()
+{
+    if (m_refreshNeeded && isVisible() && m_pending == None && !m_refreshTimer->isActive())
+        m_refreshTimer->start();
+}
+void DeliveryPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    scheduleRefresh();
 }
 }
