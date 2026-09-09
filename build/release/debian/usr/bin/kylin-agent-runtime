@@ -6,4 +6,5 @@ runtime=/usr/lib/pixiu/venv/bin/kylin-agent-runtime
     echo "kylin-agent-runtime: packaged Runtime is unavailable" >&2
     exit 127
 }
+export PYTHONPATH=/usr/lib/pixiu${PYTHONPATH:+:$PYTHONPATH}
 exec "${runtime}" "$@"

@@ -72,6 +72,7 @@ class IngestBridge:
         security: Any | None = None,
         ocr: OcrAdapter | None = None,
         media: Any | None = None,
+        dreaming: Any | None = None,
         scope: str = "user:local",
         max_text_bytes: int = 1024 * 1024,
         source_type: str = "MANUAL_CONFIG",
@@ -83,6 +84,7 @@ class IngestBridge:
         self._security = security
         self._ocr = ocr  # reserved for sensitivity annotations; never knowledge extraction
         self._media = media
+        self._dreaming = dreaming
         #: 捕获落库 scope —— 监视写入默认本机 user:*，敏感条目绝不入 shared:*。
         self._scope = validate_scope(scope)
         if not self._scope.startswith("user:"):
@@ -100,6 +102,8 @@ class IngestBridge:
         """
         # Use the same absolute path for reading and provenance; do not resolve symlinks.
         path = str(Path(path).absolute())
+        if self._dreaming is not None:
+            return await self._dreaming.capture(path)
         name = Path(path).name
         suffix = Path(path).suffix.lower()
         if suffix in IMAGE_SUFFIXES or suffix == ".pdf":

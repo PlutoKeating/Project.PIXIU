@@ -82,7 +82,6 @@ findings = [
 if findings != ["agent/redact.py"]:
     raise SystemExit(f"unexpected authenticated URL locations after pruning: {findings}")
 PY
-    patch -d "${output_root}/source" -p1 --forward --batch < "${repo_root}/backend/agent/runtime/patches/0004-image-knowledge-draft.patch"
     install -m 0644 "${repo_root}/backend/agent/runtime/image_draft.py" "${output_root}/source/gateway/pixiu_image_draft.py"
     build_venv="${output_root}/build-venv"
     python3 -m venv "${build_venv}"

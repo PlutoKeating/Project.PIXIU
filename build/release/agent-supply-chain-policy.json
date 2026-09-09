@@ -145,7 +145,13 @@
     "backend/agent/runtime/patches/0003-pixiu-gateway-branding.patch",
     "build/release/scripts/source_checkout.py",
     "backend/agent/runtime/image_draft.py",
-    "backend/agent/runtime/patches/0004-image-knowledge-draft.patch"
+    "backend/agent/runtime/patches/0004-image-knowledge-draft.patch",
+    "backend/agent/runtime/document_tasks.py",
+    "backend/agent/dreaming/__init__.py",
+    "backend/agent/dreaming/runner.py",
+    "backend/agent/dreaming/session.py",
+    "backend/agent/mcp/__init__.py",
+    "backend/agent/mcp/documents.py"
   ],
   "components": {
     "kylin_agent": {
@@ -184,7 +190,8 @@
   "runtime_required_packages": [
     "kylin-agent-runtime",
     "aiohttp",
-    "ddgs"
+    "ddgs",
+    "mcp"
   ],
   "upstream_reference_scan_paths": [
     "third_party/kylin-agent/scripts",

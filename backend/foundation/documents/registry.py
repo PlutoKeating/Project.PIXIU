@@ -16,13 +16,19 @@ class DocumentUnavailable(ValueError):
 
 
 class DocumentRegistry:
-    def __init__(self, db):
+    def __init__(self, db, authorize_source=lambda path: False):
         self.db = db
+        self.authorize_source = authorize_source
 
-    async def register(self, document: DecodedDocument) -> dict:
+    async def register(self, document: DecodedDocument, source_path=None) -> dict:
         reference = secrets.token_hex(32)
         now = int(time.time())
-        payload = json.dumps(asdict(document), ensure_ascii=False)
+        value = asdict(document)
+        if source_path:
+            if not self.authorize_source(source_path):
+                raise DocumentUnavailable("Directory authorization is unavailable")
+            value["source_path"] = source_path
+        payload = json.dumps(value, ensure_ascii=False)
         if len(payload.encode()) > 100 * 1024 * 1024:
             raise ValueError("Decoded document exceeds the supported size")
         await self.db.execute("DELETE FROM document_inputs WHERE expires_at <= ?", (now,))
@@ -41,7 +47,10 @@ class DocumentRegistry:
         row = await cursor.fetchone()
         if row is None:
             raise DocumentUnavailable("Document reference is unavailable or expired")
-        return json.loads(row[0])
+        document = json.loads(row[0])
+        if document.get("source_path") and not self.authorize_source(document["source_path"]):
+            raise DocumentUnavailable("Directory authorization was revoked")
+        return document
 
     @staticmethod
     def _describe(reference, document):

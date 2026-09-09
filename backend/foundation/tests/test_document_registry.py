@@ -46,3 +46,16 @@ async def test_expired_reference_cannot_read_original_document():
         await registry.register(decode_document(b"next", "next.txt"))
         cursor = await db.execute("SELECT count(*) FROM document_inputs")
         assert (await cursor.fetchone())[0] == 1
+
+
+@pytest.mark.asyncio
+async def test_directory_revocation_invalidates_existing_document_reference():
+    authorized = True
+    async with aiosqlite.connect(":memory:") as db:
+        await db.execute(DOCUMENT_INPUTS_DDL)
+        registry = DocumentRegistry(db, lambda path: authorized)
+        entry = await registry.register(decode_document(b"work", "work.txt"), "/authorized/work.txt")
+        assert "source_path" not in entry
+        authorized = False
+        with pytest.raises(DocumentUnavailable, match="revoked"):
+            await registry.read(entry["document_id"])

@@ -56,13 +56,14 @@ async def create_monitor_runtime(
     knowledge = await get_knowledge_service(conn)
     security = await get_security_service(conn)
     from ..agent_media import AgentMediaClient
-    media = AgentMediaClient()
+    from ..documents.access import source_authorized
+    media = AgentMediaClient(authorize_source=lambda path: source_authorized(path, config_store.get()))
 
     bridge = IngestBridge(
         ingestion,
         knowledge,
         security=security,
-        media=media,
+        dreaming=media,
         scope=scope,
     )
     watcher = DirectoryWatcher(

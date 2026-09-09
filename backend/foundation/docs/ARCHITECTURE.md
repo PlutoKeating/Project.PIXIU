@@ -484,4 +484,4 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 
 ### 文档接入（2026-09-10）
 
-`documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。PDF 使用发布画像中的 poppler-utils；标准 Office XML 解码使用 Python 标准库，不执行宏、公式或外链。旧 Office 转换及完整 dreaming 启动器尚待接线。
+`documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。PDF 使用发布画像中的 poppler-utils；标准 Office XML 解码使用 Python 标准库，不执行宏、公式或外链。旧 Office 转换仍待接线；正式目录装配已调用受控 dreaming，目录授权复核与暂存引用撤销贯穿读取和保存。

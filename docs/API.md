@@ -1315,3 +1315,5 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 `POST /documents` 接收 filename/file_base64（最多 30 MiB 原始文件），返回随机 document_id、源文件 SHA-256 version、带位置的内容块清单、warnings 和 decoding_complete。此入口不作为模型工具开放，不接受文件路径。`GET /documents/{id}` 返回清单；`GET /documents/{id}/read?cursor=0` 返回一个 block 与 next_cursor，图片保留 MIME/base64；越界返回 422，失效引用返回 404。`DELETE /documents/{id}` 撤销并删除暂存内容。引用有效期 24 小时，属于读取凭据，不应写入日志或跨任务传播。读取完成不等于模型理解或已写入知识。
 
 当前自动媒体入口：Runtime `/api/memory/image-draft` 跟随当前活动模型，旧 model_id 参数不再决定模型；`GET /api/memory/input-capabilities` 返回 images/scanned_pdf/message，`POST /api/model/active` 由宿主同步当前模型。后端 `GET /agent/input-capabilities` 供设置页面读取状态。统一文档 API 已实现，旧附件入口替换与 dreaming 启动器仍在接线中。
+
+Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，仅接受已登记文档引用；使用当前模型逐块运行限定工具，固定私人采集范围 user:local。文档登记可携带内部 source_path 绑定目录授权，该路径不交给模型；描述、读取、计划保存时授权已取消则拒绝。此接口不是模型可调用工具，也不接受模型传入 approved/scope/任意执行指令。

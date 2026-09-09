@@ -11,7 +11,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.types import ImageContent, TextContent
 
 
-def build_server(endpoint: str, document_ids: frozenset[str], dreaming=None) -> FastMCP:
+def build_server(endpoint: str, document_ids: frozenset[str], dreaming=None, api=None) -> FastMCP:
     url = urlsplit(endpoint)
     if url.scheme != "http" or url.hostname != "127.0.0.1" or url.username or url.query or url.fragment or url.path not in {"", "/"}:
         raise ValueError("Document tools require the local PIXIU API")
@@ -24,6 +24,12 @@ def build_server(endpoint: str, document_ids: frozenset[str], dreaming=None) -> 
         # Grants must not become URL paths supplied by an untrusted document.
         if len(document_id) != 64 or any(c not in "0123456789abcdef" for c in document_id):
             raise ValueError("Invalid document reference")
+        if api is not None:
+            from urllib.parse import urlencode
+            path = "/documents/" + document_id + suffix
+            if params:
+                path += "?" + urlencode(params)
+            return await api("GET", path, None)
         async with httpx.AsyncClient(timeout=30, follow_redirects=False) as client:
             response = await client.get(endpoint + "/documents/" + document_id + suffix, params=params)
             response.raise_for_status()
