@@ -49,7 +49,7 @@ printf '%s\n' '[Service]' \
     > "${TMP}/home/.config/systemd/user/hermes-gateway.service"
 
 HOME="${TMP}/home" \
-PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
 PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
 PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
@@ -95,7 +95,7 @@ grep -q '/home/tester/.local/bin/kylin-agent-runtime' \
 grep -qx 'PIXIU_AGENT_ENDPOINT=http://127.0.0.1:8765' \
     "${TMP}/home/.kylin-agent-runtime/.env"
 grep -qx 'PIXIU_AGENT_STRICT=1' "${TMP}/home/.kylin-agent-runtime/.env"
-cmp "${ROOT}/integrations/kylin_agent/SOUL.md" \
+cmp "${ROOT}/backend/agent/SOUL.md" \
     "${TMP}/home/.kylin-agent-runtime/SOUL.md"
 
 # Managed upgrades are idempotent and preserve explicit user configuration.
@@ -104,7 +104,7 @@ sed -i 's/^PIXIU_AGENT_SCOPE=.*/PIXIU_AGENT_SCOPE=user:tester/' \
 sed -i 's/^PIXIU_AGENT_STRICT=.*/PIXIU_AGENT_STRICT=0/' \
     "${TMP}/home/.kylin-agent-runtime/.env"
 HOME="${TMP}/home" \
-PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
 PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" \
 PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
 PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
@@ -125,7 +125,7 @@ test "$(grep -c '^config set model.default kylin-default$' \
 mkdir -p "${TMP}/other/plugins/pixiu"
 printf 'user owned\n' > "${TMP}/other/plugins/pixiu/custom.txt"
 if HOME="${TMP}/other-home" HERMES_HOME="${TMP}/other" \
-   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
    PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
@@ -136,7 +136,7 @@ fi
 grep -qx 'user owned' "${TMP}/other/plugins/pixiu/custom.txt"
 
 if HOME="${TMP}/home" HERMES_HOME=relative/path \
-   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
    PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
@@ -169,7 +169,7 @@ for scenario in missing-host runtime-nonzero runtime-unsupported runtime-ambiguo
             ;;
     esac
     if HOME="${TMP}/failure-home" \
-       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
        PIXIU_AGENT_RUNTIME_BIN="${runtime}" PIXIU_AGENT_HOST_BIN="${host}" \
        PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
        PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
@@ -185,7 +185,7 @@ mkdir -p "${TMP}/unsafe-home/.config/systemd/user"
 printf '%s\n' '[Service]' 'ExecStart=/usr/bin/user-service --serve' \
     > "${TMP}/unsafe-home/.config/systemd/user/hermes.service"
 if HOME="${TMP}/unsafe-home" \
-   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
    PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
@@ -207,7 +207,7 @@ printf '%s\n' 'EXISTING=value' > "${ROLLBACK_AGENT}/.env"
 printf '%s\n' 'memory: old' > "${ROLLBACK_AGENT}/config.yaml"
 printf '%s\n' 'old identity' > "${ROLLBACK_AGENT}/SOUL.md"
 if HOME="${ROLLBACK_HOME}" PIXIU_RUNTIME_FAIL_CONFIG=1 \
-   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
    PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${TMP}/non-strict" \
@@ -233,7 +233,7 @@ printf '%s\n' '[Service]' \
     'ExecStart=/home/tester/.local/bin/kylin-agent-runtime gateway run --replace' \
     > "${SYSTEMD_UNITS}/hermes-gateway.service"
 if HOME="${SYSTEMD_HOME}" PIXIU_SYSTEMCTL_FAIL_ENABLE=1 \
-   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
    PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
@@ -258,7 +258,7 @@ printf '%s\n' 'old-provider' > "${RESTART_AGENT}/plugins/pixiu/.pixiu-managed"
 printf '%s\n' 'old-provider-data' > "${RESTART_AGENT}/plugins/pixiu/old.txt"
 printf '%s\n' 'memory: old' > "${RESTART_AGENT}/config.yaml"
 if HOME="${RESTART_HOME}" PIXIU_SYSTEMCTL_FAIL_RESTART=1 \
-   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+   PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
    PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
    PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
    PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
@@ -285,7 +285,7 @@ for OUTCOME in success restart-failure; do
     FAIL_RESTART=0
     [ "${OUTCOME}" != restart-failure ] || FAIL_RESTART=1
     if HOME="${GENERIC_HOME}" \
-       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
        PIXIU_AGENT_RUNTIME_BIN="${FAKE_BIN}" PIXIU_AGENT_HOST_BIN="${FAKE_HOST}" \
        PIXIU_USER_SETUP_BIN="${FAKE_USER_SETUP}" \
        PIXIU_AGENT_DEFAULT_STRICT_FILE="${TMP}/generic" \
@@ -318,7 +318,7 @@ done
 for OWNERSHIP in invalid 0; do
     printf '%s\n' "${OWNERSHIP}" > "${TMP}/invalid-ownership"
     if HOME="${TMP}/invalid-${OWNERSHIP}" \
-       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/integrations/kylin_agent/pixiu" \
+       PIXIU_AGENT_PLUGIN_SOURCE="${ROOT}/backend/agent/pixiu" \
        PIXIU_AGENT_DEFAULT_STRICT_FILE="${STRICT_FILE}" \
        PIXIU_AGENT_BUNDLED_FILE="${TMP}/invalid-ownership" \
        "${SCRIPT}" --quiet >/dev/null 2>&1; then
@@ -328,7 +328,7 @@ for OWNERSHIP in invalid 0; do
     test ! -e "${TMP}/invalid-${OWNERSHIP}"
 done
 
-grep -q 'integrations/kylin_agent' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -q 'backend/agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate --quiet' \
     "${ROOT}/build/release/debian/usr/bin/pixiu"

@@ -98,7 +98,7 @@ PIXIU_PROFILE=kylin-v11-native-x86_64 make -C build/release deb
 ## 测试
 
 ```bash
-python3 -m pytest -q backend integrations/kylin_agent/tests
+python3 -m pytest -q backend backend/agent/tests
 ctest --test-dir build/frontend --output-on-failure
 ```
 

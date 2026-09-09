@@ -50,7 +50,7 @@ jobs:
           PIXIU_VECTOR_STORE: portable
         run: |
           make -C build/release governance
-          python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
+          python -m pytest backend/foundation/tests backend/engine/tests backend/agent/tests -q
       - name: Rebuild Agent and verify offline supply chain
         run: PIXIU_KYSDK=ON bash build/release/scripts/prepare-agent-supply-chain.sh
       - name: Verify exit actions with the native UKUI dialog helper

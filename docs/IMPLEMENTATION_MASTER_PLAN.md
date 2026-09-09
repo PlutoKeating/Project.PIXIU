@@ -43,7 +43,7 @@
   NOTICE 已形成互相绑定的发行证据并通过 `ready=true`；后续每个最终 commit 仍须重建
   和复验，不得把旧候选证据跨版本复用。
 - **模块边界**：A 仅改 `frontend/`；B 仅改 `backend/engine/` 与必要的 core 公共
-  契约；C 仅改 `backend/foundation/`；E 仅改 `integrations/kylin_agent/`；跨模块
+  契约；C 仅改 `backend/foundation/`；E 仅改 `backend/agent/`；跨模块
   装配只在公开 API、core 契约和 DI 组合根发生。
 - **测试先行**：每个行为先提交失败测试或在同一小提交中留下清晰红绿证据；先跑
   单测，再跑模块测试，阶段末跑全量回归。

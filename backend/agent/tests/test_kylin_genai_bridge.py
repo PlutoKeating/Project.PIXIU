@@ -1,7 +1,7 @@
 import json
 import ctypes
 
-from integrations.kylin_agent.kylin_genai_bridge import (
+from backend.agent.kylin_genai_bridge import (
     ModelInfo,
     extract_tool_results,
     initialize_model_session,
@@ -241,7 +241,7 @@ def test_abandoned_tool_conversation_is_closed_at_deadline():
 
     conversation = Conversation()
     bridge = __import__(
-        "integrations.kylin_agent.kylin_genai_bridge", fromlist=["KylinCloudBridge"]
+        "backend.agent.kylin_genai_bridge", fromlist=["KylinCloudBridge"]
     ).KylinCloudBridge(object(), timeout=10)
     bridge._pending["call-1"] = conversation
     bridge._pending_until[conversation] = 20

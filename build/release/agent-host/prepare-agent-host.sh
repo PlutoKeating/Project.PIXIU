@@ -117,7 +117,7 @@ done
 install -D -m 0644 "${repo_root}/VERSION" "${target_source}/pixiu/VERSION"
 install -D -m 0644 "${script_dir}/compat/pixiu_desktop.h" \
     "${target_source}/include/utils/pixiu_desktop.h"
-cp -a "${repo_root}/integrations/kylin_agent/message_renderer" \
+cp -a "${repo_root}/frontend/resources/message_renderer" \
     "${target_source}/res/message-renderer"
 install -D -m 0644 "${script_dir}/compat/pixiu_host_compat.cpp" \
     "${target_source}/src/services/pixiu_host_compat.cpp"

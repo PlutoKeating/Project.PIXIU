@@ -115,7 +115,7 @@ PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备�
 ```
 Project.PIXIU/
 ├── frontend/                         # PIXIU 记忆控制台（Qt5/UKUI）
-├── integrations/kylin_agent/         # Module E：原创 Agent/MemoryProvider 适配与契约测试
+├── backend/agent/         # Module E：原创 Agent/MemoryProvider 适配与契约测试
 ├── backend/engine/                   # 记忆业务引擎
 ├── backend/foundation/               # API、存储、检索、流转、同步、评测
 ├── backend/tests/                    # 自动化测试

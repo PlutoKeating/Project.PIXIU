@@ -29,7 +29,7 @@
 |---|---|---|
 | 正式启动器 `build/release/debian/usr/bin/pixiu` | 集成后由随包 `launch-agent.py` 只读解析当前 Agent profile，传递 scope 与一致的 endpoint，再 exec 唯一宿主 | 解析失败或显式 Qt endpoint 冲突拒绝启动；不执行 `.env`，不向 Qt 载入 profile 凭证 |
 | Agent 集成脚本 `pixiu-agent-integrate` | 在当前 Agent profile 的 `.env` 中缺省写入 `PIXIU_AGENT_SCOPE=user:default`，保留已有值 | 必须保留自定义 profile、范围和 endpoint；禁止直接 source 用户 `.env` 执行其中内容 |
-| `integrations/kylin_agent/pixiu/provider.py` | 显式构造参数或 `PIXIU_AGENT_SCOPE`，缺省 `user:default`；API 地址使用 `PIXIU_AGENT_ENDPOINT` | 轮次上下文、写入、更新与遗忘均绑定实际 Provider 范围；不能把模型提交的范围作为覆盖值 |
+| `backend/agent/pixiu/provider.py` | 显式构造参数或 `PIXIU_AGENT_SCOPE`，缺省 `user:default`；API 地址使用 `PIXIU_AGENT_ENDPOINT` | 轮次上下文、写入、更新与遗忘均绑定实际 Provider 范围；不能把模型提交的范围作为覆盖值 |
 | `frontend/src/services/HttpBackendTransport.cpp` | `PIXIU_BACKEND_URL`，正式启动时由引导器与有效 Agent endpoint 对齐；直接运行宿主仍使用进程环境或缺省本机 8765 | 不能将直接宿主启动当作 profile 已解析；公共管理接口不应依赖模型可用 |
 | `MemoryWorkspace`、`MemoryWriteDialog`、`MemoryAudit`、`ForgetPage` | 共用 `MemoryScopes.h`，保留 `user:local` / `shared:home` 并增加有效 Agent scope；MemoryScopeControl 支持明确输入其他范围，检索和偏好另有全部范围 | 录入只自动选择私有 Agent 域；不隐式共享或跨域遗忘；历史范围自动发现及跨入口真实数据验证仍待完成 |
 | `MemoryEditDialog` | 从查询页传入范围，读取完整快照并要求目标范围匹配 | 保留版本校验和精确范围，不为找不到记录而改用无范围请求 |

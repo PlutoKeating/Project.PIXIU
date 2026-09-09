@@ -12,9 +12,9 @@ ROOT = Path(__file__).resolve().parents[3]
 PRODUCT_VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 sys.path.insert(0, str(ROOT / "third_party" / "kylin-agent-runtime"))
 
-from integrations.kylin_agent.pixiu import PixiuMemoryProvider  # noqa: E402
-from integrations.kylin_agent.pixiu.client import PixiuApiError  # noqa: E402
-from integrations.kylin_agent.pixiu.compat import provider_version  # noqa: E402
+from backend.agent.pixiu import PixiuMemoryProvider  # noqa: E402
+from backend.agent.pixiu.client import PixiuApiError  # noqa: E402
+from backend.agent.pixiu.compat import provider_version  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -23,8 +23,8 @@ def isolated_provider_storage(tmp_path, monkeypatch):
 
 
 def test_provider_version_uses_canonical_repository_version():
-    assert not (ROOT / "integrations/kylin_agent/pixiu/plugin.yaml").exists()
-    template = ROOT / "integrations/kylin_agent/pixiu/plugin.yaml.in"
+    assert not (ROOT / "backend/agent/pixiu/plugin.yaml").exists()
+    template = ROOT / "backend/agent/pixiu/plugin.yaml.in"
     assert "version: @VERSION@" in template.read_text(encoding="utf-8")
     assert provider_version() == (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
@@ -380,7 +380,7 @@ def test_availability_is_configuration_only_and_provider_matches_upstream_abc():
 
 def test_pinned_upstream_discovers_user_plugin(tmp_path, monkeypatch):
     plugin_dir = tmp_path / "plugins" / "pixiu"
-    shutil.copytree(ROOT / "integrations" / "kylin_agent" / "pixiu", plugin_dir)
+    shutil.copytree(ROOT / "backend" / "agent" / "pixiu", plugin_dir)
     template = plugin_dir / "plugin.yaml.in"
     (plugin_dir / "plugin.yaml").write_text(
         template.read_text(encoding="utf-8").replace("@VERSION@", PRODUCT_VERSION),

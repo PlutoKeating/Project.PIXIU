@@ -24,7 +24,7 @@ Embedding/Vector Engine SDK、端侧性能和可验证交付。两份官方材�
 1. PIXIU **不从零实现另一套完整 OS Agent**。
 2. 首选系统已安装的 openKylin `kylin-agent` 作为桌面宿主，以 `agent-runtime`
    提供会话、规划、工具、Shell/浏览器、审批和运行控制。
-3. 在 `integrations/kylin_agent/` 实现团队原创的 Module E 适配层，通过
+3. 在 `backend/agent/` 实现团队原创的 Module E 适配层，通过
    `MemoryProvider` 生命周期与 PIXIU 公共 HTTP API 连接；禁止直接导入
    `backend/engine/` 或 `backend/foundation/` 私有实现。
 4. `frontend/` 保留为 PIXIU 记忆诊断、设备管理和独立演示控制台，不承担或冒充

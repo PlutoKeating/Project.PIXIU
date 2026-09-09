@@ -6,7 +6,7 @@ import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "third_party" / "kylin-agent-runtime"))
-from integrations.kylin_agent.pixiu.outbox import Outbox
+from backend.agent.pixiu.outbox import Outbox
 
 
 @pytest.mark.parametrize("stage", ["enqueued", "claimed", "acknowledged"])
@@ -19,7 +19,7 @@ def test_abrupt_process_exit_preserves_committed_delivery_state(tmp_path, stage)
 import os, sys
 from pathlib import Path
 sys.path.insert(0, str(Path.cwd() / "third_party" / "kylin-agent-runtime"))
-from integrations.kylin_agent.pixiu.outbox import Outbox
+from backend.agent.pixiu.outbox import Outbox
 box = Outbox(Path(sys.argv[1]), "profile-a", clock=lambda: 100.0)
 box.enqueue("stable", {"idempotency_key": "stable", "text": "记忆"})
 if sys.argv[2] != "enqueued":

@@ -14,7 +14,7 @@
 > 六类生命周期事件已有幂等短/中期 context 入口，Module E 适配已实现。真实宿主
 > 接线、长期化策略和包内默认激活已有实现；完整多轮任务与三物理设备最终验收仍待归档。
 >
-> 团队已批准由外部 Module E (`integrations/kylin_agent/`) 通过公共 HTTP/WS 契约
+> 团队已批准由外部 Module E (`backend/agent/`) 通过公共 HTTP/WS 契约
 > 接入 openKylin Agent。本后端仍只负责记忆能力，不承载会话、规划或工具循环。
 
 ---
@@ -95,3 +95,7 @@ foundation/
 | 存储层 Schema | `foundation/docs/ARCHITECTURE.md` 第 1.3 节 |
 | 混合检索 Pipeline | `foundation/docs/ARCHITECTURE.md` 第 1.4 节 |
 | P2P CRDT 同步 | `foundation/docs/ARCHITECTURE.md` 第 1.6 节 |
+
+## 2026-09-10 源码归属迁移
+
+Module E 的源码现位于 `backend/agent/`，仍经公共 HTTP API 访问记忆服务；安装路径保持兼容。此次目录迁移不增加运行依赖。

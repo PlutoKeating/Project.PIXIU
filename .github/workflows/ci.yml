@@ -70,7 +70,7 @@ jobs:
         env:
           PIXIU_EMBEDDING: portable
           PIXIU_VECTOR_STORE: portable
-        run: python -m pytest backend/foundation/tests backend/engine/tests integrations/kylin_agent/tests -q
+        run: python -m pytest backend/foundation/tests backend/engine/tests backend/agent/tests -q
 
       - name: Generate three-node protocol evidence
         if: matrix.python-version == '3.12'

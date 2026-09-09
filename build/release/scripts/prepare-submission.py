@@ -15,7 +15,7 @@ import tarfile
 from submission_layout import paths, validate
 
 ROOT = Path(__file__).resolve().parents[3]
-SOURCE_DIRS = {"frontend", "backend", "integrations", "build", "third_party", ".github"}
+SOURCE_DIRS = {"frontend", "backend", "build", "third_party", ".github"}
 RUNTIME_SOURCE_DIRS = {
     ".github", ".plans", "acp_adapter", "acp_registry", "agent", "assets", "cron",
     "datagen-config-examples", "docker", "docs", "draw", "embeddings", "evals",

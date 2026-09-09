@@ -12,8 +12,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "third_party" / "kylin-agent-runtime"))
 
-import integrations.kylin_agent.pixiu.client as client_module
-from integrations.kylin_agent.pixiu.client import PixiuApiClient, PixiuApiError
+import backend.agent.pixiu.client as client_module
+from backend.agent.pixiu.client import PixiuApiClient, PixiuApiError
 
 
 def test_http_error_preserves_backend_stable_error_code(monkeypatch):

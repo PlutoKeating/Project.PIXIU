@@ -91,7 +91,7 @@ submodule。
 ## 契约测试
 
 ```bash
-python3 -m pytest -q integrations/kylin_agent/tests
+python3 -m pytest -q backend/agent/tests
 ```
 
 契约测试覆盖上游 ABC/插件发现、宿主/API/组件/健康握手、HTTP API 0.5

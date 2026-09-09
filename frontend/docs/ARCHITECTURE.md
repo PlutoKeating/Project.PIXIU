@@ -494,3 +494,7 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 
 隔离测试桩不得用于最终安装、功能展示或截图验收。正式演示使用同版实际产品与标明的合成数据，
 不提供第二套小窗口演示流程。
+
+## 2026-09-10 源码归属迁移
+
+消息离线渲染资源及许可证统一位于 `frontend/resources/message_renderer/`，由宿主准备脚本打入资源；Agent Python 适配位于 `backend/agent/`。

@@ -95,7 +95,7 @@ check_version_consistency() {
     fi
     # 3) Module E manifest 必须是由根 VERSION 渲染的模板。
     if grep -qx 'version: @VERSION@' \
-            "${PIXIU_ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in"; then
+            "${PIXIU_ROOT}/backend/agent/pixiu/plugin.yaml.in"; then
         provider_ver="${source_ver}"
     else
         provider_ver=""
@@ -205,8 +205,8 @@ find "${BK}" -name '*.pyc' -delete
 # it into the active Agent profile without modifying either upstream submodule.
 INTEGRATION_ROOT="${STAGE}/usr/lib/pixiu/integrations/kylin_agent"
 mkdir -p "${INTEGRATION_ROOT}"
-cp -a "${PIXIU_ROOT}/integrations/kylin_agent/pixiu" "${INTEGRATION_ROOT}/"
-install -m 0644 "${PIXIU_ROOT}/integrations/kylin_agent/SOUL.md" \
+cp -a "${PIXIU_ROOT}/backend/agent/pixiu" "${INTEGRATION_ROOT}/"
+install -m 0644 "${PIXIU_ROOT}/backend/agent/SOUL.md" \
     "${INTEGRATION_ROOT}/SOUL.md"
 sed "s/@VERSION@/${PIXIU_VERSION}/g" \
     "${INTEGRATION_ROOT}/pixiu/plugin.yaml.in" \
@@ -220,7 +220,7 @@ find "${INTEGRATION_ROOT}" -type f -exec chmod 0644 {} +
 # Every release is a single complete OS Agent package. Its host/runtime
 # inputs must already have passed the artifact-backed supply-chain audit.
 if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
-    install -m 0755 "${PIXIU_ROOT}/integrations/kylin_agent/kylin_genai_bridge.py" \
+    install -m 0755 "${PIXIU_ROOT}/backend/agent/kylin_genai_bridge.py" \
         "${INTEGRATION_ROOT}/kylin_genai_bridge.py"
 fi
 {
@@ -248,7 +248,7 @@ fi
     install -m 0644 "${PIXIU_ROOT}/third_party/kylin-agent-runtime/LICENSE" \
         "${AGENT_DOC}/LICENSE.kylin-agent-runtime"
     install -d -m 0755 "${AGENT_DOC}/message-renderer"
-    install -m 0644 "${PIXIU_ROOT}/integrations/kylin_agent/message_renderer/licenses/"* \
+    install -m 0644 "${PIXIU_ROOT}/frontend/resources/message_renderer/licenses/"* \
         "${AGENT_DOC}/message-renderer/"
 }
 

@@ -19,8 +19,8 @@ grep -q 'pixiu_tools.py' "${FIXTURE}/source/tools/code_execution_tool.py"
 grep -q 'pip install --upgrade kylin-agent-runtime' "${FIXTURE}/source/kylin_agent_runtime_cli/config.py"
 grep -q '"platform": "pixiu"' "${FIXTURE}/source/gateway/platforms/api_server.py"
 grep -q '"owned_by": "pixiu"' "${FIXTURE}/source/gateway/platforms/api_server.py"
-grep -q '你的产品身份、助手署名和对外名称统一为 PIXIU' "${ROOT}/integrations/kylin_agent/SOUL.md"
-! grep -qi 'hermes' "${ROOT}/integrations/kylin_agent/SOUL.md"
+grep -q '你的产品身份、助手署名和对外名称统一为 PIXIU' "${ROOT}/backend/agent/SOUL.md"
+! grep -qi 'hermes' "${ROOT}/backend/agent/SOUL.md"
 
 python3 - "${FIXTURE}/source" <<'PY'
 from __future__ import annotations

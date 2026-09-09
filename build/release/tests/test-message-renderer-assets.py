@@ -8,7 +8,7 @@ import re
 
 
 ROOT = Path(__file__).resolve().parents[3]
-RENDERER = ROOT / "integrations/kylin_agent/message_renderer"
+RENDERER = ROOT / "frontend/resources/message_renderer"
 
 
 def require(condition: bool, message: str) -> None:

@@ -7,7 +7,7 @@
 | `frontend/` | 内嵌记忆管理界面与 UKUI 适配 | 团队原创 |
 | `backend/engine/` | 接入、偏好、知识、冲突、安全 | 团队原创 |
 | `backend/foundation/` | API、存储、检索、流转、同步、评测 | 团队原创 |
-| `integrations/kylin_agent/` | MemoryProvider 与记忆工具 | 团队原创 |
+| `backend/agent/` | MemoryProvider 与记忆工具 | 团队原创 |
 | `build/release/` | 构建、打包、升级、取证与交付门禁 | 团队原创 |
 | `third_party/` | 固定版本的上游与系统 SDK 源码 | 上游依赖 |
 

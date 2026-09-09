@@ -21,8 +21,8 @@ fi
 grep -q 'PIXIU_ROOT}/VERSION' "${ROOT}/build/release/scripts/functions.sh"
 grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../../VERSION' "${ROOT}/frontend/management/CMakeLists.txt"
 grep -qx 'version: @VERSION@' \
-    "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in"
-test ! -e "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml"
+    "${ROOT}/backend/agent/pixiu/plugin.yaml.in"
+test ! -e "${ROOT}/backend/agent/pixiu/plugin.yaml"
 for removed in frontend/debian/control frontend/debian/rules frontend/debian/postinst frontend/scripts/build-deb.sh; do
     test ! -e "${ROOT}/${removed}"
 done
@@ -31,7 +31,7 @@ grep -qx 'Package: pixiu' "${ROOT}/build/release/debian/control.in"
 if grep -nF "${EXPECTED}" \
         "${ROOT}/frontend/management/CMakeLists.txt" \
         "${ROOT}/build/release/debian/control.in" \
-        "${ROOT}/integrations/kylin_agent/pixiu/plugin.yaml.in" \
+        "${ROOT}/backend/agent/pixiu/plugin.yaml.in" \
         "${ROOT}/build/release/scripts/functions.sh" \
         "${ROOT}/build/release/scripts/build-deb.sh" \
         "${ROOT}/build/release/scripts/generate-release-manifest.py" \
@@ -51,7 +51,7 @@ trap 'rm -rf -- "${fixture}"' EXIT
         build/release/agent-host/patches/0011-product-application-version.patch \
         build/release/agent-host/prepare-agent-host.sh \
         backend/foundation/api/version.py build/release/debian/pixiu-backend.service \
-        integrations/kylin_agent/pixiu/plugin.yaml.in "${fixture}"
+        backend/agent/pixiu/plugin.yaml.in "${fixture}"
 )
 source <(sed -n '/^check_version_consistency() {/,/^}/p' \
     "${ROOT}/build/release/scripts/build-deb.sh")

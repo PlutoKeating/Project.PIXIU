@@ -217,7 +217,7 @@
 └──────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────┐
-│  模块 E: Agent 集成适配 (integrations/kylin_agent/)        │  Python · MemoryProvider
+│  模块 E: Agent 集成适配 (backend/agent/)        │  Python · MemoryProvider
 │  负责：生命周期映射 · 记忆工具 · 能力探测 · 运行审计        │
 │  与 A/B/C 契约：仅消费 docs/API.md，不跨目录导入私有实现    │
 └──────────────────────────────────────────────────────────┘
@@ -324,7 +324,7 @@ Security detector，`user:*` 敏感 evidence 本地隔离，`shared:*` 敏感写
 
 ### 2.5 模块 E — Agent 集成适配
 
-**目录**：`integrations/kylin_agent/`（已建立独立 Provider、客户端、工具与契约测试）
+**目录**：`backend/agent/`（已建立独立 Provider、客户端、工具与契约测试）
 
 | 子领域 | 内容 |
 |--------|------|
@@ -537,7 +537,7 @@ git submodule update --init --recursive
 | 模块 B | `backend/engine/` + `backend/foundation/core/`（仅接口） | `backend/foundation/api/storage/retrieval/flow/sync/eval/` |
 | 模块 C | `backend/foundation/`（除 engine 子包） | `backend/engine/` 下任何文件 |
 | 支持 D | `backend/scripts/`, `backend/tests/`, `docs/`（补全） | `frontend/src/` |
-| 模块 E | `integrations/kylin_agent/` 下所有文件 | `frontend/`、`backend/`、`third_party/` 下任何文件 |
+| 模块 E | `backend/agent/` 下所有文件 | `frontend/`、`backend/`、`third_party/` 下任何文件 |
 
 Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契约需求，A/C 更新
 `docs/API.md` 并实现；不得以赶进度为由直接 import 后端 Service 或 Repository。

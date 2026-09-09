@@ -9,7 +9,7 @@
 > 该具体基座不是赛方指定。
 
 > 2026-09-03 团队已批准 ADR-0001。Agent 适配代码归属
-> `integrations/kylin_agent/`（Module E），只调用本文后端的公共 API；不得将其塞入
+> `backend/agent/`（Module E），只调用本文后端的公共 API；不得将其塞入
 > `engine/` 或 `foundation/`，也不得让它直接导入后端私有实现。
 
 ---
