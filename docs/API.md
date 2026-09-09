@@ -1327,3 +1327,5 @@ Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，�
 2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并实现见下文最新记录。
 
 2026-09-10：Dreaming 合并已接入方案 API、MCP 和桌面审批。模型必须先读取全部目标，merge_ids 与冻结版本进入持久方案；桌面展示全部原记录与合并结果，用户批准后执行私人范围合并。旧记录转为 SUPERSEDED，来源保留，生产向量清理。模型工具不提供批准入口。无新增依赖、schema 或源目录变化，已有 CMake/宿主导出清单包含审批组件。真实模型、V11 同包验收尚未完成。
+
+2026-09-10：实际使用的记忆引用增加 `GET /agent/citations/{context_id}/{knowledge_id}`。只读取已消费、未过期的 MEMORY_SOURCES 记录，重新检查知识 ACTIVE 状态、当前读取授权及证据敏感级别，返回当时引用的证据与版本信息。trace 上下文附加 pixiu://citation 链接并遵守原字符预算，普通无记忆回答不增加链接。桌面消息链接处理尚未接通；不能宣称回答内查看已经完成。无新增依赖、数据库或构建输入。

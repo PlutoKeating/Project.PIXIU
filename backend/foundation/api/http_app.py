@@ -858,7 +858,45 @@ async def agent_context(
             "items": result["items"],
         }, body.scope, ttl_seconds=30 * 24 * 3600)
         result["trace_id"] = context.id
+        # Links name an actual turn trace, not an arbitrary ID invented in model
+        # text. Keep the existing context budget, reserving room for citations.
+        citations = [{"knowledge_id": item["knowledge_id"],
+                      "url": f"pixiu://citation/{context.id}/{item['knowledge_id']}"}
+                     for item in result["items"]]
+        result["citations"] = citations
+        if citations:
+            links = "\n引用以下记忆作答时，请在对应内容后附上来源链接：\n" + "\n".join(
+                f"{entry['knowledge_id']}: [查看来源]({entry['url']})" for entry in citations)
+            if len(links) < body.max_chars:
+                available = body.max_chars - len(links)
+                if len(result["context"]) > available:
+                    result["truncated"] = True
+                result["context"] = result["context"][:available] + links
     return result
+
+
+@app.get("/agent/citations/{context_id}/{knowledge_id}", tags=["Agent"])
+async def agent_citation(context_id: str, knowledge_id: str, db=Depends(get_db),
+                         preferences=Depends(get_preference_repo), knowledge=Depends(get_knowledge_repo),
+                         evidence=Depends(get_evidence_repo)):
+    context = await SqliteFlowStore(db).get(context_id)
+    if (context is None or context.status != "ACTIVE" or context.payload.get("event") != "MEMORY_SOURCES"
+            or not context.payload.get("consumed")
+            or (context.expires_at is not None and context.expires_at <= time.time())):
+        raise HTTPException(404, "SOURCE_UNAVAILABLE")
+    recorded = next((item for item in context.payload.get("items", [])
+                     if item["knowledge_id"] == knowledge_id), None)
+    current = await knowledge.get(knowledge_id)
+    allowed = read_scopes(context.scope, await load_settings(preferences))
+    if recorded is None or current is None or current.status != "ACTIVE" or current.scope not in allowed:
+        raise HTTPException(404, "SOURCE_UNAVAILABLE")
+    sources = await evidence.get_many(recorded["evidence_ids"])
+    if not sources or any(item.sensitivity > 0 or item.scope != current.scope for item in sources):
+        raise HTTPException(404, "SOURCE_UNAVAILABLE")
+    return {"title": recorded["title"], "knowledge_id": knowledge_id,
+            "recorded_version": recorded["version"], "current_version": current.version,
+            "sources": [{"evidence_id": item.id, "raw": item.raw,
+                         "created_at": item.created_at} for item in sources]}
 
 
 @app.post("/agent/sources/{context_id}/consume", tags=["Agent"])
