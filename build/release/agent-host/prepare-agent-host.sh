@@ -113,3 +113,6 @@ patch -d "${target_source}" -p1 --forward --batch < "${repo_root}/frontend/host/
 
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
     < "${repo_root}/frontend/host/patches/0028-simplify-workspace-navigation.patch"
+
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${repo_root}/frontend/host/patches/0029-stable-message-rendering.patch"

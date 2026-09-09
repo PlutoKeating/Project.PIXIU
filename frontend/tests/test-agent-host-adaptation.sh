@@ -171,7 +171,7 @@ grep -q 'columnLayout->addWidget(messageStack, 1)' "${fixture}/source/src/ui/cha
 grep -q 'messageAuthor' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'QSizePolicy::Expanding, QSizePolicy::Maximum' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'horizontalAdvance(content.simplified())' "${fixture}/source/src/ui/chatwidget.cpp"
-grep -q 'QTimer::singleShot(0, m_messagesArea' "${fixture}/source/src/ui/chatwidget.cpp"
+! grep -q 'QTimer::singleShot(0, m_messagesArea' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q '云端模型暂未响应' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'legacyFallback' "${fixture}/source/src/ui/chatwidget.cpp"
 grep -q 'setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff)' "${fixture}/source/src/ui/sessionlistwidget.cpp"

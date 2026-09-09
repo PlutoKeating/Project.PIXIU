@@ -1,0 +1,260 @@
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -36,6 +36,7 @@
+ #include <QWebEngineView>
+ 
+ #include <functional>
++#include <QStackedLayout>
+ 
+ class MessagePage final : public QWebEnginePage
+ {
+@@ -67,7 +68,11 @@
+         settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, false);
+         setContextMenuPolicy(Qt::DefaultContextMenu);
+         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+-        setMinimumHeight(28);
++        setFixedHeight(28);
++        m_renderTimer = new QTimer(this);
++        m_renderTimer->setSingleShot(true);
++        m_renderTimer->setInterval(32);
++        connect(m_renderTimer, &QTimer::timeout, this, [this]() { render(); });
+         connect(this, &QWebEngineView::loadFinished, this, [this](bool ok) {
+             m_ready = ok;
+             if (ok) {
+@@ -85,6 +90,7 @@
+                     if (auto *area = qobject_cast<QScrollArea *>(ancestor)) {
+                         QScrollBar *bar = area->verticalScrollBar();
+                         bar->setValue(bar->value() + delta);
++                        area->setProperty("pixiuFollowTail", bar->maximum() - bar->value() <= 64);
+                         break;
+                     }
+                     ancestor = ancestor->parentWidget();
+@@ -93,14 +99,15 @@
+             }
+             if (!title.startsWith(QStringLiteral("pixiu-height:"))) return;
+             const QStringList parts = title.split(QLatin1Char(':'));
+-            if (parts.size() < 2) return;
++            if (parts.size() < 3 || parts.at(2).toULongLong() != m_revision) return;
+             bool ok = false;
+             const int height = parts.at(1).toInt(&ok);
+             if (ok) {
+-                setFixedHeight(qBound(28, height + 2, 20000));
+-                QTimer::singleShot(0, this, [this]() {
+-                    if (contentHeightChanged) contentHeightChanged();
+-                });
++                const int target = qBound(28, height, 20000);
++                const bool changed = this->height() != target;
++                if (changed) setFixedHeight(target);
++                if (contentReady) contentReady();
++                if (changed && contentHeightChanged) contentHeightChanged();
+             }
+         });
+         setUrl(QUrl(QStringLiteral("qrc:/message-renderer/index.html")));
+@@ -108,11 +115,14 @@
+ 
+     void setMarkdown(const QString &markdown)
+     {
++        if (m_markdown == markdown && m_revision) return;
+         m_markdown = markdown;
+-        render();
++        ++m_revision;
++        if (!m_renderTimer->isActive()) m_renderTimer->start();
+     }
+ 
+     std::function<void()> contentHeightChanged;
++    std::function<void()> contentReady;
+ 
+     void applyTheme()
+     {
+@@ -147,9 +157,11 @@
+         if (!m_ready) return;
+         const QJsonArray argument{m_markdown};
+         const QString payload = QString::fromUtf8(QJsonDocument(argument).toJson(QJsonDocument::Compact));
+-        page()->runJavaScript(QStringLiteral("window.renderMarkdown(%1[0]);").arg(payload));
+-    }
+-
++        page()->runJavaScript(QStringLiteral("window.renderMarkdown(%1[0], %2);").arg(payload).arg(m_revision));
++    }
++
++    QTimer *m_renderTimer = nullptr;
++    quint64 m_revision = 0;
+     QString m_markdown;
+     bool m_ready = false;
+ };
+@@ -166,19 +178,30 @@
+         auto *layout = new QVBoxLayout(this);
+         layout->setContentsMargins(16, 10, 16, 10);
+         layout->setSpacing(0);
+-        layout->addWidget(m_view);
++        m_initialText = new QLabel(this);
++        m_initialText->setTextFormat(Qt::PlainText);
++        m_initialText->setWordWrap(true);
++        m_initialText->setTextInteractionFlags(Qt::TextSelectableByMouse);
++        m_stack = new QStackedLayout;
++        m_stack->addWidget(m_initialText);
++        m_stack->addWidget(m_view);
++        layout->addLayout(m_stack);
++        m_view->contentReady = [this]() { m_stack->setCurrentWidget(m_view); };
+         setContent(content);
+     }
+ 
+     void setContent(const QString &content)
+     {
+         m_content = content;
++        m_initialText->setText(content);
+         m_view->setMarkdown(content);
+     }
+ 
+     QString content() const { return m_content; }
+ 
+ private:
++    QLabel *m_initialText;
++    QStackedLayout *m_stack;
+     RichMessageView *m_view;
+     QString m_content;
+ };
+@@ -310,6 +333,17 @@
+     m_messagesArea = new QScrollArea(this);
+     m_messagesArea->setWidgetResizable(true);
+     m_messagesArea->setFrameShape(QFrame::NoFrame);
++    auto *scrollBar = m_messagesArea->verticalScrollBar();
++    m_messagesArea->setProperty("pixiuFollowTail", true);
++    connect(scrollBar, &QScrollBar::sliderMoved, this, [this, scrollBar](int position) {
++        m_messagesArea->setProperty("pixiuFollowTail", scrollBar->maximum() - position <= 64);
++    });
++    connect(scrollBar, &QScrollBar::actionTriggered, this, [this, scrollBar](int) {
++        m_messagesArea->setProperty("pixiuFollowTail", scrollBar->maximum() - scrollBar->sliderPosition() <= 64);
++    });
++    connect(scrollBar, &QScrollBar::rangeChanged, this, [this, scrollBar](int, int maximum) {
++        if (m_messagesArea->property("pixiuFollowTail").toBool()) scrollBar->setValue(maximum);
++    });
+     m_messagesContainer = new QWidget(m_messagesArea);
+     m_messagesLayout = new QVBoxLayout(m_messagesContainer);
+     m_messagesContainer->setObjectName(QStringLiteral("conversationCanvas"));
+@@ -430,6 +464,7 @@
+ void ChatWidget::loadSession(const QString &sessionId)
+ {
+     const bool changed = m_currentSessionId != sessionId;
++    if (!changed) return;
+     m_currentSessionId = sessionId;
+     if (changed) emit sessionChanged(sessionId);
+     m_titleLabel->setText(QStringLiteral("会话 %1").arg(sessionId.left(8)));
+@@ -486,12 +521,19 @@
+         else
+             addMessageBubble(message.role(), renderedContent);
+     }
++    if (m_pendingFallbackReplies.contains(m_currentSessionId)) {
++        if (!m_activityLines.value(m_currentSessionId).isEmpty()) updateActivityCard(m_currentSessionId);
++        const QString current = m_currentStreamSegments.value(m_currentSessionId);
++        auto *live = addMessageBubble(QStringLiteral("assistant"), current.isEmpty()
++            ? QStringLiteral("正在思考·") : current);
++        m_streamBubbles.insert(m_currentSessionId, live);
++    }
+     scrollToBottom(true);
+ }
+ 
+ RichMessageBubble *ChatWidget::addMessageBubble(const QString &role, const QString &content)
+ {
+-    auto *bubble = new RichMessageBubble(content, [this]() { scrollToBottom(true); },
++    auto *bubble = new RichMessageBubble(content, [this]() { scrollToBottom(false); },
+                                          m_messagesContainer);
+     bubble->setMaximumWidth(role == QStringLiteral("user") ? 620 : 760);
+ 
+@@ -625,7 +667,8 @@
+     }
+ 
+     m_inputEdit->clear();
+-    refreshMessages();
++    if (SessionService::instance().getSessionMessages(m_currentSessionId).size() == 1) clearMessages();
++    addMessageBubble(QStringLiteral("user"), text);
+ 
+     RichMessageBubble *waitingBubble = addMessageBubble(QStringLiteral("assistant"), QStringLiteral("正在思考·"));
+     waitingBubble->setProperty("streamState", QStringLiteral("waiting"));
+@@ -658,7 +701,6 @@
+     m_pendingFallbackReplies.insert(m_currentSessionId, QStringLiteral("生成已停止。"));
+     m_streamedReplies.remove(m_currentSessionId);
+     m_currentStreamSegments.remove(m_currentSessionId);
+-    m_streamBubbles.remove(m_currentSessionId);
+     ApiService::instance().cancelChatCompletion(m_currentSessionId);
+ }
+ 
+@@ -683,7 +725,7 @@
+     }
+     bubble->setProperty("streamState", QStringLiteral("responding"));
+     bubble->setContent(m_currentStreamSegments.value(sessionId));
+-    scrollToBottom(true);
++    scrollToBottom(false);
+ }
+ 
+ void ChatWidget::persistCurrentStreamSegment(const QString &sessionId)
+@@ -709,7 +751,7 @@
+     m_streamBubbles.remove(sessionId);
+     if (sessionId == m_currentSessionId) {
+         emit messageSent(sessionId);
+-        scrollToBottom(true);
++        scrollToBottom(false);
+     }
+ }
+ 
+@@ -791,7 +833,7 @@
+         visibleLines.append(markerEnd >= 0 ? line.mid(markerEnd + 2) : line);
+     }
+     details->setText(visibleLines.join(QLatin1Char('\n')));
+-    scrollToBottom(true);
++    scrollToBottom(false);
+ }
+ 
+ void ChatWidget::onStreamDetailEvent(const QString &sessionId, const QJsonObject &event)
+@@ -834,6 +876,15 @@
+     if (assistantReply.isEmpty() && !m_sessionsWithPersistedSegments.contains(sessionId))
+         assistantReply = ok ? m_pendingFallbackReplies.value(sessionId)
+                             : QStringLiteral("任务执行中断。请检查模型服务后重试。");
++    if (sessionId == m_currentSessionId) {
++        auto *bubble = m_streamBubbles.value(sessionId, nullptr);
++        if (!assistantReply.isEmpty()) {
++            if (bubble) bubble->setContent(assistantReply);
++            else addMessageBubble(QStringLiteral("assistant"), assistantReply);
++        }
++        if (auto *toggle = m_activityToggles.value(sessionId, nullptr))
++            toggle->setText(QStringLiteral("已完成工作 · %1 项").arg(m_activityLines.value(sessionId).size()));
++    }
+     m_pendingFallbackReplies.remove(sessionId);
+     m_streamedReplies.remove(sessionId);
+     m_currentStreamSegments.remove(sessionId);
+@@ -856,7 +907,6 @@
+     if (!assistantReply.isEmpty())
+         SessionService::instance().addMessage(sessionId, QStringLiteral("assistant"), assistantReply);
+     if (sessionId == m_currentSessionId) {
+-        refreshMessages();
+         updateRequestButtons();
+     }
+     emit messageSent(sessionId);
+@@ -868,23 +918,10 @@
+         return;
+     }
+     QScrollBar *bar = m_messagesArea->verticalScrollBar();
+-    if (!force && bar->maximum() - bar->value() > 64) {
+-        return;
+-    }
+-    if (m_messagesContainer && m_messagesContainer->layout()) {
++    if (force) m_messagesArea->setProperty("pixiuFollowTail", true);
++    const QVariant following = m_messagesArea->property("pixiuFollowTail");
++    if (!force && following.isValid() && !following.toBool()) return;
++    if (m_messagesContainer && m_messagesContainer->layout())
+         m_messagesContainer->layout()->activate();
+-    }
+     bar->setValue(bar->maximum());
+-    QTimer::singleShot(0, m_messagesArea, [this]() {
+-        if (m_messagesArea && m_messagesArea->verticalScrollBar()) {
+-            m_messagesArea->verticalScrollBar()->setValue(
+-                m_messagesArea->verticalScrollBar()->maximum());
+-        }
+-    });
+-    QTimer::singleShot(80, m_messagesArea, [this]() {
+-        if (m_messagesArea && m_messagesArea->verticalScrollBar()) {
+-            m_messagesArea->verticalScrollBar()->setValue(
+-                m_messagesArea->verticalScrollBar()->maximum());
+-        }
+-    });
+-}
++}

@@ -15,3 +15,5 @@
 再由 Chromium 字形回退到包内 `Noto Color Emoji`，不依赖目标机 fontconfig 是否接纳
 彩色位图字体。字体遵循 SIL Open Font License 1.1。
 Mermaid 固定在 10.9.5，以兼容银河麒麟 V11 所带 Qt 5.15 WebEngine 的 JavaScript 引擎。
+
+Height is measured from the content flow box, never the WebView viewport. Publications are deduplicated per height/revision; the host rejects stale revisions. Fonts use swap to retain readable fallback text. Run `node frontend/tests/test-message-renderer-height.cjs` from the repository root for the height feedback regression.

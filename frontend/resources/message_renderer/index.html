@@ -22,7 +22,7 @@
       src: url("fonts/NotoColorEmoji.ttf") format("truetype");
       font-weight: 400;
       font-style: normal;
-      font-display: block;
+      font-display: swap;
     }
     :root {
       color-scheme: light;
@@ -51,6 +51,7 @@
       letter-spacing: normal;
       white-space: normal;
     }
+    #content { display: flow-root; }
     #content > :first-child { margin-top: 0; }
     #content > :last-child { margin-bottom: 0; }
     h1, h2, h3, h4, h5, h6 { margin: 1.1em 0 .45em; line-height: 1.35; color: var(--text); }
@@ -88,6 +89,8 @@
     const defaultFence = markdown.renderer.rules.fence.bind(markdown.renderer.rules);
     let renderSequence = 0;
     let wheelSequence = 0;
+    let lastHeight = -1;
+    let lastHeightSequence = -1;
 
     markdown.renderer.rules.fence = (tokens, index, options, env, self) => {
       const language = (tokens[index].info || '').trim().toLowerCase().split(/\s+/)[0];
@@ -110,7 +113,11 @@
     });
 
     function publishHeight() {
-      const height = Math.max(28, Math.ceil(document.documentElement.scrollHeight));
+      if (!renderSequence) return;
+      const height = Math.max(28, Math.ceil(content.getBoundingClientRect().height));
+      if (height === lastHeight && renderSequence === lastHeightSequence) return;
+      lastHeight = height;
+      lastHeightSequence = renderSequence;
       document.title = `pixiu-height:${height}:${renderSequence}`;
     }
 
@@ -129,8 +136,8 @@
       publishHeight();
     };
 
-    window.renderMarkdown = async (source) => {
-      renderSequence += 1;
+    window.renderMarkdown = async (source, revision) => {
+      renderSequence = revision;
       const currentSequence = renderSequence;
       content.innerHTML = markdown.render(String(source || ''));
       const diagrams = [...content.querySelectorAll('.mermaid')];
