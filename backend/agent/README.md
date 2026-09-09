@@ -1,8 +1,6 @@
 # PIXIU openKylin Agent 适配器（Module E）
 
-本目录是 PIXIU 原创的 `MemoryProvider` 插件，只通过 `docs/API.md` 定义的公共
-HTTP 契约连接记忆服务。它不包含、不复制 Agent 的会话、模型规划、Shell、联网
-搜索或工具循环，也不修改 `third_party/` 上游工作树。
+本目录包含 PIXIU 原创 MemoryProvider、文档 MCP、受控 Dreaming 执行器及 Runtime 适配，只通过 `docs/API.md` 的公共 HTTP 契约连接记忆服务。正常对话、Shell、联网搜索和工具调度复用上游 Runtime，不修改 `third_party/` 工作树。
 
 ## 已实现边界
 
@@ -11,18 +9,12 @@ HTTP 契约连接记忆服务。它不包含、不复制 Agent 的会话、模�
   的发行版本，以及麒麟 V11 与两个指定 SDK 均实际启用。
 - turn 写入、生命周期事件和召回进入有界后台队列；写入携带 session/run/turn
   provenance 与幂等键，队列满时不阻塞 Agent，并通过 `diagnostics()` 暴露丢弃数。
-- `prefetch` 只读取缓存；召回结果中的 `memory-context` 边界文本先被中和，再由
+- `prefetch` 优先读取缓存，首次召回尚未完成时在既有 HTTP 超时内请求当前问题；召回结果中的 `memory-context` 边界文本先被中和，再由
   上游统一安全围栏包装。
 - 映射 turn start/end、pre-compress、session switch/end、delegation。
-- 暴露 `pixiu_memory_search`、`pixiu_memory_remember`、`pixiu_memory_update`、
-  `pixiu_memory_forget`、`pixiu_sync_status` 五个稳定 JSON 工具。更新工具使用召回项的
-  `knowledge_id`/`version` 执行原子乐观锁更新并携带完整 provenance；遗忘必须先预览，再使用 120 秒内的一次性
-  token 执行；工具说明要求第二步前取得用户明确确认。
-
-遗忘现携带 Provider 固定 scope，并保存后端一次性预览凭证及目标版本；模型仅获得
-本地引用，后端凭证不放入工具预览。引用绑定当前会话、按请求耗时扣减有效期、消费
-后不可重放，后端预览缺字段/范围不匹配时拒绝。此接线不把模型复述确认或持有 token
-视为可验证的人工审批；宿主人工确认凭据与完整交互验收仍需补齐。
+- 暴露记忆 search/remember/update/forget、sync_status 及 `pixiu_document_read` 工具。更正使用目标 ID 和版本；遗忘只预览并交接桌面确认，模型不能执行删除或获得审批凭证。
+- 文档工具每次读取一个原文块；文字返回 JSON，图像复用 Runtime 的 `_multimodal` 内容格式，将页面作为真实图像交给当前模型。模型不支持图片时拒绝视觉读取，纯扫描附件在上传时停用。
+- 超过两个内容块的附件保留既有 24 小时文档引用，模型沿 next_cursor 读取，后续问答可回读；短附件直接传递。分块不等于模型已完整理解，真实模型容量和全文任务验收仍未完成。
 
 `.deb` 已携带只读 Provider，并由 PIXIU 桌面启动器幂等部署/升级到当前用户 Agent
 profile；激活器会在变更前拒绝不受管插件、符号链接或非 Gateway 用户 unit，并为

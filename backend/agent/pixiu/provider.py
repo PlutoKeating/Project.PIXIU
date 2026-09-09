@@ -343,7 +343,7 @@ class PixiuMemoryProvider(MemoryProvider):
     def get_tool_schemas(self) -> list[dict[str, Any]]:
         return list(TOOL_SCHEMAS)
 
-    def handle_tool_call(self, tool_name: str, args: dict[str, Any], **kwargs: Any) -> str:
+    def handle_tool_call(self, tool_name: str, args: dict[str, Any], **kwargs: Any) -> str | dict[str, Any]:
         try:
             if tool_name == "pixiu_memory_search":
                 result = self._search(args)
@@ -363,8 +363,20 @@ class PixiuMemoryProvider(MemoryProvider):
                 result = self._client.request("GET", f"/documents/{reference}/read?cursor={cursor}")
                 if result.get("version") != version:
                     result = {"error": "DOCUMENT_VERSION_CONFLICT"}
-                elif result.get("block", {}).get("kind") != "text":
-                    result = {"error": "DOCUMENT_REQUIRES_VISUAL_READING"}
+                elif result.get("block", {}).get("kind") == "image":
+                    if not self._client.request("GET", "/agent/input-capabilities").get("images"):
+                        result = {"error": "DOCUMENT_REQUIRES_VISUAL_READING", "next_cursor": result.get("next_cursor")}
+                    else:
+                        block = dict(result["block"])
+                        encoded = block.pop("data_base64")
+                        mime = block.get("mime_type")
+                        if mime not in {"image/png", "image/jpeg", "image/webp", "image/gif"}:
+                            raise ValueError("Unsupported document image")
+                        metadata = {**result, "block": block}
+                        summary = "附件页面；原图通过多模态内容传递。" + json.dumps(metadata, ensure_ascii=False)
+                        return {"_multimodal": True, "text_summary": summary,
+                                "content": [{"type": "text", "text": summary},
+                                    {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{encoded}"}}]}
             elif tool_name == "pixiu_sync_status":
                 result = self._client.request("GET", "/sync/status")
             else:

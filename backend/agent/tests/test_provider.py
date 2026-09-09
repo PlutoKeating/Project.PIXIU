@@ -451,3 +451,27 @@ def test_document_tool_reads_original_first_middle_and_last_blocks():
     malformed = json.loads(item.handle_tool_call("pixiu_document_read", {
         "document_id": "../private", "version": "b" * 64, "cursor": 0}))
     assert malformed == {"error": "INVALID_TOOL_ARGUMENTS"}
+
+
+@pytest.mark.parametrize('vision', [True, False])
+def test_document_image_uses_runtime_multimodal_envelope_only_for_current_vision_model(vision):
+    from agent.tool_dispatch_helpers import _is_multimodal_tool_result, _multimodal_text_summary
+    class ImageClient(FakeClient):
+        def request(self, method, path, payload=None):
+            if path == '/agent/input-capabilities':
+                return {'images': vision}
+            if path.startswith('/documents/'):
+                return {'version': 'b' * 64, 'next_cursor': 4, 'block': {
+                    'id': 'block-4', 'location': '第 2 页', 'kind': 'image',
+                    'mime_type': 'image/png', 'data_base64': 'cGl4ZWxz'}}
+            return super().request(method, path, payload)
+    item = provider(ImageClient())
+    result = item.handle_tool_call('pixiu_document_read', {
+        'document_id': 'a' * 64, 'version': 'b' * 64, 'cursor': 3})
+    if vision:
+        assert _is_multimodal_tool_result(result)
+        assert result['content'][1]['image_url']['url'] == 'data:image/png;base64,cGl4ZWxz'
+        assert 'cGl4ZWxz' not in _multimodal_text_summary(result)
+        assert 'next_cursor' in result['content'][0]['text']
+    else:
+        assert json.loads(result) == {'error': 'DOCUMENT_REQUIRES_VISUAL_READING', 'next_cursor': 4}
