@@ -1,0 +1,34 @@
+{
+  "source": "raw/network/四类知识长正文-01.json",
+  "sha256": "46c28f302c2b05fde313383f34cc6e4b9acfb5cff45bccd48a840a05e16b8751",
+  "examples": [
+    {
+      "title": "书房整理事实清单",
+      "kind": "FACT",
+      "quote": "书房共有三层书架。",
+      "knowledge_id": "knw_01M2249BH6AD644G1WZF7BKZH7",
+      "evidence_id": "evd_01M2249BH25BCF08VD3YVJ9XD8"
+    },
+    {
+      "title": "家庭图书归还流程",
+      "kind": "WORKFLOW",
+      "quote": "从借阅登记本逐项核对书名",
+      "knowledge_id": "knw_01M2249D2X812FVTY3WHZ22BMM",
+      "evidence_id": "evd_01M2249D2T41TRQF7WA18AM2BX"
+    },
+    {
+      "title": "书架分类调整案例",
+      "kind": "CASE",
+      "quote": "把常用工具书集中到中层",
+      "knowledge_id": "knw_01M2249EMFD358NXNF7JTFABBN",
+      "evidence_id": "evd_01M2249EM823M670RZ4J36H2G4"
+    },
+    {
+      "title": "家庭阅读周计划模板",
+      "kind": "TEMPLATE",
+      "quote": "填写本周共同阅读的主题",
+      "knowledge_id": "knw_01M2249GB7G7QKNVFSYRF5PREA",
+      "evidence_id": "evd_01M2249GB4RCHJ5V5TAGCH7RAH"
+    }
+  ]
+}

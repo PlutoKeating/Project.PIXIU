@@ -1,0 +1,165 @@
+{
+  "source": "raw/network/第二轮断连并发与遗忘传播.json",
+  "sha256": "f40d0444f6442bf1455dcad096be8f54dd4441c878d927f7afa7e45e8949e631",
+  "online": {
+    "time": "2026-09-08T17:46:34.303406+00:00",
+    "step": "在线笔记本不再返回有效条目",
+    "result": {
+      "status": 404,
+      "body": {
+        "error": "NOT_FOUND",
+        "message": "NOT_FOUND",
+        "request_id": "req_01M2121Y5DASFFW719K0HGRN5M"
+      }
+    }
+  },
+  "offline": {
+    "time": "2026-09-08T17:46:34.864131+00:00",
+    "step": "断连客厅尚未收到遗忘",
+    "result": {
+      "status": 200,
+      "body": {
+        "knowledge_id": "knw_01M211Y1EDN2VSBECA1T75JVBV",
+        "scope": "shared:home",
+        "version": 3,
+        "title": "家庭节能约定",
+        "body": {
+          "内容": "客厅方案：晚上九点四十五关闭空调。"
+        },
+        "evidence_ids": [
+          "evd_01M211Y1E071FSB69E0Q4TBBNK",
+          "evd_01M211Z55BNN3Z7DK21FFCFX7X",
+          "evd_01M212057Z5MQD15C7EWE3SWKE"
+        ],
+        "updated_at": 1788889535
+      }
+    }
+  },
+  "rejoined": {
+    "time": "2026-09-08T17:47:05.526708+00:00",
+    "step": "客厅重连后条目失效",
+    "result": {
+      "status": 404,
+      "body": {
+        "error": "NOT_FOUND",
+        "message": "NOT_FOUND",
+        "request_id": "req_01M2122WN40KARAT8CJPR2706Z"
+      }
+    }
+  },
+  "tombstones": [
+    {
+      "status": 200,
+      "body": {
+        "present": true,
+        "tombstone": true,
+        "clock_entries": 2,
+        "clock_total": 5,
+        "operation_digest": "1f18cf9136d451ac2ac22e40cb66865e412e178d0a9ee5cffa6c51476d3728c3",
+        "updated_at": 1788889570
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "present": true,
+        "tombstone": true,
+        "clock_entries": 2,
+        "clock_total": 5,
+        "operation_digest": "1f18cf9136d451ac2ac22e40cb66865e412e178d0a9ee5cffa6c51476d3728c3",
+        "updated_at": 1788889570
+      }
+    },
+    {
+      "status": 200,
+      "body": {
+        "present": true,
+        "tombstone": true,
+        "clock_entries": 2,
+        "clock_total": 5,
+        "operation_digest": "1f18cf9136d451ac2ac22e40cb66865e412e178d0a9ee5cffa6c51476d3728c3",
+        "updated_at": 1788889570
+      }
+    }
+  ],
+  "queries": [
+    {
+      "device": "书房工作站",
+      "query": {
+        "status": 200,
+        "body": {
+          "answer": "",
+          "source_evidence": [],
+          "source_knowledge": "",
+          "confidence": 0.0,
+          "latency_ms": 10
+        }
+      },
+      "sync": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 18,
+          "enabled": true,
+          "paused": false
+        }
+      }
+    },
+    {
+      "device": "随身笔记本",
+      "query": {
+        "status": 200,
+        "body": {
+          "answer": "",
+          "source_evidence": [],
+          "source_knowledge": "",
+          "confidence": 0.0,
+          "latency_ms": 32
+        }
+      },
+      "sync": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 18,
+          "enabled": true,
+          "paused": false
+        }
+      }
+    },
+    {
+      "device": "客厅一体机",
+      "query": {
+        "status": 200,
+        "body": {
+          "answer": "",
+          "source_evidence": [],
+          "source_knowledge": "",
+          "confidence": 0.0,
+          "latency_ms": 18
+        }
+      },
+      "sync": {
+        "status": 200,
+        "body": {
+          "domain": "shared:home",
+          "peers_online": 3,
+          "peers_total": 3,
+          "pending_outgoing_ops": 0,
+          "last_anti_entropy_ts": null,
+          "total_ops_synced": 18,
+          "enabled": true,
+          "paused": false
+        }
+      }
+    }
+  ]
+}

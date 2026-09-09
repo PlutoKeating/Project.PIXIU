@@ -1,0 +1,32 @@
+{
+  "video": "submission/video-production/renders/四类知识正文-02.mp4",
+  "sha256": "08b1457efc911e2e6a12c693973da2b1b757243a1aa6fb1c6119faf9a9e2a085",
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "duration": "28.000000",
+        "nb_frames": "840",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "duration": "28.053333",
+        "nb_frames": "1315"
+      }
+    ]
+  },
+  "frames": [
+    450,
+    815
+  ],
+  "global_offset": 7003
+}

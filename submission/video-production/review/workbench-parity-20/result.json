@@ -1,0 +1,10 @@
+{
+  "frames": [
+    7103,
+    7453,
+    7818
+  ],
+  "all_equal": true,
+  "tool_output": "bundling…\nf7103: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0\nf7453: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0\nf7818: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0\n\n3 帧全部一致，PNG 见 /home/pluto/.codex/skills/video-shotcraft/workbench/.parity\n",
+  "scope": "三个工作台抽样帧一致，不代替实际编码视频检查"
+}

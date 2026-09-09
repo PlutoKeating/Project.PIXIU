@@ -1,0 +1,260 @@
+{
+  "shot": "s14",
+  "request": {
+    "text": "记忆可以保存事实、流程、案例和模板。这里记录了书架位置、图书归还步骤、分类调整经验，以及阅读计划的填写说明。打开流程正文，按步骤核对书名、整理图书并更新登记。遇到相似任务时，再检索这些内容，交给助手作为执行参考。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "29218cd700c6a2b814a6b831cb47e153022c277f1953e6078d9b3735507b9a2e",
+  "audio_sha256": "6c1509682f7b1c7ab7686c7e74e6740ade8c45b8688de2a1c90ae9d304af10f1",
+  "duration_seconds": 24.72,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 5394580,
+      "text": "记忆"
+    },
+    {
+      "offset": 6684160,
+      "duration": 1973750,
+      "text": "可以"
+    },
+    {
+      "offset": 8789580,
+      "duration": 3421250,
+      "text": "保存"
+    },
+    {
+      "offset": 12473750,
+      "duration": 5789580,
+      "text": "事实"
+    },
+    {
+      "offset": 20500000,
+      "duration": 6842080,
+      "text": "流程"
+    },
+    {
+      "offset": 29842080,
+      "duration": 4342080,
+      "text": "案例"
+    },
+    {
+      "offset": 34447500,
+      "duration": 1184160,
+      "text": "和"
+    },
+    {
+      "offset": 35763330,
+      "duration": 4210410,
+      "text": "模板"
+    },
+    {
+      "offset": 46052500,
+      "duration": 3421250,
+      "text": "这里"
+    },
+    {
+      "offset": 49605410,
+      "duration": 2500000,
+      "text": "记录"
+    },
+    {
+      "offset": 52105410,
+      "duration": 1578750,
+      "text": "了"
+    },
+    {
+      "offset": 53947500,
+      "duration": 3552500,
+      "text": "书架"
+    },
+    {
+      "offset": 57631660,
+      "duration": 5789580,
+      "text": "位置"
+    },
+    {
+      "offset": 66447500,
+      "duration": 4605410,
+      "text": "图书"
+    },
+    {
+      "offset": 71315830,
+      "duration": 3947500,
+      "text": "归还"
+    },
+    {
+      "offset": 75394580,
+      "duration": 4210410,
+      "text": "步骤"
+    },
+    {
+      "offset": 82236660,
+      "duration": 3552500,
+      "text": "分类"
+    },
+    {
+      "offset": 85921250,
+      "duration": 3684160,
+      "text": "调整"
+    },
+    {
+      "offset": 89736660,
+      "duration": 4342080,
+      "text": "经验"
+    },
+    {
+      "offset": 96710410,
+      "duration": 3157910,
+      "text": "以及"
+    },
+    {
+      "offset": 100131660,
+      "duration": 3421250,
+      "text": "阅读"
+    },
+    {
+      "offset": 103684160,
+      "duration": 3026250,
+      "text": "计划"
+    },
+    {
+      "offset": 106710410,
+      "duration": 1710410,
+      "text": "的"
+    },
+    {
+      "offset": 108684160,
+      "duration": 3815830,
+      "text": "填写"
+    },
+    {
+      "offset": 112631660,
+      "duration": 4868330,
+      "text": "说明"
+    },
+    {
+      "offset": 123552500,
+      "duration": 4342080,
+      "text": "打开"
+    },
+    {
+      "offset": 128157910,
+      "duration": 9078750,
+      "text": "流程正文"
+    },
+    {
+      "offset": 140131660,
+      "duration": 1973750,
+      "text": "按"
+    },
+    {
+      "offset": 142236660,
+      "duration": 3815830,
+      "text": "步骤"
+    },
+    {
+      "offset": 146315830,
+      "duration": 5000000,
+      "text": "核对书"
+    },
+    {
+      "offset": 151315830,
+      "duration": 3421250,
+      "text": "名"
+    },
+    {
+      "offset": 157894580,
+      "duration": 3289580,
+      "text": "整理"
+    },
+    {
+      "offset": 161315830,
+      "duration": 5263330,
+      "text": "图书"
+    },
+    {
+      "offset": 167763330,
+      "duration": 1710410,
+      "text": "并"
+    },
+    {
+      "offset": 169605410,
+      "duration": 3552500,
+      "text": "更新"
+    },
+    {
+      "offset": 173289580,
+      "duration": 3684160,
+      "text": "登记"
+    },
+    {
+      "offset": 183026250,
+      "duration": 2894580,
+      "text": "遇到"
+    },
+    {
+      "offset": 186184160,
+      "duration": 4473750,
+      "text": "相似"
+    },
+    {
+      "offset": 190789580,
+      "duration": 2894580,
+      "text": "任务"
+    },
+    {
+      "offset": 193684160,
+      "duration": 4342080,
+      "text": "时"
+    },
+    {
+      "offset": 200263330,
+      "duration": 2500000,
+      "text": "再"
+    },
+    {
+      "offset": 202763330,
+      "duration": 3552500,
+      "text": "检索"
+    },
+    {
+      "offset": 206578750,
+      "duration": 2105410,
+      "text": "这些"
+    },
+    {
+      "offset": 208815830,
+      "duration": 5131660,
+      "text": "内容"
+    },
+    {
+      "offset": 215789580,
+      "duration": 3421250,
+      "text": "交给"
+    },
+    {
+      "offset": 219342080,
+      "duration": 5000000,
+      "text": "助手"
+    },
+    {
+      "offset": 225394580,
+      "duration": 3157910,
+      "text": "作为"
+    },
+    {
+      "offset": 228815830,
+      "duration": 3947500,
+      "text": "执行"
+    },
+    {
+      "offset": 232894580,
+      "duration": 5000000,
+      "text": "参考"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

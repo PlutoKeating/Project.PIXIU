@@ -152,3 +152,28 @@ for offset, tier in [(0, 'SHORT_TERM'), (4, 'MID_TERM')]:
     'sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'cases': cases,
 }, ensure_ascii=False, indent=2) + '\n')
 print('已核对短中期晋升、知识与证据ID、摘要完整性及字符预算')
+
+source = ROOT / 'raw/network/四类知识长正文-01.json'
+examples = json.loads(source.read_text())['records']
+kinds = json.loads((ROOT / 'raw/network/四类知识长正文-类型复核-01.json').read_text())['records']
+quotes = ['书房共有三层书架。', '从借阅登记本逐项核对书名',
+          '把常用工具书集中到中层', '填写本周共同阅读的主题']
+assert len(examples) == len(kinds) == len(quotes) == 4
+output = []
+for example, kind, quote in zip(examples, kinds, quotes):
+    written, queried, detail = example['calls']
+    assert all(r['response']['status'] == 200 for r in example['calls'])
+    evidence = detail['response']['body']
+    item = queried['response']['body']['items'][0]
+    assert item['evidence_ids'] == [written['response']['body']['evidence_id']] == [evidence['id']]
+    assert evidence['raw']['body'] == written['request']['body']['raw']['body']
+    assert quote in json.dumps(evidence['raw']['body'], ensure_ascii=False)
+    assert kind['actual'] == kind['expected'] == example['expected_kind']
+    assert item['knowledge_id'] == kind['id']
+    output.append({'title': example['title'], 'kind': kind['actual'], 'quote': quote,
+                   'knowledge_id': kind['id'], 'evidence_id': evidence['id']})
+(ROOT / 'src/knowledge-examples.json').write_text(json.dumps({
+    'source': str(source.relative_to(ROOT)),
+    'sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'examples': output,
+}, ensure_ascii=False, indent=2) + '\n')
+print('已核对四类知识的正文、摘录、类型与来源ID')
