@@ -34,6 +34,15 @@ def git(root: Path, *args: str) -> str:
     ).strip()
 
 
+def release_revision(root: Path) -> str:
+    if (root / ".git").exists():
+        return git(root, "rev-parse", "HEAD")
+    revision = read_json(root / "SOURCE-MANIFEST.json")["sourceCommit"]
+    if not isinstance(revision, str) or not re.fullmatch(r"[a-f0-9]{40}", revision):
+        raise ValueError("invalid source snapshot commit")
+    return revision
+
+
 def read_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -225,7 +234,7 @@ def validate_evidence(
             valid = (
                 host.get("schema_version") == 1
                 and root is not None
-                and host.get("release_commit") == git(root, "rev-parse", "HEAD")
+                and host.get("release_commit") == release_revision(root)
                 and host.get("adaptation_inputs") == host_adaptation_inputs(root, policy)
                 and host.get("source_commit")
                 == policy["components"]["kylin_agent"]["source_commit"]
@@ -282,7 +291,7 @@ def validate_evidence(
             valid = (
                 wheelhouse.get("schema_version") == 1
                 and root is not None
-                and wheelhouse.get("release_commit") == git(root, "rev-parse", "HEAD")
+                and wheelhouse.get("release_commit") == release_revision(root)
                 and wheelhouse.get("adaptation_inputs")
                 == runtime_adaptation_inputs(root, policy)
                 and wheelhouse.get("source_commit")
@@ -509,7 +518,7 @@ def audit(
     ))
     blockers = sorted(set(blockers))
     try:
-        release_commit = git(root, "rev-parse", "HEAD")
+        release_commit = release_revision(root)
     except (OSError, subprocess.CalledProcessError):
         release_commit = None
         blockers.append("release-commit-unavailable")

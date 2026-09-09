@@ -19,6 +19,16 @@ SPEC.loader.exec_module(AUDIT)
 
 
 class AgentSupplyChainAuditTest(unittest.TestCase):
+    def test_delivered_source_revision_without_git(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "SOURCE-MANIFEST.json"
+            manifest.write_text(json.dumps({"sourceCommit": "a" * 40}))
+            self.assertEqual(AUDIT.release_revision(root), "a" * 40)
+            manifest.write_text(json.dumps({"sourceCommit": "not-a-commit"}))
+            with self.assertRaises(ValueError):
+                AUDIT.release_revision(root)
+
     def ready_report(self) -> tuple[dict, dict]:
         policy = AUDIT.read_json(
             ROOT / "build/release/agent-supply-chain-policy.json"
@@ -330,6 +340,15 @@ class AgentSupplyChainAuditTest(unittest.TestCase):
                     ],
                 },
             }
+            for name in ("kreuzberg", "mcp", "openpyxl", "pillow"):
+                artifact = evidence_dir / "wheelhouse" / (name + ".whl")
+                artifact.write_bytes(b"fixture document wheel")
+                digest = AUDIT.sha256_file(artifact)
+                documents["runtime-wheelhouse.json"]["packages"].append({
+                    "name": name, "version": "1.0", "filename": "wheelhouse/" + artifact.name, "sha256": digest})
+                documents["agent-components.spdx.json"]["packages"].append({
+                    "name": name, "SPDXID": "SPDXRef-Wheel-" + name, "versionInfo": "1.0",
+                    "checksums": [{"algorithm": "SHA256", "checksumValue": digest}]})
             for filename, document in documents.items():
                 (evidence_dir / filename).write_text(
                     json.dumps(document), encoding="utf-8"

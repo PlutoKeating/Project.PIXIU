@@ -102,6 +102,8 @@ class AgentSupplyChainRecordTest(unittest.TestCase):
             wheel(wheels / "runtime.whl", "kylin-agent-runtime", "0.9.8")
             wheel(wheels / "aiohttp.whl", "aiohttp", "3.13.3", "Apache-2.0")
             wheel(wheels / "ddgs.whl", "ddgs", "9.16.0", "MIT")
+            for name, version in [("kreuzberg", "4.10.3"), ("mcp", "1.26.0"), ("openpyxl", "3.1.5"), ("pillow", "12.1.1")]:
+                wheel(wheels / (name + ".whl"), name, version, "MIT")
             lock, install_log = inputs / "runtime.lock", inputs / "install.log"
             lock.write_text("locked\n", encoding="utf-8")
             install_log.write_text("offline install passed\n", encoding="utf-8")
