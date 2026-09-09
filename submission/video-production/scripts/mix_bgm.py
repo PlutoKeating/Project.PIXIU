@@ -46,6 +46,6 @@ assert picture_hash(args.output) == original_picture
 encoded = np.frombuffer(ff('-i', args.output, '-vn', '-ar', 48000, '-ac', 2, '-f', 'f32le', '-'), dtype='<f4')
 encoded_peak = float(np.max(np.abs(encoded)))
 assert encoded_peak < 1, 'Encoded audio exceeds full scale'
-report = {'sha256': sha(args.output), 'complete_decode': 'passed', 'source_video': str(args.video), 'source_video_sha256': sha(args.video), 'source_music_sha256': sha(source), 'stem_sha256': sha(stem), 'settings': cfg, 'duration_seconds': duration, 'mix_peak_dbfs': float(20*np.log10(peak)), 'encoded_peak_dbfs': float(20*np.log10(encoded_peak)), 'picture_bitstream_unchanged': True, 'video_bitstream_hash': original_picture, 'method': '15s source trim; 70% linear gain; last 1s linear fade on music only; picture stream copied; no normalization or ducking.'}
+report = {'sha256': sha(args.output), 'complete_decode': 'passed', 'source_video': str(args.video), 'source_video_sha256': sha(args.video), 'source_music_sha256': sha(source), 'stem_sha256': sha(stem), 'settings': cfg, 'duration_seconds': duration, 'mix_peak_dbfs': float(20*np.log10(peak)), 'encoded_peak_dbfs': float(20*np.log10(encoded_peak)), 'picture_bitstream_unchanged': True, 'video_bitstream_hash': original_picture, 'method': f'{start}s source trim; {cfg["volume"]*100:g}% linear gain; last {fade}s linear fade on music only; picture stream copied; no normalization or ducking.'}
 args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n')
 print(json.dumps(report, ensure_ascii=False), flush=True)

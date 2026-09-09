@@ -1,3 +1,4 @@
+import {narrationAudio} from './narrationAudio';
 import music from './bgm.json';
 import {createElement, Fragment} from 'react';
 import timeline from './timeline.json';
@@ -50,7 +51,7 @@ export const WORKBENCH = {
     ...timeline.shots.map((shot) => {
       const offset = Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F));
       return {from: shot.from + offset, duration: shot.duration - offset,
-        src: shot.audio, volume: 1, label: `${shot.id} 中文解说`};
+        src: narrationAudio(shot.audio), volume: 1, label: `${shot.id} 中文解说`};
     }),
     ...SFX.map((sfx) => {
       const shot = timeline.shots.find((item) => item.id === sfx.shot)!;

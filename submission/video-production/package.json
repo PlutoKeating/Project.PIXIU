@@ -20,7 +20,8 @@
     "prepare:preferences": "python3 scripts/prepare_preference_scene.py",
     "render:final": "remotion render src/index.ts PixiuFinalFull",
     "narrate:azure": "python3 scripts/narrate_azure.py",
-    "mix:bgm": "python3 scripts/mix_bgm.py"
+    "mix:bgm": "python3 scripts/mix_bgm.py",
+    "mix:levels": "python3 scripts/rebalance_audio.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

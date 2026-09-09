@@ -1,0 +1,435 @@
+{
+  "sha256": "8cb16fd87b681deeabbf611712d2b6db23ea7de6b731d7ae8a9a0acaa7ade0ed",
+  "complete_decode": "passed",
+  "baseline": "renders/演示视频-云枫白字无配乐版.mp4",
+  "baseline_sha256": "dedc02204989effd208944d9b5077447a4b1438dde4d4bfe2cf84e3d11b67a90",
+  "narration_gain": 1.7,
+  "music_gain": 0.45,
+  "duration_seconds": 389.53333333333336,
+  "picture_bitstream_unchanged": true,
+  "peaks": {
+    "no_bgm": {
+      "linear_peak_dbfs": -2.2206436890490706,
+      "encoded_peak_dbfs": -2.2176671959762255,
+      "peak_limiter": false,
+      "limiter_ceiling": null,
+      "samples_above_full_scale": 0
+    },
+    "bgm": {
+      "linear_peak_dbfs": 0.03688672757393862,
+      "encoded_peak_dbfs": -0.1796252880327603,
+      "peak_limiter": true,
+      "limiter_ceiling": 0.98,
+      "samples_above_full_scale": 1
+    }
+  },
+  "narration_alignment": [
+    {
+      "shot": "s01",
+      "declared_start_frame": 15,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999638801875796,
+      "source_peak_frame": 30.15,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7061885916076085,
+        0.7061885916076085
+      ],
+      "prepared_sha256": "f321cd759029adc080a9aeab58f3e72c7c2cf2188c45c0dd67aa3ab0de1e202f"
+    },
+    {
+      "shot": "s02",
+      "declared_start_frame": 272,
+      "measured_start_frame": 272.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999601300074814,
+      "source_peak_frame": 6.15,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.706122385333722,
+        0.706122385333722
+      ],
+      "prepared_sha256": "f50c8f0970ff27f976247129e0760f4a66f57af2927c261a40e85de5c0b01d1c"
+    },
+    {
+      "shot": "s03",
+      "declared_start_frame": 582,
+      "measured_start_frame": 582.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9921326943507366,
+      "source_peak_frame": 12.75,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7081079315259166,
+        0.708388474929577
+      ],
+      "prepared_sha256": "0b3cc293fe9ffd4b5da555fa3f4a6f307d7c69b11b7c6437c2fecb7a6fb4d7ed"
+    },
+    {
+      "shot": "s04",
+      "declared_start_frame": 978,
+      "measured_start_frame": 978.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999585199052042,
+      "source_peak_frame": 72.75,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7060396655297838,
+        0.7060396655297838
+      ],
+      "prepared_sha256": "bf2a5093f5d0e80221bc55f80743ad2ee7c156c9bde159a048bf55e1a00c9324"
+    },
+    {
+      "shot": "s05",
+      "declared_start_frame": 1378,
+      "measured_start_frame": 1378.28,
+      "pipeline_offset_frames": 0.28,
+      "normalized_correlation": 0.9999615190356106,
+      "source_peak_frame": 13.35,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7060910180344108,
+        0.7060910180344108
+      ],
+      "prepared_sha256": "a9cfab32350d43260e8c9975a842b17416a6a660cdc2bce02782a1fa37e8ce0b"
+    },
+    {
+      "shot": "s06",
+      "declared_start_frame": 1752,
+      "measured_start_frame": 1752.289375,
+      "pipeline_offset_frames": 0.289375,
+      "normalized_correlation": 0.9999608340548412,
+      "source_peak_frame": 7.05,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.705686135075718,
+        0.705686135075718
+      ],
+      "prepared_sha256": "92803d592945cd3162fd785926be0f49c27a94af62968a53145ed22d0b808730"
+    },
+    {
+      "shot": "s07",
+      "declared_start_frame": 2205,
+      "measured_start_frame": 2205.289375,
+      "pipeline_offset_frames": 0.289375,
+      "normalized_correlation": 0.9999543248863146,
+      "source_peak_frame": 56.25,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.70602509840037,
+        0.70602509840037
+      ],
+      "prepared_sha256": "941d2b5e4fb59795775c71ab85c027ab3788b309ef92a5c95c16cece64662a67"
+    },
+    {
+      "shot": "s08",
+      "declared_start_frame": 2601,
+      "measured_start_frame": 2601.289375,
+      "pipeline_offset_frames": 0.289375,
+      "normalized_correlation": 0.9999502992848514,
+      "source_peak_frame": 9.45,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7059563935947349,
+        0.7059563935947349
+      ],
+      "prepared_sha256": "0794f2cbe2147acec1ad1eb3698b7cdc285b61d9b11d28248bda51bab69ad6ca"
+    },
+    {
+      "shot": "s09",
+      "declared_start_frame": 2931,
+      "measured_start_frame": 2931.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9889543389515838,
+      "source_peak_frame": 10.95,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7056525394864064,
+        0.7056983723329068
+      ],
+      "prepared_sha256": "1a896fda43014c1553283f565feab48dbaa6876cf11d6498cbb32d930c9c1b05"
+    },
+    {
+      "shot": "s10",
+      "declared_start_frame": 3302,
+      "measured_start_frame": 3302.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999671531682238,
+      "source_peak_frame": 22.95,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7066618526330897,
+        0.7066618526330897
+      ],
+      "prepared_sha256": "67370b7531fdcdde45b211ca3e7c1df54944cdf4022b5250b15046a41e843ae4"
+    },
+    {
+      "shot": "s11",
+      "declared_start_frame": 3710,
+      "measured_start_frame": 3710.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.999966281884655,
+      "source_peak_frame": 7.95,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7062810426964802,
+        0.7062810426964802
+      ],
+      "prepared_sha256": "d28d62f415aa380ade4d022649dc350975ad23c62fb1ee77bd31228f4cc5148d"
+    },
+    {
+      "shot": "s12",
+      "declared_start_frame": 4136,
+      "measured_start_frame": 4136.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999629295438394,
+      "source_peak_frame": 5.55,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7062139683662896,
+        0.7062139683662896
+      ],
+      "prepared_sha256": "18ea406bce7f38d088981f91bbc1f10d5724ca4c264cfb694ac76252ddae4f70"
+    },
+    {
+      "shot": "s13",
+      "declared_start_frame": 4506,
+      "measured_start_frame": 4506.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9969247126073475,
+      "source_peak_frame": 14.85,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7060891955379774,
+        0.7060890076900646
+      ],
+      "prepared_sha256": "9a3b813f0788b0cccc46d746ce3ef7545a16d4175b2575f34e9695507991266c"
+    },
+    {
+      "shot": "s14",
+      "declared_start_frame": 4917,
+      "measured_start_frame": 4917.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999461167546294,
+      "source_peak_frame": 75.45,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7059121293093317,
+        0.7059121293093317
+      ],
+      "prepared_sha256": "dec9fbdbcd8a40d4f7750d7dcd9c5ca3bb6ffdf2d8eb544ccd92bdb8817a3584"
+    },
+    {
+      "shot": "s15",
+      "declared_start_frame": 5548,
+      "measured_start_frame": 5548.280625,
+      "pipeline_offset_frames": 0.280625,
+      "normalized_correlation": 0.9999613925620574,
+      "source_peak_frame": 13.05,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7060261588967863,
+        0.7060261588967863
+      ],
+      "prepared_sha256": "b3991c3264c6257cf316ee2ea9b8313367fed028c77f1a0d5ad2edc13c3cbf7a"
+    },
+    {
+      "shot": "s16",
+      "declared_start_frame": 6005,
+      "measured_start_frame": 6005.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999509937404832,
+      "source_peak_frame": 20.85,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7059256043473322,
+        0.7059256043473322
+      ],
+      "prepared_sha256": "c158665e98bb8f0c1823eda5bb76c336bb18a494682e6ff525ed11754c1d986b"
+    },
+    {
+      "shot": "s17",
+      "declared_start_frame": 6490,
+      "measured_start_frame": 6490.279375,
+      "pipeline_offset_frames": 0.279375,
+      "normalized_correlation": 0.9999621457074395,
+      "source_peak_frame": 5.25,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7059337116598828,
+        0.7059337116598828
+      ],
+      "prepared_sha256": "7716917c4af90b10647530aaef279190ed9777ed6f0e7302c5a9bec89120866a"
+    },
+    {
+      "shot": "s18",
+      "declared_start_frame": 6929,
+      "measured_start_frame": 6929.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999612997126729,
+      "source_peak_frame": 53.25,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7063924097959603,
+        0.7063924097959603
+      ],
+      "prepared_sha256": "74187207323dec7c99b49d9a018dc6675b5a257da2cd1bedf93bfc236a457f2b"
+    },
+    {
+      "shot": "s19",
+      "declared_start_frame": 7128,
+      "measured_start_frame": 7128.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999508508553512,
+      "source_peak_frame": 16.95,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7058826292198291,
+        0.7058826292198291
+      ],
+      "prepared_sha256": "38935d6a6500312d9bdd76d8519f3727862bdfae7bbdd55a10bd11470183afb2"
+    },
+    {
+      "shot": "s20",
+      "declared_start_frame": 7528,
+      "measured_start_frame": 7528.280625,
+      "pipeline_offset_frames": 0.280625,
+      "normalized_correlation": 0.9999572866829898,
+      "source_peak_frame": 7.05,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7060321831150996,
+        0.7060321831150996
+      ],
+      "prepared_sha256": "d82d8dcb1d0359be30292505d14bb8bbb66a9ced43e45e221e552e131ecbe35e"
+    },
+    {
+      "shot": "s21",
+      "declared_start_frame": 8009,
+      "measured_start_frame": 8009.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999619696319137,
+      "source_peak_frame": 51.45,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7064949904696667,
+        0.7064949904696667
+      ],
+      "prepared_sha256": "121135290c71a7cf6c6cba490117e230b9ae56f3a40a65e6f1d9cd3374c4e02d"
+    },
+    {
+      "shot": "s22",
+      "declared_start_frame": 8483,
+      "measured_start_frame": 8483.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.999942644290844,
+      "source_peak_frame": 16.65,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7055046140646947,
+        0.7055046140646947
+      ],
+      "prepared_sha256": "f45e2f3326607bbe2972be1b3466ca5dab1868bb3f9f0f26fbe03da135916875"
+    },
+    {
+      "shot": "s23",
+      "declared_start_frame": 8913,
+      "measured_start_frame": 8913.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999539599622979,
+      "source_peak_frame": 5.85,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7058296818694121,
+        0.7058296818694121
+      ],
+      "prepared_sha256": "633f57cf430e5b70080089267d10befb589fdf0f11724be994d383388ae2cc8e"
+    },
+    {
+      "shot": "s24",
+      "declared_start_frame": 9323,
+      "measured_start_frame": 9323.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999692413049611,
+      "source_peak_frame": 16.95,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7061921930229144,
+        0.7061921930229144
+      ],
+      "prepared_sha256": "89f6fc8cb11cbc09cb90e7dfb702d73aacc190903654b4e44e07314f22904a2a"
+    },
+    {
+      "shot": "s26",
+      "declared_start_frame": 9762,
+      "measured_start_frame": 9762.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999614760983584,
+      "source_peak_frame": 44.85,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7061351707719118,
+        0.7061351707719118
+      ],
+      "prepared_sha256": "1e25a6d39a7617a005ebcc5eb0d5a54ac99b9b6c8c96bdb8ddc946cb5db69a23"
+    },
+    {
+      "shot": "s27",
+      "declared_start_frame": 10217,
+      "measured_start_frame": 10217.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999688565968429,
+      "source_peak_frame": 8.85,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7061158497686754,
+        0.7061158497686754
+      ],
+      "prepared_sha256": "56129815efa5369a5986d0be8e25df0b3a2f95480cfe8ba8a8c2ec48a8c64650"
+    },
+    {
+      "shot": "s28",
+      "declared_start_frame": 10685,
+      "measured_start_frame": 10685.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999641882231718,
+      "source_peak_frame": 44.25,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.7060262487771524,
+        0.7060262487771524
+      ],
+      "prepared_sha256": "5601c05b5139ed8e6e5cfc3bf1e492a4410506e87e9a9eaa2b920b85ead51e2e"
+    },
+    {
+      "shot": "s29",
+      "declared_start_frame": 11189,
+      "measured_start_frame": 11189.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999529997053137,
+      "source_peak_frame": 43.95,
+      "probe_offset_seconds": 0.0,
+      "original_channel_gain": [
+        0.705610455979037,
+        0.705610455979037
+      ],
+      "prepared_sha256": "e321601fb18656965f9f39d8bae6fa89fb45b62c3b3c13e0bbb3d9bef021945b"
+    },
+    {
+      "shot": "s30",
+      "declared_start_frame": 11584,
+      "measured_start_frame": 11464.28,
+      "pipeline_offset_frames": 0.28,
+      "normalized_correlation": 0.999934556043264,
+      "source_peak_frame": 52.35,
+      "probe_offset_seconds": 4.0,
+      "original_channel_gain": [
+        0.7057157831975457,
+        0.7057104651240017
+      ],
+      "prepared_sha256": "a65b0db423c3ede91a9ad34913086987aed4d3273bbefa78153b1ae2b4dfbfca"
+    }
+  ],
+  "method": "Add 0.7x source narration at measured original sample positions and channel gains to the approved 1x no-music track. Existing SFX retained; add prepared music at 0.45x. No normalization, ducking, timing or speed changes. If full scale is exceeded, apply a latency-compensated 0.98 peak limiter with auto-level disabled."
+}

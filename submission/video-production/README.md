@@ -1,10 +1,14 @@
 # PIXIU 中文演示视频制作工程
 
-当前配乐白字版：`renders/演示视频-云枫配乐白字版.mp4`。使用用户提供的 ZENI — With You，源音乐15秒对应视频0秒，音量70%，在389.533333秒片尾截止，最后1秒线性淡出。字幕统一使用60px粗体、纯白填充、5px黑色描边、30%透明度阴影（向下3px、模糊2px），底部间距64px；全片与工作台同步。靠近字幕的镜头说明上移至y896，避免长字幕与说明碰撞。音轨直接复制已验证的配乐版，字幕时间保持不变。已更新正式视频ZIP；当前无配乐白字版为 `renders/演示视频-云枫白字无配乐版.mp4`，历史无配乐版 `renders/演示视频-云枫02.mp4` 与上一交付ZIP保留。
+当前音量调整版：`renders/演示视频-云枫音量调整版.mp4`。29段云枫口白为原音量的1.7倍，ZENI — With You背景音乐为45%；音乐从源15秒对应视频0秒，最后1秒淡出，视频时长389.533333秒。画面、字幕、语速、口白起点及音效音量沿用已审核版本。字幕为60px粗体纯白、5px黑描边、向下3px/模糊2px/alpha 0.3阴影，底部64px。正式ZIP已同步，当前无配乐版本为 `renders/演示视频-云枫口白170无配乐版.mp4`；历史导出保留。
+
+`src/narration-volume.json`记录1.7倍口白增益，`public/audio/narration-170/`保存由原始音频转成的立体声PCM，浏览器使用volume=1播放，避免浏览器把超过1的音量参数截断。主片、章节预览及工作台通过`narrationAudio.ts`使用相同素材；无TTS调用。`scripts/rebalance_audio.py`以原1倍无配乐白字版为基准，按波形测得的原始起点加入额外0.7倍口白，保留原音效，再混入0.45倍音乐，并直接复制画面流。此次只有一个线性混音样本超过满量程（约0.04dB），配乐导出采用关闭自动增益、补偿延迟的0.98峰值限制；编码后峰值约−0.18dBFS。检查记录为`review/audio-rebalance-technical.json`。
+
+复现入口：`npm run mix:levels -- --baseline renders/演示视频-云枫白字无配乐版.mp4 --output renders/新的音量版.mp4 --no-bgm renders/新的口白版.mp4 --report review/新的音量检查.json`。必须使用原1倍口白、无配乐基准；输出文件使用新名称。依赖沿用现有NumPy与FFmpeg。
 
 配乐配置为 `src/bgm.json`。`scripts/mix_bgm.py` 从原音乐生成包含截取与淡出的无增益WAV，再统一应用0.7增益；Remotion和工作台使用同一WAV与增益。全片组件支持 `bgm: false` 关闭音乐。时间轴变化后必须重新执行混音脚本以更新WAV长度。脚本使用已有NumPy及FFmpeg依赖，以已审核的无配乐MP4为输入，复制视频流，仅重编码混合音轨，不自动归一化或压低音乐。
 
-复现：`npm run mix:bgm -- --video renders/演示视频-云枫02.mp4 --output renders/新的配乐版.mp4 --report review/新的配乐检查.json`。输出与报告须选新文件名。字幕版检查见 `review/caption-white-technical.json`，全片以静音画面重新渲染后复制已验证配乐音轨，音轨压缩数据摘要相同。配乐检查见 `review/zeni-bgm-technical.json`：全片解码通过，视频流摘要一致，混合峰值约−1.09 dBFS、编码后约−1.11 dBFS。
+复现：`npm run mix:bgm -- --video renders/演示视频-云枫02.mp4 --output renders/新的配乐版.mp4 --report review/新的配乐检查.json`。输出与报告须选新文件名。此前白字版检查见 `review/caption-white-technical.json`，全片以静音画面重新渲染后复制已验证配乐音轨，音轨压缩数据摘要相同。配乐检查见 `review/zeni-bgm-technical.json`：全片解码通过，视频流摘要一致，混合峰值约−1.09 dBFS、编码后约−1.11 dBFS。
 
 当前云枫版已导出：29镜、约6分30秒，沿用审核文案，按新口白重排字幕、镜尾和动作。使用 video-shotcraft 的 Ink Press 模板，原版镜头源码保存在 `reference/ink-press/` 供逐镜核对；原版其他产品截图不复制、不入片。
 

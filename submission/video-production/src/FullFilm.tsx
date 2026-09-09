@@ -1,3 +1,4 @@
+import {narrationAudio} from './narrationAudio';
 import music from './bgm.json';
 import {cue} from './PresentationMotion';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame, staticFile, Easing} from 'remotion';
@@ -201,7 +202,7 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
       : SCREENS[shot.id] ? <ScreenScene shot={shot} /> : <PanelScene shot={shot} />}
     {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: headingSize, color: headingColor, fontWeight: 700}}>{shot.title}</div> : null}
     {includeAudio ? <><Sequence from={Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F))}>
-      <Audio src={staticFile(shot.audio)} />
+      <Audio src={staticFile(narrationAudio(shot.audio))} />
     </Sequence>
     {SFX.filter((sfx) => sfx.shot === shot.id).map((sfx) => <Sequence key={`${sfx.src}-${sfx.offset}`} from={sfx.offset} durationInFrames={sfx.duration}>
       <Audio src={staticFile(sfx.src)} volume={sfx.volume} />

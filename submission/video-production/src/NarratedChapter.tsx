@@ -1,3 +1,4 @@
+import {narrationAudio} from './narrationAudio';
 import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {Fonts} from './Fonts';
 import {PaperTitleCard} from './PaperTitleCard';
@@ -25,7 +26,7 @@ export const NarratedChapter: React.FC = () => <AbsoluteFill>
     words={[{text: '让多台设备，'}, {text: '共同记忆', accent: true}]}
     sub="分布式集体记忆 · 共享知识与经验" />
   <Sequence from={SHARED_CHAPTER.audio_from}>
-    <Audio src={staticFile(SHARED_CHAPTER.audio)} />
+    <Audio src={staticFile(narrationAudio(SHARED_CHAPTER.audio))} />
   </Sequence>
   <Sequence from={12} durationInFrames={60}>
     <Audio src={staticFile('audio/transition-soft.mp3')} volume={0.08} />
