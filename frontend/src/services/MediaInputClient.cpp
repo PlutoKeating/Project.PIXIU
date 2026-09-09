@@ -14,7 +14,7 @@ void MediaInputClient::next()
     if (m_paths.isEmpty()) { emit prepared(m_parts); return; }
     const auto path = m_paths.takeFirst();
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly) || file.size() > 6*1024*1024) {
+    if (!file.open(QIODevice::ReadOnly) || file.size() > 30*1024*1024) {
         emit failed(tr("附件无法读取或过大，尚未发送。")); return;
     }
     auto request = m_runtime; auto url = request.url();

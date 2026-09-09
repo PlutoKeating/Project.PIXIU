@@ -14,3 +14,6 @@
 	path = third_party/kylin-agent-runtime
 	url = https://gitee.com/openkylin/agent-runtime.git
 	branch = master
+[submodule "third_party/kreuzberg"]
+	path = third_party/kreuzberg
+	url = https://github.com/kreuzberg-dev/kreuzberg-lts.git

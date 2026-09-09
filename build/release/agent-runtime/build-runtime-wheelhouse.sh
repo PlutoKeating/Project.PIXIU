@@ -113,6 +113,13 @@ verify-offline)
         --require-hashes -r "${lockfile}"
     "${verify_root}/venv/bin/python" - <<'PY'
 import aiohttp
+import kreuzberg
+import mcp
+
+config = kreuzberg.ExtractionConfig(disable_ocr=True, use_cache=False, enable_quality_processing=False)
+document = kreuzberg.extract_bytes_sync(b"{\\rtf1\\ansi PIXIU offline document check}", "application/rtf", config)
+assert "PIXIU offline document check" in document.content
+print("headless-document-decoder=kreuzberg-4.10.3 (OCR disabled)")
 import ddgs
 import kylin_agent_runtime_cli
 from agent.system_prompt import _pixiu_model_facing_text

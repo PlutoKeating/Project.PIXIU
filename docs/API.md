@@ -489,12 +489,10 @@ evidence、knowledge、向量和同步日志等副作用，再提交**完整且�
 
 `raw` 是 connector、清洗和标准化后的证据载荷，并非原始文件字节。
 `provenance` 为可空的 `AgentProvenance`，承载 session/run/turn、工具调用、审批
-及发生时间，不承载目录路径。当前目录桥接默认以 `MANUAL_CONFIG` 入库文本或
-OCR 结果，保留文件名标题和正文，新捕获的文件路径及采集方式由 `capture_source`
-独立保存。路径是本次读取使用的绝对路径（不解析符号链接），`captured_at` 是
-取得内容后的 Unix 秒时间戳，不是文件修改时间。来源枚举不能单独证明内容
-由用户手工输入，也不能因 provenance 为空就判定目录采集失败。目录来源及其
-证据关联可从 `/monitor/log` 核对，当前接口不提供由 evidence 打开原文件的保证。
+及发生时间，不承载目录路径。目录 dreaming 通过 `MANUAL_CONFIG` 创建记忆，
+在 `body.document_sources` 中保留文档版本、块位置及被引用原始内容。
+历史 `capture_source` 保持可读，不为历史记录推测缺失路径。来源枚举不能单独证明
+内容由用户手工输入；`/monitor/log` 记录目录整理结果，完成状态以实际覆盖为准。
 
 ### 3.4 POST /memory/ocr
 
@@ -1305,7 +1303,7 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 
 `/agent/context` 增加可选 `trace`、`consumed`。启用 trace 返回 `trace_id`；后台预取默认未使用，Provider 真正注入时调用 `POST /agent/sources/{trace_id}/consume`。`GET /agent/sources?session_id=...&scope=...` 返回实际使用的来源引用，按当前授权与有效知识过滤。引用保留 30 天，不列入可保留的阶段记忆。
 
-图片知识：Runtime `POST /api/memory/image-draft` 接收已配置的 model_id 和 image_base64，通过多模态模型返回 title/text/items 草稿，不运行工具或写入记忆。用户确认后通过 `/memory/write` 的 MANUAL_CONFIG raw.body.items 保存；raw.original_image 保存原图。`/memory/ocr` 仅保留文字识别辅助接口，不用于正式图片知识提取。
+图片知识：Runtime `POST /api/memory/image-draft` 接收 filename/file_base64，跟随当前聊天模型返回 title/text/items 草稿，不运行工具或写入记忆。手动编辑确认后通过 `/memory/write` 的 MANUAL_CONFIG raw.body.items 保存；raw.original_image 保存原图。`/memory/ocr` 仅用于脱敏定位辅助，不用于知识提取。
 
 账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
 
@@ -1314,6 +1312,6 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 
 `POST /documents` 接收 filename/file_base64（最多 30 MiB 原始文件），返回随机 document_id、源文件 SHA-256 version、带位置的内容块清单、warnings 和 decoding_complete。此入口不作为模型工具开放，不接受文件路径。`GET /documents/{id}` 返回清单；`GET /documents/{id}/read?cursor=0` 返回一个 block 与 next_cursor，图片保留 MIME/base64；越界返回 422，失效引用返回 404。`DELETE /documents/{id}` 撤销并删除暂存内容。引用有效期 24 小时，属于读取凭据，不应写入日志或跨任务传播。读取完成不等于模型理解或已写入知识。
 
-当前自动媒体入口：Runtime `/api/memory/image-draft` 跟随当前活动模型，旧 model_id 参数不再决定模型；`GET /api/memory/input-capabilities` 返回 images/scanned_pdf/message，`POST /api/model/active` 由宿主同步当前模型。后端 `GET /agent/input-capabilities` 供设置页面读取状态。统一文档 API 已实现，旧附件入口替换与 dreaming 启动器仍在接线中。
+当前自动媒体入口：Runtime `/api/memory/image-draft` 跟随当前活动模型，`GET /api/memory/input-capabilities` 返回 images/scanned_pdf/message，`POST /api/model/active` 由宿主同步当前模型。后端 `GET /agent/input-capabilities` 供设置页面读取状态。聊天附件通过统一文档 MCP 读取内容块；目录事件通过经过认证的 dreaming 启动器调用受控模型循环。
 
 Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，仅接受已登记文档引用；使用当前模型逐块运行限定工具，固定私人采集范围 user:local。文档登记可携带内部 source_path 绑定目录授权，该路径不交给模型；描述、读取、计划保存时授权已取消则拒绝。此接口不是模型可调用工具，也不接受模型传入 approved/scope/任意执行指令。

@@ -23,7 +23,8 @@ RUNTIME_SOURCE_DIRS = {
     "packaging", "plans", "plugins", "pre-llm", "providers", "quick-test", "scripts",
     "skills-old", "skills", "tests", "tools", "tui_gateway", "ui-tui", "web",
 }
-TECH_DOCS = {"docs/ARCHITECTURE.md", "docs/API.md", "docs/QUICK_START.md",
+TECH_DOCS = {"docs/decisions/0007-reuse-headless-document-decoding.md",
+             "docs/DREAMING_AND_DOCUMENT_HARNESS.md","docs/ARCHITECTURE.md", "docs/API.md", "docs/QUICK_START.md",
              "docs/acceptance/acceptance-baseline-2026-08-24.md",
              "docs/acceptance/acceptance-baseline-2026-08-24.json"}
 VERIFY = '''#!/usr/bin/env python3
@@ -112,8 +113,11 @@ def collect(root: Path) -> tuple[dict, dict]:
 
 def build_source(root: Path, output: Path | None = None) -> None:
     entries, modules = collect(root)
-    if len(modules) != 4:
-        raise ValueError("必须包含四个固定上游源码")
+    required = {"third_party/kylin-agent", "third_party/kylin-agent-runtime",
+                "third_party/kreuzberg", "third_party/kylin-coreai-embedding",
+                "third_party/libkysdk-vector-engine-client"}
+    if not required.issubset(modules):
+        raise ValueError("缺少正式产品依赖的固定上游源码")
     manifest = {
         "schema": 1, "version": (root / "VERSION").read_text().strip(),
         "sourceCommit": git(root, "rev-parse", "HEAD").decode().strip(),
@@ -142,7 +146,7 @@ def build_source(root: Path, output: Path | None = None) -> None:
                 info.size = len(data)
                 archive.addfile(info, io.BytesIO(data))
     temporary.replace(output)
-    print(f"源码包已生成：{len(manifest['files'])} 个文件，四个固定上游")
+    print(f"源码包已生成：{len(manifest['files'])} 个文件，{len(modules)} 个固定上游")
 
 
 def check_source(root: Path) -> dict:

@@ -1,7 +1,7 @@
 """PIXIU Foundation — 目录监视采集器（DirectoryWatcher）
 
 批次②「目录监视闭环」的采集端：watchdog Observer 监视配置目录
-（recursive=False），对落盘文件做防抖 + 稳定性检查后经 IngestBridge
+（recursive=False），对落盘文件做防抖 + 稳定性检查后经 dreaming
 入库，并把结果以 ``on_capture`` 事件回调外发（BE-3 用它写 monitor_log +
 WS 广播）。
 
@@ -94,10 +94,10 @@ class _FileEventHandler(FileSystemEventHandler):
 
 
 class DirectoryWatcher:
-    """目录监视采集器：watchdog 事件 → 防抖/稳定 → IngestBridge → on_capture。
+    """目录监视采集器：watchdog 事件 → 防抖/稳定 → dreaming → on_capture。
 
     用法：
-        watcher = DirectoryWatcher(config_store, ingest_bridge, callbacks=[cb])
+        watcher = DirectoryWatcher(config_store, capture_client, callbacks=[cb])
         watcher.start()
         ...
         watcher.stop()
@@ -110,7 +110,7 @@ class DirectoryWatcher:
     def __init__(
         self,
         config_store: Any,
-        ingest_bridge: Any,
+        capture_client: Any,
         *,
         debounce_ms: float = 500,
         max_stable_attempts: int = 30,
@@ -118,7 +118,7 @@ class DirectoryWatcher:
         callbacks: list[Callable[..., Any]] | None = None,
     ) -> None:
         self._config_store = config_store
-        self._bridge = ingest_bridge
+        self._bridge = capture_client
         self._debounce = debounce_ms / 1000.0
         #: 稳定性检查的最大尝试次数上限：到期仍未稳定也强制入库（防无限跟踪）。
         self._max_stable_attempts = max_stable_attempts
@@ -398,7 +398,7 @@ class DirectoryWatcher:
         return (st.st_size, st.st_mtime_ns)
 
     async def _process(self, path: str) -> None:
-        """稳定文件 → IngestBridge 入库 → 派发 on_capture 回调。
+        """稳定文件 → dreaming 入库 → 派发 on_capture 回调。
 
         单文件异常吞掉记日志，不中断监视循环。
         """

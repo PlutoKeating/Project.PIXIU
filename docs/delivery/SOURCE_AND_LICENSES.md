@@ -26,6 +26,7 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 | `kylin-agent` | 桌面 Agent 宿主 | AGPL-3.0-only |
 | `agent-runtime` | Agent 运行时与 MemoryProvider 接口 | MIT |
 | `kylin-coreai-embedding` | 指定文本向量接口 | GPL-3.0-or-later |
+| `kreuzberg` 4.10.3 | headless Office/PDF 解码，禁用知识 OCR | MIT（安装包附带本地组件许可证） |
 | `libkysdk-vector-engine-client` | 指定系统向量数据库客户端 | Apache-2.0 |
 
 每个上游组件固定 commit，并随源码归档提供许可证、NOTICE、补丁、构建记录和摘要。Runtime 的 Python 依赖以哈希锁定 wheelhouse 离线安装。
@@ -40,7 +41,7 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 
 ## 源码交付与复现
 
-`源代码/PIXIU源代码.tar.gz` 包含产品版本对应的前端、后端、Agent 适配、构建配置、测试、技术规范和四个固定版本上游源码。源码清单记录文件摘要、可执行权限和上游提交；保留第三方许可证及版权声明。
+`源代码/PIXIU源代码.tar.gz` 包含产品版本对应的前端、后端、Agent 适配、构建配置、测试、技术规范和全部固定版本上游源码。源码清单记录文件摘要、可执行权限和上游提交；保留第三方许可证及版权声明。
 
 解压后先运行包内 `verify-source.py` 核对文件。后端测试使用 `backend/requirements.txt` 与 `backend/foundation/requirements-sync.txt` 的依赖，前端使用 CMake。严格安装包需在银河麒麟 V11 安装官方 SDK 和画像列出的开发依赖，按构建说明执行。依赖清单与源码一起提供，源码压缩包不包含预下载的系统软件或 Python wheels。
 

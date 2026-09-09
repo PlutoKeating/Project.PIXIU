@@ -1,9 +1,7 @@
 """Document staging API shared by attachment and controlled Agent adapters."""
 import asyncio
 import base64
-import subprocess
 import zipfile
-import xml.etree.ElementTree as ET
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
@@ -34,7 +32,7 @@ async def register_document(body: DocumentUpload, db=Depends(get_db)):
         data = base64.b64decode(body.file_base64, validate=True)
         document = await asyncio.to_thread(decode_document, data, body.filename)
         return await DocumentRegistry(db, authorized_source).register(document, body.source_path)
-    except (ValueError, OSError, zipfile.BadZipFile, ET.ParseError, subprocess.SubprocessError) as exc:
+    except (ValueError, OSError, zipfile.BadZipFile) as exc:
         raise HTTPException(422, "DOCUMENT_DECODE_FAILED") from exc
 
 

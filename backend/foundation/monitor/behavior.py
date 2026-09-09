@@ -6,8 +6,7 @@
 
 隐私边界（用户确认，S2.1）：只采集窗口焦点变化（应用名+标题）与应用活跃时长；
 **不记键击、不截屏、不读聊天内容**。标题经既有 security detector 判定，
-sensitivity>0 直接丢弃（不写 evidence、不落库）——比 ingest_bridge 的
-「带标记入库」更严格，按 S2.1 规格执行。
+sensitivity>0 直接丢弃（不写 evidence、不落库），按 S2.1 规格执行。
 
 线程模型（轮询线程）：
 - ``start()`` 启动 1s 轮询 daemon 线程；每 60s 聚合一次 ``_flush``；
@@ -67,7 +66,7 @@ class BehaviorCollector:
         ...
         collector.stop()
 
-    构造参数与批次② IngestBridge 同构：config_store 提供同步 get()；
+    构造参数：config_store 提供同步 get()；
     ingestion/knowledge 复用 api 层同进程管线服务；security 可选注入
     （提供时标题经既有 detector 判定，sensitivity>0 不落库）。
     """

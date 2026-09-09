@@ -4,7 +4,7 @@
   - 只采集窗口焦点（应用名+标题）与应用活跃时长（隐私边界：不记键击/截屏/聊天内容）；
   - 60s 聚合产出 {"app","title","focus_seconds","hour_bucket","day_type"} evidence；
   - enabled && sources["behavior"] 双门控（仿 watcher effective）；
-  - 标题经既有 security detector 判定，sensitivity>0 不落库（比 ingest_bridge 更严格）；
+  - 标题经既有 security detector 判定，sensitivity>0 不落库；
     detector 异常时无法确认非敏感，fail-closed 直接丢弃（不落库）；
   - 无 X 环境（xprop 失败）降级记录日志不采集、不崩溃。
 

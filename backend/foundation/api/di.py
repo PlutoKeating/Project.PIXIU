@@ -596,7 +596,7 @@ async def get_behavior_collector() -> BehaviorCollector:
     """行为采集器单例（惰性装配，复用 /memory/write 同进程管线服务）。
 
     security 可选注入：提供时标题经既有 detector 判定，sensitivity>0 不落库
-    （B3-1 规格比 ingest_bridge 更严格：直接丢弃，不写 evidence）。
+    （直接丢弃，不写 evidence）。
     """
     global _behavior_collector
     if _behavior_collector is None:

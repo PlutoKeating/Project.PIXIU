@@ -30,21 +30,8 @@ class AgentMediaClient:
         except (OSError, ValueError, httpx.HTTPError):
             return {"images": False, "scanned_pdf": False, "message": "当前资料读取不可用。"}
 
-    async def understand(self, path: str):
-        file = Path(path)
-        if file.stat().st_size > 6 * 1024 * 1024:
-            return None
-        base, headers = self._connection()
-        async with httpx.AsyncClient(timeout=100) as client:
-            result = await client.post(base + "/api/memory/image-draft", headers=headers,
-                json={"filename": file.name, "file_base64": base64.b64encode(file.read_bytes()).decode()})
-            if result.status_code == 422:
-                return None
-            result.raise_for_status()
-            return result.json()
-
     async def capture(self, path: str):
-        from .monitor.ingest_bridge import CaptureResult, STATUS_INGESTED, STATUS_IGNORED
+        from .monitor.capture_result import CaptureResult, STATUS_INGESTED, STATUS_IGNORED
         import time
         file = Path(path)
         if not self.authorize_source(str(file.absolute())):

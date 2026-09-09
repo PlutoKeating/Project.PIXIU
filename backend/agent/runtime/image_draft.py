@@ -8,9 +8,6 @@ import asyncio
 import base64
 import json
 import math
-from pathlib import Path
-import subprocess
-import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -37,15 +34,15 @@ def parse_draft(content: str) -> dict:
     if not isinstance(value, dict) or not isinstance(value.get("items", []), list):
         raise DraftError("模型草稿格式无效。")
     items = []
-    for row in value.get("items", [])[:100]:
+    for row in value.get("items", []):
         if not isinstance(row, dict):
             raise DraftError("模型明细格式无效。")
         amount = row.get("amount")
         if amount is not None and (isinstance(amount, bool) or not isinstance(amount, (int, float)) or not math.isfinite(amount)):
             amount = None
-        items.append({key: str(row.get(key) or "")[:512] for key in ("date", "category", "vendor")} | {"amount": amount})
+        items.append({key: str(row.get(key) or "") for key in ("date", "category", "vendor")} | {"amount": amount})
     return {"title": str(value.get("title") or "图片知识")[:160],
-            "text": str(value.get("text") or "请核对图片与明细后保存。")[:16000], "items": items}
+            "text": str(value.get("text") or "请核对图片与明细后保存。"), "items": items}
 
 
 def prepare_attachment(model: dict | None, payload: dict) -> dict:
@@ -56,36 +53,12 @@ def prepare_attachment(model: dict | None, payload: dict) -> dict:
         raise DraftError("无法读取附件。") from exc
     if not data or len(data) > 6 * 1024 * 1024:
         raise DraftError("附件为空或过大，未读取。")
-    images = []
-    if data.startswith(b"%PDF-"):
-        with tempfile.TemporaryDirectory(prefix="pixiu-document-") as directory:
-            source = Path(directory) / "input.pdf"; source.write_bytes(data)
-            try:
-                text = subprocess.run(["pdftotext", "-layout", str(source), "-"], capture_output=True,
-                                      timeout=30, check=True).stdout.decode("utf-8", errors="replace").strip()
-                if len(text) >= 40:
-                    return {"content": [{"type": "text", "text": text[:100000]}], "kind": "text"}
-                if not input_capabilities(model)["images"]:
-                    raise DraftError("当前模型不支持扫描 PDF 读取，此功能未启用。")
-                info = subprocess.run(["pdfinfo", str(source)], capture_output=True, timeout=10, check=True).stdout.decode()
-                import re
-                pages = re.search(r"^Pages:\s*(\d+)", info, re.MULTILINE)
-                if not pages or int(pages[1]) > 20:
-                    raise DraftError("文档页数超过当前读取范围，未导入。")
-                subprocess.run(["pdftoppm", "-scale-to", "1600", "-png", str(source), str(Path(directory) / "page")],
-                               capture_output=True, timeout=60, check=True)
-                images = [base64.b64encode(path.read_bytes()).decode() for path in sorted(Path(directory).glob("page-*.png"))]
-            except (OSError, subprocess.SubprocessError) as exc:
-                raise DraftError("文档读取服务暂不可用。") from exc
-        mime = "image/png"
-    else:
-        if not input_capabilities(model)["images"]:
-            raise DraftError("当前模型不支持图片读取，此功能未启用。")
-        mime = "image/png" if data.startswith(b"\x89PNG\r\n\x1a\n") else "image/jpeg" if data.startswith(b"\xff\xd8\xff") else ""
-        if not mime:
-            raise DraftError("此附件格式暂不支持。")
-        images = [encoded]
-    return {"content": [{"type": "image_url", "image_url": {"url": f"data:{mime};base64,{image}"}} for image in images],
+    if not input_capabilities(model)["images"]:
+        raise DraftError("当前模型不支持图片读取，此功能未启用。")
+    mime = "image/png" if data.startswith(b"\x89PNG\r\n\x1a\n") else "image/jpeg" if data.startswith(b"\xff\xd8\xff") else ""
+    if not mime:
+        raise DraftError("此图片格式暂不支持。文档请使用统一附件入口。")
+    return {"content": [{"type": "image_url", "image_url": {"url": f"data:{mime};base64,{encoded}"}}],
             "kind": "image"}
 
 

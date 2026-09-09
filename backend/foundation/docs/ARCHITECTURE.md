@@ -120,12 +120,10 @@ class ConflictRepository(ABC): ...
 
 ### 1.2 api/ —— API 网关
 
-目录采集的 `IngestBridge` 在构造时校验完整 scope 并强制 `user:`，非法格式或
-共享域在读取文件/调用入库前拒绝；默认仍为 `user:local`。当前文件路径不能
-直接加入 raw：MANUAL_CONFIG 连接器会将额外字段转入知识正文。桥接已用独立
-`capture_source` 参数保存文件来源：文本与 OCR 分别标为 `text`/`ocr`，记录同一次
-读取所用绝对路径，不解析符号链接；成功取得内容后记录 Unix 秒时间戳。忽略或
-敏感检测失败不创建证据，敏感内容仍仅落私有域。正式展示仍待实现，旧路径不补猜。
+目录监视统一调用 Runtime dreaming；读取前、描述/读取内容块及保存前均检查目录授权。
+文档路径只保留在私有暂存登记中，模型获得随机文档引用和内容块；来源内容经
+`body.document_sources` 保存。创建记忆限定私人范围，走公共 `/memory/write` 的
+安全检查和向量物化，不再有 watcher 直接 structure 的平行入口。
 
 HTTP 记忆写入/更新、遗忘、Agent context/lifecycle 和流转请求复用核心范围
 校验；查询的 `context_hint.scope` 拒绝非字符串或非法格式，详情及偏好列表也
@@ -484,4 +482,4 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 
 ### 文档接入（2026-09-10）
 
-`documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。PDF 使用发布画像中的 poppler-utils；标准 Office XML 解码使用 Python 标准库，不执行宏、公式或外链。旧 Office 转换仍待接线；正式目录装配已调用受控 dreaming，目录授权复核与暂存引用撤销贯穿读取和保存。
+`documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。Office/PDF 使用固定 Kreuzberg 4.10.3（third_party/kreuzberg）；PDFium 和本地库由 wheel 携带，全程 headless，显式禁用 OCR、模型下载和缓存。文本与图片分别交给当前模型；不执行宏、公式或外链；正式目录装配已调用受控 dreaming，目录授权复核与暂存引用撤销贯穿读取和保存。

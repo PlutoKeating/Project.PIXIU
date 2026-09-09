@@ -250,6 +250,7 @@ fi
         "${AGENT_DOC}/LICENSE.kylin-agent"
     install -m 0644 "${PIXIU_ROOT}/third_party/kylin-agent-runtime/LICENSE" \
         "${AGENT_DOC}/LICENSE.kylin-agent-runtime"
+    cp -a "${PIXIU_RELEASE_DIR}/licenses/document-engine" "${AGENT_DOC}/document-engine"
     install -d -m 0755 "${AGENT_DOC}/message-renderer"
     install -m 0644 "${PIXIU_ROOT}/frontend/resources/message_renderer/licenses/"* \
         "${AGENT_DOC}/message-renderer/"

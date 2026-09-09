@@ -4,7 +4,7 @@
   - 按本地时区日边界取当日 monitor_log 事件（跨日不串）；
   - 仅 status == "ingested" 计为「新增记忆」，按 source 分组计数
     （monitor_log source 枚举 directory|clipboard|behavior|screenshot|system，
-    无独立「文本」枚举——文本经 ingest_bridge 走 directory，见批次②）；
+    无独立「文本」枚举——文本经目录采集 走 directory，见批次②）；
   - sensitive_quarantined 不计入新增，>0 时单列「敏感内容已隔离」；
   - ignored / state_changed 不计入；
   - summary 服务端生成中文文案，不含任何事件 summary 原文（敏感隔离原则）；

@@ -4,14 +4,15 @@
 CPython 3.12/amd64 构建输入。`build-runtime-wheelhouse.sh prepare` 只按这两份锁及
 固定 Runtime submodule 构建、下载；所有包必须匹配逐包 SHA-256，构建结果会从 wheel
 的 METADATA 重新生成锁并逐字节比对，任何版本、哈希或闭包漂移都会失败。
-构建先在归档副本上应用 `patches/` 中的发行适配；上游 submodule 保持只读。证据记录
+构建先在归档副本上应用 `backend/agent/runtime/patches/` 中的发行适配；上游 submodule 保持只读。证据记录
 同时绑定发布提交及每个适配输入的 SHA-256，GUI 模型凭据管理不能绕开审计进入安装包。
+锁同时包含 MCP 1.26.0 与 Kreuzberg 4.10.3 及完整 Python 依赖；Kreuzberg wheel 携带 PDFium/ONNX 本地能力，安装和运行不下载文档模型、不调用 LibreOffice。
 锁中显式包含 Runtime 支持的免密 `ddgs` 搜索后端，确保 strict 单包不依赖第三方
 搜索 API Key 也能执行真实 `web_search`；离线验证会同时导入该后端。
 
 随后应在目标 V11 的断网网络命名空间执行 `verify-offline`。验证使用全新 venv、
 `--no-index --require-hashes` 安装全部 wheel，并导入 Runtime、aiohttp 与 Gateway
-适配器，再核对 CLI 版本。构建下载与断网安装必须分成两个阶段，断网安装日志才可
+适配器，并实际执行禁用 OCR 的 headless 文档解码，再核对 CLI 版本。构建下载与断网安装必须分成两个阶段，断网安装日志才可
 交给 `record-agent-supply-chain.py runtime-wheelhouse`。
 
 扫描不会因为第三方 wheel 而整体关闭。当前 `httpx==0.28.1`、

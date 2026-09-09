@@ -4,7 +4,7 @@
   - 按日（本地时区日边界）取 monitor_log 事件（MonitorLogStore.list_events_by_day）；
   - 仅 status == "ingested" 计为「新增记忆」，按 source 分组计数。monitor_log
     的 source 枚举是 directory|clipboard|behavior|screenshot|system，**无独立
-    「文本」枚举**——文本文件经 ingest_bridge 也走 directory source（见批次②），
+    「文本」枚举**——文本文件经目录采集 也走 directory source（见批次②），
     故模板按 source 枚举分组即可；
   - **新增 source 枚举须同步 _SOURCE_LABELS**：total 与分组明细同源（只累计
     _SOURCE_LABELS 已知键），未登记的 source 不膨胀总数、也不出现在明细——
@@ -24,10 +24,10 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 
-# 常量定义在 foundation.monitor.ingest_bridge（monitor_log.py 再导出于此）：
+# 常量定义在 foundation.monitor.capture_result（monitor_log.py 再导出于此）：
 # engine → foundation 直接导入定义模块（insights.py 导入 ConflictResolution
 # 先例），避免经 foundation.api 包 __init__（http_app → di → engine）回环。
-from backend.foundation.monitor.ingest_bridge import (
+from backend.foundation.monitor.capture_result import (
     STATUS_INGESTED,
     STATUS_SENSITIVE_QUARANTINED,
 )

@@ -19,7 +19,7 @@ from typing import Any
 
 from ..core.config import settings
 from ..core.logger import get_logger
-from ..monitor.ingest_bridge import (
+from ..monitor.capture_result import (
     STATUS_IGNORED,
     STATUS_INGESTED,
     STATUS_SENSITIVE_QUARANTINED,
@@ -29,7 +29,7 @@ from .ws_manager import ws_manager
 
 log = get_logger(__name__)
 
-#: 事件状态（契约 §2）：采集器三态（ingest_bridge 定义）+ 配置变更状态。
+#: 事件状态（契约 §2）：采集器三态（capture_result 定义）+ 配置变更状态。
 STATUS_STATE_CHANGED = "state_changed"
 
 #: source 额外枚举（契约 §2）：system 承载监控自身状态变更。

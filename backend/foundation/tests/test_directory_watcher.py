@@ -1,38 +1,15 @@
-"""Tests for monitor/watcher.py + monitor/ingest_bridge.py — 目录监视采集闭环。
+"""Real watchdog tests: file stability, configuration, service dispatch and lifecycle.
 
-使用 tmp_path + 真实 watchdog Observer 的集成测试（非 mock 事件），覆盖：
-  - PNG + mock OCR → MANUAL 风格入库（evidence + knowledge）→ ingested 事件；
-  - TXT 文本入库；
-  - .tmp / .part / ~ / 隐藏文件 → 完全忽略（无事件无入库）；
-  - 总闸关 / 目录源关 → 不捕获；
-  - 敏感内容（手机号）→ detector 判定 → sensitive_quarantined + sensitivity 落库；
-  - 不支持后缀 → ignored 事件；
-  - 配置热更新（store.put 后热生效）；
-  - 单文件异常隔离：一个文件失败不中断后续捕获；
-  - 写入过程防抖 + 稳定性检查（连续追加只捕获一次）。
+Document decoding and actual memory writes are tested through the document API
+and dreaming harness; this suite exercises the watcher boundary.
 """
-
 from __future__ import annotations
-
 import sqlite3
 import time
 from pathlib import Path
 from types import SimpleNamespace
-
-import aiosqlite
 import pytest
-import pytest_asyncio
-
-from backend.engine.ingest import IngestionService
-from backend.engine.knowledge import KnowledgeService
-from backend.engine.security import SecurityService
-from backend.engine.tests.fakes import StubTextEmbedder
-from backend.foundation.monitor import DirectoryWatcher, IngestBridge, MonitorConfigStore
-from backend.foundation.storage.repository import (
-    SqliteEntityRepo,
-    SqliteEvidenceRepo,
-    SqliteKnowledgeRepo,
-)
+from backend.foundation.monitor import DirectoryWatcher, MonitorConfigStore, CaptureResult
 from backend.foundation.storage.schema import init_db_on_connection
 
 WATCHED_DIR_ENABLED = {
@@ -47,70 +24,30 @@ WATCHED_DIR_ENABLED = {
 }
 
 
-class FakeMedia:
-    """测试用模型理解桩：固定返回文档结果。"""
+class FakeDreaming:
+    def __init__(self):
+        self.calls = []
+        self.contents = []
 
-    def __init__(self, lines: list[str] | None = None) -> None:
-        self.lines = list(lines or [])
-        self.calls: list[str] = []
-
-    async def understand(self, image_path):
-        self.calls.append(str(image_path))
-        return {"text": "\n".join(self.lines), "items": []}
+    async def capture(self, path):
+        self.calls.append(path)
+        content = Path(path).read_bytes()
+        self.contents.append(content)
+        return CaptureResult("ingested" if content else "ignored", Path(path).name, ts=int(time.time()))
 
 
-# ─── Fixtures ─────────────────────────────────────────────
-
-@pytest_asyncio.fixture
-async def env(tmp_path: Path):
-    """真实 SQLite 库 + 真实 Service 栈（StubTextEmbedder）+ MonitorConfigStore。"""
+@pytest.fixture
+def env(tmp_path):
     db_path = str(tmp_path / "pixiu.db")
-    # 建表连接是一次性测试用：关掉 fsync（synchronous=OFF）避免每条 DDL 落盘，
-    # 使 fixture 初始化 ~0.2s 而非 ~7s；不影响随后 aiosqlite 连接的正确性。
-    sync_conn = sqlite3.connect(db_path)
-    sync_conn.execute("PRAGMA synchronous=OFF")
-    init_db_on_connection(sync_conn)
-    sync_conn.close()
-
-    db = await aiosqlite.connect(db_path)
-    db.row_factory = aiosqlite.Row
-    await db.execute("PRAGMA foreign_keys=ON")
-
-    evidence_repo = SqliteEvidenceRepo(db)
-    knw_repo = SqliteKnowledgeRepo(db)
-    entity_repo = SqliteEntityRepo(db)
-    env = SimpleNamespace(
-        db=db,
-        db_path=db_path,
-        watched=str(tmp_path / "watched"),
-        evidence_repo=evidence_repo,
-        knw_repo=knw_repo,
-        services={
-            "ingestion": IngestionService(evidence_repo=evidence_repo),
-            "knowledge": KnowledgeService(
-                knw_repo=knw_repo,
-                entity_repo=entity_repo,
-                embedder=StubTextEmbedder(dim=32),
-            ),
-            "security": SecurityService(knw_repo=knw_repo, entity_repo=entity_repo),
-        },
-        store=MonitorConfigStore(db_path),
-    )
-    Path(env.watched).mkdir(parents=True, exist_ok=True)
-    try:
-        yield env
-    finally:
-        await db.close()
+    with sqlite3.connect(db_path) as connection:
+        init_db_on_connection(connection)
+    watched = tmp_path / "watched"
+    watched.mkdir()
+    return SimpleNamespace(watched=str(watched), store=MonitorConfigStore(db_path), capture=FakeDreaming())
 
 
-def _bridge(env, *, media: FakeMedia | None = None, security: bool = True) -> IngestBridge:
-    return IngestBridge(
-        env.services["ingestion"],
-        env.services["knowledge"],
-        security=env.services["security"] if security else None,
-        media=media,
-        scope="user:local",
-    )
+def _bridge(env):
+    return env.capture
 
 
 def _config(env, *, enabled: bool = True, directory: bool = True) -> dict:
@@ -120,19 +57,6 @@ def _config(env, *, enabled: bool = True, directory: bool = True) -> dict:
     cfg["sources"]["directory"] = directory
     cfg["directories"] = [env.watched]
     return cfg
-
-
-@pytest.mark.parametrize("scope", ["shared:home", "shared:project.2025", "user:x\n", "", "admin:x"])
-def test_directory_bridge_rejects_nonprivate_or_invalid_scope(scope):
-    # Reject configuration before opening files, invoking services or capturing data.
-    with pytest.raises(ValueError):
-        IngestBridge(None, None, scope=scope)
-
-
-@pytest.mark.parametrize("scope", ["user:local", "user:project.2025"])
-def test_directory_bridge_accepts_exact_private_scope(scope):
-    bridge = IngestBridge(None, None, scope=scope)
-    assert bridge._scope == scope
 
 
 def _wait_until(predicate, timeout: float = 8.0, interval: float = 0.05) -> bool:
@@ -145,141 +69,22 @@ def _wait_until(predicate, timeout: float = 8.0, interval: float = 0.05) -> bool
 
 
 @pytest.mark.asyncio
-async def test_relative_capture_records_the_absolute_read_path(env, monkeypatch):
-    monkeypatch.chdir(env.watched)
-    target = Path("relative.txt")
-    target.write_text("synthetic note", encoding="utf-8")
-    result = await _bridge(env).capture(str(target))
-    evidence = await env.evidence_repo.get(result.evidence_id)
-    assert evidence.capture_source.path == str(target.absolute())
-    assert evidence.raw["title"] == "relative.txt"
-    assert env.watched not in str(evidence.raw)
-
-
-@pytest.mark.asyncio
-async def test_capture_keeps_observed_symlink_path(env):
-    target = Path(env.watched) / "target.txt"
-    target.write_text("synthetic note", encoding="utf-8")
-    link = Path(env.watched) / "link.txt"
-    link.symlink_to(target)
-    result = await _bridge(env).capture(str(link))
-    evidence = await env.evidence_repo.get(result.evidence_id)
-    assert evidence.capture_source.path == str(link)
-    assert evidence.raw["title"] == "link.txt"
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("case", ["missing", "oversized", "no_ocr", "empty_ocr"])
-async def test_ignored_capture_does_not_persist_source(env, case):
-    target = Path(env.watched) / ("example.png" if "ocr" in case else "example.txt")
-    if case != "missing":
-        target.write_bytes(b"synthetic fixture")
-    bridge = IngestBridge(
-        env.services["ingestion"], env.services["knowledge"],
-        media=FakeMedia([]) if case == "empty_ocr" else None,
-        max_text_bytes=1 if case == "oversized" else 1024,
-    )
-    result = await bridge.capture(str(target))
-    assert result.status == "ignored"
-    assert result.evidence_id is None
-    assert await env.db.execute_fetchall("SELECT id FROM evidence") == []
-
-
-@pytest.mark.asyncio
-async def test_detector_failure_does_not_persist_capture_source(env):
-    class FailingSecurity:
-        async def detect_sensitivity(self, raw):
-            raise RuntimeError("detector unavailable")
-
-    target = Path(env.watched) / "example.txt"
-    target.write_text("synthetic fixture", encoding="utf-8")
-    bridge = IngestBridge(
-        env.services["ingestion"], env.services["knowledge"], security=FailingSecurity(),
-    )
-    with pytest.raises(RuntimeError, match="detector unavailable"):
-        await bridge.capture(str(target))
-    assert await env.db.execute_fetchall("SELECT id FROM evidence") == []
-
-
-# ─── PNG + mock OCR ───────────────────────────────────────
-
-@pytest.mark.asyncio
-async def test_png_ocr_captured_and_ingested(env):
+@pytest.mark.parametrize("name", ["photo.png", "note.txt", "budget.xlsx", "slides.ppt"])
+async def test_supported_files_are_dispatched_to_dreaming(env, name):
     await env.store.put(_config(env))
-    ocr = FakeMedia(["电费 210 元", "水费 80 元"])
-    events: list[dict] = []
-    watcher = DirectoryWatcher(
-        env.store, _bridge(env, media=ocr), debounce_ms=200, callbacks=[]
-    )
-    watcher.register_callback(lambda *a, **kw: events.append(kw))
-    watcher.start()
-    try:
-        time.sleep(0.6)  # 等 observer 挂上监视点
-        target = Path(env.watched) / "支出清单.png"
-        target.write_bytes(b"\x89PNG fake image bytes")
-
-        assert _wait_until(lambda: events), "on_capture 未触发"
-        event = events[0]
-        assert event["source"] == "directory"
-        assert event["status"] == "ingested"
-        assert event["summary"] == "记住文件 支出清单.png"
-        assert event["evidence_id"].startswith("evd_")
-        assert event["knowledge_id"].startswith("knw_")
-        assert isinstance(event["ts"], int) and event["ts"] > 0
-
-        # OCR 直调的是同一文件路径
-        assert ocr.calls and ocr.calls[0] == str(target)
-
-        # 证据与知识已入库
-        evidence = await env.evidence_repo.get(event["evidence_id"])
-        assert evidence is not None
-        assert evidence.source_type.value == "MANUAL_CONFIG"
-        assert evidence.scope == "user:local"
-        assert evidence.capture_source is not None
-        assert evidence.capture_source.kind == "directory"
-        assert evidence.capture_source.method == "multimodal"
-        assert evidence.capture_source.path == str(target)
-        assert 0 < evidence.capture_source.captured_at <= event["ts"]
-        assert evidence.provenance is None
-        assert str(target) not in str(evidence.raw)
-        assert "电费 210 元" in evidence.raw["body"]["text"]
-        item = await env.knw_repo.get(event["knowledge_id"])
-        assert item is not None
-        assert item.title == "支出清单.png"
-    finally:
-        watcher.stop()
-
-
-# ─── TXT 文本入库 ─────────────────────────────────────────
-
-@pytest.mark.asyncio
-async def test_txt_file_ingested(env):
-    await env.store.put(_config(env))
-    events: list[dict] = []
-    watcher = DirectoryWatcher(
-        env.store, _bridge(env), debounce_ms=200, callbacks=[]
-    )
+    events = []
+    watcher = DirectoryWatcher(env.store, env.capture, debounce_ms=200)
     watcher.register_callback(lambda *a, **kw: events.append(kw))
     watcher.start()
     try:
         time.sleep(0.6)
-        (Path(env.watched) / "启动说明.txt").write_text(
-            "项目启动步骤：1. 安装依赖 2. 初始化数据库", encoding="utf-8"
-        )
-        assert _wait_until(lambda: events), "on_capture 未触发"
-        event = events[0]
-        assert event["status"] == "ingested"
-        assert event["summary"] == "记住文件 启动说明.txt"
-        evidence = await env.evidence_repo.get(event["evidence_id"])
-        assert evidence is not None
-        assert "安装依赖" in evidence.raw["body"]["text"]
-        assert evidence.raw["title"] == "启动说明.txt"
-        assert evidence.capture_source is not None
-        assert evidence.capture_source.method == "text"
-        assert evidence.capture_source.path == str(Path(env.watched) / "启动说明.txt")
-        assert 0 < evidence.capture_source.captured_at <= event["ts"]
-        assert evidence.provenance is None
-        assert env.watched not in str(evidence.raw)
+        target = Path(env.watched) / name
+        target.write_bytes(b"document contents")
+        assert _wait_until(lambda: events)
+        assert env.capture.calls == [str(target)]
+        assert events[0]["source"] == "directory"
+        assert events[0]["status"] == "ingested"
+        assert events[0]["summary"] == name
     finally:
         watcher.stop()
 
@@ -303,8 +108,7 @@ async def test_temp_and_hidden_files_ignored_completely(env):
         (Path(env.watched) / ".hidden.txt").write_text("hidden")
         time.sleep(2.0)  # 足够跨过防抖 + 稳定性窗口
         assert events == [], f"临时/隐藏文件不应触发捕获: {events}"
-        evidence_rows = await env.db.execute_fetchall("SELECT id FROM evidence")
-        assert evidence_rows == []
+        assert env.capture.calls == []
     finally:
         watcher.stop()
 
@@ -325,8 +129,7 @@ async def test_master_switch_off_no_capture(env):
         (Path(env.watched) / "off.txt").write_text("should not be captured")
         time.sleep(2.0)
         assert events == []
-        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
-        assert rows == []
+        assert env.capture.calls == []
     finally:
         watcher.stop()
 
@@ -345,65 +148,7 @@ async def test_directory_source_off_no_capture(env):
         (Path(env.watched) / "src-off.txt").write_text("should not be captured")
         time.sleep(2.0)
         assert events == []
-        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
-        assert rows == []
-    finally:
-        watcher.stop()
-
-
-# ─── 敏感内容 → sensitive_quarantined ─────────────────────
-
-@pytest.mark.asyncio
-async def test_sensitive_text_quarantined(env):
-    await env.store.put(_config(env))
-    events: list[dict] = []
-    watcher = DirectoryWatcher(
-        env.store, _bridge(env), debounce_ms=200, callbacks=[]
-    )
-    watcher.register_callback(lambda *a, **kw: events.append(kw))
-    watcher.start()
-    try:
-        time.sleep(0.6)
-        (Path(env.watched) / "通讯录.txt").write_text(
-            "联系人 张三 手机 13812345678", encoding="utf-8"
-        )
-        assert _wait_until(lambda: events), "on_capture 未触发"
-        event = events[0]
-        assert event["status"] == "sensitive_quarantined"
-        # summary 不得含敏感原文全文（手机号）
-        assert "13812345678" not in event["summary"]
-        assert "通讯录.txt" in event["summary"]
-        evidence = await env.evidence_repo.get(event["evidence_id"])
-        assert evidence is not None
-        assert evidence.sensitivity >= 2  # 手机号 敏感度 2
-        assert evidence.scope == "user:local"
-        assert evidence.capture_source.method == "text"
-        assert evidence.capture_source.path == str(Path(env.watched) / "通讯录.txt")
-    finally:
-        watcher.stop()
-
-
-# ─── 不支持后缀 → ignored 事件（不入库） ──────────────────
-
-@pytest.mark.asyncio
-async def test_unsupported_extension_ignored_event(env):
-    await env.store.put(_config(env))
-    events: list[dict] = []
-    watcher = DirectoryWatcher(
-        env.store, _bridge(env), debounce_ms=200, callbacks=[]
-    )
-    watcher.register_callback(lambda *a, **kw: events.append(kw))
-    watcher.start()
-    try:
-        time.sleep(0.6)
-        (Path(env.watched) / "预算.xlsx").write_bytes(b"PK fake xlsx")
-        assert _wait_until(lambda: events), "on_capture 未触发"
-        event = events[0]
-        assert event["status"] == "ignored"
-        assert event["evidence_id"] is None
-        assert event["knowledge_id"] is None
-        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
-        assert rows == []
+        assert env.capture.calls == []
     finally:
         watcher.stop()
 
@@ -436,31 +181,31 @@ async def test_hot_reload_enables_after_put(env):
 async def test_failing_file_does_not_stop_monitoring(env):
     await env.store.put(_config(env))
 
-    class FlakyMedia(FakeMedia):
-        async def understand(self, image_path):
+    class FlakyDreaming(FakeDreaming):
+        async def capture(self, image_path):
             self.calls.append(str(image_path))
             if "坏图" in str(image_path):
                 raise OSError("broken image")
-            return {"text": "正常识别文本", "items": []}
+            return CaptureResult("ingested", Path(image_path).name, ts=int(time.time()))
 
     events: list[dict] = []
-    ocr = FlakyMedia()
+    capture = FlakyDreaming()
     watcher = DirectoryWatcher(
-        env.store, _bridge(env, media=ocr), debounce_ms=200, callbacks=[]
+        env.store, capture, debounce_ms=200, callbacks=[]
     )
     watcher.register_callback(lambda *a, **kw: events.append(kw))
     watcher.start()
     try:
         time.sleep(0.6)
         (Path(env.watched) / "坏图.png").write_bytes(b"broken")
-        # 等坏图进入处理（OCR 被调起，失败被吞掉、不产生事件）
-        assert _wait_until(lambda: len(ocr.calls) >= 1), "坏图未进入处理"
+        # 等坏图进入处理（dreaming 被调起，失败被吞掉、不产生事件）
+        assert _wait_until(lambda: len(capture.calls) >= 1), "坏图未进入处理"
         time.sleep(1.5)
         # 后续文件仍可正常捕获
         (Path(env.watched) / "好图.png").write_bytes(b"good")
         assert _wait_until(lambda: events), "坏图失败后 watcher 仍在工作"
         assert events[0]["status"] == "ingested"
-        assert events[0]["summary"] == "记住文件 好图.png"
+        assert events[0]["summary"] == "好图.png"
     finally:
         watcher.stop()
 
@@ -486,15 +231,10 @@ async def test_debounce_merges_concurrent_writes_into_single_capture(env):
                 time.sleep(0.15)  # 写入过程持续产生 modify 事件
         assert _wait_until(lambda: events), "on_capture 未触发"
         time.sleep(1.0)
-        captured = [e for e in events if e["summary"] == "记住文件 连载.txt"]
+        captured = [e for e in events if e["summary"] == "连载.txt"]
         assert len(captured) == 1, f"写入过程应合并为一次捕获: {events}"
-        evidence = await env.evidence_repo.get(captured[0]["evidence_id"])
-        assert evidence is not None
-        assert "第三段" in evidence.raw["body"]["text"], "应捕获到写完后的完整内容"
-        rows = await env.db.execute_fetchall(
-            "SELECT id FROM evidence WHERE source_type='MANUAL_CONFIG'"
-        )
-        assert len(rows) == 1
+        assert len(env.capture.calls) == 1
+        assert "第三段" in env.capture.contents[0].decode()
     finally:
         watcher.stop()
 
@@ -559,18 +299,16 @@ async def test_directory_move_and_empty_file_not_ingested(env):
         outside.rename(Path(env.watched) / "伪文本.txt")
         time.sleep(2.0)  # 跨过防抖 + 稳定性窗口
         assert events == [], f"移入目录不应触发捕获: {events}"
-        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
-        assert rows == []
+        assert env.capture.calls == []
 
-        # 空 .txt：_read_text 返回空 → ignored 事件，不入库（不产生空证据）
+        # 空文件由服务返回 ignored，监视器保留该状态。
         (Path(env.watched) / "空文件.txt").write_text("", encoding="utf-8")
         assert _wait_until(lambda: events), "空文件应产生 ignored 事件"
         event = events[0]
         assert event["status"] == "ignored"
-        assert event["summary"] == "忽略无法读取的文件 空文件.txt"
+        assert event["summary"] == "空文件.txt"
         assert event["evidence_id"] is None
         assert event["knowledge_id"] is None
-        rows = await env.db.execute_fetchall("SELECT id FROM evidence")
-        assert rows == []
+        assert env.capture.calls == [str(Path(env.watched) / "空文件.txt")]
     finally:
         watcher.stop()

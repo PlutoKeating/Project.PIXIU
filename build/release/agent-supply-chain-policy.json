@@ -191,7 +191,8 @@
     "kylin-agent-runtime",
     "aiohttp",
     "ddgs",
-    "mcp"
+    "mcp",
+    "kreuzberg"
   ],
   "upstream_reference_scan_paths": [
     "third_party/kylin-agent/scripts",
