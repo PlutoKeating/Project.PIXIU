@@ -23,7 +23,7 @@ Provider、`SOUL.md`、`.env`、Runtime 配置及迁移 unit 建立事务快照�
 任一步失败会恢复原状态；成功激活会显式重启已运行的包管 Gateway，使新 Runtime 和
 配置立即生效；每版被迁移 unit 另按内容哈希保留可恢复副本。服务端失败
 receipt 管理亦已实现。V11 安装包同时启用回环 Kylin GenAI 适配服务，默认
-`kylin-default` 跟随系统 AI 模块管理；Runtime 的会话、工具、审批和记忆循环保持不变。
+`kylin-default` 不指定部署类型，按系统 AI 模块管理优先级选择；显式选择目录中的云端模型时才指定 PublicCloud，避免默认模型初始化返回 MODEL_NOT_FOUND（10）。Runtime 的会话、工具、审批和记忆循环保持不变。
 适配服务先配置模型再初始化 SDK 会话，使用 SDK 原生聊天、工具回调和结果续传接口；
 先前轮次按角色封装为系统上下文，因此多轮语义与自主工具执行可同时保持。
 OpenAI-wire 请求携带完整会话历史时，适配器只把最近一条 assistant tool_calls 之后的

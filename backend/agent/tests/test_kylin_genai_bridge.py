@@ -1,5 +1,6 @@
 import json
 import ctypes
+import pytest
 
 from backend.agent.kylin_genai_bridge import (
     ModelInfo,
@@ -15,7 +16,8 @@ from backend.agent.kylin_genai_bridge import (
 )
 
 
-def test_model_configuration_precedes_sdk_session_initialization():
+@pytest.mark.parametrize("model", ["qwen", ""])
+def test_model_configuration_precedes_sdk_session_initialization(model):
     calls = []
 
     class FakeLibrary:
@@ -39,15 +41,14 @@ def test_model_configuration_precedes_sdk_session_initialization():
             calls.append("init_session")
             return 0
 
-    config, error = initialize_model_session(FakeLibrary(), ctypes.c_void_p(7), "qwen")
+    config, error = initialize_model_session(FakeLibrary(), ctypes.c_void_p(7), model)
 
     assert config.value == 42
     assert error == 0
     assert calls == [
         "create_config",
-        "set_deploy_type",
         "set_stream",
-        "set_name",
+        *(["set_deploy_type", "set_name"] if model else []),
         "set_model_config",
         "init_session",
     ]

@@ -81,7 +81,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 - **检索在线零 LLM**：仅用 embedding + 结构化字段 + 图遍历，保证 P95 ≤ 500ms
 - **国产化硬门槛**：embedding 必须经麒麟 `coreai/embedding` C 接口；生产向量存储/检索必须经系统 Vector Engine SDK；最终软件必须在银河麒麟桌面操作系统 V11 验证
 - **Agent 完整性**：项目工程上选择由 openKylin Agent 基座提供多轮会话、规划、工具、Shell/联网搜索和审批，PIXIU 通过原创记忆适配层接入；赛方材料未指定必须使用该基座，也未要求从零重写 Agent
-- **推理接入**：V11 通过回环适配服务调用系统 Kylin GenAI PublicCloud 模型，Runtime 继续掌管工具与审批；通用 Debian 画像使用 GUI 配置的官方直连服务
+- **推理接入**：V11 通过回环适配服务调用系统 Kylin GenAI：默认别名遵循系统模型优先级，显式云端模型才设置 PublicCloud，Runtime 继续掌管工具与审批；通用 Debian 画像使用 GUI 配置的官方直连服务
 - **消息渲染隔离**：模型文本只进入包内 `qrc:` 富文本页面；页面禁用任意 HTML、远端脚本、远端样式和网络读取。实际工具事件进入独立 UI 历史角色并在组装模型请求时过滤
 - **集成隔离**：Module E 只能消费 `docs/API.md` 的公共契约；上游 submodule 默认只读，最小补丁须独立记录来源、理由、许可证和维护方式
 

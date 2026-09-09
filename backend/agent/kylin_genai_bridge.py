@@ -129,9 +129,11 @@ def initialize_model_session(lib: Any, session: ctypes.c_void_p, model: str) -> 
     """Apply model settings before session initialization, as required by Kylin GenAI."""
 
     config = ctypes.c_void_p(lib.chat_model_config_create())
-    lib.chat_model_config_set_deploy_type(config, PUBLIC_CLOUD)
     lib.chat_model_config_set_stream(config, True)
     if model:
+        # Explicit catalog entries are cloud models. For the system-selected
+        # alias, leave deployment unset so Kylin applies its configured priority.
+        lib.chat_model_config_set_deploy_type(config, PUBLIC_CLOUD)
         lib.chat_model_config_set_name(config, model.encode())
     lib.genai_text_set_model_config(session, config)
     return config, int(lib.genai_text_init_session(session))
