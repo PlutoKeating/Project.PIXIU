@@ -1,0 +1,258 @@
+{
+  "environment": "同宿主三台V11隔离演示机；本轮B解除A再恢复；只验证信任关系",
+  "before": {
+    "书房": {
+      "status": 200,
+      "body": {
+        "peers": [
+          {
+            "id": "dev_01M211X1KJAXY9P0H2A11QBWKP",
+            "name": "书房工作站",
+            "is_self": true,
+            "status": "ONLINE",
+            "last_sync_ts": null,
+            "pending_ops": 0
+          },
+          {
+            "id": "dev_01M211X48GQ50Y4765J8XQS799",
+            "name": "随身笔记本",
+            "is_self": false,
+            "status": "ONLINE",
+            "last_sync_ts": 1788896264,
+            "pending_ops": 0
+          },
+          {
+            "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+            "name": "客厅一体机",
+            "is_self": false,
+            "status": "ONLINE",
+            "last_sync_ts": 1788896264,
+            "pending_ops": 0
+          }
+        ]
+      }
+    },
+    "笔记本": {
+      "status": 200,
+      "body": {
+        "peers": [
+          {
+            "id": "dev_01M211X48GQ50Y4765J8XQS799",
+            "name": "随身笔记本",
+            "is_self": true,
+            "status": "ONLINE",
+            "last_sync_ts": null,
+            "pending_ops": 0
+          },
+          {
+            "id": "dev_01M211X1KJAXY9P0H2A11QBWKP",
+            "name": "书房工作站",
+            "is_self": false,
+            "status": "ONLINE",
+            "last_sync_ts": 1788896267,
+            "pending_ops": 0
+          },
+          {
+            "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+            "name": "客厅一体机",
+            "is_self": false,
+            "status": "ONLINE",
+            "last_sync_ts": 1788896267,
+            "pending_ops": 0
+          }
+        ]
+      }
+    }
+  },
+  "after_revoke": {
+    "captured_at": "2026-09-08T23:57:23.382543+00:00",
+    "request": {
+      "method": "GET",
+      "path": "/sync/peers"
+    },
+    "results": {
+      "书房": {
+        "status": 200,
+        "body": {
+          "peers": [
+            {
+              "id": "dev_01M211X1KJAXY9P0H2A11QBWKP",
+              "name": "书房工作站",
+              "is_self": true,
+              "status": "ONLINE",
+              "last_sync_ts": null,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X48GQ50Y4765J8XQS799",
+              "name": "随身笔记本",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896264,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+              "name": "客厅一体机",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896264,
+              "pending_ops": 0
+            }
+          ]
+        }
+      },
+      "笔记本": {
+        "status": 200,
+        "body": {
+          "peers": [
+            {
+              "id": "dev_01M211X48GQ50Y4765J8XQS799",
+              "name": "随身笔记本",
+              "is_self": true,
+              "status": "ONLINE",
+              "last_sync_ts": null,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+              "name": "客厅一体机",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896267,
+              "pending_ops": 0
+            }
+          ]
+        }
+      }
+    }
+  },
+  "repair": {
+    "captured_at": "2026-09-08T23:58:17.716585+00:00",
+    "method": "PIN",
+    "token_created_on": "书房",
+    "token_and_pin_archived": false,
+    "submission": "笔记本原生配对页",
+    "after_peers": {
+      "status": 200,
+      "body": {
+        "peers": [
+          {
+            "id": "dev_01M211X48GQ50Y4765J8XQS799",
+            "name": "随身笔记本",
+            "is_self": true,
+            "status": "ONLINE",
+            "last_sync_ts": null,
+            "pending_ops": 0
+          },
+          {
+            "id": "dev_01M211X1KJAXY9P0H2A11QBWKP",
+            "name": "书房工作站",
+            "is_self": false,
+            "status": "ONLINE",
+            "last_sync_ts": 1788896267,
+            "pending_ops": 0
+          },
+          {
+            "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+            "name": "客厅一体机",
+            "is_self": false,
+            "status": "ONLINE",
+            "last_sync_ts": 1788896267,
+            "pending_ops": 0
+          }
+        ]
+      }
+    }
+  },
+  "restored": {
+    "time": "2026-09-08T23:59:44.991888+00:00",
+    "peers": {
+      "书房": {
+        "status": 200,
+        "body": {
+          "peers": [
+            {
+              "id": "dev_01M211X1KJAXY9P0H2A11QBWKP",
+              "name": "书房工作站",
+              "is_self": true,
+              "status": "ONLINE",
+              "last_sync_ts": null,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X48GQ50Y4765J8XQS799",
+              "name": "随身笔记本",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896264,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+              "name": "客厅一体机",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896264,
+              "pending_ops": 0
+            }
+          ]
+        }
+      },
+      "笔记本": {
+        "status": 200,
+        "body": {
+          "peers": [
+            {
+              "id": "dev_01M211X48GQ50Y4765J8XQS799",
+              "name": "随身笔记本",
+              "is_self": true,
+              "status": "ONLINE",
+              "last_sync_ts": null,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X1KJAXY9P0H2A11QBWKP",
+              "name": "书房工作站",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896267,
+              "pending_ops": 0
+            },
+            {
+              "id": "dev_01M211X73192ZCKMXQVHA1ZKSD",
+              "name": "客厅一体机",
+              "is_self": false,
+              "status": "ONLINE",
+              "last_sync_ts": 1788896267,
+              "pending_ops": 0
+            }
+          ]
+        }
+      }
+    },
+    "sync": {
+      "status": 200,
+      "body": {
+        "domain": "shared:home",
+        "peers_online": 3,
+        "peers_total": 3,
+        "pending_outgoing_ops": 0,
+        "last_anti_entropy_ts": null,
+        "total_ops_synced": 38,
+        "enabled": true,
+        "paused": false
+      }
+    },
+    "health": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "product_version": "0.1.9",
+        "component": "pixiu-memory-backend",
+        "database": "ok",
+        "schema_version": 13
+      }
+    }
+  }
+}

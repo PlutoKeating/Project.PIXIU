@@ -1,0 +1,15 @@
+{
+  "frames": [
+    9717,
+    9847
+  ],
+  "different_pixels": [
+    10277,
+    10277
+  ],
+  "max_channel_difference": [
+    79,
+    79
+  ],
+  "passed": false
+}

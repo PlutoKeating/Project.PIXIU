@@ -1,0 +1,19 @@
+{
+  "video": "submission/video-production/renders/\u8bbe\u5907\u4fe1\u4efb\u4e0e\u72b6\u6001-01.mp4",
+  "sha256": "1712b7d7d4b63c33a2d8d4ec89a6ca7377fd442b9a3bb754705cc9aade5d0005",
+  "sampled_frames": [
+    0,
+    30,
+    100,
+    143,
+    156,
+    157,
+    200,
+    300,
+    340,
+    390,
+    450,
+    599
+  ],
+  "global_offset": 9617
+}

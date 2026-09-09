@@ -1,0 +1,22 @@
+{
+  "source": "raw/network/解除与重新配对-01.json",
+  "source_sha256": "a2d60ea7958b54740f029b7bf9fbf8d358567e320433bd585c3a71a2e43e6763",
+  "revocation_video_sha256": "5a9008627c514d6e4fdc8a0224fa0637b096b6f70c73e708917fe39db60f78c9",
+  "decode_passed": true,
+  "assertions": [
+    "B解除A后A不在B节点列表",
+    "A仍保留B",
+    "B通过原生配对页重新加入A",
+    "双方节点集合恢复操作前"
+  ],
+  "limits": [
+    "没有记录令牌输入过程",
+    "不等于从零完成双方配对",
+    "此次未另造共享写入验证传输"
+  ],
+  "viewed": [
+    "解除后原生结果",
+    "配对成功令牌已清空",
+    "s19样片100/230帧"
+  ]
+}
