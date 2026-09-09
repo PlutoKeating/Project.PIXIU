@@ -41,7 +41,7 @@ Runtime 发行适配会在系统提示、动态上下文、技能目录与工具
 PIXIU 产品名称和公共工具术语；宿主向模型回灌历史时同步规范助手消息身份。该处理只作用于
 模型输入，不改写用户原文和本地会话记录。
 
-宿主消息资源位于 `message_renderer/`，随固定上游补丁构建为 `qrc:` 离线页面：
+宿主消息资源位于 `frontend/resources/message_renderer/`，随固定上游补丁构建为 `qrc:` 离线页面：
 markdown-it 负责 Markdown 与表格，markdown-it-texmath + KaTeX 负责公式，Mermaid
 负责思维导图、框图、甘特图和流程图，Noto Color Emoji 负责彩色 emoji。工具生命周期
 事件独立保存为默认折叠工作卡片；会话历史组装会过滤该 UI 角色，仅将用户与模型消息
@@ -115,3 +115,13 @@ Provider 现只接受 HTTP API 0.5.x，拒绝不具备后端预览凭证协议�
 账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
 
 图片知识提取：runtime/image_draft.py 被构建为 gateway.pixiu_image_draft，由自有 Runtime 补丁暴露经过现有认证的 /api/memory/image-draft。复用保存的模型地址/凭据，模型直接接收图片，返回待核对 JSON，不运行 Agent 工具或记忆生命周期。当前支持 OpenAI 兼容图片接口；麒麟文本 GenAI 桥接明确拒绝图片。
+
+## 源码目录与安装目录
+
+Agent 自有源码统一位于 `backend/agent/`，仓库根目录不再保留 `integrations/`。
+2026-09-10 已清除旧根目录中被 Git 忽略的 Python 字节码缓存及空目录，并检查正式源码、构建与启动引用。
+安装包仍将 Provider 部署到 `/usr/lib/pixiu/integrations/kylin_agent/`；这是已批准迁移计划保留的安装路径，
+由打包脚本、用户插件激活器、桥接服务和升级检查共同使用，不是第二份源码目录。
+`build/release/out/stage/` 下的对应目录是打包暂存产物，不作为源码交付。
+文档解码归 `backend/foundation/documents/`，MCP 与 dreaming 归 `backend/agent/` 内部子模块，
+不重新引入根级集成目录，也不在 build 内维护产品实现。
