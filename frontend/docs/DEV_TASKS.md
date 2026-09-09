@@ -96,7 +96,7 @@ Network、WebSockets 与 libqrencode 是管理库现有依赖；ON 另使用 Qt 
 ## 1. 模块概述
 
 Module A 维护 `frontend/management/` 嵌入页、必要公共适配及测试。产品启动器
-`build/release/debian/usr/bin/pixiu` 准备用户服务和 Agent 集成，再经随包
+`backend/platform/session/pixiu` 准备用户服务和 Agent 集成，再经随包
 `launch-agent.py` 执行唯一 `kylin-agent` 宿主；不回退到第二套前端。
 
 会话和模型/工具生命周期来自已批准的 openKylin 宿主与 Runtime；记忆业务由后端

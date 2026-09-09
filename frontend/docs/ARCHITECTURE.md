@@ -498,3 +498,5 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 ## 2026-09-10 源码归属迁移
 
 消息离线渲染资源及许可证统一位于 `frontend/resources/message_renderer/`，由宿主准备脚本打入资源；Agent Python 适配位于 `backend/agent/`。
+
+宿主补丁及兼容代码位于 `frontend/host/{patches,compat}`；`build/release/agent-host/` 仅保留准备与编译脚本。补丁顺序与宿主导出目录保持不变。

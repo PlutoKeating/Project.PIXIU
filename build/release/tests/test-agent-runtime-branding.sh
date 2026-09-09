@@ -8,7 +8,7 @@ trap 'rm -rf "${FIXTURE}"' EXIT
 mkdir -p "${FIXTURE}/source"
 git -C "${ROOT}/third_party/kylin-agent-runtime" archive --format=tar HEAD |
     tar -xf - -C "${FIXTURE}/source"
-for runtime_patch in "${ROOT}"/build/release/agent-runtime/patches/*.patch; do
+for runtime_patch in "${ROOT}"/backend/agent/runtime/patches/*.patch; do
     patch -d "${FIXTURE}/source" -p1 --forward --batch < "${runtime_patch}" >/dev/null
 done
 

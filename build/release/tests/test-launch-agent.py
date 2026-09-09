@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / "build/release/debian/usr/lib/pixiu/launch-agent.py"
+SCRIPT = ROOT / "backend/platform/session/launch-agent.py"
 spec = importlib.util.spec_from_file_location("pixiu_launch_agent", SCRIPT)
 launcher = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(launcher)

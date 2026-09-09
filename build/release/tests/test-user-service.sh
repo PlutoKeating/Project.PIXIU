@@ -3,11 +3,11 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 UNIT="${ROOT}/build/release/debian/pixiu-backend.service"
-LAUNCHER="${ROOT}/build/release/debian/usr/bin/pixiu"
-BACKEND="${ROOT}/build/release/debian/usr/bin/pixiu-backend"
-SETUP="${ROOT}/build/release/debian/usr/bin/pixiu-user-setup"
+LAUNCHER="${ROOT}/backend/platform/session/pixiu"
+BACKEND="${ROOT}/backend/platform/session/pixiu-backend"
+SETUP="${ROOT}/backend/platform/session/pixiu-user-setup"
 BUILD="${ROOT}/build/release/scripts/build-deb.sh"
-INTEGRATE="${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
+INTEGRATE="${ROOT}/backend/platform/session/pixiu-agent-integrate"
 
 test -f "${SETUP}"
 sh -n "${SETUP}"

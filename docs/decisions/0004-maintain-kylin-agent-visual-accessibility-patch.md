@@ -25,7 +25,7 @@
 
 1. 保留上游会话、Runtime、SSE、工具调用和窗口生命周期，只重做桌面表现层；不以
    UI 补丁改变 Agent 业务语义。
-2. 补丁保存在 `build/release/agent-host/patches/`，仅对从固定 commit 导出的隔离源码
+2. 补丁保存在 `frontend/host/patches/`，仅对从固定 commit 导出的隔离源码
    副本应用；上游 submodule 始终保持洁净。
 3. 全局样式使用浅色/深色两组语义令牌，页面不得再写死与主题冲突的局部颜色。普通
    文本、次要文本、占位符、主按钮和消息气泡的目标对比度为 WCAG AA 4.5:1；焦点态、

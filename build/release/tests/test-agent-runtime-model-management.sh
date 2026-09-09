@@ -9,7 +9,7 @@ trap 'rm -rf "${fixture}"' EXIT
 mkdir -p "${fixture}/source"
 git -C "${source_dir}" archive --format=tar HEAD | tar -xf - -C "${fixture}/source"
 patch -d "${fixture}/source" -p1 --forward --batch \
-    < "${repo_root}/build/release/agent-runtime/patches/0001-secure-model-management.patch"
+    < "${repo_root}/backend/agent/runtime/patches/0001-secure-model-management.patch"
 
 api="${fixture}/source/gateway/platforms/api_server.py"
 grep -q 'credential_configured' "${api}"

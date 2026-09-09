@@ -16,7 +16,7 @@
 
 - 本次发布冻结以 `8cd1905` 的实现为基线，产品版本推进至 `0.1.9`；实际发布状态以该版本标签的自动工作流及 Release 资产为准，版本文件修改不等于已发布。
 - `frontend/CMakeLists.txt` 仅构建保留的回归测试；独立 `pixiu-frontend` 目标、安装规则、旧 main、PixiuApp 装配层、FloatingBall、ChatWindow 及输入/消息展示链已删除。旧管理面板和控制器仍有专属回归，尚待逐项清理，不是第二个产品入口。
-- `build/release/debian/usr/bin/pixiu` 的通用与原生包入口均执行 `kylin-agent`，不再回退旧前端。当前宿主嵌入 `frontend/management/` 的记忆、设备及设置页。
+- `backend/platform/session/pixiu` 的通用与原生包入口均执行 `kylin-agent`，不再回退旧前端。当前宿主嵌入 `frontend/management/` 的记忆、设备及设置页。
 - Agent 构建使用固定 submodule 的导出副本及自有补丁；上游记忆设置源码被现有构建补丁排除，不能算已交付界面。
 - 旧查询入口仅调用记忆检索，不具备 Agent 循环。管理能力已接入唯一宿主，但范围配置、视觉、事件状态及全功能验收尚未统一，不能以导航接入证明迁移完成。
 - Agent 导出副本已有显式 `KYSDK=OFF` 的 Qt 适配与原生 `KYSDK=ON` 路径；固定上游源码保持只读，不恢复另一套前端作为降级路径。
@@ -27,7 +27,7 @@
 
 | 消费入口 | 当前事实源 | 迁移约束 |
 |---|---|---|
-| 正式启动器 `build/release/debian/usr/bin/pixiu` | 集成后由随包 `launch-agent.py` 只读解析当前 Agent profile，传递 scope 与一致的 endpoint，再 exec 唯一宿主 | 解析失败或显式 Qt endpoint 冲突拒绝启动；不执行 `.env`，不向 Qt 载入 profile 凭证 |
+| 正式启动器 `backend/platform/session/pixiu` | 集成后由随包 `launch-agent.py` 只读解析当前 Agent profile，传递 scope 与一致的 endpoint，再 exec 唯一宿主 | 解析失败或显式 Qt endpoint 冲突拒绝启动；不执行 `.env`，不向 Qt 载入 profile 凭证 |
 | Agent 集成脚本 `pixiu-agent-integrate` | 在当前 Agent profile 的 `.env` 中缺省写入 `PIXIU_AGENT_SCOPE=user:default`，保留已有值 | 必须保留自定义 profile、范围和 endpoint；禁止直接 source 用户 `.env` 执行其中内容 |
 | `backend/agent/pixiu/provider.py` | 显式构造参数或 `PIXIU_AGENT_SCOPE`，缺省 `user:default`；API 地址使用 `PIXIU_AGENT_ENDPOINT` | 轮次上下文、写入、更新与遗忘均绑定实际 Provider 范围；不能把模型提交的范围作为覆盖值 |
 | `frontend/src/services/HttpBackendTransport.cpp` | `PIXIU_BACKEND_URL`，正式启动时由引导器与有效 Agent endpoint 对齐；直接运行宿主仍使用进程环境或缺省本机 8765 | 不能将直接宿主启动当作 profile 已解析；公共管理接口不应依赖模型可用 |

@@ -70,7 +70,7 @@ log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSD
 # VERSION 单一事实源一致。
 check_version_consistency() {
     local frontend_cmake="${PIXIU_ROOT}/frontend/management/CMakeLists.txt"
-    local frontend_main="${PIXIU_ROOT}/build/release/agent-host/patches/0011-product-application-version.patch"
+    local frontend_main="${PIXIU_ROOT}/frontend/host/patches/0011-product-application-version.patch"
     local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
     local version_file="${PIXIU_ROOT}/VERSION"
     local backend_version="${PIXIU_ROOT}/backend/foundation/api/version.py"
@@ -339,10 +339,10 @@ printf '%s\n' "${PIXIU_VERSION}" > "${STAGE}/usr/share/pixiu/VERSION"
 printf '%s\n' "${PIXIU_INSTALL_STRICT}" \
     > "${STAGE}/usr/share/pixiu/install-strict"
 printf '1\n' > "${STAGE}/usr/share/pixiu/agent-bundled"
-install -m 0755 "${DEB_SRC}/usr/bin/pixiu" "${STAGE}/usr/bin/pixiu"
-install -m 0755 "${DEB_SRC}/usr/bin/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
-install -m 0755 "${DEB_SRC}/usr/bin/pixiu-user-setup" "${STAGE}/usr/bin/pixiu-user-setup"
-install -m 0755 "${DEB_SRC}/usr/bin/pixiu-agent-integrate" \
+install -m 0755 "${PIXIU_ROOT}/backend/platform/session/pixiu" "${STAGE}/usr/bin/pixiu"
+install -m 0755 "${PIXIU_ROOT}/backend/platform/session/pixiu-backend" "${STAGE}/usr/bin/pixiu-backend"
+install -m 0755 "${PIXIU_ROOT}/backend/platform/session/pixiu-user-setup" "${STAGE}/usr/bin/pixiu-user-setup"
+install -m 0755 "${PIXIU_ROOT}/backend/platform/session/pixiu-agent-integrate" \
     "${STAGE}/usr/bin/pixiu-agent-integrate"
     install -m 0755 "${DEB_SRC}/usr/bin/kylin-agent-runtime" \
         "${STAGE}/usr/bin/kylin-agent-runtime"
@@ -357,13 +357,13 @@ if [ "${PIXIU_INSTALL_STRICT}" = "1" ]; then
     [ -f "${DESKTOP_FILE}" ] || die "PIXIU desktop entry is missing from frontend install"
     sed -i 's/^Exec=.*/Exec=pixiu/' "${DESKTOP_FILE}"
 fi
-install -m 0755 "${PIXIU_RELEASE_DIR}/scripts/migrate-system-data.py" \
+install -m 0755 "${PIXIU_ROOT}/backend/platform/migrations/migrate-system-data.py" \
     "${STAGE}/usr/lib/pixiu/migrate-system-data"
-install -m 0755 "${DEB_SRC}/usr/lib/pixiu/install-update" \
+install -m 0755 "${PIXIU_ROOT}/backend/platform/updates/install-update" \
     "${STAGE}/usr/lib/pixiu/install-update"
-install -m 0755 "${DEB_SRC}/usr/lib/pixiu/restart-client" \
+install -m 0755 "${PIXIU_ROOT}/backend/platform/session/restart-client" \
     "${STAGE}/usr/lib/pixiu/restart-client"
-install -m 0644 "${DEB_SRC}/usr/lib/pixiu/launch-agent.py" \
+install -m 0644 "${PIXIU_ROOT}/backend/platform/session/launch-agent.py" \
     "${STAGE}/usr/lib/pixiu/launch-agent.py"
 
 # ── 5/5 dpkg 打包 ──────────────────────────────────────────────

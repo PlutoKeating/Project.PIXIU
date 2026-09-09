@@ -41,7 +41,7 @@ prepare)
     rm -rf "${repo_root}/build/release/out/agent-runtime"
     mkdir -p "${wheelhouse}" "${output_root}/source"
     git -C "${runtime_source}" archive --format=tar HEAD | tar -xf - -C "${output_root}/source"
-    for runtime_patch in "${script_dir}"/patches/*.patch; do
+    for runtime_patch in "${repo_root}"/backend/agent/runtime/patches/*.patch; do
         [[ -f "${runtime_patch}" ]] || {
             echo "At least one Runtime distribution patch is required" >&2
             exit 2

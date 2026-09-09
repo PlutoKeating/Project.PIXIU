@@ -2,13 +2,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-HELPER="${ROOT}/build/release/debian/usr/lib/pixiu/install-update"
-RESTART_HELPER="${ROOT}/build/release/debian/usr/lib/pixiu/restart-client"
+HELPER="${ROOT}/backend/platform/updates/install-update"
+RESTART_HELPER="${ROOT}/backend/platform/session/restart-client"
 
 test ! -e "${ROOT}/frontend/scripts/install-update"
 test ! -e "${ROOT}/frontend/scripts/restart-client"
-grep -qF '${DEB_SRC}/usr/lib/pixiu/install-update' "${ROOT}/build/release/scripts/build-deb.sh"
-grep -qF '${DEB_SRC}/usr/lib/pixiu/restart-client' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -qF '${PIXIU_ROOT}/backend/platform/updates/install-update' "${ROOT}/build/release/scripts/build-deb.sh"
+grep -qF '${PIXIU_ROOT}/backend/platform/session/restart-client' "${ROOT}/build/release/scripts/build-deb.sh"
 
 grep -q 'dpkg-deb --field .* Package' "${HELPER}"
 grep -q 'dpkg-deb --field .* Version' "${HELPER}"

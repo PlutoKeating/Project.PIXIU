@@ -10,9 +10,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 PATCHES = (
-    ROOT / "build/release/agent-host/patches/0002-pixiu-premium-accessible-ui.patch",
-    ROOT / "build/release/agent-host/patches/0004-working-agent-experience.patch",
-    ROOT / "build/release/agent-host/patches/0005-blue-theme-settings-and-pixiu-soul.patch",
+    ROOT / "frontend/host/patches/0002-pixiu-premium-accessible-ui.patch",
+    ROOT / "frontend/host/patches/0004-working-agent-experience.patch",
+    ROOT / "frontend/host/patches/0005-blue-theme-settings-and-pixiu-soul.patch",
 )
 
 

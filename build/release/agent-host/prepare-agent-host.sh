@@ -32,57 +32,57 @@ fi
 
 git -C "${source_dir}" archive --format=tar HEAD | tar -xf - -C "${target_source}"
 patch -d "${target_source}" -p1 --forward --batch \
-    < "${script_dir}/patches/0001-build-coherent-offline-host.patch"
+    < "${repo_root}/frontend/host/patches/0001-build-coherent-offline-host.patch"
 patch -d "${target_source}" -p1 --forward --batch \
-    < "${script_dir}/patches/0002-pixiu-premium-accessible-ui.patch"
+    < "${repo_root}/frontend/host/patches/0002-pixiu-premium-accessible-ui.patch"
 patch -d "${target_source}" -p1 --forward --batch \
-    < "${script_dir}/patches/0003-kylin-cloud-model-settings.patch"
+    < "${repo_root}/frontend/host/patches/0003-kylin-cloud-model-settings.patch"
 patch -d "${target_source}" -p1 --forward --batch \
-    < "${script_dir}/patches/0004-working-agent-experience.patch"
+    < "${repo_root}/frontend/host/patches/0004-working-agent-experience.patch"
 patch -d "${target_source}" -p1 --forward --batch \
-    < "${script_dir}/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
+    < "${repo_root}/frontend/host/patches/0005-blue-theme-settings-and-pixiu-soul.patch"
 patch -d "${target_source}" -p1 --forward --batch \
-    < "${script_dir}/patches/0006-rich-message-rendering.patch"
+    < "${repo_root}/frontend/host/patches/0006-rich-message-rendering.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
-    < "${script_dir}/patches/0007-chat-layout-follow.patch"
+    < "${repo_root}/frontend/host/patches/0007-chat-layout-follow.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
-    < "${script_dir}/patches/0008-pixiu-assistant-history.patch"
+    < "${repo_root}/frontend/host/patches/0008-pixiu-assistant-history.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
-    < "${script_dir}/patches/0009-optional-kylin-desktop.patch"
+    < "${repo_root}/frontend/host/patches/0009-optional-kylin-desktop.patch"
 patch -d "${target_source}" -p1 --forward --batch --no-backup-if-mismatch \
-    --fuzz=0 < "${script_dir}/patches/0010-embedded-memory-workspace.patch"
+    --fuzz=0 < "${repo_root}/frontend/host/patches/0010-embedded-memory-workspace.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0011-product-application-version.patch"
+    < "${repo_root}/frontend/host/patches/0011-product-application-version.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0012-unified-workspace-navigation.patch"
+    < "${repo_root}/frontend/host/patches/0012-unified-workspace-navigation.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0013-close-last-window-exits-host.patch"
+    < "${repo_root}/frontend/host/patches/0013-close-last-window-exits-host.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0014-guard-host-close.patch"
+    < "${repo_root}/frontend/host/patches/0014-guard-host-close.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0015-protect-agent-work-on-close.patch"
+    < "${repo_root}/frontend/host/patches/0015-protect-agent-work-on-close.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0016-preserve-product-display-name.patch"
+    < "${repo_root}/frontend/host/patches/0016-preserve-product-display-name.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0017-own-workspace-theme-background.patch"
+    < "${repo_root}/frontend/host/patches/0017-own-workspace-theme-background.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0018-match-installed-desktop-entry.patch"
+    < "${repo_root}/frontend/host/patches/0018-match-installed-desktop-entry.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0019-own-active-control-theme.patch"
+    < "${repo_root}/frontend/host/patches/0019-own-active-control-theme.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0020-guard-deferred-theme-repaint.patch"
+    < "${repo_root}/frontend/host/patches/0020-guard-deferred-theme-repaint.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0021-use-product-window-identity.patch"
+    < "${repo_root}/frontend/host/patches/0021-use-product-window-identity.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0022-session-evidence-entry.patch"
+    < "${repo_root}/frontend/host/patches/0022-session-evidence-entry.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0023-backend-event-status.patch"
+    < "${repo_root}/frontend/host/patches/0023-backend-event-status.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0024-single-host-tray.patch"
+    < "${repo_root}/frontend/host/patches/0024-single-host-tray.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0025-capture-directory-picker.patch"
+    < "${repo_root}/frontend/host/patches/0025-capture-directory-picker.patch"
 patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
-    < "${script_dir}/patches/0026-qt-widget-translations.patch"
+    < "${repo_root}/frontend/host/patches/0026-qt-widget-translations.patch"
 install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
     "${target_source}/res/pixiu.svg"
 for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
@@ -115,11 +115,11 @@ for relative in management/CMakeLists.txt management/MemoryWorkspace.h managemen
     install -D -m 0644 "${repo_root}/frontend/${relative}" "${target_source}/pixiu/frontend/${relative}"
 done
 install -D -m 0644 "${repo_root}/VERSION" "${target_source}/pixiu/VERSION"
-install -D -m 0644 "${script_dir}/compat/pixiu_desktop.h" \
+install -D -m 0644 "${repo_root}/frontend/host/compat/pixiu_desktop.h" \
     "${target_source}/include/utils/pixiu_desktop.h"
 cp -a "${repo_root}/frontend/resources/message_renderer" \
     "${target_source}/res/message-renderer"
-install -D -m 0644 "${script_dir}/compat/pixiu_host_compat.cpp" \
+install -D -m 0644 "${repo_root}/frontend/host/compat/pixiu_host_compat.cpp" \
     "${target_source}/src/services/pixiu_host_compat.cpp"
 # The public upstream tree contains one credential-bearing clone URL and two
 # unused online bootstrap scripts.  They are not admissible in a distributable

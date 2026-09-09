@@ -8,7 +8,7 @@ unset XDG_CONFIG_HOME XDG_STATE_HOME HERMES_HOME
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 PRODUCT_VERSION="$(tr -d '\r\n' < "${ROOT}/VERSION")"
 export PIXIU_PRODUCT_VERSION_FILE="${ROOT}/VERSION"
-SCRIPT="${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
+SCRIPT="${ROOT}/backend/platform/session/pixiu-agent-integrate"
 TMP="$(mktemp -d)"
 trap 'rm -rf "${TMP}"' EXIT
 export PIXIU_AGENT_BUNDLED_FILE="${TMP}/absent-bundled-marker"
@@ -331,15 +331,15 @@ done
 grep -q 'backend/agent' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-agent-integrate --quiet' \
-    "${ROOT}/build/release/debian/usr/bin/pixiu"
+    "${ROOT}/backend/platform/session/pixiu"
 grep -q 'exec /usr/lib/pixiu/venv/bin/python /usr/lib/pixiu/launch-agent.py' \
-    "${ROOT}/build/release/debian/usr/bin/pixiu"
+    "${ROOT}/backend/platform/session/pixiu"
 grep -q 'PATH=/usr/bin:/bin:/usr/sbin:/sbin' \
-    "${ROOT}/build/release/debian/usr/bin/pixiu"
+    "${ROOT}/backend/platform/session/pixiu"
 grep -q 'KYLIN_AGENT_FORCE_RUNTIME_RESTART=1' \
-    "${ROOT}/build/release/debian/usr/bin/pixiu"
+    "${ROOT}/backend/platform/session/pixiu"
 grep -q 'RUNTIME=/usr/bin/kylin-agent-runtime' \
-    "${ROOT}/build/release/debian/usr/bin/pixiu-agent-integrate"
+    "${ROOT}/backend/platform/session/pixiu-agent-integrate"
 grep -q 'kylin-agent-runtime-gateway.service' \
     "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'pixiu-kylin-genai-bridge.service' \
@@ -361,6 +361,6 @@ grep -q 'usr/share/pixiu/install-strict' "${ROOT}/build/release/scripts/build-de
 grep -q 's/@PRODUCT_VERSION@/' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'backend=runtime-injected' "${ROOT}/build/release/scripts/build-deb.sh"
 grep -q 'backend.foundation.api.install_health' \
-    "${ROOT}/build/release/debian/usr/lib/pixiu/install-update"
+    "${ROOT}/backend/platform/updates/install-update"
 
 echo "agent integration packaging tests: OK"

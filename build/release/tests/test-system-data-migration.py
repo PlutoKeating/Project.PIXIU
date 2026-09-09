@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / "build/release/scripts/migrate-system-data.py"
+SCRIPT = ROOT / "backend/platform/migrations/migrate-system-data.py"
 SPEC = importlib.util.spec_from_file_location("pixiu_migration", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)

@@ -48,7 +48,7 @@ trap 'rm -rf -- "${fixture}"' EXIT
     cd "${ROOT}"
     cp --parents VERSION frontend/management/CMakeLists.txt \
         frontend/src/services/HttpBackendTransport.cpp \
-        build/release/agent-host/patches/0011-product-application-version.patch \
+        frontend/host/patches/0011-product-application-version.patch \
         build/release/agent-host/prepare-agent-host.sh \
         backend/foundation/api/version.py build/release/debian/pixiu-backend.service \
         backend/agent/pixiu/plugin.yaml.in "${fixture}"
@@ -64,7 +64,7 @@ if (PIXIU_ROOT="${fixture}" check_version_consistency) >/dev/null 2>&1; then
 fi
 cp "${ROOT}/frontend/management/CMakeLists.txt" "${fixture}/frontend/management/CMakeLists.txt"
 sed -i 's/QStringLiteral(PIXIU_PRODUCT_VERSION)/QStringLiteral("9.9.9")/' \
-    "${fixture}/build/release/agent-host/patches/0011-product-application-version.patch"
+    "${fixture}/frontend/host/patches/0011-product-application-version.patch"
 if (PIXIU_ROOT="${fixture}" check_version_consistency) >/dev/null 2>&1; then
     echo "host version drift must be rejected" >&2
     exit 1

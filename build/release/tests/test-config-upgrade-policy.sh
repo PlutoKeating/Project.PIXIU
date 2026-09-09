@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 BUILD="${ROOT}/build/release/scripts/build-deb.sh"
 POSTINST="${ROOT}/build/release/debian/postinst"
-USER_SETUP="${ROOT}/build/release/debian/usr/bin/pixiu-user-setup"
+USER_SETUP="${ROOT}/backend/platform/session/pixiu-user-setup"
 
 test ! -e "${ROOT}/build/release/debian/conffiles"
 grep -q 'usr/share/pixiu/pixiu.env.default' "${BUILD}"

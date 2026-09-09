@@ -214,3 +214,5 @@ Agent 的工作边界：
 - **必须进行文档更新**，文档范围为全局文档与你修改涉及模块（前端/后端/开发者前端）的修改，严格按照你的代码修改与当前最新的代码内容更新文档，不要缺失或包含旧内容
 - **必须进行git仓库同步**，本地 `git add` 和 `git commit`，保持审查边界清晰。
 - 回复用户时列出文件、验证结果和未完成风险。
+
+用户于 2026-09-10 批准跨模块目录迁移及宣传功能实施，执行依据为 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。平台运行源码归 `backend/platform/`，宿主补丁/兼容归 `frontend/host/`，Runtime 补丁归 `backend/agent/runtime/`；build 只维护构建和交付。

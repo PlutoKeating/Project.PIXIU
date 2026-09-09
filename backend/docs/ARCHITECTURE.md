@@ -99,3 +99,5 @@ foundation/
 ## 2026-09-10 源码归属迁移
 
 Module E 的源码现位于 `backend/agent/`，仍经公共 HTTP API 访问记忆服务；安装路径保持兼容。此次目录迁移不增加运行依赖。
+
+用户初始化、Agent 激活与启动归 `backend/platform/session`，升级执行器归 `backend/platform/updates`，历史数据迁移归 `backend/platform/migrations`。安装入口和用户数据位置不变；Runtime 补丁归 `backend/agent/runtime/patches`。无新增依赖。
