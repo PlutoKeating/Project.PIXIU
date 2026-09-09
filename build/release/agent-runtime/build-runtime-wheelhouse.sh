@@ -18,11 +18,8 @@ build_tools_lock="${script_dir}/build-tools-cp312.lock"
 action="${1:-prepare}"
 
 expected_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["components"]["agent_runtime"]["source_commit"])' "${repo_root}/build/release/agent-supply-chain-policy.json")"
-if [[ "$(git -C "${runtime_source}" rev-parse HEAD)" != "${expected_commit}" ]] ||
-   [[ -n "$(git -C "${runtime_source}" status --porcelain)" ]]; then
-    echo "Agent Runtime submodule must be clean and pinned to ${expected_commit}" >&2
-    exit 2
-fi
+python3 "${repo_root}/build/release/scripts/source_checkout.py" check \
+    "${repo_root}" third_party/kylin-agent-runtime "${expected_commit}"
 
 case "${action}" in
 prepare)
@@ -40,7 +37,8 @@ prepare)
     }
     rm -rf "${repo_root}/build/release/out/agent-runtime"
     mkdir -p "${wheelhouse}" "${output_root}/source"
-    git -C "${runtime_source}" archive --format=tar HEAD | tar -xf - -C "${output_root}/source"
+    python3 "${repo_root}/build/release/scripts/source_checkout.py" export \
+        "${repo_root}" third_party/kylin-agent-runtime "${expected_commit}" "${output_root}/source"
     for runtime_patch in "${repo_root}"/backend/agent/runtime/patches/*.patch; do
         [[ -f "${runtime_patch}" ]] || {
             echo "At least one Runtime distribution patch is required" >&2
@@ -87,7 +85,7 @@ PY
     build_venv="${output_root}/build-venv"
     python3 -m venv "${build_venv}"
     "${build_venv}/bin/pip" install --require-hashes -r "${build_tools_lock}"
-    SOURCE_DATE_EPOCH="$(git -C "${runtime_source}" show -s --format=%ct HEAD)" \
+    SOURCE_DATE_EPOCH="$(python3 "${repo_root}/build/release/scripts/source_checkout.py" epoch "${repo_root}" third_party/kylin-agent-runtime)" \
         "${build_venv}/bin/pip" wheel --no-deps --no-build-isolation \
         --wheel-dir "${wheelhouse}" "${output_root}/source"
     grep -v '^kylin-agent-runtime==' "${committed_lock}" > "${dependency_lock}"

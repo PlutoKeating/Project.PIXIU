@@ -38,6 +38,8 @@ def sha256_file(path: Path) -> str:
 
 
 def release_commit(root: Path) -> str:
+    if not (root / ".git").exists():
+        return json.loads((root / "SOURCE-MANIFEST.json").read_text())["sourceCommit"]
     return subprocess.check_output(
         ["git", "-C", str(root), "rev-parse", "HEAD"],
         text=True,

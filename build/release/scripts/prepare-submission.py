@@ -110,7 +110,7 @@ def collect(root: Path) -> tuple[dict, dict]:
     return entries, modules
 
 
-def build_source(root: Path) -> None:
+def build_source(root: Path, output: Path | None = None) -> None:
     entries, modules = collect(root)
     if len(modules) != 4:
         raise ValueError("必须包含四个固定上游源码")
@@ -119,14 +119,15 @@ def build_source(root: Path) -> None:
         "sourceCommit": git(root, "rev-parse", "HEAD").decode().strip(),
         "sourceTreeClean": not bool(git(root, "status", "--porcelain", "--", *sorted(SOURCE_DIRS), *sorted(TECH_DOCS))),
         "submodules": modules,
+        "submoduleEpochs": {name: int(git(root / name, "show", "-s", "--format=%ct", "HEAD")) for name in modules},
         "files": [{"path": name, "mode": entry["mode"], "sha256": sha(entry["data"]),
                    **({"repositorySha256": entry["repositorySha256"]} if "repositorySha256" in entry else {})}
                   for name, entry in sorted(entries.items())],
     }
     entries["SOURCE-MANIFEST.json"] = {"mode": "100644", "data": (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode()}
     _, _, source = paths(root)
-    source.mkdir(parents=True, exist_ok=True)
-    output = source / "PIXIU源代码.tar.gz"
+    output = output or source / "PIXIU源代码.tar.gz"
+    output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(".tmp")
     with temporary.open("wb") as raw, gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed, tarfile.open(fileobj=compressed, mode="w") as archive:
         for name, entry in sorted(entries.items()):
@@ -174,9 +175,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["build-source", "check"])
     parser.add_argument("--require-video", action="store_true")
+    parser.add_argument("--output", type=Path, help="Optional source archive destination")
     args = parser.parse_args()
     if args.command == "build-source":
-        build_source(ROOT)
+        build_source(ROOT, args.output)
     else:
         missing = validate(ROOT, args.require_video)
         print(json.dumps({"layout": "pass", **check_source(ROOT), "pending": missing}, ensure_ascii=False))

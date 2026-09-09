@@ -20,17 +20,9 @@ shopt -u nullglob dotglob
 
 expected_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["components"]["kylin_agent"]["source_commit"])' "${repo_root}/build/release/agent-supply-chain-policy.json")"
 
-actual_commit="$(git -C "${source_dir}" rev-parse HEAD)"
-if [[ "${actual_commit}" != "${expected_commit}" ]]; then
-    echo "Agent host commit mismatch: expected ${expected_commit}, got ${actual_commit}" >&2
-    exit 2
-fi
-if [[ -n "$(git -C "${source_dir}" status --porcelain)" ]]; then
-    echo "Agent host submodule must be clean" >&2
-    exit 2
-fi
+python3 "${repo_root}/build/release/scripts/source_checkout.py" export \
+    "${repo_root}" third_party/kylin-agent "${expected_commit}" "${target_source}"
 
-git -C "${source_dir}" archive --format=tar HEAD | tar -xf - -C "${target_source}"
 patch -d "${target_source}" -p1 --forward --batch \
     < "${repo_root}/frontend/host/patches/0001-build-coherent-offline-host.patch"
 patch -d "${target_source}" -p1 --forward --batch \
@@ -97,7 +89,7 @@ install -D -m 0644 "${repo_root}/frontend/host/compat/pixiu_host_compat.cpp" \
 # unused online bootstrap scripts.  They are not admissible in a distributable
 # source archive.  Replace exactly that URL with its public upstream and remove
 # only the two uncompiled bootstrap files; fail if upstream shape changes.
-python3 - "${target_source}" <<'PY'
+python3 - "${target_source}" "${repo_root}" <<'PY'
 from pathlib import Path
 import re
 import sys
@@ -107,7 +99,7 @@ gateway = root / "src/services/gatewayservice.cpp"
 content = gateway.read_text(encoding="utf-8")
 pattern = re.compile(r"(?i)\b(?:https?|git)://[^/\s:@]+:[^/\s@]+@[^\\\"\s]+")
 content, count = pattern.subn("https://gitee.com/openkylin/kylin-cua.git", content)
-if count != 1:
+if count != 1 and not (count == 0 and (Path(sys.argv[2]) / "SOURCE-MANIFEST.json").is_file()):
     raise SystemExit(f"expected one authenticated upstream URL, found {count}")
 gateway.write_text(content, encoding="utf-8")
 for relative in ("scripts/agent_runtime_install.sh", "scripts/agent_runtime_install_bak.sh"):

@@ -758,3 +758,7 @@ search/delete/drop，并验证产品 API 写入/召回/遗忘。Agent profile �
 ## 2026-09-10 测试与源码交付归属
 
 跨系统场景脚本、对应测试及模拟服务位于 `tests/acceptance/{scripts,tests,fixtures}`；平台初始化/升级测试位于 `backend/platform/tests`；桌面及渲染测试位于 `frontend/tests`；build 仅保留打包与构建规则测试。源码白名单包含顶层 tests。依赖仍使用现有后端 requirements 与 Qt 开发依赖，不新增测试框架。
+
+## 无 Git 交付源码构建
+
+解压源码后先运行 `python3 verify-source.py`。宿主和 Runtime 构建入口保持不变，`scripts/source_checkout.py` 自动读取源码清单，校验固定上游摘要并恢复文件模式；无需 Git 历史。Runtime 仍要求画像指定的 CPython 3.12/amd64 和已有依赖锁。源码导出可使用 `python3 build/release/scripts/prepare-submission.py build-source --output build/release/out/PIXIU-source.tar.gz`，不写入视频或提交材料目录。

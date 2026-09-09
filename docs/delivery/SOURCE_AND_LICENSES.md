@@ -44,7 +44,7 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 
 解压后先运行包内 `verify-source.py` 核对文件。后端测试使用 `backend/requirements.txt` 与 `backend/foundation/requirements-sync.txt` 的依赖，前端使用 CMake。严格安装包需在银河麒麟 V11 安装官方 SDK 和画像列出的开发依赖，按构建说明执行。依赖清单与源码一起提供，源码压缩包不包含预下载的系统软件或 Python wheels。
 
-当前发布脚本通过 Git 提交核验固定上游和供应链。源码包不携带开发历史或用户配置；发布构建需要按清单恢复对应源码检出，完整离线构建还需准备依赖闭包。源码文件完整性检查不等于已在全新机器重跑全部发布验证。
+Git 工作区通过固定提交核验上游；解压源码通过 SOURCE-MANIFEST.json 核验上游文件、版本及构建时间，不需要恢复 .git。先运行 `python3 verify-source.py`，再按 `build/release/README.md` 准备系统与 Python 依赖，使用同一宿主和 Runtime 构建入口。源码不含预下载依赖；原生完整安装验证须在 V11 进行。
 
 ## 软件物料清单
 

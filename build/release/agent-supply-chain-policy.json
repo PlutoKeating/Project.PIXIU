@@ -131,14 +131,16 @@
     "frontend/host/compat/pixiu_host_compat.cpp",
     "frontend/CMakeLists.txt",
     "build/release/agent-host/frontend-sources.json",
-    "build/release/agent-host/export-frontend.py"
+    "build/release/agent-host/export-frontend.py",
+    "build/release/scripts/source_checkout.py"
   ],
   "runtime_adaptation_inputs": [
     "build/release/agent-runtime/build-runtime-wheelhouse.sh",
     "build/release/agent-runtime/runtime-wheel-MANIFEST.in",
     "backend/agent/runtime/patches/0001-secure-model-management.patch",
     "backend/agent/runtime/patches/0002-pixiu-model-context.patch",
-    "backend/agent/runtime/patches/0003-pixiu-gateway-branding.patch"
+    "backend/agent/runtime/patches/0003-pixiu-gateway-branding.patch",
+    "build/release/scripts/source_checkout.py"
   ],
   "components": {
     "kylin_agent": {
