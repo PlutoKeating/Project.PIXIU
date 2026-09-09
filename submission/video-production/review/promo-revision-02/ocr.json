@@ -1,0 +1,1417 @@
+[
+  {
+    "file": "s01-middle.jpg",
+    "text": "PIXIU 。 狐多\n\n面向麒麟智能体的分布式集体记忆\n\n面向麒麟操作系统智能体的去中心化记忆系统。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s01-tail.jpg",
+    "text": "PIXIU 。 35k\n\n面向麒麟智能体的分布式集体记忆\n\n{RUC AEE 0\n",
+    "returncode": 0
+  },
+  {
+    "file": "s02-middle.jpg",
+    "text": "fi— Bigs 不必从头再说\n\n问题\n\n不能接着使用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s02-tail.jpg",
+    "text": "i— Bigs 不必从头再说\n\n问题\n\n让助手记住你的工作方式。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s03-middle.jpg",
+    "text": "多设备，共享一份可复用的经验\n\n国\n\nO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n=\n\n客厅一体机\n\n能力示意， 每台设备独立保存本地副本\n",
+    "returncode": 0
+  },
+  {
+    "file": "s03-tail.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\n=\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n可信范围\n\n中保存\n\n智能体复用\n\nO\n\n客厅一体机\n\n共享更新与来源检索\n\n能力示意， 每台设备独立保存本地副本\n\n再由每台设备上的智能体检索和复用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s04-middle.jpg",
+    "text": "运行在银河麒麒 V11\n\n同一桌面窗口中的四个入口\n\n会话\n\n记忆\n\n设备\n\n应用与升级\n\n采集与隐私\n\n01 会话与任务\n\n02 记忆与设备\n\n03 服务与能力\n\n银河麒麟 V11 。 桌面实拍\n\n都在同一个桌面窗口中。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s04-tail.jpg",
+    "text": "I1T\n\n==\n\n在银河麒麒 V11\n\n服务与能力 + 本次读取结\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.9\n\n后端产品版本: 0.1.9\n\nHTTP API: 0.5.0 。 Agent Memory API: 1 - 数据库 schema: 13\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一致\n\n平台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\nOT SESE\n\nbo Vee\n\n03 服务与能力\n\n银河麒麟 V11 - 桌面实拍\n\n一一\n\n以及系统向量化和辐量数据库的实际\n\nJa{T\n",
+    "returncode": 0
+  },
+  {
+    "file": "s05-middle.jpg",
+    "text": "记忆和能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\nBAIS > 规划任务\n\n调用工具\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n",
+    "returncode": 0
+  },
+  {
+    "file": "s05-tail.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n记忆适配层\n\nPM ICL A\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n偏好、安全与遗忘\n\n本地存储与设备同步\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n把它连接到禾杀的接入、检索、安全和分布式同步引擎。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s06-middle.jpg",
+    "text": "从任务执行，到经验沉演\n\n桌面会话， 秋季阅读采购复核单\n\n两轮任务后，显式保存成功\n\n科普书: 24元\n\n工具书: 36元\n\n国册: 40元\n\n‘it L00sr\n\n采购复核单” 保存为记忆\n",
+    "returncode": 0
+  },
+  {
+    "file": "s06-tail.jpg",
+    "text": "从任务执行，到经验沉演\n\n桌面会话， 秋季阅读采购复核单\n\n新会话回答\n\n引用与保存记录对应的知识来源\n\n根据 PIXIU 记忆检索结果\n\n。 科普书: 24元\n\ne\n\nTASH: 367\n\ne\n\nAR: 4076\n\ne\n\nSit: 1007\n\n记忆来源:\n\nknw_01M22B0S2378RFPMSDNSJZVTIN\n\n原生界面裁片” 显式记忆检索复用\n\n继续使用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s07-middle.jpg",
+    "text": "新会话，也能找到旧知识\n\n加”录入记忆一 PIXIU\n\n口\n\n六\n\n标题\n\n2026年4月家庭水电燃气账单\n\n电费\n\n正文\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n为四元\n\n水费\n\n68.50 7\n\n4\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝; 本界面不会自动改为共享。\n\n156 元\n\n¢\n\nS\n\n关闭\n\n保存记忆\n\nae\n\n真实录入画面”已选择家庭\n\nHey\n\nNa?\n\n已\n\niN\n\nys\n\nJANN\n\n气费一百五十六元。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s07-tail.jpg",
+    "text": "新会话，也能找到旧知识\n\n已检索到2026年4月家庭水电燃气账单信息\n\n。电费: 210元\n\n。 水费: 68.50元\n\n。 燃气费: 156元\n\n三项合计: 210 + 68.50 + 156 = 434.50元\n\n原始记忆来源: knw_01M2187901RZWK8YXN29K0B79M\n\n(证据ID: evd_01M21878ZXAKQPRAXJ2ME5TZBZ)\n\n真实新\n\n话回答\n\n显式记忆工具检索已核对\n\nBLBET LIX\n\n文条长其\n\n月记忆。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s08-middle.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n5 Ore\n\n来源: MANUAL_CONFIG + 范围: shared:home\n\n质量\n\n文件采集来源: 未记录。不能根据文件名推断原始路径。\n\n_) 查看原始数据 (高级)\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n打开来源，碍看原始记录\n\n展开命中的账单，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s08-tail.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n> 0.78\n\n来源: MANUAL_CONFIG 范围: shared:home\n\n质量\n\n文件采集来源: 未记录。不能根据文件名推断原始路径。\n\n_) 查看原始数据 (BR\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n打开来源，查看原始记录\n\n复核更方便。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s09-middle.jpg",
+    "text": "多种来小 ie)\n\n进入统一记忆\n\n同一次写入:\n\n清洗前后可核对\n\n公开合成输入\n\n实际清洗后证据\n\n核对书目\n\n核对书目\n\n核对书目\n\n归还原位\n\n归还原位\n\n重复项合并，空\n\n注移除，标题去空\n\nABE\n\n注; 标题两侧有空\n\n质量评分 0.775 + 敏感级别 0 SABER\n\n内容整理过程\n\n实测记录\n\n接入时进行格式核验、清洗、质\n\n评估和敏感检测，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s09-tail.jpg",
+    "text": "多种来源，进入统一记忆\n\n写入完成后，按范围检索到同一来源\n\n家庭物品整理演示\n\n同    私有范围内查询命    °\n\n反回的来源 1D 与本次写入证据一致\n\n写入内容与检索来源一一对应\n\n内容整理过程\n\n再形成可检索的知识。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s10-middle.jpg",
+    "text": "手动记录，了明确保留范围\n\n本例保存在个人范围， 共\n\nFin\n\n—s5)\n\n明确选择\n\n范围Agent 记忆 (user:default)\n\n其他范围\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝，本界面不会自动改为共享。\n\n个人范围\n\n共享范围\n\n保留自己的资料\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n需要协作的内容，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s10-tail.jpg",
+    "text": "手动记录，了明确保留范围\n\n保存后检索，核对同一账单正文\n\n后端已接收记忆。可返回检索查看结果; 共享是否送达请以同步状态为准。\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 156.00元\n\nBit: 434.50元\n\n每月先核对原始清单，再按类别汇总。\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n保存后可以马上检索和核对正文。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s11-middle.jpg",
+    "text": "授权目录，自动沉淀文件\n\n活动日志\n\nSie\n\n时间 (UTC) : 2026-09-08T14:33:36Z\n\ndirectory + ingested\n\n记住文件 公开示例-月末核对.txt\n\n证据ID: evd_01M20Q0KENX8A5J3DS9ROITWGR\n\n知识ID: knw_01M20Q0KFQ86QGQ1E1QJFDDMX5\n\n01 授权目录\n\n02 文件入库\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n新增文本文件后，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s11-tail.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n来源详情 + 路径与采集时刻\n\n文件采集方式: 文本读取\n\n采集时路径: \"/vartmp/PIXIU操作演示/公开示例-月末核对.txt\"\n\n采集记录时间 (UTC) : 2026-09-08T14:33:35Z\n\n仅记录采集时来源，不保证原文件仍存在或内容未变化。\n\n01 授权目录\n\n0国文作人六库\n\n03 查看来源\n\n原生页面裁片 ” 公开合成演示资料\n\n还能在来源区得看文件路径与采集时间。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s12-middle.jpg",
+    "text": "使用习惯，按授权记录\n\n应用使用记录，帮助理解工作习惯\n\n公开行为演示\n\n0571\n\n来源: USER_BEHAVIOR + 范围: user:local .质量\n\n1] 1] 8 a) 本次应用使用时攻\n\nfocus_seconds: 118\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 X11 窗口演示 原生授权设置\n\n这里的记录保留了应用名称和使用时长。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s12-tail.jpg",
+    "text": "使用习惯，按授权记录\n\n采集授权，由你掌握\n\n_) 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\n行为采集: 已关闭\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 。 X11 窗口演示 原生授权设置\n\n随时天闭行为采集。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s13-middle.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n检索机制示意\n\n回答风格演示\n\n关键词\n\n内容含义\n\n关联信息\n\n查看来源1\n\n真实页面” 查询与来源展开\n\ngta\n\n系统把天键词、语义和关联信，\n\nFS\n",
+    "returncode": 0
+  },
+  {
+    "file": "s13-tail.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n查看来源: 原始配置确实包含“详细说明”\n\n命中记忆: 回答风格演示“来源: 手动配置\n\nbody:\n\ndetail_level: 详细说明\n\n找到相关内容，查看来源。\n\n原始配置中保留了“详细说明”的要求。\n\n真实页面” 查询与来源展开\n\n核对其中的详细说明。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s14-middle.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。     家庭图书归还流程\n\n“书房共有三层书架。\n\n“从借阅登记本逐项核对书名\n\n案例\n\n书架分类调整案例\n\n模板。 家庭阅读周计划模板\n\n“把常用工具书集中到中层“\n\n“填写本周共同阅读的主\n\n事实、\n\n流程、案例与模板。 来源内容摘录\n\n以及阅读计划的填写说明。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s14-tail.jpg",
+    "text": "事实、流程、案例与模板\n\n家庭图书归还流程 ， 原生正文\n\nsteps:\n\n[1]: 第一步: 从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n| [4]: BOS: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\n一更新全P\n\n01  相似任务\n\n02 检索资料\n\n03 作为执行参考\n\n原生来源裁片 ” 公开合成资料， 正文保持原样\n\n交给助手作为执行参考。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s15-middle.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n当前版本三: 详细说明\n\noutput_style.verbosity > 当前版本 3\n\noutput_style.verbosity + user:video-preference-4k-v1\n\nverbosity: verbose\n\n偏好值 verbose: 详细说明\n\n偏好历史 每次更新都有记录\n\n后来改为详细说明。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s15-tail.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n三个历史版本，保留变化过程\n\n已展示历史版本\n\n版本1 + 2026-09-09T05:18:32\n\nverbosity: compact\n\n3\n\n版本2 + 2026-09-09T05:18:33\n\nverbosity: compact\n\n版本三二三\n\n简洁回答\n\n版本三\n\n: 详细说明\n\n版本3 + 2026-09-09T05:22:34\n\nverbosity: verbose\n\n偏好历史， 每次更新都有记录\n\n奶溯自己的使用习惯。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s16-middle.jpg",
+    "text": "更新有版本，冲突有记录\n\n家庭账单: 核对金额，保存修改\n\n版本: 2\n\n众开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 186.00 元 (已核对修正)\n\nBit: 464.50 7\n\n每月先核对原始清单，再按类别汇总。\n\n原生界面裁片” 公开合成资料\n\n编辑基于读取时的版本\n\n: 如果另一端已经更新，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s16-tail.jpg",
+    "text": "更新有版本，冲突有记录\n\n同一书架的层数矛盾: 记录保留，采用新内容\n\n接口原值: 3层一4层\n\n未提供关联记忆标题\n\n演示书房公共书架.层数， 中 (medium)\n\n处理结果: 采用新内容 (NEW_WINS)\n\n检索已返回更正后的来源; 审计页面提供只读记录。\n\n原生审计裁片与接口原值 ” 公\n\n人\n\n语义矛盾还会形成冲突\n\nFATT o\n",
+    "returncode": 0
+  },
+  {
+    "file": "s17-middle.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n选择值得长期保留的内容\n\n短期 。 本轮要点\n\n中期。 会话摘要\n\nKAA > REA\n\n记录当前任务的信息\n\n保存会话整理后的摘要\n\n保存有用的上下文\n\n选择 一 保存一 BA\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 + 接口实测摘要\n\n需要长期保留的内容，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s17-tail.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n再次检索，找回摘要与来源\n\n检索返回的会话摘要\n\n家庭整理会话摘要: 已完成书架分类，待办是周末归还借阅图书，并把清单保存\n\n到共享目录。\n\n知识与来源一同返回\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 ， 接口实测摘要\n\n并保留来源。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s18-middle.jpg",
+    "text": "AEN AR: ki ZIV VICI\n\n共享开篇\n\na FEM oe KBE A BE\n\nLE\n\nBol\n\n包 人 >几\n\n备上的\n\n矢口台已\n\n& 用\n\n体，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s18-tail.jpg",
+    "text": "AiWAR: 旅冀之避共局刀人2\n\n共享开篇\n\n共字知识与经验。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s19-middle.jpg",
+    "text": "先建立信任，再共享记忆\n\n查看设备与同步状态\n\n同步状态\n\n共享域: shared:home\n\n节点记录: 3 (SAH)\n\n> ARIE: 0 ， 累计同步计数: 38\n\n已信任节点 书房工作站\n\n可信设备，共享记忆 V11 虚拟机演示\n\n核对同步状态，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s19-tail.jpg",
+    "text": "先建立信任，再共享记忆\n\n查看设备与同步状态\n\n同步状态\n\n共享域: shared:home\n\n节点记录: 3 (SAH)\n\n”待发操作: 0+ 累计同步计数: 38\n\n已信任节点。 书房工作站\n\n附近设备\n\n书房工作站\n\ndev_01M211X1KJAXY9P0OH2A11QBWKP 已有本地信任记录\n\n可信设备，共享记忆 V11 虚拟机演示\n\n为共 7 tsi  Id IZ OPH Eo\n",
+    "returncode": 0
+  },
+  {
+    "file": "s20-middle.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\n>已完成工作。 1 项\n\nPIXIU\n\n根据 PIXIU 记忆，家庭\n\nHS\n\nFain\n\n约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n完成后核对工具与结果 。 原速录屏\n\n请助手查找这份约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s20-tail.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\nv 已完成\n\n作 .1项\n\n完成 访问长期记忆\n\nPIXIU\n\n根据 PIXIU 记忆，家庭\n\nHS\n\nae\n\n约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n工具已完成， 真实回答与知识来源定格\n\n并注明知识来产。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s21-middle.jpg",
+    "text": "离线仍可用，重连再对账\n\n同步中断期间: 在线端更新，客厅保留旧版\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空\n\n，周末离家前检查客厅灯具。\n\n记录 17:45:30 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机“。 同步过程回放\n\n其他;ii\n\n入备继续工作。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s21-tail.jpg",
+    "text": "离线仍可用，重连再对账\n\n恢复同步后: 客厅读到版本二\n\n家庭节\n\n能约定， 同一知识条目\n\n公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本2\n\n每天晚上九点半关闭书房空调，周末检查客厅灯具。\n\n记录 17:45:34 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机“。 同步过程回放\n\n客厅也读到更新后的约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s22-middle.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节能约定 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\n书房方案: 晚上九点关闭空调。\n\n记录 17:45:36 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:45:36 UTC\n\n两台设备各自更新，保留修改分支。\n\n三台V11 虚拟机“。 同步过程回放\n\n系统识别修改的先后与并发天系，\n",
+    "returncode": 0
+  },
+  {
+    "file": "s22-tail.jpg",
+    "text": "同时修改，也能收敛\n\n恢复连接后: 三端正文收敛\n\n家庭节能约定 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n随身笔记本\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n重连后，三台设备读到相同内容。\n\n三台V11 虚拟机“。 同步过程回放\n\n—\n\n2-7\n\n=nHlbk\n\n备都读到相同的版本三与同一正文。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s23-middle.jpg",
+    "text": "个人记忆，有了明确边界\n\n共享写入: 合成敏感输入被拒绝\n\n拒绝写入。 HTTP 422\n\n共享范围不接受已识别的敏感内容。\n\n敏感内容检测 - 合成测试样例\n\n二\n\na\n\nZyl\n\nCHSRMEeAAwM\n\n实测记录\n\nHS\n\n敏感检测会拦截包含敏感信息的\n\nPR\n\n与入。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s23-tail.jpg",
+    "text": "个人记忆，有了明确边界\n\n解除完成: 只移除本机对书房的信任\n\n共享域: shared:home\n\n节点记录: 2 (SAAN)\n\n。待发操作: 0 .累计同步计数: 38\n\n在笔记本上管理已信任设备，选择解除与书房的信任关系。\n\n需要继续协作时，可以重新配对。\n\n同步与设备管理， 操作节选\n\n党握目己的共训学围。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s24-middle.jpg",
+    "text": "先看影响，再确认遗忘\n\nAERTS + 核对目标与影响\n\n操作图演示: TBS AIA ES\n\nknw_01M20QEATP6PZ96VWCBR8VVBKB «+ 版本1\n\nuser:pixiu-screenshots\n\n关联预估: 证据1条，关系0条 (不表示物理删除)\n\n后端确认遗忘 1 条知识。跨设备送达尚未验证。\n\n原生页面裁片与功能说明 AGRE\n\n系统让知识失效并清理检索向量。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s24-tail.jpg",
+    "text": "先看影响，再确认遗忘\n\n重连后的核对:\n\n三端删除标记一致\n\n家庭节能约定\n\n同一共享知识条目，” 公共接口实测\n\n书房工作站\n\n已标记遗忘\n\n三端已同步删除标记\n\n随身笔记本\n\n已标记遗忘\n\n三端已同步删除标记\n\n客厅一体机\n\n已标记遗忘\n\n三端已同步删除标记\n\n三台设备已同步删除标记。\n\n三台V11 虚拟机“。 同步过程回放\n\n删除标记同步到可信设备。\n\n>由 一\n\n会更新\n\n2 S\\\n",
+    "returncode": 0
+  },
+  {
+    "file": "s26-middle.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 ~ 按标题检索 一 查看来源\n\nREA RASH\n\n家庭月末归档步又\n\n质量分: 0.78\n\nsscinaianis Yani\n\n简报日期 〈按后端本地时区; 初始值为本机今天)\n\n2026-09-09\n\n真实操作录像 ， 2 倍速， 裁切放大跟随\n",
+    "returncode": 0
+  },
+  {
+    "file": "s26-tail.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 一 按标题检索 一 查看来源\n\n原始正文， 家庭月末归档步骤\n\nbody:\n\nAS: 先核对本月水电燃气账单，再按月份归档凭证，最后同步家庭共同约定。仅用于公开操作演示。\n\n沿着洞察找到正文与来源。\n\n再次打开记忆，接着完成手头的工作。\n\n真实来源正文放大 公开合成示例\n\n继续整理资料。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s27-middle.jpg",
+    "text": "一个安装包，统一管理\n\n设置 ，模型检测与更新检查结果\n\nO 麒灵系统云模型可用，PIXIU 将跟随系统首选模型。\n\n检查更新\n\n当前版本 0.1.9\n\n已是最新\n\n已是最新版本\n\n升级需要系统授权; 您的记忆、配置和同步身份将被保留。\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n",
+    "returncode": 0
+  },
+  {
+    "file": "s27-tail.jpg",
+    "text": "一个安装包，\n\n统一管理\n\n升级流程示意\n\n01\n\n02\n\n03\n\n签名核验\n\n健康检查\n\n失败恢复\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n\n帮助维护日党使用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s28-middle.jpg",
+    "text": "用数据，检验记忆优化\n\n四个维度，逐项评测\n\n01\n\n02\n\n俩好提取\n\n知识召回\n\n03\n\n04\n\n检索耗时\n\n冲突处理\n\n01 准备样本\n\n02 记录结\n\n03 持续验证\n\n评测流程示意”开发回归与三台 V11 虚拟机场景记录\n\n冲突处理结果。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s28-tail.jpg",
+    "text": "用数据，检验记忆优化\n\n开发回归与场景验证\n\n基础设施回归通过\n\nV断连后补齐修改\n\nV 并发更新后内容一致\n\n698\n\n01 准备样本\n\n02 记录结果\n\n03 持续验证\n\n评测流程示意 ”开发回归与三台 V11 虚拟机场景记录\n\n让改进有据可得。\n",
+    "returncode": 0
+  },
+  {
+    "file": "s29-middle.jpg",
+    "text": "FET A 2242 BAP SF RETI\n\n价值\n\nFEMAIL AIRGAS\n\nINZIS 9\n\n口\n\na\n",
+    "returncode": 0
+  },
+  {
+    "file": "s29-tail.jpg",
+    "text": "FET A 2242 BAP fa FRE\n\n价值\n\nILE SWAP Siz.\n",
+    "returncode": 0
+  },
+  {
+    "file": "s30-middle.jpg",
+    "text": "PIXIU\n\n下\n\nare atk\n\n—\n\n让经验，  RS\n",
+    "returncode": 0
+  },
+  {
+    "file": "s30-tail.jpg",
+    "text": "PIXIU\n\n=\n\nare aih\n\n——\n\nib eg\n\n成为下\n\n次行动的起点\n\n成为下一次行\n\n动的起点。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-001.jpg",
+    "text": "PIXIU\n\nFEM\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-002.jpg",
+    "text": "PIXIU 。 狐多\n\n面向麒麟智能体的分布式集体记忆\n\n面向麒麟操作系统智能体的去中心化记忆系统。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-003.jpg",
+    "text": "PIXIU 。 狐多\n\n面向麒麟智能体的分布式集体记忆\n\n面向麒麟操作系统智能体的去中心化记忆系统。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-004.jpg",
+    "text": "PIXIU 。 325th\n\n面向麒麟智\n\n?能体的分布式集体记忆\n\n让每一台设备的记忆，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-005.jpg",
+    "text": "PIXIU 。 狐炙\n\n面向麒麟智能体的分布式集体记忆\n\n役此相通。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-006.jpg",
+    "text": "i— Bigs 不必从头再说\n\n问题\n\n在工作电脑上交代过的安排，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-007.jpg",
+    "text": "i— Bigs 不必从头再说\n\n问题\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-008.jpg",
+    "text": "i— Bigs 不必从头再说\n\n问题\n\n不能接着使用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-009.jpg",
+    "text": "项一生辰冀 不必从头再说\n\n问题\n\n息肘连接设备之间的知识与\n\n经验\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-010.jpg",
+    "text": "项一生辰冀 不必从头再说\n\n问题\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-011.jpg",
+    "text": "项一生辰冀 不必从头再说\n\n问题\n\n让助手记住你的工作方式。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-012.jpg",
+    "text": "多设备，共享一份可复用的经验\n\n加\n\n共享记忆\n\n能力示意 ， 每台设备独立保存本地副本\n\nFEMA ABE OT\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-013.jpg",
+    "text": "多设备，共享一份可复用的经验\n\nPN\n\n有 =\n\nid\n\n端侧保存\n\n可\n\naa\n\n能力示意 ， 每台设备独立保存本地副本\n\n是把孤立的本地记忆，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-014.jpg",
+    "text": "多设备，共享一份可复用的经验\n\n享记忆\n\nlg\n\nol 4三\n\nj++\n\n7\n\n能力示意 ， 每台设备独立保存本地副本\n\n一、几\n\n连接成可\n\nol\n\n备之间的集体记忆网络。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-015.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\n国\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n共享记忆\n\n信范围\n\n保存\n\n智能体复用\n\nO\n\n客厅一体机\n\n能力示意\n\n台设备独立保存本地副本\n\nSJL\n\n连接成可1\n\nol\n\n备之间的集体记忆网络。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-016.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\noO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n客厅一体机\n\n能力示意， 每台设备独立保存本地副本\n\n知识在端侧保存，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-017.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\noO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n客厅一体机\n\n能力示意， 每台设备独立保存本地副本\n\n在授权范围内共字，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-018.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\noO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n可信范围\n\n端侧保存\n\n智能体复用\n\nO\n\n客厅一体机\n\n能力示意。 每台设备独立保存本地副本\n\n再由每台设备上的智能体检索和复用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-019.jpg",
+    "text": "==\n\nIIT\n\nTEER BABS V11\n\n01 会话与任务\n\n02 记忆与设备\n\n03 服务与能力\n\n银河麒麟 V11 .桌面实拍\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-020.jpg",
+    "text": "运行在银河麒麒 V11\n\n同一桌面窗口中的四个入口\n\n会话\n\n记忆\n\n设备\n\n应用与升级\n\n采集与隐私\n\n01 会话与任务\n\n02 记忆与设备\n\n03 服务与能力\n\n银河麒麟 V11\n\n桌面实拍\n\n现在进入实际产品。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-021.jpg",
+    "text": "运行在银河麒麒 V11\n\n同一桌面窗口中的四个入口\n\n会话\n\n记忆\n\n设备\n\n应用与升级\n\n采集与隐私\n\n01 会话与任务\n\n02 记忆与设备\n\n03 服务与能力\n\n银河麒麟 V11 .桌面实拍\n\n会话、记忆、设备和设置，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-022.jpg",
+    "text": "运行在银河麒麒 V11\n\n同一桌面窗口中的四个入口\n\n会话\n\n记忆\n\n设备\n\n应用与升级\n\n采集与隐私\n\n01 会话与任务\n\n02 记忆与设备\n\n03 服务与能力\n\n银河麒麟 V11 .桌面实拍\n\n会话、记忆、设备和设置，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-023.jpg",
+    "text": "运行在银河麒麒 V11\n\n同一桌面窗口中的四个入口\n\n会话\n\n记忆\n\n设备\n\n应用与升级\n\n采集与隐私\n\n01 会话与任务\n\n02 记忆与设备\n\n03 服务与能力\n\n银河麒麟 V11 .桌面实拍\n\n都在同一个桌面窗 口 中。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-024.jpg",
+    "text": "I1T\n\nvd\n\nTEER BABS V11\n\n服务与能力 + 本次读取结\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.9\n\n后端产品版本: 0.1.9\n\nHTTP API: 0.5.0 。 Agent Memory API: 1 - 数据库 schema: 13\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一致\n\n平台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\nOT Sees\n\nbo Ive\n\n03 服务与能力\n\n银河麒麟 V11 。 桌面实拍\n\n可以核对当前版本，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-025.jpg",
+    "text": "IIT\n\n==\n\nTEER BABS V11\n\n服务与能力 > 本次读取结\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.9\n\n后端产品版本: 0.1.9\n\nHTTP API: 0.5.0 。 Agent Memory API: 1 .数据库 schema: 13\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一致\n\n平台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\nOT Sees\n\nbo mee\n\n03 服务与能力\n\n银河麒麟 V11 。 桌面实拍\n\n一一\n\n以及系统向量化和向量数据库的实际\n\nIT\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-026.jpg",
+    "text": "IIT\n\n==\n\nTEER BABS V11\n\n服务与能力 > 本次读取结\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.9\n\n后端产品版本: 0.1.9\n\nHTTP API: 0.5.0 。 Agent Memory API: 1 .数据库 schema: 13\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一致\n\n平台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\nOT Sees\n\nbo mee\n\n03 服务与能力\n\n银河麒麟 V11 。 桌面实拍\n\n一一\n\n以及系统向量化和向量数据库的实际\n\nIT\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-027.jpg",
+    "text": "IIT\n\n==\n\nTEER BABS V11\n\n服务与能力 ， 本次读取结\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.9\n\n后端产品版本: 0.1.9\n\nHTTP API: 0.5.0 + Agent Memory API: 1 .数据库 schema: 13\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一致\n\n平台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\nOT Sees\n\nbo ives\n\n03 服务与能力\n\n银河麒麟 V11 。 桌面实拍\n\n<4\n\n以及系统向量化和向量数据库的实际\n\nIT\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-028.jpg",
+    "text": "记忆和能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\n我们复用开放麒麟的智能体耕主和运行时，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-029.jpg",
+    "text": "记忆和能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\n我们复用开放麒麟的智能体宵主和运行时，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-030.jpg",
+    "text": "记忆和能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\nBAIS > 规划任务\n\n调用工具\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n提供会话、规划与工具能力。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-031.jpg",
+    "text": "记忆和能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n记忆适配层\n\n一\n\nBESS > 规划任务\n\n调用工具\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n原创的记忆适配层\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-032.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n记忆适配层\n\nMICA\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n把它连接到禾杀的接入、检索、安全和分布式同步引擎。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-033.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n记忆适配层\n\nMICA\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n偏好、安全与遗忘\n\n本地存储与设备同步\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n把它连接到禾杀的接入、检索、安全和分布式同步引擎。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-034.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\n记忆适配层\n\nMICA\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n偏好、安全与遗忘\n\n本地存储与设备同步\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n把它连接到禾杀的接入、检索、安全和分布式同步引擎。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-035.jpg",
+    "text": "从任务执行，到经验沉演\n\n工具任务\n\n计算、文件与联网搜索\n\n写入并回读的文件原文\n\n搜索工具实际返回\n\n科普书: 33元\n\nopenkylin - 开放麒麟\n\n工具书: 39元\n\nhttps://www.openkylin.top/\n\nBt: 2870\n\n合计: 100m\n\n工具日志与文件原文摘录 + 公开合成任务\n\n助手可以计算预算、写入文件，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-036.jpg",
+    "text": "从任务执行，到经验沉演\n\n工具任务\n\n计算、文件与联网搜索\n\n写入并回读的文件原文\n\n搜索工具实际返回\n\n科普书: 33元\n\nopenkylin - 开放麒麟\n\n工具书: 39元\n\nhttps://www.openkylin.top/\n\nBt: 2870\n\n合计: 100m\n\n工具日志与文件原文摘录 + 公开合成任务\n\n助手可以计算预算、写入文件，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-037.jpg",
+    "text": "从任务执行，到经验沉演\n\n工具任务\n\n计算、文件与联网搜索\n\n写入并回读的文件原文\n\n搜索工具实际返回\n\n科普书: 33元\n\nopenkylin - 开放麒麟\n\n工具书: 39元\n\nhttps://www.openkylin.top/\n\nBt: 2870\n\nGit: 100\n\n工具日志与文件原文摘录 。\n\n公开合成任务\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-038.jpg",
+    "text": "从任务执行，到经验沉演\n\n桌面会话， 秋季阅读采购复核单\n\n两轮任务后，显式保存成功\n\n科普书: 24元\n\n工具书: 36元\n\n国册: 40元\n\n合让下00元\n\n采购复核单” 保存为记忆\n\n这里展示采购复核单的处理过程。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-039.jpg",
+    "text": "从任务执行，到经验沉演\n\n桌面会话， 秋季阅读采购复核单\n\n两轮任务后，显式保存成功\n\n科普书: 24元\n\n工具书: 36元\n\nVAR: 40元\n\n合十江00元\n\n采购复核单” 保存为记忆\n\n把结果保存为记忆后，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-040.jpg",
+    "text": "从任务执行，到经验沉淀\n\n桌面会话， 秋季阅读采购复核单\n\n新会话。\n\n光索已保存的采购复核单\n\nv 人 。1项\n\n完成 访问长期记忆\n\n原生界面裁片” 显式记忆检索复用\n\n打开新会话，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-041.jpg",
+    "text": "从任务执行，到经验沉淀\n\n桌面会话， 秋季阅读采购复核单\n\n新会话。\n\n釜索已保存的采购复核单\n\n 人 。 1项\n\n完成 访问长期记忆\n\n原生界面裁片” 显式记忆检索复用\n\n助手通过工作卡片找回采购单，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-042.jpg",
+    "text": "从任务执行，到经验沉淀\n\n桌面会话， 秋季阅读采购复核单\n\n新会话，\n\n丛索已保存的采购复核单\n\n 人 。 1项\n\n完成 访问长期记忆\n\n原生界面裁片” 显式记忆检索复用\n\n助手通过工作卡片找回采购单，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-043.jpg",
+    "text": "从任务执行，到经验沉演\n\n桌面会话 > 秋季阅读采购复核单\n\n新会话回答\n\n引用与保存记录对应的知识来源\n\n根据 PIXIU 记忆检索结果\n\n。 ABH: 24元\n\ne\n\nTAH: 367\n\ne\n\nBAR: 4076\n\ne\n\n合计: 1007\n\n记忆来源:\n\nknw_01M22B0S2378RFPMSDNSJZVTIN\n\n原生界面裁片” 显式记忆检索复用\n\n继续使用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-044.jpg",
+    "text": "新会话，也能找到旧知识\n\n¥ 录入记忆一 PIXIU\n\nO x\n\n标题\n\n2026年4月家庭水电燃气账单\n\n电费\n\nk Ex\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n21075\n\n4\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝; 本界面不会自动改为共享。\n\n«\n\nS\n\n关闭\n\n保存记忆\n\ncd\n\n真实录入画面”已选择家庭\n\nts?\n\nZN?\n\nB\n\n以家庭账单为例: 电费二百一十元，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-045.jpg",
+    "text": "新会话，也能找到旧知识\n\n¥ 录入记忆一 PIXIU\n\nO x\n\n标题\n\n2026年4月家庭水电燃气账单\n\n电费\n\nk Ex\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n21075\n\n4\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝; 本界面不会自动改为共享。\n\n«\n\nS\n\n关闭\n\n保存记忆\n\ncd\n\n真实录入画面”已选择家庭\n\nts?\n\nZN?\n\nB\n\n以家庭账单为例: 电费二百一十元，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-046.jpg",
+    "text": "新会话，也能找到旧知识\n\n¥ 录入记忆一 PIXIU\n\nO x\n\n标题\n\n2026年4月家庭水电燃气账单\n\n电费\n\nk Ex\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n21075\n\nIE\n\n68.50 7\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝; 本界面不会自动改为共享。\n\n关闭\n\n保存记忆\n\ncd\n\n真实录入画面”已选择家庭\n\nts?\n\nZN?\n\nB\n\n水费六十八元五角，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-047.jpg",
+    "text": "新会话，也能找到旧知识\n\n¥ 录入记忆一 PIXIU\n\nO x\n\n标题\n\n2026年4月家庭水电燃气账单\n\n电费\n\nk Ex\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n21075\n\nIE\n\n68.50 7\n\n4\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝; 本界面不会自动改为共享。\n\n156 70\n\n«\n\nS\n\n关闭\n\n保存记忆\n\ncd\n\n真实录入画面”已选择家庭\n\nHey\n\nCae Pd\n\nB\n\niN\n\nys\n\nVIAN\n\n气费一百五十六元。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-048.jpg",
+    "text": "新会话，也能找到旧知识\n\n¥ 录入记忆一 PIXIU\n\n= ID) %\n\n标题\n\n电费\n\n正文\n\n210 元\n\n水费\n\n68.50 7\n\n燃气费\n\n泡赎\n\n家庭共享 Agent 当前范\n\n个人记忆默认不共享\n\n共享范围的敏感内容会被后端拒绝; 本界面不会自动改为共享。\n\n15650\n\n后端已接收记忆。可返回检索查看结果; 共享是否送达请以同步状态为准。\n\n关闭\n\nht\n\n真实录入画面\n\n”已选择家庭共享范围\n\n保存之后开启新会话，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-049.jpg",
+    "text": "新会话，也能找到旧知识\n\n已检索到2026年4月家庭水电燃气账单信息\n\n。电费: 210元\n\n。水费: 68.50元\n\n。 燃气费: 156元\n\n三项合计: 210 + 68.50 + 156 = 434.50元\n\n原始记忆来源: knw_01M2187901RZWK8YXN29K0B79M\n\n(证据ID: evd_01M21878ZXAKQPRAXJ2ME5TZBZ)\n\n真实新\n\n话回答\n\n显式记忆工具检索已核对\n\n再询问水电燃气\n\n32H ;\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-050.jpg",
+    "text": "新会话，也能找到旧知识\n\n已检索到2026年4月家庭水电燃气账单信息\n\n。电费: 210元\n\n。水费: 68.50元\n\n。 燃气费: 156元\n\n三项合计: 210 + 68.50 + 156 = 434.50元\n\n原始记忆来源: knw_01M2187901RZWK8YXN29K0OB79M\n\n(证据ID: evd_01M21878ZXAKQPRAXJ2ME5TZBZ)\n\n真实新\n\n话回答\n\n显式记忆工具检索已核对\n\n融能找到这\n\n文条长其\n\n月记忆。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-051.jpg",
+    "text": "新会话，也能找到旧知识\n\n已检索到2026年4月家庭水电燃气账单信息\n\n。电费: 210元\n\n。水费: 68.50元\n\n。 燃气费: 156元\n\n三项合计: 210 + 68.50 + 156 = 434.50元\n\n原始记忆来源: knw_01M2187901RZWK8YXN29K0B79M\n\n(证据ID: evd_01M21878ZXAKQPRAXJ2ME5TZBZ)\n\n真实新\n\n话回答\n\n显式记忆工具检索已核对\n\n融能找到这\n\n文条长其\n\n月记忆。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-052.jpg",
+    "text": "每个答案，都有来源可查\n\n已检索到2026年4月家庭水电燃气账单信息 :\n\n。电费: 210元\n\n。水费: 68.50元\n\n。 燃气费: 156元\n\n三项合计: 210 + 68.50 + 156 = 434.50元\n\n原始记忆来源: knw_01M2187901RZWK8YXN29KOB79M\n\n(证据ID: evd_01M21878ZXAKQPRAXJ2ME5TZBZ)\n\n真实新会话回答\n\n显式记忆工具检索已核对\n\n合计四百三十四元五角。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-053.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n来源: MANUAL_CONFIG + 范围: shared:home\n\n质量: 0.78\n\n_) 查看原始数据 (BR)\n\n打开来源，查看原始记录\n\n氮击本会话记忆来产，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-054.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n> 0.78\n\n来源: MANUAL_CONFIG .范围: shared:home\n\n质量\n\n文件采集来源: 未记录。不能根据文件名推断原始路径。\n\n_) 查看原始数据 (BR)\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n打开来源，查看原始记录\n\n展开命中的账单，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-055.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n> 0.78\n\n来源: MANUAL_CONFIG 范围: shared:home\n\n质量\n\n文件采集来源: 未记录。不能根据文件名推断原始路径。\n\n_) 查看原始数据 (BR)\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n打开来源，查看原始记录\n\n逐项核对金额。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-056.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n> 0.78\n\n来源: MANUAL_CONFIG 范围: shared:home\n\n质量\n\n文件采集来源: 未记录。不能根据文件名推断原始路径。\n\n_) 查看原始数据 (BR)\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n打开来源，查看原始记录\n\n回答与依据连在一起，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-057.jpg",
+    "text": "每个答案，都有来源可查\n\n2026年4月家庭水电燃气账单\n\n: 0.78\n\n来源: MANUAL_CONFIG + 3GEI: shared:home\n\n质量\n\n文件采集来源: 未记录。不能根据文件名推断原始路径。\n\n_) 查看原始数据 (BR)\n\n2026年4月，家庭水电燃气支出: 电费210元，水费68.50元，燃气费156元。\n\n打开来源，查看原始记录\n\n复核更方便。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-058.jpg",
+    "text": "多种来源，进入统一记忆\n\n多种来源汇入记忆 + 过程示意\n\n对话、工\n\nANA\n\n具结\n\nRR. APTA Face,\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-059.jpg",
+    "text": "多种来源，进入统一记忆\n\n多种来源汇入记忆 + 过程示意\n\n对话、工具结果、用户行为和手动配置，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-060.jpg",
+    "text": "多种来源，进入统一记忆\n\n每条证据保留来源、范围与质量\n\n真实会话证据 家庭共享约定\n\n来源: CONVERSATION 。 范围: shared:home\n\n质量: 0.76\n\n原生界面裁片” 会话来源与质量信息\n\n会话、配置、文件与行为来源均有实测记录\n\n统一转成审来源的证掘。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-061.jpg",
+    "text": "多种来源，进入统一记忆\n\n每条证据保留来源、范围与质量\n\n真实会话证据 家庭共享约定\n\n来源: CONVERSATION 。 范围: shared:home 质量: 0.76\n\n原生界面裁片” 会话来源与质量信息\n\n会话、配置、文件与行为来源均有实测记录\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-062.jpg",
+    "text": "多种来小 ie)\n\n进入统一记忆\n\n同一次写入:\n\n清洗前后可核对\n\n公开合成输入\n\n实际清洗后证据\n\n核对书目\n\n核对书目\n\n核对书目\n\n归还原位\n\n归还原位\n\n重复项合并，空\n\n注移除，标题去空\n\nABE\n\n注; 标题两侧有空\n\n质量评分 0.775 + 敏感级别 0 SABER\n\n内容整理过程\n\n实测记录\n\n接入时进行格式核验、清洗、质\n\n评估和敏感检测，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-063.jpg",
+    "text": "多种来小 ie)\n\n进入统一记忆\n\n同一次写入:\n\n清洗前后可核对\n\n公开合成输入\n\n实际清洗后证据\n\n核对书目\n\n核对书目\n\n核对书目\n\n归还原位\n\n归还原位\n\n重复项合并，空\n\n注移除，标题去空\n\nABE\n\n注; 标题两侧有空\n\n质量评分 0.775 + 敏感级别 0 SABER\n\n内容整理过程\n\n实测记录\n\n接入时进行格式核验、清洗、质\n\n评估和敏感检测，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-064.jpg",
+    "text": "多种来源，进入统一记忆\n\n写入完成后，按范围检索到同一来源\n\n家庭物品整理演示\n\n同    私有范围内查询命    °\n\n反回的来源 1D 与本次写入证据一致\n\n写入内容与检索来源一一对应\n\n内容整理过程\n\n再形成可检索的知识。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-065.jpg",
+    "text": "手动记录，了明确保留范围\n\n录入标题与正文\n\n标题\n\n操作图演示: 九月家庭账单\n\nIEX\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50 元\n\n九月燃气费: 156.00元\n\n合计: 434.50 元\n\n每月先核对原始清单，再按类别汇总。\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-066.jpg",
+    "text": "手动记录，了明确保留范围\n\n录入标题与正文\n\n正文\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 156.00元\n\nBit: 434.50元\n\n每月先核对原始清单，再按类别汇总。\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n在记忆页录入标题与正文，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-067.jpg",
+    "text": "手动记录，了明确保留范围\n\n本例保存在个人范围， 共\n\nFin\n\n—s5)\n\n明确选择\n\n范围 Agent 记忆 (user:defautt)\n\n其他范围…\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝，本界面不会自动改为共享。\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n并选择保存泄围。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-068.jpg",
+    "text": "手动记录，了明确保留范围\n\n本例保存在个人范围， 共\n\nFin\n\nSe\n\n明确选择\n\n范围 Agent 记忆 (user:defautt)\n\n其他范围…\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝，本界面不会自动改为共享。\n\n个人范围\n\n保留自己的资料\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n个人内容保留在私有范围;\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-069.jpg",
+    "text": "手动记录，了明确保留范围\n\n本例保存在个人范围， 共\n\nFin\n\nSe\n\n明确选择\n\n范围 Agent 记忆 (user:defautt)\n\n其他范围\n\n个人记忆默认不共享。共享范围的敏感内容会被后端拒绝，本界面不会自动改为共享。\n\n个人范围\n\n共享范围\n\n保留自己的资料\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n需要协作的内容，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-070.jpg",
+    "text": "手动记录，了明确保留范围\n\n本例保存在个人范围 ，\n\n范围 Agent 记忆 (user:default)\n\n其他范围\n\n个人记忆上默认不共享。共享范围的敏感内容会被后端拒绝，本界面不会自动改为共享\n\n个人范围\n\n共享范围\n\n保留自己的资料\n\n先择要协作的内容\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片\n\n开合成演示资料\n\n才明确放进已配置的共享泄围。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-071.jpg",
+    "text": "手动记录，了明确保留范围\n\n保存后检索，核对同一账单正文\n\n后端已接收记忆。可返回检索查看结果; 共享是否送达请以同步状态为准。\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 156.00元\n\n合计: 434.50元\n\n每月先核对原始清单，再按类别汇总。\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n保存后可以马上检索和核对正文。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-072.jpg",
+    "text": "手动记录，了明确保留范围\n\n保存后检索，核对同一账单正文\n\n后端已接收记忆。可返回检索查看结果; 共享是否送达请以同步状态为准。\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 156.00元\n\n合计: 434.50元\n\n每月先核对原始清单，再按类别汇总。\n\n01 录入内容\n\n02 选择范围\n\n03 保存并检索\n\n原生页面裁片” 公开合成演示资料\n\n保存后可以马上检索和核对正文。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-073.jpg",
+    "text": "授权目录，自动沉淀文件\n\n授权演示目录，开启目录采集\n\n% 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\n 目录文件变化\n\n监视目录: 每行一个绝对路径; 请只添加允许采集的目录。\n\nAvantmp/PIXIU操作演示\n\n01 授权目录\n\n02 MPRA\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n需要目动记住文件时，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-074.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n授权演示目录，开启目录采集\n\n% 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\n 目录文件变化\n\n监视目录: 每行一个绝对路径; 请只添加允许采集的目录。\n\nAvartmp/PIXIU操作演示\n\n01 授权目录\n\n02 文件入库\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n进入采集与隐私，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-075.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n授权演示目录，开启目录采集\n\n% 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\n多 目录文件变化\n\n监视目录: 每行一个绝对路径; 请只添加允许采集的目录。\n\nAvartmp/PIXIU操作演示\n\n01 授权目录\n\n02 文件入库\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n选择壮示目录并显式开局。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-076.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n授权演示目录，开启目录采集\n\n% 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\n 目录文件变化\n\n监视目录: 每行一个绝对路径; 请只添加允许采集的目录。\n\nAvartmp/PIXIU操作演示\n\n01 授权目录\n\n02 文件入库\n\n03 查看来源\n\n原生页面裁片 ” 公开合成演示资料\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-077.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n活动日志\n\nSEA\n\n时间 (UTC) : 2026-09-08T14:33:36Z\n\ndirectory + ingested\n\n记住文件 公开示例-月未核对.txt\n\n证据ID: evd_01M20Q0KENX8A5J3DS9ROITWGR\n\n知识ID: knw_01M20Q0KFQ86QGQ1E1QJFDDMX5\n\n01 授权目录\n\n02 交作六库\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n在活动日志核对实际入库结果\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-078.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n活动日志\n\niia ee\n\n时间 (UTC) : 2026-09-08T14:33:36Z\n\ndirectory + ingested\n\n记住文件 公开示例-月末核对.txt\n\n证据ID: evd_01M20Q0KENX8A5J3DS9ROITWGR\n\n知识ID: knw_01M20Q0KFQ86QGQ1E1QJFDDMX5\n\n01 授权目录\n\n02 SFA\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n在活动日志核对实际入库结果\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-079.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n来源详情 ， 路径与采集时刻\n\n文件采集方式: 文本读取\n\n采集时路径: \"/vartmp/PIXIU操作演示/公开示例-月未核对.txt\"\n\n采集记录时间 (UTC) : 2026-09-08T14:33:35Z\n\n仅记录采集时来源，不保证原文件仍存在或内容未变化。\n\n01 授权目录\n\n02 SFA\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n还能在来源区得看文件路径与采集时间。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-080.jpg",
+    "text": "授权目录 ，自动沉淀文件\n\n来源详情 ， 路径与采集时刻\n\n文件采集方式: 文本读取\n\n采集时路径: \"/vartmp/PIXIU操作演示/公开示例-月未核对.txt\"\n\n采集记录时间 (UTC) : 2026-09-08T14:33:35Z\n\n仅记录采集时来源，不保证原文件仍存在或内容未变化。\n\n01 授权目录\n\n02 SFA\n\n03 查看来源\n\n原生页面裁片” 公开合成演示资料\n\n还能在来产区碍看文件路径与采集时间。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-081.jpg",
+    "text": "使用习惯，按授权记录\n\n应用使用记录，帮助理解工作习惯\n\n公开行为演示\n\n来源: USER_BEHAVIOR 。 范围: user:local + 质量: 0.71\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 。 X11 窗口演示 原生授权设置\n\n应用使用记录，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-082.jpg",
+    "text": "使用习惯，按授权记录\n\n应用使用记录，帮助理解工作习惯\n\n公开行为演示\n\n来源: USER_BEHAVIOR + 范围; user:local + 质量: 0.71\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 X11 窗口演示 原生授权设置\n\n也能成为了解工作习惯的线索。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-083.jpg",
+    "text": "使用习惯，按授权记录\n\n应用使用记录，帮助理解工作习惯\n\n公开行为演示\n\n来源: USER_BEHAVIOR + 范围:; user:local + 质量: 0.71\n\n3 8 本次应用使用时长\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 X11 窗口演示 原生授权设置\n\n这里的记录保留了应用名称和使用时长。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-084.jpg",
+    "text": "使用习惯，按授权记录\n\n应用使用记录，帮助理解工作习惯\n\n公开行为演示\n\n来源: USER_BEHAVIOR + 范围; user:local + 质量: 0.71\n\n1] 1] 8 a) 本次应用使用时攻\n\nfocus_seconds: 118\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 X11 窗口演示 原生授权设置\n\n这里的记录保留了应用名称和使用时长。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-085.jpg",
+    "text": "使用习惯，按授权记录\n\n应用使用记录 ，帮助理解工作习惯\n\n公开行为演示\n\n来源: USER_BEHAVIOR + 范围: user:local + 质量\n\n二057\n\n1] 1] 8 a) 本次应用使用时攻\n\nfocus_seconds: 118\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 。 X11 窗口演示 原生授权设置\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-086.jpg",
+    "text": "使用习惯，按授权记录\n\n采集授权，由你掌握\n\nJ 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 。 X11 窗口演示 原生授权设置\n\n你可以在采集与隐私中管理授权，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-087.jpg",
+    "text": "使用习惯，按授权记录\n\n采集授权，由你掌握\n\n_) 启用自动采集 (关闭后暂停采集，不删除已有记忆)\n\nTARE: OX\n\n01 应用记录\n\n02 使用时长\n\n03 管理授权\n\n应用使用记录 。 X11 窗口演示 原生授权设置\n\n随时天闭行为采集。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-088.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n检索机制示意\n\n真实页面” 查询与来源展开\n\n只记得内容中的几个词，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-089.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n检索机制示意\n\n回答风格演示\n\n查看来源 1\n\n真实页面” 查询与来源展开\n\n也可以找回记忆。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-090.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n回答风格演示\n\n检索机制示意\n\n关键词\n\n查看来源1\n\n真实页面 ”查询与来源展开\n\ngra\n\n系统把关键词、\n\n语义和关联信，\n\nA\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-091.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n检索机制示意\n\n回答风格演示\n\n关键词\n\n内容含义\n\n大\n\n查看来源1\n\n真实页面 ”查询与来源展开\n\ngra\n\n系统把天键词、语义和关联信，\n\nA\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-092.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n检索机制示意\n\n回答风格演示\n\n关键词\n\n内容含义\n\n关联信息\n\n查看来源1\n\n筛选结果\n\n真实页面” 查询与来源展开\n\nKEES\n\n二\n\n师\n\nWe\n\n相关结果。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-093.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n输入内容关键词，也能找回不同标题的记忆\n\n查看来产 1\n\n真实页面 ”查询与来源展开\n\n打开来源，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-094.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n查看来源: 原始配置确实包含“详细说明”\n\n命中记忆: 回答风格演示“来源: 手动配置\n\nbody:\n\ndetail_level: 详细说明\n\n找到相关内容，查看来源。\n\n原始配置中保留了“详细说明”的要求。\n\n真实页面 ”查询与来源展开\n\n融能得看原始配置，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-095.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n查看来源: 原始配置确实包含“详细说明”\n\n命中记忆: 回答风格演示“来源: 手动配置\n\nbody:\n\ndetail_level: 详细说明\n\n找到相关内容，查看来源。\n\n原始配置中保留了“详细说明”的要求。\n\n真实页面 ”查询与来源展开\n\n核对其中的详细说明。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-096.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实 。 书房整理事实清单\n\n书房共有三层书架\n\n事实、流程、案例与模板。 来源内容摘录\n\nNe IZ Ay 以保存事实、    流程、   案例和模板。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-097.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n书房共有三层书架\n\n事实、流程、案例与模板。 来源内容摘录\n\nMe IZ Ay 以保存事实、    流程、   案例和模板。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-098.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。 家庭图书归还流程\n\n“书房共有三层书架。\n\n“从借阅登记本逐项核对书名”\n\n事实、流程、案例与模板。 来源内容摘录\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-099.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。 家庭图书归还流程\n\n“书房共有三层书架。\n\n“从借阅登记本逐项核对书名”\n\n案例。 书架分类调整案例\n\n“把常用工具书集中到中层-\n\n事实、流程、案例与模板。 来源内容摘录\n\nBRYA\n\n这里记录了书架位置、图书归还步骤、分类调\n\n-JE一工\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-100.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。     家庭图书归还流程\n\n“书房共有三层书架。\n\n从借阅\n\n记本逐项核对书名\n\n案例\n\n书架分类调整案例\n\n“把常用工具书集中到中层\n\n事实、\n\n流程、案例与模板。 来源内容摘录\n\nBRYA\n\n这里记录了书架位置、图书归还步又、分类调\n\nAA HL\n\n验，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-101.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。     家庭图书归还流程\n\n“书房共有三层书架。\n\n“从借阅\n\n记本逐项核对书名\n\n案例\n\n书架分类调整案例\n\n模板。 家庭阅读周计划模板\n\n“把常用工具书集中到中层-\n\n“填写本周共同阅读的主\n\n事实、\n\n流程、案例与模板。 来源内容摘录\n\n以及阅读计划的填写说明。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-102.jpg",
+    "text": "打开来源，按原始步骤阅读\n\n家庭图书归还流程\n\n原生正六\n\nsteps:\n\n[1]: 第一步: MaWeicaeReZWBA, KE\n\n双归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n[4]: BOS: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\n核对书名 一 检查\n\n图书 一 分类归位 一 更新登记\n\n原生来源裁片\n\n开合成资料， 正文保持原样\n\n打开流程正文，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-103.jpg",
+    "text": "事实、流程、案例与模板\n\n家庭图书归还流程 ， 原生正文\n\nsteps:\n\n[1]: 第一步: 从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n[4]: BOS: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\n核对书名 一 检查图书 一 分类归位 一 更新登记\n\n原生来源裁片 ” 公开合成资料 正文保持原样\n\n按步骤核对书名、整理图书并更新登记。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-104.jpg",
+    "text": "事实、流程、案例与模板\n\n家庭图书归还流程 ， 原生正文\n\nsteps:\n\n[1]: 第一步: 从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n[4]: BOS: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\n核对书名 一 检查图书 一 分类归位 一 更新登记\n\n原生来源裁片 ” 公开合成资料 正文保持原样\n\n按步骤核对书名、整理图书并更新登记。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-105.jpg",
+    "text": "事实、流程、案例与模板\n\n家庭图书归还流程 ， 原生正文\n\nsteps:\n\n[1]: 第一步: 从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n| [4]: BOS: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\nHA\n\nJAIL\n\n更新登记\n\n  相似任务\n\n03 作为执行参考\n\n原生来源裁片 ” 公开合成资料 正文保持原样\n\n遇到相似任务时，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-106.jpg",
+    "text": "事实、流程、案例与模板\n\n家庭图书归还流程 ， 原生正文\n\nsteps:\n\n[1]: 第一步: 从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n| [4]: BOS: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\nTS\n\n01  相似任务\n\n03 作为执行参考\n\n原生来源裁片 ” 公开合成资料 正文保持原样\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-107.jpg",
+    "text": "事实、流程、案例与模板\n\n家庭图书归还流程 ， 原生正文\n\nsteps:\n\n[1]: 第一步: 从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\n\n[2]: 第二步: 检查归还图书是否夹有临时便签，将个人便签取出，并整理大起的书页。\n\n[3]: 第三步: 按照科普读物、工具书和画册三个分类放回对应书架，书养朝外，保持同类图\n\nBHA.\n\n| [4]: 第四步: 更新借阅登记，核对剩余待归还数量; 如果书架已满，先整理重复资料再放入\n\n新书。\n\n    售查图书    pads, 更新登记\n\n01 相似任务\n\n03 作为执行参考\n\n原生来源裁片 ” 公开合成资料 正文保持原样\n\n交给助手作为执行参考。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-108.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n操作习惯与安全偏好 。 提取结果\n\n偏好提取示例 ， 保存使用习惯与安全要求\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-109.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n操作习惯与安全偏好 。 提取结果\n\n操作习惯。 版本一\n\n输入来源: 合成行为事件\n\nop_habit.prefer_hotkey\n\n偏好快捷键: = AMES: 1\n\n偏好提取示例。 保存使用习惯与安全要求\n\nfae ICI ZAHRA ES th, BI VARA RETR\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-110.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n操作习惯与安全偏好 。 提取结果\n\n操作习惯。 版本一\n\n安全策略 。版本一\n\n输入来源: 合成行为事件\n\n输入来源: 合成手动配置\n\nop_habit.prefer_hotkey\n\nsecurity.no_exfiltrate\n\n偏好快捷键: 是有效信号: 1\n\n不外传偏好: 是\n\n偏好提取示例。 保存使用习惯与安全要求\n\n含好记忆天注操作习惯、\n\n输出风格和安全策略。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-111.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n当前版本二: 简洁回答\n\noutput_style.verbosity 。 当前版本 2\n\noutput_style.verbosity + user:video-preference-4k-v1\n\nverbosity: compact\n\n偏好值 compact:\n\nAe So\n\nfaye\n\n回答\n\n偏好历史， 每次更新都有记录\n\nIN，\n\n比如先要求回丛\n\nfev >\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-112.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n当前版本二: 简洁回答\n\noutput_style.verbosity 。 当前版本 2\n\noutput_style.verbosity + user:video-preference-4k-v1\n\nverbosity: compact\n\n偏好值 compact:\n\nAe So\n\nfaye\n\n回答\n\n偏好历史， 每次更新都有记录\n\nIN，\n\n比如先要求回丛\n\nfev >\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-113.jpg",
+    "text": "习惯变化，\n\n记忆跟着更新\n\n当前版本三\n\n: 详细说明\n\noutput_style.verbosity 当前版本 3\n\noutput_style.verbosity 。 user:video-preference-4k-v1\n\nverbosity: verbose\n\n偏好值 verbose: 详细说明\n\n偏好历史 每次更新都有记录\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-114.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n三个历史版本，保留变化过程\n\n已展示历史版本\n\n版本1 + 2026-09-09T05:18:32\n\nverbosity: compact\n\n2\n\n版本2 + 2026-09-09T05:18:33\n\nverbosity: compact\n\n版本三二三\n\n简洁回答\n\n版本三: 详细说明\n\n版本3 .2026-09-09T05:22:34\n\nverbosity: verbose\n\n偏好历史， 每次更新都有记录\n\n提取后查看当前版本与历史，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-115.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n三个历史版本，保留变化过程\n\n已展示历史版本\n\n版本1 + 2026-09-09T05:18:32\n\nverbosity: compact\n\n3\n\n版本2 + 2026-09-09T05:18:33\n\nverbosity: compact\n\n版本三二三\n\n简洁回答\n\n版本三: 详细说明\n\n版本3 + 2026-09-09T05:22:34\n\nverbosity: verbose\n\nRAL 每次更新都有记录\n\n融能看清每次变化，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-116.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n三个历史版本，保留变化过程\n\n已展示历史版本\n\n版本1 + 2026-09-09T05:18:32\n\nverbosity: compact\n\n3\n\n版本2 + 2026-09-09T05:18:33\n\nverbosity: compact\n\n版本三二三\n\n简洁回答\n\n版本三\n\n: 详细说明\n\n版本3 + 2026-09-09T05:22:34\n\nverbosity: verbose\n\n偏好历史 每次更新都有记录\n\n奶溯自己的使用习惯。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-117.jpg",
+    "text": "更新有版本，冲突有记录\n\n家庭账单: 核对金额，保存修改\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 186.00 元 (已核对修正)\n\n合计: 464.50元\n\n每月先核对原始清单，再按类别汇总。\n\n原生界面裁片 ” 公开合成资料\n\n把燃气费改为一正八十六元，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-118.jpg",
+    "text": "更新有版本，冲突有记录\n\n家庭账单: 核对金额，保存修改\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 186.00 元 (已核对修正)\n\n合计: 464.50元\n\n每月先核对原始清单，再按类别汇总。\n\n原生界面裁片 ” 公开合成资料\n\n把燃气费改为一正八十六元，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-119.jpg",
+    "text": "更新有版本，冲突有记录\n\n家庭账单: 核对金额，保存修改\n\n公开合成数据，仅用于操作演示。\n\n九月电费: 210.00元\n\n九月水费: 68.50元\n\n九月燃气费: 186.00 元 (已核对修正)\n\n合计: 464.50元\n\n每月先核对原始清单，再按类别汇总。\n\n原生界面裁片 ” 公开合成资料\n\n总额变成四百人六十四元五角。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-120.jpg",
+    "text": "更新有版本，冲突有记录\n\n家庭账单: 核对金额，保存修改\n\n版本: 2\n\n众开合成数据，仅用于操作演示。\n\n九月电费: 210.00 元\n\n九月水费: 68.50 元\n\n九月燃气费: 186.00 元 (已核对修正)\n\nBit: 464.50元\n\n每月先核对原始清单，再按类别汇总。\n\n原生界面裁片” 公开合成资料\n\n编辑基于读取时的版本\n\n: 如果另一端已经更新，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-121.jpg",
+    "text": "更新有版本，冲突有记录\n\n家庭账单: 核对金额，保存修改\n\n版本: 2\n\n众开合成数据，仅用于操作演示。\n\nWA BR: 210.00 元\n\n九月水费: 68.50 元\n\n九月燃气费: 186.00 元 (已核对修正)\n\nBit: 464.50元\n\n每月先核对原始清单，再按类别汇总。\n\n原生界面裁片 ” 公开合成资料\n\n编辑基于读取时的版本\n\n: 如果另一端已经更新，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-122.jpg",
+    "text": "更新有版本，冲突有记录\n\n另一条公开记忆: 旧版本保存被阻止\n\n公\n\n合成数据。请详细说明每一步，并补充一份可照做的操作示例。这段输入用于检查并\n\n发修改时能天保留。补充: 保留检查结果。\n\n保存已被阻止 (VERSION_CONFLICT) : VERSION_CONFLICT。输入已保留，请先复制修改并重新\n\n读取。失败收据可能需要人工核验恢复，不能自动重放。\n\n原生界面裁片 ” 公开合成资料\n\n旧版本提交会被拒绝，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-123.jpg",
+    "text": "更新有版本，冲突有记录\n\n另一条公开记忆: 旧版本保存被阻止\n\n公开合成数据。请详细说明每一步，并补充一份可照做的操作示例。这段输入用于检查并\n\n发修改时能天保留。补充: 保留检查结果。\n\n保存已被阻止 (VERSION_CONFLICT) : VERSION_CONFLICT。输入已保留，请先复制修改并重新\n\n读取。失败收据可能需要人工核验恢复，不能自动重放。\n\n原生界面裁片 ” 公开合成资料\n\n保留输入，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-124.jpg",
+    "text": "更新有版本，冲突有记录\n\n另一条公开记忆: 旧版本保存被阻止\n\n公开合成数据。请详细说明每一步，并补充一份可照做的操作示例。这段输入用于检查并\n\n发修改时能天保留。补充: 保留检查结果。\n\n保存已被阻止 (VERSION_CONFLICT) : VERSION_CONFLICT。输入已保留，请先复制修改并重新\n\n读取。失败收据可能需要人工核验恢复，不能自动重放。\n\n原生界面裁片 ” 公开合成资料\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-125.jpg",
+    "text": "更新有版本，冲突有记录\n\n同一书架的层数矛盾: 记录保留，采用新内容\n\n接口原值: 3层一4层\n\n未提供关联记忆标题\n\n演示书房公共书架.层数， 中 (medium)\n\n处理结果: 采用新内容 (NEW_WINS)\n\n检索已返回更正后的来源; 审计页面提供只读记录。\n\n原生审计裁片与接口原值 ”公\n\n人\n\n语义矛盾还会形成冲突\n\nFATT o\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-126.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n本轮要点与会话摘要，分层整理\n\n8期 。本轮要点\n\n记录当前任务的信息\n\n选择一 保存一 BA\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 ， 接口实测摘要\n\n当前轮次形成短期上下文，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-127.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n本轮要点与会话摘要，分层整理\n\n短期 。 本轮要点\n\n记录当前任务的信息\n\n选择一 保存一 BA\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 ， 接口实测摘要\n\n当前轮次形成短期上下文，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-128.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n本轮要点与会话摘要，分层整理\n\n短期 。 本轮要点\n\n中期。 会话摘要\n\n记录当前任务的信息\n\n保存会话整理后的摘要\n\n选择一 保存一 BA\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 。 接口实测摘要\n\n压缩或会话切换形成中期记录。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-129.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n本轮要点与会话摘要，分层整理\n\n短期 。 本轮要点\n\n中期。 会话摘要\n\n记录当前任务的信息\n\n保存会话整理后的摘要\n\n选择一 保存一 BA\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 。 接口实测摘要\n\n压缩或会话切换形成中期记录。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-130.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n选择值得长期保留的内容\n\n短期 。 本轮要点\n\n中期。 会话摘要\n\n长期。 持续复用\n\n记录当前任务的信息\n\n保存会话整理后的摘要\n\n保存有用的上下文\n\n选择 一 保存一 BA\n\n01 忆孙下下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 ， 接口实测摘要\n\n需要长期保留的内容，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-131.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n选择值得长期保留的内容\n\n短期 。 本轮要点\n\n中期。 会话摘要\n\n长期。 持续复用\n\n记录当前任务的信息\n\n保存会话整理后的摘要\n\n两条记录已进入长期知识\n\n选择 一 保存一 BA\n\n01 忆孙下下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 ， 接口实测摘要\n\nJA\n\na\n\n进入统一知识管续。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-132.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n再次检索，找回摘要与来源\n\n检索返回的\n\n话摘要\n\n家庭整理\n\n话摘要: 已完成书架分\n\n待办是周末归还借阅图书，并把清单保存\n\n到共享目录。\n\n01 Ba录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意\n\n接口实测摘要\n\n检索时只注入预算内的相关记忆，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-133.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n再次检索，找回摘要与来源\n\n检索返回的\n\n话摘要\n\n家庭整理\n\n话摘要: 已完成书架分\n\n待办是周末归还借阅图书，并把清单保存\n\n到共享 目 录。\n\n01 Ba录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意\n\n接口实测摘要\n\n检索时只注入预算内的相关记忆，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-134.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n再次检索，找回摘要与来源\n\n检索返回的会话摘要\n\n家庭整理会话摘要: 已完成书架分类，待办是周末归还借阅图书，并把清单保存\n\n到共享目录。\n\n知识与来源一同返回\n\n01 记录上下区\n\n02 保存到长期\n\n03 带回新任务\n\n记忆流转示意 + 接口实测摘要\n\n并保留来源。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-135.jpg",
+    "text": "REWAR: ke ZiAPICIC\n\n共享开篇\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-136.jpg",
+    "text": "AEN AR: Ri ZIV VICIC\n\n共享开篇\n\na SEK Be KBE BE\n\nLE\n\nVolk\n\nZonas\n\n备上的\n\n矢口台已\n\n& 用\n\n体，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-137.jpg",
+    "text": "AEN AR: Ri ZIV VICIC\n\n共享开篇\n\n看狐肘最天键的能\n\nLE\n\nBol\n\nZZ 人>几\n\n备上的\n\n矢口台已\n\n& 用\n\n体，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-138.jpg",
+    "text": "先建立信任，再共享记忆\n\n交换配对信息，建立信任\n\n笔记本与书房完成配对\n\n本机已信任设备 dev_01M211X1KJAXY9POH2L210BWKP (shared:home) 。请在对端完\n\n成反向令牌交换;实际传输尚未验证。\n\n笔记本与书房已建立双向信任。\n\n配对完成，查看已信任设备。\n\n可信设备，\n\n共享记忆“， V11 虚拟机演示\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-139.jpg",
+    "text": "先建立信任，再共享记忆\n\n交换配对信息，建立信任\n\n笔记本与书房完成配对\n\n本机已信任设备 dev_01M211X1KJAXY9POH2心1QBWKP (shared:home) 。请在对端完\n\n成反向令牌交换，实际传输尚未验证。\n\n笔记本与书房已建立双向信任。\n\n配对完成，查看已信任设备。\n\n可信设备，\n\n共享记忆 ，V11 虚拟机演示\n\n在设备页\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-140.jpg",
+    "text": "先建立信任，再共享记忆\n\n交换配对信息，建立信任\n\n笔记本与书房完成配对\n\n本机已信任设备 dev_01M211X1KJAXY9POH2心1QBWKP (shared:home) 。请在对端完\n\n成反向令牌交换，实际传输尚未验证。\n\n笔记本与书房已建立双向信任。\n\n配对完成，查看已信任设备。\n\n可信设备，\n\nASICS + V11 虚拟机演示\n\n建立双向信任。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-141.jpg",
+    "text": "先建立信任，再共享记忆\n\n查看设备与同步状态\n\n已信任节点 书房工作站\n\nMaize, HIS + V11 虚拟机演示\n\n随后碍看已信任的设备，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-142.jpg",
+    "text": "查看设备与同步状态\n\n同步状态\n\n共享域: shared:home\n\n节点记录: 3 (SAH)\n\n> AGRE: 0 + 累计同步计数: 38\n\n已信任节点。 书房工作站\n\n可信设备，共享记忆 V11 虚拟机演示\n\n核对同步状态，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-143.jpg",
+    "text": "先建立信任，再共享记忆\n\n查看设备与同步状态\n\n同步状态\n\n共享域: shared:home\n\n节点记录: 3 (SAH)\n\n\"待发操作: 0， 累计同步计数: 38\n\n已信任节点 书房工作站\n\n附近设备\n\n书房工作站\n\ndev_01M211X1KJAXY9P0OH2A11QBWKP 已有本地信任记录\n\n可信设备，共享记忆 V11 虚拟机演示\n\n也能发现附近的设备。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-144.jpg",
+    "text": "先建立信任，再共享记忆\n\n查看设备与同步状态\n\n同步状态\n\n共享域: shared:home\n\n节点记录: 3 (SAH)\n\n\"待发操作: 0， 累计同步计数: 38\n\n已信任节点 书房工作站\n\n附近设备\n\n书房工作站\n\ndev_01M211X1KJAXY9P0OH2A11QBWKP 已有本地信任记录\n\n可信设备，共享记忆 V11 虚拟机演示\n\n把需要协作的电脑)\n\n连接起来，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-145.jpg",
+    "text": "先建立信任，再共享记忆\n\n查看设备与同步状态\n\n同步状态\n\n共享域: shared:home\n\n节点记录: 3 (含本机)\n\n，待发操作: 0 + 累计同步计数: 38\n\n已信任节点 书房工作站\n\n附近设备\n\n书房工作站\n\ndev_01M211X1KJAXY9P0OH2A11QBWKP 已有本地信任记录\n\n可信设备，共享记忆 V11 虚拟机演示\n\n为共 7 tS}  ie ZOE Eo\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-146.jpg",
+    "text": "这里记住，那里接着使用\n\n随身笔记本\n\n会话 自动沉淀\n\n请用记忆工具记住这条家庭共享约定: 周六上午九点一起整理书房，书籍按主题分\n\n类。请简短回复。\n\nFry\n\n话请求局部，\n\n对话回合保存到家庭共享范\n\n真实产品\n\n合成演示约定\n\n在笔记本的会\n\n话里，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-147.jpg",
+    "text": "这里记住，那里接着使用\n\n随身笔记本 。 会话自动沉演\n\n请用记忆工具记住这条家庭共享约定: 周六上午九点一起整理书房，书籍按主题分\n\n类。请简短回复。\n\n原始会话请求局部 对话回合保存到家庭共享范围\n\nAY men + 合成演示约定\n\n占 RE\n\nid Ral7NEFA\n\naren —\n\n理书房、书籍按主题分类的约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-148.jpg",
+    "text": "这里记住，那里接着使用\n\n随身笔记本 。 会话自动沉演\n\n请用记忆工具记住这条家庭共享约定: 周六上午九点一起整理书房，书籍按主题分\n\n类。请简短回复。\n\n原始会话请求局部 对话回合保存到家庭共享范围\n\nAY men + 合成演示约定\n\n占 RE\n\nid RAal7VEFA\n\naren —\n\n理书房、书籍按主题分类的约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-149.jpg",
+    "text": "这里记住，那里接着使用\n\n随身笔记本 。 会话自动沉演\n\n请用记忆工具记住这条家庭共享约定: 周六上午九点一起整理书房，书籍按主题分\n\n类。请简短回复。\n\n原始会话请求局部 对话回合保存到家庭共享范围\n\n真实产品画面” 合成演示约定\n\n占 RE\n\nid Ral7NEFA\n\naren —\n\n理书房、书籍按主题分类的约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-150.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\n>已完成工作。 1 项\n\nPIXIU\n\n根据 PIXIU 记忆，家庭\n\nHS\n\nPace\n\n约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n完成后核对工具与结果 。 原速录屏\n\n换到客厅\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-151.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\n>已完成工作。 1 项\n\nPIXIU\n\n根据 PIXIU 记忆，家庭\n\nHS\n\nPace\n\n约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n完成后核对工具与结果 。 原速录屏\n\n请助手查找这份约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-152.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\n>已完成工作\n\nPIXIU\n\n根据 PIXIU 记忆，家庭共享约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n完成后核对工具与结果 。 原速录屏\n\n过记忆工具找回共享内容，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-153.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\n>已完成\n\n作 .1项\n\nPIXIU\n\n根据 PIXIU 记忆，家庭\n\nHS\n\nPace\n\n约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n完成后核对工具与结果 。 原速录屏\n\n回答时间和分类方式，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-154.jpg",
+    "text": "这里记住，那里接着使用\n\n客厅一体机。 记忆检索工具\n\nVv 已完成\n\n作 .1项\n\n完成 访问长期记忆\n\nPIXIU\n\n根据 PIXIU 记忆，家庭\n\nHS\n\nFanon\n\n约定中明确安排为: 周六上午九点一起整理书房，书籍按主题分类 (来源\n\nknw_01M212PEJJ5EBTG8FAXS7JKZEX) 。\n\n完成后核对工具与结果 。 原速录屏\n\n并注明知识来产。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-155.jpg",
+    "text": "离线仍可用，重连再对账\n\n同一条节能约定，三端均为版本一\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n仅中断客厅的同步连接;表内时间为检查点记录时刻。\n\n台V11 虚拟机 同步过程回放\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-156.jpg",
+    "text": "离线仍可用，重连再对账\n\n同一条节能约定，三端均为版本一\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n书房工作站\n\n版本 1\n\n每天晚上十点关闭书房空调，周末离家前检查客厅灯具。\n\n记录 17:45:02 UTC\n\n随身笔记本\n\n版本 1\n\n每天晚上十点关闭书房空\n\n，周末离家前检查客厅灯具。\n\n记录 17:45:02 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空\n\n，周末离家前检查客厅灯具。\n\n记录 17:45:02 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n台V11 虚拟机 同步过程回放\n\n用家庭节能约定验证断\n\n|\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-157.jpg",
+    "text": "离线仍可用，重连再对账\n\n同一条节能约定，三端均为版本一\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n书房工作站\n\n版本 1\n\n每天晚上十点关闭书房空调，周末离家前检查客厅灯具。\n\n记录 17:45:02 UTC\n\n随身笔记本\n\n版本 1\n\n每天晚上十点关闭书房空\n\n，周末离家前检查客厅灯具。\n\n记录 17:45:02 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空调，周末离家前检查客厅灯具。\n\n记录 17:45:02 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n台V11 虚拟机 同步过程回放\n\n用家庭节能约定验证断\n\n|\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-158.jpg",
+    "text": "离线仍可用，重连再对账\n\n同步中断期间: 在线端更新，客厅保留旧版\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空\n\n，周末离家前检查客厅灯具。\n\n记录 17:45:30 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机 同步过程回放\n\n暂时断开客厅设备的同步连接，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-159.jpg",
+    "text": "离线仍可用，重连再对账\n\n同步中断期间: 在线端更新，客厅保留旧版\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空调，周末离家前检查客厅灯具。\n\n记录 17:45:30 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机 同步过程回放\n\nAthi\n\n入备继续工作。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-160.jpg",
+    "text": "离线仍可用，重连再对账\n\n同步中断期间: 在线端更新，客厅保留旧版\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空\n\n，周末离家前检查客厅灯具。\n\n记录 17:45:30 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机 同步过程回放\n\n客\n\n保留目己的本地副本\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-161.jpg",
+    "text": "离线仍可用，重连再对账\n\n同步中断期间: 在线端更新，客厅保留旧版\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 1\n\n每天晚上十点关闭书房空调，周末离家前检查客厅灯具。\n\n记录 17:45:30 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机 同步过程回放\n\n|\n\n接后\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-162.jpg",
+    "text": "离线仍可用，重连再对账\n\n恢复同步后: 客厅读到版本二\n\n家庭节\n\n能约定， 同一知识条目\n\n公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 2\n\n每天晚上九点半关闭书房空调，周末检查客厅灯具。\n\n记录 17:45:34 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机 同步过程回放\n\n缺失的修改会逐\n\nBV ENT\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-163.jpg",
+    "text": "离线仍可用，重连再对账\n\n恢复同步后: 客厅读到版本二\n\n家庭节\n\n能约定， 同一知识条目\n\n公共接口实测记录\n\n随身笔记本\n\n版本 2\n\n每天晚上九点半关闭书房空调\n\n，周末检查客厅灯具。\n\n记录 17:45:30 UTC\n\n客厅一体机\n\n版本 2\n\n每天晚上九点半关闭书房空调，周末检查客厅灯具。\n\n记录 17:45:34 UTC\n\n仅中断客厅的同步连接; 表内时间为检查点记录时刻。\n\n三台V11 虚拟机 同步过程回放\n\n客厅也读到更新后的约定。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-164.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节能约定 同一知识条目\n\n公共接口实测记录\n\n两台设备各自更新，保留修改分支。\n\n三台V11 虚拟机“。 同步过程回放\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-165.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节能约定 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\nBEAR: 晚上九点关闭空调。\n\n记录 17:45:36 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:45:36 UTC\n\n两台设备各自更新，保留修改分支。\n\n三台V11 虚拟机“。 同步过程回放\n\n两台设备从同一版本同时修改，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-166.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n书房工作站\n\n版本 3\n\n书房方案: 晚上九点关闭\n\n记录 17:45:36 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调\n\nFlo\n\n记录 17:45:36 UTC\n\n两台设备各自更新，保留修改分支。\n\n台V11 虚拟机“。 同步过程回放\n\n会形成不同分支。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-167.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节能约定 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\nBEAR: 晚上九点关闭空调。\n\n记录 17:45:36 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:45:36 UTC\n\n两台设备各自更新，保留修改分支。\n\n三台V11 虚拟机“。 同步过程回放\n\n系统识别修改的先后与并发天系，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-168.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节能约定， 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\n书房方案: 晚上九点关闭空调。\n\n记录 17:45:36 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:45:36 UTC\n\n两台设备各自更新，保留修改分支。\n\n三台V11 虚拟机“。 同步过程回放\n\n系统识别修改的先后与并发天系，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-169.jpg",
+    "text": "同时修改，也能收敛\n\n从同一版本分别修改，形成两个版本三\n\n家庭节\n\n能约定， 同一知识条目\n\n”公共接口实测记录\n\n书房工作站\n\n版本 3\n\n书房方案: 晚上九点关闭\n\n记录 17:45:36 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调\n\nFlo\n\n记录 17:45:36 UTC\n\n两台设备各自更新，保留修改分支。\n\n台V11 虚拟机 同步过程回放\n\n再按人确定性规则合并。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-170.jpg",
+    "text": "同时修改，也能收敛\n\n恢复连接后:\n\n端正文收敛\n\n家庭节能约定， 同一知识条\n\n”公共接口实测记录\n\n书房工作站\n\n版本 3\n\nBAAR: 晚上九点四十五关闭\n\n记录 17:46:09 UTC\n\n随身笔记本\n\n版本 3\n\n客\n\n方案: 晚上九点四十五关闭\n\n记录 17:46:09 UTC\n\n客厅一体机\n\n记录 17:46:09 UTC\n\n版本 3\n\n客\n\n方案: 晚上九点四十五关闭空\n\n°\n\n重连后\n\n设备读到相同内容。\n\nV11 虚拟机“。 同步过程回放\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-171.jpg",
+    "text": "同时修改，也能收敛\n\n恢复连接后: 三端正文收敛\n\n家庭节能约定， 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n随身笔记本\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n重连后，三台设备读到相同内容。\n\n三台V11 虚拟机“。 同步过程回放\n\n—\n\n2v-Jt\n\n二口芭\n\n备都读到相同的版本三与同一正文。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-172.jpg",
+    "text": "同时修改，也能收敛\n\n恢复连接后: 三端正文收敛\n\n家庭节能约定 同一知识条目\n\n公共接口实测记录\n\n书房工作站\n\n版本 3\n\nSTAR: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n随身笔记本\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n客厅一体机\n\n版本 3\n\n客厅方案: 晚上九点四十五关闭空调。\n\n记录 17:46:09 UTC\n\n重连后，三台设备读到相同内容。\n\n三台V11 虚拟机“。 同步过程回放\n\n—\n\n2 -Jt\n\n二口芭\n\n备都读到相同的版本三与同一正文。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-173.jpg",
+    "text": "个人记忆，有了明确边界\n\n私有范围: 本机可用，未进入共享同步状态\n\n个人阅读演示约定， 同一知识 ID 与私有范围\n\n书房\n\n本机查询命\n\n* HTTP 200\n\n笔记本\n\n#2 ID 读取不存在 HTTP 404\n\n客厅\n\n按ID 读取不存在 HTTP 404\n\n本机同步诊断: 该知识条目不存在于同步状态中。\n\n公共接口请求与响应实测\n\n公开合成数据\n\n共享范围与敏感内容检测\n\n实测记录\n\n个人记忆保存在本机，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-174.jpg",
+    "text": "个人记忆，有了明确边界\n\n私有范围: 本机可用，未进入共享同步状态\n\n个人阅读演示约定， 同一知识 ID 与私有范围\n\n书房\n\n本机查询命\n\n* HTTP 200\n\n笔记本\n\n#2 ID 读取不存在 HTTP 404\n\n客厅\n\n按ID 读取不存在 HTTP 404\n\n本机同步诊断: 该知识条目不存在于同步状态中。\n\n公共接口请求与响应实测\n\n公开合成数据\n\n共享范围与敏感内容检测\n\n实测记录\n\ntt\n\n一一一\n\n协作内容按\n\nINF?\n\nCb\n\n围管理。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-175.jpg",
+    "text": "个人记忆，有了明确边界\n\n—_—\n\n=\n\nNF\n\nBA: 合成敏感输入被拒绝\n\n拒绝写入。 HTTP 422\n\n共享范围不接受已识别的敏感内容。\n\n敏感内容检测\n\n合成测试样例\n\n实测记录\n\nHS\n\n敏感检测会拦截包含敏感信息的\n\nPTRA\n\nBo\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-176.jpg",
+    "text": "个人记忆，有了明确边界\n\n共享写入: 合成敏感输入被拒绝\n\n拒绝写入。 HTTP 422\n\n共享范围不接受已识别的敏感内容。\n\n敏感内容检测 。 合成测试样例\n\n本\n\na\n\nPi A\n\nCHSRMEAAwM\n\n实测记录\n\nHS\n\n敏感检测会拦截包含敏感信息的\n\nPTRA\n\nBo\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-177.jpg",
+    "text": "个人记忆，有了明确边界\n\n你还可以暂停同步，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-178.jpg",
+    "text": "个人记忆，有了明确边界\n\n暂停传输; 勾选后保存同步设置\n\n网络\n\n分〈保留发现与配对能力)\n\n刷新状态与节点\n\n信任节点\n\n在设置中暂停同步 操作节选，约三倍速\n\n同步与设备管理， 操作节选\n\n或选择设备解除信任，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-179.jpg",
+    "text": "个人记忆，有了明确边界\n\n解除完成: 只移除本机对书房的信任\n\n共享域: shared:home\n\n节点记录: 2 (SAA)\n\n> AIRE: 0， 累计同步计数: 38\n\n在笔记本上管理已信任设备，选择解除与书房的信任关系。\n\n需要继续协作时，可以重新配对。\n\n同步与设备管理， 操作节选\n\n党握目己的共扣学围。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-180.jpg",
+    "text": "先看影响，再确认遗忘\n\nAERTS + 核对目标与影响\n\n操作图演示: 待遗忘的临时便等\n\nknw_01M20QEATP6PZ96VWCBR8VVBKB «+ 版本1 + user:pixiu-screenshots\n\n关联预估: 证据1条，关系0条 (不表示物理删除)\n\n确认入口\n\n取消预览的结果\n\n已取消; 未发送遗忘确认。\n\n已核对以上目标，确认遣忘\n\n原生页面裁片与功能说明 。 AAAS\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-181.jpg",
+    "text": "先看影响，再确认遗忘\n\nAMEE) + 核对目标与影响\n\n操作图演示: PBS AA ES\n\nknw_01M20QEATP6PZ96VWCBR8VVBKB ' 版本1 + user:pixiu-screenshots\n\n关联预估: 证据1条，关系0条 (不表示物理删除)\n\n确认人入口\n\n取消预览的结果\n\n已核对以上目标，确认遗忘\n\n已取消; RASA.\n\n原生页面裁片与功能说明 AGRE\n\n说出要乐记的内容，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-182.jpg",
+    "text": "先看影响，再确认遗忘\n\nAMEE) + 核对目标与影响\n\n操作图演示: PBS AA ES\n\nknw_01M20QEATP6PZ96VWCBR8VVBKB ' 版本1 + user:pixiu-screenshots\n\n关联预估: 证据1条，关系0条 (不表示物理删除)\n\n确认人入口\n\n取消预览的结果\n\n已核对以上目标，确认遗忘\n\n已取消; RASA.\n\n原生页面裁片与功能说明 。 AGRE\n\n再明确确认。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-183.jpg",
+    "text": "先看影响，再确认遗忘\n\nAERTS + 核对目标与影响\n\n操作图演示: HAS AA ES\n\nknw_01M20QEATP6PZ96VWCBR8VVBKB + ARR 1\n\nuser:pixiu-screenshots\n\n关联预估: 证据1条，关系0条 (不表示物理删除)\n\n后端确认遗忘 1 条知识。跨设备送达尚未验证。\n\n原生页面裁片与功能说明 。 AGRE\n\n系统让知识失效并清理检索向量。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-184.jpg",
+    "text": "先看影响，再确认遗忘\n\nAERTS + 核对目标与影响\n\n操作图演示: PBS AA ES\n\nknw_01M20QEATP6PZ96VWCBR8VVBKB . 版本1\n\nuser:pixiu-screenshots\n\n关联预估: 证据1条，关系0条 (不表示物理删除)\n\n后端确认遗忘 1 条知识。跨设备送达尚未验证。\n\n原生页面裁片与功能说明 。 AGRE\n\n系统让知识失效并清理检索加量。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-185.jpg",
+    "text": "先看影响，再确认遗忘\n\n共享遗忘: 在线端先失效，断连端暂存旧副本\n\n家庭节能约定 同一共享知识条目 。 公共接口实测\n\n随身笔记本\n\n条目不存在\n\n在线端检查\n\n: 17:46:34 UTC\n\n- HTTP 404\n\n客厅一体机\n\n仍保留版本三\n\n断连时检查\n\n: 17:46:34UTC“。HTTP 200\n\n先预览目标与影响范围，再确认遗筷; 本次只使用公\n\n合成数据。\n\n三台V11 虚拟机“。 同步过程回放\n\n删除标记同步到可信设备。\n\n共享记忆的删除标记会同步给其他设备，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-186.jpg",
+    "text": "先看影响，再确认遗忘\n\n共享遗忘: 在线端先失效，断连端暂存旧副本\n\n家庭节能约定。 同一共享知识条目 。 公共接口实测\n\n随身笔记本\n\n条目不存在\n\n在线端检查\n\n: 17:46:34UTC。HTTP 404\n\n客厅一体机\n\n仍保留版本三\n\n断连时检查\n\n: 17:46:34UTC。HTTP 200\n\n先预览目标与影响范围，再确认遗筷; 本次只使用公\n\n合成数据。\n\n三台V11 虚拟机“。 同步过程回放\n\n删除标记同步到可信设备。\n\n共享记忆的删除标记会同步给其他设备，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-187.jpg",
+    "text": "先看影响，再确认\n\n重连后的核对\n\n删除标记一致\n\n家庭\n\nFh ob\n\nRE TI BE\n\n约定\n\nfal—  tS RIA 目。\n\n公共接口实测\n\n书房工作站\n\n已标记遗  ry\n\n三端已同步删除标记\n\n设备已同步删除标记。\n\nV11 虚拟机“。 同步过程回放\n\n删除标记同步到可信设备。\n\n离线设备重连后，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-188.jpg",
+    "text": "先看影响，再确认遗忘\n\n重连后的核对:\n\n三端删除标记一致\n\n家庭节能约定\n\n同一共享知识条目， 公共接口实测\n\n书房工作站\n\n已标记遗忘\n\n三端已同步删除标记\n\n随身笔记本\n\n已标记遗忘\n\n三端已同步删除标记\n\n客厅一体机\n\n已标记遗忘\n\n三端已同步删除标记\n\n三台设备已同步删除标记。\n\n三台V11 虚拟机“。 同步过程回放\n\n删除标记同步到可信设备。\n\neT\n\n会更新\n\nWS\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-189.jpg",
+    "text": "从记住，到主动提供线索\n\n近期候选与每日采集简报\n\n家庭月末归档步骤\n\n家庭月末归档步骤\n\n质量分: 0.78\n\n本机个人域“ 最近 24 小时， 可继续检索的候选\n\n近期记忆，逐条展开\n\n洞察与简报，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-190.jpg",
+    "text": "从记住，到主动提供线索\n\n近期候选与每日采集简报\n\n家庭月末归档步骤\n\n家庭月未归档步骤\n\n质量分: 0.78\n\n本机个人域“ 最近 24 小时， 可继续检索的候选\n\n近期记忆，逐条展开\n\n把近其\n\n质量记忆整理为可继续检索的线索，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-191.jpg",
+    "text": "从记住，到主动提供线索\n\n近期候选与每日采集简报\n\n家庭月末归档步骤\n\n家庭月未归档步骤\n\n质量分: 0.78\n\n所选日期的采集日志汇总\n\n2026-09-09\n\n当日无新记忆\n\n手动写入产生候选， 采集简报只统计采集日志。\n\n近期记忆，逐条展开\n\n把近其\n\n质量记忆整理为可继续检索的线索，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-192.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 一 按标题检索 一 查看来源\n\n家庭月末归档步骤\n\n家庭月末归档步骤\n\n质量分: 0.78\n\n按所选标题检索记忆\n\n简报日期 〈按后端本地时区; 初始值为本机今天)\n\n2026-09-09\n\n真实操作录像 ， 2 倍速， 裁切放大跟随\n\nEN\n\n并按日期汇总采集|\n\nFJLo\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-193.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 一 按标题检索 一 查看来源\n\n家庭月末归档步骤\n\n本机个人记忆 (BA\n\n检索完成，选择来源查看证据。\n\n_) 查看原始数据 (BR\n\n家庭月末归档步骤\n\n查看来源1\n\n真实操作录像 ， 2 倍速， 裁切放大跟随\n\n用户可以顺着洞察回到正文，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-194.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 一 按标题检索 一 查看来源\n\n原始正文， 家庭月末归档步又\n\nbody:\n\nAS: 先核对本月水电燃气账单，再按月份归档凭证，最后同步家庭共同约定。仅用于公开操作演示。\n\n沿着洞察找到正文与来源。\n\n再次打开记忆，接着完成手头的工作。\n\n真实来源正文放大 公开合成示例\n\n人人\n\nAA\n\n2m yr\n\nt\n\nWES 2\n\n天新\n\n7 U7KE\n\n了什么。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-195.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 一 按标题检索 一 查看来源\n\n原始正文， 家庭月末归档步又\n\nbody:\n\nAS: 先核对本月水电燃气账单，再按月份归档凭证，最后同步家庭共同约定。仅用于公开操作演示。\n\n治着洞察找到正文与来源。\n\n再次打开记忆，接着完成手头的工作。\n\n真实来源正文放大 公开合成示例\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-196.jpg",
+    "text": "从记住，到主动提供线索\n\n选择候选 一 按标题检索 一 查看来源\n\n原始正文， 家庭月末归档步又\n\nbody:\n\nAS: 先核对本月水电燃气账单，再按月份归档凭证，最后同步家庭共同约定。仅用于公开操作演示。\n\n沿着洞察找到正文与来源。\n\n再次打开记忆，接着完成手头的工作。\n\n真实来源正文放大 公开合成示例\n\n打开这份月末归档步骤，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-197.jpg",
+    "text": "一个安装包，统一管理\n\n演示安装记录 。 0.1.9\n\n安装命令退出码: 9\n\nes 忆\n\n—\n\n安装版本与退出码取自原\n\nBERT\n\n口天-0\n\n1 LOS\n\n01 Ai\n\n02 模型连接\n\n03 维护与更新\n\n安装完成 版本 0.1.9\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-198.jpg",
+    "text": "一个安装包，统一管理\n\n演示安装记录 。 0.1.9\n\n安装命令退出码: 9\n\n安装版本与退出码取自原始终端记录\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n安装完成 ， 版本 0.1.9\n\n部署桌面应用、助手运行环境与记忆服务。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-199.jpg",
+    "text": "一个安装包，统一管理\n\n演示安装记录 。 0.1.9\n\n安装命令退出码: 9\n\n安装版本与退出码取自原始终端记录\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n安装完成 ， 版本 0.1.9\n\n部署桌面应用、助手运行环境与记忆服务。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-200.jpg",
+    "text": "一个安装包，统一管理\n\n演示安装记录 。 0.1.9\n\n安装命令退出码: 9\n\n安装版本与退出码取自原始终端记录\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n安装完成 ， 版本 0.1.9\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-201.jpg",
+    "text": "个安装包，统一管理\n\n设置\n\n模型检测与更新检查\n\nO 麒灵系统云模型可用，PIXIU 将跟随系统首选模型。\n\n检查更新\n\n当前版本 0.1.9\n\n已是最新\n\n已是最新版本\n\n升级需要系统授权; 您的记忆、配置和同步身份将被保留。\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n\n检测模型连接，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-202.jpg",
+    "text": "一个安装包，统一管理\n\n设置 ，模型检测与更新检查结果\n\nO 麒灵系统云模型可用，PIXIU 将跟随系统首选模型。\n\n检查更新\n\n当前版本 0.1.9\n\n已是最新\n\n已是最新版本\n\n升级需要系统授权; 您的记忆、配置和同步身份将被保留。\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n\n查看更新信息。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-203.jpg",
+    "text": "个安装包，\n\n统一管理\n\n升级流程示意\n\n01\n\n签名核验\n\n01 统\n\n安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n\n升级过程通\n\n名校验、\n\nfe RIS MAT\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-204.jpg",
+    "text": "统一管理\n\n个安装包，\n\n升级流程示意\n\n01\n\n02\n\n03\n\n签名核验\n\n健康检\n\n失败恢复\n\n01 统\n\n安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n\n升级过程通\n\n名校验、\n\n健康检查和失册\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-205.jpg",
+    "text": "统一管理\n\n一个安装包，\n\n升级流程示意\n\n01\n\n02\n\n03\n\n签名核验\n\n健康检查\n\n失败恢复\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-206.jpg",
+    "text": "统一管理\n\n一个安装包，\n\n升级流程示意\n\n01\n\n02\n\n03\n\n签名核验\n\n健康检查\n\n失败恢复\n\n01 统一安装\n\n02 模型连接\n\n03 维护与更新\n\n模型连接与更新检查\n\n帮助维护日党使用。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-207.jpg",
+    "text": "用数据，检验记忆优化\n\n四个维度，逐项评测\n\n01 准备样本\n\n02 记录结\n\n03 持续验证\n\n评测流程示意 开发回归与三台 V11 虚拟机场景记录\n\n怎样检验记忆优化的效果?\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-208.jpg",
+    "text": "用数据，检验记忆优化\n\n四个维度，逐项评测\n\n01\n\n俩好提取\n\n01 准备样本\n\n02 记录结\n\n03 持续验证\n\n评测流程示意 开发回归与三台 V11 虚拟机场景记录\n\n评测工具分别统计偏好提取、知识召回、检索耗时和\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-209.jpg",
+    "text": "用数据，检验记忆优化\n\n四个维度，逐项评测\n\n01\n\n02\n\n俩好提取\n\n知识召回\n\n01 准备样本\n\n02 记录结\n\n03 持续验证\n\n评测流程示意 开发回归与三台 V11 虚拟机场景记录\n\n评测工具分别统计偏好提取、知识召回、检索耗时和\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-210.jpg",
+    "text": "用数据，检验记忆优化\n\n四个维度，逐项评测\n\n01\n\n02\n\n俩好提取\n\n知识召回\n\n03\n\n04\n\n检索耗时\n\n冲突处理\n\n01 准备样本\n\n02 记录结\n\n03 持续验证\n\n评测流程示意 开发回归与三台 V11 虚拟机场景记录\n\n评测工具分别统计偏好提取、知识召回、检索耗时和\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-211.jpg",
+    "text": "用数据，检验记忆优化\n\n四个维度，逐项评测\n\n01\n\n02\n\n俩好提取\n\n知识召回\n\n03\n\n04\n\n检索耗时\n\n冲突处理\n\n01 准备样本\n\n02 记录结\n\n03 持续验证\n\n评测流程示意 开发回归与三台 V11 虚拟机场景记录\n\n冲突处理结果。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-212.jpg",
+    "text": "用数据，检验记忆优化\n\n逐样本记录，汇总形成报告\n\n偏好提取\n\n”样本记录\n\n知识召回\n\n”样本记录\n\n”样本记录\n\n冲突处理\n\n”样本记录\n\n01 准备样本\n\n02 记录结果\n\n03 持续验证\n\n评测流程示意 开发回归与三台 V11 虚拟机场景记录\n\n每个样本都留下记录，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-213.jpg",
+    "text": "用数据，检验记忆优化\n\n逐样本记录，汇总形成报告\n\n偏好提取\n\n”样本记录\n\n评测报告\n\n知识召回\n\n”样本记录\n\n输入与预期结\n\n”样本记录\n\n冲突处理\n\n”样本记录\n\n统计与分析\n\n01 准备样本\n\n02 记录结果\n\n03 持续验证\n\n评测流程示意”开发回归与三台 V11 虚拟机场景记录\n\n汇总形成报告。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-214.jpg",
+    "text": "用数据，检验记忆优化\n\n开发回归与场景验证\n\n基础设施回归通过\n\nV断连后补齐修改\n\nV 并发更新后内容一致\n\n698\n\n01 准备样本\n\n02 记录结果\n\n03 持续验证\n\n评测流程示意”开发回归与三台 V11 虚拟机场景记录\n\n开发回归与多设备场景验证，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-215.jpg",
+    "text": "用数据，检验记忆优化\n\n开发回归与场景验证\n\n基础设施回归通过\n\nV断连后补齐修改\n\nV 并发更新后内容一致\n\n698\n\n01 准备样本\n\n02 记录结果\n\n03 持续验证\n\n评测流程示意”开发回归与三台 V11 虚拟机场景记录\n\n让改进有据可得。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-216.jpg",
+    "text": "翅个人经欠变成可信协作能\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-217.jpg",
+    "text": "翅个人经骆变成可信协作能力\n\n价值\n\n面向家庭协作、办公交接和跨设备任务，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-218.jpg",
+    "text": "和个人经铬变成可信协作能\n\n价值\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-219.jpg",
+    "text": "和个人经铬变成可信协作能\n\n价值\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-220.jpg",
+    "text": "和个人经铬变成可信协作能\n\n价值\n\nILE SWAP Siz.\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-221.jpg",
+    "text": "和个人经铬变成可信协作能\n\n价值\n\n让共拉边界由用户和车握。\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-222.jpg",
+    "text": "PIXIU\n\nare atk\n\nscene\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-223.jpg",
+    "text": "PIXIU\n\nsevere\n\nare atk\n\n让经验，成为下一次行动的起点-\n\non\n\n面 rent 能体，\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-224.jpg",
+    "text": "PIXIU\n\nsiete\n\ncme\n\nare aik\n\n——\n\nLAS, A FRAT AOU\n\n这分布吉集体记忆\n",
+    "returncode": 0
+  },
+  {
+    "file": "sample-225.jpg",
+    "text": "PIXIU\n\nasi\n\nmo\n\nare atk\n\n次行动的起点\n\nma\n\ned\n\n成为下_次行\n\n动的起点。\n",
+    "returncode": 0
+  }
+]

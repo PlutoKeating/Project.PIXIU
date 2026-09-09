@@ -1,0 +1,145 @@
+{
+  "shot": "s08",
+  "request": {
+    "text": "合计四百三十四元五角。点击本会话记忆来源，展开命中的账单，逐项核对金额。回答与依据连在一起，复核更方便。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "57609e3184fe208fe5bb152b1a7cffa7565db0eb182a85032cb7c1d53eeda545",
+  "audio_sha256": "4026326915a6213da9fcad46f375915c71efb95075dc289e0bb33b058cb14023",
+  "duration_seconds": 12.624,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 5131660,
+      "text": "合计"
+    },
+    {
+      "offset": 6421250,
+      "duration": 7500000,
+      "text": "四百三十四"
+    },
+    {
+      "offset": 13921250,
+      "duration": 2105410,
+      "text": "元"
+    },
+    {
+      "offset": 16157910,
+      "duration": 1710410,
+      "text": "五"
+    },
+    {
+      "offset": 17868330,
+      "duration": 3815830,
+      "text": "角"
+    },
+    {
+      "offset": 27631660,
+      "duration": 4605410,
+      "text": "点击"
+    },
+    {
+      "offset": 32500000,
+      "duration": 2105410,
+      "text": "本"
+    },
+    {
+      "offset": 34605410,
+      "duration": 3421250,
+      "text": "会话"
+    },
+    {
+      "offset": 38289580,
+      "duration": 2368330,
+      "text": "记忆"
+    },
+    {
+      "offset": 40789580,
+      "duration": 5131660,
+      "text": "来源"
+    },
+    {
+      "offset": 48815830,
+      "duration": 4736660,
+      "text": "展开"
+    },
+    {
+      "offset": 53815830,
+      "duration": 3157910,
+      "text": "命中"
+    },
+    {
+      "offset": 56973750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 57894580,
+      "duration": 5263330,
+      "text": "账单"
+    },
+    {
+      "offset": 65263330,
+      "duration": 4736660,
+      "text": "逐项"
+    },
+    {
+      "offset": 70131660,
+      "duration": 3552500,
+      "text": "核对"
+    },
+    {
+      "offset": 73815830,
+      "duration": 4736660,
+      "text": "金额"
+    },
+    {
+      "offset": 84605410,
+      "duration": 3815830,
+      "text": "回答"
+    },
+    {
+      "offset": 88684160,
+      "duration": 1315830,
+      "text": "与"
+    },
+    {
+      "offset": 90131660,
+      "duration": 3815830,
+      "text": "依据"
+    },
+    {
+      "offset": 94210410,
+      "duration": 1842080,
+      "text": "连"
+    },
+    {
+      "offset": 96052500,
+      "duration": 1184160,
+      "text": "在"
+    },
+    {
+      "offset": 97368330,
+      "duration": 4605410,
+      "text": "一起"
+    },
+    {
+      "offset": 105921250,
+      "duration": 4868330,
+      "text": "复核"
+    },
+    {
+      "offset": 111052500,
+      "duration": 1842080,
+      "text": "更"
+    },
+    {
+      "offset": 112894580,
+      "duration": 4210410,
+      "text": "方便"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

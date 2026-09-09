@@ -1,0 +1,215 @@
+{
+  "shot": "s26",
+  "request": {
+    "text": "洞察与简报，把近期高质量记忆整理为可继续检索的线索，并按日期汇总采集情况。用户可以顺着洞察回到正文，检查今天新沉淀了什么。打开这份月末归档步骤，继续整理资料。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "78af7e43465e75c4983c7f932829855c2c77d58d0810c852e73a5f51477f57b6",
+  "audio_sha256": "ec49d68e6a3a31008c03c29df8faf7dd26a09d3ac7fad3cd49be03936dbfa7e0",
+  "duration_seconds": 17.472,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 4210410,
+      "text": "洞察"
+    },
+    {
+      "offset": 5368330,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 6684160,
+      "duration": 4868330,
+      "text": "简报"
+    },
+    {
+      "offset": 15368330,
+      "duration": 1710410,
+      "text": "把"
+    },
+    {
+      "offset": 17210410,
+      "duration": 4342080,
+      "text": "近期"
+    },
+    {
+      "offset": 21815830,
+      "duration": 4473750,
+      "text": "高质量"
+    },
+    {
+      "offset": 26421250,
+      "duration": 4342080,
+      "text": "记忆"
+    },
+    {
+      "offset": 31815830,
+      "duration": 3289580,
+      "text": "整理"
+    },
+    {
+      "offset": 35236660,
+      "duration": 4868330,
+      "text": "为可"
+    },
+    {
+      "offset": 41157910,
+      "duration": 4342080,
+      "text": "继续"
+    },
+    {
+      "offset": 45631660,
+      "duration": 3289580,
+      "text": "检索"
+    },
+    {
+      "offset": 48921250,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 49842080,
+      "duration": 4868330,
+      "text": "线索"
+    },
+    {
+      "offset": 57078750,
+      "duration": 1578750,
+      "text": "并"
+    },
+    {
+      "offset": 58657910,
+      "duration": 1184160,
+      "text": "按"
+    },
+    {
+      "offset": 59973750,
+      "duration": 4078750,
+      "text": "日期"
+    },
+    {
+      "offset": 64315830,
+      "duration": 4210410,
+      "text": "汇总"
+    },
+    {
+      "offset": 68789580,
+      "duration": 4078750,
+      "text": "采集"
+    },
+    {
+      "offset": 73000000,
+      "duration": 4210410,
+      "text": "情况"
+    },
+    {
+      "offset": 83289580,
+      "duration": 4342080,
+      "text": "用户"
+    },
+    {
+      "offset": 87894580,
+      "duration": 1842080,
+      "text": "可以"
+    },
+    {
+      "offset": 89868330,
+      "duration": 2631660,
+      "text": "顺着"
+    },
+    {
+      "offset": 92631660,
+      "duration": 4078750,
+      "text": "洞察"
+    },
+    {
+      "offset": 96973750,
+      "duration": 2236660,
+      "text": "回到"
+    },
+    {
+      "offset": 99342080,
+      "duration": 5394580,
+      "text": "正文"
+    },
+    {
+      "offset": 107894580,
+      "duration": 4078750,
+      "text": "检查"
+    },
+    {
+      "offset": 112105410,
+      "duration": 2763330,
+      "text": "今天"
+    },
+    {
+      "offset": 115131660,
+      "duration": 2105000,
+      "text": "新"
+    },
+    {
+      "offset": 117236660,
+      "duration": 3552500,
+      "text": "沉淀"
+    },
+    {
+      "offset": 120789580,
+      "duration": 657910,
+      "text": "了"
+    },
+    {
+      "offset": 121578750,
+      "duration": 3157910,
+      "text": "什么"
+    },
+    {
+      "offset": 130789580,
+      "duration": 3684160,
+      "text": "打开"
+    },
+    {
+      "offset": 134605410,
+      "duration": 1315830,
+      "text": "这"
+    },
+    {
+      "offset": 135921250,
+      "duration": 1315830,
+      "text": "份"
+    },
+    {
+      "offset": 137500000,
+      "duration": 4736660,
+      "text": "月末"
+    },
+    {
+      "offset": 142500000,
+      "duration": 4078750,
+      "text": "归档"
+    },
+    {
+      "offset": 146710410,
+      "duration": 4473750,
+      "text": "步骤"
+    },
+    {
+      "offset": 154210410,
+      "duration": 4078750,
+      "text": "继续"
+    },
+    {
+      "offset": 158421250,
+      "duration": 2631660,
+      "text": "整理"
+    },
+    {
+      "offset": 161184160,
+      "duration": 4342080,
+      "text": "资料"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

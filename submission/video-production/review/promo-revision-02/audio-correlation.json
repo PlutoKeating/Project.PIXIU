@@ -1,0 +1,238 @@
+{
+  "method": "First five seconds of each source; waveform correlation, not listening",
+  "peak_dbfs": -4.743081569671631,
+  "probes": [
+    {
+      "declared_start_frame": 13,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999617785489385,
+      "source_peak_frame": 13.65,
+      "shot": "s01"
+    },
+    {
+      "declared_start_frame": 300,
+      "measured_start_frame": 302.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.999960728137636,
+      "source_peak_frame": 8.25,
+      "shot": "s02"
+    },
+    {
+      "declared_start_frame": 665,
+      "measured_start_frame": 667.28,
+      "pipeline_offset_frames": 2.28,
+      "normalized_correlation": 0.9945018522490512,
+      "source_peak_frame": 148.65,
+      "shot": "s03"
+    },
+    {
+      "declared_start_frame": 1121,
+      "measured_start_frame": 1123.28,
+      "pipeline_offset_frames": 2.28,
+      "normalized_correlation": 0.9999652367915668,
+      "source_peak_frame": 141.75,
+      "shot": "s04"
+    },
+    {
+      "declared_start_frame": 1605,
+      "measured_start_frame": 1607.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999711660655396,
+      "source_peak_frame": 131.85,
+      "shot": "s05"
+    },
+    {
+      "declared_start_frame": 2045,
+      "measured_start_frame": 2047.28,
+      "pipeline_offset_frames": 2.28,
+      "normalized_correlation": 0.9999680710082611,
+      "source_peak_frame": 76.65,
+      "shot": "s06"
+    },
+    {
+      "declared_start_frame": 2572,
+      "measured_start_frame": 2574.289375,
+      "pipeline_offset_frames": 2.289375,
+      "normalized_correlation": 0.9999590771565412,
+      "source_peak_frame": 16.65,
+      "shot": "s07"
+    },
+    {
+      "declared_start_frame": 3045,
+      "measured_start_frame": 3047.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.999965028143139,
+      "source_peak_frame": 87.45,
+      "shot": "s08"
+    },
+    {
+      "declared_start_frame": 3423,
+      "measured_start_frame": 3425.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9929102923980709,
+      "source_peak_frame": 34.05,
+      "shot": "s09"
+    },
+    {
+      "declared_start_frame": 3873,
+      "measured_start_frame": 3875.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999746617779941,
+      "source_peak_frame": 138.15,
+      "shot": "s10"
+    },
+    {
+      "declared_start_frame": 4329,
+      "measured_start_frame": 4331.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999705280150308,
+      "source_peak_frame": 11.85,
+      "shot": "s11"
+    },
+    {
+      "declared_start_frame": 4811,
+      "measured_start_frame": 4813.28,
+      "pipeline_offset_frames": 2.28,
+      "normalized_correlation": 0.9999697954143782,
+      "source_peak_frame": 138.15,
+      "shot": "s12"
+    },
+    {
+      "declared_start_frame": 5237,
+      "measured_start_frame": 5239.28,
+      "pipeline_offset_frames": 2.28,
+      "normalized_correlation": 0.9977986136910346,
+      "source_peak_frame": 15.45,
+      "shot": "s13"
+    },
+    {
+      "declared_start_frame": 5710,
+      "measured_start_frame": 5712.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999656154873144,
+      "source_peak_frame": 143.85,
+      "shot": "s14"
+    },
+    {
+      "declared_start_frame": 6450,
+      "measured_start_frame": 6452.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999636384386673,
+      "source_peak_frame": 8.85,
+      "shot": "s15"
+    },
+    {
+      "declared_start_frame": 6980,
+      "measured_start_frame": 6982.279375,
+      "pipeline_offset_frames": 2.279375,
+      "normalized_correlation": 0.9999497773741507,
+      "source_peak_frame": 112.95,
+      "shot": "s16"
+    },
+    {
+      "declared_start_frame": 7521,
+      "measured_start_frame": 7523.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999658811973419,
+      "source_peak_frame": 7.95,
+      "shot": "s17"
+    },
+    {
+      "declared_start_frame": 8037,
+      "measured_start_frame": 8039.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999616277544118,
+      "source_peak_frame": 8.55,
+      "shot": "s18"
+    },
+    {
+      "declared_start_frame": 8260,
+      "measured_start_frame": 8262.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999705280847417,
+      "source_peak_frame": 8.55,
+      "shot": "s19"
+    },
+    {
+      "declared_start_frame": 8715,
+      "measured_start_frame": 8717.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999622802035358,
+      "source_peak_frame": 8.25,
+      "shot": "s20"
+    },
+    {
+      "declared_start_frame": 9274,
+      "measured_start_frame": 9276.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999691024743118,
+      "source_peak_frame": 34.65,
+      "shot": "s21"
+    },
+    {
+      "declared_start_frame": 9809,
+      "measured_start_frame": 9811.28,
+      "pipeline_offset_frames": 2.28,
+      "normalized_correlation": 0.9999548694235569,
+      "source_peak_frame": 20.85,
+      "shot": "s22"
+    },
+    {
+      "declared_start_frame": 10312,
+      "measured_start_frame": 10314.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999771730030683,
+      "source_peak_frame": 8.55,
+      "shot": "s23"
+    },
+    {
+      "declared_start_frame": 10777,
+      "measured_start_frame": 10779.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999781300361894,
+      "source_peak_frame": 10.65,
+      "shot": "s24"
+    },
+    {
+      "declared_start_frame": 11277,
+      "measured_start_frame": 11279.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999539710349287,
+      "source_peak_frame": 7.65,
+      "shot": "s26"
+    },
+    {
+      "declared_start_frame": 11800,
+      "measured_start_frame": 11802.29,
+      "pipeline_offset_frames": 2.29,
+      "normalized_correlation": 0.9999705718589045,
+      "source_peak_frame": 25.65,
+      "shot": "s27"
+    },
+    {
+      "declared_start_frame": 12345,
+      "measured_start_frame": 12347.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.9999656274683801,
+      "source_peak_frame": 90.75,
+      "shot": "s28"
+    },
+    {
+      "declared_start_frame": 12929,
+      "measured_start_frame": 12931.27875,
+      "pipeline_offset_frames": 2.27875,
+      "normalized_correlation": 0.9999569618626816,
+      "source_peak_frame": 7.65,
+      "shot": "s29"
+    },
+    {
+      "declared_start_frame": 13251,
+      "measured_start_frame": 13253.27,
+      "pipeline_offset_frames": 2.27,
+      "normalized_correlation": 0.68136300973,
+      "source_peak_frame": 16.35,
+      "shot": "s30"
+    }
+  ]
+}

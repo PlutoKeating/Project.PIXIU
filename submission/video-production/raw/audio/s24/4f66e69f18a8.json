@@ -1,0 +1,210 @@
+{
+  "shot": "s24",
+  "request": {
+    "text": "说出要忘记的内容，先预览目标和范围，再明确确认。系统让知识失效并清理检索向量。共享记忆的删除标记会同步给其他设备，离线设备重连后，也会更新遗忘状态。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "4f66e69f18a88c1d64e42798ac5ef52447e5464c30d0740fc0cdfefbe43ae387",
+  "audio_sha256": "ab6cce40c73d5ca26d55dc41f920d9db185bbc56c9531129a1912a65a8b7b9bb",
+  "duration_seconds": 16.728,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 3684160,
+      "text": "说出"
+    },
+    {
+      "offset": 4973750,
+      "duration": 1315830,
+      "text": "要"
+    },
+    {
+      "offset": 6421250,
+      "duration": 3289160,
+      "text": "忘记"
+    },
+    {
+      "offset": 9710410,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 10631660,
+      "duration": 5263330,
+      "text": "内容"
+    },
+    {
+      "offset": 18657910,
+      "duration": 2894580,
+      "text": "先"
+    },
+    {
+      "offset": 21684160,
+      "duration": 2631660,
+      "text": "预览"
+    },
+    {
+      "offset": 24447500,
+      "duration": 3289580,
+      "text": "目标"
+    },
+    {
+      "offset": 28000000,
+      "duration": 921250,
+      "text": "和"
+    },
+    {
+      "offset": 29052500,
+      "duration": 5000000,
+      "text": "范围"
+    },
+    {
+      "offset": 36552500,
+      "duration": 1842080,
+      "text": "再"
+    },
+    {
+      "offset": 38526250,
+      "duration": 3684160,
+      "text": "明确"
+    },
+    {
+      "offset": 42342080,
+      "duration": 3947500,
+      "text": "确认"
+    },
+    {
+      "offset": 52236660,
+      "duration": 6315830,
+      "text": "系统"
+    },
+    {
+      "offset": 59605410,
+      "duration": 1973750,
+      "text": "让"
+    },
+    {
+      "offset": 61710410,
+      "duration": 3026250,
+      "text": "知识"
+    },
+    {
+      "offset": 64868330,
+      "duration": 5131660,
+      "text": "失效"
+    },
+    {
+      "offset": 71052500,
+      "duration": 2105410,
+      "text": "并"
+    },
+    {
+      "offset": 73289580,
+      "duration": 4473750,
+      "text": "清理"
+    },
+    {
+      "offset": 78026250,
+      "duration": 2368330,
+      "text": "检"
+    },
+    {
+      "offset": 80394580,
+      "duration": 5789580,
+      "text": "索向量"
+    },
+    {
+      "offset": 92236660,
+      "duration": 4210410,
+      "text": "共享"
+    },
+    {
+      "offset": 96578750,
+      "duration": 2368330,
+      "text": "记忆"
+    },
+    {
+      "offset": 98947500,
+      "duration": 1710410,
+      "text": "的"
+    },
+    {
+      "offset": 100921250,
+      "duration": 3684160,
+      "text": "删除"
+    },
+    {
+      "offset": 104736660,
+      "duration": 6184160,
+      "text": "标记会"
+    },
+    {
+      "offset": 111973750,
+      "duration": 3684160,
+      "text": "同步"
+    },
+    {
+      "offset": 115657910,
+      "duration": 1184160,
+      "text": "给"
+    },
+    {
+      "offset": 117105410,
+      "duration": 3289580,
+      "text": "其他"
+    },
+    {
+      "offset": 120526250,
+      "duration": 4210410,
+      "text": "设备"
+    },
+    {
+      "offset": 128289580,
+      "duration": 3815830,
+      "text": "离线"
+    },
+    {
+      "offset": 132236660,
+      "duration": 2894580,
+      "text": "设备"
+    },
+    {
+      "offset": 135263330,
+      "duration": 3157910,
+      "text": "重连"
+    },
+    {
+      "offset": 138421250,
+      "duration": 3026250,
+      "text": "后"
+    },
+    {
+      "offset": 143289580,
+      "duration": 1447080,
+      "text": "也"
+    },
+    {
+      "offset": 144736660,
+      "duration": 1315830,
+      "text": "会"
+    },
+    {
+      "offset": 146184160,
+      "duration": 3947500,
+      "text": "更新"
+    },
+    {
+      "offset": 150394580,
+      "duration": 3157910,
+      "text": "遗忘"
+    },
+    {
+      "offset": 153684160,
+      "duration": 4210410,
+      "text": "状态"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

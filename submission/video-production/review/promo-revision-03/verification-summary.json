@@ -1,0 +1,23 @@
+{
+  "video_sha256": "b15d77bbbe45c0a3598b4dc7c88189ff397d9945b33551797e660e5e9f2012e7",
+  "duration_seconds": 449.813333,
+  "video_frames": 13493,
+  "shots": 29,
+  "reduction_seconds": 125.33333399999998,
+  "voice_start_error_frames_max": 0.2900000000008731,
+  "decoded_peak_dbfs": -4.743081569671631,
+  "silence_threshold_dbfs": -40,
+  "silence_minimum_seconds": 1.5,
+  "long_silence_intervals": 0,
+  "ocr_samples": 283,
+  "ocr_flagged_samples": 0,
+  "workbench_matching_frames": [
+    1570,
+    3165,
+    5010,
+    6400,
+    11000
+  ],
+  "human_listening": "not performed",
+  "source_dependencies": "existing requirements; system Tesseract chi_sim+eng for OCR"
+}

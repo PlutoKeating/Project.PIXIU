@@ -1,0 +1,12 @@
+{
+  "source": "write",
+  "sha256": "122b3e40f0e891018d5f8d7b9bb634d39eb68495456ddb211ea0777fb555f005",
+  "id": "cfl_01M227PKTSPC91EPXJGAA1PAZ1",
+  "target_knowledge": "knw_01M227PJBMWA9F29RSC0R0XK85",
+  "field": "演示书房公共书架.层数",
+  "old_value": 3,
+  "new_value": 4,
+  "resolution": "NEW_WINS",
+  "created_at": 1788929068,
+  "severity": "medium"
+}

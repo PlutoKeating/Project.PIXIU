@@ -1,0 +1,200 @@
+{
+  "shot": "s06",
+  "request": {
+    "text": "助手可以计算预算、写入文件，并联网搜索资料。这里展示采购复核单的处理过程。把结果保存为记忆后，打开新会话，助手通过工作卡片找回采购单，引用来源，继续使用。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "956f14c234dd55cf3577316f4c88b3aef837214c108fec46cbd541f3bedbb59b",
+  "audio_sha256": "5faff74b9fd90e9c3c2ec9de460b02928bbcdb4cb2d3115d483d8251e8a820ce",
+  "duration_seconds": 17.616,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 4342080,
+      "text": "助手"
+    },
+    {
+      "offset": 5631660,
+      "duration": 1842080,
+      "text": "可以"
+    },
+    {
+      "offset": 7605410,
+      "duration": 2763330,
+      "text": "计算"
+    },
+    {
+      "offset": 10500000,
+      "duration": 4210410,
+      "text": "预算"
+    },
+    {
+      "offset": 18000000,
+      "duration": 3552500,
+      "text": "写入"
+    },
+    {
+      "offset": 21684160,
+      "duration": 5000000,
+      "text": "文件"
+    },
+    {
+      "offset": 29052500,
+      "duration": 1842080,
+      "text": "并"
+    },
+    {
+      "offset": 30894580,
+      "duration": 3684160,
+      "text": "联网"
+    },
+    {
+      "offset": 34842080,
+      "duration": 3289580,
+      "text": "搜索"
+    },
+    {
+      "offset": 38263330,
+      "duration": 4473750,
+      "text": "资料"
+    },
+    {
+      "offset": 48815830,
+      "duration": 2631660,
+      "text": "这里"
+    },
+    {
+      "offset": 51578750,
+      "duration": 5921250,
+      "text": "展示"
+    },
+    {
+      "offset": 58684160,
+      "duration": 4868330,
+      "text": "采购"
+    },
+    {
+      "offset": 63684160,
+      "duration": 4868330,
+      "text": "复核单"
+    },
+    {
+      "offset": 68552500,
+      "duration": 1842080,
+      "text": "的"
+    },
+    {
+      "offset": 70657910,
+      "duration": 3552500,
+      "text": "处理"
+    },
+    {
+      "offset": 74342080,
+      "duration": 4605410,
+      "text": "过程"
+    },
+    {
+      "offset": 85000000,
+      "duration": 1973750,
+      "text": "把"
+    },
+    {
+      "offset": 87105410,
+      "duration": 3421250,
+      "text": "结果"
+    },
+    {
+      "offset": 90789580,
+      "duration": 3026250,
+      "text": "保存"
+    },
+    {
+      "offset": 93815830,
+      "duration": 1447500,
+      "text": "为"
+    },
+    {
+      "offset": 95394580,
+      "duration": 2631660,
+      "text": "记忆"
+    },
+    {
+      "offset": 98026250,
+      "duration": 3157910,
+      "text": "后"
+    },
+    {
+      "offset": 103026250,
+      "duration": 3157910,
+      "text": "打开"
+    },
+    {
+      "offset": 106315830,
+      "duration": 2631660,
+      "text": "新"
+    },
+    {
+      "offset": 108947500,
+      "duration": 4736660,
+      "text": "会话"
+    },
+    {
+      "offset": 118157910,
+      "duration": 4342080,
+      "text": "助手"
+    },
+    {
+      "offset": 122631660,
+      "duration": 3421250,
+      "text": "通过"
+    },
+    {
+      "offset": 126315830,
+      "duration": 2894580,
+      "text": "工作"
+    },
+    {
+      "offset": 129342080,
+      "duration": 5921250,
+      "text": "卡片"
+    },
+    {
+      "offset": 136315830,
+      "duration": 3947500,
+      "text": "找回"
+    },
+    {
+      "offset": 140394580,
+      "duration": 3421250,
+      "text": "采购"
+    },
+    {
+      "offset": 143815830,
+      "duration": 2631660,
+      "text": "单"
+    },
+    {
+      "offset": 149210410,
+      "duration": 3684160,
+      "text": "引用"
+    },
+    {
+      "offset": 153026250,
+      "duration": 4605410,
+      "text": "来源"
+    },
+    {
+      "offset": 159342080,
+      "duration": 3289580,
+      "text": "继续"
+    },
+    {
+      "offset": 162763330,
+      "duration": 4210410,
+      "text": "使用"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

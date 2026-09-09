@@ -1,0 +1,195 @@
+{
+  "shot": "s23",
+  "request": {
+    "text": "个人记忆保存在本机，协作内容按共享范围管理。敏感检测会拦截包含敏感信息的共享写入。你还可以暂停同步，或选择设备解除信任，掌握自己的共享范围。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "695887351603faef9d4fcf9ea64e8ba73e4d1895783383a57db8140676f0fb73",
+  "audio_sha256": "bf2a5e5d88c8c51e46a57fc3bf8168a99b7618795a53a86a6caa76c8b25f6c3d",
+  "duration_seconds": 15.552,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 3421250,
+      "text": "个人"
+    },
+    {
+      "offset": 4578750,
+      "duration": 3421250,
+      "text": "记忆"
+    },
+    {
+      "offset": 8263330,
+      "duration": 2762910,
+      "text": "保存"
+    },
+    {
+      "offset": 11026250,
+      "duration": 1052500,
+      "text": "在"
+    },
+    {
+      "offset": 12210410,
+      "duration": 5000000,
+      "text": "本机"
+    },
+    {
+      "offset": 21421250,
+      "duration": 3815830,
+      "text": "协作"
+    },
+    {
+      "offset": 25368330,
+      "duration": 4473750,
+      "text": "内容"
+    },
+    {
+      "offset": 30105410,
+      "duration": 2236660,
+      "text": "按"
+    },
+    {
+      "offset": 32342080,
+      "duration": 3552500,
+      "text": "共享"
+    },
+    {
+      "offset": 36026250,
+      "duration": 2500000,
+      "text": "范围"
+    },
+    {
+      "offset": 38657910,
+      "duration": 3552500,
+      "text": "管理"
+    },
+    {
+      "offset": 48289580,
+      "duration": 3684160,
+      "text": "敏感"
+    },
+    {
+      "offset": 52105410,
+      "duration": 5526250,
+      "text": "检测"
+    },
+    {
+      "offset": 58815830,
+      "duration": 2631660,
+      "text": "会"
+    },
+    {
+      "offset": 61578750,
+      "duration": 3815830,
+      "text": "拦截"
+    },
+    {
+      "offset": 65657910,
+      "duration": 3947500,
+      "text": "包含"
+    },
+    {
+      "offset": 69868330,
+      "duration": 2894580,
+      "text": "敏感"
+    },
+    {
+      "offset": 72894580,
+      "duration": 3157910,
+      "text": "信息"
+    },
+    {
+      "offset": 76052500,
+      "duration": 1578750,
+      "text": "的"
+    },
+    {
+      "offset": 77894580,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 81710410,
+      "duration": 3815830,
+      "text": "写入"
+    },
+    {
+      "offset": 91578750,
+      "duration": 1447500,
+      "text": "你"
+    },
+    {
+      "offset": 93026250,
+      "duration": 1184160,
+      "text": "还"
+    },
+    {
+      "offset": 94342080,
+      "duration": 3026250,
+      "text": "可以"
+    },
+    {
+      "offset": 97631660,
+      "duration": 3684160,
+      "text": "暂停"
+    },
+    {
+      "offset": 101447500,
+      "duration": 4342080,
+      "text": "同步"
+    },
+    {
+      "offset": 107631660,
+      "duration": 1842080,
+      "text": "或"
+    },
+    {
+      "offset": 109605410,
+      "duration": 3157910,
+      "text": "选择"
+    },
+    {
+      "offset": 112894580,
+      "duration": 4736660,
+      "text": "设备"
+    },
+    {
+      "offset": 117894580,
+      "duration": 3421250,
+      "text": "解除"
+    },
+    {
+      "offset": 121447500,
+      "duration": 4736660,
+      "text": "信任"
+    },
+    {
+      "offset": 129342080,
+      "duration": 4078750,
+      "text": "掌握"
+    },
+    {
+      "offset": 133684160,
+      "duration": 2500000,
+      "text": "自己"
+    },
+    {
+      "offset": 136315830,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 137894580,
+      "duration": 3552500,
+      "text": "共享"
+    },
+    {
+      "offset": 141578750,
+      "duration": 4605410,
+      "text": "范围"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

@@ -1,0 +1,12 @@
+
+> shotcraft-workbench@0.1.0 parity
+> node scripts/parity.mjs --frames 1570,3165,5010,6400,11000
+
+bundling…
+f1570: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0
+f3165: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0
+f5010: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0
+f6400: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0
+f11000: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0
+
+5 帧全部一致，PNG 见 /home/pluto/.codex/skills/video-shotcraft/workbench/.parity

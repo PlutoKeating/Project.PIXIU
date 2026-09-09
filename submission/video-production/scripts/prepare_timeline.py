@@ -11,6 +11,8 @@ import math
 from pathlib import Path
 import re
 import shutil
+import subprocess
+import array
 
 ROOT = Path(__file__).resolve().parents[1]
 story = json.loads((ROOT / 'storyboard/shots.json').read_text())
@@ -58,14 +60,26 @@ for shot in story['shots']:
                              'to': 15 + math.ceil((last['offset'] + last['duration']) / 1e7 * fps) + 3})
     for i in range(len(captions) - 1):
         captions[i]['to'] = min(captions[i]['to'], captions[i+1]['from'])
-    duration = max(round(shot['planned_duration_seconds'] * fps),
-                   math.ceil((meta['duration_seconds'] + 1.2) * fps))
+    # Actual decoded speech bounds, not the planning estimate or MP3 tail padding.
+    pcm = subprocess.check_output(['ffmpeg', '-v', 'error', '-i', str(path.with_suffix('.mp3')),
+        '-ac', '1', '-ar', '16000', '-f', 's16le', '-'])
+    samples = array.array('h', pcm)
+    block = 160  # 10 ms; -45 dBFS RMS retains soft final syllables.
+    active = [i for i in range(0, len(samples), block)
+              if sum(v*v for v in samples[i:i+block]) / max(1, len(samples[i:i+block])) > (32768 * 10**(-45/20))**2]
+    spoken_end = (active[-1] + block) / 16000 if active else meta['duration_seconds']
+    end_frame = max(captions[-1]['to'], 15 + math.ceil(spoken_end * fps))
+    duration = end_frame + (15 if shot['id'] in ('s01', 's30') else 8)
+    # Keep the final line during the short cut breath; no subtitle-free idle tail.
+    captions[-1]['to'] = duration
+
     assert all(0 <= cue['from'] < cue['to'] <= duration for cue in captions)
     output = ROOT / 'public/audio' / (shot['id'] + '.mp3')
     shutil.copyfile(path.with_suffix('.mp3'), output)
     timeline.append({**shot, 'from': start, 'duration': duration,
                      'audio': 'audio/' + output.name, 'audio_from': 15,
                      'audio_source': str(path.with_suffix('.mp3').relative_to(ROOT)),
+                     'speech_end_frame': end_frame, 'tail_frames': duration - end_frame,
                      'captions': captions})
     measurements.append({'shot': shot['id'], 'seconds': meta['duration_seconds'],
                          'audio': str(path.with_suffix('.mp3').relative_to(ROOT))})

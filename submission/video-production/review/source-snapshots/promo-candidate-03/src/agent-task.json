@@ -1,0 +1,20 @@
+{
+  "sources": {
+    "raw/network/完整助手任务-03-工具证据.json": "18bb185919e3c37c1fcb68f1558bc84cc075868cc6b7430d1b6bb381ca0c244c",
+    "raw/network/秋季原生助手任务-工具证据-02.json": "3ffaf20e0cf3bebcc093f48f7dbc711071dfc2ae4a7ca42f0b8b5a696d8fe774",
+    "review/秋季任务保存复用验证-01.json": "69fc68d07d4f4646dac303384d8a7f6cf1cec914969f835f69f7a683e87edad1",
+    "raw/screenshots/20260909-秋季复用记忆工具卡-4K.png": "d379ccb0fc3921e246f40df3d058aa53ed021b0f488dc7e28ecf14d5552a8a0f"
+  },
+  "gateway": {
+    "file": "科普书：33元\n工具书：39元\n画册：28元\n合计：100元",
+    "search_title": "openKylin - 开放麒麟",
+    "search_url": "https://www.openkylin.top/"
+  },
+  "native": {
+    "file": "科普书: 24元\n工具书: 36元\n画册: 40元\n合计: 100元",
+    "saved_content": "秋季阅读采购复核单：科普书24元，工具书36元，画册40元，合计100元",
+    "knowledge_id": "knw_01M22B0S2378RFPM5DNSJZVT1N",
+    "screenshot": "20260909-秋季复用记忆工具卡-4K.png"
+  },
+  "boundary": "两个独立样本；原生搜索失败，不展示为成功；新会话使用显式记忆检索。"
+}

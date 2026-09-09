@@ -1,0 +1,220 @@
+{
+  "shot": "s20",
+  "request": {
+    "text": "在笔记本的会话里，记下周六上午九点整理书房、书籍按主题分类的约定。换到客厅，请助手查找这份约定。它通过记忆工具找回共享内容，回答时间和分类方式，并注明知识来源。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "1bce8884fc5f1512501138311fea9e2ad988d056f983cc2a0b94667626173114",
+  "audio_sha256": "b23f9d6adea9de072a83f707af99b246f8fe478b80422fc1196b5a0e13567f46",
+  "duration_seconds": 18.696,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 1973750,
+      "text": "在"
+    },
+    {
+      "offset": 3131660,
+      "duration": 3815830,
+      "text": "笔记本"
+    },
+    {
+      "offset": 6947500,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 7868330,
+      "duration": 3684160,
+      "text": "会话"
+    },
+    {
+      "offset": 11552500,
+      "duration": 3684160,
+      "text": "里"
+    },
+    {
+      "offset": 19315830,
+      "duration": 1973750,
+      "text": "记"
+    },
+    {
+      "offset": 21289580,
+      "duration": 1578750,
+      "text": "下"
+    },
+    {
+      "offset": 23131660,
+      "duration": 3684160,
+      "text": "周六"
+    },
+    {
+      "offset": 26947500,
+      "duration": 9210410,
+      "text": "上午九点"
+    },
+    {
+      "offset": 37210410,
+      "duration": 3157910,
+      "text": "整理"
+    },
+    {
+      "offset": 40500000,
+      "duration": 5394580,
+      "text": "书房"
+    },
+    {
+      "offset": 48921250,
+      "duration": 6710410,
+      "text": "书籍"
+    },
+    {
+      "offset": 56684160,
+      "duration": 2105410,
+      "text": "按"
+    },
+    {
+      "offset": 58921250,
+      "duration": 2894580,
+      "text": "主题"
+    },
+    {
+      "offset": 61947500,
+      "duration": 2631250,
+      "text": "分类"
+    },
+    {
+      "offset": 64578750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 65500000,
+      "duration": 3289580,
+      "text": "约定"
+    },
+    {
+      "offset": 74868330,
+      "duration": 3552500,
+      "text": "换到"
+    },
+    {
+      "offset": 78552500,
+      "duration": 5657910,
+      "text": "客厅"
+    },
+    {
+      "offset": 87368330,
+      "duration": 2368330,
+      "text": "请"
+    },
+    {
+      "offset": 89868330,
+      "duration": 5263330,
+      "text": "助手"
+    },
+    {
+      "offset": 96184160,
+      "duration": 3815830,
+      "text": "查找"
+    },
+    {
+      "offset": 100131660,
+      "duration": 1052500,
+      "text": "这"
+    },
+    {
+      "offset": 101184160,
+      "duration": 1184160,
+      "text": "份"
+    },
+    {
+      "offset": 102500000,
+      "duration": 3289580,
+      "text": "约定"
+    },
+    {
+      "offset": 111842080,
+      "duration": 1578750,
+      "text": "它"
+    },
+    {
+      "offset": 113552500,
+      "duration": 3552500,
+      "text": "通过"
+    },
+    {
+      "offset": 117368330,
+      "duration": 2368330,
+      "text": "记忆"
+    },
+    {
+      "offset": 119868330,
+      "duration": 5131660,
+      "text": "工具"
+    },
+    {
+      "offset": 126052500,
+      "duration": 4605410,
+      "text": "找回"
+    },
+    {
+      "offset": 130921250,
+      "duration": 3157910,
+      "text": "共享"
+    },
+    {
+      "offset": 134210410,
+      "duration": 4605410,
+      "text": "内容"
+    },
+    {
+      "offset": 142105410,
+      "duration": 3289580,
+      "text": "回答"
+    },
+    {
+      "offset": 145526250,
+      "duration": 5526250,
+      "text": "时间"
+    },
+    {
+      "offset": 151315830,
+      "duration": 1710410,
+      "text": "和"
+    },
+    {
+      "offset": 153157910,
+      "duration": 2894580,
+      "text": "分类"
+    },
+    {
+      "offset": 156184160,
+      "duration": 5000000,
+      "text": "方式"
+    },
+    {
+      "offset": 163289580,
+      "duration": 2105410,
+      "text": "并"
+    },
+    {
+      "offset": 165526250,
+      "duration": 3815830,
+      "text": "注明"
+    },
+    {
+      "offset": 169605410,
+      "duration": 3157910,
+      "text": "知识"
+    },
+    {
+      "offset": 172894580,
+      "duration": 4736660,
+      "text": "来源"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

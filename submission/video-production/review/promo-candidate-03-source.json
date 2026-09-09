@@ -1,0 +1,205 @@
+{
+  "snapshot": "review/source-snapshots/promo-candidate-03",
+  "files": [
+    {
+      "path": "src/DeckDealMotion.tsx",
+      "sha256": "8b07e847f944e6065f8915f926b1a9ffcf8573c7c0aa0827254e19fddc5e642c"
+    },
+    {
+      "path": "src/KnowledgeExamplesScene.tsx",
+      "sha256": "b5718aa35c5d7b2e09ea7b5d1906a6cbd1b5399c656f1834e69ec04b3caed6df"
+    },
+    {
+      "path": "src/AgentTaskScene.tsx",
+      "sha256": "c7b0c704795d7815afd4c008e5944306a9f74bf13914d876ae46596e5fe3c852"
+    },
+    {
+      "path": "src/knowledge-examples.json",
+      "sha256": "a7b4c00f33d4b030cf566313b8f817329b29e135305963eed23c9e4eb093e8e2"
+    },
+    {
+      "path": "src/privacy-boundary.json",
+      "sha256": "af148df5bc979676bebff5a6ace923c37aa80df8e6180fb2e4283d8c411dc114"
+    },
+    {
+      "path": "src/BehaviorCaptureScene.tsx",
+      "sha256": "ab85f160f6ae783477d8d0b6b32ecf5d3fbdfa8c0884bb91eba7879659d28276"
+    },
+    {
+      "path": "src/Fonts.tsx",
+      "sha256": "dbfed4eccc20199a92bd9fe900b41d3af3760a61310576778dd187c6c33f9ce3"
+    },
+    {
+      "path": "src/BillScene.tsx",
+      "sha256": "3872f4e00567c2581afbe35dce859b7e4af5033facf1a9602c776c94f2ca393b"
+    },
+    {
+      "path": "src/DigitRoll.tsx",
+      "sha256": "cd23e46e46ca32bb633cb703f08ccb332bfa0bf1b0fe857355ad4d154ada0ea0"
+    },
+    {
+      "path": "src/deck-assets.json",
+      "sha256": "2177a2f9813733e401af86d24c5efba489fa353ed0825f368bb2a84c52fe38b5"
+    },
+    {
+      "path": "src/index.ts",
+      "sha256": "2e0e358282a1b998a65387c653b97c2bb2eb7aae94cf200fc0b8d919f7be73a6"
+    },
+    {
+      "path": "src/DeckCamera.tsx",
+      "sha256": "88d8ff3bb2fd3ff60572cfbbbaf934396afe332a56f249f3703f1fac80432562"
+    },
+    {
+      "path": "src/FullFilm.tsx",
+      "sha256": "ac2a5489389dcbae47b35091e5d885336e4ad289c0ec6955fca1d4b2f158dcc2"
+    },
+    {
+      "path": "src/timeline.json",
+      "sha256": "e6031f156e03c8f1f1a98beead7895cfee0bc21b43b5aa63b29c0bce3b040ac5"
+    },
+    {
+      "path": "src/ForgetTraceScene.tsx",
+      "sha256": "14e0996b83b7f05b2020fc4c0b27990346377f99a6f9f3978e6e963274c9865d"
+    },
+    {
+      "path": "src/flow-results.json",
+      "sha256": "5cbc2ecb6bd2bfc1d2c4ae9eca6e35aa6a1460d82fe396dffdd0386a62adf105"
+    },
+    {
+      "path": "src/preference-categories.json",
+      "sha256": "5fffacd1af37fe7884012e328c2e278327b09e3de4c9eb911c5d9b103d26f5ab"
+    },
+    {
+      "path": "src/semantic-conflict.json",
+      "sha256": "522030e6146ff04bf194a29fa28f560f80b5629e6dc9a8b5978992813f4dfc88"
+    },
+    {
+      "path": "src/NarratedChapter.tsx",
+      "sha256": "b932877cfd1e42c8797249e19f243ff92b21907c257ce9d58f59f02be7253c3d"
+    },
+    {
+      "path": "src/SyncTraceScene.tsx",
+      "sha256": "eb03faa1561e9323529587d01b0334059dd885fc32feac186affb543a240761b"
+    },
+    {
+      "path": "src/SharedAgentScene.tsx",
+      "sha256": "eba4ac3546956d94519f030073715e099ea6d969339baf43e13ba8d2030e8c75"
+    },
+    {
+      "path": "src/NativeDeliveryScenes.tsx",
+      "sha256": "3a4c6488cb1f880a392e37420eab36e4ffe80b4ee811bda70733b5d98fcf311c"
+    },
+    {
+      "path": "src/ingest-results.json",
+      "sha256": "820aa6b142146dd353ac807bd3dc1fb47519cbfbd7eb39fab5ea8e5ad99371ef"
+    },
+    {
+      "path": "src/PresentationMotion.tsx",
+      "sha256": "ea4d9696040fa73ffdd7c7a362451b851a5bdbe9a30c9a7bb4c8a48a11f300df"
+    },
+    {
+      "path": "src/InsightDocumentScene.tsx",
+      "sha256": "24a241932009f9dd8cf5943f1e8a6b5e28241515d685e0faa5fa7444806828c9"
+    },
+    {
+      "path": "src/PreferenceHistoryScene.tsx",
+      "sha256": "8b22ecb1aa2b3b5a747eafa1c7426483f2bbab472a4d94a4e95dabbc3f8f0edd"
+    },
+    {
+      "path": "src/workbench.ts",
+      "sha256": "c5d5ba266e7e9b7993c3bcdad390ab558b2d94dc41688a9e7107ef032016e3ac"
+    },
+    {
+      "path": "src/agent-task.json",
+      "sha256": "b0eed29fae8c838350edea49801ceccf00d21946ebe0184f795e27cd2199d222"
+    },
+    {
+      "path": "src/ConflictAuditScene.tsx",
+      "sha256": "bd80552d39814312ab015ff610854cda4f2d1e9cd564748cab0c4fe85f57706a"
+    },
+    {
+      "path": "src/ArchitectureScene.tsx",
+      "sha256": "84eccc064bf4e2f0145b27c59eec40457392e32f9c2cb31b94c4f022cfc7414f"
+    },
+    {
+      "path": "src/evaluation-baseline.json",
+      "sha256": "9214a1dab78c251e02af201598c4089b6ebecb8d74b7f1ee3f588c49b1f6c6b9"
+    },
+    {
+      "path": "src/SearchEvidenceScene.tsx",
+      "sha256": "18636efc48bae29cf0d06828a00765493bdd770dc1982fc5b736b08f47c69526"
+    },
+    {
+      "path": "src/sync-trace.json",
+      "sha256": "99ed455fe6dd21dc57d2940cc35da784216c6fff9121b67dc3ecb501d3863e30"
+    },
+    {
+      "path": "src/forget-trace.json",
+      "sha256": "0d747133896c465a0f3070d705ea93c7efe38395f33533bc839c15454367ab12"
+    },
+    {
+      "path": "src/Root.tsx",
+      "sha256": "978847f4bd25b1c7134bb59cfd5b27150174ea6ee11444260738e5ae0611959b"
+    },
+    {
+      "path": "src/BrandInkOpen.tsx",
+      "sha256": "341d1451f67249c481942180edc8c419119602e7ccd7f14a31a00ed40677b085"
+    },
+    {
+      "path": "src/IngestSourcesScene.tsx",
+      "sha256": "b7ed86fa01a951c907d3794c814bb7a7e8a4bf6577955d2b32854186cb0e382a"
+    },
+    {
+      "path": "src/SceneOutro.tsx",
+      "sha256": "64484da098d7f9cb7d433414ba20d574bf0b46d3ad79b85184cce29ce27bf4de"
+    },
+    {
+      "path": "src/SharingBoundaryScene.tsx",
+      "sha256": "b19cee6eab0633ef7c0e481e387a46806851ef8b5bf3bcdca2ec1404cec37a63"
+    },
+    {
+      "path": "src/MemoryFlowScene.tsx",
+      "sha256": "804f6fcdb7c71b23bf0ed7885f829860510d09d10f2a103d02b52e81c79a581d"
+    },
+    {
+      "path": "src/PageCam.tsx",
+      "sha256": "f8efe781653d20bd415f02e82846d118fba4bdeaaef86df6fe40da4d96a7cc21"
+    },
+    {
+      "path": "src/NativeSetupScenes.tsx",
+      "sha256": "461a20794cfbc668d00869ae55eb69c1d91d61e54ed6f67c25fbb15c65c89a31"
+    },
+    {
+      "path": "src/PaperTitleCard.tsx",
+      "sha256": "82e0814046ec56cdbe343b3cdb7805c94d74534c553920aa2a7ef02249227cf7"
+    },
+    {
+      "path": "src/SpotlightHeroCard.tsx",
+      "sha256": "b43094d445fb5b7fbf186dd827a1f5aaaf2d016b0921286ec22d5585207c109c"
+    },
+    {
+      "path": "src/DeviceTrustScene.tsx",
+      "sha256": "dff7011e428d74a4e3bebed1aeb998b7e9ca643b29823de7e4b34f6481babc3c"
+    },
+    {
+      "path": "src/EvaluationScene.tsx",
+      "sha256": "5d1d78f6380a01831b3562c7b8e18b12a6023cb97beca0d2633266366a890ee9"
+    },
+    {
+      "path": "storyboard/shots.json",
+      "sha256": "793fc473f51ef911e3a543a764bb562c6cf46411df8302a2157b196669622b21"
+    },
+    {
+      "path": "package.json",
+      "sha256": "b8f4b3db92047b34616ff65383ebf205a7cb5cff17d6ef6ce5b2701c2bfb601e"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "af86a0da9ce514404d33dde59fe6788253a4082b9f8422a264d3bcda1a6f897a"
+    },
+    {
+      "path": "remotion.config.ts",
+      "sha256": "239918065a60a743c1b34b5d996ff17264468b3c6bece390d72d53228b9b4e7a"
+    }
+  ]
+}

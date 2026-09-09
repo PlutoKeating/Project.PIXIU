@@ -1,0 +1,170 @@
+{
+  "shot": "s02",
+  "request": {
+    "text": "在工作电脑上交代过的安排，换到另一台设备，还能接着使用。貔貅连接设备之间的知识与经验，让助手记住你的工作方式。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "34f80c5a6d87b83579d4ef3294546dca8313a30fb139be029ce660c1c7badc1b",
+  "audio_sha256": "83f2cb8b0338470bc5fa6ea9d6df95b2a1bc20d1fe6cd7f6454a18ee76df3bbe",
+  "duration_seconds": 12.216,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2236660,
+      "text": "在"
+    },
+    {
+      "offset": 3394580,
+      "duration": 3026250,
+      "text": "工作"
+    },
+    {
+      "offset": 6552500,
+      "duration": 5131660,
+      "text": "电脑"
+    },
+    {
+      "offset": 12736660,
+      "duration": 6578750,
+      "text": "上交代"
+    },
+    {
+      "offset": 19315830,
+      "duration": 920830,
+      "text": "过"
+    },
+    {
+      "offset": 20236660,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 21157910,
+      "duration": 5789580,
+      "text": "安排"
+    },
+    {
+      "offset": 30368330,
+      "duration": 3815830,
+      "text": "换到"
+    },
+    {
+      "offset": 34447500,
+      "duration": 1447080,
+      "text": "另"
+    },
+    {
+      "offset": 35894580,
+      "duration": 1052500,
+      "text": "一"
+    },
+    {
+      "offset": 36947500,
+      "duration": 1447500,
+      "text": "台"
+    },
+    {
+      "offset": 38526250,
+      "duration": 4473750,
+      "text": "设备"
+    },
+    {
+      "offset": 44842080,
+      "duration": 2236660,
+      "text": "还"
+    },
+    {
+      "offset": 47078750,
+      "duration": 1447500,
+      "text": "能"
+    },
+    {
+      "offset": 48789580,
+      "duration": 2763330,
+      "text": "接着"
+    },
+    {
+      "offset": 51684160,
+      "duration": 4342080,
+      "text": "使用"
+    },
+    {
+      "offset": 62105410,
+      "duration": 3815830,
+      "text": "貔貅"
+    },
+    {
+      "offset": 66184160,
+      "duration": 2894580,
+      "text": "连接"
+    },
+    {
+      "offset": 69210410,
+      "duration": 3684160,
+      "text": "设备"
+    },
+    {
+      "offset": 73026250,
+      "duration": 2763330,
+      "text": "之间"
+    },
+    {
+      "offset": 75789580,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 77105410,
+      "duration": 4078750,
+      "text": "知识"
+    },
+    {
+      "offset": 81315830,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 82500000,
+      "duration": 4605410,
+      "text": "经验"
+    },
+    {
+      "offset": 90657910,
+      "duration": 1842080,
+      "text": "让"
+    },
+    {
+      "offset": 92631660,
+      "duration": 3157910,
+      "text": "助手"
+    },
+    {
+      "offset": 95921250,
+      "duration": 5263330,
+      "text": "记住"
+    },
+    {
+      "offset": 102236660,
+      "duration": 2236660,
+      "text": "你"
+    },
+    {
+      "offset": 104473750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 105394580,
+      "duration": 2763330,
+      "text": "工作"
+    },
+    {
+      "offset": 108289580,
+      "duration": 4473750,
+      "text": "方式"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}
