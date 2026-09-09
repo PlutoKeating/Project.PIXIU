@@ -1,4 +1,5 @@
 #include "MemoryWorkspace.h"
+#include "widgets/WorkspaceNavigation.h"
 #include "MemoryScopes.h"
 #include "MemoryScopeControl.h"
 #include "MemoryWriteDialog.h"
@@ -99,6 +100,52 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void desktopNavigationRemainsImmediateDuringMotion()
+    {
+        QWidget host;
+        auto *outer = new QVBoxLayout(&host);
+        auto *tabs = new QTabWidget(&host);
+        for (const auto &label : {"One", "Two", "Three"}) tabs->addTab(new QWidget, label);
+        outer->addWidget(tabs);
+        pixiu::installWorkspaceNavigation(outer, tabs, {"One", "Two", "Three"});
+        host.resize(800, 600);
+        host.show();
+        QCoreApplication::processEvents();
+        auto *navigation = host.findChild<QListWidget *>("workspaceSections");
+        QVERIFY(navigation);
+        const auto firstRect = navigation->visualItemRect(navigation->item(0));
+        for (int index : {2, 0, 1, 2, 1}) {
+            QTest::mouseClick(navigation->viewport(), Qt::LeftButton, Qt::NoModifier,
+                              navigation->visualItemRect(navigation->item(index)).center());
+            QCOMPARE(tabs->currentIndex(), index);
+            QCOMPARE(navigation->visualItemRect(navigation->item(0)), firstRect);
+        }
+        QTest::keyClick(navigation, Qt::Key_Down);
+        QCOMPARE(tabs->currentIndex(), 2);
+        tabs->setCurrentIndex(0);
+        QCOMPARE(navigation->currentRow(), 0);
+        host.resize(900, 500);
+        QTest::qWait(180);
+        QCOMPARE(tabs->currentIndex(), 0);
+        QSettings motionSettings;
+        const bool hadPreference = motionSettings.contains("appearance/animations");
+        const bool previousPreference = pixiu::MotionPreferences::enabled();
+        pixiu::MotionPreferences::setEnabled(false);
+        navigation->setCurrentRow(1);
+        const bool animationStopped = navigation->findChild<QVariantAnimation *>()->state()
+            == QAbstractAnimation::Stopped;
+        const bool persistedDisabled = !QSettings().value("appearance/animations", true).toBool();
+        pixiu::MotionPreferences::setEnabled(previousPreference);
+        if (!hadPreference) motionSettings.remove("appearance/animations");
+        QVERIFY(animationStopped);
+        QVERIFY(persistedDisabled);
+        const bool effects = QApplication::isEffectEnabled(Qt::UI_AnimateMenu);
+        QApplication::setEffectEnabled(Qt::UI_AnimateMenu, false);
+        navigation->setCurrentRow(2);
+        const int finalPage = tabs->currentIndex();
+        QApplication::setEffectEnabled(Qt::UI_AnimateMenu, effects);
+        QCOMPARE(finalPage, 2);
+    }
     void sessionSourceReadParticipatesInHostExitGuard()
     {
         QWidget host;

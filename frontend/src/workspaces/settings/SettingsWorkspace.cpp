@@ -98,6 +98,14 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     });
     memoryHttp->agentMemorySettings();
     heading(tr("桌面使用"));
+    auto *animations = new QCheckBox(tr("界面动画"), general);
+    animations->setObjectName("interfaceAnimations");
+    animations->setToolTip(tr("关闭后立即切换界面，减少低配置电脑的绘制开销。"));
+    animations->setChecked(MotionPreferences::enabled());
+    generalLayout->addWidget(animations);
+    connect(animations, &QCheckBox::toggled, this, [](bool enabled) {
+        MotionPreferences::setEnabled(enabled);
+    });
     auto *shortcutRow = new QHBoxLayout();
     auto *shortcutLabel = new QLabel(tr("唤起快捷键"), general);
     auto *shortcut = new QKeySequenceEdit(general);

@@ -250,5 +250,9 @@
   {
     "source": "frontend/src/widgets/WorkspaceNavigation.h",
     "destination": "pixiu/frontend/src/widgets/WorkspaceNavigation.h"
+  },
+  {
+    "source": "frontend/src/widgets/MotionPreferences.h",
+    "destination": "pixiu/frontend/src/widgets/MotionPreferences.h"
   }
 ]
