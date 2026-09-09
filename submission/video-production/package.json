@@ -15,7 +15,8 @@
     "render:spotlight": "remotion render src/index.ts PixiuSpotlightReview",
     "prepare:concept": "python3 scripts/outline_concept.py",
     "render:bill": "remotion render src/index.ts PixiuBillReview",
-    "prepare:evidence": "python3 scripts/prepare_evidence.py"
+    "prepare:evidence": "python3 scripts/prepare_evidence.py",
+    "prepare:agent-scene": "python3 scripts/prepare_agent_scene.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

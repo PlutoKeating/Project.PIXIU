@@ -1,0 +1,22 @@
+{
+  "video": "renders/助手任务-04.mp4",
+  "sha256": "6da1aeba7cb91f8fb2ebdf1bae01fbedcac16151c142c041694ee750c9f8b135",
+  "bytes": 1574031,
+  "seconds": 25.045333,
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 1080,
+      "r_frame_rate": "30/1"
+    },
+    {
+      "codec_name": "aac",
+      "r_frame_rate": "0/0"
+    }
+  ],
+  "source_snapshot": "review/source-snapshots/agent-task-04",
+  "scope": "章节技术检查；未听审，未放行全片",
+  "intermediates": "01搜索结果仅展示58帧；02因修订命令路径失败而重复导出01源码；03延长为196帧。全部保留。",
+  "change": "仅页脚字号34→36，修正独立审查发现的31px实际字形。"
+}

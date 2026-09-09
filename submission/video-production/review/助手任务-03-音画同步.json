@@ -1,0 +1,22 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/助手任务-03.mp4",
+  "video_sha256": "a60617ec022e22304e0995b71d4efb642aab5338ec6084c19020ae83acc329a5",
+  "peak_dbfs": -6.90871524810791,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": -3.898415484448759,
+  "probes": [
+    {
+      "declared_start_frame": 15.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999586198248798,
+      "source_peak_frame": 9.45,
+      "source": "raw/audio/s06/98036ec8f62a.mp3",
+      "source_sha256": "66e56e9cc3fe152c58f53e427e89298046688f7d25d1e495d08cfa075d45b824"
+    }
+  ]
+}

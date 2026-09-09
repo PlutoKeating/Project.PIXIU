@@ -1,0 +1,41 @@
+{
+  "sha256": "a60617ec022e22304e0995b71d4efb642aab5338ec6084c19020ae83acc329a5",
+  "frames": [
+    0,
+    138,
+    195,
+    196,
+    270,
+    316,
+    317,
+    390,
+    462,
+    463,
+    500,
+    700
+  ],
+  "global_offset": 2367,
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "duration": "25.000000",
+        "nb_frames": "750",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0",
+        "duration": "25.045333",
+        "nb_frames": "1174"
+      }
+    ]
+  }
+}

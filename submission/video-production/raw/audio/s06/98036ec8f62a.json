@@ -1,0 +1,215 @@
+{
+  "shot": "s06",
+  "request": {
+    "text": "先看一次网关任务：计算预算、写入文件，并联网搜索资料。再看原生会话中的采购复核单：保存为记忆后，打开新会话，助手通过工作卡片访问长期记忆，引用同一来源，接着使用。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "98036ec8f62a25bdaaa76a3ef5c630a91a02a180a0862a41610d85d30f6e9408",
+  "audio_sha256": "66e56e9cc3fe152c58f53e427e89298046688f7d25d1e495d08cfa075d45b824",
+  "duration_seconds": 17.952,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 2631660,
+      "text": "先"
+    },
+    {
+      "offset": 3657910,
+      "duration": 1184160,
+      "text": "看"
+    },
+    {
+      "offset": 4973750,
+      "duration": 2236660,
+      "text": "一次"
+    },
+    {
+      "offset": 7473750,
+      "duration": 3815830,
+      "text": "网关"
+    },
+    {
+      "offset": 11421250,
+      "duration": 4078750,
+      "text": "任务"
+    },
+    {
+      "offset": 19710410,
+      "duration": 3421250,
+      "text": "计算"
+    },
+    {
+      "offset": 23263330,
+      "duration": 4605410,
+      "text": "预算"
+    },
+    {
+      "offset": 29842080,
+      "duration": 3815830,
+      "text": "写入"
+    },
+    {
+      "offset": 33789580,
+      "duration": 5000000,
+      "text": "文件"
+    },
+    {
+      "offset": 41157910,
+      "duration": 1842080,
+      "text": "并"
+    },
+    {
+      "offset": 43000000,
+      "duration": 3552500,
+      "text": "联网"
+    },
+    {
+      "offset": 46815830,
+      "duration": 3289580,
+      "text": "搜索"
+    },
+    {
+      "offset": 50236660,
+      "duration": 4342080,
+      "text": "资料"
+    },
+    {
+      "offset": 60657910,
+      "duration": 1842080,
+      "text": "再"
+    },
+    {
+      "offset": 62500000,
+      "duration": 2236660,
+      "text": "看"
+    },
+    {
+      "offset": 65000000,
+      "duration": 1710410,
+      "text": "原"
+    },
+    {
+      "offset": 66710410,
+      "duration": 3157910,
+      "text": "生会"
+    },
+    {
+      "offset": 70000000,
+      "duration": 1842080,
+      "text": "话"
+    },
+    {
+      "offset": 71842080,
+      "duration": 1315830,
+      "text": "中"
+    },
+    {
+      "offset": 73157910,
+      "duration": 1447500,
+      "text": "的"
+    },
+    {
+      "offset": 74868330,
+      "duration": 3947500,
+      "text": "采购"
+    },
+    {
+      "offset": 78947500,
+      "duration": 5526250,
+      "text": "复核单"
+    },
+    {
+      "offset": 87894580,
+      "duration": 3552500,
+      "text": "保存"
+    },
+    {
+      "offset": 91447500,
+      "duration": 1578750,
+      "text": "为"
+    },
+    {
+      "offset": 93157910,
+      "duration": 2631660,
+      "text": "记忆"
+    },
+    {
+      "offset": 95789580,
+      "duration": 3157910,
+      "text": "后"
+    },
+    {
+      "offset": 100921250,
+      "duration": 3421250,
+      "text": "打开"
+    },
+    {
+      "offset": 104473750,
+      "duration": 2762910,
+      "text": "新"
+    },
+    {
+      "offset": 107236660,
+      "duration": 4605410,
+      "text": "会话"
+    },
+    {
+      "offset": 116052500,
+      "duration": 4078750,
+      "text": "助手"
+    },
+    {
+      "offset": 120263330,
+      "duration": 3289580,
+      "text": "通过"
+    },
+    {
+      "offset": 123815830,
+      "duration": 2894580,
+      "text": "工作"
+    },
+    {
+      "offset": 126842080,
+      "duration": 5526250,
+      "text": "卡片"
+    },
+    {
+      "offset": 133421250,
+      "duration": 3684160,
+      "text": "访问"
+    },
+    {
+      "offset": 137368330,
+      "duration": 4342080,
+      "text": "长期"
+    },
+    {
+      "offset": 141842080,
+      "duration": 4210410,
+      "text": "记忆"
+    },
+    {
+      "offset": 149473750,
+      "duration": 3684160,
+      "text": "引用"
+    },
+    {
+      "offset": 153421250,
+      "duration": 7368330,
+      "text": "同一来源"
+    },
+    {
+      "offset": 162631660,
+      "duration": 3026250,
+      "text": "接着"
+    },
+    {
+      "offset": 165789580,
+      "duration": 4342080,
+      "text": "使用"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

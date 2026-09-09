@@ -1,0 +1,20 @@
+{
+  "sha256": "6da1aeba7cb91f8fb2ebdf1bae01fbedcac16151c142c041694ee750c9f8b135",
+  "frames": [
+    196,
+    500
+  ],
+  "global_offset": 2367,
+  "measure": {
+    "196": {
+      "footer_first_y": 917,
+      "footer_last_y": 949,
+      "height": 33
+    },
+    "500": {
+      "footer_first_y": 917,
+      "footer_last_y": 949,
+      "height": 33
+    }
+  }
+}
