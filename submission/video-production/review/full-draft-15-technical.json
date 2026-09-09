@@ -1,0 +1,13 @@
+{
+  "status": "保留中间稿；所含发牌04章节存在静止纹理显隐问题",
+  "sha256": "6bdf68ba68f54fba94be589c9a32a5bb99d3dd470cfcb311d4483305acbacaf4",
+  "metadata": {
+    "format": {
+      "duration": "561.152000",
+      "size": "57954766"
+    }
+  },
+  "full_decode_passed": false,
+  "full_decode_note": "未执行完整解码验收；待05修正后的16版",
+  "source_manifest": "full-draft-15-source.json"
+}

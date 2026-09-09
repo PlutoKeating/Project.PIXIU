@@ -1,0 +1,6 @@
+{
+  "asset": "public/audio/whoosh-fast.mp3",
+  "rms_peak_frame": 21.75,
+  "window_ms": 10,
+  "method": "decoded mono waveform; not listening"
+}

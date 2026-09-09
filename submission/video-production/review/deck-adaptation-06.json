@@ -1,0 +1,26 @@
+{
+  "gallery_card": "deck-deal-flyin",
+  "style_key": "deck-deal-flyin",
+  "demo": "reference/DeckDealFlyin-demo.tsx",
+  "demo_sha256": "4738e54d707a82847d1a5081af88876a872465eb3ead94f1c7682acf8e5a251a",
+  "adaptations": [
+    "五张真实截图各两种裁片组成十张纹理，额外十六张复用；不代表二十六条独立采集记录",
+    "继承26卡、硬加速cue、48/30px预备、8+4帧落位和0.996 press、90px弧顶、确定性抖动与相机轨迹",
+    "按用户明亮主题把深金属与暖光改为浅蓝灰材质；不照搬模板产品截图",
+    "发牌后保持至129帧，再展示真实来源特写、清洗/质量公共接口记录与同来源检索",
+    "原配音与字幕时间不变，新增三处轻量whoosh；未主观听审"
+  ],
+  "source_data": "raw/network/接入清洗与质量-01.json",
+  "limits": [
+    "接口手动合成输入不证明自动行为采集",
+    "发牌为说明动画，卡片正文不作逐字结果阅读；结果另有放大段",
+    "未完成全片最终审查"
+  ],
+  "revision": "06",
+  "corrections": [
+    "纹理0.42不透明度及1.2px轻虚化",
+    "101帧落定后转等价2D",
+    "底板z=-12避免末卡缓动穿入"
+  ],
+  "review": "independent-deck-06/REPORT.md；有限范围通过，不包含主观听审或完整影片放行"
+}

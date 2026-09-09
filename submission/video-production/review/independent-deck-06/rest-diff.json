@@ -1,0 +1,281 @@
+[
+  {
+    "pair": [
+      98,
+      99
+    ],
+    "mae": 0.41191666666666665,
+    "fraction_pixel_any_channel_over16": 0.005338888888888889,
+    "max_diff": 56
+  },
+  {
+    "pair": [
+      99,
+      100
+    ],
+    "mae": 0.18534583333333332,
+    "fraction_pixel_any_channel_over16": 0.00033958333333333334,
+    "max_diff": 35
+  },
+  {
+    "pair": [
+      100,
+      101
+    ],
+    "mae": 0.440480787037037,
+    "fraction_pixel_any_channel_over16": 0.0002375,
+    "max_diff": 35
+  },
+  {
+    "pair": [
+      101,
+      102
+    ],
+    "mae": 0.00013055555555555555,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      102,
+      103
+    ],
+    "mae": 0.0017212962962962963,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      103,
+      104
+    ],
+    "mae": 0.002215046296296296,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 3
+  },
+  {
+    "pair": [
+      104,
+      105
+    ],
+    "mae": 9.351851851851852e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      105,
+      106
+    ],
+    "mae": 0.0003226851851851852,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      106,
+      107
+    ],
+    "mae": 0.001351851851851852,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      107,
+      108
+    ],
+    "mae": 0.002490740740740741,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      108,
+      109
+    ],
+    "mae": 7.847222222222222e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      109,
+      110
+    ],
+    "mae": 6.736111111111111e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      110,
+      111
+    ],
+    "mae": 0.0010231481481481482,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      111,
+      112
+    ],
+    "mae": 0.0015074074074074074,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 3
+  },
+  {
+    "pair": [
+      112,
+      113
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      113,
+      114
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      114,
+      115
+    ],
+    "mae": 0.0009150462962962963,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      115,
+      116
+    ],
+    "mae": 0.0008706018518518519,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      116,
+      117
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      117,
+      118
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      118,
+      119
+    ],
+    "mae": 0.003674537037037037,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      119,
+      120
+    ],
+    "mae": 0.0010224537037037038,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      120,
+      121
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      121,
+      122
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      122,
+      123
+    ],
+    "mae": 0.000987962962962963,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      123,
+      124
+    ],
+    "mae": 0.0008817129629629629,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      124,
+      125
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      125,
+      126
+    ],
+    "mae": 5.625e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  },
+  {
+    "pair": [
+      126,
+      127
+    ],
+    "mae": 0.0008817129629629629,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      127,
+      128
+    ],
+    "mae": 0.0008752314814814815,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 2
+  },
+  {
+    "pair": [
+      128,
+      129
+    ],
+    "mae": 5.486111111111111e-05,
+    "fraction_pixel_any_channel_over16": 0.0,
+    "max_diff": 1
+  }
+]

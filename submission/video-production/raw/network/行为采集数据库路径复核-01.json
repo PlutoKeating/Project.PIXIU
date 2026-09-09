@@ -1,0 +1,27 @@
+{
+  "time": "2026-09-09T02:05:59.124494+00:00",
+  "active_process_databases": [
+    {
+      "file_basename": "pixiu.db",
+      "current_public_api_fixture_count": 1,
+      "source_counts": [
+        [
+          "CONVERSATION",
+          4
+        ],
+        [
+          "MANUAL_CONFIG",
+          9
+        ],
+        [
+          "USER_BEHAVIOR",
+          2
+        ]
+      ]
+    }
+  ],
+  "previously_checked_database_basename": "pixiu.db",
+  "previous_database_fixture_count": 0,
+  "fixture": "本轮API成功写入的家庭物品整理演示",
+  "mode": "只读连接；未修改采集开关或数据库"
+}

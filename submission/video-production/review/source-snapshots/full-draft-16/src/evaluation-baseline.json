@@ -1,0 +1,55 @@
+{
+  "source": "docs/acceptance/acceptance-baseline-2026-08-24.json",
+  "sha256": "16d4b4a832134be992691abee7fed5cf9d79795de2d0e5f5cb718388e1e8f0c4",
+  "dataset": "pixiu-family-expense-v1",
+  "metrics": [
+    {
+      "comparison": ">=",
+      "denominator": 15,
+      "description": "Exact-set accuracy of canonical category:key preference labels.",
+      "name": "preference_accuracy",
+      "numerator": 15.0,
+      "status": "PASS",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 1.0,
+      "label": "偏好准确率"
+    },
+    {
+      "comparison": ">=",
+      "denominator": 50,
+      "description": "Mean relevant-item recall at each case's declared top_k.",
+      "name": "knowledge_recall_at_k",
+      "numerator": 50.0,
+      "status": "PASS",
+      "target": 0.85,
+      "unit": "ratio",
+      "value": 1.0,
+      "label": "知识召回率"
+    },
+    {
+      "comparison": "<=",
+      "denominator": 1000,
+      "description": "Nearest-rank P95 latency; all declared repetitions are required.",
+      "name": "retrieval_p95_ms",
+      "numerator": 115.151,
+      "status": "PASS",
+      "target": 500.0,
+      "unit": "ms",
+      "value": 115.151,
+      "label": "检索延迟 P95"
+    },
+    {
+      "comparison": ">=",
+      "denominator": 25,
+      "description": "Exact conflict resolution accuracy.",
+      "name": "conflict_accuracy",
+      "numerator": 24.0,
+      "status": "PASS",
+      "target": 0.88,
+      "unit": "ratio",
+      "value": 0.96,
+      "label": "冲突正确率"
+    }
+  ]
+}

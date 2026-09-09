@@ -1,0 +1,18 @@
+{
+  "frames": [
+    4187,
+    4222,
+    4277,
+    4337,
+    4467
+  ],
+  "different_pixels": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "maximum_channel_difference": 0,
+  "version": "deck-sources-03"
+}

@@ -1,0 +1,22 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/真实来源发牌-03.mp4",
+  "video_sha256": "155b71d947c2c30ecf2cdcb5702013072224389a5cc20c0dd4c7b3f35d01fc4b",
+  "peak_dbfs": -6.939938068389893,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": -3.9296386704566566,
+  "probes": [
+    {
+      "declared_start_frame": 15.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9972463363944658,
+      "source_peak_frame": 213.15,
+      "source": "raw/audio/s09/2dbd9e964127.mp3",
+      "source_sha256": "f14e5e508450286dc893444b7c81041f13735ede48fa711b1f1c29d4b4b15570"
+    }
+  ]
+}

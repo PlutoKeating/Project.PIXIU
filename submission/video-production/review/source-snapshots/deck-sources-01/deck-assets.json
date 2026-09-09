@@ -1,0 +1,132 @@
+[
+  {
+    "src": "screens/20260909-客厅原始会话证据-4K.png",
+    "source": "raw/screenshots/20260909-客厅原始会话证据-4K.png",
+    "imageWidth": 3840,
+    "imageHeight": 2160,
+    "crop": {
+      "x": 1512,
+      "y": 936,
+      "w": 1540,
+      "h": 180
+    },
+    "sha256": "6c73a3f8d0543f5182488fbf563633b45dc2f6ea6b7451cea7ad717bb806f40c"
+  },
+  {
+    "src": "screens/20260909-客厅原始会话证据-4K.png",
+    "source": "raw/screenshots/20260909-客厅原始会话证据-4K.png",
+    "imageWidth": 3840,
+    "imageHeight": 2160,
+    "crop": {
+      "x": 1536,
+      "y": 1160,
+      "w": 1500,
+      "h": 280
+    },
+    "sha256": "6c73a3f8d0543f5182488fbf563633b45dc2f6ea6b7451cea7ad717bb806f40c"
+  },
+  {
+    "src": "screens/20260909-账单原始证据-4K.png",
+    "source": "raw/screenshots/20260909-账单原始证据-4K.png",
+    "imageWidth": 3840,
+    "imageHeight": 2160,
+    "crop": {
+      "x": 1512,
+      "y": 936,
+      "w": 1540,
+      "h": 180
+    },
+    "sha256": "cb0c4ef121325146d937ce2a9123d6e5ffba22e8325f49e1ff924fd2256c49df"
+  },
+  {
+    "src": "screens/20260909-账单原始证据-4K.png",
+    "source": "raw/screenshots/20260909-账单原始证据-4K.png",
+    "imageWidth": 3840,
+    "imageHeight": 2160,
+    "crop": {
+      "x": 1536,
+      "y": 1160,
+      "w": 1500,
+      "h": 280
+    },
+    "sha256": "cb0c4ef121325146d937ce2a9123d6e5ffba22e8325f49e1ff924fd2256c49df"
+  },
+  {
+    "src": "screens/20260909-洞察来源正文-4K.png",
+    "source": "raw/20260909-洞察来源正文-4K.png",
+    "imageWidth": 3840,
+    "imageHeight": 2160,
+    "crop": {
+      "x": 1512,
+      "y": 936,
+      "w": 1540,
+      "h": 180
+    },
+    "sha256": "2f8c104d449fd5b2cc3de48095366e61ae1adfdb0a694b711c7b486671346847"
+  },
+  {
+    "src": "screens/20260909-洞察来源正文-4K.png",
+    "source": "raw/20260909-洞察来源正文-4K.png",
+    "imageWidth": 3840,
+    "imageHeight": 2160,
+    "crop": {
+      "x": 1536,
+      "y": 1160,
+      "w": 1500,
+      "h": 280
+    },
+    "sha256": "2f8c104d449fd5b2cc3de48095366e61ae1adfdb0a694b711c7b486671346847"
+  },
+  {
+    "src": "screens/34-file-source.png",
+    "source": "raw/screenshots/34-file-source.png",
+    "imageWidth": 1440,
+    "imageHeight": 900,
+    "crop": {
+      "x": 472,
+      "y": 390,
+      "w": 930,
+      "h": 150
+    },
+    "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
+  },
+  {
+    "src": "screens/34-file-source.png",
+    "source": "raw/screenshots/34-file-source.png",
+    "imageWidth": 1440,
+    "imageHeight": 900,
+    "crop": {
+      "x": 488,
+      "y": 603,
+      "w": 900,
+      "h": 176
+    },
+    "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
+  },
+  {
+    "src": "screens/81-long-reader.png",
+    "source": "raw/screenshots/81-long-reader.png",
+    "imageWidth": 1440,
+    "imageHeight": 900,
+    "crop": {
+      "x": 472,
+      "y": 390,
+      "w": 930,
+      "h": 100
+    },
+    "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062"
+  },
+  {
+    "src": "screens/81-long-reader.png",
+    "source": "raw/screenshots/81-long-reader.png",
+    "imageWidth": 1440,
+    "imageHeight": 900,
+    "crop": {
+      "x": 488,
+      "y": 510,
+      "w": 900,
+      "h": 270
+    },
+    "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062"
+  }
+]

@@ -1,0 +1,103 @@
+{
+  "environment": "笔记本V11虚拟机公共API；公开合成手动输入，非自动行为采集",
+  "records": [
+    {
+      "label": "输入与写入结果",
+      "time": "2026-09-09T01:21:51.054653+00:00",
+      "request": {
+        "method": "POST",
+        "path": "/memory/write",
+        "body": {
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "  家庭物品整理演示  ",
+            "body": {
+              "内容": "每周整理书房书架。仅用于公开演示。",
+              "items": [
+                "核对书目",
+                "核对书目",
+                "归还原位"
+              ],
+              "备注": ""
+            }
+          },
+          "scope": "user:video-ingest-v1",
+          "idempotency_key": "video-ingest-v1"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M21W3F7Z2PKNQ5AXRPCDS9TY",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 3500
+        }
+      }
+    },
+    {
+      "label": "清洗后证据",
+      "time": "2026-09-09T01:21:51.385925+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/evidence/evd_01M21W3F7Z2PKNQ5AXRPCDS9TY",
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "evd_01M21W3F7Z2PKNQ5AXRPCDS9TY",
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "家庭物品整理演示",
+            "body": {
+              "内容": "每周整理书房书架。仅用于公开演示。",
+              "items": [
+                "核对书目",
+                "归还原位"
+              ]
+            },
+            "entities": [],
+            "relations": [],
+            "content_hash": "9192c5656ba064e7b8ada0937e92cc38bbd2b0097c3b83e54d8a41b14e96a9b7"
+          },
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "provenance": null,
+          "capture_source": null,
+          "scope": "user:video-ingest-v1",
+          "created_at": 1788916907
+        }
+      }
+    },
+    {
+      "label": "写入后检索",
+      "time": "2026-09-09T01:21:51.765529+00:00",
+      "request": {
+        "method": "POST",
+        "path": "/memory/query",
+        "body": {
+          "text": "家庭物品整理演示",
+          "context_hint": {
+            "scope": "user:video-ingest-v1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "answer": "家庭物品整理演示",
+          "source_evidence": [
+            "evd_01M21W3F7Z2PKNQ5AXRPCDS9TY"
+          ],
+          "source_knowledge": "knw_01M21W3F8BYZ9RJ1X5VPFDH7G8",
+          "confidence": 1.0,
+          "latency_ms": 29
+        }
+      }
+    }
+  ]
+}

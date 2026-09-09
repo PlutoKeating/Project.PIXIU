@@ -103,3 +103,20 @@ assert denied['response']['status'] == 422
 assert denied['response']['body']['error'] == 'SENSITIVE_SHARED_SCOPE'
 (ROOT / 'src/privacy-boundary.json').write_bytes(privacy_source.read_bytes())
 print('已核对私有与敏感共享边界请求参数并复制原始记录')
+
+source = ROOT / 'raw/network/接入清洗与质量-01.json'
+ingest = json.loads(source.read_text())
+written, detail, queried = [r['response'] for r in ingest['records']]
+assert written['status'] == detail['status'] == queried['status'] == 200
+assert queried['body']['source_evidence'] == [written['body']['evidence_id']]
+cleaned = detail['body']['raw']
+assert cleaned['title'] == '家庭物品整理演示'
+assert cleaned['body']['items'] == ['核对书目', '归还原位']
+assert '备注' not in cleaned['body']
+output = {'source': str(source.relative_to(ROOT)),
+          'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+          'title': cleaned['title'], 'items': cleaned['body']['items'],
+          'input_items': ingest['records'][0]['request']['body']['raw']['body']['items'],
+          'quality': detail['body']['quality_score'], 'sensitivity': detail['body']['sensitivity']}
+(ROOT / 'src/ingest-results.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n')
+print('已核对接入清洗、质量与同来源检索')

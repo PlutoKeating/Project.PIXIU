@@ -1,0 +1,68 @@
+{
+  "method": "运行中服务进程数据库只读查询，仅导出含公开行为演示的USER_BEHAVIOR记录",
+  "rows": [
+    {
+      "id": "evd_01M21MH7S9RGADE7XP7XM852N7",
+      "source_type": "USER_BEHAVIOR",
+      "raw": {
+        "title": "公开行为演示",
+        "body": {
+          "events": [
+            {
+              "app": "mate-terminal",
+              "title": "公开行为演示",
+              "focus_seconds": 118,
+              "hour_bucket": 7,
+              "day_type": "workday"
+            }
+          ]
+        },
+        "entities": [],
+        "relations": [],
+        "content_hash": "c5435cb07c3feb759c9a670da4634f93bcab772b2f5b9451bc0472d5a55957bb"
+      },
+      "quality_score": 0.715,
+      "sensitivity": 0,
+      "scope": "user:local",
+      "created_at": 1788908969
+    }
+  ],
+  "api_checks": [
+    {
+      "request": {
+        "method": "GET",
+        "path": "/evidence/evd_01M21MH7S9RGADE7XP7XM852N7"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "evd_01M21MH7S9RGADE7XP7XM852N7",
+          "source_type": "USER_BEHAVIOR",
+          "raw": {
+            "title": "公开行为演示",
+            "body": {
+              "events": [
+                {
+                  "app": "mate-terminal",
+                  "title": "公开行为演示",
+                  "focus_seconds": 118,
+                  "hour_bucket": 7,
+                  "day_type": "workday"
+                }
+              ]
+            },
+            "entities": [],
+            "relations": [],
+            "content_hash": "c5435cb07c3feb759c9a670da4634f93bcab772b2f5b9451bc0472d5a55957bb"
+          },
+          "quality_score": 0.715,
+          "sensitivity": 0,
+          "provenance": null,
+          "capture_source": null,
+          "scope": "user:local",
+          "created_at": 1788908969
+        }
+      }
+    }
+  ]
+}

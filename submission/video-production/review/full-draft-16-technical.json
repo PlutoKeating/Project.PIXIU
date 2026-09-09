@@ -1,0 +1,29 @@
+{
+  "video": "renders/全片初剪-16.mp4",
+  "sha256": "6b0ae2ff1a24107250d896bf4fc2172790468a50a7aff246aced3c6f241802d3",
+  "metadata": {
+    "format": {
+      "filename": "submission/video-production/renders/全片初剪-16.mp4",
+      "nb_streams": 2,
+      "nb_programs": 0,
+      "nb_stream_groups": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "561.152000",
+      "size": "57947426",
+      "bit_rate": "826120",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf61.7.100",
+        "comment": "Made with Remotion 4.0.484"
+      }
+    }
+  },
+  "status": "保留中间稿：包含05章节底行两卡100→101补现；已由06及全片17修正",
+  "full_decode_passed": false,
+  "note": "未执行该中间稿的完整解码验收，正式技术核对见17版"
+}
