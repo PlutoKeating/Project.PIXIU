@@ -67,16 +67,23 @@ def build_server(endpoint: str, document_ids: frozenset[str], dreaming=None, api
             return await dreaming.search(query)
 
         @server.tool()
-        def memory_plan(title: str, text: str, source_refs: list[dict]) -> dict:
+        async def memory_read(knowledge_id: str) -> dict:
+            """Read an existing private memory and its version before proposing a correction."""
+            return await dreaming.read_memory(knowledge_id)
+
+        @server.tool()
+        def memory_plan(title: str, text: str, source_refs: list[dict],
+                        operation: str = "create", knowledge_id: str | None = None) -> dict:
             """Propose a memory supported by already-read document blocks.
 
             Each reference has document_id, version and block_id. This does not approve execution.
             """
-            return dreaming.plan({"title": title, "text": text, "source_refs": source_refs})
+            return dreaming.plan({"title": title, "text": text, "source_refs": source_refs,
+                                  "operation": operation, "knowledge_id": knowledge_id})
 
         @server.tool()
         async def memory_apply(plan_id: str) -> dict:
-            """Apply a verified plan only if the trusted launcher granted memory creation."""
+            """Apply a verified creation or individually approved correction. Model tools cannot approve plans."""
             return await dreaming.apply(plan_id)
 
         @server.tool()

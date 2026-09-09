@@ -7,7 +7,7 @@ import re
 def correct_expense_body(existing: dict, content: str) -> dict:
     """Apply one explicit amount correction without dropping other bill lines."""
     import copy
-    match = re.search(r"(?:改为|改成|更正为|调整为|应为|是|to)\s*[¥￥]?\s*(\d+(?:\.\d{1,2})?)\s*(?:元)?", content)
+    match = re.search(r"(?:改为|改成|更正为|调整为|应为|(?<!不)是|to)\s*[¥￥]?\s*(\d+(?:\.\d{1,2})?)\s*(?:元)?", content)
     if not match:
         raise ValueError("Specify the bill item and its corrected amount")
     candidates = []

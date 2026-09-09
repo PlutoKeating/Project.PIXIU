@@ -1321,3 +1321,5 @@ Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，�
 偏好管理界面不再调用 `/preference/extract`：正式写入管线自动执行偏好提取，页面显示与相关事件触发只读列表更新。该调整不改变既有写入或审批契约。
 
 简报、隐私与设备页面的首次自动加载复用既有只读 API；日期切换与数据事件不会提交配置或执行写入，不新增 API、依赖或 schema。
+
+2026-09-10：文档支持的记忆更正沿 `/memory/update`，body 为 content 与 document_sources 时仍执行账单明细更正，保留原始文档依据。修正“不是旧金额，是新金额”的否定金额误匹配。无新依赖或安装路径变化。dreaming 执行器的逐方案宿主审批不等于用户审批 UI 已完成。

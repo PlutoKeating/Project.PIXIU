@@ -129,3 +129,5 @@ Agent 自有源码统一位于 `backend/agent/`，仓库根目录不再保留 `i
 `mcp/` 使用 SDK 1.26.0，通过公共文档 API 提供任务授权范围内的真实 stdio 工具；`dreaming/session.py` 提供固定私人范围的检索、来源校验、计划及获准创建，向量更新沿既有 `/memory/write` 进行。目录已接 Runtime 认证入口与逐块模型工具循环，聊天附件已调用同一 MCP 文档工具读取所有内容块，结束撤销暂存。模拟模型链路通过不代表真实模型或最终包已交付。构建包携带这两个模块，离线依赖锁与最终安装包按文档计划验证。
 
 后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
+
+Dreaming corrections use memory_read + memory_plan(operation="update") and the existing versioned update API. Each update needs trusted per-plan approval, which is never an MCP tool. Directory approval remains create-only. Desktop approval and merge integration remain on the 0.1.10 completion plan; no additional dependencies.

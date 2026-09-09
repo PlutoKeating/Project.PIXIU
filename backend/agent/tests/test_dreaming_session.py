@@ -68,3 +68,62 @@ async def test_revocation_unknown_sources_and_shared_scope_cannot_write():
     with pytest.raises(ValueError, match="revoked"):
         await session.apply(plan_id)
     assert not calls
+
+
+@pytest.mark.asyncio
+async def test_correction_requires_individual_review_and_keeps_reviewed_version():
+    import copy
+    current = {"knowledge_id": "knw_example123", "scope": "user:local", "version": 3,
+               "title": "约定", "body": {"content": "周六九点"}}
+    writes = []
+
+    async def api(method, path, payload):
+        if path.startswith("/documents/"):
+            return MANIFEST
+        if method == "GET":
+            return copy.deepcopy(current)
+        assert path == "/memory/update"
+        if payload["expected_version"] != current["version"]:
+            raise ValueError("VERSION_CONFLICT")
+        writes.append(payload)
+        return {"knowledge_id": current["knowledge_id"], "version": current["version"] + 1}
+
+    session = DreamingSession(api, document_ids=[REFERENCE], scope="user:local", approved=True)
+    proposal = {**prepare(session), "operation": "update", "knowledge_id": current["knowledge_id"]}
+    with pytest.raises(ValueError, match="Read"):
+        session.plan(proposal)
+    await session.read_memory(current["knowledge_id"])
+    plan = session.plan(proposal)
+    assert plan["status"] == "awaiting_approval"  # Directory grants never approve corrections.
+    with pytest.raises(ValueError, match="approved"):
+        await session.apply(plan["plan_id"])
+    review = session.review(plan["plan_id"])
+    assert review["before"]["version"] == 3 and review["after"]["text"] == proposal["text"]
+    review["before"]["version"] = 99
+    session.approve_plan(plan["plan_id"])
+    current["version"] = 4
+    await session.read_memory(current["knowledge_id"])
+    with pytest.raises(ValueError, match="VERSION_CONFLICT"):
+        await session.apply(plan["plan_id"])
+    assert not writes
+    replacement = session.plan(proposal)
+    session.approve_plan(replacement["plan_id"])
+    await session.apply(replacement["plan_id"])
+    await session.apply(replacement["plan_id"])
+    assert len(writes) == 1
+    assert writes[0]["expected_version"] == 4
+    assert writes[0]["body"]["document_sources"][0]["block"]["text"] == "原始资料"
+
+
+@pytest.mark.asyncio
+async def test_model_cannot_change_scope_or_approve_its_own_update():
+    async def api(method, path, payload):
+        return {"knowledge_id": "knw_example123", "version": 1, "scope": "shared:home"}
+
+    session = DreamingSession(api, document_ids=[REFERENCE], scope="user:local", approved=True)
+    with pytest.raises(ValueError, match="scope"):
+        await session.read_memory("knw_example123")
+    with pytest.raises(ValueError, match="reference"):
+        await session.read_memory("../private")
+    with pytest.raises(ValueError):
+        session.plan({**prepare(session), "approved": True})

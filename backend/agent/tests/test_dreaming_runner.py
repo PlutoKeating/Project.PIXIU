@@ -58,7 +58,7 @@ async def test_model_uses_fixed_tools_for_every_source_block_and_cannot_run_shel
     assert len(written) == 1
     assert written[0]["raw"]["body"]["document_sources"][0]["block"]["text"] == "电费50元"
     assert "电费50元" in model_inputs[0][1]["content"][0]["text"]
-    assert set(tool_names) == {"memory_search", "memory_plan", "memory_apply", "dreaming_report"}
+    assert set(tool_names) == {"memory_search", "memory_read", "memory_plan", "memory_apply", "dreaming_report"}
 
     assert [event["processed_blocks"] for event in updates] == [0, 1]
     assert [event["saved_count"] for event in updates] == [0, 1]

@@ -35,7 +35,7 @@ async def run_documents(*, api, model_turn, document_ids, scope, vision,
     # Same registered MCP handlers and schemas as the externally served tools.
     server = build_server(api.endpoint, frozenset(document_ids), dreaming=session, api=api)
     listing = await server.list_tools()
-    allowed = {"memory_search", "memory_plan", "memory_apply", "dreaming_report"}
+    allowed = {"memory_search", "memory_read", "memory_plan", "memory_apply", "dreaming_report"}
     tools = [{"type": "function", "function": {
         "name": tool.name, "description": tool.description or "", "parameters": tool.inputSchema}}
         for tool in listing if tool.name in allowed]

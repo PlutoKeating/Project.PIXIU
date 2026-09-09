@@ -1820,3 +1820,23 @@ def test_confirmed_image_bill_keeps_image_and_uses_edited_amount(client):
     result = client.post("/memory/query", json={"text": "2026年4月燃气费多少", "context_hint": {"scope": "user:alice"}})
     assert result.status_code == 200
     assert "186" in result.json()["answer"]
+
+
+def test_document_supported_bill_update_preserves_amounts_and_sources(client):
+    written = client.post('/memory/write', json={
+        'scope': 'user:alice', 'source_type': 'MANUAL_CONFIG',
+        'raw': {'title': '家庭费用更正', 'body': {'items': [
+            {'vendor': '燃气费', 'category': '水电燃气', 'amount': 156},
+            {'vendor': '电费', 'category': '水电燃气', 'amount': 210}]}}})
+    assert written.status_code == 200
+    query = client.post('/memory/query', json={'text': '燃气费多少', 'context_hint': {'scope': 'user:alice'}}).json()
+    knowledge = query['source_knowledge']
+    sources = [{'document_id': 'a' * 64, 'version': 'v1', 'block_id': 'block-1',
+                'block': {'kind': 'text', 'text': '燃气费实际为186元'}}]
+    result = client.post('/memory/update', json={'knowledge_id': knowledge, 'scope': 'user:alice',
+        'expected_version': 1, 'body': {'content': '燃气费不是156元，是186元', 'document_sources': sources},
+        'idempotency_key': 'document-bill-correction'})
+    assert result.status_code == 200, result.text
+    current = client.get('/memory/items/' + knowledge, params={'scope': 'user:alice'}).json()
+    assert sorted(item['amount'] for item in current['body']['items']) == [186, 210]
+    assert current['body']['document_sources'] == sources
