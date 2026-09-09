@@ -1,4 +1,6 @@
 #include "SettingsWorkspace.h"
+#include "widgets/WorkspaceNavigation.h"
+#include <QScrollArea>
 #include "PrivacyPage.h"
 #include "ServiceStatusPage.h"
 #include "HostCloseGuard.h"
@@ -30,8 +32,17 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     auto *tabs = new QTabWidget(this);
     layout->addWidget(tabs);
     auto *general = new QWidget(tabs);
+    general->setMaximumWidth(780);
     auto *generalLayout = new QVBoxLayout(general);
-    auto *agent = new QPushButton(tr("模型与 Agent 配置…"), general);
+    generalLayout->setContentsMargins(28, 24, 28, 24);
+    generalLayout->setSpacing(12);
+    auto heading = [general, generalLayout](const QString &text) {
+        auto *label = new QLabel(text, general);
+        label->setStyleSheet("font-size: 16px; font-weight: 600; padding-top: 12px;");
+        generalLayout->addWidget(label);
+    };
+    heading(tr("助手与记忆"));
+    auto *agent = new QPushButton(tr("配置模型…"), general);
     agent->setObjectName(QStringLiteral("agentSettings"));
     generalLayout->addWidget(agent);
     connect(agent, &QPushButton::clicked, this, &SettingsWorkspace::agentSettingsRequested);
@@ -86,6 +97,7 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
         memoryStatus->setText(tr("记忆设置未保存，请检查服务连接及共享空间名称后重试。"));
     });
     memoryHttp->agentMemorySettings();
+    heading(tr("桌面使用"));
     auto *shortcutRow = new QHBoxLayout();
     auto *shortcutLabel = new QLabel(tr("唤起快捷键"), general);
     auto *shortcut = new QKeySequenceEdit(general);
@@ -145,6 +157,7 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
         pin->setEnabled(false);
         pinStatus->setText(tr("宿主窗口服务不可用，未更改置顶状态。"));
     }
+    heading(tr("关于与更新"));
     auto *version = new QLabel(tr("PIXIU %1").arg(QStringLiteral(PIXIU_VERSION)), general);
     version->setObjectName(QStringLiteral("productVersion"));
     generalLayout->addWidget(version);
@@ -176,9 +189,16 @@ SettingsWorkspace::SettingsWorkspace(QWidget *parent) : QWidget(parent)
     });
     connect(updates, &QPushButton::clicked, updateDialog, &CheckUpdateDialog::showAndCheck);
     connect(upgrade, &UpgradeController::restartScheduled, QCoreApplication::instance(), &QCoreApplication::quit);
-    tabs->addTab(general, tr("应用与升级"));
+    for (auto *button : general->findChildren<QPushButton *>(QString(), Qt::FindDirectChildrenOnly))
+        generalLayout->setAlignment(button, Qt::AlignLeft);
+    auto *generalScroll = new QScrollArea(tabs);
+    generalScroll->setWidgetResizable(true);
+    generalScroll->setFrameShape(QFrame::NoFrame);
+    generalScroll->setWidget(general);
+    tabs->addTab(generalScroll, tr("应用与升级"));
     tabs->addTab(new PrivacyPage(tabs), tr("采集与隐私"));
     tabs->addTab(new ServiceStatusPage(tabs), tr("服务与能力"));
+    installWorkspaceNavigation(layout, tabs, {tr("应用与升级"), tr("采集与隐私"), tr("服务与能力")});
 }
 bool SettingsWorkspace::hasUnsavedChanges() const
 {

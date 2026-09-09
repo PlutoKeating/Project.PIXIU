@@ -246,5 +246,9 @@
   {
     "source": "frontend/src/services/MediaInputClient.cpp",
     "destination": "pixiu/frontend/src/services/MediaInputClient.cpp"
+  },
+  {
+    "source": "frontend/src/widgets/WorkspaceNavigation.h",
+    "destination": "pixiu/frontend/src/widgets/WorkspaceNavigation.h"
   }
 ]

@@ -1,4 +1,5 @@
 #include "MemoryWorkspace.h"
+#include "widgets/WorkspaceNavigation.h"
 #include "MemoryScopes.h"
 #include "MemoryScopeControl.h"
 #include "MemoryWriteDialog.h"
@@ -233,7 +234,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     });
     menu->addAction(tr("忘记内容…"), tabs, [tabs, forget]() { tabs->setCurrentWidget(forget); });
     manage->setMenu(menu);
-    tabs->setCornerWidget(manage);
+    installWorkspaceNavigation(outer, tabs, {tr("资料"), tr("简报"), tr("偏好")}, manage);
     connect(forget, &ForgetPage::memoryForgotten, this, &MemoryWorkspace::clearResult);
     layout->setContentsMargins(32, 28, 32, 24);
     layout->setSpacing(16);

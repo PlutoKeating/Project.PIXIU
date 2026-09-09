@@ -22,7 +22,18 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     connect(m_refreshTimer, &QTimer::timeout, this, [this]() {
         if (m_refreshNeeded && isVisible() && m_pending == Pending::None && !hasUnsavedChanges()) refresh();
     });
-    auto *layout = new QVBoxLayout(this);
+    auto *outer = new QHBoxLayout(this);
+    outer->setContentsMargins(28, 24, 28, 24);
+    auto *content = new QWidget(this);
+    content->setMaximumWidth(1040);
+    outer->addWidget(content, 1);
+    outer->addStretch();
+    auto *layout = new QVBoxLayout(content);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(12);
+    auto *title = new QLabel(tr("设备共享"), this);
+    title->setStyleSheet("font-size: 22px; font-weight: 600;");
+    layout->addWidget(title);
     auto *notice = new QLabel(tr("个人记忆不参与共享域同步。设备发现只表示收到广播，本地信任与节点记录状态不证明对端在线或数据已经送达。"), this);
     notice->setWordWrap(true);
     layout->addWidget(notice);
@@ -44,6 +55,7 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     m_save->setObjectName(QStringLiteral("deviceSave"));
     buttons->addWidget(m_refresh);
     buttons->addWidget(m_save);
+    buttons->addStretch();
     layout->addLayout(buttons);
     layout->addWidget(new QLabel(tr("本机与本地信任节点"), this));
     m_peers = new QListWidget(this);
@@ -53,13 +65,13 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     layout->addWidget(m_peers, 1);
     m_revoke = new QPushButton(tr("移除所选设备…"), this);
     m_revoke->setObjectName(QStringLiteral("deviceRevoke"));
-    layout->addWidget(m_revoke);
+
     m_leave = new QPushButton(tr("断开所有设备…"), this);
     m_leave->setObjectName(QStringLiteral("deviceLeave"));
-    layout->addWidget(m_leave);
+
     auto *pair = new QPushButton(tr("添加设备…"), this);
     pair->setObjectName(QStringLiteral("devicePair"));
-    layout->addWidget(pair);
+
     auto *pairing = new PairingDialog(this);
     pairing->setWindowModality(Qt::WindowModal);
     connect(pair, &QPushButton::clicked, this, [pairing]() {
@@ -72,7 +84,16 @@ DevicePage::DevicePage(QWidget *parent, BackendTransport *transport)
     });
     m_discover = new QPushButton(tr("查找附近设备"), this);
     m_discover->setObjectName(QStringLiteral("deviceDiscover"));
-    layout->addWidget(m_discover);
+    auto *deviceActions = new QHBoxLayout;
+    deviceActions->addWidget(pair);
+    deviceActions->addWidget(m_discover);
+    deviceActions->addStretch();
+    deviceActions->addWidget(m_revoke);
+    layout->addLayout(deviceActions);
+    auto *leaveRow = new QHBoxLayout;
+    leaveRow->addWidget(m_leave);
+    leaveRow->addStretch();
+    layout->addLayout(leaveRow);
     m_discovered = new QListWidget(this);
     m_discovered->setObjectName(QStringLiteral("deviceDiscovered"));
     m_discovered->setAccessibleName(tr("附近设备广播记录"));

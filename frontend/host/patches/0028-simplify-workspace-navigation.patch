@@ -9,7 +9,17 @@
  
  #include <QHBoxLayout>
  #include <QInputDialog>
-@@ -89,18 +91,32 @@
+@@ -74,9 +76,6 @@
+     titleLayout->setContentsMargins(18, 0, 14, 0);
+     titleLayout->setSpacing(10);
+ 
+-    QPushButton *sidebarButton = createTitleButton(QStringLiteral("☰"), QStringLiteral("Toggle sidebar"));
+-    connect(sidebarButton, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
+-    titleLayout->addWidget(sidebarButton);
+ 
+     QLabel *brandMark = new QLabel(QStringLiteral("P"), titleBar);
+     brandMark->setObjectName(QStringLiteral("brandMark"));
+@@ -89,18 +88,32 @@
      brandLayout->setSpacing(0);
      QLabel *title = new QLabel(QStringLiteral("PIXIU"), titleBar);
      title->setObjectName(QStringLiteral("brandTitle"));
@@ -48,7 +58,7 @@
  
      rootLayout->addWidget(titleBar);
  
-@@ -204,7 +220,8 @@
+@@ -204,7 +217,8 @@
              }
              workspaces->setCurrentWidget(memory);
          });
@@ -58,11 +68,10 @@
          if (index != 0) resetSources();
      });
      workspaces->addTab(new pixiu::DevicePage(workspaces), tr("设备"));
-@@ -218,6 +235,25 @@
-     connect(settings, &pixiu::SettingsWorkspace::agentSettingsRequested, this, [this]() {
+@@ -219,6 +233,24 @@
          SettingsDialog dialog(this);
          dialog.exec();
-+    });
+     });
 +    workspaces->tabBar()->hide();
 +    workspaces->setStyleSheet(QStringLiteral(
 +        "QTabWidget#pixiuWorkspaces::pane { border: 0; }"
@@ -78,9 +87,35 @@
 +            workspaces->setCurrentIndex(index);
 +        });
 +    }
-+    connect(workspaces, &QTabWidget::currentChanged, this, [navigation, sidebarButton](int index) {
++    connect(workspaces, &QTabWidget::currentChanged, this, [navigation](int index) {
 +        navigation->button(index)->setChecked(true);
-+        sidebarButton->setVisible(index == 0);
-     });
++    });
      rootLayout->addWidget(workspaces, 1);
      workspaces->setCurrentIndex(0);
+ 
+@@ -240,15 +272,6 @@
+     button->setCursor(Qt::PointingHandCursor);
+     button->setObjectName(QStringLiteral("titleIconButton"));
+     return button;
+-}
+-
+-void MainWindow::toggleSidebar()
+-{
+-    if (!m_sidebar) {
+-        return;
+-    }
+-
+-    m_sidebar->setVisible(!m_sidebar->isVisible());
+ }
+ 
+ void MainWindow::openSettings()
+--- a/include/ui/mainwindow.h
++++ b/include/ui/mainwindow.h
+@@ -45,7 +45,6 @@
+ protected:
+ 
+ private slots:
+-    void toggleSidebar();
+     void openSettings();
+     void showBackendConnectionState(bool connected);
+     void createNewSession();
