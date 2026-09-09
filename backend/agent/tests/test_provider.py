@@ -224,7 +224,7 @@ def test_tools_return_stable_json_and_forget_never_exposes_execution_token():
     names = {schema["name"] for schema in item.get_tool_schemas()}
     assert names == {
         "pixiu_memory_search", "pixiu_memory_remember",
-        "pixiu_memory_update", "pixiu_memory_forget", "pixiu_sync_status",
+        "pixiu_memory_update", "pixiu_memory_forget", "pixiu_sync_status", "pixiu_document_read",
     }
     preview = json.loads(item.handle_tool_call("pixiu_memory_forget", {"command": "forget x"}))
     assert preview["status"] == "human_review_required"
@@ -424,3 +424,30 @@ def test_cached_sources_are_marked_only_when_given_to_agent():
     assert item.wait_for_idle(1)
     assert any(path == "/agent/sources/ctx_example01/consume" for _, path, _ in client.calls)
     item.shutdown()
+
+
+def test_document_tool_reads_original_first_middle_and_last_blocks():
+    blocks = ["第一段事实", "中间事实", "最后事实"]
+    class DocumentClient(FakeClient):
+        def request(self, method, path, payload=None):
+            if path.startswith("/documents/"):
+                assert method == "GET"
+                index = int(path.split("cursor=")[1])
+                return {"version": "b" * 64, "block": {"kind": "text", "text": blocks[index]},
+                        "next_cursor": index + 1 if index < 2 else None}
+            return super().request(method, path, payload)
+    item = provider(DocumentClient())
+    cursor = 0
+    recovered = []
+    while cursor is not None:
+        result = json.loads(item.handle_tool_call("pixiu_document_read", {
+            "document_id": "a" * 64, "version": "b" * 64, "cursor": cursor}))
+        recovered.append(result["block"]["text"])
+        cursor = result["next_cursor"]
+    assert recovered == blocks
+    changed = json.loads(item.handle_tool_call("pixiu_document_read", {
+        "document_id": "a" * 64, "version": "c" * 64, "cursor": 0}))
+    assert changed == {"error": "DOCUMENT_VERSION_CONFLICT"}
+    malformed = json.loads(item.handle_tool_call("pixiu_document_read", {
+        "document_id": "../private", "version": "b" * 64, "cursor": 0}))
+    assert malformed == {"error": "INVALID_TOOL_ARGUMENTS"}

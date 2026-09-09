@@ -1331,3 +1331,5 @@ Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，�
 2026-09-10：实际使用的记忆引用增加 `GET /agent/citations/{context_id}/{knowledge_id}`。只读取已消费、未过期的 MEMORY_SOURCES 记录，重新检查知识 ACTIVE 状态、当前读取授权及证据敏感级别，返回当时引用的证据与版本信息。trace 上下文附加 pixiu://citation 链接并遵守原字符预算，普通无记忆回答不增加链接。桌面消息链接已接通应用内来源窗口，真实模型同包验收未完成。无新增依赖、数据库或构建输入。
 
 2026-09-10：回答中的 pixiu://citation 来源链接由宿主补丁 0030 在应用内打开 CitationDialog，读取受核验的引用 API，显示原文和原图；普通网络链接沿用现有行为。已删除的全局来源按钮不恢复。新组件登记于 Management.cmake、宿主导出清单和供应链补丁清单，无新依赖。通用宿主编译通过；真实模型生成链接与 V11 同包点击验收仍待完成。
+
+2026-09-10：超过两个文本块的纯文字附件不再一次拼入模型输入；保留文档暂存引用（既有 24 小时有效期），初始消息给出读取游标。Provider 新增只读 pixiu_document_read，按随机 document_id、原文件 version 和 cursor 读取单块文字并返回 next_cursor；不接受路径，不写记忆。模型需读至末块才可声称全文读取，后续问题可回读。短附件沿用现有直送；图片密集文档分批视觉输入、真实模型容量验证尚未完成。无新增依赖/构建文件，现有 Provider 与 Runtime 源码打包覆盖变更。26 项 Provider/附件/MCP 测试通过。

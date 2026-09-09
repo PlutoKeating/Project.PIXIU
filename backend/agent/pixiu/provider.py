@@ -353,6 +353,18 @@ class PixiuMemoryProvider(MemoryProvider):
                 result = self._update(args)
             elif tool_name == "pixiu_memory_forget":
                 result = self._forget(args)
+            elif tool_name == "pixiu_document_read":
+                reference, version, cursor = args["document_id"], args["version"], args["cursor"]
+                if (set(args) != {"document_id", "version", "cursor"}
+                        or not re.fullmatch(r"[a-f0-9]{64}", reference)
+                        or not re.fullmatch(r"[a-f0-9]{64}", version)
+                        or type(cursor) is not int or cursor < 0):
+                    raise ValueError("Invalid attachment reference")
+                result = self._client.request("GET", f"/documents/{reference}/read?cursor={cursor}")
+                if result.get("version") != version:
+                    result = {"error": "DOCUMENT_VERSION_CONFLICT"}
+                elif result.get("block", {}).get("kind") != "text":
+                    result = {"error": "DOCUMENT_REQUIRES_VISUAL_READING"}
             elif tool_name == "pixiu_sync_status":
                 result = self._client.request("GET", "/sync/status")
             else:

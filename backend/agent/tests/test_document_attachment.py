@@ -6,7 +6,7 @@ from backend.agent.runtime import document_tasks
 
 
 @pytest.mark.asyncio
-async def test_attachment_keeps_all_large_text_blocks_and_revokes_staging(monkeypatch):
+async def test_large_text_attachment_defers_reading_and_keeps_original_available(monkeypatch):
     reference = "a" * 64
     blocks = [{"id": f"block-{i}", "kind": "text", "location": f"sheet:{i}",
                "text": str(i) + "正文" * 3000} for i in range(30)]
@@ -29,7 +29,8 @@ async def test_attachment_keeps_all_large_text_blocks_and_revokes_staging(monkey
     monkeypatch.setattr(document_tasks, "MemoryApi", Api)
     monkeypatch.setattr(document_tasks, "input_capabilities", lambda model: {"images": False})
     result = await document_tasks.prepare_document_attachment({}, {"filename": "长文档.docx", "file_base64": "dGVzdA=="})
-    recovered = [json.loads(part["text"])["block"]["text"] for part in result["content"]]
-    assert recovered == [block["text"] for block in blocks]
-    assert result["read_blocks"] == result["total_blocks"] == 30
-    assert calls[-1] == ("DELETE", "/documents/" + reference)
+    guide = json.loads(result["content"][0]["text"].split("\n")[-1])
+    assert guide == {"document_id": reference, "version": "v1", "total_blocks": 30, "cursor": 0}
+    assert result["read_blocks"] == 0 and result["total_blocks"] == 30
+    assert len(result["content"][0]["text"]) < 1000
+    assert calls == [("POST", "/documents")]
