@@ -110,3 +110,6 @@ for relative in ("scripts/agent_runtime_install.sh", "scripts/agent_runtime_inst
 PY
 
 patch -d "${target_source}" -p1 --forward --batch < "${repo_root}/frontend/host/patches/0027-automatic-attachments.patch"
+
+patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismatch \
+    < "${repo_root}/frontend/host/patches/0028-simplify-workspace-navigation.patch"

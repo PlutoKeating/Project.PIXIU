@@ -395,6 +395,12 @@ private slots:
             {&write, "writeScope"}, {&audit, "auditScope"}, {&forget, "forgetScope"}};
         for (const auto &entry : pages) {
             auto *page = entry.first;
+            if (page == &audit) {
+                auto *combo = audit.findChild<QComboBox *>("auditScope");
+                combo->addItem(chosenScope, chosenScope);
+                combo->setCurrentIndex(combo->count() - 1);
+                continue;
+            }
             QTimer::singleShot(0, &host, [page, entry, chosenScope]() {
                 auto *dialog = page->findChild<QDialog *>(entry.second + "Dialog");
                 dialog->findChild<QLineEdit *>("customScopeInput")->setText(chosenScope);
@@ -798,8 +804,7 @@ private slots:
         QCOMPARE(forgetTransport.forgetCalls, 2);
         emit forgetTransport.errorOccurred("TIMEOUT", "unknown result", "test");
         QVERIFY(!forget.hasPendingOperation());
-        audit.setEvidenceIds({"evd_test"});
-        audit.findChild<QPushButton *>("auditExtract")->click();
+        audit.refresh();
         QVERIFY(audit.hasPendingOperation());
         QTimer::singleShot(0, &host, [&]() { host.findChild<QMessageBox *>()->accept(); });
         QVERIFY(!host.close());
@@ -1628,12 +1633,11 @@ private slots:
         pixiu::MemoryAudit audit(nullptr, &transport);
         QSignalSpy reminders(&audit, SIGNAL(preferencesChanged(int)));
         QVERIFY(reminders.isValid());
-        auto *refresh = audit.findChild<QPushButton *>("auditRefresh");
         auto *scope = audit.findChild<QComboBox *>("auditScope");
         QJsonObject record{{"id", "p1"}, {"scope", "user:local"}, {"version", 2},
                            {"key", "private-key"}, {"value", "private-value"}};
         auto respond = [&](const QJsonArray &records) {
-            refresh->click();
+            audit.refresh();
             emit transport.preferencesListResult(records);
         };
         respond({record}); // first snapshot is not a learning event
@@ -1698,20 +1702,18 @@ private slots:
         QVERIFY(transport.extraction.isEmpty());
     }
 
-    void auditEventsDoNotRepeatExtraction()
+    void auditAutomaticallyLoadsWithoutManualExtraction()
     {
         Transport transport;
         pixiu::MemoryAudit audit(nullptr, &transport);
+        QVERIFY(!audit.findChild<QPushButton *>("auditExtract"));
+        QVERIFY(!audit.findChild<QPushButton *>("auditRefresh"));
         audit.show();
-        audit.setEvidenceIds({"evd_example"});
-        audit.findChild<QPushButton *>("auditExtract")->click();
-        QCOMPARE(transport.extractionRequests, 1);
-        audit.notifyDataChanged();
-        QTest::qWait(550);
-        QCOMPARE(transport.preferenceRequests, 0);
-        emit transport.errorOccurred("TIMEOUT", "unknown outcome", "extract");
         QTRY_COMPARE(transport.preferenceRequests, 1);
-        QCOMPARE(transport.extractionRequests, 1);
+        emit transport.preferencesListResult({});
+        audit.notifyDataChanged();
+        QTRY_COMPARE(transport.preferenceRequests, 2);
+        QCOMPARE(transport.extractionRequests, 0);
         emit transport.preferencesListResult({});
     }
 
@@ -1739,7 +1741,7 @@ private slots:
             {QStringLiteral("future-result"), QStringLiteral("future-result")},
             {QString(), QStringLiteral("未提供处理结果")}};
         for (const auto &outcome : outcomes) {
-            audit.findChild<QPushButton *>("auditRefresh")->click();
+            audit.refresh();
             emit transport.conflictsResult({QJsonObject{{"resolution", outcome.first}}});
             QVERIFY(records->item(0)->text().contains(outcome.second));
             QVERIFY(records->item(0)->text().contains(QStringLiteral("未提供关联记忆标题")));
@@ -1747,16 +1749,13 @@ private slots:
         }
     }
 
-    void auditHistoryExtractionAndErrors()
+    void auditHistoryAndErrors()
     {
         Transport transport;
         pixiu::MemoryAudit audit(nullptr, &transport);
-        auto *refresh = audit.findChild<QPushButton *>("auditRefresh");
-        auto *extract = audit.findChild<QPushButton *>("auditExtract");
         auto *records = audit.findChild<QListWidget *>("auditRecords");
-        QVERIFY(!extract->isEnabled());
-        refresh->click();
-        QVERIFY(!refresh->isEnabled());
+        audit.refresh();
+        QVERIFY(audit.hasPendingOperation());
         emit transport.preferencesListResult({QJsonObject{{"id", "p1"}, {"key", "color"}, {"value", "blue"}}});
         QCOMPARE(records->count(), 1);
         records->setCurrentRow(0);
@@ -1764,21 +1763,15 @@ private slots:
         emit transport.preferenceHistoryResult({{"id", "p1"}, {"key", "color"}, {"current_version", 2},
             {"history", QJsonArray{QJsonObject{{"version", 1}, {"value", "green"}, {"updated_at", 1700000000}}}}});
         QVERIFY(audit.findChild<QPlainTextEdit *>("auditDetails")->toPlainText().contains("green"));
-        audit.setEvidenceIds({"e1", "e1", ""});
-        extract->click();
-        QCOMPARE(transport.extraction.value("evidence_ids").toArray(), QJsonArray{"e1"});
-        emit transport.preferenceExtractResult({{"extracted_preferences", QJsonArray{}}});
-        QVERIFY(extract->isEnabled());
         audit.findChild<QComboBox *>("auditMode")->setCurrentIndex(1);
         QCOMPARE(transport.conflictRequests, 1);
         emit transport.errorOccurred("NETWORK_ERROR", "offline", "");
         QVERIFY(audit.findChild<QLabel *>("auditStatus")->text().contains("offline"));
-        QVERIFY(refresh->isEnabled());
-        refresh->click();
+        QVERIFY(!audit.hasPendingOperation());
+        audit.refresh();
         emit transport.conflictsResult({QJsonObject{{"field", "name"}, {"old_value", "old"}, {"new_value", "new"}, {"resolution", "kept"}}});
         records->setCurrentRow(0);
         QVERIFY(audit.findChild<QPlainTextEdit *>("auditDetails")->toPlainText().contains("old"));
-        QVERIFY(!extract->isEnabled());
     }
     void writeRetainsInputAndRetriesIdempotently()
     {
@@ -1919,7 +1912,7 @@ private slots:
         source["path"] = "/" + QString(4095, 'x');
         evidence["capture_source"] = source;
         read(evidence);
-        QVERIFY(capture->toPlainText().contains("图片 OCR"));
+        QVERIFY(capture->toPlainText().contains("历史 OCR"));
         QVERIFY(capture->toPlainText().contains(source["path"].toString()));
         auto missing = evidence;
         missing.remove("capture_source");

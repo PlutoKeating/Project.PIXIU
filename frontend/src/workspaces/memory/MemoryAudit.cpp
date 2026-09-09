@@ -60,22 +60,17 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     auto *layout = new QVBoxLayout(this);
     m_mode = new QComboBox(this);
     m_mode->setObjectName(QStringLiteral("auditMode"));
-    m_mode->addItems({tr("偏好与历史"), tr("冲突审计")});
+    m_mode->addItems({tr("我的偏好"), tr("需要确认")});
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("auditScope"));
     populateMemoryScopes(m_scope, true);
-    m_refresh = new QPushButton(tr("刷新"), this);
-    m_refresh->setObjectName(QStringLiteral("auditRefresh"));
-    m_extract = new QPushButton(tr("从当前证据提取偏好"), this);
-    m_extract->setObjectName(QStringLiteral("auditExtract"));
     auto *toolbar = new QHBoxLayout;
     toolbar->addWidget(m_mode);
-    toolbar->addWidget(new MemoryScopeControl(m_scope));
+    m_scope->setMaximumWidth(220);
+    toolbar->addWidget(m_scope);
     toolbar->addStretch();
-    toolbar->addWidget(m_refresh);
     layout->addLayout(toolbar);
-    layout->addWidget(m_extract);
-    m_status = new QLabel(tr("点击刷新加载偏好。提取使用检索来源或最近成功录入的证据。"), this);
+    m_status = new QLabel(tr("助手会从日常交流和资料中自动记住你的偏好。"), this);
     m_status->setObjectName(QStringLiteral("auditStatus"));
     m_status->setTextFormat(Qt::PlainText);
     m_status->setWordWrap(true);
@@ -93,6 +88,11 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
     auto *review = new QPushButton(tr("处理所选冲突"), this);
     review->setObjectName("reviewManualConflict");
     layout->addWidget(review);
+    review->hide();
+    connect(m_records, &QListWidget::currentItemChanged, review, [review, this](QListWidgetItem *item) {
+        const auto record = item ? item->data(Qt::UserRole).toJsonObject() : QJsonObject();
+        review->setVisible(m_mode->currentIndex() == 1 && record.value("resolution").toString() == "MANUAL");
+    });
     auto *reviewHttp = new HttpBackendTransport(this);
     connect(review, &QPushButton::clicked, this, [=]() {
         auto *row = m_records->currentItem();
@@ -149,18 +149,8 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
         m_pending = Pending::None; updateControls();
         m_status->setText(tr("处理未完成，记忆可能已经变化。请刷新后重新核对。"));
     });
-    connect(m_refresh, &QPushButton::clicked, this, &MemoryAudit::refresh);
     connect(m_mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() { refresh(); });
     connect(m_scope, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() { refresh(); });
-    connect(m_extract, &QPushButton::clicked, this, [this]() {
-        if (m_pending != Pending::None || m_evidenceIds.isEmpty()) return;
-        m_pending = Pending::Extract;
-        updateControls();
-        m_status->setText(tr("正在从 %1 条证据提取偏好…").arg(m_evidenceIds.size()));
-        QJsonArray ids;
-        for (const auto &id : m_evidenceIds) ids.append(id);
-        m_transport->extractPreferences({{QStringLiteral("evidence_ids"), ids}});
-    });
     connect(m_transport, &BackendTransport::preferencesListResult, this, [this](const QJsonArray &records) {
         if (m_pending != Pending::Preferences) return;
         trackPreferences(records);
@@ -234,16 +224,6 @@ MemoryAudit::MemoryAudit(QWidget *parent, BackendTransport *transport)
         m_details->setPlainText(snapshots.isEmpty() ? tr("暂无历史版本。") : snapshots.join(QStringLiteral("\n\n")));
         m_status->setText(tr("%1 · 当前版本 %2").arg(result.value("key").toString()).arg(result.value("current_version").toInt()));
     });
-    connect(m_transport, &BackendTransport::preferenceExtractResult, this, [this](const QJsonObject &result) {
-        if (m_pending != Pending::Extract) return;
-        m_pending = Pending::None;
-        updateControls();
-        if (!result.value("extracted_preferences").isArray()) {
-            m_status->setText(tr("提取响应不完整，无法确认结果。"));
-            return;
-        }
-        m_status->setText(tr("提取返回 %1 条偏好。点击刷新查看当前列表。").arg(result.value("extracted_preferences").toArray().size()));
-    });
     connect(m_transport, &BackendTransport::errorOccurred, this, [this](const QString &, const QString &message, const QString &) {
         if (m_pending == Pending::None) return;
         m_pending = Pending::None;
@@ -282,21 +262,12 @@ void MemoryAudit::trackPreferences(const QJsonArray &records)
     m_havePreferenceBaseline = true;
     if (changed > 0) emit preferencesChanged(changed);
 }
-void MemoryAudit::setEvidenceIds(const QStringList &ids)
-{
-    m_evidenceIds = ids;
-    m_evidenceIds.removeAll(QString());
-    m_evidenceIds.removeDuplicates();
-    updateControls();
-}
 void MemoryAudit::updateControls()
 {
     const bool idle = m_pending == Pending::None;
     m_mode->setEnabled(idle);
     m_scope->setEnabled(idle && m_mode->currentIndex() == 0);
-    m_refresh->setEnabled(idle);
     m_records->setEnabled(idle);
-    m_extract->setEnabled(idle && m_mode->currentIndex() == 0 && !m_evidenceIds.isEmpty());
     scheduleRefresh();
 }
 void MemoryAudit::notifyDataChanged()

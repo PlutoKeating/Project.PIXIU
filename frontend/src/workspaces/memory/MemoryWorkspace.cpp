@@ -19,6 +19,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QTabWidget>
+#include <QToolButton>
+#include <QMenu>
 #include <QSplitter>
 #include <QSet>
 #include <QRegularExpression>
@@ -147,9 +149,9 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     outer->addWidget(tabs);
     auto *queryPage = new QWidget(tabs);
     auto *layout = new QVBoxLayout(queryPage);
-    tabs->addTab(queryPage, tr("检索与录入"));
+    tabs->addTab(queryPage, tr("资料"));
     auto *delivery = new DeliveryPage(tabs);
-    tabs->addTab(delivery, tr("洞察与简报"));
+    tabs->addTab(delivery, tr("简报"));
     connect(delivery, &DeliveryPage::searchRequested, this, [this, tabs, queryPage](const QString &text) {
         if (m_request || m_evidenceBusy) return;
         tabs->setCurrentWidget(queryPage);
@@ -158,7 +160,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         search();
     });
     m_audit = new MemoryAudit(tabs);
-    tabs->addTab(m_audit, tr("偏好与审计"));
+    tabs->addTab(m_audit, tr("偏好"));
     auto *forget = new ForgetPage(tabs);
     tabs->addTab(forget, tr("安全遗忘"));
     auto *stages = new QWidget(tabs);
@@ -217,7 +219,20 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     connect(stageHttp, &BackendTransport::errorOccurred, stages, [=](const QString &, const QString &, const QString &) {
         keepStage->setEnabled(true); stageDetails->setPlainText(tr("操作未完成，请检查连接或刷新后重试。"));
     });
-    tabs->addTab(stages, tr("短期与阶段记忆"));
+    tabs->addTab(stages, tr("会话记录"));
+    tabs->setTabVisible(tabs->indexOf(forget), false);
+    tabs->setTabVisible(tabs->indexOf(stages), false);
+    auto *manage = new QToolButton(tabs);
+    manage->setText(tr("更多"));
+    manage->setPopupMode(QToolButton::InstantPopup);
+    auto *menu = new QMenu(manage);
+    menu->addAction(tr("查看会话记录"), tabs, [tabs, stages, stageHttp, stageScope]() {
+        tabs->setCurrentWidget(stages);
+        stageHttp->flowContexts(stageScope->currentData().toString());
+    });
+    menu->addAction(tr("忘记内容…"), tabs, [tabs, forget]() { tabs->setCurrentWidget(forget); });
+    manage->setMenu(menu);
+    tabs->setCornerWidget(manage);
     connect(forget, &ForgetPage::memoryForgotten, this, &MemoryWorkspace::clearResult);
     layout->setContentsMargins(20, 16, 20, 16);
     auto *title = new QLabel(tr("记忆工作区"), this);
@@ -261,7 +276,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     });
     connect(write, &QPushButton::clicked, writeDialog, &QDialog::show);
     connect(writeDialog, &MemoryWriteDialog::memoryAccepted, m_audit,
-            [this](const QString &id) { m_audit->setEvidenceIds({id}); });
+            [this](const QString &) { m_audit->notifyDataChanged(); });
     layout->addLayout(row);
     m_status = new QLabel(tr("输入关键词开始检索。"), this);
     m_status->setObjectName(QStringLiteral("memoryStatus"));
@@ -359,9 +374,6 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
             auto *item = new QListWidgetItem(tr("查看来源 %1").arg(m_sources->count() + 1), m_sources);
             item->setData(Qt::UserRole, source);
         }
-        QStringList ids;
-        for (int i = 0; i < m_sources->count(); ++i) ids << m_sources->item(i)->data(Qt::UserRole).toString();
-        m_audit->setEvidenceIds(ids);
     });
     connect(m_transport, &BackendTransport::queryFailed, this,
             [this](quint64 id, const QString &, const QString &message) {
@@ -464,7 +476,6 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
         ? tr("会话记录中没有可核验的记忆来源；这不代表会话未使用记忆。")
         : tr("本会话记忆来源：选择后读取当前证据。此列表不是每条回答的逐句引用。"));
     QSet<QString> seen;
-    QStringList ids;
     for (const auto &source : result.references) {
         if (seen.contains(source.evidenceId)) continue;
         seen.insert(source.evidenceId);
@@ -472,9 +483,7 @@ bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const 
             ? tr("查看来源 %1").arg(m_sources->count() + 1) : source.title.left(512), m_sources);
         item->setData(Qt::UserRole, source.evidenceId);
         item->setData(Qt::UserRole + 1, source.scope);
-        ids << source.evidenceId;
     }
-    m_audit->setEvidenceIds(ids);
     return true;
 }
 
@@ -516,7 +525,6 @@ void MemoryWorkspace::clearResult()
     m_edit->setEnabled(false);
     m_request = 0;
     m_evidence.clear();
-    m_audit->setEvidenceIds({});
     m_answer->clear();
     m_sources->clear();
     clearEvidence();

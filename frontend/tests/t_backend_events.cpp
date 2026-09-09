@@ -40,7 +40,6 @@ private slots:
         QSignalSpy commands(peer, &QWebSocket::textMessageReceived);
         QTRY_VERIFY(!changed.isEmpty());
         changed.clear();
-        status.findChild<QPushButton *>("eventDismiss")->click();
         const QStringList invalid{
             QStringLiteral("not-json"), QStringLiteral("[]"),
             QStringLiteral(R"({"data":{"severity":"high"}})"),
@@ -55,15 +54,11 @@ private slots:
         peer->sendTextMessage(R"({"event":"capture_event","data":{}})");
         QTRY_COMPARE(changed.count(), 1);
         QCOMPARE(changed.first().first().toString(), QStringLiteral("capture_event"));
+        QVERIFY(!status.findChild<QPushButton *>("eventDismiss"));
+        QVERIFY(status.findChild<QLabel *>("eventConnection")->text().isEmpty());
         QCOMPARE(attention.count(), 0);
         QCOMPARE(commands.count(), 0);
         QVERIFY(status.findChildren<QDialog *>().isEmpty());
-        const QString notice = status.findChild<QLabel *>("eventChanges")->text();
-        QVERIFY(notice.contains(QStringLiteral("采集与隐私")));
-        QVERIFY(!notice.contains(QStringLiteral("设备")));
-        QVERIFY(!notice.contains(QStringLiteral("记忆")));
-        QVERIFY(!notice.contains(QStringLiteral("审计")));
-        QVERIFY(!notice.contains(QStringLiteral("private")));
         peer->close();
         peer->deleteLater();
     }
@@ -78,9 +73,6 @@ private slots:
         QSignalSpy sentCommands(peer, &QWebSocket::textMessageReceived);
         QTRY_VERIFY(!changed.isEmpty());
         changed.clear();
-        auto *notice = status.findChild<QLabel *>("eventChanges");
-        auto *dismiss = status.findChild<QPushButton *>("eventDismiss");
-        dismiss->click();
         const QStringList states{QStringLiteral("ingested"), QStringLiteral("sensitive_quarantined"),
                                  QStringLiteral("ignored"), QStringLiteral("state_changed")};
         for (const QString &state : states) {
@@ -95,14 +87,9 @@ private slots:
             QCOMPARE(args.size(), 1);
             QCOMPARE(args.first().toString(), QStringLiteral("capture_event"));
         }
-        QCOMPARE(notice->text().count(QStringLiteral("采集与隐私")), 1);
-        QVERIFY(!notice->text().contains("private"));
-        QVERIFY(!notice->text().contains(QStringLiteral("相关")));
         QCOMPARE(attention.count(), 0);
         QCOMPARE(sentCommands.count(), 0);
         QVERIFY(status.findChildren<QDialog *>().isEmpty());
-        dismiss->click();
-        QVERIFY(notice->text().isEmpty());
         QCOMPARE(changed.count(), states.size());
         peer->close();
         peer->deleteLater();
@@ -127,7 +114,6 @@ private slots:
         QTRY_COMPARE(changed.count(), 23);
         QCOMPARE(attention.count(), 1);
         QVERIFY(attention.first().isEmpty());
-        QVERIFY(!status.findChild<QLabel *>("eventChanges")->text().contains("private-secret"));
         QVERIFY(status.findChildren<QDialog *>().isEmpty());
         peer->close();
         peer->deleteLater();
@@ -140,16 +126,11 @@ private slots:
         QTRY_VERIFY(server.hasPendingConnections());
         auto *peer = server.nextPendingConnection();
         QSignalSpy sentCommands(peer, &QWebSocket::textMessageReceived);
-        auto *notice = status.findChild<QLabel *>("eventChanges");
-        auto *dismiss = status.findChild<QPushButton *>("eventDismiss");
-        QTRY_VERIFY(dismiss->isEnabled());
         QTRY_VERIFY(!changed.isEmpty());
         QCOMPARE(changed.takeFirst().at(0).toString(), QStringLiteral("reconnected"));
-        dismiss->click();
         peer->sendTextMessage(R"({"event":"forget_confirmation","data":{"command":"secret-command","confirmation_token":"secret-token"}})");
-        QTRY_VERIFY(notice->text().contains(QStringLiteral("记忆")));
+        QTRY_VERIFY(!changed.isEmpty());
         QCOMPARE(changed.takeFirst().at(0).toString(), QStringLiteral("forget_confirmation"));
-        QVERIFY(!notice->text().contains("secret"));
         QVERIFY(status.findChildren<QDialog *>().isEmpty());
         auto *review = status.findChild<QPushButton *>("reviewAgentForget");
         QVERIFY(review);
@@ -160,13 +141,11 @@ private slots:
         QCOMPARE(sentCommands.count(), 0);
         peer->sendTextMessage(R"({"event":"forget_confirmation","data":{}})");
         peer->sendTextMessage(R"({"event":"capture_event","data":{}})");
-        QTRY_VERIFY(notice->text().contains(QStringLiteral("采集与隐私")));
-        QCOMPARE(notice->text().count(QStringLiteral("记忆")), 1);
         peer->abort();
         peer->deleteLater();
         QTRY_VERIFY_WITH_TIMEOUT(server.hasPendingConnections(), 8000);
         auto *replacement = server.nextPendingConnection();
-        QTRY_VERIFY(notice->text().contains(QStringLiteral("连接恢复")));
+        QTRY_VERIFY(status.findChild<QLabel *>("eventConnection")->text().isEmpty());
         replacement->close();
         replacement->deleteLater();
     }
@@ -180,17 +159,14 @@ private slots:
         QTRY_VERIFY(server.hasPendingConnections());
         auto *peer = server.nextPendingConnection();
         QSignalSpy disconnected(peer, &QWebSocket::disconnected);
-        QTRY_VERIFY(status.findChild<QPushButton *>("eventDismiss")->isEnabled());
-        status.findChild<QPushButton *>("eventDismiss")->click();
         peer->sendTextMessage(QStringLiteral("{\"event\":\"memory_ready\",\"data\":{\"text\":\"")
             + QString(2 * 1024 * 1024, QLatin1Char('x')) + QStringLiteral("\"}}"));
         QTRY_VERIFY_WITH_TIMEOUT(!disconnected.isEmpty(), 8000);
-        QVERIFY(!status.findChild<QLabel *>("eventChanges")->text().contains(QStringLiteral("记忆")));
         peer->deleteLater();
     }
     void invalidAddressDoesNotConnect() {
         pixiu::BackendEventStatus status("http://user:secret@localhost:1234/?token=secret");
-        QVERIFY(status.findChild<QLabel *>("eventConnection")->text().contains(QStringLiteral("地址无效")));
+        QVERIFY(status.findChild<QLabel *>("eventConnection")->text().contains(QStringLiteral("无法连接")));
         QVERIFY(!status.findChild<QLabel *>("eventConnection")->text().contains("secret"));
     }
 };

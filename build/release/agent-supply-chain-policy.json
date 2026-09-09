@@ -135,7 +135,8 @@
     "build/release/scripts/source_checkout.py",
     "frontend/src/services/MediaInputClient.h",
     "frontend/src/services/MediaInputClient.cpp",
-    "frontend/host/patches/0027-automatic-attachments.patch"
+    "frontend/host/patches/0027-automatic-attachments.patch",
+    "frontend/host/patches/0028-simplify-workspace-navigation.patch"
   ],
   "runtime_adaptation_inputs": [
     "build/release/agent-runtime/build-runtime-wheelhouse.sh",

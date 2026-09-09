@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QTabWidget>
 #include <QRegularExpression>
+#include <QTimer>
 #include "ForgetPage.h"
 
 namespace pixiu {
@@ -13,38 +14,35 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
 {
     setObjectName(QStringLiteral("backendEventStatus"));
     auto *layout = new QHBoxLayout(this);
-    auto *connection = new QLabel(tr("事件通道尚未连接；不代表服务健康状态。"), this);
+    auto *connection = new QLabel(this);
+    m_connection = connection;
     connection->setObjectName(QStringLiteral("eventConnection"));
     connection->setTextFormat(Qt::PlainText);
     connection->setWordWrap(true);
     layout->addWidget(connection);
-    m_notice = new QLabel(this);
-    m_notice->setObjectName(QStringLiteral("eventChanges"));
-    m_notice->setTextFormat(Qt::PlainText);
-    m_notice->setWordWrap(true);
-    layout->addWidget(m_notice, 1);
     m_progress = new QLabel(this);
     m_progress->setObjectName(QStringLiteral("dreamingProgress"));
     m_progress->setTextFormat(Qt::PlainText);
     m_progress->setWordWrap(true);
     layout->addWidget(m_progress, 1);
-    m_dismiss = new QPushButton(tr("清除提示"), this);
-    m_dismiss->setObjectName(QStringLiteral("eventDismiss"));
-    layout->addWidget(m_dismiss);
-    connect(m_dismiss, &QPushButton::clicked, this, [this]() {
-        m_changed.clear();
+    auto *reportTimer = new QTimer(this);
+    reportTimer->setSingleShot(true);
+    reportTimer->setInterval(15000);
+    connect(reportTimer, &QTimer::timeout, this, [this]() {
         m_progress->clear();
-        updateNotice();
+        updateVisibility();
     });
-    updateNotice();
+    updateVisibility();
     const QUrl url(baseUrl);
     if (!url.isValid() || url.host().isEmpty() || !url.userInfo().isEmpty()
         || url.hasQuery() || url.hasFragment()
         || (url.scheme() != "http" && url.scheme() != "https")) {
-        connection->setText(tr("事件地址无效，未连接；请检查后端配置。"));
+        connection->setText(tr("暂时无法连接记忆服务，请在设置中检查连接。"));
+        updateVisibility();
         return;
     }
-    auto *reviewForget = new QPushButton(tr("确认助手遗忘请求"), this);
+    auto *reviewForget = new QPushButton(tr("查看遗忘计划"), this);
+    m_reviewForget = reviewForget;
     reviewForget->setObjectName("reviewAgentForget");
     reviewForget->hide();
     layout->addWidget(reviewForget);
@@ -60,22 +58,21 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
             }
         }
         reviewForget->hide();
+        updateVisibility();
     });
     auto *client = new WebSocketClient(this);
     connect(client, &WebSocketClient::connectionStateChanged, this, [this, connection](ConnectionState state) {
         if (state == ConnectionState::Connected) {
-            connection->setText(tr("事件通道已连接（不代表服务健康）。"));
-            // The protocol has no replay cursor: reconnect cannot prove freshness.
-            m_changed.insert(tr("连接恢复后的各页面"));
-            updateNotice();
+            connection->clear();
             emit dataChanged(QStringLiteral("reconnected"));
         } else if (state == ConnectionState::Connecting) {
-            connection->setText(tr("事件通道正在连接…"));
+            connection->clear();
         } else {
-            connection->setText(tr("事件通道未连接，将自动重试；页面可能不是最新数据。"));
+            connection->setText(tr("正在恢复连接，最新结果稍后自动更新。"));
         }
+        updateVisibility();
     });
-    connect(client, &WebSocketClient::eventReceived, this, [this, reviewForget](const QJsonObject &event) {
+    connect(client, &WebSocketClient::eventReceived, this, [this, reviewForget, reportTimer](const QJsonObject &event) {
         const QString name = event.value("event").toString();
         if (name == "dreaming_progress") {
             const auto data = event.value("data").toObject();
@@ -92,7 +89,9 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
             else if (status == "incomplete")
                 m_progress->setText(tr("资料尚未完整整理，已保存 %1 条记忆。").arg(saved));
             else return;
-            m_dismiss->setEnabled(true);
+            if (status == "running") reportTimer->stop();
+            else reportTimer->start();
+            updateVisibility();
             emit dataChanged(name);
             return;
         }
@@ -105,6 +104,7 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
                 reviewForget->setProperty("command", command);
                 reviewForget->setProperty("scope", scope);
                 reviewForget->show();
+                updateVisibility();
             }
             return;
         }
@@ -120,19 +120,16 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
             m_lastAttention.start();
             emit conflictAttentionRequested(); // no event text, values or IDs cross this boundary
         }
-        m_changed.insert(page);
-        updateNotice();
         emit dataChanged(name);
     });
     client->setBackendUrl(url.toString());
     client->connectToBackend();
 }
-void BackendEventStatus::updateNotice()
+void BackendEventStatus::updateVisibility()
 {
-    QStringList pages = m_changed.values();
-    pages.sort();
-    m_notice->setText(pages.isEmpty() ? QString() : tr("请刷新核对：%1。提示不会执行操作或覆盖未保存输入。")
-        .arg(pages.join(QStringLiteral("、"))));
-    m_dismiss->setEnabled(!pages.isEmpty() || !m_progress->text().isEmpty());
+    m_connection->setVisible(!m_connection->text().isEmpty());
+    m_progress->setVisible(!m_progress->text().isEmpty());
+    setVisible(!m_connection->text().isEmpty() || !m_progress->text().isEmpty()
+               || (m_reviewForget && !m_reviewForget->isHidden()));
 }
 }

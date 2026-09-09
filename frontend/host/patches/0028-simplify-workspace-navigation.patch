@@ -1,0 +1,24 @@
+--- a/src/ui/mainwindow.cpp
++++ b/src/ui/mainwindow.cpp
+@@ -96,11 +96,6 @@
+     titleLayout->addLayout(brandLayout);
+     titleLayout->addStretch();
+ 
+-    QPushButton *settingsButton = createTitleButton(QStringLiteral("设置"), QStringLiteral("打开设置"));
+-    settingsButton->setObjectName(QStringLiteral("titleTextButton"));
+-    settingsButton->setFixedWidth(64);
+-    connect(settingsButton, &QPushButton::clicked, this, &MainWindow::openSettings);
+-    titleLayout->addWidget(settingsButton);
+ 
+     rootLayout->addWidget(titleBar);
+ 
+@@ -204,7 +199,8 @@
+             }
+             workspaces->setCurrentWidget(memory);
+         });
+-    connect(workspaces, &QTabWidget::currentChanged, this, [resetSources](int index) {
++    connect(workspaces, &QTabWidget::currentChanged, this, [resetSources, sources](int index) {
++        sources->setVisible(index == 0);
+         if (index != 0) resetSources();
+     });
+     workspaces->addTab(new pixiu::DevicePage(workspaces), tr("设备"));

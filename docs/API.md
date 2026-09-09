@@ -1317,3 +1317,5 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，仅接受已登记文档引用；使用当前模型逐块运行限定工具，固定私人采集范围 user:local。文档登记可携带内部 source_path 绑定目录授权，该路径不交给模型；描述、读取、计划保存时授权已取消则拒绝。此接口不是模型可调用工具，也不接受模型传入 approved/scope/任意执行指令。
 
 后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
+
+偏好管理界面不再调用 `/preference/extract`：正式写入管线自动执行偏好提取，页面显示与相关事件触发只读列表更新。该调整不改变既有写入或审批契约。

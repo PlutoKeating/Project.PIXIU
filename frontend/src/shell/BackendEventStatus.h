@@ -1,5 +1,4 @@
 #pragma once
-#include <QSet>
 #include <QWidget>
 #include <QElapsedTimer>
 
@@ -18,11 +17,10 @@ signals:
     void dataChanged(const QString &eventName);
     void conflictAttentionRequested();
 private:
-    void updateNotice();
-    QLabel *m_notice;
+    void updateVisibility();
+    QLabel *m_connection;
     QLabel *m_progress;
-    QPushButton *m_dismiss;
-    QSet<QString> m_changed;
+    QPushButton *m_reviewForget = nullptr;
     QElapsedTimer m_lastAttention;
 };
 }
