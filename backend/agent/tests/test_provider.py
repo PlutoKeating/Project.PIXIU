@@ -395,3 +395,13 @@ def test_pinned_upstream_discovers_user_plugin(tmp_path, monkeypatch):
     loaded = load_memory_provider("pixiu")
     assert loaded is not None
     assert loaded.name == "pixiu"
+
+
+def test_first_turn_prefetch_reads_current_query_without_waiting_for_worker():
+    client = FakeClient()
+    item = provider(client)
+    item.initialize('fresh-session', platform='cli')
+    assert 'known fact' in item.prefetch('current question', session_id='fresh-session')
+    context_calls = [call for call in client.calls if call[1] == '/agent/context']
+    assert context_calls[-1][2]['query'] == 'current question'
+    item.shutdown()

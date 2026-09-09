@@ -275,6 +275,7 @@ async def get_agent_context_service(
         retrieval=retrieval,
         evidence_repo=SqliteEvidenceRepo(db),
         conflict_repo=SqliteConflictRepo(db),
+        preference_repo=SqlitePreferenceRepo(db),
     )
 
 

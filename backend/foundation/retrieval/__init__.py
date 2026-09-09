@@ -18,7 +18,7 @@ from backend.foundation.core.repository import (
 from backend.foundation.core.vector_store import VectorStore
 
 from .ann import ANNChannel, Embedder
-from .assembler import Assembler
+from .assembler import Assembler, _AGGREGATE_HINT, _amount_items, _group_summary, expense_selection
 from .bm25 import BM25Channel
 from .fuse import fuse_candidates
 from .graph_search import GraphChannel
@@ -58,6 +58,17 @@ class RetrievalService:
     async def query(self, text: str, context_hint: dict[str, Any] | None = None) -> MemoryAtom:
         """执行混合检索，返回 MemoryAtom。"""
         started = time.monotonic()
+        expenses = await self.expenses(text, context_hint)
+        if expenses is not None:
+            if not expenses:
+                return MemoryAtom(answer="没有找到符合类别或时间条件的支出记录。")
+            lines = [line for item in expenses for line in item.body["items"]]
+            total = sum(float(line["amount"]) for line in lines)
+            summary = "、".join(f"{label} {amount:.2f} 元" for label, amount in _group_summary(lines))
+            return MemoryAtom(answer=f"共支出 {total:.2f} 元" + (f"，其中{summary}。" if summary else "。"),
+                source_evidence=list(dict.fromkeys(e for item in expenses for e in item.evidence_ids)),
+                source_knowledge=expenses[0].id, confidence=1,
+                latency_ms=int((time.monotonic() - started) * 1000))
         reranked = await self.ranked(text, context_hint)
 
         if not reranked:
@@ -70,6 +81,21 @@ class RetrievalService:
             top_item, top_score, text, latency
         )
 
+    async def expenses(self, text: str, context_hint=None):
+        if not _AGGREGATE_HINT.search(text):
+            return None
+        hint = context_hint or {}
+        records = [item for item in await self._knw_repo.list_active()
+                   if (not hint.get("scope") or item.scope == hint["scope"]) and _amount_items(item.body)]
+        if not records:
+            return None
+        selected = []
+        for item in records:
+            lines = expense_selection(item, text, hint.get("time_range"))
+            if lines:
+                selected.append(item.model_copy(update={"body": {**item.body, "items": lines}}))
+        return selected
+
     async def ranked(
         self,
         text: str,
@@ -81,6 +107,9 @@ class RetrievalService:
         scope = hint.get("scope")
         time_range = hint.get("time_range")
 
+        expenses = await self.expenses(text, hint)
+        if expenses is not None:
+            return [(item, 1.0) for item in expenses][:top_k]
         intent = route(text, await self._entity_names())
         search_limit = max(top_k * 4, 20)
 

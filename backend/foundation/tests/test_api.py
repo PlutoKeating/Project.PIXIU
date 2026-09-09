@@ -1719,3 +1719,21 @@ def test_agent_authorized_capture_and_shared_spaces(client):
     request['use_settings'] = False
     assert client.post('/agent/context', json=request).json()['items'] == []
     assert client.put('/agent/settings', json={'shared_scopes': ['user:other']}).status_code == 400
+
+
+def test_conversation_preference_applies_in_new_session_and_updates(client):
+    for index, (text, style) in enumerate([('以后请简洁回答', 'compact'), ('以后请详细回答', 'verbose')]):
+        response = client.post('/memory/write', json={
+            'source_type': 'CONVERSATION', 'raw': {'user': text, 'assistant': '我可以简洁也可以详细回答'},
+            'scope': 'user:default', 'idempotency_key': f'preference-turn-{index}',
+            'provenance': {'session_id': 'preference-session', 'run_id': f'run-{index}',
+                           'turn_id': f'turn-{index}', 'occurred_at': 1700000011 + index}})
+        assert response.status_code == 200
+        result = client.post('/agent/context', json={'query': '帮我准备采购计划',
+            'scope': 'user:default', 'session_id': f'new-session-{index}', 'turn_id': 'turn-1',
+            'use_settings': True}).json()
+        assert result['preferences'][0]['value']['verbosity'] == style
+        assert result['preferences'][0]['version'] == index + 1
+        assert ('简洁回答' if style == 'compact' else '详细回答') in result['context']
+    history = client.get('/preference/' + result['preferences'][0]['id'] + '/history').json()
+    assert history

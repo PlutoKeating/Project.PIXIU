@@ -82,6 +82,7 @@ class PixiuMemoryProvider(MemoryProvider):
         self._worker: threading.Thread | None = None
         self._stopping = threading.Event()
         self._lock = threading.Lock()
+        self._cache_queries: dict[str, str] = {}
         self._cache: dict[str, str] = {}
         self._session_id = ""
         self._run_id = ""
@@ -221,7 +222,20 @@ class PixiuMemoryProvider(MemoryProvider):
     def prefetch(self, query: str, *, session_id: str = "") -> str:
         sid = self._safe_id(session_id, "session") if session_id else self._session_id
         with self._lock:
-            return self._cache.pop(sid, "")
+            cached = self._cache.pop(sid, "")
+            cached_query = self._cache_queries.pop(sid, "")
+        if cached and cached_query == self._clip(query):
+            return cached
+        # A first/new-session turn must not lose recall merely because the worker
+        # has not finished prefetching. The HTTP client already has a bounded timeout.
+        try:
+            result = self._client.request("POST", "/agent/context", {
+                "query": self._clip(query), "scope": self._scope, "use_settings": True,
+                "session_id": sid, "turn_id": self._turn_id, "top_k": 5,
+                "max_chars": self._max_chars})
+            return _FENCE.sub("[memory fence removed]", str(result.get("context") or ""))
+        except PixiuApiError:
+            return ""
 
     def queue_prefetch(self, query: str, *, session_id: str = "") -> None:
         if not self._initialized or not query.strip():
@@ -633,6 +647,7 @@ class PixiuMemoryProvider(MemoryProvider):
                     context = _FENCE.sub("[memory fence removed]", context)
                     with self._lock:
                         self._cache[job.cache_session] = context
+                        self._cache_queries[job.cache_session] = str(job.payload.get("query") or "")
                 with self._lock:
                     self._completed_jobs += 1
             except PixiuApiError as exc:

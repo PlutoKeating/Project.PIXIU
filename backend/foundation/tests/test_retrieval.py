@@ -532,3 +532,19 @@ def test_api_memory_query_endpoint(tmp_path):
             assert data["latency_ms"] >= 0
     finally:
         app.dependency_overrides.clear()
+
+
+@pytest.mark.asyncio
+async def test_expenses_filter_each_line_and_sum_multiple_bills(svc):
+    service, repo, _, _, _ = svc
+    for tag, month, amount in [('a', '2026-04-02', 210), ('b', '2026-04-12', 68.5)]:
+        await _save_knowledge(repo, StubTextEmbedder(), tag=tag, title='家庭账单', body={'items': [
+            {'category': '水电燃气', 'date': month, 'amount': amount},
+            {'category': '水电燃气', 'date': '2026-05-02', 'amount': 999},
+            {'category': '食品', 'date': month, 'amount': 100},
+        ]})
+    answer = await service.query('2026年4月水电燃气花了多少钱', {'scope': 'shared:home'})
+    assert '278.50' in answer.answer
+    assert '999' not in answer.answer
+    missing = await service.query('2026年4月交通花了多少钱', {'scope': 'shared:home'})
+    assert '没有找到' in missing.answer

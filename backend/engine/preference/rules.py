@@ -195,6 +195,15 @@ def _style_from_text(
     return verbosity_candidate(verbosity, 0.75)
 
 
+def _style_from_conversation(evidence, body, raw):
+    # Only the user's request sets preferences; the assistant's wording is not a vote.
+    text = str(body.get("user") or raw.get("user") or "")
+    if not any(word in text.casefold() for word in ("以后", "今后", "偏好", "回答", "回复", "输出", "prefer", "respond", "answer")):
+        return None
+    style = match_verbosity(text)
+    return verbosity_candidate(style, 0.9) if style else None
+
+
 def _security_from_config(
     evidence: Evidence, body: dict[str, Any], raw: dict[str, Any]
 ) -> Optional[Candidate]:
@@ -294,6 +303,8 @@ OP_HABIT_RULES: tuple[Rule, ...] = (
 )
 
 OUTPUT_STYLE_RULES: tuple[Rule, ...] = (
+    Rule(name="conversation_output_style", category="OUTPUT_STYLE",
+         source_types=frozenset({"CONVERSATION"}), apply=_style_from_conversation),
     Rule(
         name="manual_config_verbosity",
         category="OUTPUT_STYLE",

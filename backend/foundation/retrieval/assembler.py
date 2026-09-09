@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 from typing import Any
+from datetime import datetime, timezone
+from .fuse import _parse_timestamp, _time_bounds
 
 from backend.foundation.core.models import Evidence, KnowledgeItem, MemoryAtom
 from backend.foundation.core.repository import EvidenceRepository
@@ -33,8 +35,6 @@ def _matching_items(body: dict[str, Any], query: str) -> list[dict[str, Any]]:
         if item.get("category")
         and str(item["category"]).casefold() in normalized_query
     ]
-    if category_matches:
-        return category_matches
 
     detail_matches: list[dict[str, Any]] = []
     for item in items:
@@ -44,7 +44,20 @@ def _matching_items(body: dict[str, Any], query: str) -> list[dict[str, Any]]:
             labels.extend(tags)
         if any(label and str(label).casefold() in normalized_query for label in labels):
             detail_matches.append(item)
-    return detail_matches or items
+    if detail_matches:
+        return detail_matches
+    if category_matches:
+        return category_matches
+    if "水电燃气" in normalized_query:
+        return [item for item in items if item.get("category") in {"电费", "水费", "燃气费", "水电燃气"}]
+    # Only an unqualified total may include every line. A missing category or
+    # merchant must never silently turn into a different (whole-bill) answer.
+    remainder = re.sub(r"(?:20\d{2}[年/-])?\d{1,2}月|20\d{2}-\d{2}(?:-\d{2})?", "", normalized_query)
+    for word in ("这个月", "本月", "上个月", "上月", "我们", "我", "的", "这些", "这个", "这份", "那份",
+                 "账单", "清单", "家庭", "总共", "一共", "合计", "总额", "花了", "花费", "花", "支出", "费用", "金额",
+                 "多少钱", "多少", "钱", "是", "在", "来着", "请", "帮忙", "算一下", "统计一下", "？", "?", "。", " "):
+        remainder = remainder.replace(word, "")
+    return items if not remainder else []
 
 
 def _sum_items(items: list[dict[str, Any]]) -> float | None:
@@ -96,6 +109,8 @@ class Assembler:
         if _AGGREGATE_HINT.search(query) and isinstance(item.body, dict):
             matched_items = _matching_items(item.body, query)
             total = _sum_items(matched_items)
+            if total is None:
+                return "没有找到符合类别或时间条件的支出记录。"
             if total is not None:
                 summary = "、".join(
                     f"{label} {amount:.2f} 元"
@@ -123,3 +138,34 @@ class Assembler:
             confidence=max(0.0, min(1.0, score)),
             latency_ms=latency_ms,
         )
+
+
+def expense_selection(item: KnowledgeItem, query: str, time_range=None) -> list[dict[str, Any]]:
+    """Filter individual expense lines, including dates within a single bill."""
+    selected = _matching_items(item.body, query)
+    bounds = _time_bounds(time_range)
+    month = re.search(r"(?:(20\d{2})[年/-])?(\d{1,2})月", query)
+    iso_month = re.search(r"(20\d{2})-(\d{2})(?!-\d)", query)
+    match = month or iso_month
+    if match:
+        year = int(match.group(1) or datetime.now().year)
+        number = int(match.group(2))
+        if not 1 <= number <= 12:
+            return []
+        start = datetime(year, number, 1, tzinfo=timezone.utc)
+        end = datetime(year + (number == 12), number % 12 + 1, 1, tzinfo=timezone.utc)
+        bounds = (start.timestamp(), end.timestamp())
+    elif any(word in query for word in ("上个月", "上月")):
+        bounds = _time_bounds("last_month")
+    elif any(word in query for word in ("这个月", "本月")):
+        now = datetime.now(timezone.utc)
+        bounds = (now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).timestamp(), None)
+    if bounds is None:
+        return selected
+    start, end = bounds
+    result = []
+    for line in selected:
+        stamp = _parse_timestamp(line.get("date") or item.body.get("date"))
+        if stamp is not None and (start is None or stamp >= start) and (end is None or stamp < end):
+            result.append(line)
+    return result

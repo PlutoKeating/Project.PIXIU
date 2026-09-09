@@ -19,10 +19,12 @@ class AgentContextService:
         retrieval: RetrievalService,
         evidence_repo: EvidenceRepository,
         conflict_repo: ConflictRepository,
+        preference_repo=None,
     ) -> None:
         self._retrieval = retrieval
         self._evidence_repo = evidence_repo
         self._conflict_repo = conflict_repo
+        self._preference_repo = preference_repo
 
     async def build(
         self,
@@ -56,6 +58,16 @@ class AgentContextService:
 
         now = int(time.time())
         context = ""
+        preferences = []
+        if self._preference_repo is not None:
+            for selected in scopes:
+                pref = await self._preference_repo.get_by_key("output_style.verbosity", selected)
+                if pref is not None and pref.value.get("verbosity") in {"compact", "verbose"}:
+                    preferences.append({"id": pref.id, "version": pref.version, "scope": pref.scope,
+                                        "key": pref.key, "value": pref.value})
+                    style = "简洁回答，先给结论" if pref.value["verbosity"] == "compact" else "详细回答，解释步骤和理由"
+                    context = ("用户已保存的输出偏好：" + style + "。本轮明确要求优先。")[:max_chars]
+                    break
         items: list[dict[str, Any]] = []
         truncated = False
         for item, score in ranked:
@@ -93,6 +105,7 @@ class AgentContextService:
                 break
 
         return {
+            "preferences": preferences,
             "read_scopes": scopes,
             "session_id": session_id,
             "turn_id": turn_id,
