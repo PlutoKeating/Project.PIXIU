@@ -163,3 +163,36 @@ def test_multipage_image_keeps_each_page():
 def test_corrupt_image_is_not_reported_as_readable():
     document = decode_document(b"\x89PNG\r\n\x1a\nnot-an-image", "bad.png")
     assert not document.blocks and document.warnings
+
+
+@pytest.mark.parametrize("filename,prefix", [
+    ("docx/word_sample.docx", "word"),
+    ("pptx/powerpoint_sample.pptx", "ppt"),
+])
+def test_office_chart_keeps_series_labels_and_cached_values(filename, prefix):
+    import io
+    import zipfile
+    from xml.etree import ElementTree as ET
+
+    chart = b'''<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart">
+      <c:chart><c:plotArea><c:barChart><c:ser><c:idx val="0"/>
+      <c:tx><c:v>Energy budget</c:v></c:tx>
+      <c:cat><c:strLit><c:pt idx="0"><c:v>Gas</c:v></c:pt></c:strLit></c:cat>
+      <c:val><c:numRef><c:f>Sheet1!$B$2</c:f><c:numCache>
+      <c:pt idx="0"><c:v>186</c:v></c:pt></c:numCache></c:numRef></c:val>
+      </c:ser></c:barChart></c:plotArea></c:chart></c:chartSpace>'''
+    output = io.BytesIO()
+    with zipfile.ZipFile(FIXTURES / filename) as original, zipfile.ZipFile(output, "w") as target:
+        for item in original.infolist():
+            target.writestr(item, original.read(item.filename))
+        target.writestr(prefix + "/charts/chart1.xml", chart)
+    result = decode_document(output.getvalue(), Path(filename).name)
+    blocks = [block for block in result.blocks if "图表 " in block.location]
+    assert len(blocks) == 1
+    root = ET.fromstring(blocks[0].text)
+    ns = {"c": "http://schemas.openxmlformats.org/drawingml/2006/chart"}
+    series = root.find(".//c:ser", ns)
+    assert series.find("c:tx/c:v", ns).text == "Energy budget"
+    assert series.find("c:cat/c:strLit/c:pt/c:v", ns).text == "Gas"
+    assert series.find("c:val/c:numRef/c:numCache/c:pt/c:v", ns).text == "186"
+    assert series.find("c:val/c:numRef/c:f", ns).text == "Sheet1!$B$2"
