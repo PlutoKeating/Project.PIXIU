@@ -306,7 +306,7 @@ Security detector，`user:*` 敏感 evidence 本地隔离，`shared:*` 敏感写
 
 | 属性 | 说明 |
 |------|------|
-| 目录 | `backend/scripts/`, `backend/tests/` |
+| 目录 | `backend/scripts/`, `backend/{engine,foundation}/tests/` |
 | 技术栈 | Python, Shell |
 | 开发人员 | 1人（测试 / 运维 / 工具开发） |
 | 对其他模块 | 零依赖，可使用 mock 独立工作 |
@@ -503,8 +503,8 @@ Project.PIXIU/
 │   ├── CMakeLists.txt
 │   └── .env.example
 
-├── integrations/
-│   └── kylin_agent/                ★ 模块 E：Agent/MemoryProvider 适配与契约测试
+├── backend/agent/
+│   └── pixiu/                ★ 模块 E：Agent/MemoryProvider 适配与契约测试
 
 ├── submission/                     # 正式提交目录；两层同名结构见 DELIVERY_PLAN.md §0
 
@@ -536,7 +536,7 @@ git submodule update --init --recursive
 | 模块 A | `frontend/` 下所有文件 | `backend/` 下任何文件 |
 | 模块 B | `backend/engine/` + `backend/foundation/core/`（仅接口） | `backend/foundation/api/storage/retrieval/flow/sync/eval/` |
 | 模块 C | `backend/foundation/`（除 engine 子包） | `backend/engine/` 下任何文件 |
-| 支持 D | `backend/scripts/`, `backend/tests/`, `docs/`（补全） | `frontend/src/` |
+| 支持 D | `backend/scripts/`, `backend/{engine,foundation}/tests/`, `docs/`（补全） | `frontend/src/` |
 | 模块 E | `backend/agent/` 下所有文件 | `frontend/`、`backend/`、`third_party/` 下任何文件 |
 
 Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契约需求，A/C 更新
@@ -630,3 +630,7 @@ Module E 只通过公共 API 与后端交互。若 API 不足，由 E 提交契�
 | — | API 网关 | 模块 C | `backend/foundation/api/` |
 | — | 存储层 | 模块 C | `backend/foundation/storage/` |
 | — | 共享契约 | 模块 C | `backend/foundation/core/` |
+
+## 2026-09-10 测试与源码交付归属
+
+跨系统场景脚本、对应测试及模拟服务位于 `tests/acceptance/{scripts,tests,fixtures}`；平台初始化/升级测试位于 `backend/platform/tests`；桌面及渲染测试位于 `frontend/tests`；build 仅保留打包与构建规则测试。源码白名单包含顶层 tests。依赖仍使用现有后端 requirements 与 Qt 开发依赖，不新增测试框架。

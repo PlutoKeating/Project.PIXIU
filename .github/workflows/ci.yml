@@ -36,7 +36,7 @@ jobs:
           XDG_CONFIG_HOME="$RUNNER_TEMP/external-config" \
           XDG_STATE_HOME="$RUNNER_TEMP/external-state" \
           HERMES_HOME="$RUNNER_TEMP/external-agent" \
-            bash build/release/tests/test-agent-integration.sh
+            bash backend/platform/tests/test-agent-integration.sh
           make -C build/release governance
 
   backend-tests:
@@ -126,7 +126,7 @@ jobs:
         env:
           PIXIU_KYSDK: "OFF"
         run: |
-          bash build/release/tests/test-desktop-adapter.sh
+          bash frontend/tests/test-desktop-adapter.sh
           cmake -S frontend -B build/release/out/management-tests -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
           cmake --build build/release/out/management-tests --parallel 2
           ctest --test-dir build/release/out/management-tests --output-on-failure

@@ -68,7 +68,7 @@ CI 的 Python 3.12 job 会执行第 3 步，校验三节点逻辑视图摘要一
 > `AcceptanceTestSpecification.md` 的 H-01～H-03 证明要求，也未覆盖完整 Agent 闭环。
 
 最终报告不得直接复制本目录数值。发布阶段使用
-`build/release/scripts/final-performance-evidence.py` 绑定 strict V11 原生证据、完整
+`tests/acceptance/scripts/final-performance-evidence.py` 绑定 strict V11 原生证据、完整
 Agent 生命周期证据、冻结数据集 manifest、逐样本评测 JSON 与无记忆/单机/分布式
 三变体矩阵；汇总器会重验四项阈值和最低样本数。当前工具契约已通过，真实输入尚缺，
 所以 `kylin-v11-final-performance` 尚未生成。
@@ -87,6 +87,6 @@ Kylin 双 SDK runtime、隔离评测状态和同版 native 摘要。当前 porta
 manifest 固定 50 个 fixture、90 个纯测试用例、20 次检索重复以及规范化/文件/划分
 摘要。当前仓库只保存生成器和历史 portable 报告，不预先伪造最终候选 manifest。
 
-最终安装/升级结果由 `build/release/scripts/install-update-evidence.py` 采集和汇总。它要求
+最终安装/升级结果由 `tests/acceptance/scripts/install-update-evidence.py` 采集和汇总。它要求
 六种真实操作的前后 V11 状态、独立 proof、同一 strict 候选包及数据保留指纹；工具
 契约 6/6 通过，但最终 V11 候选的矩阵尚未运行，不能在本报告中预填通过结论。

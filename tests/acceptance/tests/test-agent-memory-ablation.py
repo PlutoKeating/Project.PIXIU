@@ -8,7 +8,7 @@ import pytest
 
 
 ROOT = Path(__file__).parents[3]
-SCRIPT = ROOT / "build/release/scripts/agent-memory-ablation.py"
+SCRIPT = ROOT / "tests/acceptance/scripts/agent-memory-ablation.py"
 SPEC = importlib.util.spec_from_file_location("agent_memory_ablation", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
@@ -59,7 +59,7 @@ def write_json(path: Path, value: dict) -> None:
 
 def test_checked_in_task_set_is_fixed_and_large_enough() -> None:
     tasks = MODULE.validate_task_set(
-        MODULE.read_json(ROOT / "build/release/agent-memory-ablation-tasks.json")
+        MODULE.read_json(ROOT / "tests/acceptance/agent-memory-ablation-tasks.json")
     )
     assert len(tasks) == 30
     assert len({task["token"] for task in tasks}) == 30

@@ -127,7 +127,7 @@ v12 另覆盖失败 receipt 原载荷校验、一次性恢复授权、独立命�
 A-10 的局部证据，但不等于 Agent run 恢复。A-01～A-10 的真实宿主行为、A-11 分发
 审查和 A-14 端到端展示仍不得标为通过。
 
-真实宿主证据由 `build/release/scripts/agent-lifecycle-evidence.py` 两阶段采集：第一阶段
+真实宿主证据由 `tests/acceptance/scripts/agent-lifecycle-evidence.py` 两阶段采集：第一阶段
 只经 Agent Gateway 完成同会话 3 个 run，并要求 SSE 成功事件实际出现 `terminal`、
 `web_search`、`pixiu_memory_remember`；审批必须由操作者输入与当前 run 绑定的确认语句，
 脚本不提供自动批准。随机标记由采集器写入仅本用户可读的临时文件，必须先经 Shell
@@ -238,7 +238,7 @@ knowledge 先于 evidence 跨批次到达时，接收端持久登记待补 citat
 私有 scope 拒绝写为绑定 commit/版本的 JSON，并强制标记
 `final_device_evidence=false`；最终证据不能修改该字段来冒充真机。
 
-真实设备的 W6.2 拓扑证据由 `build/release/scripts/three-device-evidence.py` 两阶段
+真实设备的 W6.2 拓扑证据由 `tests/acceptance/scripts/three-device-evidence.py` 两阶段
 生成：三台设备分别在 loopback 上读取 `/sync/peers`、`/sync/status`，并绑定各自已经
 通过的 strict 原生 SDK 证据；汇总校验要求同一 run/候选包/commit/产品与 Debian
 版本/架构/Agent Runtime/共享域，三个不同设备身份构成完全图、全部在线、待发送为零，
@@ -306,7 +306,7 @@ PPT 建议参考 MultiWOZ、ToolBench、PersonaChat、BPMN、DailyDialog、TREC�
 
 未达基础指标必须明确优化方向。现有 portable 100%/100%/96%/115ms 只可登记为“开发回归通过”，不能填入最终 V11 双 SDK 结果栏。
 
-最终性能 JSON 由 `build/release/scripts/final-performance-evidence.py` 汇总。它要求原始
+最终性能 JSON 由 `tests/acceptance/scripts/final-performance-evidence.py` 汇总。它要求原始
 评测报告为 `acceptance` profile、包含至少 90 个逐样本 outcome，并分别达到偏好 15、
 检索 50、冲突 25 和延迟 1000 的最低样本数；四项基础指标会按本节阈值重新判定。
 F7-03 还必须提供相同 `task_set_sha256` 下的 `no_memory`、

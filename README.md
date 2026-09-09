@@ -118,7 +118,7 @@ Project.PIXIU/
 ├── backend/agent/         # Module E：原创 Agent/MemoryProvider 适配与契约测试
 ├── backend/engine/                   # 记忆业务引擎
 ├── backend/foundation/               # API、存储、检索、流转、同步、评测
-├── backend/tests/                    # 自动化测试
+├── backend/{engine,foundation}/tests/                    # 自动化测试
 ├── build/release/                    # Debian/银河麒麟构建、发布画像与交付校验工具
 ├── docs/                             # 架构、API、赛题、验收与报告
 ├── submission/                       # 正式提交目录；两层同名结构，云枫配乐宣传片（白字字幕、口白170%、配乐15%、首尾统一及指定封面）及完整制作工程

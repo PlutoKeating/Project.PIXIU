@@ -8,7 +8,9 @@
 | `backend/engine/` | 接入、偏好、知识、冲突、安全 | 团队原创 |
 | `backend/foundation/` | API、存储、检索、流转、同步、评测 | 团队原创 |
 | `backend/agent/` | MemoryProvider 与记忆工具 | 团队原创 |
-| `build/release/` | 构建、打包、升级、取证与交付门禁 | 团队原创 |
+| `build/release/` | 构建、打包、发布与源码导出 | 团队原创 |
+| `backend/platform/` | 初始化、启动、升级与数据迁移 | 团队原创 |
+| `tests/acceptance/` | 跨模块用户场景验证及模拟夹具 | 团队原创 |
 | `third_party/` | 固定版本的上游与系统 SDK 源码 | 上游依赖 |
 
 ## 原创边界
@@ -40,7 +42,7 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 
 `源代码/PIXIU源代码.tar.gz` 包含产品版本对应的前端、后端、Agent 适配、构建配置、测试、技术规范和四个固定版本上游源码。源码清单记录文件摘要、可执行权限和上游提交；保留第三方许可证及版权声明。
 
-解压后先运行包内 `verify-source.py` 核对文件。后端测试使用 `backend/pyproject.toml` 的依赖，前端使用 CMake。严格安装包需在银河麒麟 V11 安装官方 SDK 和画像列出的开发依赖，按构建说明执行。依赖清单与源码一起提供，源码压缩包不包含预下载的系统软件或 Python wheels。
+解压后先运行包内 `verify-source.py` 核对文件。后端测试使用 `backend/requirements.txt` 与 `backend/foundation/requirements-sync.txt` 的依赖，前端使用 CMake。严格安装包需在银河麒麟 V11 安装官方 SDK 和画像列出的开发依赖，按构建说明执行。依赖清单与源码一起提供，源码压缩包不包含预下载的系统软件或 Python wheels。
 
 当前发布脚本通过 Git 提交核验固定上游和供应链。源码包不携带开发历史或用户配置；发布构建需要按清单恢复对应源码检出，完整离线构建还需准备依赖闭包。源码文件完整性检查不等于已在全新机器重跑全部发布验证。
 

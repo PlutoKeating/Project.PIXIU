@@ -16,8 +16,8 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SERVER = ROOT / "build/release/testing/openai-compatible-mock.py"
-RUNNER = ROOT / "build/release/testing/run-agent-mock-acceptance.py"
+SERVER = ROOT / "tests/acceptance/fixtures/openai-compatible-mock.py"
+RUNNER = ROOT / "tests/acceptance/fixtures/run-agent-mock-acceptance.py"
 
 
 def load_runner():

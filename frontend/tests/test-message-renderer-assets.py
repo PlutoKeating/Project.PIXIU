@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[2]
 RENDERER = ROOT / "frontend/resources/message_renderer"
 
 

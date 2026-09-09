@@ -110,7 +110,7 @@ python3 build/release/scripts/audit-agent-supply-chain.py \
 时自动切换到该隔离解释器，确保直接 SDK 调用与实际后端使用同一份锁定依赖：
 
 ```bash
-python3 build/release/scripts/native-sdk-smoke.py \
+python3 tests/acceptance/scripts/native-sdk-smoke.py \
   --base-url http://127.0.0.1:8765 \
   --deb build/release/out/pixiu_0.1.7-3_amd64.deb \
   --expected-commit "$(git rev-parse HEAD)" \
@@ -168,20 +168,20 @@ Runtime。受控场景不出现具体工具名；采集器会生成一次性随�
 实际工具序列和审批次数由 SSE 事件判定：
 
 ```bash
-python3 build/release/scripts/agent-lifecycle-evidence.py before-restart \
+python3 tests/acceptance/scripts/agent-lifecycle-evidence.py before-restart \
   --native-evidence NATIVE_SDK_JSON \
-  --scenario build/release/agent-lifecycle-scenario.json \
+  --scenario tests/acceptance/agent-lifecycle-scenario.json \
   --state AGENT_CAPTURE_STATE_JSON
 ```
 
 第一阶段成功后，完整退出并重新启动桌面宿主和 Runtime，再运行：
 
 ```bash
-python3 build/release/scripts/agent-lifecycle-evidence.py after-restart \
-  --scenario build/release/agent-lifecycle-scenario.json \
+python3 tests/acceptance/scripts/agent-lifecycle-evidence.py after-restart \
+  --scenario tests/acceptance/agent-lifecycle-scenario.json \
   --state AGENT_CAPTURE_STATE_JSON \
   --output agent-lifecycle.json
-python3 build/release/scripts/agent-lifecycle-evidence.py validate \
+python3 tests/acceptance/scripts/agent-lifecycle-evidence.py validate \
   --output agent-lifecycle.json
 ```
 
@@ -192,7 +192,7 @@ Bearer 认证，只通过默认 `KYLIN_AGENT_API_KEY` 或 `--api-key-env` 指定
 保护且不得放入 内部证据目录；最终 JSON 只保留哈希、计数、工具名和通过项。工具的通过只说明
 采集程序契约已验证，最终状态仍取决于同一候选包在 V11 上的真实输出。
 
-开发阶段可用 `build/release/testing/openai-compatible-mock.py` 启动确定性、无推理的
+开发阶段可用 `tests/acceptance/fixtures/openai-compatible-mock.py` 启动确定性、无推理的
 OpenAI-compatible 节点，再用 `run-agent-mock-acceptance.py --suite full` 经真实 Gateway
 验证系统提示、多轮历史、SSE、审批、Shell、真实联网搜索及 PIXIU 记忆工具链；另以
 `--suite memory --scope shared:<name>` 独立保存共享域记忆写入、检索、更新和同步状态
@@ -225,7 +225,7 @@ Vector Engine，以及隔离的评测状态；不得用 `sudo`、portable 报告
 字段替代。原始逐样本报告和三变体对比完成后，用同一候选的五项输入生成性能主记录：
 
 三变体不得手填汇总。固定任务集为
-`build/release/agent-memory-ablation-tasks.json`（30 个互异的合成跨会话事实）。先在每个
+`tests/acceptance/agent-memory-ablation-tasks.json`（30 个互异的合成跨会话事实）。先在每个
 参与端对已经启动的 Runtime 采配置快照；无记忆画像必须显式关闭内置 memory、用户
 profile、外部 provider 和同步并只用非持久化 compressor context，单机画像必须启用 strict PIXIU provider 并关闭同步，
 分布式画像必须绑定同一三设备 run 中两个不同节点的 manifest，且三节点全在线、队列
@@ -233,21 +233,21 @@ profile、外部 provider 和同步并只用非持久化 compressor context，�
 一致。
 
 ```bash
-python3 build/release/scripts/agent-memory-ablation.py snapshot \
+python3 tests/acceptance/scripts/agent-memory-ablation.py snapshot \
   --variant VARIANT --role teach-or-recall --native-evidence NATIVE_SDK_JSON \
   --runtime-config RUNTIME_CONFIG_YAML --runtime-env RUNTIME_ENV_FILE \
   --node-manifest DISTRIBUTED_NODE_MANIFEST_IF_REQUIRED \
   --output VARIANT_NODE_SNAPSHOT_JSON
 
-python3 build/release/scripts/agent-memory-ablation.py capture \
+python3 tests/acceptance/scripts/agent-memory-ablation.py capture \
   --variant VARIANT --native-evidence NATIVE_SDK_JSON \
-  --task-set build/release/agent-memory-ablation-tasks.json \
+  --task-set tests/acceptance/agent-memory-ablation-tasks.json \
   --teach-snapshot TEACH_NODE_SNAPSHOT_JSON \
   --recall-snapshot RECALL_NODE_SNAPSHOT_JSON \
   --teach-url TEACH_LOOPBACK_GATEWAY --recall-url RECALL_LOOPBACK_GATEWAY \
   --output VARIANT_REPORT_JSON
 
-python3 build/release/scripts/agent-memory-ablation.py build \
+python3 tests/acceptance/scripts/agent-memory-ablation.py build \
   --variant-report NO_MEMORY_REPORT --variant-report SINGLE_DEVICE_REPORT \
   --variant-report DISTRIBUTED_REPORT \
   --dataset-manifest FINAL_DATASET_MANIFEST_JSON \
@@ -261,14 +261,14 @@ ID、成功布尔值、轮数、工具名和运行摘要。工具会从 30 条�
 不得删除。`snapshot` 依赖 PyYAML，使用 PIXIU 已安装 venv 或具备项目依赖的解释器。
 
 ```bash
-python3 build/release/scripts/final-performance-evidence.py build \
+python3 tests/acceptance/scripts/final-performance-evidence.py build \
   --native-evidence NATIVE_SDK_JSON \
   --agent-evidence AGENT_LIFECYCLE_JSON \
   --dataset-manifest FINAL_DATASET_MANIFEST_JSON \
   --eval-report FULL_EVAL_REPORT_JSON \
   --comparison MEMORY_ABLATION_JSON \
   --output final-performance.json
-python3 build/release/scripts/final-performance-evidence.py validate \
+python3 tests/acceptance/scripts/final-performance-evidence.py validate \
   --output final-performance.json
 ```
 
@@ -285,11 +285,11 @@ python3 build/release/scripts/final-performance-evidence.py validate \
 最终候选洁净且 strict 原生证据通过后，冻结 acceptance 数据集：
 
 ```bash
-python3 build/release/scripts/final-dataset-manifest.py build \
+python3 tests/acceptance/scripts/final-dataset-manifest.py build \
   --native-evidence NATIVE_SDK_JSON \
   --dataset-output final-dataset.json \
   --manifest-output dataset-manifest.json
-python3 build/release/scripts/final-dataset-manifest.py validate \
+python3 tests/acceptance/scripts/final-dataset-manifest.py validate \
   --dataset-output final-dataset.json \
   --manifest-output dataset-manifest.json
 ```
@@ -309,12 +309,12 @@ python3 build/release/scripts/final-dataset-manifest.py validate \
 strict contest capability 就绪：
 
 ```bash
-python3 build/release/scripts/install-update-evidence.py snapshot \
+python3 tests/acceptance/scripts/install-update-evidence.py snapshot \
   --package FINAL_DEB --expect-installed yes --output OPERATION-before.json
 # 通过该场景规定的系统安装器、特权 helper 或 GUI 执行真实动作，并保存去敏日志/测试记录。
-python3 build/release/scripts/install-update-evidence.py snapshot \
+python3 tests/acceptance/scripts/install-update-evidence.py snapshot \
   --package FINAL_DEB --expect-installed yes --output OPERATION-after.json
-python3 build/release/scripts/install-update-evidence.py operation \
+python3 tests/acceptance/scripts/install-update-evidence.py operation \
   --kind OPERATION --before OPERATION-before.json --after OPERATION-after.json \
   --proof OPERATION-proof.log --exit-code 0 --outcome installed \
   --output OPERATION-operation.json
@@ -331,13 +331,13 @@ API。每次动作使用独立的前后快照和 proof 文件，不得重复摘�
 六条 operation JSON 完成后生成主记录：
 
 ```bash
-python3 build/release/scripts/install-update-evidence.py finalize \
+python3 tests/acceptance/scripts/install-update-evidence.py finalize \
   --native-evidence NATIVE_SDK_JSON \
   --operation fresh-install-operation.json \
   --operation reinstall-operation.json --operation upgrade-operation.json \
   --operation rollback-operation.json --operation uninstall-operation.json \
   --operation gui-update-operation.json --output install-update-matrix.json
-python3 build/release/scripts/install-update-evidence.py validate \
+python3 tests/acceptance/scripts/install-update-evidence.py validate \
   --input install-update-matrix.json
 ```
 
@@ -356,7 +356,7 @@ python3 build/release/scripts/install-update-evidence.py validate \
 在每台设备本地使用同一个不含设备信息的 `run-id` 采集节点清单：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py capture \
+python3 tests/acceptance/scripts/three-device-evidence.py capture \
   --run-id run-YYYYMMDD-sequence \
   --native-evidence native-sdk-evidence.json \
   --output sync-node-evidence.json
@@ -367,7 +367,7 @@ python3 build/release/scripts/three-device-evidence.py capture \
 版本/候选包摘要和同步计数。将三台设备的清单汇总到隔离目录后执行：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py validate \
+python3 tests/acceptance/scripts/three-device-evidence.py validate \
   --node node-a.json --node node-b.json --node node-c.json \
   --output three-device-topology.json
 ```
@@ -388,7 +388,7 @@ python3 build/release/scripts/three-device-evidence.py validate \
 `converged/converged`。每次均在对应设备本地执行：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py capture-concurrency \
+python3 tests/acceptance/scripts/three-device-evidence.py capture-concurrency \
   --topology three-device-topology.json \
   --node sync-node-evidence.json \
   --scope shared:team-demo \
@@ -400,7 +400,7 @@ python3 build/release/scripts/three-device-evidence.py capture-concurrency \
 九份检查点汇总后执行（每份使用一个 `--checkpoint`）：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py validate-concurrency \
+python3 tests/acceptance/scripts/three-device-evidence.py validate-concurrency \
   --topology three-device-topology.json \
   --checkpoint node-a-baseline.json \
   --checkpoint node-b-baseline.json \
@@ -429,7 +429,7 @@ python3 build/release/scripts/three-device-evidence.py validate-concurrency \
 再采集三份 `converged/converged`：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py capture-offline \
+python3 tests/acceptance/scripts/three-device-evidence.py capture-offline \
   --topology three-device-topology.json \
   --node sync-node-evidence.json \
   --scope shared:team-demo \
@@ -441,7 +441,7 @@ python3 build/release/scripts/three-device-evidence.py capture-offline \
 将三阶段各三份、共九份检查点传给校验器：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py validate-offline \
+python3 tests/acceptance/scripts/three-device-evidence.py validate-offline \
   --topology three-device-topology.json \
   --checkpoint node-a-baseline.json \
   --checkpoint node-b-baseline.json \
@@ -467,7 +467,7 @@ python3 build/release/scripts/three-device-evidence.py validate-offline \
 `post-write/writer`、B/C 以 `post-write/observer` 采集：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py capture-privacy \
+python3 tests/acceptance/scripts/three-device-evidence.py capture-privacy \
   --topology three-device-topology.json \
   --node sync-node-evidence.json \
   --scope user:team-demo \
@@ -479,7 +479,7 @@ python3 build/release/scripts/three-device-evidence.py capture-privacy \
 把两阶段各三份检查点汇总校验：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py validate-privacy \
+python3 tests/acceptance/scripts/three-device-evidence.py validate-privacy \
   --topology three-device-topology.json \
   --checkpoint node-a-baseline.json \
   --checkpoint node-b-baseline.json \
@@ -504,7 +504,7 @@ python3 build/release/scripts/three-device-evidence.py validate-privacy \
 再等待至少一个反熵周期并采集 `stable/stable`。每次在对应节点执行：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py capture-tombstone \
+python3 tests/acceptance/scripts/three-device-evidence.py capture-tombstone \
   --topology three-device-topology.json \
   --node sync-node-evidence.json \
   --scope shared:team-demo \
@@ -517,7 +517,7 @@ python3 build/release/scripts/three-device-evidence.py capture-tombstone \
 汇总四阶段各三份、共十二份检查点：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py validate-tombstone \
+python3 tests/acceptance/scripts/three-device-evidence.py validate-tombstone \
   --topology three-device-topology.json \
   --checkpoint node-a-baseline.json --checkpoint node-b-baseline.json \
   --checkpoint node-c-baseline.json \
@@ -542,7 +542,7 @@ python3 build/release/scripts/three-device-evidence.py validate-tombstone \
 最终拓扑报告；不得复用初始三份节点清单。最后执行：
 
 ```bash
-python3 build/release/scripts/three-device-evidence.py validate-final \
+python3 tests/acceptance/scripts/three-device-evidence.py validate-final \
   --initial-topology three-device-topology-initial.json \
   --final-topology three-device-topology-final.json \
   --scenario concurrent-update-scenario.json \
@@ -754,3 +754,7 @@ search/delete/drop，并验证产品 API 写入/召回/遗忘。Agent profile �
 
 仓库只保存脱敏后的候选版本测试报告和公开复现步骤，不记录任何本地测试设施的
 地址、账号、连接方式、拓扑、SSH 配置或临时调试流程。
+
+## 2026-09-10 测试与源码交付归属
+
+跨系统场景脚本、对应测试及模拟服务位于 `tests/acceptance/{scripts,tests,fixtures}`；平台初始化/升级测试位于 `backend/platform/tests`；桌面及渲染测试位于 `frontend/tests`；build 仅保留打包与构建规则测试。源码白名单包含顶层 tests。依赖仍使用现有后端 requirements 与 Qt 开发依赖，不新增测试框架。

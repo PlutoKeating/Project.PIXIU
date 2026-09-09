@@ -68,7 +68,7 @@ jobs:
           XDG_CONFIG_HOME="$RUNNER_TEMP/pixiu-native-dialog-config" \
             timeout 60s "$RUNNER_TEMP/pixiu-native-dialog-tests/t_memory_workspace" \
               hostCloseUsesExplicitActionsAndSafeKeyboardDefaults
-          bash build/release/tests/test-native-dialog-theme.sh
+          bash frontend/tests/test-native-dialog-theme.sh
       - name: Build strict native package
         env:
           PIXIU_PROFILE: kylin-v11-native-x86_64
@@ -89,7 +89,7 @@ jobs:
           test "$(systemctl --user is-active pixiu-backend.service)" = active
       - name: Verify installed identity and true SDK lifecycle
         run: |
-          python build/release/scripts/native-sdk-smoke.py \
+          python tests/acceptance/scripts/native-sdk-smoke.py \
             --deb "$(realpath build/release/out/pixiu_*.deb)" \
             --expected-commit "$GITHUB_SHA" \
             --output build/release/out/kylin-native-evidence.json

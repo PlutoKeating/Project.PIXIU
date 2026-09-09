@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / "build/release/scripts/install-update-evidence.py"
+SCRIPT = ROOT / "tests/acceptance/scripts/install-update-evidence.py"
 SPEC = importlib.util.spec_from_file_location("install_update_evidence", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)

@@ -152,3 +152,7 @@ API检查点和历史portable评测。它不重跑产品、不改变原始证据
 视频偏好重采增加 `submission/video-production/scripts/capture_preference_history.py`，
 仅调用既有写入/提取/列表/历史公共接口，保留独立合成范围和失败证据；
 不添加产品依赖。实际管线写入已提取偏好，后续详细风格写入避免重复显式提取。
+
+## 2026-09-10 测试与源码交付归属
+
+跨系统场景脚本、对应测试及模拟服务位于 `tests/acceptance/{scripts,tests,fixtures}`；平台初始化/升级测试位于 `backend/platform/tests`；桌面及渲染测试位于 `frontend/tests`；build 仅保留打包与构建规则测试。源码白名单包含顶层 tests。依赖仍使用现有后端 requirements 与 Qt 开发依赖，不新增测试框架。

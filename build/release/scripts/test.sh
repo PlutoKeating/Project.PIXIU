@@ -25,44 +25,44 @@ if [ "${PIXIU_BACKEND_TESTS}" = "1" ]; then
 else
     warn "backend pytest skipped（PIXIU_BACKEND_TESTS=1 启用，需安装 backend/requirements.txt 与 backend/foundation/requirements-sync.txt）"
 fi
-bash "${PIXIU_ROOT}/build/release/tests/test-agent-integration.sh"
-PYTHONDONTWRITEBYTECODE=1 "${PIXIU_PYTHON:-python3}" "${PIXIU_ROOT}/build/release/tests/test-launch-agent.py"
+bash "${PIXIU_ROOT}/backend/platform/tests/test-agent-integration.sh"
+PYTHONDONTWRITEBYTECODE=1 "${PIXIU_PYTHON:-python3}" "${PIXIU_ROOT}/backend/platform/tests/test-launch-agent.py"
 bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-lock.sh"
-bash "${PIXIU_ROOT}/build/release/tests/test-agent-runtime-branding.sh"
-bash "${PIXIU_ROOT}/build/release/tests/test-agent-host-adaptation.sh"
-bash "${PIXIU_ROOT}/build/release/tests/test-agent-host-theme.sh"
+bash "${PIXIU_ROOT}/backend/agent/tests/test-agent-runtime-branding.sh"
+bash "${PIXIU_ROOT}/frontend/tests/test-agent-host-adaptation.sh"
+bash "${PIXIU_ROOT}/frontend/tests/test-agent-host-theme.sh"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-message-renderer-assets.py"
+    "${PIXIU_ROOT}/frontend/tests/test-message-renderer-assets.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-agent-host-ui-contrast.py"
-bash "${PIXIU_ROOT}/build/release/tests/test-update-helper.sh"
+    "${PIXIU_ROOT}/frontend/tests/test-agent-host-ui-contrast.py"
+bash "${PIXIU_ROOT}/backend/platform/tests/test-update-helper.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-release-key-rotation.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-release-manifest.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-version-source.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-artifact-manifest.sh"
 bash "${PIXIU_ROOT}/build/release/tests/test-install-preflight.sh"
-bash "${PIXIU_ROOT}/build/release/tests/test-user-service.sh"
+bash "${PIXIU_ROOT}/backend/platform/tests/test-user-service.sh"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-system-data-migration.py"
+    "${PIXIU_ROOT}/backend/platform/tests/test-system-data-migration.py"
 bash "${PIXIU_ROOT}/build/release/tests/test-native-profile.sh"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-native-sdk-smoke.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-native-sdk-smoke.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-agent-lifecycle-evidence.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-agent-lifecycle-evidence.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-openai-compatible-mock.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-openai-compatible-mock.py"
 "${PIXIU_PYTHON:-python3}" -m pytest -q \
-    "${PIXIU_ROOT}/build/release/tests/test-agent-memory-ablation.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-agent-memory-ablation.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-final-performance-evidence.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-final-performance-evidence.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-final-eval-capture.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-final-eval-capture.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-final-dataset-manifest.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-final-dataset-manifest.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-install-update-evidence.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-install-update-evidence.py"
 "${PIXIU_PYTHON:-python3}" \
-    "${PIXIU_ROOT}/build/release/tests/test-three-device-evidence.py"
+    "${PIXIU_ROOT}/tests/acceptance/tests/test-three-device-evidence.py"
 "${PIXIU_PYTHON:-python3}" \
     "${PIXIU_ROOT}/build/release/tests/test-agent-supply-chain.py"
 "${PIXIU_PYTHON:-python3}" \

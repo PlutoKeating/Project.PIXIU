@@ -11,19 +11,19 @@ clean:
 	rm -rf $(ROOT)/build/release/out $(ROOT)/build/release/dist
 
 governance:
-	PYTHONDONTWRITEBYTECODE=1 python3 $(ROOT)/build/release/tests/test-launch-agent.py
+	PYTHONDONTWRITEBYTECODE=1 python3 $(ROOT)/backend/platform/tests/test-launch-agent.py
 	$(SCRIPTS)/verify-governance.sh
 	bash $(ROOT)/build/release/tests/test-governance.sh
 	bash $(ROOT)/build/release/tests/test-native-profile.sh
 	bash $(ROOT)/build/release/tests/test-config-upgrade-policy.sh
 	python3 $(ROOT)/build/release/tests/test-postinst-bootstrap.py
-	bash $(ROOT)/build/release/tests/test-user-service.sh
-	python3 $(ROOT)/build/release/tests/test-system-data-migration.py
-	bash $(ROOT)/build/release/tests/test-agent-integration.sh
+	bash $(ROOT)/backend/platform/tests/test-user-service.sh
+	python3 $(ROOT)/backend/platform/tests/test-system-data-migration.py
+	bash $(ROOT)/backend/platform/tests/test-agent-integration.sh
 	bash $(ROOT)/build/release/tests/test-agent-runtime-lock.sh
-	bash $(ROOT)/build/release/tests/test-agent-host-adaptation.sh
-	python3 $(ROOT)/build/release/tests/test-agent-host-ui-contrast.py
-	python3 $(ROOT)/build/release/tests/test-openai-compatible-mock.py
+	bash $(ROOT)/frontend/tests/test-agent-host-adaptation.sh
+	python3 $(ROOT)/frontend/tests/test-agent-host-ui-contrast.py
+	python3 $(ROOT)/tests/acceptance/tests/test-openai-compatible-mock.py
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain.py
 	python3 $(ROOT)/build/release/tests/test-agent-supply-chain-record.py
 

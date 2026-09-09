@@ -58,7 +58,7 @@
 
 以 `docs/UNIFIED_FRONTEND_PLAN.md`、ADR-0006、当前宿主导出补丁和
 `frontend/management/` 为实现依据。测试入口包括管理库 ctest、
-`build/release/tests/test-agent-host-theme.sh` 及原生自动化工作流。
+`frontend/tests/test-agent-host-theme.sh` 及原生自动化工作流。
 
 本目录下旧图库的 77 张 PNG 已删除，不保留旧展示归档。原有子目录仅保留空目录占位。
 最终截图交付状态由提交材料的截图目录与清单维护，尚不能宣称完整图库已经生成。

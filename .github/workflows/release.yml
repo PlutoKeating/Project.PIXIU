@@ -53,7 +53,7 @@ jobs:
           python3 - <<'PY'
           import hashlib, importlib.util, json, os
           from pathlib import Path
-          path = Path("build/release/scripts/native-sdk-smoke.py")
+          path = Path("tests/acceptance/scripts/native-sdk-smoke.py")
           spec = importlib.util.spec_from_file_location("native_smoke", path)
           module = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(module)
