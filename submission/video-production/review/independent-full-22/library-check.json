@@ -1,0 +1,74 @@
+[
+  {
+    "name": "brand-ink-open",
+    "styleKeys": [
+      "brand-ink-open"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/opening/brand-ink-open.md"
+  },
+  {
+    "name": "deck-deal-flyin",
+    "styleKeys": [
+      "deck-deal-flyin"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/ui-entrance/deck-deal-flyin.md"
+  },
+  {
+    "name": "document-typewriter-reveal",
+    "styleKeys": [
+      "document-typewriter-reveal"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/typography/document-typewriter-reveal.md"
+  },
+  {
+    "name": "list-stack-press",
+    "styleKeys": [
+      "list-stack-press"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/ui-entrance/list-stack-press.md"
+  },
+  {
+    "name": "outro-group-photo-launch",
+    "styleKeys": [
+      "outro-group-photo-launch"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/outro/outro-group-photo-launch.md"
+  },
+  {
+    "name": "paper-title-card",
+    "styleKeys": [
+      "paper-title-card"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/typography/paper-title-card.md"
+  },
+  {
+    "name": "row-embed",
+    "styleKeys": [
+      "row-embed"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/ui-entrance/row-embed.md"
+  },
+  {
+    "name": "spotlight-hero-card",
+    "styleKeys": [
+      "spotlight-hero-card"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/opening/spotlight-hero-card.md"
+  },
+  {
+    "name": "type-and-filter",
+    "styleKeys": [
+      "type-and-filter"
+    ],
+    "matchesSelectedEntry": true,
+    "source": "references/shots/interaction/type-and-filter.md"
+  }
+]

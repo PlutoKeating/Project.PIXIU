@@ -1,0 +1,112 @@
+{
+  "method": "Original 1920x1080 JPEG; dark ink threshold R<150 G<160 B<180; rows with >3 matching pixels; contiguous row bands. Approximate visible glyph height, antialiased fringe excluded.",
+  "regions": [
+    {
+      "frame": 11222,
+      "region": "s20-answer",
+      "crop": [
+        374,
+        758,
+        1390,
+        831
+      ],
+      "ink_row_bands": [
+        {
+          "y0": 767,
+          "y1": 788,
+          "height": 22
+        },
+        {
+          "y0": 807,
+          "y1": 827,
+          "height": 21
+        }
+      ]
+    },
+    {
+      "frame": 2199,
+      "region": "s05-body",
+      "crop": [
+        230,
+        420,
+        630,
+        460
+      ],
+      "ink_row_bands": [
+        {
+          "y0": 426,
+          "y1": 452,
+          "height": 27
+        }
+      ]
+    },
+    {
+      "frame": 2199,
+      "region": "s05-note",
+      "crop": [
+        700,
+        600,
+        1260,
+        640
+      ],
+      "ink_row_bands": [
+        {
+          "y0": 610,
+          "y1": 632,
+          "height": 23
+        }
+      ]
+    },
+    {
+      "frame": 17103,
+      "region": "s30-tagline",
+      "crop": [
+        720,
+        650,
+        1200,
+        700
+      ],
+      "ink_row_bands": [
+        {
+          "y0": 663,
+          "y1": 689,
+          "height": 27
+        }
+      ]
+    },
+    {
+      "frame": 3507,
+      "region": "s07-amount",
+      "crop": [
+        190,
+        469,
+        450,
+        514
+      ],
+      "ink_row_bands": [
+        {
+          "y0": 480,
+          "y1": 505,
+          "height": 26
+        }
+      ]
+    },
+    {
+      "frame": 2199,
+      "region": "caption",
+      "crop": [
+        145,
+        980,
+        1730,
+        1050
+      ],
+      "ink_row_bands": [
+        {
+          "y0": 988,
+          "y1": 1046,
+          "height": 59
+        }
+      ]
+    }
+  ]
+}

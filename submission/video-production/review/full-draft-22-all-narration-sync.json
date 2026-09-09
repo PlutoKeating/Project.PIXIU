@@ -1,0 +1,283 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": "renders/全片初剪-22.mp4",
+  "video_sha256": "ba1507cc0277e764ac629e86f051769a84ba7d44a462608a691115498fb5b9e8",
+  "peak_dbfs": -4.78113317489624,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": -1.7708335895576324,
+  "probes": [
+    {
+      "declared_start_frame": 15.0,
+      "measured_start_frame": 15.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999617676508039,
+      "source_peak_frame": 13.65,
+      "source": "raw/audio/s01/3c9bf256f4a7.mp3",
+      "source_sha256": "7f25094a1f9c2576b9e21820321d203cf018be69c62d0bf60498b5b986e9c97a"
+    },
+    {
+      "declared_start_frame": 332.0,
+      "measured_start_frame": 332.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999593575379425,
+      "source_peak_frame": 7.95,
+      "source": "raw/audio/s02/a444368befbc.mp3",
+      "source_sha256": "39fbfcf98593e9bc30879806081d4b8c9be011f260a9f38ee9ce8672cb9bf722"
+    },
+    {
+      "declared_start_frame": 782.0,
+      "measured_start_frame": 782.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9974698132202738,
+      "source_peak_frame": 148.65,
+      "source": "raw/audio/s03/dfbc03f700e7.mp3",
+      "source_sha256": "216d6a7f1946b5cacef26f2ece7b6f757760969610aa5a10276548859ba62e8f"
+    },
+    {
+      "declared_start_frame": 1382.0,
+      "measured_start_frame": 1382.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999642679779729,
+      "source_peak_frame": 141.75,
+      "source": "raw/audio/s04/c4eb086bd5ae.mp3",
+      "source_sha256": "125448b966b8adc26d370bcd3c320ee11cdaf5593f4cd4581b744c0640a2aab6"
+    },
+    {
+      "declared_start_frame": 1904.0,
+      "measured_start_frame": 1904.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999629016725967,
+      "source_peak_frame": 131.85,
+      "source": "raw/audio/s05/f9b2b89c0d4f.mp3",
+      "source_sha256": "b1e71390b02b0ed023010741a704640d8df5d0ab2bf0ca22b8945312bac2669c"
+    },
+    {
+      "declared_start_frame": 2382.0,
+      "measured_start_frame": 2382.289375,
+      "pipeline_offset_frames": 0.289375,
+      "normalized_correlation": 0.9999585165847772,
+      "source_peak_frame": 9.45,
+      "source": "raw/audio/s06/98036ec8f62a.mp3",
+      "source_sha256": "66e56e9cc3fe152c58f53e427e89298046688f7d25d1e495d08cfa075d45b824"
+    },
+    {
+      "declared_start_frame": 3132.0,
+      "measured_start_frame": 3132.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999589269555795,
+      "source_peak_frame": 243.75,
+      "source": "raw/audio/s07/a61783a282b2.mp3",
+      "source_sha256": "7ae43b135e3fc55ab38cf5a47534f830581ff03efd38578f1a129984630dad3e"
+    },
+    {
+      "declared_start_frame": 3732.0,
+      "measured_start_frame": 3732.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.999960153966963,
+      "source_peak_frame": 282.75,
+      "source": "raw/audio/s08/e50177ea6657.mp3",
+      "source_sha256": "25568581e5235e6a9c1b791de96d212cde705815cd429ed628dce38cbebeda1a"
+    },
+    {
+      "declared_start_frame": 4182.0,
+      "measured_start_frame": 4182.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9972440184526228,
+      "source_peak_frame": 213.15,
+      "source": "raw/audio/s09/2dbd9e964127.mp3",
+      "source_sha256": "f14e5e508450286dc893444b7c81041f13735ede48fa711b1f1c29d4b4b15570"
+    },
+    {
+      "declared_start_frame": 4722.0,
+      "measured_start_frame": 4722.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999690499186374,
+      "source_peak_frame": 138.15,
+      "source": "raw/audio/s10/02522ab02cc8.mp3",
+      "source_sha256": "617cf2dd7412a69a01b788f09176187380f2ea77d0ad0385e451bcd7aeedae1a"
+    },
+    {
+      "declared_start_frame": 5262.0,
+      "measured_start_frame": 5262.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999613227759596,
+      "source_peak_frame": 11.85,
+      "source": "raw/audio/s11/7af76030ea0e.mp3",
+      "source_sha256": "0f4e7117ecad32502b7c38080fbdb6912b5e38a12110a4417c1475d908f82af8"
+    },
+    {
+      "declared_start_frame": 5862.0,
+      "measured_start_frame": 5862.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.999952657027866,
+      "source_peak_frame": 14.25,
+      "source": "raw/audio/s12/5abaac250c06.mp3",
+      "source_sha256": "16fc0654f80bd6f65a29eda1aee4b622348de1805448bdb7d2df4ecb25dbe695"
+    },
+    {
+      "declared_start_frame": 6418.0,
+      "measured_start_frame": 6418.279375,
+      "pipeline_offset_frames": 0.279375,
+      "normalized_correlation": 0.9999576537691478,
+      "source_peak_frame": 95.55,
+      "source": "raw/audio/s13/9ce71a3c8df3.mp3",
+      "source_sha256": "404350e39a202408b9784dcba2112fe4f51c3441f11591204b2d6fcc43127b80"
+    },
+    {
+      "declared_start_frame": 7018.0,
+      "measured_start_frame": 7018.279375,
+      "pipeline_offset_frames": 0.279375,
+      "normalized_correlation": 0.9999653843542523,
+      "source_peak_frame": 143.85,
+      "source": "raw/audio/s14/29218cd700c6.mp3",
+      "source_sha256": "6c1509682f7b1c7ab7686c7e74e6740ade8c45b8688de2a1c90ae9d304af10f1"
+    },
+    {
+      "declared_start_frame": 7858.0,
+      "measured_start_frame": 7858.279375,
+      "pipeline_offset_frames": 0.279375,
+      "normalized_correlation": 0.9999579654400429,
+      "source_peak_frame": 8.85,
+      "source": "raw/audio/s15/9f3c5596f0b5.mp3",
+      "source_sha256": "342ad8692813886d6e6d0b8db54011165f7a53195c016e300ba8094f5dd659ea"
+    },
+    {
+      "declared_start_frame": 8518.0,
+      "measured_start_frame": 8518.279375,
+      "pipeline_offset_frames": 0.279375,
+      "normalized_correlation": 0.9999594229181239,
+      "source_peak_frame": 241.05,
+      "source": "raw/audio/s16/64ef520e06bc.mp3",
+      "source_sha256": "bb8dbbc0f9818f3167b6e40bbf58ac9b1aa5746ee491b2d0cfae57767c20d430"
+    },
+    {
+      "declared_start_frame": 9238.0,
+      "measured_start_frame": 9238.279375,
+      "pipeline_offset_frames": 0.279375,
+      "normalized_correlation": 0.9999607665376025,
+      "source_peak_frame": 211.95,
+      "source": "raw/audio/s17/4c11415c498e.mp3",
+      "source_sha256": "7464379d3aa88707066cec6289ac1557da86c19926fadd19c2c5e3b04b7889ad"
+    },
+    {
+      "declared_start_frame": 9791.0,
+      "measured_start_frame": 9791.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999566979038369,
+      "source_peak_frame": 8.55,
+      "source": "raw/audio/s18/9012691a6994.mp3",
+      "source_sha256": "23cc92a9a58f17fe965bf85e4340e89b56692bb86065c6a267fe64f54b889464"
+    },
+    {
+      "declared_start_frame": 10052.0,
+      "measured_start_frame": 10052.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999640145149913,
+      "source_peak_frame": 151.35,
+      "source": "raw/audio/s19/fff9ad2dbc7a.mp3",
+      "source_sha256": "cf67953cc876296e244a1ad490868b8b521137b7569933cfec58ffd75a6d77fb"
+    },
+    {
+      "declared_start_frame": 10652.0,
+      "measured_start_frame": 10652.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999613950089926,
+      "source_peak_frame": 582.75,
+      "source": "raw/audio/s20/74fe7457c7f1.mp3",
+      "source_sha256": "5e2dc80ac832685cec3a79095dd1244e64a7cbdbb719592b1a2d0de233498173"
+    },
+    {
+      "declared_start_frame": 11552.0,
+      "measured_start_frame": 11552.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999689735647005,
+      "source_peak_frame": 358.95,
+      "source": "raw/audio/s21/08a6dd7ab639.mp3",
+      "source_sha256": "72f56b82c1f8eb928930f6b09df417c3128cf9dcd59642a7875f8756ccdd4b45"
+    },
+    {
+      "declared_start_frame": 12362.0,
+      "measured_start_frame": 12362.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999529198984634,
+      "source_peak_frame": 20.85,
+      "source": "raw/audio/s22/840a4a6b71f6.mp3",
+      "source_sha256": "7b3b467b1b945069033083ba23857f302a0ad66153620388538ddb9605d12233"
+    },
+    {
+      "declared_start_frame": 13022.0,
+      "measured_start_frame": 13022.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999714670963431,
+      "source_peak_frame": 143.55,
+      "source": "raw/audio/s23/824d09e85e09.mp3",
+      "source_sha256": "2cc94d98dfd401ea97f3a3ad769aafc4a96b77d87253a2c3a9fc25665399f74a"
+    },
+    {
+      "declared_start_frame": 13652.0,
+      "measured_start_frame": 13652.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999647879191639,
+      "source_peak_frame": 369.75,
+      "source": "raw/audio/s24/5c8470251d46.mp3",
+      "source_sha256": "f8af8122e881b114ef65de64722365f215c2b01ef227b363a4865ce20e614d6d"
+    },
+    {
+      "declared_start_frame": 14312.0,
+      "measured_start_frame": 14312.27,
+      "pipeline_offset_frames": 0.27,
+      "normalized_correlation": 0.9999588693632092,
+      "source_peak_frame": 8.55,
+      "source": "raw/audio/s25/9b4881d004c4.mp3",
+      "source_sha256": "c0d37f875641dc6c6f6a2e6adbfd3dda0c282373576727f66857d1965a1604e0"
+    },
+    {
+      "declared_start_frame": 14649.0,
+      "measured_start_frame": 14649.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999607374543467,
+      "source_peak_frame": 255.45,
+      "source": "raw/audio/s26/3b9d2d3f5cc2.mp3",
+      "source_sha256": "c31bcfe5ce797f470c6049a16c3391c1b94e5bb0150d283e5895423be530de6b"
+    },
+    {
+      "declared_start_frame": 15249.0,
+      "measured_start_frame": 15249.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999603202172456,
+      "source_peak_frame": 177.15,
+      "source": "raw/audio/s27/e54863712525.mp3",
+      "source_sha256": "f5ba0c79dcf8d70df45b42ca99678a60d043f007087e0411668d557a5402ecbe"
+    },
+    {
+      "declared_start_frame": 15858.0,
+      "measured_start_frame": 15858.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999583974171729,
+      "source_peak_frame": 15.45,
+      "source": "raw/audio/s28/c946f1b9603e.mp3",
+      "source_sha256": "74adef5829c55491f52670a4a4c9095c2fc4baa5a6af997664a07fd8f82b244e"
+    },
+    {
+      "declared_start_frame": 16608.0,
+      "measured_start_frame": 16608.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.9999541676079841,
+      "source_peak_frame": 7.65,
+      "source": "raw/audio/s29/ce79258d4584.mp3",
+      "source_sha256": "978d991ff511a87f205a909a308edfdf8b164aa4ab3f42e9cc2320704e739b73"
+    },
+    {
+      "declared_start_frame": 16968.0,
+      "measured_start_frame": 16968.29,
+      "pipeline_offset_frames": 0.29,
+      "normalized_correlation": 0.7289638782145721,
+      "source_peak_frame": 16.35,
+      "source": "raw/audio/s30/4cc0d0509f38.mp3",
+      "source_sha256": "9baf4dd30b16a4954f7cb059ced6d4926bc132325aa1cfeb7126f83c91bb92b2"
+    }
+  ]
+}
