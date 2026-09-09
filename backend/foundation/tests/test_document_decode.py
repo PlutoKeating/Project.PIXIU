@@ -94,3 +94,38 @@ def test_workbook_keeps_formula_comment_chart_and_embedded_image():
     images = [block for block in result.blocks if block.kind == "image"]
     assert len(images) == 1 and "家庭开支" in images[0].location
     assert not result.warnings
+
+
+@pytest.mark.parametrize("kind,suffix", [("WEBP", ".webp"), ("BMP", ".bmp"), ("TIFF", ".tiff"), ("GIF", ".gif")])
+def test_common_images_are_decoded_to_model_supported_content(kind, suffix):
+    import io
+    import base64
+    from PIL import Image
+    output = io.BytesIO()
+    Image.new("RGB", (24, 16), "red").save(output, format=kind)
+    document = decode_document(output.getvalue(), "资料" + suffix)
+    assert not document.warnings
+    assert len(document.blocks) == 1
+    image = Image.open(io.BytesIO(base64.b64decode(document.blocks[0].data_base64)))
+    assert image.size == (24, 16)
+    assert image.convert("RGB").getpixel((0, 0))[0] > 240
+
+
+def test_multipage_image_keeps_each_page():
+    import io
+    import base64
+    from PIL import Image
+    output = io.BytesIO()
+    Image.new("RGB", (12, 12), "red").save(output, format="TIFF", save_all=True,
+        append_images=[Image.new("RGB", (12, 12), "blue")])
+    document = decode_document(output.getvalue(), "扫描件.tiff")
+    assert not document.warnings and len(document.blocks) == 2
+    colors = [Image.open(io.BytesIO(base64.b64decode(block.data_base64))).getpixel((0, 0))
+              for block in document.blocks]
+    assert colors == [(255, 0, 0), (0, 0, 255)]
+    assert document.blocks[0].location != document.blocks[1].location
+
+
+def test_corrupt_image_is_not_reported_as_readable():
+    document = decode_document(b"\x89PNG\r\n\x1a\nnot-an-image", "bad.png")
+    assert not document.blocks and document.warnings

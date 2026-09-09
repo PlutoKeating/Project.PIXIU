@@ -38,7 +38,7 @@
 +    attach->setObjectName("attachDocument");
 +    connect(attach, &QPushButton::clicked, this, [this, attach] {
 +        if (m_preparingAttachments) return;
-+        const auto paths = QFileDialog::getOpenFileNames(this, tr("添加资料"), {}, tr("资料 (*.txt *.md *.csv *.json *.log *.doc *.xls *.ppt *.docx *.xlsx *.pptx *.odt *.ods *.odp *.rtf *.pdf *.png *.jpg *.jpeg)"));
++        const auto paths = QFileDialog::getOpenFileNames(this, tr("添加资料"), {}, tr("资料 (*.txt *.md *.csv *.json *.log *.doc *.xls *.ppt *.docx *.xlsx *.pptx *.odt *.ods *.odp *.rtf *.pdf *.png *.jpg *.jpeg *.webp *.bmp *.tif *.tiff *.gif)"));
 +        if (paths.isEmpty()) return;
 +        m_pendingAttachmentPaths = paths;
 +        attach->setText(tr("已附加 %1 份").arg(paths.size()));

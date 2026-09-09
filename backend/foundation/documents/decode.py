@@ -8,6 +8,7 @@ import io
 from pathlib import Path
 import tempfile
 import zipfile
+import warnings
 
 
 @dataclass
@@ -35,12 +36,25 @@ class DecodedDocument:
                 self.blocks.append(DocumentBlock(f"block-{len(self.blocks)+1}", f"{location}:{offset}", "text", value))
 
     def image(self, location: str, data: bytes):
-        mime = "image/png" if data.startswith(b"\x89PNG\r\n\x1a\n") else "image/jpeg" if data.startswith(b"\xff\xd8\xff") else ""
-        if mime:
-            self.blocks.append(DocumentBlock(f"block-{len(self.blocks)+1}", location, "image",
-                                             mime_type=mime, data_base64=base64.b64encode(data).decode()))
-        else:
-            self.warnings.append(f"未解析的图片/绘图：{location}")
+        from PIL import Image, ImageOps, ImageSequence
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error", Image.DecompressionBombWarning)
+                with Image.open(io.BytesIO(data)) as source:
+                    frames = getattr(source, "n_frames", 1)
+                    if frames > 200:
+                        raise ValueError("Image contains too many pages")
+                    for index, frame in enumerate(ImageSequence.Iterator(source)):
+                        # Apply orientation before sending to a vision model; no
+                        # OCR, display server, network, or source-file mutation.
+                        picture = ImageOps.exif_transpose(frame).convert("RGBA" if "A" in frame.getbands() else "RGB")
+                        encoded = io.BytesIO()
+                        picture.save(encoded, format="PNG")
+                        position = f"{location}，第 {index + 1} 页/帧" if frames > 1 else location
+                        self.blocks.append(DocumentBlock(f"block-{len(self.blocks)+1}", position, "image",
+                            mime_type="image/png", data_base64=base64.b64encode(encoded.getvalue()).decode()))
+        except (OSError, ValueError, Image.DecompressionBombError, Image.DecompressionBombWarning):
+            self.warnings.append(f"未解析或未完整解析的图片/绘图：{location}")
 
 
 def _extract(document: DecodedDocument, data: bytes, suffix: str):
@@ -119,7 +133,7 @@ def decode_document(data: bytes, name: str) -> DecodedDocument:
         result.text("正文", text)
     elif suffix in MIME_TYPES:
         _extract(result, data, suffix)
-    elif suffix in {".png", ".jpg", ".jpeg"}:
+    elif suffix in {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff", ".gif"}:
         result.image("原图", data)
     else:
         result.warnings.append(f"尚未支持的文件格式：{suffix}")
