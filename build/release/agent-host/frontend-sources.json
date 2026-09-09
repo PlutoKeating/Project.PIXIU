@@ -254,5 +254,9 @@
   {
     "source": "frontend/src/widgets/MotionPreferences.h",
     "destination": "pixiu/frontend/src/widgets/MotionPreferences.h"
+  },
+  {
+    "source": "frontend/src/widgets/ContentReveal.h",
+    "destination": "pixiu/frontend/src/widgets/ContentReveal.h"
   }
 ]

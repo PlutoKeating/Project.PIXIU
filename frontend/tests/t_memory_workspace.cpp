@@ -1,5 +1,6 @@
 #include "MemoryWorkspace.h"
 #include "widgets/WorkspaceNavigation.h"
+#include "widgets/ContentReveal.h"
 #include "MemoryScopes.h"
 #include "MemoryScopeControl.h"
 #include "MemoryWriteDialog.h"
@@ -100,6 +101,30 @@ class WorkspaceTest : public QObject
 {
     Q_OBJECT
 private slots:
+    void contentRevealSettlesWhenAnimationsAreDisabled()
+    {
+        QSettings settings;
+        const bool hadPreference = settings.contains("appearance/animations");
+        const bool previous = pixiu::MotionPreferences::enabled();
+        QWidget content;
+        new pixiu::ContentReveal(&content);
+        pixiu::MotionPreferences::setEnabled(true);
+        content.show();
+        QCoreApplication::processEvents();
+        pixiu::MotionPreferences::setEnabled(false);
+        auto *effect = qobject_cast<QGraphicsOpacityEffect *>(content.graphicsEffect());
+        const qreal settled = effect->opacity();
+        const auto state = content.findChild<QPropertyAnimation *>()->state();
+        content.hide();
+        content.show();
+        const qreal reopened = effect->opacity();
+        pixiu::MotionPreferences::setEnabled(previous);
+        if (!hadPreference) settings.remove("appearance/animations");
+        QCOMPARE(settled, 1.0);
+        QCOMPARE(reopened, 1.0);
+        QCOMPARE(state, QAbstractAnimation::Stopped);
+        QVERIFY(content.isVisible());
+    }
     void desktopNavigationRemainsImmediateDuringMotion()
     {
         QWidget host;

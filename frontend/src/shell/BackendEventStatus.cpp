@@ -1,4 +1,5 @@
 #include "BackendEventStatus.h"
+#include "widgets/ContentReveal.h"
 #include "services/WebSocketClient.h"
 #include <QHBoxLayout>
 #include <QLabel>
@@ -13,6 +14,7 @@ namespace pixiu {
 BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) : QWidget(parent)
 {
     setObjectName(QStringLiteral("backendEventStatus"));
+    new ContentReveal(this);
     auto *layout = new QHBoxLayout(this);
     auto *connection = new QLabel(this);
     m_connection = connection;

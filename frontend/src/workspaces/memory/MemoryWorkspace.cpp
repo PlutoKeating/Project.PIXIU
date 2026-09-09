@@ -1,4 +1,5 @@
 #include "MemoryWorkspace.h"
+#include "widgets/ContentReveal.h"
 #include "widgets/WorkspaceNavigation.h"
 #include "MemoryScopes.h"
 #include "MemoryScopeControl.h"
@@ -346,6 +347,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         auto *layout = new QVBoxLayout(&dialog);
         auto *scroll = new QScrollArea(&dialog); auto *label = new QLabel;
         label->setPixmap(picture); scroll->setWidget(label); layout->addWidget(scroll);
+        new ContentReveal(scroll);
         dialog.exec();
     });
     m_captureStatus = new QLabel(this);
