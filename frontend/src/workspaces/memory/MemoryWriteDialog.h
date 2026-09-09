@@ -1,6 +1,7 @@
 #pragma once
 #include <QDialog>
 #include <QJsonObject>
+#include <QNetworkRequest>
 class BackendTransport;
 class QLineEdit;
 class QPlainTextEdit;
@@ -15,6 +16,7 @@ class MemoryWriteDialog : public QDialog
 public:
     explicit MemoryWriteDialog(QWidget *parent, BackendTransport *transport = nullptr);
     void reject() override;
+    void setRuntimeRequest(const QNetworkRequest &request) { m_runtimeRequest = request; }
 signals:
     void memoryAccepted(const QString &evidenceId);
 private:
@@ -27,6 +29,7 @@ private:
     QLabel *m_status;
     QPushButton *m_save;
     QPushButton *m_cancel;
+    QNetworkRequest m_runtimeRequest;
     QTableWidget *m_items;
     QPushButton *m_image;
     QJsonObject m_originalImage;

@@ -1,0 +1,22 @@
+--- a/gateway/platforms/api_server.py
++++ b/gateway/platforms/api_server.py
+@@ -2124,2 +2124,15 @@
+         return web.json_response(self._combined_model_entries())
++
++    async def _handle_pixiu_image_draft(self, request: "web.Request") -> "web.Response":
++        auth_err = self._check_auth(request)
++        if auth_err:
++            return auth_err
++        from gateway.pixiu_image_draft import image_draft, DraftError
++        try:
++            payload = await request.json()
++            if not isinstance(payload, dict):
++                raise DraftError("Invalid image request")
++            return web.json_response(await image_draft(self._combined_model_entries(), payload))
++        except (DraftError, ValueError, TypeError) as exc:
++            return web.json_response({"error": {"message": str(exc)}}, status=422)
+ 
+@@ -5521,2 +5534,3 @@
+             self._app.router.add_get("/api/config/models", self._handle_list_config_models)
++            self._app.router.add_post("/api/memory/image-draft", self._handle_pixiu_image_draft)
+             self._app.router.add_put("/api/config/models", self._handle_replace_config_models)

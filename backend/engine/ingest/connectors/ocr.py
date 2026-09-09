@@ -6,6 +6,20 @@ import base64
 from typing import Any
 
 
+def original_image_fields(raw: dict[str, Any]) -> dict[str, Any]:
+    attachment = raw.get("original_image")
+    extra = {}
+    if attachment is not None:
+        if not isinstance(attachment, dict):
+            raise ValueError("Invalid original image")
+        data = base64.b64decode(str(attachment.get("base64", "")), validate=True)
+        if len(data) > 2 * 1024 * 1024 or not (data.startswith(b"\x89PNG\r\n\x1a\n") or data.startswith(b"\xff\xd8\xff")):
+            raise ValueError("Original image must be PNG/JPEG within 2 MiB")
+        extra["original_image"] = {"base64": base64.b64encode(data).decode("ascii"),
+            "name": str(attachment.get("name") or "账单图片")[:255]}
+    return extra
+
+
 class OcrConnector:
     source_type = "OCR"
 
@@ -46,16 +60,7 @@ class OcrConnector:
                     if rel not in relations:
                         relations.append(rel)
 
-        attachment = raw.get("original_image")
-        extra = {}
-        if attachment is not None:
-            if not isinstance(attachment, dict):
-                raise ValueError("Invalid original image")
-            data = base64.b64decode(str(attachment.get("base64", "")), validate=True)
-            if len(data) > 2 * 1024 * 1024 or not (data.startswith(b"\x89PNG\r\n\x1a\n") or data.startswith(b"\xff\xd8\xff")):
-                raise ValueError("Original image must be PNG/JPEG within 2 MiB")
-            extra["original_image"] = {"base64": base64.b64encode(data).decode("ascii"),
-                "name": str(attachment.get("name") or "账单图片")[:255]}
+        extra = original_image_fields(raw)
         return {
             **extra,
             "title": title,

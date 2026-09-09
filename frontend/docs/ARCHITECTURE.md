@@ -513,4 +513,4 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 
 正式宿主的本会话来源入口调用 AgentEvidenceClient.loadMemorySources，从记忆后端读取自动注入及显式搜索的引用；使用独立请求，不转发 Runtime 认证头。旧 Runtime 事件解析接口保留兼容测试。
 
-MemoryWriteDialog 支持 PNG/JPEG 图片识别与明细表编辑；OCR 网络等待为 60 秒，普通请求不变。识别失败可手动填写并保留原图。MemoryWorkspace 来源提供原图查看，正常文本阅读不展开 base64。
+MemoryWriteDialog 从现有模型配置中选择图片理解模型，直接发送 PNG/JPEG 给模型生成可编辑知识草稿；明确提示发送目的地，并保留人工确认。文本专用麒麟桥接不作为图片模型。MemoryWorkspace 来源提供原图查看，正常文本阅读不展开 base64。

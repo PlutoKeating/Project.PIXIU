@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from .ocr import original_image_fields
 
 
 class ManualConfigConnector:
@@ -20,6 +21,7 @@ class ManualConfigConnector:
             }
 
         return {
+            **original_image_fields(raw),
             "title": title,
             "body": body,
             "entities": list(raw.get("entities") or []),

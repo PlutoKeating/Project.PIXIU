@@ -793,9 +793,7 @@ async def memory_ocr(
             with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
 
-    from backend.engine.ingest.expense_draft import expense_draft
     return {
-        "items": expense_draft("\n".join(lines)),
         "text_lines": lines,
         "text": "\n".join(lines),
         "engine": type(ocr).__name__,

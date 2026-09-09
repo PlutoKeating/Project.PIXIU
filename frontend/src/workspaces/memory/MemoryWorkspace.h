@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include "AgentEvidence.h"
+#include <QNetworkRequest>
 
 class BackendTransport;
 class QLineEdit;
@@ -14,6 +15,7 @@ class QTabWidget;
 
 namespace pixiu {
 class MemoryAudit;
+class MemoryWriteDialog;
 // An embedded workspace: no application, tray, window lifecycle or Agent loop.
 class MemoryWorkspace : public QWidget
 {
@@ -25,12 +27,14 @@ public:
     bool showAgentSources(const AgentEvidenceResult &result, const QString &scope);
     void clearAgentSources();
     void notifyDataChanged();
+    void setImageModelRequest(const QNetworkRequest &request);
 private:
     void search();
     void clearResult();
     void clearEvidence();
     BackendTransport *m_transport;
     MemoryAudit *m_audit;
+    MemoryWriteDialog *m_writeDialog;
     QLineEdit *m_query;
     QComboBox *m_scope;
     QTabWidget *m_tabs;

@@ -113,3 +113,5 @@ Provider 现只接受 HTTP API 0.5.x，拒绝不具备后端预览凭证协议�
 预取来源：后台 context 请求带 trace=true，缓存连同 trace_id 保存；实际 prefetch 消费缓存后排队确认使用。同步读取与显式搜索带 consumed=true。桌面从 /agent/sources 获取同一会话的实际来源。
 
 账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
+
+图片知识提取：runtime/image_draft.py 被构建为 gateway.pixiu_image_draft，由自有 Runtime 补丁暴露经过现有认证的 /api/memory/image-draft。复用保存的模型地址/凭据，模型直接接收图片，返回待核对 JSON，不运行 Agent 工具或记忆生命周期。当前支持 OpenAI 兼容图片接口；麒麟文本 GenAI 桥接明确拒绝图片。

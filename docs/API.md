@@ -1305,6 +1305,6 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 
 `/agent/context` 增加可选 `trace`、`consumed`。启用 trace 返回 `trace_id`；后台预取默认未使用，Provider 真正注入时调用 `POST /agent/sources/{trace_id}/consume`。`GET /agent/sources?session_id=...&scope=...` 返回实际使用的来源引用，按当前授权与有效知识过滤。引用保留 30 天，不列入可保留的阶段记忆。
 
-图片账单：`/memory/ocr` 返回 `text`、`text_lines` 和可编辑 `items` 草稿，不写入记忆。用户确认后通过 `/memory/write` 的 OCR raw.body.items 保存；raw.original_image 支持 PNG/JPEG 的 base64 与文件名（最多 2 MiB），保留于证据，知识和助手上下文只使用文字/明细。
+图片知识：Runtime `POST /api/memory/image-draft` 接收已配置的 model_id 和 image_base64，通过多模态模型返回 title/text/items 草稿，不运行工具或写入记忆。用户确认后通过 `/memory/write` 的 MANUAL_CONFIG raw.body.items 保存；raw.original_image 保存原图。`/memory/ocr` 仅保留文字识别辅助接口，不用于正式图片知识提取。
 
 账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。

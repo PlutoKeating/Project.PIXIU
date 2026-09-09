@@ -1803,20 +1803,14 @@ def test_automatic_sources_only_show_consumed_context_and_active_memories(client
 
 
 def test_confirmed_image_bill_keeps_image_and_uses_edited_amount(client):
-    from backend.foundation.api.di import get_ocr_service
     image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aSAAAAABJRU5ErkJggg=="
-    class Ocr:
-        def recognize(self, path):
-            return ["2026年4月家庭账单", "燃气费 156元", "电费 210元", "合计 366元"]
-    _install_ocr_override(Ocr())
-    try:
-        draft = client.post("/memory/ocr", json={"image_base64": image}).json()
-    finally:
-        app.dependency_overrides.pop(get_ocr_service, None)
+    draft = {"text": "图片模型生成、尚待用户核对的账单", "items": [
+        {"date": "2026-04-01", "vendor": "燃气费", "category": "水电燃气", "amount": 156},
+        {"date": "2026-04-01", "vendor": "电费", "category": "水电燃气", "amount": 210}]}
     assert len(draft["items"]) == 2
-    # User corrects the OCR draft before explicitly saving it.
+    # User corrects the model draft before explicitly saving it.
     draft["items"][0]["amount"] = 186
-    saved = client.post("/memory/write", json={"scope": "user:alice", "source_type": "OCR", "raw": {
+    saved = client.post("/memory/write", json={"scope": "user:alice", "source_type": "MANUAL_CONFIG", "raw": {
         "title": "2026年4月家庭账单", "body": {"text": draft["text"], "items": draft["items"]},
         "original_image": {"name": "bill.png", "base64": image}}})
     assert saved.status_code == 200, saved.text

@@ -269,4 +269,4 @@ class SecurityService:
 
 ConflictService 提供 review_candidates/resolve_manual：按当前同范围实体冲突返回候选，校验用户看到的全部版本，保留选择并将其余候选标记 SUPERSEDED，复用既有知识物化写入。审计 source=manual 表示人工已确认。
 
-expense_draft 仅从识别文本提取可修改的逐行账单建议，排除识别出的合计行；用户保存时 OCR connector 保留原图到证据顶层，Structurer 不把图片加入知识正文。
+多模态知识草稿由 backend/agent/runtime/image_draft.py 通过模型服务产生，用户确认后 MANUAL_CONFIG connector 保留原图到证据顶层；Structurer 不把图片加入知识正文。expense_draft 仅保留聊天金额更正逻辑，不从 OCR 文本推断知识。

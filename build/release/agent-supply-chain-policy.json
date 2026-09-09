@@ -140,7 +140,9 @@
     "backend/agent/runtime/patches/0001-secure-model-management.patch",
     "backend/agent/runtime/patches/0002-pixiu-model-context.patch",
     "backend/agent/runtime/patches/0003-pixiu-gateway-branding.patch",
-    "build/release/scripts/source_checkout.py"
+    "build/release/scripts/source_checkout.py",
+    "backend/agent/runtime/image_draft.py",
+    "backend/agent/runtime/patches/0004-image-knowledge-draft.patch"
   ],
   "components": {
     "kylin_agent": {

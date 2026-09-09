@@ -244,6 +244,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     write->setObjectName(QStringLiteral("memoryWrite"));
     row->addWidget(write);
     auto *writeDialog = new MemoryWriteDialog(this);
+    m_writeDialog = writeDialog;
     m_edit = new QPushButton(tr("编辑命中记忆"), this);
     m_edit->setObjectName("memoryEdit");
     m_edit->setToolTip(tr("选择个人或家庭共享范围并检索后，编辑主要命中的记忆。"));
@@ -437,6 +438,11 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
         m_sources->setCurrentRow(-1);
         m_detailMeta->setText(tr("证据加载失败：%1。重新选择来源可重试。").arg(message));
     });
+}
+
+void MemoryWorkspace::setImageModelRequest(const QNetworkRequest &request)
+{
+    m_writeDialog->setRuntimeRequest(request);
 }
 
 bool MemoryWorkspace::showAgentSources(const AgentEvidenceResult &result, const QString &scope)

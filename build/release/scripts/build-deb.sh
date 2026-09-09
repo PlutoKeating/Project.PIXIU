@@ -80,7 +80,7 @@ check_version_consistency() {
     source_ver="$(tr -d '\r\n' < "${version_file}")"
 
     # 1) 管理库必须直接读取根 VERSION。
-    if grep -qF 'CMAKE_CURRENT_SOURCE_DIR}/../../VERSION' "${frontend_cmake}" \
+    if grep -qF 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${frontend_cmake}" \
        && grep -qF 'PIXIU_MANAGEMENT_VERSION LIMIT_COUNT 1' \
             "${frontend_cmake}"; then
         cmake_ver="${source_ver}"
@@ -269,12 +269,13 @@ if [ "${PIXIU_KYSDK}" = "ON" ]; then
         -name '_kylin_vector_client*.so' -print -quit)"
     OCR_MODULE="$(find "${NATIVE_BUILD_DIR}" -maxdepth 1 -type f \
         -name '_kylin_ocr*.so' -print -quit)"
-    [ -n "${OCR_MODULE}" ] || die "OCR native module was not built; install libkysdk-ocr-dev"
     [ -n "${EMBEDDING_MODULE}" ] || die "embedding native module was not built"
     [ -n "${VECTOR_MODULE}" ] || die "vector native module was not built"
     install -m 0755 "${EMBEDDING_MODULE}" "${BK}/engine/kylin/"
     install -m 0755 "${VECTOR_MODULE}" "${BK}/engine/kylin/"
-    install -m 0755 "${OCR_MODULE}" "${BK}/engine/kylin/"
+    if [ -n "${OCR_MODULE}" ]; then
+        install -m 0755 "${OCR_MODULE}" "${BK}/engine/kylin/"
+    fi
 fi
 
 # ── 3/5 必需离线 wheels（目标 Python 版本；含 sync 额外依赖）─────

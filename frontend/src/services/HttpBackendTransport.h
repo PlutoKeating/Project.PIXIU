@@ -61,7 +61,6 @@ public:
     void deliveryDigest(const QString &date = QString()) override;
     void backendDiagnostics() override;
 
-    void recognizeImage(const QJsonObject &payload);
     void reviewConflict(const QString &id);
     void resolveConflict(const QString &id, const QJsonObject &payload);
     void flowContexts(const QString &scope);
@@ -74,7 +73,6 @@ public:
     QString baseUrl() const override;
 
 signals:
-    void imageRecognized(const QJsonObject &result);
     void conflictReviewResult(const QJsonObject &review);
     void conflictResolved(const QJsonObject &result);
     void flowContextsResult(const QJsonObject &contexts);

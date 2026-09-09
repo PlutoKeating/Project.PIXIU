@@ -15,9 +15,12 @@
 +#include "AgentEvidenceClient.h"
  
  #include "services/apiservice.h"
-@@ -112,1 +113,51 @@
+@@ -112,1 +113,54 @@
 -    workspaces->addTab(new pixiu::MemoryWorkspace(workspaces), tr("记忆"));
 +    auto *memory = new pixiu::MemoryWorkspace(workspaces);
++    memory->setImageModelRequest(ApiService::instance().sessionEvidenceRequest());
++    connect(&ApiService::instance(), &ApiService::backendChanged, memory,
++        [memory]() { memory->setImageModelRequest(ApiService::instance().sessionEvidenceRequest()); });
 +    workspaces->addTab(memory, tr("记忆"));
 +    auto *sources = new QPushButton(tr("本会话记忆来源"), titleBar);
 +    sources->setObjectName(QStringLiteral("sessionMemorySources"));

@@ -66,4 +66,4 @@ Python 工作线程安全排队，但是否创建多个 session 以提升吞吐�
 
 ## OCR 图片账单绑定
 
-`_kylin_ocr` 使用目标系统官方 libkysdk-ocr-dev 的 `kysdk/kysdk-system/libkyocr.hpp` 和 libkyocr，运行依赖 libkysdk-ocr。严格原生画像必须构建并装入此扩展。识别时释放 Python GIL；无 SDK 的 Debian 环境继续明确返回 OCR_UNAVAILABLE。此接口与文档中的 coreai vision 接口不同，不混称为后者的验收。
+`_kylin_ocr` 使用目标系统官方 libkysdk-ocr-dev 的 `kysdk/kysdk-system/libkyocr.hpp` 和 libkyocr，运行依赖 libkysdk-ocr。扩展可选构建与安装，图片知识提取不依赖它。识别时释放 Python GIL；无 SDK 的 Debian 环境继续明确返回 OCR_UNAVAILABLE。此接口与文档中的 coreai vision 接口不同，不混称为后者的验收。
