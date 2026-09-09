@@ -82,6 +82,7 @@ class PixiuMemoryProvider(MemoryProvider):
         self._worker: threading.Thread | None = None
         self._stopping = threading.Event()
         self._lock = threading.Lock()
+        self._cache_traces: dict[str, str] = {}
         self._cache_queries: dict[str, str] = {}
         self._cache: dict[str, str] = {}
         self._session_id = ""
@@ -224,13 +225,17 @@ class PixiuMemoryProvider(MemoryProvider):
         with self._lock:
             cached = self._cache.pop(sid, "")
             cached_query = self._cache_queries.pop(sid, "")
+            trace = self._cache_traces.pop(sid, "")
         if cached and cached_query == self._clip(query):
+            if trace:
+                self._enqueue(_Job("POST", "/agent/sources/" + trace + "/consume", {}))
             return cached
         # A first/new-session turn must not lose recall merely because the worker
         # has not finished prefetching. The HTTP client already has a bounded timeout.
         try:
             result = self._client.request("POST", "/agent/context", {
                 "query": self._clip(query), "scope": self._scope, "use_settings": True,
+                "trace": True, "consumed": True,
                 "session_id": sid, "turn_id": self._turn_id, "top_k": 5,
                 "max_chars": self._max_chars})
             return _FENCE.sub("[memory fence removed]", str(result.get("context") or ""))
@@ -418,6 +423,7 @@ class PixiuMemoryProvider(MemoryProvider):
             {
                 "query": query,
                 "use_settings": True,
+                "trace": True, "consumed": True,
                 "scope": self._scope,
                 "session_id": self._session_id,
                 "turn_id": self._turn_id,
@@ -549,6 +555,7 @@ class PixiuMemoryProvider(MemoryProvider):
                 {
                     "query": self._clip(query),
                     "use_settings": True,
+                    "trace": True,
                     "scope": self._scope,
                     "session_id": session_id,
                     "turn_id": turn_id,
@@ -646,6 +653,7 @@ class PixiuMemoryProvider(MemoryProvider):
                     context = str(result.get("context") or "").strip()
                     context = _FENCE.sub("[memory fence removed]", context)
                     with self._lock:
+                        self._cache_traces[job.cache_session] = str(result.get("trace_id") or "")
                         self._cache[job.cache_session] = context
                         self._cache_queries[job.cache_session] = str(job.payload.get("query") or "")
                 with self._lock:

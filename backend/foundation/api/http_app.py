@@ -328,6 +328,8 @@ class MemoryQueryRequest(BaseModel):
 
 
 class AgentContextRequest(BaseModel):
+    trace: bool = False
+    consumed: bool = False
     use_settings: bool = False
     query: str = Field(min_length=1, max_length=16 * 1024)
     scope: ScopeValue
@@ -821,9 +823,10 @@ async def agent_context(
     body: AgentContextRequest,
     service=Depends(get_agent_context_service),
     preferences=Depends(get_preference_repo),
+    flow=Depends(get_flow_service),
 ):
     """返回受 scope、敏感度和字符预算约束且可追溯的记忆上下文。"""
-    return await service.build(
+    result = await service.build(
         body.query,
         body.scope,
         session_id=body.session_id,
@@ -833,6 +836,60 @@ async def agent_context(
         freshness_seconds=body.freshness_seconds,
         read_scopes=read_scopes(body.scope, await load_settings(preferences)) if body.use_settings else None,
     )
+
+    if body.trace:
+        context = await flow.remember(MemoryTier.MID_TERM, {
+            "event": "MEMORY_SOURCES", "session_id": body.session_id,
+            "turn_id": body.turn_id, "consumed": body.consumed,
+            "items": result["items"],
+        }, body.scope, ttl_seconds=30 * 24 * 3600)
+        result["trace_id"] = context.id
+    return result
+
+
+@app.post("/agent/sources/{context_id}/consume", tags=["Agent"])
+async def consume_agent_sources(context_id: str, db=Depends(get_db)):
+    store = SqliteFlowStore(db)
+    context = await store.get(context_id)
+    if context is None or context.payload.get("event") != "MEMORY_SOURCES":
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    context.payload["consumed"] = True
+    await store.save(context)
+    return {"status": "recorded"}
+
+
+@app.get("/agent/sources", tags=["Agent"])
+async def agent_sources(session_id: str, scope: ScopeValue, db=Depends(get_db),
+                        preferences=Depends(get_preference_repo), knowledge=Depends(get_knowledge_repo),
+                        evidence=Depends(get_evidence_repo)):
+    allowed = read_scopes(scope, await load_settings(preferences))
+    references = []
+    seen = set()
+    for context in await SqliteFlowStore(db).list_active(scope):
+        payload = context.payload
+        if (payload.get("event") != "MEMORY_SOURCES" or not payload.get("consumed")
+            or payload.get("session_id") != session_id
+            or (context.expires_at is not None and context.expires_at <= time.time())):
+            continue
+        for item in payload.get("items", []):
+            current = await knowledge.get(item["knowledge_id"])
+            if current is None or current.status != "ACTIVE" or current.scope not in allowed:
+                continue
+            for source in await evidence.get_many(item["evidence_ids"]):
+                key = (current.id, source.id)
+                if key in seen or source.sensitivity > 0 or source.scope != current.scope:
+                    continue
+                seen.add(key)
+                references.append({"knowledge_id": current.id, "evidence_id": source.id,
+                    "title": current.title, "scope": current.scope,
+                    "turn_id": payload["turn_id"], "trace_id": context.id})
+                if len(references) >= 256:
+                    break
+            if len(references) >= 256:
+                break
+        if len(references) >= 256:
+            break
+    return {"session_id": session_id, "read_scopes": allowed, "references": references}
 
 
 @app.post("/agent/lifecycle", tags=["Agent"], summary="记录 Agent 生命周期上下文")
@@ -1126,7 +1183,7 @@ async def resolve_conflict(conflict_id: str, body: ManualConflictChoice,
 async def flow_contexts(scope: ScopeValue, db=Depends(get_db), flow=Depends(get_flow_service)):
     await flow.sweep_expired()
     contexts = await SqliteFlowStore(db).list_active(scope)
-    return {"contexts": [entry.model_dump(mode="json") for entry in contexts[:100]]}
+    return {"contexts": [entry.model_dump(mode="json") for entry in contexts if entry.payload.get("event") != "MEMORY_SOURCES"][:100]}
 
 
 @app.post("/memory/flow/promote", tags=["Flow"], summary="短/中期记忆沉淀到长期")

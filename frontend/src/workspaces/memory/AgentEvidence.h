@@ -18,6 +18,7 @@ struct AgentEvidenceResult {
     QVector<AgentEvidenceReference> references;
     QStringList readScopes;
 };
+AgentEvidenceResult parseMemorySources(const QByteArray &response, const QString &sessionId, const QString &scope);
 // Runtime details are a best-effort trace, not the memory database. Empty Ready
 // means no verified references in this trace, not that the session used no memory.
 AgentEvidenceResult parseAgentEvidence(const QByteArray &response,

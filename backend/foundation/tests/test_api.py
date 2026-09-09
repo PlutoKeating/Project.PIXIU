@@ -1782,3 +1782,21 @@ def test_manual_conflict_review_retains_chosen_memory(client):
         active = db.execute("SELECT id FROM knowledge_items WHERE status = 'ACTIVE' AND scope = 'user:alice'").fetchall()
     assert active == [(keep["id"],)]
     assert client.get(path + "/review").status_code == 409
+
+
+def test_automatic_sources_only_show_consumed_context_and_active_memories(client):
+    written = client.post("/memory/write", json={"source_type": "OCR", "scope": "user:alice", "raw": OCR_RAW})
+    assert written.status_code == 200
+    request = {"query": "家庭支出", "scope": "user:alice", "session_id": "source-session", "turn_id": "turn-1", "trace": True}
+    context = client.post("/agent/context", json=request).json()
+    assert context["items"]
+    params = {"session_id": "source-session", "scope": "user:alice"}
+    assert client.get("/agent/sources", params=params).json()["references"] == []
+    assert client.post("/agent/sources/" + context["trace_id"] + "/consume").status_code == 200
+    sources = client.get("/agent/sources", params=params).json()["references"]
+    assert sources[0]["evidence_id"] == context["items"][0]["evidence_ids"][0]
+    assert client.get("/memory/flow/contexts", params={"scope": "user:alice"}).json()["contexts"] == []
+    assert client.get("/agent/sources", params={**params, "session_id": "another-session"}).json()["references"] == []
+    with sqlite3.connect(di_module.settings.db_path) as db:
+        db.execute("UPDATE knowledge_items SET status = 'SUPERSEDED' WHERE id = ?", (sources[0]["knowledge_id"],))
+    assert client.get("/agent/sources", params=params).json()["references"] == []

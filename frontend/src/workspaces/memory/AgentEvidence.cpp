@@ -6,6 +6,31 @@
 #include <QSet>
 
 namespace pixiu {
+AgentEvidenceResult parseMemorySources(const QByteArray &response, const QString &sessionId, const QString &scope)
+{
+    if (response.size() > 2*1024*1024) return {AgentEvidenceResult::TooLarge, {}};
+    const auto root = QJsonDocument::fromJson(response).object();
+    if (root.value("session_id").toString() != sessionId || !root.value("references").isArray()) return {};
+    AgentEvidenceResult parsed{AgentEvidenceResult::Ready, {}};
+    const QRegularExpression safeScope("\\A(user|shared):[A-Za-z0-9._-]+\\z");
+    const QRegularExpression knowledgeId("\\Aknw_[A-Za-z0-9_-]{8,128}\\z");
+    const QRegularExpression evidenceId("\\Aevd_[A-Za-z0-9_-]{8,128}\\z");
+    for (const auto &selected : root.value("read_scopes").toArray()) {
+        if (!safeScope.match(selected.toString()).hasMatch()) return {};
+        parsed.readScopes.append(selected.toString());
+    }
+    for (const auto &value : root.value("references").toArray()) {
+        const auto item = value.toObject();
+        const auto selected = item.value("scope").toString();
+        if (selected != scope && !parsed.readScopes.contains(selected)) return {};
+        if (!knowledgeId.match(item.value("knowledge_id").toString()).hasMatch()
+            || !evidenceId.match(item.value("evidence_id").toString()).hasMatch()) return {};
+        if (parsed.references.size() == 256) return {AgentEvidenceResult::TooLarge, {}};
+        parsed.references.append({item.value("evidence_id").toString(), item.value("knowledge_id").toString(),
+            item.value("title").toString().left(512), selected, item.value("turn_id").toString(), item.value("trace_id").toString()});
+    }
+    return parsed;
+}
 AgentEvidenceResult parseAgentEvidence(const QByteArray &response, const QString &sessionId,
                                       const QString &scope)
 {

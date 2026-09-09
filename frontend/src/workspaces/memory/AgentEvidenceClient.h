@@ -15,6 +15,7 @@ public:
     ~AgentEvidenceClient() override;
     // Caller supplies the existing Runtime endpoint/authentication, never model output.
     void load(QNetworkRequest runtime, const QString &session, const QString &scope);
+    void loadMemorySources(QNetworkRequest runtime, const QString &session, const QString &scope);
     void cancel();
     bool busy() const { return !m_reply.isNull(); }
 signals:
@@ -28,5 +29,6 @@ private:
     QByteArray m_buffer;
     QString m_session;
     QString m_scope;
+    bool m_memorySources = false;
 };
 }

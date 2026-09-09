@@ -510,3 +510,5 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 `GET/PUT /agent/settings` 读取/保存 include_capture（默认 true）、shared_scopes（默认空数组，仅 shared:*）、write_scope（默认 null，沿用当前 Agent）。设置保存于本机安全偏好，不随记忆共享同步。`POST /agent/context` 的可选 use_settings 默认 false；Agent 设置为 true 时，默认个人 user:default/user:local 可读取授权采集，另外查询用户选择的共享空间，返回 read_scopes。自定义个人范围保持隔离。显式记忆工具按 write_scope 保存，普通会话保存范围不变；设置页面分别控制读取与保存，不迁移已有数据。不新增依赖或数据库 schema。
 
 工作台补充：MemoryAudit 调用冲突 review/resolve；MemoryWorkspace 的阶段记忆页调用 flow contexts/promote；BackendEventStatus 的助手遗忘按钮将意图交给 ForgetPage 重新预览。按钮不代替删除确认。隐私页说明监控授权目录的直接子文件及格式/大小范围，日报说明实际覆盖文件与应用采集。
+
+正式宿主的本会话来源入口调用 AgentEvidenceClient.loadMemorySources，从记忆后端读取自动注入及显式搜索的引用；使用独立请求，不转发 Runtime 认证头。旧 Runtime 事件解析接口保留兼容测试。

@@ -43,7 +43,7 @@
 +        }
 +        workspaces->setCurrentIndex(0);
 +        sources->setText(tr("取消读取来源"));
-+        evidenceClient->load(ApiService::instance().sessionEvidenceRequest(),
++        evidenceClient->loadMemorySources(ApiService::instance().sessionEvidenceRequest(),
 +            m_chatWidget->currentSessionId(), qEnvironmentVariable("PIXIU_AGENT_SCOPE"));
 +    });
 +    connect(evidenceClient, &pixiu::AgentEvidenceClient::failed, this,

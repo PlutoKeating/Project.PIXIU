@@ -1,6 +1,7 @@
 #include "AgentEvidenceClient.h"
 #include <QNetworkReply>
 #include <QRegularExpression>
+#include <QUrlQuery>
 
 namespace pixiu {
 AgentEvidenceClient::AgentEvidenceClient(QObject *parent, int timeoutMs) : QObject(parent)
@@ -28,6 +29,13 @@ void AgentEvidenceClient::fail(const QString &message)
     cancel();
     emit failed(session, message);
 }
+void AgentEvidenceClient::loadMemorySources(QNetworkRequest runtime, const QString &session, const QString &scope)
+{
+    Q_UNUSED(runtime);
+    m_memorySources = true;
+    load(QNetworkRequest(QUrl(qEnvironmentVariable("PIXIU_BACKEND_URL", "http://127.0.0.1:8765"))), session, scope);
+    m_memorySources = false;
+}
 void AgentEvidenceClient::load(QNetworkRequest request, const QString &session, const QString &scope)
 {
     cancel();
@@ -42,7 +50,12 @@ void AgentEvidenceClient::load(QNetworkRequest request, const QString &session, 
         fail(tr("会话来源配置无效。"));
         return;
     }
-    url.setPath("/api/sessions/" + session + "/details");
+    const bool memorySources = m_memorySources;
+    if (memorySources) {
+        url.setPath("/agent/sources");
+        QUrlQuery query; query.addQueryItem("session_id", session); query.addQueryItem("scope", scope);
+        url.setQuery(query);
+    } else url.setPath("/api/sessions/" + session + "/details");
     request.setUrl(url);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     request.setRawHeader("Accept", "application/json");
@@ -61,16 +74,17 @@ void AgentEvidenceClient::load(QNetworkRequest request, const QString &session, 
     };
     connect(reply, &QNetworkReply::metaDataChanged, this, consume);
     connect(reply, &QNetworkReply::readyRead, this, consume);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, consume] {
+    connect(reply, &QNetworkReply::finished, this, [this, reply, consume, memorySources] {
         if (m_reply != reply) return;
         consume();
         if (m_reply != reply) return;
         const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError || status != 200) {
-            fail(tr("会话来源读取失败，请检查 Runtime 连接后重试。"));
+            fail(tr("会话来源读取失败，请检查服务连接后重试。"));
             return;
         }
-        const auto result = parseAgentEvidence(m_buffer, m_session, m_scope);
+        const auto result = memorySources ? parseMemorySources(m_buffer, m_session, m_scope)
+                                          : parseAgentEvidence(m_buffer, m_session, m_scope);
         const auto session = m_session;
         m_timeout.stop();
         m_reply.clear();

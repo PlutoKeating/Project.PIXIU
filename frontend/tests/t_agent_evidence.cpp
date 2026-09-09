@@ -27,6 +27,18 @@ class AgentEvidenceTest : public QObject {
         return QJsonDocument(QJsonObject{{"session_id", session}, {"content", content}}).toJson();
     }
 private slots:
+    void parsesAutomaticMemorySources() {
+        const QJsonObject data{{"session_id", "session-1"}, {"read_scopes", QJsonArray{"user:local"}},
+            {"references", QJsonArray{QJsonObject{{"knowledge_id", "knw_example01"},
+                {"evidence_id", "evd_example01"}, {"scope", "user:local"},
+                {"title", "Remembered fact"}, {"turn_id", "turn-1"}, {"trace_id", "ctx_example01"}}}}};
+        const auto result = pixiu::parseMemorySources(QJsonDocument(data).toJson(), "session-1", "user:local");
+        QCOMPARE(result.status, pixiu::AgentEvidenceResult::Ready);
+        QCOMPARE(result.references.size(), 1);
+        QCOMPARE(result.references.first().evidenceId, QString("evd_example01"));
+        QCOMPARE(pixiu::parseMemorySources(QJsonDocument(data).toJson(), "another", "user:local").status,
+                 pixiu::AgentEvidenceResult::Invalid);
+    }
     void rejectsInvalidRequestBeforeNetworking_data() {
         QTest::addColumn<QString>("url");
         QTest::addColumn<QString>("session");

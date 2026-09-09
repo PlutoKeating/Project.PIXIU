@@ -405,3 +405,22 @@ def test_first_turn_prefetch_reads_current_query_without_waiting_for_worker():
     context_calls = [call for call in client.calls if call[1] == '/agent/context']
     assert context_calls[-1][2]['query'] == 'current question'
     item.shutdown()
+
+
+def test_cached_sources_are_marked_only_when_given_to_agent():
+    class TracedClient(FakeClient):
+        def request(self, method, path, payload=None):
+            result = super().request(method, path, payload)
+            if path == "/agent/context":
+                result["trace_id"] = "ctx_example01"
+            return result
+    client = TracedClient()
+    item = provider(client)
+    item.initialize("session 1", platform="cli")
+    item.on_turn_start(1, "known fact")
+    assert item.wait_for_idle(1)
+    assert not any(path.endswith("/consume") for _, path, _ in client.calls)
+    assert "known fact" in item.prefetch("known fact", session_id="session 1")
+    assert item.wait_for_idle(1)
+    assert any(path == "/agent/sources/ctx_example01/consume" for _, path, _ in client.calls)
+    item.shutdown()

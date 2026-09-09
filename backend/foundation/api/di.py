@@ -290,6 +290,8 @@ async def get_flow_service(
 
     async def _promote_context(context):
         payload = dict(context.payload)
+        if payload.get("event") == "MEMORY_SOURCES":
+            raise ValueError("Source references are not stage memories")
         if "event" in payload and "data" in payload:
             data = payload["data"]
             title = str(data.get("summary") or data.get("message") or "会话阶段记录")[:80]
