@@ -480,6 +480,9 @@ class PixiuMemoryProvider(MemoryProvider):
         content = str(args.get("content") or "").strip()
         if not content:
             raise ValueError("content")
+        scope = str(args.get("scope") or self._scope)
+        if not re.fullmatch(r"(?:user|shared):[A-Za-z0-9._-]+", scope):
+            raise ValueError("scope")
         title = str(args.get("title") or "").strip()
         canonical = json.dumps(
             {
@@ -487,6 +490,7 @@ class PixiuMemoryProvider(MemoryProvider):
                 "expected_version": expected_version,
                 "content": content,
                 "title": title,
+                "scope": scope,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -501,7 +505,7 @@ class PixiuMemoryProvider(MemoryProvider):
         payload: dict[str, Any] = {
             "knowledge_id": knowledge_id,
             "expected_version": expected_version,
-            "scope": self._scope,
+            "scope": scope,
             "body": {"content": self._clip(content)},
             "provenance": {
                 "session_id": self._session_id,

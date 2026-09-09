@@ -635,6 +635,12 @@ async def memory_update(
 
     title = body.title.strip() if body.title is not None else existing.title
     updated_body = body.body if body.body is not None else existing.body
+    if existing.body.get("items") and body.body is not None and set(body.body) == {"content"}:
+        from backend.engine.ingest.expense_draft import correct_expense_body
+        try:
+            updated_body = correct_expense_body(existing.body, str(body.body["content"]))
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail="BILL_ITEM_CORRECTION_REQUIRED") from exc
     update_raw = {
         "title": f"Update: {title}",
         "body": {

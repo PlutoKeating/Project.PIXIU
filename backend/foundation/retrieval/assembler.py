@@ -164,8 +164,12 @@ def expense_selection(item: KnowledgeItem, query: str, time_range=None) -> list[
         return selected
     start, end = bounds
     result = []
+    title_month = re.search(r"(20\d{2})[年/-](\d{1,2})(?:月|(?=[^0-9]|$))", item.title)
+    title_date = ""
+    if title_month and 1 <= int(title_month[2]) <= 12:
+        title_date = f"{title_month[1]}-{int(title_month[2]):02d}-01"
     for line in selected:
-        stamp = _parse_timestamp(line.get("date") or item.body.get("date"))
+        stamp = _parse_timestamp(line.get("date") or item.body.get("date") or title_date)
         if stamp is not None and (start is None or stamp >= start) and (end is None or stamp < end):
             result.append(line)
     return result

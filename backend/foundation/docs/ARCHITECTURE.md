@@ -478,3 +478,5 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 人工同步冲突解决时，SyncService 将已观察的分支时钟并入本地裁决操作，再解除实体阻塞。阶段记忆由既有 FlowStore 提供列表，用户保留经敏感检查进入长期知识及共享同步。BehaviorCollector 在 flush 时累计未切换的当前应用，并通过已有采集回调进入日志/日报。
 
 会话来源使用既有 memory_contexts 持久化 MEMORY_SOURCES 引用事件，保存知识/证据 ID 和轮次，不保存上下文正文。只有 consumed 的引用返回给桌面；查询时重新核对当前授权、有效知识和证据敏感度。
+
+账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。

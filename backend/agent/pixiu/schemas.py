@@ -30,7 +30,8 @@ UPDATE = {
     "name": "pixiu_memory_update",
     "description": (
         "Update a recalled PIXIU memory when the user supplies corrected information. "
-        "Use the knowledge_id and version returned by pixiu_memory_search."
+        "Use the knowledge_id, scope and version returned by pixiu_memory_search. "
+        "For a bill amount correction specify the exact item and corrected amount in content, e.g. 燃气费改为186元."
     ),
     "parameters": {
         "type": "object",
@@ -39,6 +40,7 @@ UPDATE = {
                 "type": "string",
                 "pattern": "^knw_[A-Za-z0-9_-]{8,128}$",
             },
+            "scope": {"type": "string", "pattern": "^(user|shared):[A-Za-z0-9._-]+$"},
             "expected_version": {"type": "integer", "minimum": 1},
             "content": {"type": "string"},
             "title": {"type": "string"},
