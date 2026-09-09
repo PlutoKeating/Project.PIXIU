@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import tempfile
 import unittest
@@ -19,6 +20,31 @@ SPEC.loader.exec_module(AUDIT)
 
 
 class AgentSupplyChainAuditTest(unittest.TestCase):
+    def test_snapshot_component_requires_pinned_unchanged_source_and_license(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            relative = "third_party/example"
+            source = root / relative
+            source.mkdir(parents=True)
+            license_file = source / "LICENSE"
+            license_file.write_text("Example license")
+            policy = {"path": relative, "source_commit": "a" * 40,
+                      "license_files": ["LICENSE"]}
+            manifest = {"submodules": {relative: "a" * 40}, "files": [{
+                "path": relative + "/LICENSE", "mode": "100644",
+                "sha256": hashlib.sha256(license_file.read_bytes()).hexdigest()}]}
+            manifest_path = root / "SOURCE-MANIFEST.json"
+            manifest_path.write_text(json.dumps(manifest))
+            self.assertTrue(AUDIT.check_component(root, "example", policy)["passed"])
+            license_file.write_text("Changed license")
+            self.assertFalse(AUDIT.check_component(root, "example", policy)["passed"])
+            license_file.write_text("Example license")
+            manifest["submodules"][relative] = "b" * 40
+            manifest_path.write_text(json.dumps(manifest))
+            self.assertFalse(AUDIT.check_component(root, "example", policy)["passed"])
+            license_file.unlink()
+            self.assertFalse(AUDIT.check_component(root, "example", policy)["passed"])
+
     def test_delivered_source_revision_without_git(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -126,10 +126,20 @@ def check_component(root: Path, name: str, policy: dict[str, Any]) -> dict[str, 
         "passed": False,
     }
     try:
-        result["gitlink_commit"] = git(root, "rev-parse", f"HEAD:{relative_path}")
-        result["checkout_commit"] = git(source, "rev-parse", "HEAD")
-        result["checkout_clean"] = not bool(git(source, "status", "--porcelain"))
-    except (OSError, subprocess.CalledProcessError):
+        if (root / ".git").exists():
+            result["gitlink_commit"] = git(root, "rev-parse", f"HEAD:{relative_path}")
+            result["checkout_commit"] = git(source, "rev-parse", "HEAD")
+            result["checkout_clean"] = not bool(git(source, "status", "--porcelain"))
+        else:
+            subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("source_checkout.py")),
+                 "check", str(root), relative_path, expected],
+                check=True, capture_output=True,
+            )
+            revision = read_json(root / "SOURCE-MANIFEST.json")["submodules"][relative_path]
+            result.update(gitlink_commit=revision, checkout_commit=revision,
+                          checkout_clean=True)
+    except (OSError, ValueError, KeyError, subprocess.CalledProcessError):
         return result
     result["license_files_present"] = all(
         (source / str(item)).is_file() for item in policy.get("license_files", [])
