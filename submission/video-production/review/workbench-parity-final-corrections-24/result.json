@@ -1,0 +1,39 @@
+{
+  "frames": [
+    3897,
+    7940,
+    8240
+  ],
+  "different_pixels": [
+    0,
+    0,
+    0
+  ],
+  "boundary": "三个视觉帧，不覆盖音轨或全部帧",
+  "files": [
+    {
+      "file": "ProjOriginal-f3897.png",
+      "sha256": "469a8ee325a9b43cc52ce8447708b2c2e5ef40d83d40fa09645f22f3d5d9c066"
+    },
+    {
+      "file": "ProjImported-f3897.png",
+      "sha256": "469a8ee325a9b43cc52ce8447708b2c2e5ef40d83d40fa09645f22f3d5d9c066"
+    },
+    {
+      "file": "ProjImported-f7940.png",
+      "sha256": "974be3edb617ce38da0c04c103f50d22abc163c20320a7847fd5a2f9ff4bd508"
+    },
+    {
+      "file": "ProjOriginal-f7940.png",
+      "sha256": "974be3edb617ce38da0c04c103f50d22abc163c20320a7847fd5a2f9ff4bd508"
+    },
+    {
+      "file": "ProjOriginal-f8240.png",
+      "sha256": "5f6aeb3336b0e403d50874733a78496eb69ea2e94d3dea55a583cd19a422de38"
+    },
+    {
+      "file": "ProjImported-f8240.png",
+      "sha256": "5f6aeb3336b0e403d50874733a78496eb69ea2e94d3dea55a583cd19a422de38"
+    }
+  ]
+}

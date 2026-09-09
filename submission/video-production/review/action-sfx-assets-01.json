@@ -1,0 +1,57 @@
+{
+  "method": "5ms RMS envelope across stereo channels; original MP3 retained, action WAV shortened and edges faded; not listening",
+  "assets": [
+    {
+      "original": "public/audio/typewriter-hit-hard.mp3",
+      "action": "public/audio/typewriter-hit-hard-action.wav",
+      "source_url": "https://assets.mixkit.co/active_storage/sfx/1364/1364-preview.mp3",
+      "license": "Mixkit Sound Effects Free License; provenance from video-shotcraft assets/audio/ATTRIBUTION.md",
+      "trim_start_seconds": 0.015,
+      "duration_seconds": 0.1,
+      "fade_in_seconds": 0.003,
+      "fade_out_seconds": 0.012,
+      "peak_frame": 0.6,
+      "native_peak_dbfs": -1.0742273330688477,
+      "sha256": "7b65cab657c643a70fb8a41ae1292c6bb18a0e43a542e42bdddc977f744e1776"
+    },
+    {
+      "original": "public/audio/typewriter-hit-soft.mp3",
+      "action": "public/audio/typewriter-hit-soft-action.wav",
+      "source_url": "https://assets.mixkit.co/active_storage/sfx/1366/1366-preview.mp3",
+      "license": "Mixkit Sound Effects Free License; provenance from video-shotcraft assets/audio/ATTRIBUTION.md",
+      "trim_start_seconds": 0.12,
+      "duration_seconds": 0.1,
+      "fade_in_seconds": 0.003,
+      "fade_out_seconds": 0.012,
+      "peak_frame": 0.6,
+      "native_peak_dbfs": -2.7595951557159424,
+      "sha256": "8647089cbadc2b105d8a7b1c82e7cefe3177138683749d6c6215c53a7db87461"
+    },
+    {
+      "original": "public/audio/switch-click-quick.mp3",
+      "action": "public/audio/switch-click-quick-action.wav",
+      "source_url": "https://assets.mixkit.co/active_storage/sfx/2582/2582-preview.mp3",
+      "license": "Mixkit Sound Effects Free License; provenance from video-shotcraft assets/audio/ATTRIBUTION.md",
+      "trim_start_seconds": 0,
+      "duration_seconds": 0.24,
+      "fade_in_seconds": 0.003,
+      "fade_out_seconds": 0.012,
+      "peak_frame": 0.15,
+      "native_peak_dbfs": -0.10158427059650421,
+      "sha256": "4ca8321468927bc670a2181f8056ed9d96c2b72bccfbb14427a6338a49e8cb44"
+    },
+    {
+      "original": "public/audio/paper-slide.mp3",
+      "action": "public/audio/paper-slide-action.wav",
+      "source_url": "https://assets.mixkit.co/active_storage/sfx/1530/1530-preview.mp3",
+      "license": "Mixkit Sound Effects Free License; provenance from video-shotcraft assets/audio/ATTRIBUTION.md",
+      "trim_start_seconds": 0.2,
+      "duration_seconds": 0.5,
+      "fade_in_seconds": 0.003,
+      "fade_out_seconds": 0.012,
+      "peak_frame": 4.65,
+      "native_peak_dbfs": -0.6695460677146912,
+      "sha256": "3c28295c90246a763025c485e1a434fe23757d75f6f64004b7716d6d59afe3f6"
+    }
+  ]
+}

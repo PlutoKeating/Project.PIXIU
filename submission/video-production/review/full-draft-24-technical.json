@@ -1,0 +1,23 @@
+{
+  "video": "renders/全片初剪-24.mp4",
+  "sha256": "3ca27ff309a769f7b5af33f5254448b00aa5e326156d6bee86c51103ca3a3c3a",
+  "bytes": 47936881,
+  "duration": "575.146667",
+  "streams": [
+    {
+      "codec": "h264",
+      "frames": "17253",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "codec": "aac",
+      "frames": "26960",
+      "width": null,
+      "height": null
+    }
+  ],
+  "complete_decode": "passed",
+  "frozen_source_matches": true,
+  "boundary": "初剪标记仍保留；实际听审及正式交付待完成"
+}

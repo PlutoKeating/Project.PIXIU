@@ -1,0 +1,32 @@
+{
+  "name": "pixiu-ink-press-video",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prepare:timeline": "python3 scripts/prepare_timeline.py",
+    "dev": "remotion studio src/index.ts",
+    "check": "tsc --noEmit",
+    "render:full": "remotion render src/index.ts PixiuFullDraft",
+    "still:full": "remotion still src/index.ts PixiuFullDraft",
+    "render:outro": "remotion render src/index.ts PixiuOutroReview",
+    "still": "remotion still src/index.ts PixiuOpeningReview",
+    "render": "remotion render src/index.ts PixiuOpeningReview renders/开场审阅样片.mp4",
+    "render:shared-agent": "remotion render src/index.ts PixiuSharedAgentReview",
+    "render:spotlight": "remotion render src/index.ts PixiuSpotlightReview",
+    "prepare:concept": "python3 scripts/outline_concept.py",
+    "render:bill": "remotion render src/index.ts PixiuBillReview",
+    "prepare:evidence": "python3 scripts/prepare_evidence.py",
+    "prepare:agent-scene": "python3 scripts/prepare_agent_scene.py",
+    "prepare:preferences": "python3 scripts/prepare_preference_scene.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "typescript": "6.0.3"
+  }
+}

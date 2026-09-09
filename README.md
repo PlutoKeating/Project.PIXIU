@@ -121,7 +121,7 @@ Project.PIXIU/
 ├── backend/tests/                    # 自动化测试
 ├── build/release/                    # Debian/银河麒麟构建、发布画像与交付校验工具
 ├── docs/                             # 架构、API、赛题、验收与报告
-├── submission/                       # 正式提交目录；两层同名结构，视频待补
+├── submission/                       # 正式提交目录；两层同名结构，视频候选已补入、听审待完成
 └── third_party/
     ├── kylin-agent/                  # openKylin 官方 Agent 桌面端（submodule）
     ├── kylin-agent-runtime/          # openKylin 官方 Agent 运行时（submodule）

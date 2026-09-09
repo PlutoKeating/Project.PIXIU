@@ -1,0 +1,39 @@
+{
+  "frames": [
+    917,
+    7940,
+    17103
+  ],
+  "different_pixels": [
+    0,
+    0,
+    0
+  ],
+  "boundary": "无初剪标记的三个视觉帧，不覆盖音轨或全部帧",
+  "files": [
+    {
+      "file": "ProjOriginal-f917.png",
+      "sha256": "3c97a8674fa766a0f1848a6ead2dc4b10c76d12cbb35bcf768925b4d6c757d50"
+    },
+    {
+      "file": "ProjImported-f917.png",
+      "sha256": "3c97a8674fa766a0f1848a6ead2dc4b10c76d12cbb35bcf768925b4d6c757d50"
+    },
+    {
+      "file": "ProjImported-f7940.png",
+      "sha256": "666d76fba987ed0919b5bae93e9ce411fcb719e90a6ce76f3916defcf65fd733"
+    },
+    {
+      "file": "ProjOriginal-f7940.png",
+      "sha256": "666d76fba987ed0919b5bae93e9ce411fcb719e90a6ce76f3916defcf65fd733"
+    },
+    {
+      "file": "ProjOriginal-f17103.png",
+      "sha256": "ca8d3b6629745a5fc8f3dbfc2d910891dd1cf2b3209c407adb2a1789f52b01f8"
+    },
+    {
+      "file": "ProjImported-f17103.png",
+      "sha256": "ca8d3b6629745a5fc8f3dbfc2d910891dd1cf2b3209c407adb2a1789f52b01f8"
+    }
+  ]
+}

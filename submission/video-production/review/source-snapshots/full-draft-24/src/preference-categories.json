@@ -1,0 +1,37 @@
+{
+  "source": "raw/偏好三类提取-02.json",
+  "sha256": "0bb5b31d471a2a3e5a82adc262cae866b721e35944399cca2fd6c8c1d9ff8767",
+  "cards": [
+    {
+      "id": "pref_01M22JA1QNJ7R8H6C5E786H9RK",
+      "category": "OP_HABIT",
+      "key": "op_habit.prefer_hotkey",
+      "value": {
+        "enabled": true,
+        "signal_count": 1
+      },
+      "confidence": 0.7,
+      "version": 1,
+      "scope": "user:video-preference-4k-v1",
+      "created_at": 1788940191,
+      "updated_at": 1788940191,
+      "title": "操作习惯",
+      "origin": "合成行为事件"
+    },
+    {
+      "id": "pref_01M22J7WJRVKRZH3F5QJXC0VWV",
+      "category": "SECURITY_POLICY",
+      "key": "security.no_exfiltrate",
+      "value": {
+        "no_exfiltrate": true
+      },
+      "confidence": 0.92,
+      "version": 1,
+      "scope": "user:video-preference-4k-v1",
+      "created_at": 1788940120,
+      "updated_at": 1788940120,
+      "title": "安全策略",
+      "origin": "合成手动配置"
+    }
+  ]
+}

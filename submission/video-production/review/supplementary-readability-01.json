@@ -1,0 +1,38 @@
+[
+  {
+    "file": "source-readability-01-f3897.png",
+    "crop": [
+      200,
+      698,
+      1540,
+      760
+    ],
+    "ink_heights": [
+      37
+    ]
+  },
+  {
+    "file": "source-readability-01-f15084.png",
+    "crop": [
+      150,
+      480,
+      1670,
+      522
+    ],
+    "ink_heights": [
+      32
+    ]
+  },
+  {
+    "file": "preference-categories-01-f7940.png",
+    "crop": [
+      160,
+      620,
+      770,
+      670
+    ],
+    "ink_heights": [
+      35
+    ]
+  }
+]

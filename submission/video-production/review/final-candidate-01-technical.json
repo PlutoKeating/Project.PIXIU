@@ -1,0 +1,32 @@
+{
+  "video": "renders/演示视频-候选01.mp4",
+  "sha256": "6bec172afb25fc14398fcaeab05815e4fc9c9e667fd61dbe2a8337f072b2de3e",
+  "bytes": 47565807,
+  "duration": "575.146667",
+  "streams": [
+    {
+      "codec": "h264",
+      "frames": "17253",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "codec": "aac",
+      "frames": "26960",
+      "width": null,
+      "height": null
+    }
+  ],
+  "complete_decode": "passed",
+  "frozen_source_matches": true,
+  "decoded_audio_sha256": "7c0580a5ef7369ecdd663fa209e78ec596c0b1a0ccd2773d8f74a103872964d8",
+  "audio_identical_to_full24": true,
+  "format_tags": {
+    "major_brand": "isom",
+    "minor_version": "512",
+    "compatible_brands": "isomiso2avc1mp41",
+    "encoder": "Lavf61.7.100",
+    "comment": "Made with Remotion 4.0.484"
+  },
+  "boundary": "无初剪标记候选；实际听审反馈待完成，未宣称最终验收通过"
+}

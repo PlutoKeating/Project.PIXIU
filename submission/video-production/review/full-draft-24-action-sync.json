@@ -1,0 +1,199 @@
+{
+  "method": "Waveform correlation in +/-2-frame window; decoded candidate minus previous render isolates added sounds approximately. Not listening or proof of perceptual audibility.",
+  "video": "renders/全片初剪-24.mp4",
+  "video_sha256": "3ca27ff309a769f7b5af33f5254448b00aa5e326156d6bee86c51103ca3a3c3a",
+  "baseline": "renders/全片初剪-23.mp4",
+  "baseline_sha256": "df6406688d88939449534d16d674b75f109c553a53398354528415d1043850f1",
+  "probes": [
+    {
+      "shot": "s13",
+      "target_frame": 6413,
+      "source": "public/audio/typewriter-hit-hard-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 6412.280624999999,
+          "peak_frame": 6412.880625,
+          "target_error_frames": -0.11937500000021828,
+          "correlation": 0.9998875566329867
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 6412.280624999999,
+          "peak_frame": 6412.880625,
+          "target_error_frames": -0.11937500000021828,
+          "correlation": 0.9998875566329867
+        }
+      }
+    },
+    {
+      "shot": "s13",
+      "target_frame": 6416,
+      "source": "public/audio/typewriter-hit-soft-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 6415.28,
+          "peak_frame": 6415.88,
+          "target_error_frames": -0.11999999999989086,
+          "correlation": 0.9988236231222938
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 6415.28,
+          "peak_frame": 6415.88,
+          "target_error_frames": -0.11999999999989086,
+          "correlation": 0.9988236231222938
+        }
+      }
+    },
+    {
+      "shot": "s13",
+      "target_frame": 6419,
+      "source": "public/audio/typewriter-hit-hard-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 6418.279375,
+          "peak_frame": 6418.879375,
+          "target_error_frames": -0.12062499999956344,
+          "correlation": 0.9997214639022193
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 6418.279375,
+          "peak_frame": 6418.879375,
+          "target_error_frames": -0.12062499999956344,
+          "correlation": 0.9997214924243515
+        }
+      }
+    },
+    {
+      "shot": "s13",
+      "target_frame": 6422,
+      "source": "public/audio/typewriter-hit-soft-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 6421.28,
+          "peak_frame": 6421.88,
+          "target_error_frames": -0.11999999999989086,
+          "correlation": 0.997846358606735
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 6421.28,
+          "peak_frame": 6421.88,
+          "target_error_frames": -0.11999999999989086,
+          "correlation": 0.9988602482154103
+        }
+      }
+    },
+    {
+      "shot": "s13",
+      "target_frame": 6753,
+      "source": "public/audio/switch-click-quick-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 6753.29,
+          "peak_frame": 6753.44,
+          "target_error_frames": 0.4399999999995998,
+          "correlation": 0.9257181240680218
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 6753.29,
+          "peak_frame": 6753.44,
+          "target_error_frames": 0.4399999999995998,
+          "correlation": 0.9968587861598625
+        }
+      }
+    },
+    {
+      "shot": "s15",
+      "target_frame": 8194,
+      "source": "public/audio/paper-slide-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 8189.2699999999995,
+          "peak_frame": 8193.92,
+          "target_error_frames": -0.07999999999992724,
+          "correlation": 0.18698039030660615
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 8189.2699999999995,
+          "peak_frame": 8193.92,
+          "target_error_frames": -0.07999999999992724,
+          "correlation": 0.9620027097809053
+        }
+      }
+    },
+    {
+      "shot": "s15",
+      "target_frame": 8206,
+      "source": "public/audio/paper-slide-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 8201.27,
+          "peak_frame": 8205.92,
+          "target_error_frames": -0.07999999999992724,
+          "correlation": 0.11074365872977587
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 8201.27,
+          "peak_frame": 8205.92,
+          "target_error_frames": -0.07999999999992724,
+          "correlation": 0.9617089637480056
+        }
+      }
+    },
+    {
+      "shot": "s15",
+      "target_frame": 8218,
+      "source": "public/audio/paper-slide-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 8213.27,
+          "peak_frame": 8217.92,
+          "target_error_frames": -0.07999999999992724,
+          "correlation": 0.09123734344788503
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 8213.27,
+          "peak_frame": 8217.92,
+          "target_error_frames": -0.07999999999992724,
+          "correlation": 0.9952919937484185
+        }
+      }
+    },
+    {
+      "shot": "s26",
+      "target_frame": 14640,
+      "source": "public/audio/typewriter-hit-hard-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 14639.27,
+          "peak_frame": 14639.87,
+          "target_error_frames": -0.12999999999919964,
+          "correlation": 0.9999363549301632
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 14639.27,
+          "peak_frame": 14639.87,
+          "target_error_frames": -0.12999999999919964,
+          "correlation": 0.9999363549301632
+        }
+      }
+    },
+    {
+      "shot": "s26",
+      "target_frame": 14643.5,
+      "source": "public/audio/typewriter-hit-soft-action.wav",
+      "estimates": {
+        "mixed": {
+          "source_start_frame": 14643.29,
+          "peak_frame": 14643.890000000001,
+          "target_error_frames": 0.3900000000012369,
+          "correlation": 0.9988573172133732
+        },
+        "candidate_minus_baseline": {
+          "source_start_frame": 14643.29,
+          "peak_frame": 14643.890000000001,
+          "target_error_frames": 0.3900000000012369,
+          "correlation": 0.9988573172133732
+        }
+      }
+    }
+  ]
+}
