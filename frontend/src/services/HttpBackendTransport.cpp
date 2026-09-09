@@ -490,3 +490,8 @@ void HttpBackendTransport::resolveConflict(const QString &id, const QJsonObject 
     postJson("/conflicts/" + QString::fromUtf8(QUrl::toPercentEncoding(id)) + "/resolve", payload,
         [this](quint64, const QJsonObject &value) { emit conflictResolved(value); });
 }
+
+void HttpBackendTransport::inputCapabilities()
+{
+    getJson("/agent/input-capabilities", [this](quint64, const QJsonObject &result) { emit inputCapabilitiesResult(result); });
+}

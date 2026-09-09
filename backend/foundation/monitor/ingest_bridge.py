@@ -1,27 +1,8 @@
-"""PIXIU Foundation — 目录捕获入库桥接（IngestBridge）
+"""Authorized directory capture with model-based image/PDF understanding.
 
-批次②「目录监视闭环」的核心入库端：把落盘文件经既有管线变为
-evidence + knowledge（同进程直调，不经过 HTTP）：
-
-- 图片（.png/.jpg/.jpeg/.bmp/.webp）→ 既有 OCR 适配器（get_ocr 返回的
-  ``recognize(image_path) -> list[str]`` 接口）→ 组装 MANUAL 风格
-  raw{title=文件名, text=识别文本}；
-- 文本（.txt/.md/.csv，默认 ≤1MB）→ 直接读文本 → 同样 raw{title, text}；
-- 其余后缀/超限文本 → ``ignored``，不入库。
-
-两者共用 /memory/write 的既有同进程管线：
-``ingestion.ingest(source_type, raw, scope, sensitivity=…, capture_source=…)`` 产出 evidence，
-``knowledge.structure(evidence)`` 产出 knowledge（对应的 HTTP handler 见
-http_app.memory_write：ingest → structure → preference.extract → conflict.arbitrate；
-本桥接只取 ingest + structure 两个必要环节，冲突仲裁/偏好提取属 BE-3 共享
-流，不在监视桥接内重复）。
-
-敏感处理（沿用既有 security.Detector 判定，不另起规则）：detector 命中
-（sensitivity > 0）时仍入库但携带 sensitivity 标记、仅落本机 user:* scope，
-事件状态记为 ``sensitive_quarantined`` —— 隔离语义 = 不出 shared:*/不参与
-同步流转；sensitivity == 0 时状态为 ``ingested``。
-
-异常不在此吞掉：由 DirectoryWatcher 统一 try/except 记录并继续监视。
+Text capture currently uses the existing memory pipeline. Document decoding and
+controlled dreaming will replace direct ingestion under the approved harness plan.
+OCR is not used for knowledge extraction.
 """
 
 from __future__ import annotations
@@ -40,7 +21,7 @@ log = get_logger(__name__)
 #: 文本直读后缀（≤ max_text_bytes）。
 TEXT_SUFFIXES = frozenset({".txt", ".md", ".csv"})
 
-#: 图片后缀（走 OCR）。
+#: 图片后缀（由当前模型理解）。
 IMAGE_SUFFIXES = frozenset({".png", ".jpg", ".jpeg", ".bmp", ".webp"})
 
 #: 事件状态（对齐 frontend/docs/MONITOR_API_REQUIREMENTS.md §2 契约）。
@@ -90,6 +71,7 @@ class IngestBridge:
         *,
         security: Any | None = None,
         ocr: OcrAdapter | None = None,
+        media: Any | None = None,
         scope: str = "user:local",
         max_text_bytes: int = 1024 * 1024,
         source_type: str = "MANUAL_CONFIG",
@@ -99,7 +81,8 @@ class IngestBridge:
         self._knowledge = knowledge
         #: security 可选：提供时按既有 detector 判定敏感度（sensitive_quarantined）。
         self._security = security
-        self._ocr = ocr
+        self._ocr = ocr  # reserved for sensitivity annotations; never knowledge extraction
+        self._media = media
         #: 捕获落库 scope —— 监视写入默认本机 user:*，敏感条目绝不入 shared:*。
         self._scope = validate_scope(scope)
         if not self._scope.startswith("user:"):
@@ -119,7 +102,7 @@ class IngestBridge:
         path = str(Path(path).absolute())
         name = Path(path).name
         suffix = Path(path).suffix.lower()
-        if suffix in IMAGE_SUFFIXES:
+        if suffix in IMAGE_SUFFIXES or suffix == ".pdf":
             return await self._capture_image(path, name)
         if suffix in TEXT_SUFFIXES:
             return await self._capture_text(path, name)
@@ -130,29 +113,18 @@ class IngestBridge:
             ts=int(time.time()),
         )
 
-    # ─── 内部：图片 OCR ───────────────────────────────────
+    # ─── 内部：图片与 PDF 理解 ───────────────────────────────────
 
     async def _capture_image(self, path: str, name: str) -> CaptureResult:
-        if self._ocr is None:
-            log.warning("image capture without OCR adapter: %s", path)
-            return CaptureResult(
-                status=STATUS_IGNORED,
-                summary=f"忽略无法识别的图片 {name}",
-                ts=int(time.time()),
-            )
-        # OCR 为同步 C 调用，放入线程池避免阻塞监视循环（对齐 http_app 的 to_thread）。
-        lines = await asyncio.to_thread(self._ocr.recognize, path)
-        text = "\n".join(lines)
-        if not text.strip():
-            # OCR 无有效文本：不入库（避免空证据），与 size 不可读→ignored 一致
-            log.warning("image capture ignored (no OCR text): %s", path)
-            return CaptureResult(
-                status=STATUS_IGNORED,
-                summary=f"忽略无法识别的图片 {name}",
-                ts=int(time.time()),
-            )
-        source = FileCaptureSource(method="ocr", path=path, captured_at=int(time.time()))
-        return await self._ingest({"title": name, "text": text}, name, source)
+        if self._media is None:
+            return CaptureResult(status=STATUS_IGNORED, summary=f"当前图片与扫描 PDF 读取未启用：{name}", ts=int(time.time()))
+        result = await self._media.understand(path)
+        if not result or not str(result.get("text") or "").strip():
+            return CaptureResult(status=STATUS_IGNORED, summary=f"资料未读取：{name}", ts=int(time.time()))
+        source = FileCaptureSource(method="multimodal", path=path, captured_at=int(time.time()))
+        raw = {"title": result.get("title") or name,
+               "body": {"text": result["text"], "items": result.get("items", [])}}
+        return await self._ingest(raw, name, source)
 
     # ─── 内部：文本直读 ───────────────────────────────────
 

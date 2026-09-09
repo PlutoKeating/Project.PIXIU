@@ -22,8 +22,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QJsonDocument>
-#include <QInputDialog>
-#include <QSettings>
 #include <cmath>
 
 namespace pixiu {
@@ -39,7 +37,7 @@ MemoryWriteDialog::MemoryWriteDialog(QWidget *parent, BackendTransport *transpor
     m_scope = new QComboBox(this);
     m_scope->setObjectName(QStringLiteral("writeScope"));
     populateMemoryScopes(m_scope, false, true);
-    m_image = new QPushButton(tr("用多模态模型理解图片（PNG/JPEG，≤2 MB）"), this);
+    m_image = new QPushButton(tr("导入图片"), this);
     m_image->setObjectName("importBillImage");
     m_items = new QTableWidget(0, 4, this);
     m_items->setObjectName("billItems");
@@ -73,43 +71,29 @@ MemoryWriteDialog::MemoryWriteDialog(QWidget *parent, BackendTransport *transpor
             m_status->setText(tr("请连接助手服务并配置支持图片输入的模型。")); return;
         }
         m_ocrBusy = true; updateForm();
-        m_status->setText(tr("正在读取已配置模型…"));
+        m_status->setText(tr("正在读取图片…"));
         auto request = m_runtimeRequest;
-        auto url = request.url(); url.setPath("/api/config/models"); url.setQuery(QString());
+        auto url = request.url(); url.setPath("/api/memory/input-capabilities"); url.setQuery(QString());
         request.setUrl(url); request.setTransferTimeout(10000);
         request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
         auto *modelsReply = network->get(request);
         connect(modelsReply, &QNetworkReply::finished, this, [this, network, modelsReply]() {
             const auto data = modelsReply->readAll();
             const bool ok = modelsReply->error() == QNetworkReply::NoError
-                && modelsReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200;
+                && modelsReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200
+                && QJsonDocument::fromJson(data).object().value("images").toBool();
             modelsReply->deleteLater();
-            QStringList labels, ids;
-            if (ok) for (const auto &value : QJsonDocument::fromJson(data).array()) {
-                const auto model = value.toObject();
-                if (model.value("provider").toString() == "kylin-genai") continue;
-                labels.append(model.value("name").toString() + " · " + model.value("model").toString());
-                ids.append(model.value("id").toString());
-            }
-            if (ids.isEmpty()) {
+            if (!ok) {
                 m_ocrBusy = false; updateForm();
-                m_status->setText(tr("没有可用的图片理解模型。请在模型设置中添加支持图片输入的兼容模型；麒麟云端文本适配不支持图片。")); return;
+                m_status->setText(tr("当前图片读取不可用，详情见设置中的资料读取状态。")); return;
             }
-            QSettings settings;
-            const int preferred = qMax(0, ids.indexOf(settings.value("pixiu/imageModelId").toString()));
-            bool chosen = false;
-            const QString label = QInputDialog::getItem(this, tr("选择图片理解模型"),
-                tr("图片将发送给所选模型服务，生成待核对的草稿。请选择支持图片输入的模型："), labels, preferred, false, &chosen);
-            if (!chosen) { m_ocrBusy = false; updateForm(); m_status->setText(tr("已取消图片理解，尚未保存。")); return; }
-            const auto modelId = ids.value(labels.indexOf(label));
-            settings.setValue("pixiu/imageModelId", modelId);
             auto request = m_runtimeRequest; auto url = request.url();
             url.setPath("/api/memory/image-draft"); url.setQuery(QString()); request.setUrl(url);
             request.setTransferTimeout(100000);
             request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
             m_status->setText(tr("正在理解图片。草稿不会自动保存，请稍候…"));
-            const QJsonObject payload{{"model_id", modelId}, {"image_base64", m_originalImage.value("base64")}};
+            const QJsonObject payload{{"image_base64", m_originalImage.value("base64")}};
             auto *reply = network->post(request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
             connect(reply, &QNetworkReply::finished, this, [this, reply]() {
                 const auto result = QJsonDocument::fromJson(reply->readAll()).object();

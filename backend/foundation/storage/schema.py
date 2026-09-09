@@ -10,7 +10,15 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 13
+SCHEMA_VERSION = 14
+
+DOCUMENT_INPUTS_DDL = """
+CREATE TABLE IF NOT EXISTS document_inputs (
+    id TEXT PRIMARY KEY,
+    payload TEXT NOT NULL,
+    expires_at INTEGER NOT NULL
+)
+"""
 
 # monitor_config 配置 KV 表（监视服务配置，单行 key="main"）。
 # 独立常量供 monitor/config_store.py 复用，避免 DDL 双份漂移。
@@ -325,6 +333,7 @@ DDL_STATEMENTS: list[str] = [
     # ─── monitor_log (监视活动日志) ────────────────────────
     MONITOR_LOG_DDL,
     MONITOR_LOG_INDEX_DDL,
+    DOCUMENT_INPUTS_DDL,
 ]
 
 

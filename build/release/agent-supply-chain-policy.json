@@ -132,7 +132,10 @@
     "frontend/CMakeLists.txt",
     "build/release/agent-host/frontend-sources.json",
     "build/release/agent-host/export-frontend.py",
-    "build/release/scripts/source_checkout.py"
+    "build/release/scripts/source_checkout.py",
+    "frontend/src/services/MediaInputClient.h",
+    "frontend/src/services/MediaInputClient.cpp",
+    "frontend/host/patches/0027-automatic-attachments.patch"
   ],
   "runtime_adaptation_inputs": [
     "build/release/agent-runtime/build-runtime-wheelhouse.sh",

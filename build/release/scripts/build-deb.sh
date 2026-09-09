@@ -186,6 +186,8 @@ BK="${STAGE}/usr/lib/pixiu/backend"
 mkdir -p "${BK}"
 cp -a "${PIXIU_ROOT}/backend/engine" "${BK}/"
 cp -a "${PIXIU_ROOT}/backend/foundation" "${BK}/"
+mkdir -p "${BK}/agent"
+cp -a "${PIXIU_ROOT}/backend/agent/mcp" "${PIXIU_ROOT}/backend/agent/dreaming" "${BK}/agent/"
 if [ -d "${PIXIU_ROOT}/backend/scripts" ]; then
     cp -a "${PIXIU_ROOT}/backend/scripts" "${BK}/"
 fi

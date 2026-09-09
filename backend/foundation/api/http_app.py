@@ -813,6 +813,12 @@ async def memory_query(
     return atom.model_dump(mode="json")
 
 
+@app.get("/agent/input-capabilities", tags=["Agent"])
+async def agent_input_capabilities():
+    from ..agent_media import AgentMediaClient
+    return await AgentMediaClient().capabilities()
+
+
 @app.get("/agent/settings", tags=["Agent"])
 async def agent_settings(preferences=Depends(get_preference_repo)):
     return (await load_settings(preferences)).model_dump()
@@ -1439,3 +1445,7 @@ if __name__ == "__main__":
     from ..core.config import settings
 
     uvicorn.run(app, host=settings.api_host, port=settings.api_port)
+
+# Document adapters remain separate from memory business endpoints.
+from .documents import router as document_router
+app.include_router(document_router)

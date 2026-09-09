@@ -108,3 +108,5 @@ for relative in ("scripts/agent_runtime_install.sh", "scripts/agent_runtime_inst
         raise SystemExit(f"expected upstream bootstrap file is missing: {relative}")
     candidate.unlink()
 PY
+
+patch -d "${target_source}" -p1 --forward --batch < "${repo_root}/frontend/host/patches/0027-automatic-attachments.patch"

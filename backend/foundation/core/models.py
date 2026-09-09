@@ -122,7 +122,7 @@ class FileCaptureSource(BaseModel):
     """Private capture metadata, never part of normalized knowledge content."""
 
     kind: Literal["directory"] = "directory"
-    method: Literal["text", "ocr"]
+    method: Literal["text", "ocr", "multimodal"]
     path: str = Field(min_length=2, max_length=4096)
     captured_at: int = Field(ge=0)
 

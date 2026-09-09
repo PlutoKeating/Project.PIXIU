@@ -64,6 +64,7 @@ public:
     void reviewConflict(const QString &id);
     void resolveConflict(const QString &id, const QJsonObject &payload);
     void flowContexts(const QString &scope);
+    void inputCapabilities();
     void agentMemorySettings();
     void saveAgentMemorySettings(const QJsonObject &payload);
 
@@ -73,6 +74,7 @@ public:
     QString baseUrl() const override;
 
 signals:
+    void inputCapabilitiesResult(const QJsonObject &capabilities);
     void conflictReviewResult(const QJsonObject &review);
     void conflictResolved(const QJsonObject &result);
     void flowContextsResult(const QJsonObject &contexts);

@@ -22,6 +22,15 @@ namespace pixiu {
 PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     : QWidget(parent), m_transport(transport ? transport : new HttpBackendTransport(this))
 {
+    auto *inputStatus = new QLabel(tr("正在检查图片和扫描 PDF 读取状态…"), this);
+    inputStatus->setObjectName("mediaInputStatus"); inputStatus->setWordWrap(true);
+    auto *mediaHttp = new HttpBackendTransport(this);
+    connect(mediaHttp, &HttpBackendTransport::inputCapabilitiesResult, this, [inputStatus](const QJsonObject &result) {
+        inputStatus->setText(result.value("message").toString());
+    });
+    auto *mediaTimer = new QTimer(this); mediaTimer->setInterval(15000);
+    connect(mediaTimer, &QTimer::timeout, this, [this, mediaHttp] { if (isVisible()) mediaHttp->inputCapabilities(); });
+    mediaTimer->start(); mediaHttp->inputCapabilities();
     m_refreshTimer = new QTimer(this);
     m_refreshTimer->setSingleShot(true);
     m_refreshTimer->setInterval(500);
@@ -29,6 +38,7 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
         if (m_refreshNeeded && isVisible() && m_pending == Pending::None && m_offset == 0) loadLogs(0);
     });
     auto *layout = new QVBoxLayout(this);
+    layout->addWidget(inputStatus);
     m_enabled = new QCheckBox(tr("启用自动采集（关闭后暂停采集，不删除已有记忆）"), this);
     m_enabled->setObjectName(QStringLiteral("privacyEnabled"));
     m_directory = new QCheckBox(tr("目录文件变化"), this);
@@ -41,7 +51,7 @@ PrivacyPage::PrivacyPage(QWidget *parent, BackendTransport *transport)
     auto *unavailable = new QLabel(tr("剪贴板与自动截图：当前版本未实现采集。保存时保留已有配置字段，不将其宣称为可用能力。"), this);
     unavailable->setWordWrap(true);
     layout->addWidget(unavailable);
-    layout->addWidget(new QLabel(tr("监视所选目录的直接子文件，不包含子目录。文本支持 TXT、Markdown、CSV（不超过 1 MB）；图片识别依赖可用的 OCR 服务。每行填写一个授权目录。"), this));
+    layout->addWidget(new QLabel(tr("监视所选目录的直接子文件，不包含子目录。文本支持 TXT、Markdown、CSV（不超过 1 MB）；图片和扫描 PDF 自动使用当前聊天模型；不可用时不读取。每行填写一个授权目录。"), this));
     m_directories = new QPlainTextEdit(this);
     m_directories->setObjectName(QStringLiteral("privacyDirectories"));
     m_directories->setAccessibleName(tr("监视目录列表"));

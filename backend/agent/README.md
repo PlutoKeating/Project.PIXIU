@@ -125,3 +125,5 @@ Agent 自有源码统一位于 `backend/agent/`，仓库根目录不再保留 `i
 `build/release/out/stage/` 下的对应目录是打包暂存产物，不作为源码交付。
 文档解码归 `backend/foundation/documents/`，MCP 与 dreaming 归 `backend/agent/` 内部子模块，
 不重新引入根级集成目录，也不在 build 内维护产品实现。
+
+`mcp/` 使用 SDK 1.26.0，通过公共文档 API 提供任务授权范围内的真实 stdio 工具；`dreaming/session.py` 提供固定私人范围的检索、来源校验、计划及获准创建，向量更新沿既有 `/memory/write` 进行。尚未自动注册到正式聊天/目录模型循环，不能按这些模块的单测宣称 dreaming 已交付。构建包携带这两个模块，离线依赖锁仍需更新验证。

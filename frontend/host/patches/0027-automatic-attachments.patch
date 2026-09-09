@@ -1,0 +1,94 @@
+--- a/include/ui/chatwidget.h
++++ b/include/ui/chatwidget.h
+@@ -4,1 +4,2 @@
+ #include <QWidget>
++#include <QJsonArray>
+@@ -207,4 +207,6 @@
+     QString m_currentModel;
+     QStringList m_pendingAttachmentPaths;
++    QJsonArray m_preparedAttachmentParts;
++    bool m_preparingAttachments = false;
+     QMap<QString, QString> m_pendingFallbackReplies;
+     QMap<QString, QString> m_streamedReplies;
+--- a/src/ui/chatwidget.cpp
++++ b/src/ui/chatwidget.cpp
+@@ -1,3 +1,7 @@
+ #include "ui/chatwidget.h"
++#include "services/MediaInputClient.h"
++#include <QFileDialog>
++#include <QFileInfo>
++#include <QNetworkReply>
+ 
+ #include "services/apiservice.h"
+@@ -293,4 +297,10 @@
+         if (index >= 0) {
+             ConfigService::instance().setSelectedModelId(m_modelCombo->itemData(index).toString());
++            auto request = ApiService::instance().sessionEvidenceRequest(); auto url = request.url();
++            url.setPath("/api/model/active"); url.setQuery(QString()); request.setUrl(url);
++            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
++            auto *network = new QNetworkAccessManager(this);
++            auto *reply = network->post(request, QJsonDocument(QJsonObject{{"id", m_modelCombo->itemData(index).toString()}}).toJson());
++            connect(reply, &QNetworkReply::finished, network, [reply, network] { reply->deleteLater(); network->deleteLater(); });
+         }
+     });
+@@ -331,4 +341,14 @@
+     chatInput->submit = [this]() { sendMessage(); };
+     composerLayout->addWidget(m_inputEdit, 1);
++    auto *attach = new QPushButton(tr("添加附件"), composerShell);
++    attach->setObjectName("attachDocument");
++    connect(attach, &QPushButton::clicked, this, [this, attach] {
++        if (m_preparingAttachments) return;
++        const auto paths = QFileDialog::getOpenFileNames(this, tr("添加资料"), {}, tr("资料 (*.png *.jpg *.jpeg *.pdf)"));
++        if (paths.isEmpty()) return;
++        m_pendingAttachmentPaths = paths;
++        attach->setText(tr("已附加 %1 份").arg(paths.size()));
++    });
++    composerLayout->addWidget(attach);
+ 
+     m_sendButton = new QPushButton(QStringLiteral("发送"), composerShell);
+@@ -370,4 +390,5 @@
+         QStringLiteral("anthropic"),
+         QStringLiteral("openai"),
++        QStringLiteral("custom"), QStringLiteral("ollama"),
+     };
+     for (const QString &allowedProvider : providerPriority) {
+@@ -565,4 +586,25 @@
+ void ChatWidget::sendMessage()
+ {
++    if (m_preparingAttachments) return;
++    if (!m_pendingAttachmentPaths.isEmpty()) {
++        m_preparingAttachments = true;
++        m_sendButton->setText(tr("读取附件…"));
++        auto *reader = new pixiu::MediaInputClient(this);
++        const auto paths = m_pendingAttachmentPaths;
++        connect(reader, &pixiu::MediaInputClient::failed, this, [this, reader](const QString &message) {
++            m_preparingAttachments = false; m_sendButton->setText(tr("发送"));
++            addMessageBubble("assistant", message); reader->deleteLater();
++        });
++        connect(reader, &pixiu::MediaInputClient::prepared, this, [this, reader, paths](const QJsonArray &parts) {
++            m_preparingAttachments = false; m_sendButton->setText(tr("发送"));
++            m_preparedAttachmentParts = parts; m_pendingAttachmentPaths.clear();
++            if (auto *button = findChild<QPushButton *>("attachDocument")) button->setText(tr("添加附件"));
++            if (m_inputEdit->toPlainText().trimmed().isEmpty()) m_inputEdit->setPlainText(tr("请阅读并整理这些资料。"));
++            for (const auto &path : paths) m_inputEdit->append(tr("[附件：%1]").arg(QFileInfo(path).fileName()));
++            reader->deleteLater(); sendMessage();
++        });
++        reader->prepare(ApiService::instance().sessionEvidenceRequest(), paths);
++        return;
++    }
+     QString text = m_inputEdit->toPlainText().trimmed();
+     if (text.isEmpty()) {
+@@ -594,5 +636,12 @@
+     scrollToBottom(true);
+ 
+-    const QJsonArray messages = buildChatMessages(SessionService::instance().getSessionMessages(m_currentSessionId));
++    QJsonArray messages = buildChatMessages(SessionService::instance().getSessionMessages(m_currentSessionId));
++    if (!m_preparedAttachmentParts.isEmpty() && !messages.isEmpty()) {
++        auto last = messages.last().toObject();
++        QJsonArray content{QJsonObject{{"type", "text"}, {"text", text}}};
++        for (const auto &part : m_preparedAttachmentParts) content.append(part);
++        last.insert("content", content); messages.replace(messages.size()-1, last);
++        m_preparedAttachmentParts = {};
++    }
+     m_pendingFallbackReplies.insert(m_currentSessionId, localAssistantReply(text));
+     updateRequestButtons();

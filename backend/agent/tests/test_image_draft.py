@@ -8,7 +8,8 @@ from backend.agent.runtime.image_draft import DraftError, image_draft, parse_dra
 
 
 @pytest.mark.asyncio
-async def test_image_understanding_uses_configured_model_and_returns_only_draft():
+async def test_image_understanding_uses_configured_model_and_returns_only_draft(monkeypatch):
+    monkeypatch.setattr("backend.agent.runtime.image_draft.input_capabilities", lambda model: {"images": True})
     calls = []
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
@@ -41,6 +42,6 @@ def test_uncertain_amount_is_not_invented():
 
 @pytest.mark.asyncio
 async def test_text_only_bridge_is_not_used_as_image_model():
-    with pytest.raises(DraftError, match="仅支持文本"):
+    with pytest.raises(DraftError, match="不支持图片读取"):
         await image_draft([{"id": "text", "provider": "kylin-genai"}],
                           {"model_id": "text", "image_base64": "iVBORw0KGgo="})

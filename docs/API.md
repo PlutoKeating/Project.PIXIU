@@ -1308,3 +1308,10 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 图片知识：Runtime `POST /api/memory/image-draft` 接收已配置的 model_id 和 image_base64，通过多模态模型返回 title/text/items 草稿，不运行工具或写入记忆。用户确认后通过 `/memory/write` 的 MANUAL_CONFIG raw.body.items 保存；raw.original_image 保存原图。`/memory/ocr` 仅保留文字识别辅助接口，不用于正式图片知识提取。
 
 账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
+
+
+### 文档暂存 API（2026-09-10，schema v14）
+
+`POST /documents` 接收 filename/file_base64（最多 30 MiB 原始文件），返回随机 document_id、源文件 SHA-256 version、带位置的内容块清单、warnings 和 decoding_complete。此入口不作为模型工具开放，不接受文件路径。`GET /documents/{id}` 返回清单；`GET /documents/{id}/read?cursor=0` 返回一个 block 与 next_cursor，图片保留 MIME/base64；越界返回 422，失效引用返回 404。`DELETE /documents/{id}` 撤销并删除暂存内容。引用有效期 24 小时，属于读取凭据，不应写入日志或跨任务传播。读取完成不等于模型理解或已写入知识。
+
+当前自动媒体入口：Runtime `/api/memory/image-draft` 跟随当前活动模型，旧 model_id 参数不再决定模型；`GET /api/memory/input-capabilities` 返回 images/scanned_pdf/message，`POST /api/model/active` 由宿主同步当前模型。后端 `GET /agent/input-capabilities` 供设置页面读取状态。统一文档 API 已实现，旧附件入口替换与 dreaming 启动器仍在接线中。

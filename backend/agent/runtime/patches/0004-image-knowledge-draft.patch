@@ -1,7 +1,40 @@
 --- a/gateway/platforms/api_server.py
 +++ b/gateway/platforms/api_server.py
-@@ -2124,2 +2124,15 @@
+@@ -2124,2 +2124,48 @@
          return web.json_response(self._combined_model_entries())
++
++    async def _handle_pixiu_input_capabilities(self, request: "web.Request") -> "web.Response":
++        auth_err = self._check_auth(request)
++        if auth_err:
++            return auth_err
++        from gateway.pixiu_image_draft import input_capabilities
++        models = self._combined_model_entries()
++        return web.json_response(await asyncio.to_thread(input_capabilities, models[0] if models else None))
++
++    async def _handle_pixiu_active_model(self, request: "web.Request") -> "web.Response":
++        auth_err = self._check_auth(request)
++        if auth_err:
++            return auth_err
++        body = await request.json()
++        models = self._combined_model_entries()
++        selected = next((row for row in models if row.get("id") == body.get("id")), None)
++        if selected is None:
++            return web.json_response({"error": {"message": "Model unavailable"}}, status=404)
++        self._sync_models_to_config([selected] + [row for row in models if row is not selected])
++        return web.json_response({"status": "active"})
++
++    async def _handle_pixiu_attachment(self, request: "web.Request") -> "web.Response":
++        auth_err = self._check_auth(request)
++        if auth_err:
++            return auth_err
++        from gateway.pixiu_image_draft import prepare_attachment, DraftError
++        try:
++            payload = await request.json()
++            models = self._combined_model_entries()
++            result = await asyncio.to_thread(prepare_attachment, models[0] if models else None, payload)
++            return web.json_response(result)
++        except (DraftError, ValueError, TypeError) as exc:
++            return web.json_response({"error": {"message": str(exc)}}, status=422)
 +
 +    async def _handle_pixiu_image_draft(self, request: "web.Request") -> "web.Response":
 +        auth_err = self._check_auth(request)
@@ -16,7 +49,10 @@
 +        except (DraftError, ValueError, TypeError) as exc:
 +            return web.json_response({"error": {"message": str(exc)}}, status=422)
  
-@@ -5521,2 +5534,3 @@
+@@ -5521,2 +5554,6 @@
              self._app.router.add_get("/api/config/models", self._handle_list_config_models)
 +            self._app.router.add_post("/api/memory/image-draft", self._handle_pixiu_image_draft)
++            self._app.router.add_post("/api/memory/attachment", self._handle_pixiu_attachment)
++            self._app.router.add_get("/api/memory/input-capabilities", self._handle_pixiu_input_capabilities)
++            self._app.router.add_post("/api/model/active", self._handle_pixiu_active_model)
              self._app.router.add_put("/api/config/models", self._handle_replace_config_models)

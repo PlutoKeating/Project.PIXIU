@@ -8,6 +8,9 @@ import asyncio
 import base64
 import json
 import math
+from pathlib import Path
+import subprocess
+import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -45,25 +48,56 @@ def parse_draft(content: str) -> dict:
             "text": str(value.get("text") or "请核对图片与明细后保存。")[:16000], "items": items}
 
 
-def _extract(model: dict, payload: dict) -> dict:
-    image = str(payload.get("image_base64") or "")
+def prepare_attachment(model: dict | None, payload: dict) -> dict:
+    encoded = str(payload.get("file_base64") or payload.get("image_base64") or "")
     try:
-        data = base64.b64decode(image, validate=True)
+        data = base64.b64decode(encoded, validate=True)
     except ValueError as exc:
-        raise DraftError("图片编码无效。") from exc
-    mime = "image/png" if data.startswith(b"\x89PNG\r\n\x1a\n") else "image/jpeg" if data.startswith(b"\xff\xd8\xff") else ""
-    if not mime or len(data) > 2 * 1024 * 1024:
-        raise DraftError("请选择 2 MB 以内的 PNG 或 JPEG 图片。")
-    if str(model.get("provider") or "") == "kylin-genai":
-        raise DraftError("当前麒麟云端适配仅支持文本，请选择支持图片输入的模型。")
+        raise DraftError("无法读取附件。") from exc
+    if not data or len(data) > 6 * 1024 * 1024:
+        raise DraftError("附件为空或过大，未读取。")
+    images = []
+    if data.startswith(b"%PDF-"):
+        with tempfile.TemporaryDirectory(prefix="pixiu-document-") as directory:
+            source = Path(directory) / "input.pdf"; source.write_bytes(data)
+            try:
+                text = subprocess.run(["pdftotext", "-layout", str(source), "-"], capture_output=True,
+                                      timeout=30, check=True).stdout.decode("utf-8", errors="replace").strip()
+                if len(text) >= 40:
+                    return {"content": [{"type": "text", "text": text[:100000]}], "kind": "text"}
+                if not input_capabilities(model)["images"]:
+                    raise DraftError("当前模型不支持扫描 PDF 读取，此功能未启用。")
+                info = subprocess.run(["pdfinfo", str(source)], capture_output=True, timeout=10, check=True).stdout.decode()
+                import re
+                pages = re.search(r"^Pages:\s*(\d+)", info, re.MULTILINE)
+                if not pages or int(pages[1]) > 20:
+                    raise DraftError("文档页数超过当前读取范围，未导入。")
+                subprocess.run(["pdftoppm", "-scale-to", "1600", "-png", str(source), str(Path(directory) / "page")],
+                               capture_output=True, timeout=60, check=True)
+                images = [base64.b64encode(path.read_bytes()).decode() for path in sorted(Path(directory).glob("page-*.png"))]
+            except (OSError, subprocess.SubprocessError) as exc:
+                raise DraftError("文档读取服务暂不可用。") from exc
+        mime = "image/png"
+    else:
+        if not input_capabilities(model)["images"]:
+            raise DraftError("当前模型不支持图片读取，此功能未启用。")
+        mime = "image/png" if data.startswith(b"\x89PNG\r\n\x1a\n") else "image/jpeg" if data.startswith(b"\xff\xd8\xff") else ""
+        if not mime:
+            raise DraftError("此附件格式暂不支持。")
+        images = [encoded]
+    return {"content": [{"type": "image_url", "image_url": {"url": f"data:{mime};base64,{image}"}} for image in images],
+            "kind": "image"}
+
+
+def _extract(model: dict, payload: dict) -> dict:
+    attachment = prepare_attachment(model, payload)
     base = str(model.get("baseUrl") or "").rstrip("/")
     url = urllib.parse.urlsplit(base)
     if url.scheme not in {"http", "https"} or not url.netloc or url.username or url.query or url.fragment:
         raise DraftError("请在模型设置中配置支持图片输入的兼容接口地址。")
     request_body = {"model": str(model.get("model") or ""), "stream": False,
-                    "messages": [{"role": "user", "content": [
-                        {"type": "text", "text": PROMPT},
-                        {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{image}"}}]}]}
+                    "messages": [{"role": "user", "content": [{"type": "text", "text": PROMPT}] + attachment["content"]}]}
+
     request = urllib.request.Request(base + "/chat/completions", data=json.dumps(request_body).encode(),
         headers={"Content-Type": "application/json", "Accept": "application/json"})
     key = str(model.get("apiKey") or "")
@@ -83,9 +117,21 @@ def _extract(model: dict, payload: dict) -> dict:
     return {**draft, "model": request_body["model"]}
 
 
+def input_capabilities(model: dict | None) -> dict:
+    enabled = False
+    if model and model.get("provider") != "kylin-genai" and "127.0.0.1:8767" not in str(model.get("baseUrl", "")):
+        try:
+            from agent.models_dev import get_model_capabilities
+            capabilities = get_model_capabilities(str(model.get("provider") or ""), str(model.get("model") or ""))
+            enabled = capabilities is not None and capabilities.supports_vision
+        except Exception:
+            enabled = False
+    return {"images": bool(enabled), "scanned_pdf": bool(enabled),
+            "message": "图片和扫描 PDF 可自动读取。" if enabled else "当前模型暂不支持图片和扫描 PDF 读取，此功能未启用。"}
+
+
 async def image_draft(models: list[dict], payload: dict) -> dict:
-    model_id = str(payload.get("model_id") or "")
-    model = next((row for row in models if row.get("id") == model_id), None)
+    model = models[0] if models else None
     if model is None:
-        raise DraftError("请先选择已配置的图片理解模型。")
+        raise DraftError("当前资料读取不可用。")
     return await asyncio.to_thread(_extract, model, payload)

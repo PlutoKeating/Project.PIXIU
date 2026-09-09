@@ -40,6 +40,7 @@ EXPECTED_TABLES = {
     "monitor_log",
     "vector_id_map",
     "agent_ingest_receipts",
+    "document_inputs",
 }
 
 

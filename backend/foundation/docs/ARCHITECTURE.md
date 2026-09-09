@@ -480,3 +480,8 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 会话来源使用既有 memory_contexts 持久化 MEMORY_SOURCES 引用事件，保存知识/证据 ID 和轮次，不保存上下文正文。只有 consumed 的引用返回给桌面；查询时重新核对当前授权、有效知识和证据敏感度。
 
 账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
+
+
+### 文档接入（2026-09-10）
+
+`documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。PDF 使用发布画像中的 poppler-utils；标准 Office XML 解码使用 Python 标准库，不执行宏、公式或外链。旧 Office 转换及完整 dreaming 启动器尚待接线。

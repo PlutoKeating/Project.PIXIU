@@ -18,7 +18,7 @@
   含集成期扩展：`list_active` / `get_by_key` / `find_entity_by_name` / `list_relations`）、
   `config.py`（`auto`/`kylin`/`portable` 能力选择）、`idgen.py`（9 个 ULID 生成器）、`logger.py`
   （request_id + 敏感过滤）
-- `storage/`：`schema.py`（20 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v13 版本化迁移，含 evidence provenance、Agent 幂等 receipt、恢复审计与独立文件采集来源列）、
+- `storage/`：`schema.py`（20 张基础表 + FTS5/向量表惰性创建）、`migrations.py`（v14 版本化迁移，含 evidence provenance、Agent 幂等 receipt、恢复审计与独立文件采集来源列）、
   `repository.py`（5 个 SQLite 仓储，含 evidence/entity 回填、偏好版本化、冲突读写修复）
 - `api/`：全部 REST 契约端点真实接入（含 `/sync/*`），request_id 中间件 + API.md §5
   统一错误契约（`{error, message, request_id}`），D-Bus 服务（`com.kylin.pixiu.Memory`：
@@ -275,3 +275,5 @@ V11 虚拟机由发现接口报错恢复为彼此发现；`test_discovery_pairab
 这是同宿主虚拟机开发验证；正式包重建及发布门仍待完成，不能替代最终设备验收。
 
 2026-09-10：完成阶段查看/保留、聊天遗忘桌面交接、人工冲突同步接线与连续应用统计。相关 API、冲突、同步、行为测试 137 项通过；不将此结果计为多设备麒麟真机验收。
+
+2026-09-10：新增 documents 解码、登记及分块 API，schema v14 增加私有暂存表。解码/登记/schema 39 项、API 1 项通过；后端全套 933 项通过。目录 dreaming 尚未替换现有采集入口。

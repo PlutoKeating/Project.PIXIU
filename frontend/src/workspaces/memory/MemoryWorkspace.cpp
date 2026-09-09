@@ -44,7 +44,7 @@ QString captureDetails(const QJsonObject &evidence, bool &valid)
     const QRegularExpression privateScope(QStringLiteral("\\Auser:[A-Za-z0-9._-]+\\z"));
     const QString type = evidence.value("source_type").toString();
     if (!value.isObject() || source.size() != 4 || source.value("kind") != "directory"
-        || (method != "text" && method != "ocr")
+        || (method != "text" && method != "ocr" && method != "multimodal")
         || !path.startsWith('/') || path.size() < 2 || path.size() > 8192
         || path.toUcs4().size() > 4096 || path.contains(QChar(0))
         || !source.value("captured_at").isDouble() || !std::isfinite(seconds)
@@ -56,7 +56,7 @@ QString captureDetails(const QJsonObject &evidence, bool &valid)
     valid = true;
     const QString quoted = QString::fromUtf8(QJsonDocument(QJsonArray{path}).toJson(QJsonDocument::Compact));
     return MemoryWorkspace::tr("文件采集方式：%1\n采集时路径：%2\n采集记录时间（UTC）：%3\n仅记录采集时来源，不保证原文件仍存在或内容未变化。")
-        .arg(method == "text" ? MemoryWorkspace::tr("文本读取") : MemoryWorkspace::tr("图片 OCR"),
+        .arg(method == "text" ? MemoryWorkspace::tr("文本读取") : (method == "multimodal" ? MemoryWorkspace::tr("图片/文档理解") : MemoryWorkspace::tr("历史 OCR")),
              quoted.mid(1, quoted.size() - 2),
              QDateTime::fromSecsSinceEpoch(static_cast<qint64>(seconds), Qt::UTC).toString(Qt::ISODate));
 }
@@ -204,7 +204,7 @@ MemoryWorkspace::MemoryWorkspace(QWidget *parent, BackendTransport *transport)
     });
     connect(keepStage, &QPushButton::clicked, stages, [=]() {
         auto *row = stageItems->currentItem();
-        if (!row || QMessageBox::question(stages, tr("保留阶段记忆"), tr("将已查看的内容保存为长期记忆？")) != QMessageBox::Yes) return;
+        if (!row) return;
         const auto entry = row->data(Qt::UserRole).toJsonObject();
         keepStage->setEnabled(false);
         stageHttp->promoteMemory({{"source", entry.value("tier")}, {"scope", entry.value("scope")},

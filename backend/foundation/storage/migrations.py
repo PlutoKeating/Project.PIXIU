@@ -260,6 +260,11 @@ def _add_file_capture_source(conn: sqlite3.Connection) -> None:
         conn.execute("ALTER TABLE evidence ADD COLUMN capture_source TEXT NOT NULL DEFAULT '{}'")
 
 
+def _add_document_inputs(conn: sqlite3.Connection) -> None:
+    from .schema import DOCUMENT_INPUTS_DDL
+    conn.execute(DOCUMENT_INPUTS_DDL)
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -274,6 +279,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (11, "agent_ingest_receipts", _add_agent_ingest_receipts),
     (12, "agent_retry_audit", _add_agent_retry_audit),
     (13, "file_capture_source", _add_file_capture_source),
+    (14, "document_inputs", _add_document_inputs),
 ]
 
 

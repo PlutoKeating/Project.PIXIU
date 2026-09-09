@@ -238,5 +238,13 @@
   {
     "source": "frontend/CMakeLists.txt",
     "destination": "pixiu/frontend/CMakeLists.txt"
+  },
+  {
+    "source": "frontend/src/services/MediaInputClient.h",
+    "destination": "pixiu/frontend/src/services/MediaInputClient.h"
+  },
+  {
+    "source": "frontend/src/services/MediaInputClient.cpp",
+    "destination": "pixiu/frontend/src/services/MediaInputClient.cpp"
   }
 ]

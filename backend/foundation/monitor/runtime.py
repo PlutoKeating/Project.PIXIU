@@ -48,7 +48,6 @@ async def create_monitor_runtime(
         get_db,
         get_ingestion_service,
         get_knowledge_service,
-        get_ocr_service,
         get_security_service,
     )
 
@@ -56,13 +55,14 @@ async def create_monitor_runtime(
     ingestion = await get_ingestion_service(conn)
     knowledge = await get_knowledge_service(conn)
     security = await get_security_service(conn)
-    ocr_adapter = ocr if ocr is not None else await get_ocr_service()
+    from ..agent_media import AgentMediaClient
+    media = AgentMediaClient()
 
     bridge = IngestBridge(
         ingestion,
         knowledge,
         security=security,
-        ocr=ocr_adapter,
+        media=media,
         scope=scope,
     )
     watcher = DirectoryWatcher(

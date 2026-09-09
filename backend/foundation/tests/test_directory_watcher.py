@@ -47,16 +47,16 @@ WATCHED_DIR_ENABLED = {
 }
 
 
-class FakeOcr:
-    """测试用 OCR 桩：固定返回识别行（生产环境为 engine/kylin ocr adapter）。"""
+class FakeMedia:
+    """测试用模型理解桩：固定返回文档结果。"""
 
     def __init__(self, lines: list[str] | None = None) -> None:
         self.lines = list(lines or [])
         self.calls: list[str] = []
 
-    def recognize(self, image_path, nums: int = 4) -> list[str]:
+    async def understand(self, image_path):
         self.calls.append(str(image_path))
-        return list(self.lines)
+        return {"text": "\n".join(self.lines), "items": []}
 
 
 # ─── Fixtures ─────────────────────────────────────────────
@@ -103,12 +103,12 @@ async def env(tmp_path: Path):
         await db.close()
 
 
-def _bridge(env, *, ocr: FakeOcr | None = None, security: bool = True) -> IngestBridge:
+def _bridge(env, *, media: FakeMedia | None = None, security: bool = True) -> IngestBridge:
     return IngestBridge(
         env.services["ingestion"],
         env.services["knowledge"],
         security=env.services["security"] if security else None,
-        ocr=ocr,
+        media=media,
         scope="user:local",
     )
 
@@ -176,7 +176,7 @@ async def test_ignored_capture_does_not_persist_source(env, case):
         target.write_bytes(b"synthetic fixture")
     bridge = IngestBridge(
         env.services["ingestion"], env.services["knowledge"],
-        ocr=FakeOcr([]) if case == "empty_ocr" else None,
+        media=FakeMedia([]) if case == "empty_ocr" else None,
         max_text_bytes=1 if case == "oversized" else 1024,
     )
     result = await bridge.capture(str(target))
@@ -206,10 +206,10 @@ async def test_detector_failure_does_not_persist_capture_source(env):
 @pytest.mark.asyncio
 async def test_png_ocr_captured_and_ingested(env):
     await env.store.put(_config(env))
-    ocr = FakeOcr(["电费 210 元", "水费 80 元"])
+    ocr = FakeMedia(["电费 210 元", "水费 80 元"])
     events: list[dict] = []
     watcher = DirectoryWatcher(
-        env.store, _bridge(env, ocr=ocr), debounce_ms=200, callbacks=[]
+        env.store, _bridge(env, media=ocr), debounce_ms=200, callbacks=[]
     )
     watcher.register_callback(lambda *a, **kw: events.append(kw))
     watcher.start()
@@ -237,7 +237,7 @@ async def test_png_ocr_captured_and_ingested(env):
         assert evidence.scope == "user:local"
         assert evidence.capture_source is not None
         assert evidence.capture_source.kind == "directory"
-        assert evidence.capture_source.method == "ocr"
+        assert evidence.capture_source.method == "multimodal"
         assert evidence.capture_source.path == str(target)
         assert 0 < evidence.capture_source.captured_at <= event["ts"]
         assert evidence.provenance is None
@@ -436,17 +436,17 @@ async def test_hot_reload_enables_after_put(env):
 async def test_failing_file_does_not_stop_monitoring(env):
     await env.store.put(_config(env))
 
-    class FlakyOcr(FakeOcr):
-        def recognize(self, image_path, nums: int = 4) -> list[str]:
+    class FlakyMedia(FakeMedia):
+        async def understand(self, image_path):
             self.calls.append(str(image_path))
             if "坏图" in str(image_path):
                 raise OSError("broken image")
-            return ["正常识别文本"]
+            return {"text": "正常识别文本", "items": []}
 
     events: list[dict] = []
-    ocr = FlakyOcr()
+    ocr = FlakyMedia()
     watcher = DirectoryWatcher(
-        env.store, _bridge(env, ocr=ocr), debounce_ms=200, callbacks=[]
+        env.store, _bridge(env, media=ocr), debounce_ms=200, callbacks=[]
     )
     watcher.register_callback(lambda *a, **kw: events.append(kw))
     watcher.start()
