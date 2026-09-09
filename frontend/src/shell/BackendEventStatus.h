@@ -21,6 +21,7 @@ private:
     QLabel *m_connection;
     QLabel *m_progress;
     QPushButton *m_reviewForget = nullptr;
+    QPushButton *m_reviewDreaming = nullptr;
     QElapsedTimer m_lastAttention;
 };
 }

@@ -29,13 +29,15 @@ class MemoryProposal(BaseModel):
 
 
 class DreamingSession:
-    def __init__(self, api, *, document_ids, scope, approved=False, active=lambda: True):
+    def __init__(self, api, *, document_ids, scope, approved=False, active=lambda: True, queue_reviews=False):
         if not re.fullmatch(r"user:[A-Za-z0-9_.-]+", scope):
             raise ValueError("Background document creation requires a private scope")
         self.api = api
         self.document_ids = frozenset(document_ids)
         self.scope = scope
         self.approved = approved
+        self.queue_reviews = queue_reviews
+        self.pending_reviews = {}
         self.active = active
         self.manifests = {}
         self.delivered = {}
@@ -126,6 +128,13 @@ class DreamingSession:
             raise ValueError("Unknown plan")
         proposal = self.plans[plan_id]
         if not ((proposal.operation == "create" and self.approved) or plan_id in self.reviewed_plans):
+            if self.queue_reviews and proposal.operation == "update":
+                if plan_id not in self.pending_reviews:
+                    self.pending_reviews[plan_id] = await self.api("POST", "/dreaming/plans", {
+                        "operation": "update", "scope": self.scope, "knowledge_id": proposal.knowledge_id,
+                        "expected_version": proposal._snapshot["version"], "title": proposal.title,
+                        "text": proposal.text, "source_refs": [ref.model_dump() for ref in proposal.source_refs]})
+                return self.pending_reviews[plan_id]
             raise ValueError("This memory plan has not been approved")
         if plan_id in self.results:
             return self.results[plan_id]
@@ -158,6 +167,7 @@ class DreamingSession:
                    for ref in self.plans[plan_id].source_refs}
         complete = (set(self.manifests) == set(self.document_ids) and bool(expected)
                     and expected <= covered and all(doc.get("decoding_complete") for doc in self.manifests.values()))
-        return {"status": "completed" if complete else "incomplete", "summary": summary,
+        return {"status": "awaiting_approval" if self.pending_reviews else "completed" if complete else "incomplete", "summary": summary,
+                "pending_plans": list(self.pending_reviews.values()),
                 "saved_count": len(self.results), "remaining_blocks": len(expected - covered),
                 "warnings": [warning for doc in self.manifests.values() for warning in doc.get("warnings", [])]}

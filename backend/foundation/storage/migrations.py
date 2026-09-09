@@ -265,6 +265,11 @@ def _add_document_inputs(conn: sqlite3.Connection) -> None:
     conn.execute(DOCUMENT_INPUTS_DDL)
 
 
+def _add_dreaming_plans(conn):
+    from .schema import DREAMING_PLANS_DDL
+    conn.execute(DREAMING_PLANS_DDL)
+
+
 MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = [
     (1, "initial_schema", _apply_initial_schema),
     (2, "knowledge_entity_links", _add_knowledge_entities),
@@ -280,6 +285,7 @@ MIGRATIONS: list[tuple[int, str, str | Callable[[sqlite3.Connection], None]]] = 
     (12, "agent_retry_audit", _add_agent_retry_audit),
     (13, "file_capture_source", _add_file_capture_source),
     (14, "document_inputs", _add_document_inputs),
+    (15, "dreaming_plans", _add_dreaming_plans),
 ]
 
 

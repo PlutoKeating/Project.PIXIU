@@ -1323,3 +1323,5 @@ Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，�
 简报、隐私与设备页面的首次自动加载复用既有只读 API；日期切换与数据事件不会提交配置或执行写入，不新增 API、依赖或 schema。
 
 2026-09-10：文档支持的记忆更正沿 `/memory/update`，body 为 content 与 document_sources 时仍执行账单明细更正，保留原始文档依据。修正“不是旧金额，是新金额”的否定金额误匹配。无新依赖或安装路径变化。dreaming 执行器的逐方案宿主审批不等于用户审批 UI 已完成。
+
+2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并仍在实施。

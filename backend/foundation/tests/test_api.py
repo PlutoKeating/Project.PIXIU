@@ -1840,3 +1840,53 @@ def test_document_supported_bill_update_preserves_amounts_and_sources(client):
     current = client.get('/memory/items/' + knowledge, params={'scope': 'user:alice'}).json()
     assert sorted(item['amount'] for item in current['body']['items']) == [186, 210]
     assert current['body']['document_sources'] == sources
+
+
+def test_dreaming_plan_is_reviewed_persistent_and_survives_staging_cleanup(client):
+    import base64
+    identifier = _write_knowledge_id(client, title="原安排", scope="user:alice")
+    doc = client.post('/documents', json={'filename': '安排.txt',
+        'file_base64': base64.b64encode('会议改到周二'.encode()).decode()}).json()
+    request = {'operation': 'update', 'scope': 'user:alice', 'knowledge_id': identifier,
+        'expected_version': 1, 'title': '会议安排', 'text': '会议改到周二',
+        'source_refs': [{'document_id': doc['document_id'], 'version': doc['version'],
+                         'block_id': doc['blocks'][0]['id']}]}
+    proposed = client.post('/dreaming/plans', json=request)
+    assert proposed.status_code == 200, proposed.text
+    plan_id = proposed.json()['plan_id']
+    assert client.get('/memory/items/' + identifier, params={'scope': 'user:alice'}).json()['version'] == 1
+    pending = client.get('/dreaming/plans').json()['plans']
+    assert pending[0]['before']['version'] == 1
+    assert pending[0]['text'] == '会议改到周二'
+    client.delete('/documents/' + doc['document_id'])
+    decision = client.post('/dreaming/plans/' + plan_id + '/decision', json={'approve': True})
+    assert decision.status_code == 200, decision.text
+    replay = client.post('/dreaming/plans/' + plan_id + '/decision', json={'approve': True})
+    assert replay.json() == decision.json()
+    current = client.get('/memory/items/' + identifier, params={'scope': 'user:alice'}).json()
+    assert current['version'] == 2 and current['body']['content'] == '会议改到周二'
+    assert current['body']['document_sources'][0]['block']['text'] == '会议改到周二'
+    assert client.get('/dreaming/plans').json()['plans'] == []
+
+
+def test_dreaming_review_cannot_overwrite_an_intervening_edit(client):
+    import base64
+    identifier = _write_knowledge_id(client, title="日程", scope="user:alice")
+    doc = client.post('/documents', json={'filename': '日程.txt',
+        'file_base64': base64.b64encode(b'new schedule').decode()}).json()
+    request = {'operation': 'update', 'scope': 'user:alice', 'knowledge_id': identifier,
+        'expected_version': 1, 'title': '日程', 'text': 'new schedule',
+        'source_refs': [{'document_id': doc['document_id'], 'version': doc['version'],
+                         'block_id': doc['blocks'][0]['id']}]}
+    assert client.post('/dreaming/plans', json={**request, 'approved': True}).status_code == 400
+    assert client.post('/dreaming/plans', json={**request, 'scope': 'user:bob'}).status_code == 404
+    plan = client.post('/dreaming/plans', json=request).json()['plan_id']
+    changed = client.post('/memory/update', json={'knowledge_id': identifier, 'scope': 'user:alice',
+        'expected_version': 1, 'body': {'content': 'manual change'}, 'idempotency_key': 'manual-during-review'})
+    assert changed.status_code == 200
+    result = client.post('/dreaming/plans/' + plan + '/decision', json={'approve': True})
+    assert result.status_code == 409
+    current = client.get('/memory/items/' + identifier, params={'scope': 'user:alice'}).json()
+    assert current['body']['content'] == 'manual change' and current['version'] == 2
+    assert client.get('/dreaming/plans').json()['plans'][0]['status'] == 'failed'
+    assert client.post('/dreaming/plans/' + plan + '/decision', json={'approve': False}).json()['status'] == 'rejected'

@@ -258,5 +258,13 @@
   {
     "source": "frontend/src/widgets/ContentReveal.h",
     "destination": "pixiu/frontend/src/widgets/ContentReveal.h"
+  },
+  {
+    "source": "frontend/src/widgets/DreamingReviewDialog.h",
+    "destination": "pixiu/frontend/src/widgets/DreamingReviewDialog.h"
+  },
+  {
+    "source": "frontend/src/widgets/DreamingReviewDialog.cpp",
+    "destination": "pixiu/frontend/src/widgets/DreamingReviewDialog.cpp"
   }
 ]

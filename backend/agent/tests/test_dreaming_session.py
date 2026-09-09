@@ -127,3 +127,27 @@ async def test_model_cannot_change_scope_or_approve_its_own_update():
         await session.read_memory("../private")
     with pytest.raises(ValueError):
         session.plan({**prepare(session), "approved": True})
+
+
+@pytest.mark.asyncio
+async def test_unapproved_correction_queues_one_durable_review_without_writing():
+    queued = []
+
+    async def api(method, path, payload):
+        if path.startswith('/memory/items/'):
+            return {'knowledge_id': 'knw_example123', 'scope': 'user:local', 'version': 2,
+                    'title': '安排', 'body': {'content': '旧安排'}}
+        if path == '/dreaming/plans':
+            queued.append(payload)
+            return {'plan_id': 'persisted-review', 'status': 'awaiting_approval'}
+        raise AssertionError('No direct memory writes are allowed before approval')
+
+    session = DreamingSession(api, document_ids=[REFERENCE], scope='user:local',
+                             approved=True, queue_reviews=True)
+    await session.read_memory('knw_example123')
+    plan = session.plan({**prepare(session), 'operation': 'update', 'knowledge_id': 'knw_example123'})
+    result = await session.apply(plan['plan_id'])
+    assert await session.apply(plan['plan_id']) == result
+    assert len(queued) == 1 and queued[0]['expected_version'] == 2
+    report = session.report('模型声称已完成')
+    assert report['status'] == 'awaiting_approval' and report['saved_count'] == 0

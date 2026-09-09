@@ -10,7 +10,17 @@ from __future__ import annotations
 import os
 import sqlite3
 
-SCHEMA_VERSION = 14
+SCHEMA_VERSION = 15
+
+DREAMING_PLANS_DDL = """
+CREATE TABLE IF NOT EXISTS dreaming_plans (
+    id TEXT PRIMARY KEY,
+    payload TEXT NOT NULL,
+    status TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    result TEXT
+)
+"""
 
 DOCUMENT_INPUTS_DDL = """
 CREATE TABLE IF NOT EXISTS document_inputs (
@@ -334,6 +344,7 @@ DDL_STATEMENTS: list[str] = [
     MONITOR_LOG_DDL,
     MONITOR_LOG_INDEX_DDL,
     DOCUMENT_INPUTS_DDL,
+    DREAMING_PLANS_DDL,
 ]
 
 

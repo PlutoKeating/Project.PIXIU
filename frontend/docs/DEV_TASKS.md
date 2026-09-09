@@ -415,3 +415,5 @@ SettingsWorkspace 复用宿主模型配置入口、升级状态机和 InfoDialog
 正式宿主变更位于 0029-stable-message-rendering.patch，准备脚本与供应链输入同步登记。未增加产品运行依赖。`node frontend/tests/test-message-renderer-height.cjs` 执行真实渲染脚本的高度协议回归：旧版在独立正文/视口尺寸检查失败，修复版通过；另检查离线资源契约和正式宿主编译。此验证针对代码路径，不冒充对用户机器短暂现象的录像验收。
 
 2026-09-10（0.1.10 R2）：统一文档图片适配复用已锁定且随包提供的 Pillow，支持 PNG/JPEG/WebP/BMP/TIFF/GIF，包含多页/多帧与方向校正；Office 内嵌位图沿相同路径处理。损坏/不支持的图像显式报告未完整读取，OCR 不参与知识解码。附件选择过滤同步更新，无新增依赖。20 项真实格式/图片内容测试及 3 项 API/MCP 检查通过；真实模型与最终包验收仍待完成。
+
+2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并仍在实施。

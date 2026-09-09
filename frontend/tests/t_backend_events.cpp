@@ -25,7 +25,7 @@ private slots:
         QVERIFY(!label->text().contains("private-file"));
         peer->sendTextMessage(R"({"event":"dreaming_progress","data":{"status":"incomplete","processed_blocks":1,"total_blocks":2,"saved_count":1}})");
         QTRY_VERIFY(label->text().contains(QStringLiteral("尚未完整整理")));
-        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        for (auto *dialog : status.findChildren<QDialog *>()) QVERIFY(!dialog->isVisible());
         peer->close();
         peer->deleteLater();
     }
@@ -58,7 +58,7 @@ private slots:
         QVERIFY(status.findChild<QLabel *>("eventConnection")->text().isEmpty());
         QCOMPARE(attention.count(), 0);
         QCOMPARE(commands.count(), 0);
-        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        for (auto *dialog : status.findChildren<QDialog *>()) QVERIFY(!dialog->isVisible());
         peer->close();
         peer->deleteLater();
     }
@@ -89,7 +89,7 @@ private slots:
         }
         QCOMPARE(attention.count(), 0);
         QCOMPARE(sentCommands.count(), 0);
-        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        for (auto *dialog : status.findChildren<QDialog *>()) QVERIFY(!dialog->isVisible());
         QCOMPARE(changed.count(), states.size());
         peer->close();
         peer->deleteLater();
@@ -114,7 +114,7 @@ private slots:
         QTRY_COMPARE(changed.count(), 23);
         QCOMPARE(attention.count(), 1);
         QVERIFY(attention.first().isEmpty());
-        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        for (auto *dialog : status.findChildren<QDialog *>()) QVERIFY(!dialog->isVisible());
         peer->close();
         peer->deleteLater();
     }
@@ -131,13 +131,13 @@ private slots:
         peer->sendTextMessage(R"({"event":"forget_confirmation","data":{"command":"secret-command","confirmation_token":"secret-token"}})");
         QTRY_VERIFY(!changed.isEmpty());
         QCOMPARE(changed.takeFirst().at(0).toString(), QStringLiteral("forget_confirmation"));
-        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        for (auto *dialog : status.findChildren<QDialog *>()) QVERIFY(!dialog->isVisible());
         auto *review = status.findChild<QPushButton *>("reviewAgentForget");
         QVERIFY(review);
         QVERIFY(review->isHidden());
         peer->sendTextMessage(R"({"event":"forget_requested","data":{"command":"忘记测试记忆","scope":"user:default"}})");
         QTRY_VERIFY(!review->isHidden());
-        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        for (auto *dialog : status.findChildren<QDialog *>()) QVERIFY(!dialog->isVisible());
         QCOMPARE(sentCommands.count(), 0);
         peer->sendTextMessage(R"({"event":"forget_confirmation","data":{}})");
         peer->sendTextMessage(R"({"event":"capture_event","data":{}})");

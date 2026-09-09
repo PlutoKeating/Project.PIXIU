@@ -1,5 +1,6 @@
 #include "BackendEventStatus.h"
 #include "widgets/ContentReveal.h"
+#include "widgets/DreamingReviewDialog.h"
 #include "services/WebSocketClient.h"
 #include <QHBoxLayout>
 #include <QLabel>
@@ -43,6 +44,18 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
         updateVisibility();
         return;
     }
+    auto *reviewDialog = new DreamingReviewDialog(url, this);
+    m_reviewDreaming = new QPushButton(tr("查看整理方案"), this);
+    m_reviewDreaming->setObjectName("reviewDreamingPlans");
+    m_reviewDreaming->hide();
+    layout->addWidget(m_reviewDreaming);
+    connect(m_reviewDreaming, &QPushButton::clicked, this, [reviewDialog]() {
+        reviewDialog->refresh(); reviewDialog->show(); reviewDialog->raise(); reviewDialog->activateWindow();
+    });
+    connect(reviewDialog, &DreamingReviewDialog::pendingChanged, this, [this](int count) {
+        m_reviewDreaming->setVisible(count > 0); updateVisibility();
+    });
+    reviewDialog->refresh();
     auto *reviewForget = new QPushButton(tr("查看遗忘计划"), this);
     m_reviewForget = reviewForget;
     reviewForget->setObjectName("reviewAgentForget");
@@ -63,9 +76,10 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
         updateVisibility();
     });
     auto *client = new WebSocketClient(this);
-    connect(client, &WebSocketClient::connectionStateChanged, this, [this, connection](ConnectionState state) {
+    connect(client, &WebSocketClient::connectionStateChanged, this, [this, connection, reviewDialog](ConnectionState state) {
         if (state == ConnectionState::Connected) {
             connection->clear();
+            reviewDialog->refresh();
             emit dataChanged(QStringLiteral("reconnected"));
         } else if (state == ConnectionState::Connecting) {
             connection->clear();
@@ -74,8 +88,9 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
         }
         updateVisibility();
     });
-    connect(client, &WebSocketClient::eventReceived, this, [this, reviewForget, reportTimer](const QJsonObject &event) {
+    connect(client, &WebSocketClient::eventReceived, this, [this, reviewForget, reportTimer, reviewDialog](const QJsonObject &event) {
         const QString name = event.value("event").toString();
+        if (name == "dreaming_review") { reviewDialog->refresh(); return; }
         if (name == "dreaming_progress") {
             const auto data = event.value("data").toObject();
             const auto status = data.value("status").toString();
@@ -88,6 +103,8 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
                     .arg(total ? qRound(100.0 * processed / total) : 0).arg(saved));
             else if (status == "completed")
                 m_progress->setText(tr("资料整理完成，已保存 %1 条记忆。").arg(saved));
+            else if (status == "awaiting_approval")
+                m_progress->setText(tr("资料整理方案等待审批，已保存 %1 条记忆。").arg(saved));
             else if (status == "incomplete")
                 m_progress->setText(tr("资料尚未完整整理，已保存 %1 条记忆。").arg(saved));
             else return;
@@ -132,6 +149,7 @@ void BackendEventStatus::updateVisibility()
     m_connection->setVisible(!m_connection->text().isEmpty());
     m_progress->setVisible(!m_progress->text().isEmpty());
     setVisible(!m_connection->text().isEmpty() || !m_progress->text().isEmpty()
-               || (m_reviewForget && !m_reviewForget->isHidden()));
+               || (m_reviewForget && !m_reviewForget->isHidden())
+               || (m_reviewDreaming && !m_reviewDreaming->isHidden()));
 }
 }

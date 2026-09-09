@@ -41,6 +41,7 @@ EXPECTED_TABLES = {
     "vector_id_map",
     "agent_ingest_receipts",
     "document_inputs",
+    "dreaming_plans",
 }
 
 

@@ -540,3 +540,5 @@ MemoryWriteDialog 使用当前聊天模型，直接发送 PNG/JPEG 给模型生�
 原渲染器以 documentElement.scrollHeight 回传高度，宿主再增加 2 px，形成视口与控件高度反馈；同时高度变化强制滚底并追加延迟滚动。发送和完成回复又清空重建全部 WebView，字体 block 策略允许加载期隐字。这些路径已分别替换：按 content 实际高度去重回报，携带渲染版本并拒绝过期回报；32 ms 合并流式渲染；以用户跟随状态处理滚动，删除延迟强制滚动；发送/完成就地更新，同会话重复选择不重建；初次加载显示可选中的纯文字，富文本就绪后接替，字体使用 swap。切回生成中的会话会恢复未完成正文与工作卡片。
 
 正式宿主变更位于 0029-stable-message-rendering.patch，准备脚本与供应链输入同步登记。未增加产品运行依赖。`node frontend/tests/test-message-renderer-height.cjs` 执行真实渲染脚本的高度协议回归：旧版在独立正文/视口尺寸检查失败，修复版通过；另检查离线资源契约和正式宿主编译。此验证针对代码路径，不冒充对用户机器短暂现象的录像验收。
+
+2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并仍在实施。

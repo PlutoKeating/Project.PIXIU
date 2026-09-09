@@ -1451,3 +1451,6 @@ if __name__ == "__main__":
 # Document adapters remain separate from memory business endpoints.
 from .documents import router as document_router
 app.include_router(document_router)
+
+from .dreaming import router as dreaming_router
+app.include_router(dreaming_router)

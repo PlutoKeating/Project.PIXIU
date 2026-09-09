@@ -63,7 +63,7 @@ async def revoke_document(document_id: str, db=Depends(get_db)):
 
 class DocumentProgress(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    status: Literal["running", "completed", "incomplete"]
+    status: Literal["running", "completed", "incomplete", "awaiting_approval"]
     processed_blocks: int = Field(ge=0)
     saved_count: int = Field(ge=0)
 
