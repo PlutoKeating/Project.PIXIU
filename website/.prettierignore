@@ -1,0 +1,7 @@
+node_modules
+.vitepress/dist
+.vitepress/cache
+package-lock.json
+playwright-report
+test-results
+public/media

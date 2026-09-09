@@ -1,0 +1,8 @@
+node_modules/
+.vitepress/cache/
+.vitepress/dist/
+.env*
+!.env.example
+playwright-report/
+test-results/
+.wrangler/

@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="canonical" href="https://pixiu.arr2018.dpdns.org/voice-audition.html" />
+    <title>PIXIU · 男声音色选择</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #536176;
+        --blue: #1456b8;
+        --line: #dce3ec;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f4f6f8;
+        color: var(--ink);
+        font:
+          17px/1.6 system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+      }
+      main {
+        max-width: 1160px;
+        margin: 40px auto;
+        padding: 0 24px 160px;
+      }
+      h1 {
+        font-size: clamp(28px, 4vw, 38px);
+        line-height: 1.25;
+        margin: 12px 0;
+      }
+      h2 {
+        font-size: 24px;
+        margin: 0;
+      }
+      p {
+        color: var(--muted);
+      }
+      a {
+        color: var(--blue);
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 11px 18px;
+        background: #fff;
+        color: var(--ink);
+        min-height: 46px;
+      }
+      button.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: white;
+        font-weight: 600;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        background: #e1e5ec;
+        border-color: #e1e5ec;
+        color: #667080;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid #eea321;
+        outline-offset: 4px;
+      }
+      .eyebrow {
+        color: var(--blue);
+        font-weight: 650;
+      }
+      .steps {
+        display: flex;
+        gap: 24px;
+        list-style: none;
+        padding: 0;
+        margin: 28px 0;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+      .steps [aria-current='step'] {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .voice-card {
+        background: white;
+        border: 2px solid transparent;
+        border-radius: 15px;
+        padding: 22px;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .voice-card.chosen {
+        border-color: var(--blue);
+        background: #f8fbff;
+      }
+      .voice-card.removed {
+        background: #e9edf1;
+        border-color: #ccd3db;
+      }
+      .voice-card.removed .voice-info,
+      .voice-card.removed audio {
+        opacity: 0.45;
+      }
+      .voice-card .voice-id {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+        margin: 8px 0 16px;
+      }
+      .voice-card audio {
+        width: 100%;
+        margin: 12px 0;
+      }
+      .pick {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 12px 0 0;
+        font-weight: 600;
+      }
+      .pick input {
+        width: 22px;
+        height: 22px;
+        accent-color: var(--blue);
+      }
+      .toggle {
+        width: 100%;
+        margin-top: 12px;
+      }
+      .badge {
+        font-size: 14px;
+        color: var(--blue);
+      }
+      .bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fffffff5;
+        border-top: 1px solid var(--line);
+        padding: 18px 24px;
+        z-index: 2;
+      }
+      .bar-inner {
+        max-width: 1112px;
+        margin: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+      }
+      .bar p {
+        margin: 0;
+        font-size: 15px;
+      }
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .count {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      details {
+        margin: 28px 0;
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px 22px;
+      }
+      summary {
+        cursor: pointer;
+      }
+      #result {
+        background: white;
+        border-radius: 18px;
+        padding: 32px;
+        border: 1px solid var(--line);
+      }
+      .result-list {
+        list-style: none;
+        margin: 24px 0;
+        padding: 0;
+      }
+      .result-list li {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        padding: 22px 0;
+        border-top: 1px solid var(--line);
+      }
+      .number {
+        font-size: 30px;
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .result-list p {
+        margin: 5px 0;
+        overflow-wrap: anywhere;
+      }
+      .result-name {
+        font-size: 25px;
+        font-weight: 700;
+      }
+      .result-meta {
+        font-size: 15px;
+      }
+      .screen-note {
+        color: var(--muted);
+        font-size: 15px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      @media (max-width: 600px) {
+        main {
+          margin: 24px auto;
+          padding: 0 16px 210px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .bar {
+          padding: 14px 16px;
+        }
+        .bar-inner {
+          align-items: stretch;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .actions button {
+          flex: 1;
+        }
+        .steps {
+          gap: 12px;
+          font-size: 14px;
+        }
+        #result {
+          padding: 22px;
+        }
+        .voice-card {
+          padding: 18px;
+        }
+      }
+      body.final-stage .bar {
+        position: static;
+      }
+      body.final-stage main {
+        padding-bottom: 24px;
+      }
+      @media (max-width: 600px) {
+        body.final-stage .result-list li {
+          padding: 12px 0;
+        }
+        body.final-stage #result {
+          padding: 18px;
+        }
+        body.final-stage .result-name {
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="/" id="home-link">← 返回首页</a>
+      <div class="eyebrow">PIXIU · 配音试听</div>
+      <h1 id="stage-title" tabindex="-1">第一轮：选择喜欢的音色</h1>
+      <p id="stage-help">先试听并勾选任意多个候选，下一轮再缩小到1–3个。</p>
+      <ol class="steps" aria-label="选择进度">
+        <li id="step-1" aria-current="step">01 初选</li>
+        <li id="step-2">02 确认候选</li>
+        <li id="step-3">03 最终名单</li>
+      </ol>
+      <div id="cards" class="grid"></div>
+      <section id="result" hidden aria-label="最终音色名单">
+        <div class="eyebrow">我的最终选择</div>
+        <h2>PIXIU 宣传片 · 男声音色候选</h2>
+        <ol class="result-list" id="result-list"></ol>
+        <p class="screen-note">请截图此名单，发送给负责人。</p>
+      </section>
+      <details id="sample-text">
+        <summary>查看统一试听文稿</summary>
+        <p>
+          清晨打开电脑，昨天讨论的工作安排，已经成为今天行动的起点。貔貅把对话、文件和使用习惯整理为可以检索的记忆。换到另一台可信设备，助手仍能找到需要的资料。面对一份家庭账单，你可以询问支出总额，也可以打开来源，逐项核对每笔费用。团队交接时，经验随着授权共享，后续工作接着展开。个人内容由自己掌握，共享范围清楚可控。暂时离线，设备继续保留本地记忆，恢复连接后补齐更新。让知识持续积累，让每一次协作都有迹可循，这就是貔貅希望带来的日常体验。
+        </p>
+      </details>
+      <noscript>请启用浏览器的 JavaScript 以使用试听选择功能。</noscript>
+    </main>
+    <div class="bar">
+      <div class="bar-inner">
+        <div role="status" aria-live="polite">
+          <div class="count" id="count">已勾选0个</div>
+          <p id="selection-help">第一轮数量不限，至少选择1个。</p>
+        </div>
+        <div class="actions">
+          <button id="back" type="button" hidden>返回第一轮</button
+          ><button id="next" class="primary" type="button" disabled>结束第一轮候选</button>
+        </div>
+      </div>
+    </div>
+    <script id="voice-data" type="application/json">
+      [
+        {
+          "id": "zh-CN-YunxiNeural",
+          "name": "云希",
+          "audio": "/audio/voices/zh-CN-YunxiNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunjianNeural",
+          "name": "云健",
+          "audio": "/audio/voices/zh-CN-YunjianNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunyangNeural",
+          "name": "云扬",
+          "audio": "/audio/voices/zh-CN-YunyangNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunfanMultilingualNeural",
+          "name": "Yunfan Multilingual",
+          "audio": "/audio/voices/zh-CN-YunfanMultilingualNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunjieNeural",
+          "name": "云杰",
+          "audio": "/audio/voices/zh-CN-YunjieNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunxiaNeural",
+          "name": "云夏",
+          "audio": "/audio/voices/zh-CN-YunxiaNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunfengNeural",
+          "name": "云枫",
+          "audio": "/audio/voices/zh-CN-YunfengNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunyeNeural",
+          "name": "云野",
+          "audio": "/audio/voices/zh-CN-YunyeNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunxiaoMultilingualNeural",
+          "name": "Yunxiao Multilingual",
+          "audio": "/audio/voices/zh-CN-YunxiaoMultilingualNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunzeNeural",
+          "name": "云泽",
+          "audio": "/audio/voices/zh-CN-YunzeNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunyiMultilingualNeural",
+          "name": "云逸 多语言",
+          "audio": "/audio/voices/zh-CN-YunyiMultilingualNeural.mp3"
+        },
+        {
+          "id": "zh-CN-YunhaoNeural",
+          "name": "云皓",
+          "audio": "/audio/voices/zh-CN-YunhaoNeural.mp3"
+        }
+      ]
+    </script>
+    <script>
+      'use strict';
+      const voices = JSON.parse(document.getElementById('voice-data').textContent);
+      let stage = 1;
+      const first = new Set(),
+        removed = new Set();
+      const cards = document.getElementById('cards'),
+        result = document.getElementById('result'),
+        next = document.getElementById('next'),
+        back = document.getElementById('back');
+      const title = document.getElementById('stage-title'),
+        help = document.getElementById('stage-help'),
+        count = document.getElementById('count'),
+        selectionHelp = document.getElementById('selection-help');
+      const kept = () => voices.filter((v) => first.has(v.id) && !removed.has(v.id));
+      function pauseAll() {
+        document.querySelectorAll('audio').forEach((a) => a.pause());
+      }
+      function element(tag, cls, text) {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text !== undefined) e.textContent = text;
+        return e;
+      }
+      function updateCount() {
+        if (stage === 1) {
+          count.textContent = `已勾选${first.size}个`;
+          selectionHelp.textContent = '第一轮数量不限，至少选择1个。';
+          next.disabled = first.size === 0;
+        } else if (stage === 2) {
+          const n = kept().length;
+          count.textContent = `当前保留${n}个`;
+          selectionHelp.textContent =
+            n > 3
+              ? `再移除${n - 3}个，即可提交。`
+              : n === 0
+                ? '请至少恢复1个候选。'
+                : '可以提交；点击已移除的卡片按钮可恢复。';
+          next.disabled = n < 1 || n > 3;
+        } else {
+          count.textContent = `已确认${kept().length}个音色`;
+          selectionHelp.textContent = '截图发送给负责人即可。';
+        }
+      }
+      function render() {
+        document.body.classList.toggle('final-stage', stage === 3);
+        pauseAll();
+        cards.replaceChildren();
+        cards.hidden = stage === 3;
+        result.hidden = stage !== 3;
+        document.getElementById('sample-text').hidden = stage === 3;
+        for (let n = 1; n <= 3; n++) {
+          const s = document.getElementById(`step-${n}`);
+          if (stage === n) s.setAttribute('aria-current', 'step');
+          else s.removeAttribute('aria-current');
+        }
+        title.textContent =
+          stage === 1
+            ? '第一轮：选择喜欢的音色'
+            : stage === 2
+              ? '第二轮：保留1–3个候选'
+              : '你的最终音色名单';
+        help.textContent =
+          stage === 1
+            ? '先试听并勾选任意多个候选，下一轮再缩小到1–3个。'
+            : stage === 2
+              ? '只显示第一轮入围音色。移除后卡片变灰，可以随时恢复。'
+              : '选择已在本页确认，请截图下方名单。';
+        next.hidden = stage === 3;
+        next.textContent = stage === 1 ? '结束第一轮候选' : '提交最终选择';
+        back.hidden = stage === 1;
+        back.textContent = stage === 2 ? '返回第一轮' : '返回调整';
+        if (stage === 3) {
+          const list = document.getElementById('result-list');
+          list.replaceChildren();
+          kept().forEach((v, i) => {
+            const li = element('li');
+            li.append(element('span', 'number', String(i + 1).padStart(2, '0')));
+            const d = element('div');
+            d.append(
+              element('div', 'result-name', v.name),
+              element('p', 'result-meta', v.id),
+              element('p', 'result-meta', '中文普通话 · 男声 · 默认风格'),
+            );
+            li.append(d);
+            list.append(li);
+          });
+        } else
+          voices
+            .filter((v) => stage === 1 || first.has(v.id))
+            .forEach((v) => {
+              const card = element('article', 'voice-card');
+              card.dataset.voice = v.id;
+              const info = element('div', 'voice-info');
+              info.append(
+                element('div', 'badge', '中文普通话 · 男声'),
+                element('h2', '', v.name),
+                element('p', 'voice-id', v.id),
+              );
+              card.append(info);
+              const audio = element('audio');
+              audio.controls = true;
+              audio.preload = 'none';
+              audio.src = v.audio;
+              audio.setAttribute('aria-label', `试听${v.name}`);
+              audio.addEventListener('play', () =>
+                document.querySelectorAll('audio').forEach((a) => {
+                  if (a !== audio) a.pause();
+                }),
+              );
+              card.append(audio);
+              if (stage === 1) {
+                card.classList.toggle('chosen', first.has(v.id));
+                const label = element('label', 'pick'),
+                  input = element('input');
+                input.type = 'checkbox';
+                input.checked = first.has(v.id);
+                input.setAttribute('aria-label', `将${v.name}加入第一轮候选`);
+                label.append(input, element('span', '', '加入候选'));
+                card.append(label);
+                input.addEventListener('change', () => {
+                  if (input.checked) first.add(v.id);
+                  else first.delete(v.id);
+                  card.classList.toggle('chosen', input.checked);
+                  updateCount();
+                });
+              } else {
+                const button = element('button', 'toggle');
+                button.type = 'button';
+                const sync = () => {
+                  const off = removed.has(v.id);
+                  card.classList.toggle('removed', off);
+                  button.textContent = off ? '恢复候选' : '移除候选';
+                  button.setAttribute('aria-pressed', String(!off));
+                  button.setAttribute('aria-label', `${off ? '恢复' : '移除'}${v.name}`);
+                };
+                sync();
+                button.addEventListener('click', () => {
+                  if (removed.has(v.id)) removed.delete(v.id);
+                  else removed.add(v.id);
+                  sync();
+                  updateCount();
+                });
+                card.append(button);
+              }
+              cards.append(card);
+            });
+        updateCount();
+      }
+      next.addEventListener('click', () => {
+        if (stage === 1 && first.size) {
+          removed.clear();
+          stage = 2;
+        } else if (stage === 2 && kept().length >= 1 && kept().length <= 3) {
+          stage = 3;
+        } else return;
+        render();
+        title.focus();
+        window.scrollTo({ top: 0 });
+      });
+      back.addEventListener('click', () => {
+        stage = stage === 3 ? 2 : 1;
+        render();
+        title.focus();
+        window.scrollTo({ top: 0 });
+      });
+      render();
+    </script>
+  </body>
+</html>
