@@ -1,0 +1,152 @@
+{
+  "environment": "同宿主三台V11演示机；合成数据公共API核对；OCR来源字符串输入，不是截图识别",
+  "records": [
+    {
+      "device": "书房",
+      "label": "私有写入",
+      "time": "2026-09-09T00:42:03.618479+00:00",
+      "request": {
+        "method": "POST",
+        "path": "/memory/write",
+        "body": {
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "个人阅读演示约定",
+            "body": {
+              "内容": "睡前阅读二十分钟，周末整理读书笔记。仅用于公开功能演示。"
+            }
+          },
+          "scope": "user:video-boundary-v2",
+          "idempotency_key": "video-boundary-v2"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M21STN1BR1EMD8PKM7DHAPHC",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 2201
+        }
+      }
+    },
+    {
+      "device": "书房",
+      "label": "本机查询",
+      "time": "2026-09-09T00:42:04.049757+00:00",
+      "request": {
+        "method": "POST",
+        "path": "/memory/query",
+        "body": {
+          "text": "个人阅读演示约定",
+          "context_hint": {
+            "scope": "user:video-boundary-v2"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "answer": "个人阅读演示约定",
+          "source_evidence": [
+            "evd_01M21STN1BR1EMD8PKM7DHAPHC"
+          ],
+          "source_knowledge": "knw_01M21STN1PTHZG5HH857TD62F1",
+          "confidence": 1.0,
+          "latency_ms": 71
+        }
+      }
+    },
+    {
+      "device": "笔记本",
+      "label": "另一端按同一ID与范围读取",
+      "time": "2026-09-09T00:42:04.319295+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/memory/items/knw_01M21STN1PTHZG5HH857TD62F1?scope=user:video-boundary-v2",
+        "body": null
+      },
+      "response": {
+        "status": 404,
+        "body": {
+          "error": "NOT_FOUND",
+          "message": "NOT_FOUND",
+          "request_id": "req_01M21STQVMASTJS72TTNAQ73Z9"
+        }
+      }
+    },
+    {
+      "device": "客厅",
+      "label": "另一端按同一ID与范围读取",
+      "time": "2026-09-09T00:42:04.657684+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/memory/items/knw_01M21STN1PTHZG5HH857TD62F1?scope=user:video-boundary-v2",
+        "body": null
+      },
+      "response": {
+        "status": 404,
+        "body": {
+          "error": "NOT_FOUND",
+          "message": "NOT_FOUND",
+          "request_id": "req_01M21STR55HYYZKF83NH9Y6X2M"
+        }
+      }
+    },
+    {
+      "device": "书房",
+      "label": "私有条目同步状态",
+      "time": "2026-09-09T00:42:05.016338+00:00",
+      "request": {
+        "method": "GET",
+        "path": "/sync/state/knowledge/knw_01M21STN1PTHZG5HH857TD62F1",
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "present": false,
+          "tombstone": false,
+          "clock_entries": 0,
+          "clock_total": 0,
+          "operation_digest": null,
+          "updated_at": null
+        }
+      }
+    },
+    {
+      "device": "书房",
+      "label": "合成敏感输入共享拒绝",
+      "time": "2026-09-09T00:42:05.534435+00:00",
+      "request": {
+        "method": "POST",
+        "path": "/memory/write",
+        "body": {
+          "source_type": "OCR",
+          "raw": {
+            "text": "公开合成测试：联系人手机号 13812345678"
+          },
+          "scope": "shared:home",
+          "idempotency_key": "video-sensitive-boundary-v2"
+        }
+      },
+      "response": {
+        "status": 422,
+        "body": {
+          "error": "SENSITIVE_SHARED_SCOPE",
+          "message": "SENSITIVE_SHARED_SCOPE",
+          "request_id": "req_01M21STRWC1GG2XHR9TWQJBSTV"
+        }
+      }
+    }
+  ],
+  "status": "verified",
+  "limitations": [
+    "范围与ID读取检查不等于穷尽检索测试",
+    "同步状态未进入不等于对所有历史日志做磁盘审计",
+    "合成字符串敏感拒绝不等于OCR SDK效果验收"
+  ]
+}

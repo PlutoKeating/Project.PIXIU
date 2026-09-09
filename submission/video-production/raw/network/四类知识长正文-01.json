@@ -1,0 +1,453 @@
+{
+  "environment": "V11公共接口公开合成资料，本机个人范围；为四类长正文镜头准备",
+  "records": [
+    {
+      "expected_kind": "FACT",
+      "title": "书房整理事实清单",
+      "calls": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/memory/write",
+            "body": {
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "书房整理事实清单",
+                "body": {
+                  "内容": "书房共有三层书架。上层存放科普读物，中层存放常用工具书，下层存放画册。备用标签纸放在书桌左侧抽屉，借阅登记本放在中层最右侧。每次借出图书都在登记本中记下书名和预计归还日，归还后擦除临时书签。以上内容为公开合成演示资料。"
+                }
+              },
+              "scope": "user:local",
+              "idempotency_key": "video-long-v5-FACT"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "evidence_id": "evd_01M2249BH25BCF08VD3YVJ9XD8",
+              "status": "accepted",
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "preference_count": 0,
+              "conflict_detected": false,
+              "latency_ms": 604
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "POST",
+            "path": "/agent/context",
+            "body": {
+              "query": "书房整理事实清单",
+              "scope": "user:local",
+              "session_id": "video-long-v5",
+              "turn_id": "FACT",
+              "top_k": 1,
+              "max_chars": 4000
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "session_id": "video-long-v5",
+              "turn_id": "FACT",
+              "context": "- 书房整理事实清单: {\"内容\":\"书房共有三层书架。上层存放科普读物，中层存放常用工具书，下层存放画册。备用标签纸放在书桌左侧抽屉，借阅登记本放在中层最右侧。每次借出图书都在登记本中记下书名和预计归还日，归还后擦除临时书签。以上内容为公开合成演示资料。\"} [knowledge=knw_01M2249BH6AD644G1WZF7BKZH7; evidence=evd_01M2249BH25BCF08VD3YVJ9XD8]",
+              "items": [
+                {
+                  "knowledge_id": "knw_01M2249BH6AD644G1WZF7BKZH7",
+                  "version": 1,
+                  "title": "书房整理事实清单",
+                  "scope": "user:local",
+                  "evidence_ids": [
+                    "evd_01M2249BH25BCF08VD3YVJ9XD8"
+                  ],
+                  "confidence": 1.0,
+                  "updated_at": 1788925488,
+                  "freshness": "fresh",
+                  "conflict_status": "none"
+                }
+              ],
+              "truncated": false,
+              "latency_ms": 19
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "GET",
+            "path": "/evidence/evd_01M2249BH25BCF08VD3YVJ9XD8",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "evd_01M2249BH25BCF08VD3YVJ9XD8",
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "书房整理事实清单",
+                "body": {
+                  "内容": "书房共有三层书架。上层存放科普读物，中层存放常用工具书，下层存放画册。备用标签纸放在书桌左侧抽屉，借阅登记本放在中层最右侧。每次借出图书都在登记本中记下书名和预计归还日，归还后擦除临时书签。以上内容为公开合成演示资料。"
+                },
+                "entities": [],
+                "relations": [],
+                "content_hash": "3b15d792b3acb5ddeebe9c1152565aeb396aa85cb5460f5a52eb144a72ac502c"
+              },
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "provenance": null,
+              "capture_source": null,
+              "scope": "user:local",
+              "created_at": 1788925488
+            }
+          }
+        }
+      ],
+      "knowledge_id": "knw_01M2249BH6AD644G1WZF7BKZH7"
+    },
+    {
+      "expected_kind": "WORKFLOW",
+      "title": "家庭图书归还流程",
+      "calls": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/memory/write",
+            "body": {
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "家庭图书归还流程",
+                "body": {
+                  "steps": [
+                    "第一步：从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。",
+                    "第二步：检查归还图书是否夹有临时便签，将个人便签取出，并整理翘起的书页。",
+                    "第三步：按照科普读物、工具书和画册三个分类放回对应书架，书脊朝外，保持同类图书相邻。",
+                    "第四步：更新借阅登记，核对剩余待归还数量；如果书架已满，先整理重复资料再放入新书。"
+                  ]
+                }
+              },
+              "scope": "user:local",
+              "idempotency_key": "video-long-v5-WORKFLOW"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "evidence_id": "evd_01M2249D2T41TRQF7WA18AM2BX",
+              "status": "accepted",
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "preference_count": 0,
+              "conflict_detected": false,
+              "latency_ms": 587
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "POST",
+            "path": "/agent/context",
+            "body": {
+              "query": "家庭图书归还流程",
+              "scope": "user:local",
+              "session_id": "video-long-v5",
+              "turn_id": "WORKFLOW",
+              "top_k": 1,
+              "max_chars": 4000
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "session_id": "video-long-v5",
+              "turn_id": "WORKFLOW",
+              "context": "- 家庭图书归还流程: {\"steps\":[\"第一步：从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。\",\"第二步：检查归还图书是否夹有临时便签，将个人便签取出，并整理翘起的书页。\",\"第三步：按照科普读物、工具书和画册三个分类放回对应书架，书脊朝外，保持同类图书相邻。\",\"第四步：更新借阅登记，核对剩余待归还数量；如果书架已满，先整理重复资料再放入新书。\"]} [knowledge=knw_01M2249D2X812FVTY3WHZ22BMM; evidence=evd_01M2249D2T41TRQF7WA18AM2BX]",
+              "items": [
+                {
+                  "knowledge_id": "knw_01M2249D2X812FVTY3WHZ22BMM",
+                  "version": 1,
+                  "title": "家庭图书归还流程",
+                  "scope": "user:local",
+                  "evidence_ids": [
+                    "evd_01M2249D2T41TRQF7WA18AM2BX"
+                  ],
+                  "confidence": 1.0,
+                  "updated_at": 1788925490,
+                  "freshness": "fresh",
+                  "conflict_status": "none"
+                }
+              ],
+              "truncated": false,
+              "latency_ms": 1
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "GET",
+            "path": "/evidence/evd_01M2249D2T41TRQF7WA18AM2BX",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "evd_01M2249D2T41TRQF7WA18AM2BX",
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "家庭图书归还流程",
+                "body": {
+                  "steps": [
+                    "第一步：从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。",
+                    "第二步：检查归还图书是否夹有临时便签，将个人便签取出，并整理翘起的书页。",
+                    "第三步：按照科普读物、工具书和画册三个分类放回对应书架，书脊朝外，保持同类图书相邻。",
+                    "第四步：更新借阅登记，核对剩余待归还数量；如果书架已满，先整理重复资料再放入新书。"
+                  ]
+                },
+                "entities": [],
+                "relations": [],
+                "content_hash": "3084156c30e5c85946eb493e1401ef23872af765adb2f13e687d5614eb524a21"
+              },
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "provenance": null,
+              "capture_source": null,
+              "scope": "user:local",
+              "created_at": 1788925490
+            }
+          }
+        }
+      ],
+      "knowledge_id": "knw_01M2249D2X812FVTY3WHZ22BMM"
+    },
+    {
+      "expected_kind": "CASE",
+      "title": "书架分类调整案例",
+      "calls": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/memory/write",
+            "body": {
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "书架分类调整案例",
+                "body": {
+                  "case": {
+                    "问题": "家庭成员查找常用工具书时，经常需要同时翻看上层和下层，借阅登记与实际位置不一致。",
+                    "处理": "先核对登记本中的书名，再把常用工具书集中到中层；为科普读物与画册保留独立区域，并同步更新分类标签。",
+                    "结果": "调整后能够根据分类标签直接定位工具书；仍在外借的图书保留临时位置卡，避免把空位误判为丢失。",
+                    "复用条件": "适用于共享书架的分类整理；正式调整前仍需核对实际书目。本案例为公开合成演示资料。"
+                  }
+                }
+              },
+              "scope": "user:local",
+              "idempotency_key": "video-long-v5-CASE"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "evidence_id": "evd_01M2249EM823M670RZ4J36H2G4",
+              "status": "accepted",
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "preference_count": 0,
+              "conflict_detected": false,
+              "latency_ms": 713
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "POST",
+            "path": "/agent/context",
+            "body": {
+              "query": "书架分类调整案例",
+              "scope": "user:local",
+              "session_id": "video-long-v5",
+              "turn_id": "CASE",
+              "top_k": 1,
+              "max_chars": 4000
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "session_id": "video-long-v5",
+              "turn_id": "CASE",
+              "context": "- 书架分类调整案例: {\"case\":{\"处理\":\"先核对登记本中的书名，再把常用工具书集中到中层；为科普读物与画册保留独立区域，并同步更新分类标签。\",\"复用条件\":\"适用于共享书架的分类整理；正式调整前仍需核对实际书目。本案例为公开合成演示资料。\",\"结果\":\"调整后能够根据分类标签直接定位工具书；仍在外借的图书保留临时位置卡，避免把空位误判为丢失。\",\"问题\":\"家庭成员查找常用工具书时，经常需要同时翻看上层和下层，借阅登记与实际位置不一致。\"}} [knowledge=knw_01M2249EMFD358NXNF7JTFABBN; evidence=evd_01M2249EM823M670RZ4J36H2G4]",
+              "items": [
+                {
+                  "knowledge_id": "knw_01M2249EMFD358NXNF7JTFABBN",
+                  "version": 1,
+                  "title": "书架分类调整案例",
+                  "scope": "user:local",
+                  "evidence_ids": [
+                    "evd_01M2249EM823M670RZ4J36H2G4"
+                  ],
+                  "confidence": 1.0,
+                  "updated_at": 1788925491,
+                  "freshness": "fresh",
+                  "conflict_status": "none"
+                }
+              ],
+              "truncated": false,
+              "latency_ms": 25
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "GET",
+            "path": "/evidence/evd_01M2249EM823M670RZ4J36H2G4",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "evd_01M2249EM823M670RZ4J36H2G4",
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "书架分类调整案例",
+                "body": {
+                  "case": {
+                    "问题": "家庭成员查找常用工具书时，经常需要同时翻看上层和下层，借阅登记与实际位置不一致。",
+                    "处理": "先核对登记本中的书名，再把常用工具书集中到中层；为科普读物与画册保留独立区域，并同步更新分类标签。",
+                    "结果": "调整后能够根据分类标签直接定位工具书；仍在外借的图书保留临时位置卡，避免把空位误判为丢失。",
+                    "复用条件": "适用于共享书架的分类整理；正式调整前仍需核对实际书目。本案例为公开合成演示资料。"
+                  }
+                },
+                "entities": [],
+                "relations": [],
+                "content_hash": "68d9e231b7d302e4152cc96e2bf6d86b19da961194fca737c27e219e5624ef18"
+              },
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "provenance": null,
+              "capture_source": null,
+              "scope": "user:local",
+              "created_at": 1788925491
+            }
+          }
+        }
+      ],
+      "knowledge_id": "knw_01M2249EMFD358NXNF7JTFABBN"
+    },
+    {
+      "expected_kind": "TEMPLATE",
+      "title": "家庭阅读周计划模板",
+      "calls": [
+        {
+          "request": {
+            "method": "POST",
+            "path": "/memory/write",
+            "body": {
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "家庭阅读周计划模板",
+                "body": {
+                  "template": {
+                    "本周阅读主题": "填写本周共同阅读的主题，例如自然科学；说明选择主题的理由。",
+                    "图书与进度": "填写书名、计划阅读章节及当前页码；长篇内容可以拆成多次阅读。",
+                    "讨论安排": "填写预计讨论日期、主持角色以及希望共同回答的两个问题。",
+                    "借阅与归还": "填写需要借入或归还的图书、预计时间和登记位置，完成后逐项标记。",
+                    "本周回顾": "记录本周读到的新知识、尚未解决的问题以及下一周准备继续阅读的内容。"
+                  }
+                }
+              },
+              "scope": "user:local",
+              "idempotency_key": "video-long-v5-TEMPLATE"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "evidence_id": "evd_01M2249GB4RCHJ5V5TAGCH7RAH",
+              "status": "accepted",
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "preference_count": 0,
+              "conflict_detected": false,
+              "latency_ms": 552
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "POST",
+            "path": "/agent/context",
+            "body": {
+              "query": "家庭阅读周计划模板",
+              "scope": "user:local",
+              "session_id": "video-long-v5",
+              "turn_id": "TEMPLATE",
+              "top_k": 1,
+              "max_chars": 4000
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "session_id": "video-long-v5",
+              "turn_id": "TEMPLATE",
+              "context": "- 家庭阅读周计划模板: {\"template\":{\"借阅与归还\":\"填写需要借入或归还的图书、预计时间和登记位置，完成后逐项标记。\",\"图书与进度\":\"填写书名、计划阅读章节及当前页码；长篇内容可以拆成多次阅读。\",\"本周回顾\":\"记录本周读到的新知识、尚未解决的问题以及下一周准备继续阅读的内容。\",\"本周阅读主题\":\"填写本周共同阅读的主题，例如自然科学；说明选择主题的理由。\",\"讨论安排\":\"填写预计讨论日期、主持角色以及希望共同回答的两个问题。\"}} [knowledge=knw_01M2249GB7G7QKNVFSYRF5PREA; evidence=evd_01M2249GB4RCHJ5V5TAGCH7RAH]",
+              "items": [
+                {
+                  "knowledge_id": "knw_01M2249GB7G7QKNVFSYRF5PREA",
+                  "version": 1,
+                  "title": "家庭阅读周计划模板",
+                  "scope": "user:local",
+                  "evidence_ids": [
+                    "evd_01M2249GB4RCHJ5V5TAGCH7RAH"
+                  ],
+                  "confidence": 1.0,
+                  "updated_at": 1788925493,
+                  "freshness": "fresh",
+                  "conflict_status": "none"
+                }
+              ],
+              "truncated": false,
+              "latency_ms": 1
+            }
+          }
+        },
+        {
+          "request": {
+            "method": "GET",
+            "path": "/evidence/evd_01M2249GB4RCHJ5V5TAGCH7RAH",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "evd_01M2249GB4RCHJ5V5TAGCH7RAH",
+              "source_type": "MANUAL_CONFIG",
+              "raw": {
+                "title": "家庭阅读周计划模板",
+                "body": {
+                  "template": {
+                    "本周阅读主题": "填写本周共同阅读的主题，例如自然科学；说明选择主题的理由。",
+                    "图书与进度": "填写书名、计划阅读章节及当前页码；长篇内容可以拆成多次阅读。",
+                    "讨论安排": "填写预计讨论日期、主持角色以及希望共同回答的两个问题。",
+                    "借阅与归还": "填写需要借入或归还的图书、预计时间和登记位置，完成后逐项标记。",
+                    "本周回顾": "记录本周读到的新知识、尚未解决的问题以及下一周准备继续阅读的内容。"
+                  }
+                },
+                "entities": [],
+                "relations": [],
+                "content_hash": "692c647b999c4bfc4025b72f25b7623e503fddfb5e5dbaddb33987ff8f3427c2"
+              },
+              "quality_score": 0.775,
+              "sensitivity": 0,
+              "provenance": null,
+              "capture_source": null,
+              "scope": "user:local",
+              "created_at": 1788925493
+            }
+          }
+        }
+      ],
+      "knowledge_id": "knw_01M2249GB7G7QKNVFSYRF5PREA"
+    }
+  ]
+}

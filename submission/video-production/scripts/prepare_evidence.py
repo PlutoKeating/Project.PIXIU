@@ -120,3 +120,35 @@ output = {'source': str(source.relative_to(ROOT)),
           'quality': detail['body']['quality_score'], 'sensitivity': detail['body']['sensitivity']}
 (ROOT / 'src/ingest-results.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n')
 print('已核对接入清洗、质量与同来源检索')
+
+source = ROOT / 'raw/network/生命周期摘要晋升与复用-01.json'
+flow = json.loads(source.read_text())['records']
+assert len(flow) == 8
+cases = []
+for offset, tier in [(0, 'SHORT_TERM'), (4, 'MID_TERM')]:
+    created, promoted, reused, detail = flow[offset:offset + 4]
+    assert all(r['response']['status'] == 200 for r in (created, promoted, reused, detail))
+    context = created['response']['body']
+    promotion = promoted['response']['body']
+    answer = reused['response']['body']
+    item = answer['items'][0]
+    evidence = detail['response']['body']
+    assert context['tier'] == promoted['request']['body']['source'] == tier
+    assert promoted['request']['body']['context_ids'] == [context['context_id']]
+    assert promotion['promoted_count'] == 1
+    assert promotion['knowledge_ids'] == [item['knowledge_id']]
+    assert item['evidence_ids'] == [evidence['id']]
+    summary = created['request']['body']['data']['summary']
+    assert evidence['raw']['body']['data']['summary'] == summary
+    assert summary in answer['context'] and answer['truncated'] is False
+    assert len(answer['context']) <= reused['request']['body']['max_chars']
+    cases.append({'tier': tier, 'event': context['event'], 'summary': summary,
+                  'context_id': context['context_id'], 'knowledge_id': item['knowledge_id'],
+                  'evidence_id': evidence['id'], 'title': item['title'],
+                  'promoted_count': promotion['promoted_count'],
+                  'max_chars': reused['request']['body']['max_chars']})
+(ROOT / 'src/flow-results.json').write_text(json.dumps({
+    'source': str(source.relative_to(ROOT)),
+    'sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'cases': cases,
+}, ensure_ascii=False, indent=2) + '\n')
+print('已核对短中期晋升、知识与证据ID、摘要完整性及字符预算')

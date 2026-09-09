@@ -1,0 +1,29 @@
+{
+  "mode": "运行中服务数据库只读查询，仅导出本次公开示例的类型",
+  "records": [
+    {
+      "id": "knw_01M2249BH6AD644G1WZF7BKZH7",
+      "scope": "user:local",
+      "expected": "FACT",
+      "actual": "FACT"
+    },
+    {
+      "id": "knw_01M2249D2X812FVTY3WHZ22BMM",
+      "scope": "user:local",
+      "expected": "WORKFLOW",
+      "actual": "WORKFLOW"
+    },
+    {
+      "id": "knw_01M2249EMFD358NXNF7JTFABBN",
+      "scope": "user:local",
+      "expected": "CASE",
+      "actual": "CASE"
+    },
+    {
+      "id": "knw_01M2249GB7G7QKNVFSYRF5PREA",
+      "scope": "user:local",
+      "expected": "TEMPLATE",
+      "actual": "TEMPLATE"
+    }
+  ]
+}

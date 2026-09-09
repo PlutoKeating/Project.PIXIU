@@ -1,0 +1,18 @@
+{
+  "frames": [
+    8833,
+    9063,
+    9253
+  ],
+  "differing_pixels": [
+    0,
+    0,
+    0
+  ],
+  "maximum_channel_difference": [
+    0,
+    0,
+    0
+  ],
+  "log": "bundling…\nf8833: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0\nf9063: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0\nf9253: ✓ 一致  差异像素 0/2073600 (0.000%)，最大通道差 0\n\n3 帧全部一致，PNG 见 /home/pluto/.codex/skills/video-shotcraft/workbench/.parity\n"
+}
