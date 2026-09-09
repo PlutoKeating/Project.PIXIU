@@ -151,3 +151,32 @@ async def test_unapproved_correction_queues_one_durable_review_without_writing()
     assert len(queued) == 1 and queued[0]['expected_version'] == 2
     report = session.report('模型声称已完成')
     assert report['status'] == 'awaiting_approval' and report['saved_count'] == 0
+
+
+@pytest.mark.asyncio
+async def test_merge_freezes_all_read_versions_and_only_queues_approval():
+    queued = []
+    version = 2
+    async def api(method, path, payload):
+        if path.startswith('/memory/items/'):
+            return {'knowledge_id': path.split('/')[3].split('?')[0], 'scope': 'user:local',
+                    'version': version, 'title': '安排', 'body': {'content': '原安排'}}
+        assert path == '/dreaming/plans'
+        queued.append(payload)
+        return {'plan_id': 'review', 'status': 'awaiting_approval'}
+    session = DreamingSession(api, document_ids=[REFERENCE], scope='user:local', approved=True, queue_reviews=True)
+    proposal = {**prepare(session), 'operation': 'merge', 'knowledge_id': 'knw_example123',
+                'merge_ids': ['knw_example123', 'knw_example456']}
+    await session.read_memory('knw_example123')
+    with pytest.raises(ValueError, match='Read all'):
+        session.plan(proposal)
+    await session.read_memory('knw_example456')
+    plan = session.plan(proposal)
+    version = 3
+    await session.read_memory('knw_example456')
+    await session.apply(plan['plan_id'])
+    await session.apply(plan['plan_id'])
+    assert len(queued) == 1
+    assert queued[0]['versions'] == {'knw_example123': 2, 'knw_example456': 2}
+    assert queued[0]['operation'] == 'merge'
+    assert session.report('完成')['saved_count'] == 0

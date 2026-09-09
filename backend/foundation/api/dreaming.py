@@ -13,6 +13,7 @@ from .documents import authorized_source
 from .ws_manager import ws_manager
 from ..documents.registry import DocumentRegistry, DocumentUnavailable
 from ..core.models import KnowledgeStatus
+from ..core.repository import KnowledgeVersionConflict
 
 router = APIRouter(prefix="/dreaming/plans", tags=["Dreaming"])
 
@@ -26,7 +27,8 @@ class PlanSource(BaseModel):
 
 class ReviewPlan(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    operation: Literal["update"]
+    operation: Literal["update", "merge"]
+    versions: dict[str, int] = Field(default_factory=dict, max_length=20)
     scope: str = Field(pattern=r"^user:[A-Za-z0-9._-]+$")
     knowledge_id: str = Field(pattern=r"^knw_[A-Za-z0-9_-]{8,128}$")
     expected_version: int = Field(ge=1)
@@ -47,6 +49,21 @@ async def propose_plan(body: ReviewPlan, db=Depends(get_db), knowledge=Depends(g
         raise HTTPException(404, "MEMORY_UNAVAILABLE")
     if item.version != body.expected_version:
         raise HTTPException(409, "VERSION_CONFLICT")
+    originals = []
+    if body.operation == "merge":
+        if (len(body.versions) < 2 or body.versions.get(item.id) != body.expected_version
+                or any(v < 1 for v in body.versions.values())):
+            raise HTTPException(422, "MERGE_REQUIRES_ALL_VERSIONS")
+        for identifier, version in body.versions.items():
+            original = await knowledge.get(identifier)
+            if original is None or original.scope != body.scope or original.status != KnowledgeStatus.ACTIVE:
+                raise HTTPException(404, "MEMORY_UNAVAILABLE")
+            if original.version != version:
+                raise HTTPException(409, "VERSION_CONFLICT")
+            originals.append({"knowledge_id": identifier, "title": original.title,
+                              "body": original.body, "version": version})
+    elif body.versions:
+        raise HTTPException(422, "UPDATE_HAS_MERGE_TARGETS")
     registry = DocumentRegistry(db, authorized_source)
     sources, paths = [], set()
     try:
@@ -65,7 +82,7 @@ async def propose_plan(body: ReviewPlan, db=Depends(get_db), knowledge=Depends(g
     # Copy verified source blocks before attachment staging is revoked. The review
     # keeps the evidence it actually displays; directory grants are checked again.
     plan = {**body.model_dump(), "before": {"title": item.title, "body": item.body, "version": item.version},
-            "sources": sources, "source_paths": sorted(paths)}
+            "sources": sources, "source_paths": sorted(paths), "originals": originals}
     encoded = json.dumps(plan, ensure_ascii=False)
     if len(encoded.encode()) > 100 * 1024 * 1024:
         raise HTTPException(422, "PLAN_TOO_LARGE")
@@ -85,7 +102,7 @@ async def list_plans(db=Depends(get_db)):
         plan = json.loads(payload)
         result.append({"plan_id": identifier, "status": status, "created_at": created_at,
                        "operation": plan["operation"], "title": plan["title"], "text": plan["text"],
-                       "before": plan["before"], "scope": plan["scope"]})
+                       "before": plan["before"], "originals": plan.get("originals", []), "scope": plan["scope"]})
     return {"plans": result}
 
 
@@ -114,23 +131,50 @@ async def decide_plan(plan_id: str, decision: Decision, db=Depends(get_db),
         raise HTTPException(409, "PLAN_REQUIRES_NEW_REVIEW")
     if any(not authorized_source(path) for path in plan["source_paths"]):
         raise HTTPException(409, "SOURCE_AUTHORIZATION_REVOKED")
-    await db.execute("UPDATE dreaming_plans SET status='executing' WHERE id=? AND status='pending'", (plan_id,))
+    claim = await db.execute("UPDATE dreaming_plans SET status='executing' WHERE id=? AND status='pending'", (plan_id,))
     await db.commit()
     cursor = await db.execute("SELECT status FROM dreaming_plans WHERE id=?", (plan_id,))
     if (await cursor.fetchone())[0] != "executing":
         raise HTTPException(409, "PLAN_STATE_CHANGED")
+    if plan["operation"] == "merge" and not claim.rowcount:
+        raise HTTPException(409, "PLAN_EXECUTING")
     from .http_app import MemoryUpdateRequest, memory_update
     try:
-        result = await memory_update(MemoryUpdateRequest(knowledge_id=plan["knowledge_id"], scope=plan["scope"],
-            expected_version=plan["expected_version"], title=plan["title"],
-            body={"content": plan["text"], "document_sources": plan["sources"]},
-            idempotency_key="dreaming-review:" + plan_id), ingestion=ingestion, knowledge=knowledge,
-            knowledge_repo=knowledge_repo, security=security, sync=sync, idempotency=receipts)
+        if plan["operation"] == "merge":
+            target = await knowledge_repo.get(plan["knowledge_id"])
+            if target is None or target.scope != plan["scope"]:
+                raise HTTPException(404, "MEMORY_UNAVAILABLE")
+            value = {"content": plan["text"], "document_sources": plan["sources"],
+                     "merged_from": plan["originals"]}
+            raw = {"title": plan["title"], "body": value}
+            sensitivity = await security.detect_sensitivity(raw)
+            evidence = await ingestion.ingest("MANUAL_CONFIG", raw, plan["scope"], sensitivity=sensitivity)
+            merged = target.model_copy(update={"title": plan["title"], "body": value,
+                "version": plan["expected_version"] + 1, "updated_at": int(time.time()),
+                "evidence_ids": [*target.evidence_ids, evidence.id]})
+            try:
+                merged = await knowledge.merge(merged, expected_versions=plan["versions"])
+            except KnowledgeVersionConflict as exc:
+                raise HTTPException(409, "VERSION_CONFLICT") from exc
+            result = {"knowledge_id": merged.id, "version": merged.version,
+                      "superseded_ids": [key for key in plan["versions"] if key != merged.id]}
+        else:
+            result = await memory_update(MemoryUpdateRequest(knowledge_id=plan["knowledge_id"], scope=plan["scope"],
+                expected_version=plan["expected_version"], title=plan["title"],
+                body={"content": plan["text"], "document_sources": plan["sources"]},
+                idempotency_key="dreaming-review:" + plan_id), ingestion=ingestion, knowledge=knowledge,
+                knowledge_repo=knowledge_repo, security=security, sync=sync, idempotency=receipts)
     except HTTPException as exc:
         # An in-flight duplicate must not overwrite the first request's outcome.
         if exc.detail != "IDEMPOTENCY_IN_PROGRESS":
             await db.execute("UPDATE dreaming_plans SET status='failed' WHERE id=? AND status='executing'", (plan_id,))
             await db.commit()
+        raise
+    except Exception:
+        if plan["operation"] == "merge":
+            await db.execute("UPDATE dreaming_plans SET status='failed' WHERE id=? AND status='executing'", (plan_id,))
+            await db.commit()
+            await ws_manager.broadcast("dreaming_review", {"plan_id": plan_id, "status": "failed"})
         raise
     await db.execute("UPDATE dreaming_plans SET status='completed',result=? WHERE id=?",
                      (json.dumps(result), plan_id))

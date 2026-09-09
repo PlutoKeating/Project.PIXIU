@@ -24,8 +24,9 @@ class MemoryProposal(BaseModel):
     title: str = Field(min_length=1, max_length=512)
     text: str = Field(min_length=1, max_length=60000)
     source_refs: list[SourceReference] = Field(min_length=1)
-    operation: Literal["create", "update"] = "create"
+    operation: Literal["create", "update", "merge"] = "create"
     knowledge_id: str | None = None
+    merge_ids: list[str] = Field(default_factory=list, max_length=20)
 
 
 class DreamingSession:
@@ -113,7 +114,15 @@ class DreamingSession:
                 raise ValueError("Proposal refers to an unread or unauthorized source")
         if parsed.operation == "create" and parsed.knowledge_id is not None:
             raise ValueError("Creation cannot target an existing memory")
-        if parsed.operation == "update":
+        if parsed.operation != "merge" and parsed.merge_ids:
+            raise ValueError("Only merge plans can contain multiple memories")
+        if parsed.operation == "merge":
+            if (len(set(parsed.merge_ids)) < 2 or len(set(parsed.merge_ids)) != len(parsed.merge_ids)
+                    or parsed.knowledge_id not in parsed.merge_ids
+                    or any(key not in self.memory_snapshots for key in parsed.merge_ids)):
+                raise ValueError("Read all distinct merge targets before proposing consolidation")
+            parsed._versions = {key: self.memory_snapshots[key]["version"] for key in parsed.merge_ids}
+        if parsed.operation in {"update", "merge"}:
             if parsed.knowledge_id not in self.memory_snapshots:
                 raise ValueError("Read the existing memory before proposing changes")
             # Freeze the reviewed version; later model reads cannot alter this plan.
@@ -127,11 +136,12 @@ class DreamingSession:
         if plan_id not in self.plans:
             raise ValueError("Unknown plan")
         proposal = self.plans[plan_id]
-        if not ((proposal.operation == "create" and self.approved) or plan_id in self.reviewed_plans):
-            if self.queue_reviews and proposal.operation == "update":
+        if proposal.operation == "merge" or not ((proposal.operation == "create" and self.approved) or plan_id in self.reviewed_plans):
+            if self.queue_reviews and proposal.operation in {"update", "merge"}:
                 if plan_id not in self.pending_reviews:
                     self.pending_reviews[plan_id] = await self.api("POST", "/dreaming/plans", {
-                        "operation": "update", "scope": self.scope, "knowledge_id": proposal.knowledge_id,
+                        "operation": proposal.operation, "scope": self.scope, "knowledge_id": proposal.knowledge_id,
+                        "versions": getattr(proposal, "_versions", {}),
                         "expected_version": proposal._snapshot["version"], "title": proposal.title,
                         "text": proposal.text, "source_refs": [ref.model_dump() for ref in proposal.source_refs]})
                 return self.pending_reviews[plan_id]

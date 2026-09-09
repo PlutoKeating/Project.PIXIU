@@ -1890,3 +1890,37 @@ def test_dreaming_review_cannot_overwrite_an_intervening_edit(client):
     assert current['body']['content'] == 'manual change' and current['version'] == 2
     assert client.get('/dreaming/plans').json()['plans'][0]['status'] == 'failed'
     assert client.post('/dreaming/plans/' + plan + '/decision', json={'approve': False}).json()['status'] == 'rejected'
+
+
+def test_dreaming_merge_requires_review_and_preserves_both_sources(client):
+    import base64
+    from backend.foundation.storage.vector_store import SqliteVectorStore
+    original_factory = app.dependency_overrides[get_knowledge_service]
+    async def with_vector_store():
+        service = await original_factory()
+        service._vector_store = SqliteVectorStore(await di_module.get_db())
+        return service
+    app.dependency_overrides[get_knowledge_service] = with_vector_store
+    first = _write_knowledge_id(client, title="电费安排", scope="user:alice")
+    second = _write_knowledge_id(client, title="燃气安排", scope="user:alice")
+    doc = client.post('/documents', json={'filename': '能源.txt',
+        'file_base64': base64.b64encode('将能源安排统一整理'.encode()).decode()}).json()
+    request = {'operation': 'merge', 'scope': 'user:alice', 'knowledge_id': first,
+        'expected_version': 1, 'versions': {first: 1, second: 1},
+        'title': '家庭能源安排', 'text': '统一安排电费与燃气缴费',
+        'source_refs': [{'document_id': doc['document_id'], 'version': doc['version'],
+                         'block_id': doc['blocks'][0]['id']}]}
+    proposed = client.post('/dreaming/plans', json=request)
+    assert proposed.status_code == 200, proposed.text
+    plan = proposed.json()['plan_id']
+    pending = client.get('/dreaming/plans').json()['plans'][0]
+    assert {item['knowledge_id'] for item in pending['originals']} == {first, second}
+    assert client.get('/memory/items/' + second, params={'scope': 'user:alice'}).status_code == 200
+    decision = client.post('/dreaming/plans/' + plan + '/decision', json={'approve': True})
+    assert decision.status_code == 200, decision.text
+    assert decision.json()['result']['superseded_ids'] == [second]
+    assert client.post('/dreaming/plans/' + plan + '/decision', json={'approve': True}).json() == decision.json()
+    assert client.get('/memory/items/' + second, params={'scope': 'user:alice'}).status_code == 404
+    saved = client.get('/memory/items/' + first, params={'scope': 'user:alice'}).json()
+    assert saved['version'] == 2 and len(saved['evidence_ids']) >= 3
+    assert len(saved['body']['merged_from']) == 2

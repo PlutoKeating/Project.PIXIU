@@ -73,13 +73,14 @@ def build_server(endpoint: str, document_ids: frozenset[str], dreaming=None, api
 
         @server.tool()
         def memory_plan(title: str, text: str, source_refs: list[dict],
-                        operation: str = "create", knowledge_id: str | None = None) -> dict:
+                        operation: str = "create", knowledge_id: str | None = None,
+                        merge_ids: list[str] | None = None) -> dict:
             """Propose a memory supported by already-read document blocks.
 
             Each reference has document_id, version and block_id. This does not approve execution.
             """
             return dreaming.plan({"title": title, "text": text, "source_refs": source_refs,
-                                  "operation": operation, "knowledge_id": knowledge_id})
+                                  "operation": operation, "knowledge_id": knowledge_id, "merge_ids": merge_ids or []})
 
         @server.tool()
         async def memory_apply(plan_id: str) -> dict:

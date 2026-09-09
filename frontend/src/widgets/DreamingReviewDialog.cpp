@@ -18,15 +18,15 @@ DreamingReviewDialog::DreamingReviewDialog(const QUrl &endpoint, QWidget *parent
     setObjectName("dreamingReviewDialog");
     resize(880, 580);
     auto *layout = new QVBoxLayout(this);
-    auto *intro = new QLabel(tr("助手根据新资料提出了以下更正。核对原内容与新内容后，批准执行或保留原内容。"), this);
+    auto *intro = new QLabel(tr("助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。"), this);
     intro->setWordWrap(true); layout->addWidget(intro);
     m_plans = new QListWidget(this); m_plans->setMaximumHeight(140); layout->addWidget(m_plans);
     auto *columns = new QHBoxLayout;
     m_before = new QPlainTextEdit(this); m_before->setReadOnly(true);
     m_before->setAccessibleName(tr("原内容"));
     m_after = new QPlainTextEdit(this); m_after->setReadOnly(true);
-    m_after->setAccessibleName(tr("拟更正内容"));
-    for (auto pair : {qMakePair(tr("原内容"), m_before), qMakePair(tr("拟更正内容"), m_after)}) {
+    m_after->setAccessibleName(tr("整理后内容"));
+    for (auto pair : {qMakePair(tr("原内容"), m_before), qMakePair(tr("整理后内容"), m_after)}) {
         auto *column = new QVBoxLayout; column->addWidget(new QLabel(pair.first, this));
         column->addWidget(pair.second); columns->addLayout(column);
     }
@@ -50,11 +50,25 @@ void DreamingReviewDialog::selected()
     const auto value = (index >= 0 && index < m_records.size() ? m_records.at(index).toObject() : QJsonObject());
     m_approve->setEnabled(!m_busy && value.value("status") == "pending");
     m_reject->setEnabled(!m_busy && index >= 0 && value.value("status") != "executing");
+    const bool merge = value.value("operation") == "merge";
+    m_approve->setText(merge ? tr("批准合并") : tr("批准更正"));
     const auto before = value.value("before").toObject();
     const auto body = before.value("body").toObject();
     QString text = body.value("content").toString(body.value("text").toString());
     if (text.isEmpty() && !body.isEmpty()) text = QString::fromUtf8(QJsonDocument(body).toJson(QJsonDocument::Indented));
-    m_before->setPlainText(before.value("title").toString() + "\n\n" + text);
+    QString originalText = before.value("title").toString() + "\n\n" + text;
+    if (merge) {
+        QStringList originals;
+        for (const auto &entry : value.value("originals").toArray()) {
+            const auto record = entry.toObject();
+            const auto content = record.value("body").toObject();
+            QString details = content.value("content").toString(content.value("text").toString());
+            if (details.isEmpty()) details = QString::fromUtf8(QJsonDocument(content).toJson(QJsonDocument::Indented));
+            originals.append(record.value("title").toString() + "\n" + details);
+        }
+        originalText = tr("以下记录将合并为右侧的一条记忆，原始来源会保留。\n\n") + originals.join("\n\n────────\n\n");
+    }
+    m_before->setPlainText(originalText);
     m_after->setPlainText(value.value("title").toString() + "\n\n" + value.value("text").toString());
 }
 void DreamingReviewDialog::refresh()
@@ -76,7 +90,7 @@ void DreamingReviewDialog::refresh()
                 m_plans->addItem(plan.value("title").toString() + (plan.value("status") == "failed" ? tr(" · 原内容已变化或执行失败") : QString()));
             }
             if (!m_records.isEmpty()) m_plans->setCurrentRow(0);
-            m_status->setText(m_records.isEmpty() ? tr("暂无待审批的整理方案。") : tr("批准前请核对更正内容。"));
+            m_status->setText(m_records.isEmpty() ? tr("暂无待审批的整理方案。") : tr("批准前请核对整理内容。"));
             emit pendingChanged(m_records.size());
         }
         reply->deleteLater(); selected();
