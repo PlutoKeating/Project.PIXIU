@@ -1,8 +1,8 @@
 {
   "status": "按语音时间生成，待逐段试听和画面校准",
   "fps": 30,
-  "duration": 13493,
-  "seconds": 449.76666666666665,
+  "duration": 11686,
+  "seconds": 389.53333333333336,
   "shots": [
     {
       "id": "s01",
@@ -15,32 +15,32 @@
       "visual": "品牌抽象画面",
       "status": "revision-in-progress",
       "from": 0,
-      "duration": 287,
+      "duration": 257,
       "audio": "audio/s01.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s01/3c9bf256f4a7.mp3",
-      "speech_end_frame": 272,
+      "audio_source": "raw/audio/s01/da881c4670c4.mp3",
+      "speech_end_frame": 242,
       "tail_frames": 15,
       "captions": [
         {
           "text": "貔貅，",
-          "from": 18,
-          "to": 39
+          "from": 16,
+          "to": 34
         },
         {
           "text": "面向麒麟操作系统智能体的去中心化记忆系统。",
-          "from": 47,
-          "to": 166
+          "from": 41,
+          "to": 147
         },
         {
           "text": "让每一台设备的记忆，",
-          "from": 180,
-          "to": 235
+          "from": 161,
+          "to": 207
         },
         {
           "text": "彼此相通。",
-          "from": 241,
-          "to": 287
+          "from": 213,
+          "to": 257
         }
       ]
     },
@@ -54,38 +54,38 @@
       "narration": "在工作电脑上交代过的安排，换到另一台设备，还能接着使用。貔貅连接设备之间的知识与经验，让助手记住你的工作方式。",
       "visual": "痛点字卡",
       "status": "revision-in-progress",
-      "from": 287,
-      "duration": 365,
+      "from": 257,
+      "duration": 310,
       "audio": "audio/s02.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s02/34f80c5a6d87.mp3",
-      "speech_end_frame": 357,
+      "audio_source": "raw/audio/s02/9dbe6514a8f8.mp3",
+      "speech_end_frame": 302,
       "tail_frames": 8,
       "captions": [
         {
           "text": "在工作电脑上交代过的安排，",
-          "from": 18,
-          "to": 99
+          "from": 16,
+          "to": 79
         },
         {
           "text": "换到另一台设备，",
-          "from": 106,
-          "to": 147
+          "from": 82,
+          "to": 118
         },
         {
           "text": "还能接着使用。",
-          "from": 149,
-          "to": 187
+          "from": 120,
+          "to": 152
         },
         {
           "text": "貔貅连接设备之间的知识与经验，",
-          "from": 201,
-          "to": 280
+          "from": 166,
+          "to": 237
         },
         {
           "text": "让助手记住你的工作方式。",
-          "from": 286,
-          "to": 365
+          "from": 243,
+          "to": 310
         }
       ]
     },
@@ -99,43 +99,43 @@
       "narration": "貔貅的关键创新，是把孤立的本地记忆，连接成可信设备之间的集体记忆网络。知识在端侧保存，在授权范围内共享，再由每台设备上的智能体检索和复用。",
       "visual": "蓝白共享记忆能力示意；spotlight-hero-card 聚焦、悬浮、归位后展示对等设备网络",
       "status": "revision-in-progress",
-      "from": 652,
-      "duration": 456,
+      "from": 567,
+      "duration": 396,
       "audio": "audio/s03.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s03/dfbc03f700e7.mp3",
-      "speech_end_frame": 448,
+      "audio_source": "raw/audio/s03/3a4651254e3f.mp3",
+      "speech_end_frame": 388,
       "tail_frames": 8,
       "captions": [
         {
           "text": "貔貅的关键创新，",
-          "from": 18,
-          "to": 65
+          "from": 16,
+          "to": 60
         },
         {
           "text": "是把孤立的本地记忆，",
-          "from": 66,
-          "to": 123
+          "from": 61,
+          "to": 107
         },
         {
           "text": "连接成可信设备之间的集体记忆网络。",
-          "from": 127,
-          "to": 223
+          "from": 114,
+          "to": 198
         },
         {
           "text": "知识在端侧保存，",
-          "from": 238,
-          "to": 290
+          "from": 212,
+          "to": 257
         },
         {
           "text": "在授权范围内共享，",
-          "from": 293,
-          "to": 343
+          "from": 258,
+          "to": 303
         },
         {
           "text": "再由每台设备上的智能体检索和复用。",
-          "from": 347,
-          "to": 456
+          "from": 306,
+          "to": 396
         }
       ]
     },
@@ -149,43 +149,43 @@
       "narration": "现在进入实际产品。会话、记忆、设备和设置，都在同一个桌面窗口中。服务与能力页，可以核对当前版本，以及系统向量化和向量数据库的实际运行状态。",
       "visual": "原生四入口与服务读取状态裁片，版本和麒麟适配结果放大；明确演示快照边界",
       "status": "revision-in-progress",
-      "from": 1108,
-      "duration": 484,
+      "from": 963,
+      "duration": 400,
       "audio": "audio/s04.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s04/c4eb086bd5ae.mp3",
-      "speech_end_frame": 476,
+      "audio_source": "raw/audio/s04/2e163b041185.mp3",
+      "speech_end_frame": 392,
       "tail_frames": 8,
       "captions": [
         {
           "text": "现在进入实际产品。",
-          "from": 18,
-          "to": 76
+          "from": 16,
+          "to": 67
         },
         {
           "text": "会话、记忆、设备和设置，",
-          "from": 90,
-          "to": 187
+          "from": 81,
+          "to": 149
         },
         {
           "text": "都在同一个桌面窗口中。",
-          "from": 189,
-          "to": 245
+          "from": 151,
+          "to": 197
         },
         {
           "text": "服务与能力页，",
-          "from": 258,
-          "to": 297
+          "from": 211,
+          "to": 242
         },
         {
           "text": "可以核对当前版本，",
-          "from": 300,
-          "to": 347
+          "from": 245,
+          "to": 284
         },
         {
           "text": "以及系统向量化和向量数据库的实际运行状态。",
-          "from": 352,
-          "to": 484
+          "from": 287,
+          "to": 400
         }
       ]
     },
@@ -199,33 +199,33 @@
       "narration": "我们复用开放麒麟的智能体宿主和运行时，提供会话、规划与工具能力。原创的记忆适配层，把它连接到貔貅的接入、检索、安全和分布式同步引擎。",
       "visual": "架构示意",
       "status": "revision-in-progress",
-      "from": 1592,
-      "duration": 440,
+      "from": 1363,
+      "duration": 374,
       "audio": "audio/s05.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s05/f9b2b89c0d4f.mp3",
-      "speech_end_frame": 432,
+      "audio_source": "raw/audio/s05/3277b190963a.mp3",
+      "speech_end_frame": 366,
       "tail_frames": 8,
       "captions": [
         {
           "text": "我们复用开放麒麟的智能体宿主和运行时，",
-          "from": 18,
-          "to": 125
+          "from": 16,
+          "to": 106
         },
         {
           "text": "提供会话、规划与工具能力。",
-          "from": 132,
-          "to": 207
+          "from": 109,
+          "to": 174
         },
         {
           "text": "原创的记忆适配层，",
-          "from": 221,
-          "to": 270
+          "from": 188,
+          "to": 230
         },
         {
           "text": "把它连接到貔貅的接入、检索、安全和分布式同步引擎。",
-          "from": 272,
-          "to": 440
+          "from": 232,
+          "to": 374
         }
       ]
     },
@@ -239,53 +239,53 @@
       "narration": "助手可以计算预算、写入文件，并联网搜索资料。这里展示采购复核单的处理过程。把结果保存为记忆后，打开新会话，助手通过工作卡片找回采购单，引用来源，继续使用。",
       "visual": "网关真实计算、四行文件和搜索结果摘录；另一次原生采购复核单保存记录与新会话工作卡、同来源回答裁片",
       "status": "revision-in-progress",
-      "from": 2032,
-      "duration": 527,
+      "from": 1737,
+      "duration": 453,
       "audio": "audio/s06.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s06/956f14c234dd.mp3",
-      "speech_end_frame": 519,
+      "audio_source": "raw/audio/s06/943a0b9d43f5.mp3",
+      "speech_end_frame": 445,
       "tail_frames": 8,
       "captions": [
         {
           "text": "助手可以计算预算、写入文件，",
-          "from": 18,
-          "to": 99
+          "from": 16,
+          "to": 84
         },
         {
           "text": "并联网搜索资料。",
-          "from": 102,
-          "to": 147
+          "from": 88,
+          "to": 127
         },
         {
           "text": "这里展示采购复核单的处理过程。",
-          "from": 161,
-          "to": 255
+          "from": 141,
+          "to": 220
         },
         {
           "text": "把结果保存为记忆后，",
-          "from": 270,
-          "to": 322
+          "from": 234,
+          "to": 279
         },
         {
           "text": "打开新会话，",
-          "from": 324,
-          "to": 360
+          "from": 281,
+          "to": 309
         },
         {
           "text": "助手通过工作卡片找回采购单，",
-          "from": 369,
-          "to": 458
+          "from": 316,
+          "to": 392
         },
         {
           "text": "引用来源，",
-          "from": 462,
-          "to": 491
+          "from": 396,
+          "to": 419
         },
         {
           "text": "继续使用。",
-          "from": 493,
-          "to": 527
+          "from": 420,
+          "to": 453
         }
       ]
     },
@@ -299,43 +299,43 @@
       "narration": "以家庭账单为例：电费二百一十元，水费六十八元五角，燃气费一百五十六元。保存之后开启新会话，再询问水电燃气支出，就能找到这条长期记忆。",
       "visual": "原生4K实拍：账单录入、保存成功、新会话实际工具检索回答；三项金额210/68.50/156",
       "status": "revision-in-progress",
-      "from": 2559,
-      "duration": 473,
+      "from": 2190,
+      "duration": 396,
       "audio": "audio/s07.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s07/a61783a282b2.mp3",
-      "speech_end_frame": 465,
+      "audio_source": "raw/audio/s07/f7e0e66538e3.mp3",
+      "speech_end_frame": 388,
       "tail_frames": 8,
       "captions": [
         {
           "text": "以家庭账单为例：电费二百一十元，",
-          "from": 18,
-          "to": 121
+          "from": 16,
+          "to": 105
         },
         {
           "text": "水费六十八元五角，",
-          "from": 125,
-          "to": 180
+          "from": 108,
+          "to": 153
         },
         {
           "text": "燃气费一百五十六元。",
-          "from": 186,
-          "to": 240
+          "from": 156,
+          "to": 205
         },
         {
           "text": "保存之后开启新会话，",
-          "from": 254,
-          "to": 323
+          "from": 219,
+          "to": 275
         },
         {
           "text": "再询问水电燃气支出，",
-          "from": 330,
-          "to": 390
+          "from": 283,
+          "to": 332
         },
         {
           "text": "就能找到这条长期记忆。",
-          "from": 393,
-          "to": 473
+          "from": 337,
+          "to": 396
         }
       ]
     },
@@ -349,43 +349,43 @@
       "narration": "合计四百三十四元五角。点击本会话记忆来源，展开命中的账单，逐项核对金额。回答与依据连在一起，复核更方便。",
       "visual": "同一账单回答434.50元 → 原始证据详情；row-embed 只强调截图真实槽位",
       "status": "revision-in-progress",
-      "from": 3032,
-      "duration": 378,
+      "from": 2586,
+      "duration": 330,
       "audio": "audio/s08.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s08/57609e3184fe.mp3",
-      "speech_end_frame": 370,
+      "audio_source": "raw/audio/s08/3ae5fb0f8ea6.mp3",
+      "speech_end_frame": 322,
       "tail_frames": 8,
       "captions": [
         {
           "text": "合计四百三十四元五角。",
-          "from": 18,
-          "to": 84
+          "from": 16,
+          "to": 78
         },
         {
           "text": "点击本会话记忆来源，",
-          "from": 97,
-          "to": 156
+          "from": 92,
+          "to": 142
         },
         {
           "text": "展开命中的账单，",
-          "from": 161,
-          "to": 208
+          "from": 145,
+          "to": 185
         },
         {
           "text": "逐项核对金额。",
-          "from": 210,
-          "to": 254
+          "from": 188,
+          "to": 224
         },
         {
           "text": "回答与依据连在一起，",
-          "from": 268,
-          "to": 324
+          "from": 238,
+          "to": 287
         },
         {
           "text": "复核更方便。",
-          "from": 332,
-          "to": 378
+          "from": 291,
+          "to": 330
         }
       ]
     },
@@ -399,33 +399,33 @@
       "narration": "对话、工具结果、用户行为和手动配置，统一转成带来源的证据。接入时进行格式校验、清洗、质量评估和敏感检测，再形成可检索的知识。",
       "visual": "十张真实裁片与十六张复用裁片加速发牌；原生会话来源放大；同次API输入清洗、质量与敏感级别、同来源检索结果。",
       "status": "revision-in-progress",
-      "from": 3410,
-      "duration": 450,
+      "from": 2916,
+      "duration": 371,
       "audio": "audio/s09.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s09/2dbd9e964127.mp3",
-      "speech_end_frame": 442,
+      "audio_source": "raw/audio/s09/9e4fc9b9b8f5.mp3",
+      "speech_end_frame": 363,
       "tail_frames": 8,
       "captions": [
         {
           "text": "对话、工具结果、用户行为和手动配置，",
-          "from": 18,
-          "to": 144
+          "from": 16,
+          "to": 118
         },
         {
           "text": "统一转成带来源的证据。",
-          "from": 148,
-          "to": 206
+          "from": 120,
+          "to": 170
         },
         {
           "text": "接入时进行格式校验、清洗、质量评估和敏感检测，",
-          "from": 221,
-          "to": 384
+          "from": 184,
+          "to": 315
         },
         {
           "text": "再形成可检索的知识。",
-          "from": 388,
-          "to": 450
+          "from": 318,
+          "to": 371
         }
       ]
     },
@@ -439,43 +439,43 @@
       "narration": "在记忆页录入标题与正文，并选择保存范围。个人内容保留在私有范围；需要协作的内容，才明确放进已配置的共享范围。保存后可以马上检索和核对正文。",
       "visual": "个人范围录入示例的标题正文、范围说明、保存提示与同一账单检索正文裁片",
       "status": "revision-in-progress",
-      "from": 3860,
-      "duration": 456,
+      "from": 3287,
+      "duration": 408,
       "audio": "audio/s10.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s10/02522ab02cc8.mp3",
-      "speech_end_frame": 448,
+      "audio_source": "raw/audio/s10/aa2de9a9469a.mp3",
+      "speech_end_frame": 400,
       "tail_frames": 8,
       "captions": [
         {
           "text": "在记忆页录入标题与正文，",
-          "from": 18,
-          "to": 87
+          "from": 16,
+          "to": 78
         },
         {
           "text": "并选择保存范围。",
-          "from": 91,
-          "to": 133
+          "from": 81,
+          "to": 120
         },
         {
           "text": "个人内容保留在私有范围；",
-          "from": 147,
-          "to": 213
+          "from": 134,
+          "to": 187
         },
         {
           "text": "需要协作的内容，",
-          "from": 223,
-          "to": 265
+          "from": 197,
+          "to": 234
         },
         {
           "text": "才明确放进已配置的共享范围。",
-          "from": 266,
-          "to": 343
+          "from": 235,
+          "to": 303
         },
         {
           "text": "保存后可以马上检索和核对正文。",
-          "from": 358,
-          "to": 456
+          "from": 318,
+          "to": 408
         }
       ]
     },
@@ -489,43 +489,43 @@
       "narration": "需要自动记住文件时，进入采集与隐私，选择演示目录并显式开启。新增文本文件后，在活动日志核对实际入库结果，还能在来源区查看文件路径与采集时间。",
       "visual": "已授权目录与开关、文件入库日志、采集路径与时间原生裁片",
       "status": "revision-in-progress",
-      "from": 4316,
-      "duration": 482,
+      "from": 3695,
+      "duration": 426,
       "audio": "audio/s11.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s11/7af76030ea0e.mp3",
-      "speech_end_frame": 474,
+      "audio_source": "raw/audio/s11/20d0167797b8.mp3",
+      "speech_end_frame": 418,
       "tail_frames": 8,
       "captions": [
         {
           "text": "需要自动记住文件时，",
-          "from": 18,
-          "to": 73
+          "from": 16,
+          "to": 63
         },
         {
           "text": "进入采集与隐私，",
-          "from": 78,
-          "to": 127
+          "from": 67,
+          "to": 111
         },
         {
           "text": "选择演示目录并显式开启。",
-          "from": 131,
-          "to": 200
+          "from": 118,
+          "to": 182
         },
         {
           "text": "新增文本文件后，",
-          "from": 215,
-          "to": 262
+          "from": 196,
+          "to": 238
         },
         {
           "text": "在活动日志核对实际入库结果，",
-          "from": 267,
-          "to": 352
+          "from": 240,
+          "to": 315
         },
         {
           "text": "还能在来源区查看文件路径与采集时间。",
-          "from": 359,
-          "to": 482
+          "from": 319,
+          "to": 426
         }
       ]
     },
@@ -539,38 +539,38 @@
       "narration": "应用使用记录，也能成为了解工作习惯的线索。这里的记录保留了应用名称和使用时长。你可以在采集与隐私中管理授权，随时关闭行为采集。",
       "visual": "应用名称与118秒使用记录逐项聚焦，随后展示原生授权关闭状态",
       "status": "revision-in-progress",
-      "from": 4798,
-      "duration": 426,
+      "from": 4121,
+      "duration": 370,
       "audio": "audio/s12.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s12/312ef2e0e405.mp3",
-      "speech_end_frame": 418,
+      "audio_source": "raw/audio/s12/b675736f2e32.mp3",
+      "speech_end_frame": 362,
       "tail_frames": 8,
       "captions": [
         {
           "text": "应用使用记录，",
-          "from": 18,
-          "to": 58
+          "from": 16,
+          "to": 50
         },
         {
           "text": "也能成为了解工作习惯的线索。",
-          "from": 61,
-          "to": 133
+          "from": 55,
+          "to": 119
         },
         {
           "text": "这里的记录保留了应用名称和使用时长。",
-          "from": 148,
-          "to": 258
+          "from": 133,
+          "to": 224
         },
         {
           "text": "你可以在采集与隐私中管理授权，",
-          "from": 272,
-          "to": 356
+          "from": 238,
+          "to": 311
         },
         {
           "text": "随时关闭行为采集。",
-          "from": 364,
-          "to": 426
+          "from": 315,
+          "to": 370
         }
       ]
     },
@@ -584,48 +584,48 @@
       "narration": "只记得内容中的几个词，也可以找回记忆。系统把关键词、语义和关联信息结合起来，筛选相关结果。打开来源，就能查看原始配置，核对其中的详细说明。",
       "visual": "非标题关键词“详细说明”实际命中“回答风格演示”，同源证据详情；真实4K裁片重排与检索机制示意",
       "status": "revision-in-progress",
-      "from": 5224,
-      "duration": 473,
+      "from": 4491,
+      "duration": 411,
       "audio": "audio/s13.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s13/9c695d80f20a.mp3",
-      "speech_end_frame": 465,
+      "audio_source": "raw/audio/s13/08290b00eada.mp3",
+      "speech_end_frame": 403,
       "tail_frames": 8,
       "captions": [
         {
           "text": "只记得内容中的几个词，",
-          "from": 18,
-          "to": 74
+          "from": 16,
+          "to": 65
         },
         {
           "text": "也可以找回记忆。",
-          "from": 77,
-          "to": 114
+          "from": 70,
+          "to": 104
         },
         {
           "text": "系统把关键词、语义和关联信息结合起来，",
-          "from": 128,
-          "to": 258
+          "from": 118,
+          "to": 223
         },
         {
           "text": "筛选相关结果。",
-          "from": 260,
-          "to": 301
+          "from": 225,
+          "to": 262
         },
         {
           "text": "打开来源，",
-          "from": 315,
-          "to": 347
+          "from": 276,
+          "to": 302
         },
         {
           "text": "就能查看原始配置，",
-          "from": 348,
-          "to": 401
+          "from": 304,
+          "to": 349
         },
         {
           "text": "核对其中的详细说明。",
-          "from": 408,
-          "to": 473
+          "from": 352,
+          "to": 411
         }
       ]
     },
@@ -639,53 +639,53 @@
       "narration": "记忆可以保存事实、流程、案例和模板。这里记录了书架位置、图书归还步骤、分类调整经验，以及阅读计划的填写说明。打开流程正文，按步骤核对书名、整理图书并更新登记。遇到相似任务时，再检索这些内容，交给助手作为执行参考。",
       "visual": "四类知识真实正文摘录概览；放大原生图书归还流程长正文，保留四步操作",
       "status": "revision-in-progress",
-      "from": 5697,
-      "duration": 740,
+      "from": 4902,
+      "duration": 631,
       "audio": "audio/s14.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s14/29218cd700c6.mp3",
-      "speech_end_frame": 732,
+      "audio_source": "raw/audio/s14/10177e9ccde1.mp3",
+      "speech_end_frame": 623,
       "tail_frames": 8,
       "captions": [
         {
           "text": "记忆可以保存事实、流程、案例和模板。",
-          "from": 18,
-          "to": 138
+          "from": 16,
+          "to": 118
         },
         {
           "text": "这里记录了书架位置、图书归还步骤、分类调整经验，",
-          "from": 153,
-          "to": 301
+          "from": 132,
+          "to": 253
         },
         {
           "text": "以及阅读计划的填写说明。",
-          "from": 305,
-          "to": 371
+          "from": 256,
+          "to": 314
         },
         {
           "text": "打开流程正文，",
-          "from": 385,
-          "to": 430
+          "from": 328,
+          "to": 364
         },
         {
           "text": "按步骤核对书名、整理图书并更新登记。",
-          "from": 435,
-          "to": 549
+          "from": 367,
+          "to": 468
         },
         {
           "text": "遇到相似任务时，",
-          "from": 564,
-          "to": 613
+          "from": 482,
+          "to": 522
         },
         {
           "text": "再检索这些内容，",
-          "from": 615,
-          "to": 660
+          "from": 524,
+          "to": 562
         },
         {
           "text": "交给助手作为执行参考。",
-          "from": 662,
-          "to": 740
+          "from": 563,
+          "to": 631
         }
       ]
     },
@@ -699,43 +699,43 @@
       "narration": "偏好记忆关注操作习惯、输出风格和安全策略。比如先要求回答简洁，后来改为详细说明。提取后查看当前版本与历史，就能看清每次变化，追溯自己的使用习惯。",
       "visual": "两类偏好提取示例依次呈现；原生输出风格版本二/三；三条历史裁片落定",
       "status": "revision-in-progress",
-      "from": 6437,
-      "duration": 530,
+      "from": 5533,
+      "duration": 457,
       "audio": "audio/s15.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s15/f2bca4e74a14.mp3",
-      "speech_end_frame": 522,
+      "audio_source": "raw/audio/s15/2e02c58b7028.mp3",
+      "speech_end_frame": 449,
       "tail_frames": 8,
       "captions": [
         {
           "text": "偏好记忆关注操作习惯、输出风格和安全策略。",
-          "from": 18,
-          "to": 169
+          "from": 16,
+          "to": 141
         },
         {
           "text": "比如先要求回答简洁，",
-          "from": 183,
-          "to": 254
+          "from": 155,
+          "to": 215
         },
         {
           "text": "后来改为详细说明。",
-          "from": 258,
-          "to": 309
+          "from": 221,
+          "to": 264
         },
         {
           "text": "提取后查看当前版本与历史，",
-          "from": 323,
-          "to": 410
+          "from": 278,
+          "to": 350
         },
         {
           "text": "就能看清每次变化，",
-          "from": 414,
-          "to": 468
+          "from": 354,
+          "to": 396
         },
         {
           "text": "追溯自己的使用习惯。",
-          "from": 471,
-          "to": 530
+          "from": 403,
+          "to": 457
         }
       ]
     },
@@ -749,48 +749,48 @@
       "narration": "把燃气费改为一百八十六元，总额变成四百六十四元五角。编辑基于读取时的版本：如果另一端已经更新，旧版本提交会被拒绝，保留输入，提醒重新核对。语义矛盾还会形成冲突审计。",
       "visual": "账单金额与版本原生裁片；另一条记忆的旧版本拒绝；书架层数3→4的原生只读审计与接口原值",
       "status": "revision-in-progress",
-      "from": 6967,
-      "duration": 541,
+      "from": 5990,
+      "duration": 485,
       "audio": "audio/s16.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s16/64ef520e06bc.mp3",
-      "speech_end_frame": 533,
+      "audio_source": "raw/audio/s16/7fa60ab864e9.mp3",
+      "speech_end_frame": 477,
       "tail_frames": 8,
       "captions": [
         {
           "text": "把燃气费改为一百八十六元，",
-          "from": 18,
-          "to": 86
+          "from": 16,
+          "to": 80
         },
         {
           "text": "总额变成四百六十四元五角。",
-          "from": 93,
-          "to": 168
+          "from": 85,
+          "to": 148
         },
         {
           "text": "编辑基于读取时的版本：如果另一端已经更新，",
-          "from": 181,
-          "to": 298
+          "from": 163,
+          "to": 266
         },
         {
           "text": "旧版本提交会被拒绝，",
-          "from": 298,
-          "to": 360
+          "from": 267,
+          "to": 318
         },
         {
           "text": "保留输入，",
-          "from": 364,
-          "to": 393
+          "from": 320,
+          "to": 343
         },
         {
           "text": "提醒重新核对。",
-          "from": 395,
-          "to": 436
+          "from": 348,
+          "to": 390
         },
         {
           "text": "语义矛盾还会形成冲突审计。",
-          "from": 450,
-          "to": 541
+          "from": 404,
+          "to": 485
         }
       ]
     },
@@ -804,43 +804,43 @@
       "narration": "当前轮次形成短期上下文，压缩或会话切换形成中期记录。需要长期保留的内容，再经晋升进入统一知识管线。检索时只注入预算内的相关记忆，并保留来源。",
       "visual": "短中期上下文创建、各晋升一条、同知识与来源ID复用及完整摘要，全部取自公共接口合成事件实测",
       "status": "revision-in-progress",
-      "from": 7508,
-      "duration": 516,
+      "from": 6475,
+      "duration": 439,
       "audio": "audio/s17.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s17/4c11415c498e.mp3",
-      "speech_end_frame": 508,
+      "audio_source": "raw/audio/s17/d458f2590296.mp3",
+      "speech_end_frame": 431,
       "tail_frames": 8,
       "captions": [
         {
           "text": "当前轮次形成短期上下文，",
-          "from": 18,
-          "to": 99
+          "from": 16,
+          "to": 84
         },
         {
           "text": "压缩或会话切换形成中期记录。",
-          "from": 108,
-          "to": 203
+          "from": 87,
+          "to": 161
         },
         {
           "text": "需要长期保留的内容，",
-          "from": 217,
-          "to": 272
+          "from": 175,
+          "to": 225
         },
         {
           "text": "再经晋升进入统一知识管线。",
-          "from": 275,
-          "to": 358
+          "from": 228,
+          "to": 304
         },
         {
           "text": "检索时只注入预算内的相关记忆，",
-          "from": 372,
-          "to": 469
+          "from": 318,
+          "to": 397
         },
         {
           "text": "并保留来源。",
-          "from": 472,
-          "to": 516
+          "from": 398,
+          "to": 439
         }
       ]
     },
@@ -854,28 +854,28 @@
       "narration": "接下来，看貔貅最关键的能力：让多台设备上的智能体，共享知识与经验。",
       "visual": "核心亮点字卡",
       "status": "revision-in-progress",
-      "from": 8024,
-      "duration": 223,
+      "from": 6914,
+      "duration": 199,
       "audio": "audio/s18.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s18/9012691a6994.mp3",
-      "speech_end_frame": 215,
+      "audio_source": "raw/audio/s18/90ef86d44505.mp3",
+      "speech_end_frame": 191,
       "tail_frames": 8,
       "captions": [
         {
           "text": "接下来，",
-          "from": 18,
-          "to": 43
+          "from": 16,
+          "to": 35
         },
         {
           "text": "看貔貅最关键的能力：让多台设备上的智能体，",
-          "from": 47,
-          "to": 167
+          "from": 43,
+          "to": 144
         },
         {
           "text": "共享知识与经验。",
-          "from": 170,
-          "to": 223
+          "from": 150,
+          "to": 199
         }
       ]
     },
@@ -889,48 +889,48 @@
       "narration": "在设备页交换配对信息，建立双向信任。随后查看已信任的设备，核对同步状态，也能发现附近的设备。把需要协作的电脑连接起来，为共享记忆做好准备。",
       "visual": "真实配对成功裁片；已信任节点、同步状态与附近设备随讲解逐项聚焦",
       "status": "revision-in-progress",
-      "from": 8247,
-      "duration": 455,
+      "from": 7113,
+      "duration": 400,
       "audio": "audio/s19.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s19/12d327341cd6.mp3",
-      "speech_end_frame": 447,
+      "audio_source": "raw/audio/s19/a2adb312f638.mp3",
+      "speech_end_frame": 392,
       "tail_frames": 8,
       "captions": [
         {
           "text": "在设备页交换配对信息，",
-          "from": 18,
-          "to": 85
+          "from": 16,
+          "to": 77
         },
         {
           "text": "建立双向信任。",
-          "from": 87,
-          "to": 131
+          "from": 79,
+          "to": 118
         },
         {
           "text": "随后查看已信任的设备，",
-          "from": 146,
-          "to": 208
+          "from": 132,
+          "to": 184
         },
         {
           "text": "核对同步状态，",
-          "from": 215,
-          "to": 257
+          "from": 188,
+          "to": 223
         },
         {
           "text": "也能发现附近的设备。",
-          "from": 258,
-          "to": 306
+          "from": 225,
+          "to": 266
         },
         {
           "text": "把需要协作的电脑连接起来，",
-          "from": 320,
-          "to": 384
+          "from": 280,
+          "to": 340
         },
         {
           "text": "为共享记忆做好准备。",
-          "from": 393,
-          "to": 455
+          "from": 344,
+          "to": 400
         }
       ]
     },
@@ -944,48 +944,48 @@
       "narration": "在笔记本的会话里，记下周六上午九点整理书房、书籍按主题分类的约定。换到客厅，请助手查找这份约定。它通过记忆工具找回共享内容，回答时间和分类方式，并注明知识来源。",
       "visual": "原生4K用户请求裁片 → 客厅完成后核对工具与回答原速录屏 → 来源结果定格",
       "status": "revision-in-progress",
-      "from": 8702,
-      "duration": 559,
+      "from": 7513,
+      "duration": 481,
       "audio": "audio/s20.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s20/1bce8884fc5f.mp3",
-      "speech_end_frame": 551,
+      "audio_source": "raw/audio/s20/fb646cbb1b49.mp3",
+      "speech_end_frame": 473,
       "tail_frames": 8,
       "captions": [
         {
           "text": "在笔记本的会话里，",
-          "from": 18,
-          "to": 64
+          "from": 16,
+          "to": 58
         },
         {
           "text": "记下周六上午九点整理书房、书籍按主题分类的约定。",
-          "from": 72,
-          "to": 225
+          "from": 64,
+          "to": 192
         },
         {
           "text": "换到客厅，",
-          "from": 239,
-          "to": 271
+          "from": 206,
+          "to": 233
         },
         {
           "text": "请助手查找这份约定。",
-          "from": 277,
-          "to": 336
+          "from": 236,
+          "to": 289
         },
         {
           "text": "它通过记忆工具找回共享内容，",
-          "from": 350,
-          "to": 435
+          "from": 303,
+          "to": 380
         },
         {
           "text": "回答时间和分类方式，",
-          "from": 441,
-          "to": 502
+          "from": 385,
+          "to": 432
         },
         {
           "text": "并注明知识来源。",
-          "from": 504,
-          "to": 559
+          "from": 434,
+          "to": 481
         }
       ]
     },
@@ -999,53 +999,53 @@
       "narration": "接着，用家庭节能约定验证断连恢复。暂时断开客厅设备的同步连接，其他设备继续工作。客厅保留自己的本地副本；恢复连接后，缺失的修改会逐步补齐，客厅也读到更新后的约定。",
       "visual": "公共接口原始检查点回放：断连前版本一、在线端版本二/客厅版本一、重连后客厅版本二",
       "status": "revision-in-progress",
-      "from": 9261,
-      "duration": 535,
+      "from": 7994,
+      "duration": 474,
       "audio": "audio/s21.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s21/08a6dd7ab639.mp3",
-      "speech_end_frame": 527,
+      "audio_source": "raw/audio/s21/69e2e09d240d.mp3",
+      "speech_end_frame": 466,
       "tail_frames": 8,
       "captions": [
         {
           "text": "接着，",
-          "from": 18,
-          "to": 37
+          "from": 16,
+          "to": 31
         },
         {
           "text": "用家庭节能约定验证断连恢复。",
-          "from": 45,
-          "to": 131
+          "from": 34,
+          "to": 109
         },
         {
           "text": "暂时断开客厅设备的同步连接，",
-          "from": 145,
-          "to": 228
+          "from": 123,
+          "to": 195
         },
         {
           "text": "其他设备继续工作。",
-          "from": 234,
-          "to": 286
+          "from": 198,
+          "to": 242
         },
         {
           "text": "客厅保留自己的本地副本；",
-          "from": 300,
-          "to": 362
+          "from": 256,
+          "to": 307
         },
         {
           "text": "恢复连接后，",
-          "from": 368,
-          "to": 401
+          "from": 314,
+          "to": 340
         },
         {
           "text": "缺失的修改会逐步补齐，",
-          "from": 405,
-          "to": 467
+          "from": 345,
+          "to": 407
         },
         {
           "text": "客厅也读到更新后的约定。",
-          "from": 471,
-          "to": 535
+          "from": 412,
+          "to": 474
         }
       ]
     },
@@ -1059,43 +1059,43 @@
       "narration": "两台设备从同一版本同时修改，会形成不同分支。系统识别修改的先后与并发关系，再按确定性规则合并。恢复连接后，三台设备都读到相同的版本三与同一正文。",
       "visual": "公共接口原始检查点回放：同一知识版本三的两个正文分支、恢复连接后三端正文一致",
       "status": "revision-in-progress",
-      "from": 9796,
-      "duration": 503,
+      "from": 8468,
+      "duration": 430,
       "audio": "audio/s22.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s22/6f079d0dbf23.mp3",
-      "speech_end_frame": 495,
+      "audio_source": "raw/audio/s22/98175c86e6b0.mp3",
+      "speech_end_frame": 422,
       "tail_frames": 8,
       "captions": [
         {
           "text": "两台设备从同一版本同时修改，",
-          "from": 18,
-          "to": 105
+          "from": 16,
+          "to": 89
         },
         {
           "text": "会形成不同分支。",
-          "from": 110,
-          "to": 157
+          "from": 90,
+          "to": 128
         },
         {
           "text": "系统识别修改的先后与并发关系，",
-          "from": 171,
-          "to": 262
+          "from": 142,
+          "to": 215
         },
         {
           "text": "再按确定性规则合并。",
-          "from": 268,
-          "to": 323
+          "from": 219,
+          "to": 269
         },
         {
           "text": "恢复连接后，",
-          "from": 337,
-          "to": 372
+          "from": 283,
+          "to": 313
         },
         {
           "text": "三台设备都读到相同的版本三与同一正文。",
-          "from": 379,
-          "to": 503
+          "from": 317,
+          "to": 430
         }
       ]
     },
@@ -1109,43 +1109,43 @@
       "narration": "个人记忆保存在本机，协作内容按共享范围管理。敏感检测会拦截包含敏感信息的共享写入。你还可以暂停同步，或选择设备解除信任，掌握自己的共享范围。",
       "visual": "真实接口记录：私有范围本机命中、另两端同ID同范围404、敏感共享422；原生暂停保存录像、解除确认裁片与单侧信任移除结果。",
       "status": "revision-in-progress",
-      "from": 10299,
-      "duration": 465,
+      "from": 8898,
+      "duration": 410,
       "audio": "audio/s23.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s23/695887351603.mp3",
-      "speech_end_frame": 457,
+      "audio_source": "raw/audio/s23/6acee00b8d42.mp3",
+      "speech_end_frame": 402,
       "tail_frames": 8,
       "captions": [
         {
           "text": "个人记忆保存在本机，",
-          "from": 18,
-          "to": 70
+          "from": 16,
+          "to": 63
         },
         {
           "text": "协作内容按共享范围管理。",
-          "from": 79,
-          "to": 145
+          "from": 70,
+          "to": 134
         },
         {
           "text": "敏感检测会拦截包含敏感信息的共享写入。",
-          "from": 159,
-          "to": 275
+          "from": 148,
+          "to": 245
         },
         {
           "text": "你还可以暂停同步，",
-          "from": 289,
-          "to": 336
+          "from": 259,
+          "to": 300
         },
         {
           "text": "或选择设备解除信任，",
-          "from": 337,
-          "to": 397
+          "from": 305,
+          "to": 352
         },
         {
           "text": "掌握自己的共享范围。",
-          "from": 403,
-          "to": 465
+          "from": 357,
+          "to": 410
         }
       ]
     },
@@ -1159,48 +1159,48 @@
       "narration": "说出要忘记的内容，先预览目标和范围，再明确确认。系统让知识失效并清理检索向量。共享记忆的删除标记会同步给其他设备，离线设备重连后，也会更新遗忘状态。",
       "visual": "本机便笺预览、确认入口、取消预览结果与确认结果原生裁片；随后为独立跨端删除标记检查点",
       "status": "revision-in-progress",
-      "from": 10764,
-      "duration": 500,
+      "from": 9308,
+      "duration": 439,
       "audio": "audio/s24.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s24/4f66e69f18a8.mp3",
-      "speech_end_frame": 492,
+      "audio_source": "raw/audio/s24/79c193b4be39.mp3",
+      "speech_end_frame": 431,
       "tail_frames": 8,
       "captions": [
         {
           "text": "说出要忘记的内容，",
-          "from": 18,
-          "to": 66
+          "from": 16,
+          "to": 59
         },
         {
           "text": "先预览目标和范围，",
-          "from": 70,
-          "to": 121
+          "from": 64,
+          "to": 107
         },
         {
           "text": "再明确确认。",
-          "from": 124,
-          "to": 157
+          "from": 110,
+          "to": 137
         },
         {
           "text": "系统让知识失效并清理检索向量。",
-          "from": 171,
-          "to": 277
+          "from": 150,
+          "to": 242
         },
         {
           "text": "共享记忆的删除标记会同步给其他设备，",
-          "from": 291,
-          "to": 393
+          "from": 256,
+          "to": 343
         },
         {
           "text": "离线设备重连后，",
-          "from": 399,
-          "to": 443
+          "from": 347,
+          "to": 387
         },
         {
           "text": "也会更新遗忘状态。",
-          "from": 444,
-          "to": 500
+          "from": 389,
+          "to": 439
         }
       ]
     },
@@ -1214,48 +1214,48 @@
       "narration": "洞察与简报，把近期高质量记忆整理为可继续检索的线索，并按日期汇总采集情况。用户可以顺着洞察回到正文，检查今天新沉淀了什么。打开这份月末归档步骤，继续整理资料。",
       "visual": "真实候选与采集简报逐行揭示；连续标题检索与来源录像，最终同源正文",
       "status": "revision-in-progress",
-      "from": 11264,
-      "duration": 523,
+      "from": 9747,
+      "duration": 455,
       "audio": "audio/s26.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s26/78af7e43465e.mp3",
-      "speech_end_frame": 515,
+      "audio_source": "raw/audio/s26/d57d5019ce5a.mp3",
+      "speech_end_frame": 447,
       "tail_frames": 8,
       "captions": [
         {
           "text": "洞察与简报，",
-          "from": 18,
-          "to": 53
+          "from": 16,
+          "to": 49
         },
         {
           "text": "把近期高质量记忆整理为可继续检索的线索，",
-          "from": 61,
-          "to": 183
+          "from": 55,
+          "to": 155
         },
         {
           "text": "并按日期汇总采集情况。",
-          "from": 186,
-          "to": 250
+          "from": 157,
+          "to": 212
         },
         {
           "text": "用户可以顺着洞察回到正文，",
-          "from": 264,
-          "to": 333
+          "from": 226,
+          "to": 288
         },
         {
           "text": "检查今天新沉淀了什么。",
-          "from": 338,
-          "to": 393
+          "from": 290,
+          "to": 344
         },
         {
           "text": "打开这份月末归档步骤，",
-          "from": 407,
-          "to": 472
+          "from": 358,
+          "to": 411
         },
         {
           "text": "继续整理资料。",
-          "from": 477,
-          "to": 523
+          "from": 413,
+          "to": 455
         }
       ]
     },
@@ -1269,48 +1269,48 @@
       "narration": "一个安装包，部署桌面应用、助手运行环境与记忆服务。打开设置，检测模型连接，查看更新信息。升级过程通过签名校验、健康检查和失败恢复，帮助维护日常使用。",
       "visual": "原始终端安装版本和退出码；原生模型检测与更新结果同时放大，未执行版本升级",
       "status": "revision-in-progress",
-      "from": 11787,
-      "duration": 545,
+      "from": 10202,
+      "duration": 468,
       "audio": "audio/s27.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s27/a81867dea8e6.mp3",
-      "speech_end_frame": 537,
+      "audio_source": "raw/audio/s27/4de027ad2d0b.mp3",
+      "speech_end_frame": 460,
       "tail_frames": 8,
       "captions": [
         {
           "text": "一个安装包，",
-          "from": 18,
-          "to": 48
+          "from": 16,
+          "to": 42
         },
         {
           "text": "部署桌面应用、助手运行环境与记忆服务。",
-          "from": 52,
-          "to": 179
+          "from": 47,
+          "to": 149
         },
         {
           "text": "打开设置，",
-          "from": 193,
-          "to": 222
+          "from": 163,
+          "to": 188
         },
         {
           "text": "检测模型连接，",
-          "from": 230,
-          "to": 272
+          "from": 193,
+          "to": 230
         },
         {
           "text": "查看更新信息。",
-          "from": 273,
-          "to": 315
+          "from": 232,
+          "to": 274
         },
         {
           "text": "升级过程通过签名校验、健康检查和失败恢复，",
-          "from": 329,
-          "to": 480
+          "from": 288,
+          "to": 410
         },
         {
           "text": "帮助维护日常使用。",
-          "from": 484,
-          "to": 545
+          "from": 415,
+          "to": 468
         }
       ]
     },
@@ -1324,48 +1324,48 @@
       "narration": "怎样检验记忆优化的效果？评测工具分别统计偏好提取、知识召回、检索耗时和冲突处理结果。每个样本都留下记录，汇总形成报告。开发回归与多设备场景验证，让改进有据可查。",
       "visual": "四项评测指标依次形成流程，样本记录汇入报告；展示698项基础设施回归与三端同步场景记录",
       "status": "revision-in-progress",
-      "from": 12332,
-      "duration": 584,
+      "from": 10670,
+      "duration": 504,
       "audio": "audio/s28.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s28/25de09c518aa.mp3",
-      "speech_end_frame": 576,
+      "audio_source": "raw/audio/s28/02562f2ed8e3.mp3",
+      "speech_end_frame": 496,
       "tail_frames": 8,
       "captions": [
         {
           "text": "怎样检验记忆优化的效果？",
-          "from": 18,
-          "to": 80
+          "from": 16,
+          "to": 78
         },
         {
           "text": "评测工具分别统计偏好提取、知识召回、检索耗时和",
-          "from": 95,
-          "to": 266
+          "from": 92,
+          "to": 232
         },
         {
           "text": "冲突处理结果。",
-          "from": 266,
-          "to": 302
+          "from": 232,
+          "to": 265
         },
         {
           "text": "每个样本都留下记录，",
-          "from": 316,
-          "to": 375
+          "from": 279,
+          "to": 324
         },
         {
           "text": "汇总形成报告。",
-          "from": 377,
-          "to": 419
+          "from": 328,
+          "to": 363
         },
         {
           "text": "开发回归与多设备场景验证，",
-          "from": 433,
-          "to": 517
+          "from": 377,
+          "to": 450
         },
         {
           "text": "让改进有据可查。",
-          "from": 521,
-          "to": 584
+          "from": 451,
+          "to": 504
         }
       ]
     },
@@ -1379,33 +1379,33 @@
       "narration": "面向家庭协作、办公交接和跨设备任务，貔貅让知识持续积累，让来源可以追溯，让共享边界由用户掌握。",
       "visual": "应用价值字卡",
       "status": "revision-in-progress",
-      "from": 12916,
-      "duration": 322,
+      "from": 11174,
+      "duration": 275,
       "audio": "audio/s29.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s29/ce79258d4584.mp3",
-      "speech_end_frame": 314,
+      "audio_source": "raw/audio/s29/e1bd9fabda55.mp3",
+      "speech_end_frame": 267,
       "tail_frames": 8,
       "captions": [
         {
           "text": "面向家庭协作、办公交接和跨设备任务，",
-          "from": 18,
-          "to": 128
+          "from": 16,
+          "to": 110
         },
         {
           "text": "貔貅让知识持续积累，",
-          "from": 136,
-          "to": 193
+          "from": 118,
+          "to": 167
         },
         {
           "text": "让来源可以追溯，",
-          "from": 200,
-          "to": 243
+          "from": 172,
+          "to": 208
         },
         {
           "text": "让共享边界由用户掌握。",
-          "from": 248,
-          "to": 322
+          "from": 212,
+          "to": 275
         }
       ]
     },
@@ -1419,33 +1419,33 @@
       "narration": "貔貅。面向麒麟操作系统智能体，让分布式集体记忆，成为下一次行动的起点。",
       "visual": "真实页面组装＋品牌压印",
       "status": "revision-in-progress",
-      "from": 13238,
-      "duration": 255,
+      "from": 11449,
+      "duration": 237,
       "audio": "audio/s30.mp3",
       "audio_from": 15,
-      "audio_source": "raw/audio/s30/4cc0d0509f38.mp3",
-      "speech_end_frame": 240,
+      "audio_source": "raw/audio/s30/0ce68970d289.mp3",
+      "speech_end_frame": 222,
       "tail_frames": 15,
       "captions": [
         {
           "text": "貔貅。",
-          "from": 18,
-          "to": 41
+          "from": 16,
+          "to": 45
         },
         {
           "text": "面向麒麟操作系统智能体，",
-          "from": 55,
-          "to": 125
+          "from": 58,
+          "to": 121
         },
         {
           "text": "让分布式集体记忆，",
-          "from": 130,
-          "to": 183
+          "from": 124,
+          "to": 168
         },
         {
           "text": "成为下一次行动的起点。",
-          "from": 185,
-          "to": 255
+          "from": 170,
+          "to": 237
         }
       ]
     }

@@ -3,3 +3,4 @@ numpy==2.5.3
 pytest==8.4.2
 Pillow==12.1.1
 fonttools==4.61.1
+azure-cognitiveservices-speech==1.51.2

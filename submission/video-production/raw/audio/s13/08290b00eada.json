@@ -1,0 +1,194 @@
+{
+  "shot": "s13",
+  "request": {
+    "text": "只记得内容中的几个词，也可以找回记忆。系统把关键词、语义和关联信息结合起来，筛选相关结果。打开来源，就能查看原始配置，核对其中的详细说明。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "08290b00eada0ad3ceb19417175534ed26bba54ac2644af36f47d824976476db",
+  "audio_sha256": "3a34fbbd48048d14118f4941d2d7fb8235a31a11628164b7a656d91c3999c2fa",
+  "duration_seconds": 13.728,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2105410,
+      "text": "只"
+    },
+    {
+      "offset": 2631660,
+      "duration": 2368330,
+      "text": "记得"
+    },
+    {
+      "offset": 5263330,
+      "duration": 2762910,
+      "text": "内容"
+    },
+    {
+      "offset": 8026250,
+      "duration": 1052500,
+      "text": "中"
+    },
+    {
+      "offset": 9078750,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 10000000,
+      "duration": 2105410,
+      "text": "几个"
+    },
+    {
+      "offset": 12105410,
+      "duration": 3289580,
+      "text": "词"
+    },
+    {
+      "offset": 18421250,
+      "duration": 1578750,
+      "text": "也"
+    },
+    {
+      "offset": 20000000,
+      "duration": 1973750,
+      "text": "可以"
+    },
+    {
+      "offset": 22105410,
+      "duration": 3552500,
+      "text": "找回"
+    },
+    {
+      "offset": 25657910,
+      "duration": 2763330,
+      "text": "记忆"
+    },
+    {
+      "offset": 34342080,
+      "duration": 3684160,
+      "text": "系统"
+    },
+    {
+      "offset": 38157910,
+      "duration": 1447500,
+      "text": "把"
+    },
+    {
+      "offset": 39868330,
+      "duration": 5657910,
+      "text": "关键词"
+    },
+    {
+      "offset": 48947500,
+      "duration": 4078750,
+      "text": "语义"
+    },
+    {
+      "offset": 54210410,
+      "duration": 1973750,
+      "text": "和"
+    },
+    {
+      "offset": 56315830,
+      "duration": 2236660,
+      "text": "关联"
+    },
+    {
+      "offset": 58552500,
+      "duration": 3552500,
+      "text": "信息"
+    },
+    {
+      "offset": 62368330,
+      "duration": 3026250,
+      "text": "结合"
+    },
+    {
+      "offset": 65394580,
+      "duration": 2894580,
+      "text": "起来"
+    },
+    {
+      "offset": 70000000,
+      "duration": 4078750,
+      "text": "筛选"
+    },
+    {
+      "offset": 74342080,
+      "duration": 3289580,
+      "text": "相关"
+    },
+    {
+      "offset": 77631660,
+      "duration": 3684160,
+      "text": "结果"
+    },
+    {
+      "offset": 87236660,
+      "duration": 2894580,
+      "text": "打开"
+    },
+    {
+      "offset": 90263330,
+      "duration": 4210410,
+      "text": "来源"
+    },
+    {
+      "offset": 96578750,
+      "duration": 1447500,
+      "text": "就"
+    },
+    {
+      "offset": 98026250,
+      "duration": 1052500,
+      "text": "能"
+    },
+    {
+      "offset": 99078750,
+      "duration": 3815830,
+      "text": "查看"
+    },
+    {
+      "offset": 103157910,
+      "duration": 3157910,
+      "text": "原始"
+    },
+    {
+      "offset": 106447500,
+      "duration": 3815830,
+      "text": "配置"
+    },
+    {
+      "offset": 112500000,
+      "duration": 3421250,
+      "text": "核对"
+    },
+    {
+      "offset": 116052500,
+      "duration": 2894580,
+      "text": "其中"
+    },
+    {
+      "offset": 118947500,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 120394580,
+      "duration": 3815830,
+      "text": "详细"
+    },
+    {
+      "offset": 124210410,
+      "duration": 3815830,
+      "text": "说明"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

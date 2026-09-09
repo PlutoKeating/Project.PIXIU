@@ -1,6 +1,6 @@
 import {Img, staticFile, useCurrentFrame} from 'remotion';
 
-import {Reveal, Steps} from './PresentationMotion';
+import {cue, Reveal, Steps} from './PresentationMotion';
 
 const Crop: React.FC<{file: string; x: number; y: number; w: number; h: number; scale?: number}> =
   ({file, x, y, w, h, scale = 1.2}) => <div style={{position: 'relative', width: w * scale, height: h * scale, overflow: 'hidden'}}>
@@ -10,7 +10,7 @@ const Crop: React.FC<{file: string; x: number; y: number; w: number; h: number; 
 
 export const DeviceTrustScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const paired = frame < 146;
+  const paired = frame < cue('s19','随后查看');
   return <div style={{position: 'absolute', left: 135, right: 135, top: 165}}>
     <div style={{fontSize: 38, color: '#1456b8', fontWeight: 700, marginBottom: 24}}>
       {paired ? '交换配对信息，建立信任' : '查看设备与同步状态'}
@@ -27,7 +27,7 @@ export const DeviceTrustScene: React.FC = () => {
         {label: '同步状态', file: '20260909-设备节点就绪-4K.png', y: 618, h: 76},
         {label: '已信任节点 · 书房工作站', file: '20260909-选择本地信任设备-4K.png', y: 1054, h: 118},
         {label: '附近设备', file: '20260909-附近设备广播就绪-4K.png', y: 1574, h: 98},
-      ].map((row, i) => <Reveal at={[215,146,258][i]} key={row.label} style={{marginBottom: 14}}>
+      ].map((row, i) => <Reveal at={[cue('s19','核对同步'),cue('s19','随后查看'),cue('s19','也能发现')][i]} key={row.label} style={{marginBottom: 14}}>
         <div style={{fontSize: 36, marginBottom: 8}}>{row.label}</div>
         <Crop file={row.file} x={736} y={row.y} w={1300} h={row.h} scale={1.25} />
       </Reveal>)}

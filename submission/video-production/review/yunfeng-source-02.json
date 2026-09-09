@@ -1,0 +1,308 @@
+{
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "db46391bf4c697b20ec09de2f1d1368cc3f91a5241c9244a286d7ce1606855af"
+    },
+    {
+      "path": "remotion.config.ts",
+      "sha256": "239918065a60a743c1b34b5d996ff17264468b3c6bece390d72d53228b9b4e7a"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "ede779bfa1c16ba02ccf744eb313be3f14e7a2a690db13dfa2f655bdbe6a60f7"
+    },
+    {
+      "path": "scripts/capture_agent_evidence.py",
+      "sha256": "900128cc67466d427c3ce81157b47706ed90b121437dfca1692c1109a4a44268"
+    },
+    {
+      "path": "scripts/capture_agent_task.py",
+      "sha256": "7f1934b0af139c25fea9d37c769778fd66c88fa6745bd0356cd50aeb575b0f08"
+    },
+    {
+      "path": "scripts/capture_memory_features.py",
+      "sha256": "b1b6eac9d969976da1c78bd6e761293474657a0b5a95316fbe75b08400fa6a7a"
+    },
+    {
+      "path": "scripts/capture_preference_categories.py",
+      "sha256": "1f823ae059f82f815a314c960194370f4092ffed8d98d5987c3104851ce2e70c"
+    },
+    {
+      "path": "scripts/capture_preference_history.py",
+      "sha256": "3aa7bc6ddcc4f5a18d276bdef1b7abb93320c0f961404165a3af1312d1b855e7"
+    },
+    {
+      "path": "scripts/capture_semantic_conflict.py",
+      "sha256": "60ac4ecfc9f13b66726b06b3dd7299c3b46fc9236d9ce2a59062eb1ca2b5c7d2"
+    },
+    {
+      "path": "scripts/configure_demo_guest.py",
+      "sha256": "2968e34231e7755fba4b0628f462529b2cee91ab8dde617db976c6a9bd6ae916"
+    },
+    {
+      "path": "scripts/demo_api.py",
+      "sha256": "00d1da746c7ed4450fd331e49cb6fe574c042677dbc09a7b7acc381a9c346529"
+    },
+    {
+      "path": "scripts/measure_action_sfx.py",
+      "sha256": "a05a08891f08702bf8be824257fa48cb0e1c7be648efbe5f3823064ade019bfb"
+    },
+    {
+      "path": "scripts/measure_audio_sync.py",
+      "sha256": "65113fad630bb7f215f6969d4493e5d9152aa9eacd08cf10877d1f46d759a1b6"
+    },
+    {
+      "path": "scripts/narrate.py",
+      "sha256": "7a18d375e1252a1ce56f5f947080641012346a08a25705505cbda1c306b68a91"
+    },
+    {
+      "path": "scripts/narrate_azure.py",
+      "sha256": "6018182fa93526046331f44e3783a9384540bacdcbad207677cfc0e545c0d8a9"
+    },
+    {
+      "path": "scripts/outline_concept.py",
+      "sha256": "2d82233b81ddbf084ecbc1b6ef63d4da39b06df3aa8921eac5d0a8affaf5429c"
+    },
+    {
+      "path": "scripts/package_video.py",
+      "sha256": "87ad20a0de23a1272b2468b1ab4f5c312d8039dd7b06780e37b9a15b2a2b09cd"
+    },
+    {
+      "path": "scripts/prepare_agent_scene.py",
+      "sha256": "c167d1e221fd2bf3e96038e362d9f75cbadebd77f23e88746d0c2448c034b1d7"
+    },
+    {
+      "path": "scripts/prepare_evidence.py",
+      "sha256": "ee64c9aff2d103353c00f727647c92029101d169187c51ce529e4ec308c8c181"
+    },
+    {
+      "path": "scripts/prepare_preference_scene.py",
+      "sha256": "4f10efb9646ad0df5f4d72e31e981ea03256d1956018285cebde39ba9429ab63"
+    },
+    {
+      "path": "scripts/prepare_timeline.py",
+      "sha256": "e6daabfa319f3d08ea1031499150a3069742887f1559377f64fdd23cd1ef3138"
+    },
+    {
+      "path": "scripts/prepare_vms.py",
+      "sha256": "c93f1eb8ce03fd36fb7b3ec44fbc64abafc1367246f0077d8cef2fd81e3b409d"
+    },
+    {
+      "path": "scripts/probe_prefetch_timing.py",
+      "sha256": "0cabd0eae052b16b749155f21c9fb849995118cc8b5e279a01ca600fd4426a8c"
+    },
+    {
+      "path": "scripts/record_desktop.py",
+      "sha256": "31a16f635f33ed64ce871bcfb3e11f15f13700c5ea5fba6b09b8193a6d1a914b"
+    },
+    {
+      "path": "scripts/requirements-agent-demo.txt",
+      "sha256": "f4781b354ccaa5e243cb2ff3c1dcc18b9c2426ad8af911805a187c0a8072dc46"
+    },
+    {
+      "path": "scripts/verify_narration.py",
+      "sha256": "2df4bbc01da0f44ecf379d00d08e7c4388dece1c235688ab3a1f554b0146b48f"
+    },
+    {
+      "path": "scripts/verify_partition.py",
+      "sha256": "dcb5f269e5a6008f768a26a15f428e7c40dc83ed08278fe6ce8bfe317ff8bf8d"
+    },
+    {
+      "path": "scripts/verify_promo.py",
+      "sha256": "9c30c792e627ff40f6c5416042735a0039418a8aa7210219f04e8e2c609931d6"
+    },
+    {
+      "path": "src/AgentTaskScene.tsx",
+      "sha256": "8c5cbc32d17b1a59237b69327162cd2ee80503cf9952297580427e8cfe4f32d4"
+    },
+    {
+      "path": "src/ArchitectureScene.tsx",
+      "sha256": "84eccc064bf4e2f0145b27c59eec40457392e32f9c2cb31b94c4f022cfc7414f"
+    },
+    {
+      "path": "src/BehaviorCaptureScene.tsx",
+      "sha256": "ab85f160f6ae783477d8d0b6b32ecf5d3fbdfa8c0884bb91eba7879659d28276"
+    },
+    {
+      "path": "src/BillScene.tsx",
+      "sha256": "f1035a61976aebf20e8e19152d694802a7d13b6cb41fc2b6acf3e24487cc1cfe"
+    },
+    {
+      "path": "src/BrandInkOpen.tsx",
+      "sha256": "341d1451f67249c481942180edc8c419119602e7ccd7f14a31a00ed40677b085"
+    },
+    {
+      "path": "src/ConflictAuditScene.tsx",
+      "sha256": "f6eaad0a59661c37b61f02e7ffb3250b3ef1dd152472cd343555a7b96d550564"
+    },
+    {
+      "path": "src/DeckCamera.tsx",
+      "sha256": "88d8ff3bb2fd3ff60572cfbbbaf934396afe332a56f249f3703f1fac80432562"
+    },
+    {
+      "path": "src/DeckDealMotion.tsx",
+      "sha256": "8b07e847f944e6065f8915f926b1a9ffcf8573c7c0aa0827254e19fddc5e642c"
+    },
+    {
+      "path": "src/DeviceTrustScene.tsx",
+      "sha256": "e35e221c9af0c5325e4b0ecf18e504236424c435f434adf2ecafeebfcd37f995"
+    },
+    {
+      "path": "src/DigitRoll.tsx",
+      "sha256": "cd23e46e46ca32bb633cb703f08ccb332bfa0bf1b0fe857355ad4d154ada0ea0"
+    },
+    {
+      "path": "src/EvaluationScene.tsx",
+      "sha256": "5d1d78f6380a01831b3562c7b8e18b12a6023cb97beca0d2633266366a890ee9"
+    },
+    {
+      "path": "src/Fonts.tsx",
+      "sha256": "dbfed4eccc20199a92bd9fe900b41d3af3760a61310576778dd187c6c33f9ce3"
+    },
+    {
+      "path": "src/ForgetTraceScene.tsx",
+      "sha256": "5fd7e3be1a6f9794ab4a387b237a7b64dd487ac8312cce8bb860f6f898ef341f"
+    },
+    {
+      "path": "src/FullFilm.tsx",
+      "sha256": "a602a73e6c7b42c93ab95918fb59c0503e8cbf0f51f626242882be8a444566fd"
+    },
+    {
+      "path": "src/IngestSourcesScene.tsx",
+      "sha256": "6dc2a9f4c4b48fdb5aef8f670d486af4f30f7773401f3c15a4f915158f928f53"
+    },
+    {
+      "path": "src/InsightDocumentScene.tsx",
+      "sha256": "3d92152cdf58256747edd20c1e98bd5dea53f6ff9244a32b012131249960ef92"
+    },
+    {
+      "path": "src/KnowledgeExamplesScene.tsx",
+      "sha256": "3b95ded6ba3bce9f29bb1ce5dc61ed26f1f7fa681cdbaeab8905dc5b75baaee9"
+    },
+    {
+      "path": "src/MemoryFlowScene.tsx",
+      "sha256": "54f128dcb21f00f7dabad2d7c771285e1ede3b7812f6656390cb65c2b6725374"
+    },
+    {
+      "path": "src/NarratedChapter.tsx",
+      "sha256": "b932877cfd1e42c8797249e19f243ff92b21907c257ce9d58f59f02be7253c3d"
+    },
+    {
+      "path": "src/NativeDeliveryScenes.tsx",
+      "sha256": "d40895221bccf8dc0b7743e0298a776139d75b385afd6ec4f35f95ee6cf876e7"
+    },
+    {
+      "path": "src/NativeSetupScenes.tsx",
+      "sha256": "4c9568caffcb2de55acdfc333267f24cfe7e0d1ccdc9db46adcc3ea544c2bad1"
+    },
+    {
+      "path": "src/PageCam.tsx",
+      "sha256": "f8efe781653d20bd415f02e82846d118fba4bdeaaef86df6fe40da4d96a7cc21"
+    },
+    {
+      "path": "src/PaperTitleCard.tsx",
+      "sha256": "82e0814046ec56cdbe343b3cdb7805c94d74534c553920aa2a7ef02249227cf7"
+    },
+    {
+      "path": "src/PreferenceHistoryScene.tsx",
+      "sha256": "8b7dc81255446b123225179e5b152db36d8555d4f872b11b6b73d409c6e3f6fd"
+    },
+    {
+      "path": "src/PresentationMotion.tsx",
+      "sha256": "ea4d9696040fa73ffdd7c7a362451b851a5bdbe9a30c9a7bb4c8a48a11f300df"
+    },
+    {
+      "path": "src/Root.tsx",
+      "sha256": "978847f4bd25b1c7134bb59cfd5b27150174ea6ee11444260738e5ae0611959b"
+    },
+    {
+      "path": "src/SceneOutro.tsx",
+      "sha256": "64484da098d7f9cb7d433414ba20d574bf0b46d3ad79b85184cce29ce27bf4de"
+    },
+    {
+      "path": "src/SearchEvidenceScene.tsx",
+      "sha256": "71059def2b12e273ff7d16795d8b7c26a4597e57efbc60c41754cd46f172150d"
+    },
+    {
+      "path": "src/SharedAgentScene.tsx",
+      "sha256": "5c7e70f43112ba35c052f16b77b9519d34189e366f74fc507a3b0ffb80b944a9"
+    },
+    {
+      "path": "src/SharingBoundaryScene.tsx",
+      "sha256": "e9592d4c29cd611487837186ac6215c7df928943add6328cc757d08cc3655870"
+    },
+    {
+      "path": "src/SpotlightHeroCard.tsx",
+      "sha256": "b43094d445fb5b7fbf186dd827a1f5aaaf2d016b0921286ec22d5585207c109c"
+    },
+    {
+      "path": "src/SyncTraceScene.tsx",
+      "sha256": "eb03faa1561e9323529587d01b0334059dd885fc32feac186affb543a240761b"
+    },
+    {
+      "path": "src/agent-task.json",
+      "sha256": "b0eed29fae8c838350edea49801ceccf00d21946ebe0184f795e27cd2199d222"
+    },
+    {
+      "path": "src/deck-assets.json",
+      "sha256": "2177a2f9813733e401af86d24c5efba489fa353ed0825f368bb2a84c52fe38b5"
+    },
+    {
+      "path": "src/evaluation-baseline.json",
+      "sha256": "9214a1dab78c251e02af201598c4089b6ebecb8d74b7f1ee3f588c49b1f6c6b9"
+    },
+    {
+      "path": "src/flow-results.json",
+      "sha256": "5cbc2ecb6bd2bfc1d2c4ae9eca6e35aa6a1460d82fe396dffdd0386a62adf105"
+    },
+    {
+      "path": "src/forget-trace.json",
+      "sha256": "0d747133896c465a0f3070d705ea93c7efe38395f33533bc839c15454367ab12"
+    },
+    {
+      "path": "src/index.ts",
+      "sha256": "2e0e358282a1b998a65387c653b97c2bb2eb7aae94cf200fc0b8d919f7be73a6"
+    },
+    {
+      "path": "src/ingest-results.json",
+      "sha256": "820aa6b142146dd353ac807bd3dc1fb47519cbfbd7eb39fab5ea8e5ad99371ef"
+    },
+    {
+      "path": "src/knowledge-examples.json",
+      "sha256": "a7b4c00f33d4b030cf566313b8f817329b29e135305963eed23c9e4eb093e8e2"
+    },
+    {
+      "path": "src/preference-categories.json",
+      "sha256": "5fffacd1af37fe7884012e328c2e278327b09e3de4c9eb911c5d9b103d26f5ab"
+    },
+    {
+      "path": "src/privacy-boundary.json",
+      "sha256": "af148df5bc979676bebff5a6ace923c37aa80df8e6180fb2e4283d8c411dc114"
+    },
+    {
+      "path": "src/semantic-conflict.json",
+      "sha256": "522030e6146ff04bf194a29fa28f560f80b5629e6dc9a8b5978992813f4dfc88"
+    },
+    {
+      "path": "src/sync-trace.json",
+      "sha256": "99ed455fe6dd21dc57d2940cc35da784216c6fff9121b67dc3ecb501d3863e30"
+    },
+    {
+      "path": "src/timeline.json",
+      "sha256": "6ac530fc82917b6407e1a7ed4eeaa2077062a50014b4b16c3297b52b9a707d56"
+    },
+    {
+      "path": "src/workbench.ts",
+      "sha256": "c5d5ba266e7e9b7993c3bcdad390ab558b2d94dc41688a9e7107ef032016e3ac"
+    },
+    {
+      "path": "storyboard/narration.json",
+      "sha256": "13a8c74088498c456f029c1f7d8b9d4313760bc7873a937766bedf51098749c2"
+    },
+    {
+      "path": "storyboard/shots.json",
+      "sha256": "793fc473f51ef911e3a543a764bb562c6cf46411df8302a2157b196669622b21"
+    }
+  ]
+}

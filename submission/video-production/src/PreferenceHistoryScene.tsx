@@ -22,7 +22,7 @@ const Crop: React.FC<{file: string; x: number; y: number; w: number; h: number; 
 
 export const PreferenceHistoryScene: React.FC = () => {
   const frame = useCurrentFrame();
-  if (frame < 183) return <AbsoluteFill>
+  if (frame < shot.captions.find(c=>c.text.startsWith('比如先要求'))!.from) return <AbsoluteFill>
     <div style={{position: 'absolute', left: 135, top: 175, fontSize: 38, color: blue, fontWeight: 700}}>
       操作习惯与安全偏好 · 提取结果
     </div>

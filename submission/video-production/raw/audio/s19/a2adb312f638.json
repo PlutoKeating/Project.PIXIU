@@ -1,0 +1,199 @@
+{
+  "shot": "s19",
+  "request": {
+    "text": "在设备页交换配对信息，建立双向信任。随后查看已信任的设备，核对同步状态，也能发现附近的设备。把需要协作的电脑连接起来，为共享记忆做好准备。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "a2adb312f63853b827bb9a362b28665beae0817c69cd062dbb39253fa3d74313",
+  "audio_sha256": "384fc86b86caf315c7d82f0c698f10a9d0fd14f89470d0ec23810a71114022d8",
+  "duration_seconds": 13.368,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2500000,
+      "text": "在"
+    },
+    {
+      "offset": 3157910,
+      "duration": 3552500,
+      "text": "设备"
+    },
+    {
+      "offset": 6710410,
+      "duration": 1710410,
+      "text": "页"
+    },
+    {
+      "offset": 8684160,
+      "duration": 3421250,
+      "text": "交换"
+    },
+    {
+      "offset": 12368330,
+      "duration": 2631660,
+      "text": "配对"
+    },
+    {
+      "offset": 15131660,
+      "duration": 4342080,
+      "text": "信息"
+    },
+    {
+      "offset": 21578750,
+      "duration": 3421250,
+      "text": "建立"
+    },
+    {
+      "offset": 25263330,
+      "duration": 4078750,
+      "text": "双向"
+    },
+    {
+      "offset": 29473750,
+      "duration": 3684160,
+      "text": "信任"
+    },
+    {
+      "offset": 39078750,
+      "duration": 3421250,
+      "text": "随后"
+    },
+    {
+      "offset": 42631660,
+      "duration": 3684160,
+      "text": "查看"
+    },
+    {
+      "offset": 46578750,
+      "duration": 657910,
+      "text": "已"
+    },
+    {
+      "offset": 47368330,
+      "duration": 3289580,
+      "text": "信任"
+    },
+    {
+      "offset": 50657910,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 51447500,
+      "duration": 3815830,
+      "text": "设备"
+    },
+    {
+      "offset": 57894580,
+      "duration": 3289580,
+      "text": "核对"
+    },
+    {
+      "offset": 61447500,
+      "duration": 2762910,
+      "text": "同步"
+    },
+    {
+      "offset": 64210410,
+      "duration": 3947500,
+      "text": "状态"
+    },
+    {
+      "offset": 70131660,
+      "duration": 1184160,
+      "text": "也"
+    },
+    {
+      "offset": 71315830,
+      "duration": 1184160,
+      "text": "能"
+    },
+    {
+      "offset": 72500000,
+      "duration": 3421250,
+      "text": "发现"
+    },
+    {
+      "offset": 76184160,
+      "duration": 2368330,
+      "text": "附近"
+    },
+    {
+      "offset": 78552500,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 79342080,
+      "duration": 3157910,
+      "text": "设备"
+    },
+    {
+      "offset": 88552500,
+      "duration": 1447500,
+      "text": "把"
+    },
+    {
+      "offset": 90131660,
+      "duration": 2631660,
+      "text": "需要"
+    },
+    {
+      "offset": 92894580,
+      "duration": 3421250,
+      "text": "协作"
+    },
+    {
+      "offset": 96315830,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 97368330,
+      "duration": 3289580,
+      "text": "电脑"
+    },
+    {
+      "offset": 100921250,
+      "duration": 3157500,
+      "text": "连接"
+    },
+    {
+      "offset": 104078750,
+      "duration": 3157910,
+      "text": "起来"
+    },
+    {
+      "offset": 109868330,
+      "duration": 1447500,
+      "text": "为"
+    },
+    {
+      "offset": 111447500,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 115263330,
+      "duration": 2500000,
+      "text": "记忆"
+    },
+    {
+      "offset": 118026250,
+      "duration": 2894580,
+      "text": "做好"
+    },
+    {
+      "offset": 120921250,
+      "duration": 3684160,
+      "text": "准备"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

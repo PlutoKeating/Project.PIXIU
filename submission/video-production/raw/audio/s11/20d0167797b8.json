@@ -1,0 +1,204 @@
+{
+  "shot": "s11",
+  "request": {
+    "text": "需要自动记住文件时，进入采集与隐私，选择演示目录并显式开启。新增文本文件后，在活动日志核对实际入库结果，还能在来源区查看文件路径与采集时间。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "20d0167797b850a1b2d04ec638d0a770a1aabd70f3fcf3bc15180387716fe6dc",
+  "audio_sha256": "6fa60a8c0153586e04736773686faaf4928659bdf4aa0e31dc1c3fcb9a2a277d",
+  "duration_seconds": 14.208,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2763330,
+      "text": "需要"
+    },
+    {
+      "offset": 3552500,
+      "duration": 2894580,
+      "text": "自动"
+    },
+    {
+      "offset": 6578750,
+      "duration": 2236660,
+      "text": "记住"
+    },
+    {
+      "offset": 8947500,
+      "duration": 3157910,
+      "text": "文件"
+    },
+    {
+      "offset": 12105410,
+      "duration": 2894580,
+      "text": "时"
+    },
+    {
+      "offset": 17368330,
+      "duration": 2894580,
+      "text": "进入"
+    },
+    {
+      "offset": 20526250,
+      "duration": 4210410,
+      "text": "采集"
+    },
+    {
+      "offset": 25000000,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 26315830,
+      "duration": 4605410,
+      "text": "隐私"
+    },
+    {
+      "offset": 34605410,
+      "duration": 3026250,
+      "text": "选择"
+    },
+    {
+      "offset": 37894580,
+      "duration": 3157910,
+      "text": "演示"
+    },
+    {
+      "offset": 41052500,
+      "duration": 3157910,
+      "text": "目录"
+    },
+    {
+      "offset": 45394580,
+      "duration": 1842080,
+      "text": "并"
+    },
+    {
+      "offset": 47236660,
+      "duration": 3157910,
+      "text": "显式"
+    },
+    {
+      "offset": 50394580,
+      "duration": 4210410,
+      "text": "开启"
+    },
+    {
+      "offset": 60526250,
+      "duration": 2894580,
+      "text": "新"
+    },
+    {
+      "offset": 63421250,
+      "duration": 1710410,
+      "text": "增"
+    },
+    {
+      "offset": 65394580,
+      "duration": 5394580,
+      "text": "文本文件"
+    },
+    {
+      "offset": 70789580,
+      "duration": 2368330,
+      "text": "后"
+    },
+    {
+      "offset": 75000000,
+      "duration": 1973750,
+      "text": "在"
+    },
+    {
+      "offset": 77105410,
+      "duration": 3026250,
+      "text": "活动"
+    },
+    {
+      "offset": 80131660,
+      "duration": 3684160,
+      "text": "日志"
+    },
+    {
+      "offset": 85131660,
+      "duration": 3289580,
+      "text": "核对"
+    },
+    {
+      "offset": 88684160,
+      "duration": 3157910,
+      "text": "实际"
+    },
+    {
+      "offset": 91973750,
+      "duration": 2894580,
+      "text": "入库"
+    },
+    {
+      "offset": 95000000,
+      "duration": 3947500,
+      "text": "结果"
+    },
+    {
+      "offset": 101578750,
+      "duration": 1447500,
+      "text": "还"
+    },
+    {
+      "offset": 103026250,
+      "duration": 1052500,
+      "text": "能"
+    },
+    {
+      "offset": 104078750,
+      "duration": 1184160,
+      "text": "在"
+    },
+    {
+      "offset": 105526250,
+      "duration": 2368330,
+      "text": "来源"
+    },
+    {
+      "offset": 107894580,
+      "duration": 2894580,
+      "text": "区"
+    },
+    {
+      "offset": 111973750,
+      "duration": 3684160,
+      "text": "查看"
+    },
+    {
+      "offset": 115921250,
+      "duration": 3026250,
+      "text": "文件"
+    },
+    {
+      "offset": 118947500,
+      "duration": 3552500,
+      "text": "路径"
+    },
+    {
+      "offset": 123552500,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 124736660,
+      "duration": 4078750,
+      "text": "采集"
+    },
+    {
+      "offset": 128815830,
+      "duration": 4210410,
+      "text": "时间"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

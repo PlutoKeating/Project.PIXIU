@@ -1,0 +1,7 @@
+{
+  "provider": "azure",
+  "voice": "zh-CN-YunfengNeural",
+  "rate": "-5%",
+  "style": "default",
+  "output_format": "audio-24khz-96kbitrate-mono-mp3"
+}

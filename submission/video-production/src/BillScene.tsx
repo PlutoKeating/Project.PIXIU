@@ -1,7 +1,7 @@
 import React from 'react';
 import {Img, Sequence, Easing, interpolate, staticFile, useCurrentFrame} from 'remotion';
 
-import {Reveal} from './PresentationMotion';
+import {cue, Reveal} from './PresentationMotion';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const evidenceSrc = staticFile('clips/bill-source-4k.png');
@@ -64,14 +64,14 @@ const BillAnswer: React.FC = () => <>
 
 export const BillScene: React.FC<{evidence?: boolean}> = ({evidence = false}) => {
   const frame = useCurrentFrame();
-  const source = evidence && frame >= 97;
-  const input = !evidence && frame < 330;
-  const file = input ? (frame < 254 ? 'bill-input-4k.png' : 'bill-saved-4k.png') : 'bill-answer-4k.png';
+  const source = evidence && frame >= cue('s08', '点击本会话');
+  const input = !evidence && frame < cue('s07', '再询问');
+  const file = input ? (frame < cue('s07', '保存之后') ? 'bill-input-4k.png' : 'bill-saved-4k.png') : 'bill-answer-4k.png';
   return <>
-    {source ? <Sequence from={97}><EvidenceRows /></Sequence> : !input ? <BillAnswer /> : <Img src={staticFile(`clips/${file}`)}
+    {source ? <Sequence from={cue('s08', '点击本会话')}><EvidenceRows /></Sequence> : !input ? <BillAnswer /> : <Img src={staticFile(`clips/${file}`)}
       style={input ? {position: 'absolute', width: 820, height: 965 * 820 / 1140, left: 550, top: 165}
         : {position: 'absolute', width: 1640, height: 440, left: 140, top: 330}} />}
-    {input?<div style={{position:'absolute',left:145,top:285,width:360}}>{[['电费','210 元'],['水费','68.50 元'],['燃气费','156 元']].map(([label,value],i)=><Reveal key={label} at={[18,125,186][i]} style={{marginBottom:35}}><div style={{fontSize:36,color:'#526477'}}>{label}</div><div style={{fontSize:52,color:'#1456b8',marginTop:10}}>{value}</div></Reveal>)}</div>:null}
+    {input?<div style={{position:'absolute',left:145,top:285,width:360}}>{[['电费','210 元'],['水费','68.50 元'],['燃气费','156 元']].map(([label,value],i)=><Reveal key={label} at={[cue('s07','以家庭账单'),cue('s07','水费'),cue('s07','燃气费')][i]} style={{marginBottom:35}}><div style={{fontSize:36,color:'#526477'}}>{label}</div><div style={{fontSize:52,color:'#1456b8',marginTop:10}}>{value}</div></Reveal>)}</div>:null}
     <div style={{position: 'absolute', left: 140, bottom: 140, color: '#526477', fontSize: 36}}>
       {source ? '打开来源，查看原始记录'
         : input ? '真实录入画面 · 已选择家庭共享范围' : '真实新会话回答 · 显式记忆工具检索已核对'}

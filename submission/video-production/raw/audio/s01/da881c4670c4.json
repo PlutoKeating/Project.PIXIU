@@ -1,0 +1,124 @@
+{
+  "shot": "s01",
+  "request": {
+    "text": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "da881c4670c401b4e0ac2903054280668cbc48d2247c3ed50852cfd03abc5546",
+  "audio_sha256": "7bdba724402716ee5231a757c290cb8e0d62191c555cd1d36c695f330056eb88",
+  "duration_seconds": 8.376,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 4605410,
+      "text": "貔貅"
+    },
+    {
+      "offset": 8684160,
+      "duration": 3552500,
+      "text": "面向"
+    },
+    {
+      "offset": 12500000,
+      "duration": 2631660,
+      "text": "麒麟"
+    },
+    {
+      "offset": 15263330,
+      "duration": 7236660,
+      "text": "操作系统"
+    },
+    {
+      "offset": 22763330,
+      "duration": 3026250,
+      "text": "智能"
+    },
+    {
+      "offset": 25789580,
+      "duration": 1842080,
+      "text": "体"
+    },
+    {
+      "offset": 27631660,
+      "duration": 1710410,
+      "text": "的"
+    },
+    {
+      "offset": 29605410,
+      "duration": 1578750,
+      "text": "去"
+    },
+    {
+      "offset": 31315830,
+      "duration": 3684160,
+      "text": "中心"
+    },
+    {
+      "offset": 35000000,
+      "duration": 1973750,
+      "text": "化"
+    },
+    {
+      "offset": 37236660,
+      "duration": 2500000,
+      "text": "记忆"
+    },
+    {
+      "offset": 39736660,
+      "duration": 3157910,
+      "text": "系统"
+    },
+    {
+      "offset": 48815830,
+      "duration": 2105410,
+      "text": "让"
+    },
+    {
+      "offset": 51052500,
+      "duration": 1578750,
+      "text": "每"
+    },
+    {
+      "offset": 52631660,
+      "duration": 920830,
+      "text": "一"
+    },
+    {
+      "offset": 53552500,
+      "duration": 1842080,
+      "text": "台"
+    },
+    {
+      "offset": 55657910,
+      "duration": 3026250,
+      "text": "设备"
+    },
+    {
+      "offset": 58684160,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 59736660,
+      "duration": 3157910,
+      "text": "记忆"
+    },
+    {
+      "offset": 66315830,
+      "duration": 3420830,
+      "text": "彼此"
+    },
+    {
+      "offset": 69736660,
+      "duration": 4736660,
+      "text": "相通"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

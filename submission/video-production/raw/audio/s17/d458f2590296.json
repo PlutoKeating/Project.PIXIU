@@ -1,0 +1,194 @@
+{
+  "shot": "s17",
+  "request": {
+    "text": "当前轮次形成短期上下文，压缩或会话切换形成中期记录。需要长期保留的内容，再经晋升进入统一知识管线。检索时只注入预算内的相关记忆，并保留来源。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "d458f259029601d17d09f96bd291a12b1321cd220bc16d1427f7f8952b3d8d46",
+  "audio_sha256": "142afd07fc80cbf1722e892b5dba3faae394f5d72df6457033ca65f7277bc676",
+  "duration_seconds": 14.664,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3289580,
+      "text": "当前"
+    },
+    {
+      "offset": 3947500,
+      "duration": 4078750,
+      "text": "轮次"
+    },
+    {
+      "offset": 9210410,
+      "duration": 3289580,
+      "text": "形成"
+    },
+    {
+      "offset": 12763330,
+      "duration": 3552500,
+      "text": "短期"
+    },
+    {
+      "offset": 16315830,
+      "duration": 5526250,
+      "text": "上下文"
+    },
+    {
+      "offset": 24210410,
+      "duration": 4078750,
+      "text": "压缩"
+    },
+    {
+      "offset": 28552500,
+      "duration": 1184160,
+      "text": "或"
+    },
+    {
+      "offset": 29868330,
+      "duration": 2894580,
+      "text": "会话"
+    },
+    {
+      "offset": 32894580,
+      "duration": 3684160,
+      "text": "切换"
+    },
+    {
+      "offset": 37631660,
+      "duration": 3552500,
+      "text": "形成"
+    },
+    {
+      "offset": 41447500,
+      "duration": 3420830,
+      "text": "中期"
+    },
+    {
+      "offset": 44868330,
+      "duration": 2763330,
+      "text": "记录"
+    },
+    {
+      "offset": 53552500,
+      "duration": 3026250,
+      "text": "需要"
+    },
+    {
+      "offset": 56842080,
+      "duration": 4078750,
+      "text": "长期"
+    },
+    {
+      "offset": 61052500,
+      "duration": 3026250,
+      "text": "保留"
+    },
+    {
+      "offset": 64078750,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 65131660,
+      "duration": 3815830,
+      "text": "内容"
+    },
+    {
+      "offset": 71184160,
+      "duration": 2105410,
+      "text": "再"
+    },
+    {
+      "offset": 73289580,
+      "duration": 1447500,
+      "text": "经"
+    },
+    {
+      "offset": 74868330,
+      "duration": 4473750,
+      "text": "晋升"
+    },
+    {
+      "offset": 80526250,
+      "duration": 3026250,
+      "text": "进入"
+    },
+    {
+      "offset": 83815830,
+      "duration": 4210410,
+      "text": "统一"
+    },
+    {
+      "offset": 88157910,
+      "duration": 2894580,
+      "text": "知识"
+    },
+    {
+      "offset": 91184160,
+      "duration": 3947500,
+      "text": "管线"
+    },
+    {
+      "offset": 101184160,
+      "duration": 3421250,
+      "text": "检索"
+    },
+    {
+      "offset": 104605410,
+      "duration": 2763330,
+      "text": "时"
+    },
+    {
+      "offset": 108552500,
+      "duration": 2236660,
+      "text": "只"
+    },
+    {
+      "offset": 110789580,
+      "duration": 2763330,
+      "text": "注入"
+    },
+    {
+      "offset": 113815830,
+      "duration": 3815830,
+      "text": "预算内"
+    },
+    {
+      "offset": 117631660,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 118947500,
+      "duration": 3552500,
+      "text": "相关"
+    },
+    {
+      "offset": 122631660,
+      "duration": 3421250,
+      "text": "记忆"
+    },
+    {
+      "offset": 127894580,
+      "duration": 1842080,
+      "text": "并"
+    },
+    {
+      "offset": 129868330,
+      "duration": 3289580,
+      "text": "保留"
+    },
+    {
+      "offset": 133289580,
+      "duration": 4078750,
+      "text": "来源"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

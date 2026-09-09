@@ -1,0 +1,194 @@
+{
+  "shot": "s04",
+  "request": {
+    "text": "现在进入实际产品。会话、记忆、设备和设置，都在同一个桌面窗口中。服务与能力页，可以核对当前版本，以及系统向量化和向量数据库的实际运行状态。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "2e163b041185e206860d367b17d1489765727cf39696e988a42b7332c46efe11",
+  "audio_sha256": "880883647cee8a920944b6307fd863a83cf584bf5886dbc3bc3c18c8144e96cd",
+  "duration_seconds": 13.368,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 4473750,
+      "text": "现在"
+    },
+    {
+      "offset": 5131660,
+      "duration": 3157910,
+      "text": "进入"
+    },
+    {
+      "offset": 8552500,
+      "duration": 3815830,
+      "text": "实际"
+    },
+    {
+      "offset": 12500000,
+      "duration": 3815830,
+      "text": "产品"
+    },
+    {
+      "offset": 22236660,
+      "duration": 4605410,
+      "text": "会话"
+    },
+    {
+      "offset": 28947500,
+      "duration": 3552500,
+      "text": "记忆"
+    },
+    {
+      "offset": 35657910,
+      "duration": 3289580,
+      "text": "设备"
+    },
+    {
+      "offset": 39210410,
+      "duration": 657910,
+      "text": "和"
+    },
+    {
+      "offset": 40000000,
+      "duration": 3552500,
+      "text": "设置"
+    },
+    {
+      "offset": 45526250,
+      "duration": 1315830,
+      "text": "都"
+    },
+    {
+      "offset": 46842080,
+      "duration": 1052500,
+      "text": "在"
+    },
+    {
+      "offset": 48157910,
+      "duration": 1973750,
+      "text": "同"
+    },
+    {
+      "offset": 50131660,
+      "duration": 1842080,
+      "text": "一个"
+    },
+    {
+      "offset": 52236660,
+      "duration": 2105410,
+      "text": "桌面"
+    },
+    {
+      "offset": 54473750,
+      "duration": 3289580,
+      "text": "窗口"
+    },
+    {
+      "offset": 57763330,
+      "duration": 1710410,
+      "text": "中"
+    },
+    {
+      "offset": 65394580,
+      "duration": 3421250,
+      "text": "服务"
+    },
+    {
+      "offset": 69078750,
+      "duration": 789580,
+      "text": "与"
+    },
+    {
+      "offset": 70000000,
+      "duration": 2894580,
+      "text": "能力"
+    },
+    {
+      "offset": 72894580,
+      "duration": 1578750,
+      "text": "页"
+    },
+    {
+      "offset": 76710410,
+      "duration": 2236660,
+      "text": "可以"
+    },
+    {
+      "offset": 79078750,
+      "duration": 2763330,
+      "text": "核对"
+    },
+    {
+      "offset": 82105410,
+      "duration": 2894580,
+      "text": "当前"
+    },
+    {
+      "offset": 85000000,
+      "duration": 3552500,
+      "text": "版本"
+    },
+    {
+      "offset": 90789580,
+      "duration": 2631660,
+      "text": "以及"
+    },
+    {
+      "offset": 93552500,
+      "duration": 3421250,
+      "text": "系统"
+    },
+    {
+      "offset": 97105410,
+      "duration": 2894580,
+      "text": "向量"
+    },
+    {
+      "offset": 100000000,
+      "duration": 1973750,
+      "text": "化"
+    },
+    {
+      "offset": 103157910,
+      "duration": 1710410,
+      "text": "和"
+    },
+    {
+      "offset": 105000000,
+      "duration": 3289580,
+      "text": "向量"
+    },
+    {
+      "offset": 108421250,
+      "duration": 4342080,
+      "text": "数据库"
+    },
+    {
+      "offset": 112763330,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 114342080,
+      "duration": 3552500,
+      "text": "实际"
+    },
+    {
+      "offset": 118026250,
+      "duration": 2763330,
+      "text": "运行"
+    },
+    {
+      "offset": 120789580,
+      "duration": 3684160,
+      "text": "状态"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

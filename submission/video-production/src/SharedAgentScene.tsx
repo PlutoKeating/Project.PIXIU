@@ -5,7 +5,8 @@ export const SHARED_AGENT_SHOT = timeline.shots.find((shot) => shot.id === 's20'
 // The recorded interaction begins after the response completed. Its only action
 // is expanding the actual work card; it must not imply generation latency.
 const REPLAY_FROM = SHARED_AGENT_SHOT.captions.find((cue) => cue.text === '换到客厅，')!.from;
-const REPLAY_FRAMES = 304;
+const REPLAY_FRAMES = Math.min(304, SHARED_AGENT_SHOT.captions.find(c=>c.text.startsWith('并注明'))!.from - REPLAY_FROM);
+const REPLAY_TRIM = 304 - REPLAY_FRAMES;
 const crop = {x: 1420, y: 900, width: 1320, height: 410};
 const scale = 1.25;
 const sourceStyle = {position: 'absolute' as const, width: 3840 * scale,
@@ -26,7 +27,7 @@ export const SharedAgentScene: React.FC = () => {
     </div> : <div style={{position: 'absolute', left: 135, top: 280,
       width: crop.width * scale, height: crop.height * scale, overflow: 'hidden', borderRadius: 12}}>
       {replay ? <Sequence from={REPLAY_FROM} durationInFrames={REPLAY_FRAMES}>
-        <OffthreadVideo src={staticFile('clips/shared-agent-result-4k.mp4')} muted style={sourceStyle} />
+        <OffthreadVideo src={staticFile('clips/shared-agent-result-4k.mp4')} startFrom={REPLAY_TRIM} muted style={sourceStyle} />
       </Sequence> : <Img src={staticFile('screens/20260909-客厅工具展开-4K.png')} style={sourceStyle} />}
     </div>}
     <div style={{position: 'absolute', right: 240, bottom: 145, fontSize: 38, color: '#526477'}}>

@@ -1,0 +1,184 @@
+{
+  "shot": "s02",
+  "request": {
+    "text": "在工作电脑上交代过的安排，换到另一台设备，还能接着使用。貔貅连接设备之间的知识与经验，让助手记住你的工作方式。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "9dbe6514a8f8571c5b3fb80be50333243e963769a05852c71699a9d908ad5569",
+  "audio_sha256": "f39c0f145400c38ef1a1a03efe5eb9fc2b3c9235845c91f7c1481ef8e22d704b",
+  "duration_seconds": 10.368,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2368330,
+      "text": "在"
+    },
+    {
+      "offset": 3026250,
+      "duration": 2763330,
+      "text": "工作"
+    },
+    {
+      "offset": 5921250,
+      "duration": 3289160,
+      "text": "电脑"
+    },
+    {
+      "offset": 9210410,
+      "duration": 2105410,
+      "text": "上"
+    },
+    {
+      "offset": 11578750,
+      "duration": 2763330,
+      "text": "交代"
+    },
+    {
+      "offset": 14342080,
+      "duration": 921250,
+      "text": "过"
+    },
+    {
+      "offset": 15263330,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 16315830,
+      "duration": 3815830,
+      "text": "安排"
+    },
+    {
+      "offset": 22631660,
+      "duration": 1842080,
+      "text": "换"
+    },
+    {
+      "offset": 24473750,
+      "duration": 1447500,
+      "text": "到"
+    },
+    {
+      "offset": 26184160,
+      "duration": 1052500,
+      "text": "另"
+    },
+    {
+      "offset": 27236660,
+      "duration": 789580,
+      "text": "一"
+    },
+    {
+      "offset": 28026250,
+      "duration": 1315830,
+      "text": "台"
+    },
+    {
+      "offset": 29473750,
+      "duration": 3552500,
+      "text": "设备"
+    },
+    {
+      "offset": 35000000,
+      "duration": 1710410,
+      "text": "还"
+    },
+    {
+      "offset": 36710410,
+      "duration": 1578750,
+      "text": "能"
+    },
+    {
+      "offset": 38552500,
+      "duration": 2368330,
+      "text": "接着"
+    },
+    {
+      "offset": 41052500,
+      "duration": 3552500,
+      "text": "使用"
+    },
+    {
+      "offset": 50657910,
+      "duration": 4078750,
+      "text": "貔貅"
+    },
+    {
+      "offset": 55000000,
+      "duration": 2631660,
+      "text": "连接"
+    },
+    {
+      "offset": 57631660,
+      "duration": 2894580,
+      "text": "设备"
+    },
+    {
+      "offset": 60657910,
+      "duration": 2500000,
+      "text": "之间"
+    },
+    {
+      "offset": 63157910,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 64342080,
+      "duration": 3552500,
+      "text": "知识"
+    },
+    {
+      "offset": 68026250,
+      "duration": 1447500,
+      "text": "与"
+    },
+    {
+      "offset": 69605410,
+      "duration": 3289580,
+      "text": "经验"
+    },
+    {
+      "offset": 76315830,
+      "duration": 1842080,
+      "text": "让"
+    },
+    {
+      "offset": 78289580,
+      "duration": 3026250,
+      "text": "助手"
+    },
+    {
+      "offset": 81447500,
+      "duration": 3157910,
+      "text": "记住"
+    },
+    {
+      "offset": 85657910,
+      "duration": 1184160,
+      "text": "你"
+    },
+    {
+      "offset": 86842080,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 88026250,
+      "duration": 2500000,
+      "text": "工作"
+    },
+    {
+      "offset": 90526250,
+      "duration": 4078750,
+      "text": "方式"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

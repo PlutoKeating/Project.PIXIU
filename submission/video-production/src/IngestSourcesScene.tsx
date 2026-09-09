@@ -1,3 +1,4 @@
+import {cue} from './PresentationMotion';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
 import {DeckDealMotion} from './DeckDealMotion';
 import evidence from './ingest-results.json';
@@ -9,15 +10,15 @@ export const IngestSourcesScene: React.FC = () => {
     {f < 130 ? <div style={{position: 'absolute', inset: 0, clipPath: 'inset(145px 0 185px 0)'}}><DeckDealMotion /></div>
       : <div style={{position: 'absolute', left: 135, right: 135, top: 200}}>
         <div style={{fontSize: 38, color: BLUE, fontWeight: 700, marginBottom: 55}}>
-          {f < 221 ? '每条证据保留来源、范围与质量' : f < 388 ? '同一次写入：清洗前后可核对' : '写入完成后，按范围检索到同一来源'}
+          {f < cue('s09','接入时') ? '每条证据保留来源、范围与质量' : f < cue('s09','再形成') ? '同一次写入：清洗前后可核对' : '写入完成后，按范围检索到同一来源'}
         </div>
-        {f < 221 ? <>
+        {f < cue('s09','接入时') ? <>
           <div style={{fontSize: 38, marginBottom: 35}}>真实会话证据 · 家庭共享约定</div>
           <div style={{position: 'relative', width: 1650, height: 76, overflow: 'hidden', background: '#fff'}}>
             <Img src={staticFile('screens/20260909-客厅原始会话证据-4K.png')} style={{position: 'absolute', width: 5760, height: 3240, left: -1512*1.5, top: -978*1.5}} />
           </div>
           <div style={{fontSize: 36, color: '#526477', marginTop: 45}}>原生界面裁片 · 会话来源与质量信息</div>
-        </> : f < 388 ? <>
+        </> : f < cue('s09','再形成') ? <>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28}}>
             {[
               {title: '公开合成输入', rows: evidence.input_items, note: '另含空备注；标题两侧有空格'},
@@ -38,7 +39,7 @@ export const IngestSourcesScene: React.FC = () => {
         </>}
       </div>}
     <div style={{position: 'absolute', left: 135, top: 905, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>
-      {f < 130 ? '多种来源汇入记忆 · 过程示意' : f < 221 ? '会话、配置、文件与行为来源均有实测记录' : '内容整理过程 · 实测记录'}
+      {f < 130 ? '多种来源汇入记忆 · 过程示意' : f < cue('s09','接入时') ? '会话、配置、文件与行为来源均有实测记录' : '内容整理过程 · 实测记录'}
     </div>
   </AbsoluteFill>;
 };

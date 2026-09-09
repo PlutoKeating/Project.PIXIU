@@ -1,22 +1,23 @@
 import {Easing, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import evidence from './privacy-boundary.json';
 
-import {Reveal} from './PresentationMotion';
+import {cue, Reveal} from './PresentationMotion';
 
+const sensitive=cue('s23','敏感检测'), pause=cue('s23','你还可以'), confirm=Math.max(cue('s23','或选择设备'), pause+72), done=Math.max(cue('s23','掌握自己'), confirm+40);
 const BLUE = '#1456b8';
 export const SharingBoundaryScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const privateStage = frame < 159;
-  const sensitiveStage = frame >= 159 && frame < 289;
-  const pauseStage = frame >= 289 && frame < 361;
-  const confirmStage = frame >= 361 && frame < 402;
-  const pausedFrame = frame - 289;
+  const privateStage = frame < sensitive;
+  const sensitiveStage = frame >= sensitive && frame < pause;
+  const pauseStage = frame >= pause && frame < confirm;
+  const confirmStage = frame >= confirm && frame < done;
+  const pausedFrame = frame - pause;
   const pan = interpolate(pausedFrame, [0, 20, 30, 50, 65], [720, 720, 1750, 1750, 720],
     {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(.4, 0, .6, 1)});
   const local = evidence.records.find((r) => r.label === '本机查询')!;
   const remote = evidence.records.filter((r) => r.label === '另一端按同一ID与范围读取');
   const denied = evidence.records.find((r) => r.label === '合成敏感输入共享拒绝')!;
-  return <Reveal at={frame<159?0:frame<289?159:frame<361?289:frame<402?361:402} style={{position: 'absolute', left: 135, right: 135, top: 165}}>
+  return <Reveal at={frame<sensitive?0:frame<pause?sensitive:frame<confirm?pause:frame<done?confirm:done} style={{position: 'absolute', left: 135, right: 135, top: 165}}>
     <div style={{fontSize: 38, fontWeight: 700, color: BLUE, marginBottom: 30}}>
       {privateStage ? '私有范围：本机可用，未进入共享同步状态' : sensitiveStage ? '共享写入：合成敏感输入被拒绝'
         : pauseStage ? '暂停传输：勾选后保存同步设置' : confirmStage ? '解除信任：先确认影响范围' : '解除完成：只移除本机对书房的信任'}
@@ -38,7 +39,7 @@ export const SharingBoundaryScene: React.FC = () => {
       <div style={{fontSize: 36, marginTop: 32, lineHeight: 1.6}}>敏感内容检测 · 合成测试样例</div>
     </> : pauseStage ? <>
       <div style={{position: 'relative', width: 1650, height: 355, overflow: 'hidden', marginTop: 65, background: '#fff'}}>
-        <Sequence from={289}>
+        <Sequence from={pause}>
           <OffthreadVideo src={staticFile('recordings/设备暂停与恢复-4K-02.mp4')} startFrom={60} playbackRate={3.3333333333} muted
             style={{position: 'absolute', maxWidth: 'none', width: 4800, height: 2700, left: -pan * 1.25, top: -745 * 1.25}} />
         </Sequence>
@@ -54,7 +55,7 @@ export const SharingBoundaryScene: React.FC = () => {
       <div style={{fontSize: 36, color: '#526477', marginTop: 25}}>需要继续协作时，可以重新配对。</div>
     </>}
     <div style={{position: 'absolute', top: 745, left: 0, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>
-      {frame < 289 ? '共享范围与敏感内容检测 · 实测记录' : '同步与设备管理 · 操作节选'}
+      {frame < pause ? '共享范围与敏感内容检测 · 实测记录' : '同步与设备管理 · 操作节选'}
     </div>
   </Reveal>;
 };

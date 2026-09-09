@@ -1,0 +1,234 @@
+{
+  "shot": "s21",
+  "request": {
+    "text": "接着，用家庭节能约定验证断连恢复。暂时断开客厅设备的同步连接，其他设备继续工作。客厅保留自己的本地副本；恢复连接后，缺失的修改会逐步补齐，客厅也读到更新后的约定。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "69e2e09d240d2031603432adb8357f3db08e2d18a7f3346d3cd595a475f269b6",
+  "audio_sha256": "b082766e3b1490e31bf00270916c0bc987a39f3d4e6aa6984fbc2a65a2770b11",
+  "duration_seconds": 15.84,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3552500,
+      "text": "接着"
+    },
+    {
+      "offset": 6578750,
+      "duration": 1973750,
+      "text": "用"
+    },
+    {
+      "offset": 8684160,
+      "duration": 3947500,
+      "text": "家庭"
+    },
+    {
+      "offset": 12631660,
+      "duration": 2763330,
+      "text": "节能"
+    },
+    {
+      "offset": 15526250,
+      "duration": 2631660,
+      "text": "约定"
+    },
+    {
+      "offset": 18289580,
+      "duration": 4210410,
+      "text": "验证"
+    },
+    {
+      "offset": 23552500,
+      "duration": 1578750,
+      "text": "断"
+    },
+    {
+      "offset": 25131660,
+      "duration": 1184160,
+      "text": "连"
+    },
+    {
+      "offset": 26447500,
+      "duration": 3815830,
+      "text": "恢复"
+    },
+    {
+      "offset": 36184160,
+      "duration": 4210410,
+      "text": "暂时"
+    },
+    {
+      "offset": 40526250,
+      "duration": 3684160,
+      "text": "断开"
+    },
+    {
+      "offset": 44473750,
+      "duration": 3421250,
+      "text": "客厅"
+    },
+    {
+      "offset": 48026250,
+      "duration": 2631660,
+      "text": "设备"
+    },
+    {
+      "offset": 50657910,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 51842080,
+      "duration": 2894580,
+      "text": "同步"
+    },
+    {
+      "offset": 54736660,
+      "duration": 3947500,
+      "text": "连接"
+    },
+    {
+      "offset": 61052500,
+      "duration": 3421250,
+      "text": "其他"
+    },
+    {
+      "offset": 64473750,
+      "duration": 3421250,
+      "text": "设备"
+    },
+    {
+      "offset": 68157910,
+      "duration": 2763330,
+      "text": "继续"
+    },
+    {
+      "offset": 70921250,
+      "duration": 3552500,
+      "text": "工作"
+    },
+    {
+      "offset": 80394580,
+      "duration": 3421250,
+      "text": "客厅"
+    },
+    {
+      "offset": 83947500,
+      "duration": 2500000,
+      "text": "保留"
+    },
+    {
+      "offset": 86447500,
+      "duration": 2236660,
+      "text": "自己"
+    },
+    {
+      "offset": 88684160,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 90000000,
+      "duration": 2500000,
+      "text": "本地"
+    },
+    {
+      "offset": 92500000,
+      "duration": 3552500,
+      "text": "副本"
+    },
+    {
+      "offset": 99736660,
+      "duration": 2763330,
+      "text": "恢复"
+    },
+    {
+      "offset": 102500000,
+      "duration": 2500000,
+      "text": "连接"
+    },
+    {
+      "offset": 105000000,
+      "duration": 2236660,
+      "text": "后"
+    },
+    {
+      "offset": 110131660,
+      "duration": 3420830,
+      "text": "缺失"
+    },
+    {
+      "offset": 113552500,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 114605410,
+      "duration": 3420830,
+      "text": "修改"
+    },
+    {
+      "offset": 118026250,
+      "duration": 2894580,
+      "text": "会"
+    },
+    {
+      "offset": 122105410,
+      "duration": 3421250,
+      "text": "逐步"
+    },
+    {
+      "offset": 125657910,
+      "duration": 3815830,
+      "text": "补齐"
+    },
+    {
+      "offset": 132631660,
+      "duration": 3947500,
+      "text": "客厅"
+    },
+    {
+      "offset": 136710410,
+      "duration": 1052500,
+      "text": "也"
+    },
+    {
+      "offset": 137894580,
+      "duration": 1315830,
+      "text": "读"
+    },
+    {
+      "offset": 139210410,
+      "duration": 1447500,
+      "text": "到"
+    },
+    {
+      "offset": 140921250,
+      "duration": 3157500,
+      "text": "更新"
+    },
+    {
+      "offset": 144078750,
+      "duration": 1184160,
+      "text": "后"
+    },
+    {
+      "offset": 145263330,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 146052500,
+      "duration": 3026250,
+      "text": "约定"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

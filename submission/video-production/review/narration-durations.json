@@ -1,152 +1,152 @@
 {
   "count": 29,
-  "total_seconds": 450.624,
+  "total_seconds": 390.192,
   "status": "当前稿对应音频已核对摘要，未逐段试听校准",
   "shots": [
     {
       "shot": "s01",
-      "seconds": 9.36,
-      "audio": "raw/audio/s01/3c9bf256f4a7.mp3"
+      "seconds": 8.376,
+      "audio": "raw/audio/s01/da881c4670c4.mp3"
     },
     {
       "shot": "s02",
-      "seconds": 12.216,
-      "audio": "raw/audio/s02/34f80c5a6d87.mp3"
+      "seconds": 10.368,
+      "audio": "raw/audio/s02/9dbe6514a8f8.mp3"
     },
     {
       "shot": "s03",
-      "seconds": 15.24,
-      "audio": "raw/audio/s03/dfbc03f700e7.mp3"
+      "seconds": 13.224,
+      "audio": "raw/audio/s03/3a4651254e3f.mp3"
     },
     {
       "shot": "s04",
-      "seconds": 16.176,
-      "audio": "raw/audio/s04/c4eb086bd5ae.mp3"
+      "seconds": 13.368,
+      "audio": "raw/audio/s04/2e163b041185.mp3"
     },
     {
       "shot": "s05",
-      "seconds": 14.712,
-      "audio": "raw/audio/s05/f9b2b89c0d4f.mp3"
+      "seconds": 12.504,
+      "audio": "raw/audio/s05/3277b190963a.mp3"
     },
     {
       "shot": "s06",
-      "seconds": 17.616,
-      "audio": "raw/audio/s06/956f14c234dd.mp3"
+      "seconds": 15.144,
+      "audio": "raw/audio/s06/943a0b9d43f5.mp3"
     },
     {
       "shot": "s07",
-      "seconds": 15.816,
-      "audio": "raw/audio/s07/a61783a282b2.mp3"
+      "seconds": 13.248,
+      "audio": "raw/audio/s07/f7e0e66538e3.mp3"
     },
     {
       "shot": "s08",
-      "seconds": 12.624,
-      "audio": "raw/audio/s08/57609e3184fe.mp3"
+      "seconds": 11.016,
+      "audio": "raw/audio/s08/3ae5fb0f8ea6.mp3"
     },
     {
       "shot": "s09",
-      "seconds": 15.048,
-      "audio": "raw/audio/s09/2dbd9e964127.mp3"
+      "seconds": 12.432,
+      "audio": "raw/audio/s09/9e4fc9b9b8f5.mp3"
     },
     {
       "shot": "s10",
-      "seconds": 15.24,
-      "audio": "raw/audio/s10/02522ab02cc8.mp3"
+      "seconds": 13.632,
+      "audio": "raw/audio/s10/aa2de9a9469a.mp3"
     },
     {
       "shot": "s11",
-      "seconds": 16.104,
-      "audio": "raw/audio/s11/7af76030ea0e.mp3"
+      "seconds": 14.208,
+      "audio": "raw/audio/s11/20d0167797b8.mp3"
     },
     {
       "shot": "s12",
-      "seconds": 14.256,
-      "audio": "raw/audio/s12/312ef2e0e405.mp3"
+      "seconds": 12.384,
+      "audio": "raw/audio/s12/b675736f2e32.mp3"
     },
     {
       "shot": "s13",
-      "seconds": 15.816,
-      "audio": "raw/audio/s13/9c695d80f20a.mp3"
+      "seconds": 13.728,
+      "audio": "raw/audio/s13/08290b00eada.mp3"
     },
     {
       "shot": "s14",
-      "seconds": 24.72,
-      "audio": "raw/audio/s14/29218cd700c6.mp3"
+      "seconds": 21.072,
+      "audio": "raw/audio/s14/10177e9ccde1.mp3"
     },
     {
       "shot": "s15",
-      "seconds": 17.712,
-      "audio": "raw/audio/s15/f2bca4e74a14.mp3"
+      "seconds": 15.264,
+      "audio": "raw/audio/s15/2e02c58b7028.mp3"
     },
     {
       "shot": "s16",
-      "seconds": 18.072,
-      "audio": "raw/audio/s16/64ef520e06bc.mp3"
+      "seconds": 16.224,
+      "audio": "raw/audio/s16/7fa60ab864e9.mp3"
     },
     {
       "shot": "s17",
-      "seconds": 17.232,
-      "audio": "raw/audio/s17/4c11415c498e.mp3"
+      "seconds": 14.664,
+      "audio": "raw/audio/s17/d458f2590296.mp3"
     },
     {
       "shot": "s18",
-      "seconds": 7.488,
-      "audio": "raw/audio/s18/9012691a6994.mp3"
+      "seconds": 6.696,
+      "audio": "raw/audio/s18/90ef86d44505.mp3"
     },
     {
       "shot": "s19",
-      "seconds": 15.216,
-      "audio": "raw/audio/s19/12d327341cd6.mp3"
+      "seconds": 13.368,
+      "audio": "raw/audio/s19/a2adb312f638.mp3"
     },
     {
       "shot": "s20",
-      "seconds": 18.696,
-      "audio": "raw/audio/s20/1bce8884fc5f.mp3"
+      "seconds": 16.08,
+      "audio": "raw/audio/s20/fb646cbb1b49.mp3"
     },
     {
       "shot": "s21",
-      "seconds": 17.88,
-      "audio": "raw/audio/s21/08a6dd7ab639.mp3"
+      "seconds": 15.84,
+      "audio": "raw/audio/s21/69e2e09d240d.mp3"
     },
     {
       "shot": "s22",
-      "seconds": 16.8,
-      "audio": "raw/audio/s22/6f079d0dbf23.mp3"
+      "seconds": 14.352,
+      "audio": "raw/audio/s22/98175c86e6b0.mp3"
     },
     {
       "shot": "s23",
-      "seconds": 15.552,
-      "audio": "raw/audio/s23/695887351603.mp3"
+      "seconds": 13.728,
+      "audio": "raw/audio/s23/6acee00b8d42.mp3"
     },
     {
       "shot": "s24",
-      "seconds": 16.728,
-      "audio": "raw/audio/s24/4f66e69f18a8.mp3"
+      "seconds": 14.688,
+      "audio": "raw/audio/s24/79c193b4be39.mp3"
     },
     {
       "shot": "s26",
-      "seconds": 17.472,
-      "audio": "raw/audio/s26/78af7e43465e.mp3"
+      "seconds": 15.192,
+      "audio": "raw/audio/s26/d57d5019ce5a.mp3"
     },
     {
       "shot": "s27",
-      "seconds": 18.216,
-      "audio": "raw/audio/s27/a81867dea8e6.mp3"
+      "seconds": 15.624,
+      "audio": "raw/audio/s27/4de027ad2d0b.mp3"
     },
     {
       "shot": "s28",
-      "seconds": 19.488,
-      "audio": "raw/audio/s28/25de09c518aa.mp3"
+      "seconds": 16.848,
+      "audio": "raw/audio/s28/02562f2ed8e3.mp3"
     },
     {
       "shot": "s29",
-      "seconds": 10.8,
-      "audio": "raw/audio/s29/ce79258d4584.mp3"
+      "seconds": 9.216,
+      "audio": "raw/audio/s29/e1bd9fabda55.mp3"
     },
     {
       "shot": "s30",
-      "seconds": 8.328,
-      "audio": "raw/audio/s30/4cc0d0509f38.mp3"
+      "seconds": 7.704,
+      "audio": "raw/audio/s30/0ce68970d289.mp3"
     }
   ]
 }

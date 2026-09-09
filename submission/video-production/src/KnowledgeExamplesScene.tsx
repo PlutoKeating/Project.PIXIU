@@ -1,5 +1,5 @@
 import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
-import {Reveal, Steps, ease} from './PresentationMotion';
+import {cue, Reveal, Steps, ease} from './PresentationMotion';
 import {interpolate} from 'remotion';
 import data from './knowledge-examples.json';
 
@@ -9,10 +9,10 @@ export const KnowledgeExamplesScene: React.FC = () => {
   return <AbsoluteFill>
     <div style={{position: 'absolute', left: 135, right: 135, top: 185}}>
       <div style={{fontSize: 38, color: '#1456b8', fontWeight: 700, marginBottom: 38}}>
-        {f < 385 ? '四类公开示例，均已写入并检索到来源' : '打开来源，按原始步骤阅读'}
+        {f < cue('s14','打开流程') ? '四类公开示例，均已写入并检索到来源' : '打开来源，按原始步骤阅读'}
       </div>
-      {f < 385 ? <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28}}>
-        {data.examples.map((item, i) => <Reveal at={[18,100,190,285][i]} key={item.evidence_id} style={{background: '#fff', padding: '26px 30px', borderTop: '4px solid #1456b8'}}>
+      {f < cue('s14','打开流程') ? <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28}}>
+        {data.examples.map((item, i) => <Reveal at={[cue('s14','记忆可以'),cue('s14','这里记录'),cue('s14','这里记录')+65,cue('s14','以及阅读')][i]} key={item.evidence_id} style={{background: '#fff', padding: '26px 30px', borderTop: '4px solid #1456b8'}}>
           <div style={{fontSize: 38, color: '#1456b8', fontWeight: 700}}>{labels[i]} · {item.title}</div>
           <div style={{fontSize: 38, lineHeight: 1.7, marginTop: 25}}>“{item.quote}”</div>
         </Reveal>)}
@@ -26,7 +26,7 @@ export const KnowledgeExamplesScene: React.FC = () => {
       </>}
     </div>
     <div style={{position: 'absolute', left: 135, top: 905, fontSize: 36, color: '#526477'}}>
-      {f < 385 ? '事实、流程、案例与模板 · 来源内容摘录' : '原生来源裁片 · 公开合成资料 · 正文保持原样'}
+      {f < cue('s14','打开流程') ? '事实、流程、案例与模板 · 来源内容摘录' : '原生来源裁片 · 公开合成资料 · 正文保持原样'}
     </div>
-  {f>=564?<Steps labels={['相似任务','检索资料','作为执行参考']} cues={[564,615,662]} top={805}/>:null}</AbsoluteFill>;
+  {f>=cue('s14','遇到相似')?<Steps labels={['相似任务','检索资料','作为执行参考']} cues={[cue('s14','遇到相似'),cue('s14','再检索'),cue('s14','交给助手')]} top={805}/>:null}</AbsoluteFill>;
 };

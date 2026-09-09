@@ -18,7 +18,8 @@
     "prepare:evidence": "python3 scripts/prepare_evidence.py",
     "prepare:agent-scene": "python3 scripts/prepare_agent_scene.py",
     "prepare:preferences": "python3 scripts/prepare_preference_scene.py",
-    "render:final": "remotion render src/index.ts PixiuFinalFull"
+    "render:final": "remotion render src/index.ts PixiuFinalFull",
+    "narrate:azure": "python3 scripts/narrate_azure.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

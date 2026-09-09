@@ -1,3 +1,4 @@
+import {cue} from './PresentationMotion';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame, staticFile, Easing} from 'remotion';
 import timeline from './timeline.json';
 import {ArchitectureScene} from './ArchitectureScene';
@@ -42,11 +43,11 @@ const preferenceHistoryStart = timeline.shots.find((shot) => shot.id === 's15')!
 type SoundCue = {shot: string; offset: number; src: string; volume: number;
   duration?: number; label?: string};
 export const SFX: SoundCue[] = [
-  // SearchEvidenceScene: four letters at local 10/13/16/19, then click at 315.
+  // SearchEvidenceScene: four letters at local 10/13/16/19, then click at the source-opening narration cue.
   ...[10, 13, 16, 19].map((target, i) => ({shot: 's13', offset: peakStart(target, 0.6),
     src: `audio/typewriter-hit-${i % 2 ? 'soft' : 'hard'}-action.wav`, volume: 0.18,
     duration: 3, label: '搜索输入拟音'})),
-  {shot: 's13', offset: peakStart(315, 0.15), src: 'audio/switch-click-quick-action.wav',
+  {shot: 's13', offset: peakStart(cue('s13','打开来源'), 0.15), src: 'audio/switch-click-quick-action.wav',
     volume: 0.24, duration: 8, label: '来源点击拟音'},
   // PreferenceHistoryScene: cue 6/18/30 + 22-frame flight, tied to caption start.
   ...[28, 40, 52].map((landing, i) => ({shot: 's15',
@@ -194,7 +195,7 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
       : shot.id === 's16' ? <ConflictAuditScene />
       : shot.id === 's06' ? <AgentTaskScene />
       : shot.id === 's04' || shot.id === 's10' || shot.id === 's11' ? <NativeSetupScene kind={shot.id} />
-      : shot.id === 's24' && frame >= 284 ? <ForgetTraceScene />
+      : shot.id === 's24' && frame >= cue('s24','共享记忆') ? <ForgetTraceScene />
       : shot.id === 's24' || shot.id === 's27' ? <NativeDeliveryScene kind={shot.id} />
       : SCREENS[shot.id] ? <ScreenScene shot={shot} /> : <PanelScene shot={shot} />}
     {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: headingSize, color: headingColor, fontWeight: 700}}>{shot.title}</div> : null}

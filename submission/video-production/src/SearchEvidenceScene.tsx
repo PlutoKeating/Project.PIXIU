@@ -1,6 +1,6 @@
 import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
 
-import {Reveal} from './PresentationMotion';
+import {cue, Reveal} from './PresentationMotion';
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 const BLUE = '#1456b8';
@@ -8,7 +8,7 @@ const QUERY = '详细说明';
 // Exact type-and-filter demo timing: 3f per character, >=11f breath,
 // 10f result settling, two ripple rings 3f apart, 16f push to 2.2.
 // The real UI returns one row; no invented nonmatching grid is added.
-const TYPE_START = 10, FILTER = 33, CLICK = 315, DETAIL = 331;
+const TYPE_START = 10, FILTER = 33, CLICK = cue('s13', '打开来源'), DETAIL = CLICK + 16;
 const Crop: React.FC<{src: string; x: number; y: number; w: number; h: number; scale: number}> =
   ({src, x, y, w, h, scale}) => <div style={{position: 'relative', width: w * scale, height: h * scale, overflow: 'hidden'}}>
     <Img src={staticFile(`screens/${src}`)} style={{position: 'absolute', width: 3840 * scale,
@@ -48,7 +48,7 @@ export const SearchEvidenceScene: React.FC = () => {
         </div>
         <div style={{position: 'absolute', left: 1340, top: 475, fontSize: 36, lineHeight: 1.85, color: BLUE}}>
           <div style={{color: '#526477'}}>检索机制示意</div>
-          {['关键词','内容含义','关联信息','筛选结果'].map((t,i)=><Reveal key={t} at={[128,165,202,260][i]}>{t}</Reveal>)}
+          {['关键词','内容含义','关联信息','筛选结果'].map((t,i)=><Reveal key={t} at={[cue('s13','系统把'),cue('s13','系统把')+30,cue('s13','系统把')+60,cue('s13','筛选相关')][i]}>{t}</Reveal>)}
         </div>
         {[0, 1].map((r) => {
           const cue = CLICK + r * 3;
@@ -66,7 +66,7 @@ export const SearchEvidenceScene: React.FC = () => {
         </div>
       </div>}
       <div style={{position: 'absolute', inset: 0, background: '#f6f7f9', pointerEvents: 'none',
-        opacity: interpolate(f, [325, 331, 337], [0, 1, 0], clamp)}} />
+        opacity: interpolate(f, [CLICK + 10, DETAIL, DETAIL + 6], [0, 1, 0], clamp)}} />
     </div>
     <div style={{position: 'absolute', left: 135, top: 905, color: '#526477', fontSize: 36}}>
       真实页面 · 查询与来源展开

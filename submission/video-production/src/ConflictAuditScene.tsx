@@ -1,3 +1,4 @@
+import {cue} from './PresentationMotion';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
 import audit from './semantic-conflict.json';
 
@@ -10,11 +11,11 @@ export const ConflictAuditScene: React.FC = () => {
   const f = useCurrentFrame();
   return <AbsoluteFill>
     <div style={{position: 'absolute', left: 135, right: 135, top: 195}}>
-      {f < 298 ? <>
+      {f < cue('s16','旧版本提交') ? <>
         <div style={{fontSize: 38, color: '#1456b8', marginBottom: 35}}>家庭账单：核对金额，保存修改</div>
-        {f >= 181 && <div style={{marginBottom: 28}}><Crop src="15-memory-version.png" x={539} y={213} w={76} h={20} scale={2.6} /></div>}
-        <Crop src={f < 181 ? '14-memory-edit.png' : '15-memory-version.png'} x={446} y={304} w={450} h={132} scale={2.6} />
-      </> : f < 450 ? <>
+        {f >= cue('s16','编辑基于') && <div style={{marginBottom: 28}}><Crop src="15-memory-version.png" x={539} y={213} w={76} h={20} scale={2.6} /></div>}
+        <Crop src={f < cue('s16','编辑基于') ? '14-memory-edit.png' : '15-memory-version.png'} x={446} y={304} w={450} h={132} scale={2.6} />
+      </> : f < cue('s16','语义矛盾') ? <>
         <div style={{fontSize: 38, color: '#1456b8', marginBottom: 35}}>另一条公开记忆：旧版本保存被阻止</div>
         <Crop src="64-edit-version-conflict.png" x={447} y={302} w={557} h={48} scale={2.6} />
         <div style={{marginTop: 55}}><Crop src="64-edit-version-conflict.png" x={397} y={606} w={625} h={45} scale={2.6} /></div>
@@ -26,7 +27,7 @@ export const ConflictAuditScene: React.FC = () => {
       </>}
     </div>
     <div style={{position: 'absolute', left: 135, top: 905, fontSize: 36, color: '#526477'}}>
-      {f < 450 ? '原生界面裁片 · 公开合成资料' : '原生审计裁片与接口原值 · 公开合成资料'}
+      {f < cue('s16','语义矛盾') ? '原生界面裁片 · 公开合成资料' : '原生审计裁片与接口原值 · 公开合成资料'}
     </div>
   </AbsoluteFill>;
 };

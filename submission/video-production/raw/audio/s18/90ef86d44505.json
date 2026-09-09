@@ -1,0 +1,114 @@
+{
+  "shot": "s18",
+  "request": {
+    "text": "接下来，看貔貅最关键的能力：让多台设备上的智能体，共享知识与经验。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "90ef86d44505b30cb7e8e336beffe49cfb16d4e295bd9dff7886982b84396440",
+  "audio_sha256": "0a4e54ec3bfbaa9da45c423a8c641e55ce77645c74e9ec17ac84a83be685d8ed",
+  "duration_seconds": 6.696,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 5131660,
+      "text": "接下来"
+    },
+    {
+      "offset": 9342080,
+      "duration": 2105410,
+      "text": "看"
+    },
+    {
+      "offset": 11447500,
+      "duration": 3026250,
+      "text": "貔貅"
+    },
+    {
+      "offset": 14736660,
+      "duration": 1578750,
+      "text": "最"
+    },
+    {
+      "offset": 16315830,
+      "duration": 2894580,
+      "text": "关键"
+    },
+    {
+      "offset": 19210410,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 20000000,
+      "duration": 2763330,
+      "text": "能力"
+    },
+    {
+      "offset": 26184160,
+      "duration": 2105410,
+      "text": "让"
+    },
+    {
+      "offset": 28289580,
+      "duration": 1973750,
+      "text": "多"
+    },
+    {
+      "offset": 30263330,
+      "duration": 1842080,
+      "text": "台"
+    },
+    {
+      "offset": 32105410,
+      "duration": 2631250,
+      "text": "设备"
+    },
+    {
+      "offset": 34736660,
+      "duration": 921250,
+      "text": "上"
+    },
+    {
+      "offset": 35657910,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 36710410,
+      "duration": 2894580,
+      "text": "智能"
+    },
+    {
+      "offset": 39605410,
+      "duration": 2368330,
+      "text": "体"
+    },
+    {
+      "offset": 45000000,
+      "duration": 3815830,
+      "text": "共享"
+    },
+    {
+      "offset": 48947500,
+      "duration": 3815830,
+      "text": "知识"
+    },
+    {
+      "offset": 53026250,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 54342080,
+      "duration": 3289580,
+      "text": "经验"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

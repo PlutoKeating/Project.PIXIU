@@ -1,0 +1,189 @@
+{
+  "shot": "s27",
+  "request": {
+    "text": "一个安装包，部署桌面应用、助手运行环境与记忆服务。打开设置，检测模型连接，查看更新信息。升级过程通过签名校验、健康检查和失败恢复，帮助维护日常使用。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "4de027ad2d0b6535d6cd0b92100007b6b8c92684cd7ab58799d381214b05e2a1",
+  "audio_sha256": "450be6bd751813bae23510969cde64d3b97aee11ea4e7659a9a94c5f24c358f4",
+  "duration_seconds": 15.624,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2105410,
+      "text": "一个"
+    },
+    {
+      "offset": 2763330,
+      "duration": 2894580,
+      "text": "安装"
+    },
+    {
+      "offset": 5657910,
+      "duration": 2105410,
+      "text": "包"
+    },
+    {
+      "offset": 10789580,
+      "duration": 2894580,
+      "text": "部署"
+    },
+    {
+      "offset": 13947500,
+      "duration": 2500000,
+      "text": "桌面"
+    },
+    {
+      "offset": 16578750,
+      "duration": 3289580,
+      "text": "应用"
+    },
+    {
+      "offset": 24078750,
+      "duration": 3421250,
+      "text": "助手"
+    },
+    {
+      "offset": 27763330,
+      "duration": 2894580,
+      "text": "运行"
+    },
+    {
+      "offset": 30789580,
+      "duration": 4210410,
+      "text": "环境"
+    },
+    {
+      "offset": 36052500,
+      "duration": 1710410,
+      "text": "与"
+    },
+    {
+      "offset": 37894580,
+      "duration": 2763330,
+      "text": "记忆"
+    },
+    {
+      "offset": 40789580,
+      "duration": 2763330,
+      "text": "服务"
+    },
+    {
+      "offset": 49605410,
+      "duration": 3026250,
+      "text": "打开"
+    },
+    {
+      "offset": 52631660,
+      "duration": 3815830,
+      "text": "设置"
+    },
+    {
+      "offset": 59342080,
+      "duration": 3947500,
+      "text": "检测"
+    },
+    {
+      "offset": 63421250,
+      "duration": 2894580,
+      "text": "模型"
+    },
+    {
+      "offset": 66447500,
+      "duration": 4078750,
+      "text": "连接"
+    },
+    {
+      "offset": 72500000,
+      "duration": 4342080,
+      "text": "查看"
+    },
+    {
+      "offset": 77105410,
+      "duration": 3947080,
+      "text": "更新"
+    },
+    {
+      "offset": 81052500,
+      "duration": 4210410,
+      "text": "信息"
+    },
+    {
+      "offset": 91184160,
+      "duration": 3552500,
+      "text": "升级"
+    },
+    {
+      "offset": 94868330,
+      "duration": 4210410,
+      "text": "过程"
+    },
+    {
+      "offset": 100263330,
+      "duration": 3026250,
+      "text": "通过"
+    },
+    {
+      "offset": 103552500,
+      "duration": 3157910,
+      "text": "签名"
+    },
+    {
+      "offset": 106842080,
+      "duration": 3552500,
+      "text": "校验"
+    },
+    {
+      "offset": 112500000,
+      "duration": 3684160,
+      "text": "健康"
+    },
+    {
+      "offset": 116184160,
+      "duration": 4342080,
+      "text": "检查"
+    },
+    {
+      "offset": 121578750,
+      "duration": 1578750,
+      "text": "和"
+    },
+    {
+      "offset": 123289580,
+      "duration": 3157910,
+      "text": "失败"
+    },
+    {
+      "offset": 126447500,
+      "duration": 3947500,
+      "text": "恢复"
+    },
+    {
+      "offset": 133552500,
+      "duration": 3289580,
+      "text": "帮助"
+    },
+    {
+      "offset": 136842080,
+      "duration": 3421250,
+      "text": "维护"
+    },
+    {
+      "offset": 140526250,
+      "duration": 3026250,
+      "text": "日常"
+    },
+    {
+      "offset": 143552500,
+      "duration": 3552500,
+      "text": "使用"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

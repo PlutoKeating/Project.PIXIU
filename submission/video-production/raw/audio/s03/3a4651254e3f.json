@@ -1,0 +1,224 @@
+{
+  "shot": "s03",
+  "request": {
+    "text": "貔貅的关键创新，是把孤立的本地记忆，连接成可信设备之间的集体记忆网络。知识在端侧保存，在授权范围内共享，再由每台设备上的智能体检索和复用。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "3a4651254e3f03ff6cf450df15b68a7fd33c5c8d35d9462a3777c070fe12995d",
+  "audio_sha256": "994adb0e94f0855a8599ebc5b91c6a293b259dc31d61f64bba9f435a9deacc74",
+  "duration_seconds": 13.224,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3684160,
+      "text": "貔貅"
+    },
+    {
+      "offset": 4210410,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 5657910,
+      "duration": 3026250,
+      "text": "关键"
+    },
+    {
+      "offset": 8815830,
+      "duration": 5000000,
+      "text": "创新"
+    },
+    {
+      "offset": 15657910,
+      "duration": 1710410,
+      "text": "是"
+    },
+    {
+      "offset": 17368330,
+      "duration": 1447500,
+      "text": "把"
+    },
+    {
+      "offset": 19078750,
+      "duration": 2368330,
+      "text": "孤立"
+    },
+    {
+      "offset": 21447500,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 22894580,
+      "duration": 3289580,
+      "text": "本地"
+    },
+    {
+      "offset": 26315830,
+      "duration": 3157910,
+      "text": "记忆"
+    },
+    {
+      "offset": 33026250,
+      "duration": 2763330,
+      "text": "连接"
+    },
+    {
+      "offset": 35789580,
+      "duration": 2368330,
+      "text": "成"
+    },
+    {
+      "offset": 38421250,
+      "duration": 3552500,
+      "text": "可信"
+    },
+    {
+      "offset": 42105410,
+      "duration": 2763330,
+      "text": "设备"
+    },
+    {
+      "offset": 45000000,
+      "duration": 2500000,
+      "text": "之间"
+    },
+    {
+      "offset": 47500000,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 49078750,
+      "duration": 4342080,
+      "text": "集体"
+    },
+    {
+      "offset": 53552500,
+      "duration": 2500000,
+      "text": "记忆"
+    },
+    {
+      "offset": 56184160,
+      "duration": 3552500,
+      "text": "网络"
+    },
+    {
+      "offset": 65789580,
+      "duration": 3684160,
+      "text": "知识"
+    },
+    {
+      "offset": 69736660,
+      "duration": 1578750,
+      "text": "在"
+    },
+    {
+      "offset": 71315830,
+      "duration": 1710410,
+      "text": "端"
+    },
+    {
+      "offset": 73026250,
+      "duration": 1315830,
+      "text": "侧"
+    },
+    {
+      "offset": 74473750,
+      "duration": 5131660,
+      "text": "保存"
+    },
+    {
+      "offset": 81315830,
+      "duration": 1973750,
+      "text": "在"
+    },
+    {
+      "offset": 83421250,
+      "duration": 3684160,
+      "text": "授权"
+    },
+    {
+      "offset": 87236660,
+      "duration": 2236660,
+      "text": "范围"
+    },
+    {
+      "offset": 89473750,
+      "duration": 1184160,
+      "text": "内"
+    },
+    {
+      "offset": 90789580,
+      "duration": 4078750,
+      "text": "共享"
+    },
+    {
+      "offset": 97105410,
+      "duration": 1315830,
+      "text": "再"
+    },
+    {
+      "offset": 98421250,
+      "duration": 1315830,
+      "text": "由"
+    },
+    {
+      "offset": 100000000,
+      "duration": 1447500,
+      "text": "每"
+    },
+    {
+      "offset": 101447500,
+      "duration": 1578750,
+      "text": "台"
+    },
+    {
+      "offset": 103026250,
+      "duration": 2631660,
+      "text": "设备"
+    },
+    {
+      "offset": 105657910,
+      "duration": 1315830,
+      "text": "上"
+    },
+    {
+      "offset": 106973750,
+      "duration": 1447500,
+      "text": "的"
+    },
+    {
+      "offset": 108684160,
+      "duration": 3289580,
+      "text": "智能"
+    },
+    {
+      "offset": 111973750,
+      "duration": 2105410,
+      "text": "体"
+    },
+    {
+      "offset": 114210410,
+      "duration": 4078750,
+      "text": "检索"
+    },
+    {
+      "offset": 118552500,
+      "duration": 1184160,
+      "text": "和"
+    },
+    {
+      "offset": 119868330,
+      "duration": 3157910,
+      "text": "复用"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

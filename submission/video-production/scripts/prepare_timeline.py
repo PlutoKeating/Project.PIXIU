@@ -16,6 +16,7 @@ import array
 
 ROOT = Path(__file__).resolve().parents[1]
 story = json.loads((ROOT / 'storyboard/shots.json').read_text())
+settings = json.loads((ROOT / 'storyboard/narration.json').read_text())
 fps = story['fps']
 start = 0
 timeline = []
@@ -24,7 +25,7 @@ for shot in story['shots']:
     matches = []
     for path in (ROOT / 'raw/audio' / shot['id']).glob('*.json'):
         meta = json.loads(path.read_text())
-        if meta['request']['text'] == shot['narration']:
+        if meta['request']['text'] == shot['narration'] and all(meta['request'].get(k) == v for k, v in settings.items()):
             matches.append((path, meta))
     if len(matches) != 1:
         raise RuntimeError(shot['id'] + ': need one matching narration, got ' + str(len(matches)))

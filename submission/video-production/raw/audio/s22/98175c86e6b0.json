@@ -1,0 +1,219 @@
+{
+  "shot": "s22",
+  "request": {
+    "text": "两台设备从同一版本同时修改，会形成不同分支。系统识别修改的先后与并发关系，再按确定性规则合并。恢复连接后，三台设备都读到相同的版本三与同一正文。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "98175c86e6b09580733b937493efb64746992b4793173f70c963bbf7116d34b0",
+  "audio_sha256": "f0ff274c28dff9339addafb06cfb2cb69dd6f8250834373c4ecb424b0690ea46",
+  "duration_seconds": 14.352,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3157910,
+      "text": "两台"
+    },
+    {
+      "offset": 3684160,
+      "duration": 3684160,
+      "text": "设备"
+    },
+    {
+      "offset": 7631660,
+      "duration": 1578750,
+      "text": "从"
+    },
+    {
+      "offset": 9342080,
+      "duration": 3026250,
+      "text": "同一"
+    },
+    {
+      "offset": 12368330,
+      "duration": 3552500,
+      "text": "版本"
+    },
+    {
+      "offset": 16184160,
+      "duration": 3421250,
+      "text": "同时"
+    },
+    {
+      "offset": 19605410,
+      "duration": 3947500,
+      "text": "修改"
+    },
+    {
+      "offset": 25131660,
+      "duration": 1578750,
+      "text": "会"
+    },
+    {
+      "offset": 26710410,
+      "duration": 3289580,
+      "text": "形成"
+    },
+    {
+      "offset": 30263330,
+      "duration": 2631250,
+      "text": "不同"
+    },
+    {
+      "offset": 32894580,
+      "duration": 3684160,
+      "text": "分支"
+    },
+    {
+      "offset": 42500000,
+      "duration": 3947500,
+      "text": "系统"
+    },
+    {
+      "offset": 46447500,
+      "duration": 2763330,
+      "text": "识别"
+    },
+    {
+      "offset": 49473750,
+      "duration": 3026250,
+      "text": "修改"
+    },
+    {
+      "offset": 52500000,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 53684160,
+      "duration": 3684160,
+      "text": "先后"
+    },
+    {
+      "offset": 57500000,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 58684160,
+      "duration": 3026250,
+      "text": "并发"
+    },
+    {
+      "offset": 61842080,
+      "duration": 3815830,
+      "text": "关系"
+    },
+    {
+      "offset": 68289580,
+      "duration": 1973750,
+      "text": "再"
+    },
+    {
+      "offset": 70263330,
+      "duration": 1710410,
+      "text": "按"
+    },
+    {
+      "offset": 71973750,
+      "duration": 3157910,
+      "text": "确定"
+    },
+    {
+      "offset": 75131660,
+      "duration": 1842080,
+      "text": "性"
+    },
+    {
+      "offset": 77105410,
+      "duration": 3026250,
+      "text": "规则"
+    },
+    {
+      "offset": 80263330,
+      "duration": 3289580,
+      "text": "合并"
+    },
+    {
+      "offset": 89605410,
+      "duration": 3289580,
+      "text": "恢复"
+    },
+    {
+      "offset": 93026250,
+      "duration": 2631660,
+      "text": "连接"
+    },
+    {
+      "offset": 95657910,
+      "duration": 2500000,
+      "text": "后"
+    },
+    {
+      "offset": 100789580,
+      "duration": 4210410,
+      "text": "三台"
+    },
+    {
+      "offset": 105131660,
+      "duration": 4078750,
+      "text": "设备"
+    },
+    {
+      "offset": 109473750,
+      "duration": 1447500,
+      "text": "都"
+    },
+    {
+      "offset": 110921250,
+      "duration": 1447080,
+      "text": "读"
+    },
+    {
+      "offset": 112368330,
+      "duration": 1447500,
+      "text": "到"
+    },
+    {
+      "offset": 113815830,
+      "duration": 3684160,
+      "text": "相同"
+    },
+    {
+      "offset": 117500000,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 118421250,
+      "duration": 4078750,
+      "text": "版本"
+    },
+    {
+      "offset": 123684160,
+      "duration": 2500000,
+      "text": "三"
+    },
+    {
+      "offset": 126184160,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 127500000,
+      "duration": 3157910,
+      "text": "同一"
+    },
+    {
+      "offset": 130789580,
+      "duration": 3552500,
+      "text": "正文"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

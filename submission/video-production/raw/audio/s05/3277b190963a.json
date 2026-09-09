@@ -1,0 +1,199 @@
+{
+  "shot": "s05",
+  "request": {
+    "text": "我们复用开放麒麟的智能体宿主和运行时，提供会话、规划与工具能力。原创的记忆适配层，把它连接到貔貅的接入、检索、安全和分布式同步引擎。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "3277b190963a50ad222994f6a900ac1810059fb0c556bf1b2d68c66b998d98eb",
+  "audio_sha256": "c5a6ac7c59b9356d2cfb6627b7b96af22daa38ed00e454cc9a0e3a924a4b3574",
+  "duration_seconds": 12.504,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2105410,
+      "text": "我们"
+    },
+    {
+      "offset": 2763330,
+      "duration": 1447080,
+      "text": "复"
+    },
+    {
+      "offset": 4210410,
+      "duration": 1184160,
+      "text": "用"
+    },
+    {
+      "offset": 5657910,
+      "duration": 3684160,
+      "text": "开放"
+    },
+    {
+      "offset": 9473750,
+      "duration": 3026250,
+      "text": "麒麟"
+    },
+    {
+      "offset": 12500000,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 13947500,
+      "duration": 2631250,
+      "text": "智能"
+    },
+    {
+      "offset": 16578750,
+      "duration": 2105410,
+      "text": "体"
+    },
+    {
+      "offset": 18815830,
+      "duration": 3552500,
+      "text": "宿主"
+    },
+    {
+      "offset": 22631660,
+      "duration": 921250,
+      "text": "和"
+    },
+    {
+      "offset": 23684160,
+      "duration": 3157910,
+      "text": "运行"
+    },
+    {
+      "offset": 26842080,
+      "duration": 2236660,
+      "text": "时"
+    },
+    {
+      "offset": 31447500,
+      "duration": 3026250,
+      "text": "提供"
+    },
+    {
+      "offset": 34736660,
+      "duration": 3421250,
+      "text": "会话"
+    },
+    {
+      "offset": 40921250,
+      "duration": 3421250,
+      "text": "规划"
+    },
+    {
+      "offset": 44605410,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 45789580,
+      "duration": 2894580,
+      "text": "工具"
+    },
+    {
+      "offset": 48815830,
+      "duration": 3026250,
+      "text": "能力"
+    },
+    {
+      "offset": 57894580,
+      "duration": 3552500,
+      "text": "原创"
+    },
+    {
+      "offset": 61447500,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 62763330,
+      "duration": 2236660,
+      "text": "记忆"
+    },
+    {
+      "offset": 65131660,
+      "duration": 2894580,
+      "text": "适配"
+    },
+    {
+      "offset": 68026250,
+      "duration": 2631660,
+      "text": "层"
+    },
+    {
+      "offset": 72631660,
+      "duration": 1315830,
+      "text": "把"
+    },
+    {
+      "offset": 73947500,
+      "duration": 921250,
+      "text": "它"
+    },
+    {
+      "offset": 75000000,
+      "duration": 2368330,
+      "text": "连接"
+    },
+    {
+      "offset": 77368330,
+      "duration": 1315830,
+      "text": "到"
+    },
+    {
+      "offset": 78947500,
+      "duration": 2894580,
+      "text": "貔貅"
+    },
+    {
+      "offset": 81842080,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 83026250,
+      "duration": 3026250,
+      "text": "接入"
+    },
+    {
+      "offset": 89605410,
+      "duration": 4210410,
+      "text": "检索"
+    },
+    {
+      "offset": 96710410,
+      "duration": 4736660,
+      "text": "安全"
+    },
+    {
+      "offset": 102500000,
+      "duration": 1447500,
+      "text": "和"
+    },
+    {
+      "offset": 104078750,
+      "duration": 4342080,
+      "text": "分布式"
+    },
+    {
+      "offset": 108684160,
+      "duration": 3157910,
+      "text": "同步"
+    },
+    {
+      "offset": 111842080,
+      "duration": 3947500,
+      "text": "引擎"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

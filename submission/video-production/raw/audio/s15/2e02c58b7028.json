@@ -1,0 +1,199 @@
+{
+  "shot": "s15",
+  "request": {
+    "text": "偏好记忆关注操作习惯、输出风格和安全策略。比如先要求回答简洁，后来改为详细说明。提取后查看当前版本与历史，就能看清每次变化，追溯自己的使用习惯。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "2e02c58b70284273fba3227bee1f94fcec80dddb9564cccb118f36368db7eb6d",
+  "audio_sha256": "b8598bca70db522b4d50f4aa517a646df2a34f9a1275e46bf72e2ade798ecfbf",
+  "duration_seconds": 15.264,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3947500,
+      "text": "偏好"
+    },
+    {
+      "offset": 4605410,
+      "duration": 3421250,
+      "text": "记忆"
+    },
+    {
+      "offset": 8947500,
+      "duration": 2894580,
+      "text": "关注"
+    },
+    {
+      "offset": 12105410,
+      "duration": 3289160,
+      "text": "操作"
+    },
+    {
+      "offset": 15394580,
+      "duration": 4078750,
+      "text": "习惯"
+    },
+    {
+      "offset": 22631660,
+      "duration": 3421250,
+      "text": "输出"
+    },
+    {
+      "offset": 26184160,
+      "duration": 4868330,
+      "text": "风格"
+    },
+    {
+      "offset": 32236660,
+      "duration": 1710410,
+      "text": "和"
+    },
+    {
+      "offset": 34078750,
+      "duration": 3289580,
+      "text": "安全"
+    },
+    {
+      "offset": 37500000,
+      "duration": 3289580,
+      "text": "策略"
+    },
+    {
+      "offset": 46842080,
+      "duration": 4868330,
+      "text": "比如"
+    },
+    {
+      "offset": 53026250,
+      "duration": 2236660,
+      "text": "先"
+    },
+    {
+      "offset": 55263330,
+      "duration": 3157910,
+      "text": "要求"
+    },
+    {
+      "offset": 58421250,
+      "duration": 2368330,
+      "text": "回答"
+    },
+    {
+      "offset": 60921250,
+      "duration": 4605410,
+      "text": "简洁"
+    },
+    {
+      "offset": 68947500,
+      "duration": 2631660,
+      "text": "后来"
+    },
+    {
+      "offset": 71710410,
+      "duration": 2500000,
+      "text": "改为"
+    },
+    {
+      "offset": 74473750,
+      "duration": 3815830,
+      "text": "详细"
+    },
+    {
+      "offset": 78289580,
+      "duration": 3684160,
+      "text": "说明"
+    },
+    {
+      "offset": 87894580,
+      "duration": 3157910,
+      "text": "提取"
+    },
+    {
+      "offset": 91052500,
+      "duration": 2894580,
+      "text": "后"
+    },
+    {
+      "offset": 95263330,
+      "duration": 3815410,
+      "text": "查看"
+    },
+    {
+      "offset": 99078750,
+      "duration": 3157910,
+      "text": "当前"
+    },
+    {
+      "offset": 102368330,
+      "duration": 2763330,
+      "text": "版本"
+    },
+    {
+      "offset": 105394580,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 106710410,
+      "duration": 3947500,
+      "text": "历史"
+    },
+    {
+      "offset": 113157910,
+      "duration": 1315830,
+      "text": "就"
+    },
+    {
+      "offset": 114473750,
+      "duration": 1184160,
+      "text": "能"
+    },
+    {
+      "offset": 115657910,
+      "duration": 3684160,
+      "text": "看清"
+    },
+    {
+      "offset": 119605410,
+      "duration": 2763330,
+      "text": "每次"
+    },
+    {
+      "offset": 122500000,
+      "duration": 3289580,
+      "text": "变化"
+    },
+    {
+      "offset": 129342080,
+      "duration": 3684160,
+      "text": "追溯"
+    },
+    {
+      "offset": 133289580,
+      "duration": 2236660,
+      "text": "自己"
+    },
+    {
+      "offset": 135526250,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 136973750,
+      "duration": 2236660,
+      "text": "使用"
+    },
+    {
+      "offset": 139210410,
+      "duration": 4342080,
+      "text": "习惯"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

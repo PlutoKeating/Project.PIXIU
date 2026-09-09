@@ -1,0 +1,189 @@
+{
+  "shot": "s12",
+  "request": {
+    "text": "应用使用记录，也能成为了解工作习惯的线索。这里的记录保留了应用名称和使用时长。你可以在采集与隐私中管理授权，随时关闭行为采集。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "b675736f2e32d653fa3b75c507be342b05048c3d81e1dd306e7cc728b6432d7d",
+  "audio_sha256": "494dfcd14dc8dfdd432a09636973346c08126ad9abf1ee636635b0225ee04a42",
+  "duration_seconds": 12.384,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3289580,
+      "text": "应用"
+    },
+    {
+      "offset": 4078750,
+      "duration": 2763330,
+      "text": "使用"
+    },
+    {
+      "offset": 6973750,
+      "duration": 3684160,
+      "text": "记录"
+    },
+    {
+      "offset": 13421250,
+      "duration": 1315410,
+      "text": "也"
+    },
+    {
+      "offset": 14736660,
+      "duration": 1184160,
+      "text": "能"
+    },
+    {
+      "offset": 15921250,
+      "duration": 2894580,
+      "text": "成为"
+    },
+    {
+      "offset": 19078750,
+      "duration": 3026250,
+      "text": "了解"
+    },
+    {
+      "offset": 22236660,
+      "duration": 2763330,
+      "text": "工作"
+    },
+    {
+      "offset": 25000000,
+      "duration": 3684160,
+      "text": "习惯"
+    },
+    {
+      "offset": 28684160,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 29473750,
+      "duration": 3947500,
+      "text": "线索"
+    },
+    {
+      "offset": 39473750,
+      "duration": 2500000,
+      "text": "这里"
+    },
+    {
+      "offset": 41973750,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 43157910,
+      "duration": 3552500,
+      "text": "记录"
+    },
+    {
+      "offset": 47763330,
+      "duration": 2894580,
+      "text": "保留"
+    },
+    {
+      "offset": 50657910,
+      "duration": 921250,
+      "text": "了"
+    },
+    {
+      "offset": 51842080,
+      "duration": 2894580,
+      "text": "应用"
+    },
+    {
+      "offset": 54868330,
+      "duration": 3947500,
+      "text": "名称"
+    },
+    {
+      "offset": 60000000,
+      "duration": 1578750,
+      "text": "和"
+    },
+    {
+      "offset": 61710410,
+      "duration": 2500000,
+      "text": "使用"
+    },
+    {
+      "offset": 64210410,
+      "duration": 4210410,
+      "text": "时长"
+    },
+    {
+      "offset": 74342080,
+      "duration": 1184160,
+      "text": "你"
+    },
+    {
+      "offset": 75657910,
+      "duration": 1842080,
+      "text": "可以"
+    },
+    {
+      "offset": 77500000,
+      "duration": 1578750,
+      "text": "在"
+    },
+    {
+      "offset": 79342080,
+      "duration": 4342080,
+      "text": "采集"
+    },
+    {
+      "offset": 83947500,
+      "duration": 1447500,
+      "text": "与"
+    },
+    {
+      "offset": 85526250,
+      "duration": 3157910,
+      "text": "隐私"
+    },
+    {
+      "offset": 88684160,
+      "duration": 2105410,
+      "text": "中"
+    },
+    {
+      "offset": 91052500,
+      "duration": 2368330,
+      "text": "管理"
+    },
+    {
+      "offset": 93552500,
+      "duration": 4078750,
+      "text": "授权"
+    },
+    {
+      "offset": 100263330,
+      "duration": 3815410,
+      "text": "随时"
+    },
+    {
+      "offset": 104078750,
+      "duration": 3289580,
+      "text": "关闭"
+    },
+    {
+      "offset": 107631660,
+      "duration": 2105410,
+      "text": "行为"
+    },
+    {
+      "offset": 109868330,
+      "duration": 4736660,
+      "text": "采集"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

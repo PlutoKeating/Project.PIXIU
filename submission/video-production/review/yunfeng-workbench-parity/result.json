@@ -1,0 +1,17 @@
+{
+  "frames": [
+    7883,
+    9249,
+    11674
+  ],
+  "different_pixels": [
+    0,
+    0,
+    0
+  ],
+  "resolution": [
+    1920,
+    1080
+  ],
+  "boundary": "Three sampled visual frames, not full-frame or audio parity."
+}

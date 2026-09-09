@@ -1,0 +1,229 @@
+{
+  "shot": "s24",
+  "request": {
+    "text": "说出要忘记的内容，先预览目标和范围，再明确确认。系统让知识失效并清理检索向量。共享记忆的删除标记会同步给其他设备，离线设备重连后，也会更新遗忘状态。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "79c193b4be3948adb91311392db5f6d48a55ca9d5eefa11f620343ee685e4a98",
+  "audio_sha256": "99bbea100eb0f7fa846b4cd3ae2aaa69fc0850376283c67ef3e660f80f07af05",
+  "duration_seconds": 14.688,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2236660,
+      "text": "说"
+    },
+    {
+      "offset": 2763330,
+      "duration": 1447500,
+      "text": "出"
+    },
+    {
+      "offset": 4473750,
+      "duration": 1184160,
+      "text": "要"
+    },
+    {
+      "offset": 5657910,
+      "duration": 2894580,
+      "text": "忘记"
+    },
+    {
+      "offset": 8552500,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 9605410,
+      "duration": 3947500,
+      "text": "内容"
+    },
+    {
+      "offset": 16578750,
+      "duration": 2368330,
+      "text": "先"
+    },
+    {
+      "offset": 19078750,
+      "duration": 2631660,
+      "text": "预览"
+    },
+    {
+      "offset": 21842080,
+      "duration": 2763330,
+      "text": "目标"
+    },
+    {
+      "offset": 24868330,
+      "duration": 921250,
+      "text": "和"
+    },
+    {
+      "offset": 25921250,
+      "duration": 3684160,
+      "text": "范围"
+    },
+    {
+      "offset": 31710410,
+      "duration": 1447500,
+      "text": "再"
+    },
+    {
+      "offset": 33289580,
+      "duration": 2894580,
+      "text": "明确"
+    },
+    {
+      "offset": 36184160,
+      "duration": 3157910,
+      "text": "确认"
+    },
+    {
+      "offset": 45263330,
+      "duration": 5263330,
+      "text": "系统"
+    },
+    {
+      "offset": 51578750,
+      "duration": 2105410,
+      "text": "让"
+    },
+    {
+      "offset": 53815830,
+      "duration": 2631660,
+      "text": "知识"
+    },
+    {
+      "offset": 56578750,
+      "duration": 4473750,
+      "text": "失效"
+    },
+    {
+      "offset": 62236660,
+      "duration": 1842080,
+      "text": "并"
+    },
+    {
+      "offset": 64210410,
+      "duration": 3421250,
+      "text": "清理"
+    },
+    {
+      "offset": 67894580,
+      "duration": 3026250,
+      "text": "检索"
+    },
+    {
+      "offset": 71052500,
+      "duration": 3421250,
+      "text": "向量"
+    },
+    {
+      "offset": 80526250,
+      "duration": 3947500,
+      "text": "共享"
+    },
+    {
+      "offset": 84605410,
+      "duration": 2236660,
+      "text": "记忆"
+    },
+    {
+      "offset": 86842080,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 88026250,
+      "duration": 2763330,
+      "text": "删除"
+    },
+    {
+      "offset": 90789580,
+      "duration": 4342080,
+      "text": "标记"
+    },
+    {
+      "offset": 96315830,
+      "duration": 1842080,
+      "text": "会"
+    },
+    {
+      "offset": 98289580,
+      "duration": 2631660,
+      "text": "同步"
+    },
+    {
+      "offset": 100921250,
+      "duration": 1315830,
+      "text": "给"
+    },
+    {
+      "offset": 102500000,
+      "duration": 2631660,
+      "text": "其他"
+    },
+    {
+      "offset": 105131660,
+      "duration": 3157910,
+      "text": "设备"
+    },
+    {
+      "offset": 110789580,
+      "duration": 3684160,
+      "text": "离线"
+    },
+    {
+      "offset": 114473750,
+      "duration": 2631660,
+      "text": "设备"
+    },
+    {
+      "offset": 117236660,
+      "duration": 1973750,
+      "text": "重"
+    },
+    {
+      "offset": 119210410,
+      "duration": 1447500,
+      "text": "连"
+    },
+    {
+      "offset": 120657910,
+      "duration": 2236660,
+      "text": "后"
+    },
+    {
+      "offset": 124868330,
+      "duration": 1052500,
+      "text": "也"
+    },
+    {
+      "offset": 125921250,
+      "duration": 1315410,
+      "text": "会"
+    },
+    {
+      "offset": 127236660,
+      "duration": 3552500,
+      "text": "更新"
+    },
+    {
+      "offset": 131052500,
+      "duration": 3026250,
+      "text": "遗忘"
+    },
+    {
+      "offset": 134210410,
+      "duration": 3421250,
+      "text": "状态"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}
