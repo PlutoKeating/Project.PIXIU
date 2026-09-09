@@ -12,6 +12,8 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from source_checkout import check as check_source, snapshot
+
 
 SEMVER = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 
@@ -37,9 +39,16 @@ def source_pin(
     license_review_status: str = "confirmed",
 ) -> dict[str, object]:
     path = root / relative_path
-    gitlink_commit = git(root, "rev-parse", f"HEAD:{relative_path}")
-    checkout_commit = git(path, "rev-parse", "HEAD")
-    checkout_dirty = bool(git(path, "status", "--porcelain"))
+    if (root / ".git").exists():
+        gitlink_commit = git(root, "rev-parse", f"HEAD:{relative_path}")
+        checkout_commit = git(path, "rev-parse", "HEAD")
+        checkout_dirty = bool(git(path, "status", "--porcelain"))
+        source_ref = git(path, "describe", "--tags", "--always")
+    else:
+        gitlink_commit = snapshot(root)["submodules"][relative_path]
+        check_source(root, relative_path, gitlink_commit)
+        checkout_commit = source_ref = gitlink_commit
+        checkout_dirty = False
     if gitlink_commit != checkout_commit or checkout_dirty:
         raise SystemExit(
             "pixiu-manifest: submodule checkout does not match clean gitlink: "
@@ -48,7 +57,7 @@ def source_pin(
     return {
         "source_commit": checkout_commit,
         "gitlink_commit": gitlink_commit,
-        "source_ref": git(path, "describe", "--tags", "--always"),
+        "source_ref": source_ref,
         "source_tree_clean": True,
         "license": {
             "family": license_family,
@@ -95,7 +104,7 @@ def build_manifest(root: Path) -> dict[str, object]:
     canonical_version = (root / "VERSION").read_text(encoding="utf-8").strip()
     cmake_source = (root / "frontend/cmake/Management.cmake").read_text(encoding="utf-8")
     if (
-        "CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" not in cmake_source
+        "CMAKE_CURRENT_SOURCE_DIR}/../VERSION" not in cmake_source
         or 'target_compile_definitions(pixiu-management PRIVATE PIXIU_VERSION="${PIXIU_MANAGEMENT_VERSION}")' not in cmake_source
     ):
         raise SystemExit("pixiu-manifest: frontend must derive from canonical VERSION")
@@ -160,8 +169,11 @@ def build_manifest(root: Path) -> dict[str, object]:
             "debian_version": f"{version}-{revision}",
         },
         "build": {
-            "git_commit": git(root, "rev-parse", "HEAD"),
-            "source_tree_clean": not bool(git(root, "status", "--porcelain")),
+            "git_commit": (git(root, "rev-parse", "HEAD") if (root / ".git").exists()
+                           else snapshot(root)["sourceCommit"]),
+            "source_tree_clean": (not bool(git(root, "status", "--porcelain"))
+                                  if (root / ".git").exists()
+                                  else snapshot(root)["sourceTreeClean"]),
             "built_at_utc": utc_timestamp(),
             "architecture": architecture,
             "profile": profile,
