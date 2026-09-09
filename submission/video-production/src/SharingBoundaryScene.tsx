@@ -54,7 +54,7 @@ export const SharingBoundaryScene: React.FC = () => {
       <div style={{fontSize: 38, marginTop: 45, lineHeight: 1.7}}>在笔记本上管理已信任设备，选择解除与书房的信任关系。</div>
       <div style={{fontSize: 36, color: '#526477', marginTop: 25}}>需要继续协作时，可以重新配对。</div>
     </>}
-    <div style={{position: 'absolute', top: 745, left: 0, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>
+    <div style={{position: 'absolute', top: 707, left: 0, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>
       {frame < pause ? '共享范围与敏感内容检测 · 实测记录' : '同步与设备管理 · 操作节选'}
     </div>
   </Reveal>;

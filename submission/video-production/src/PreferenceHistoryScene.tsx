@@ -104,7 +104,7 @@ export const PreferenceHistoryScene: React.FC = () => {
         background: 'linear-gradient(90deg, transparent, #e6f1ff 45%, #e6f1ff 55%, transparent)'}} />
       </div>
     </>}
-    <div style={{position: 'absolute', left: 135, top: 910, color: '#526477', fontSize: 36}}>
+    <div style={{position: 'absolute', left: 135, top: 896, color: '#526477', fontSize: 36}}>
       偏好历史 · 每次更新都有记录
     </div>
   </AbsoluteFill>;

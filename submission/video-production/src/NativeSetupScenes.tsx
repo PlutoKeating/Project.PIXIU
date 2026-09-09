@@ -43,7 +43,7 @@ export const NativeSetupScene: React.FC<{kind: 's04' | 's10' | 's11'}> = ({kind}
       {kind==='s10' && f>=scope && f<saved?<div style={{display:'flex',gap:28,marginTop:45}}><Reveal at={cue('s10','个人内容')} style={{flex:1,background:'#fff',padding:30,borderRadius:16}}><div style={{fontSize:42,color:'#1456b8'}}>个人范围</div><div style={{fontSize:38,marginTop:20}}>保留自己的资料</div></Reveal><Reveal at={cue('s10','需要协作')} style={{flex:1,background:'#fff',padding:30,borderRadius:16}}><div style={{fontSize:42,color:'#1456b8'}}>共享范围</div><Reveal at={cue('s10','才明确')} style={{fontSize:38,marginTop:20}}>选择要协作的内容</Reveal></Reveal></div>:null}
     </Reveal>
     {kind==='s04'?<Steps labels={['会话与任务','记忆与设备','服务与能力']} cues={[cue('s04','会话'),cue('s04','会话')+40,service]} top={815}/>:kind==='s10'?<Steps labels={['录入内容','选择范围','保存并检索']} cues={[cue('s10','在记忆页'),scope,saved]} top={815}/>:<Steps labels={['授权目录','文件入库','查看来源']} cues={[cue('s11','需要自动'),ingested,source]} top={815}/>}
-    <div style={{position: 'absolute', left: 135, top: 920, fontSize: 36, color: '#526477'}}>
+    <div style={{position: 'absolute', left: 135, top: 896, fontSize: 36, color: '#526477'}}>
       {kind === 's04' ? '银河麒麟 V11 · 桌面实拍' : '原生页面裁片 · 公开合成演示资料'}
     </div>
   </AbsoluteFill>;

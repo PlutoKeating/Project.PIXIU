@@ -36,12 +36,12 @@ export const WORKBENCH = {
   captions: timeline.shots.flatMap((shot) => shot.captions.map((cue, index) => ({
     id: `${shot.id}-caption-${index}`, label: cue.text, from: shot.from + cue.from,
     duration: cue.to - cue.from, component: Caption, cardId: 'caption', cardName: '中文字幕',
-    props: {text: cue.text, fontSize: 64, color: '#172033', bottom: 28},
+    props: {text: cue.text, fontSize: 60, color: '#ffffff', bottom: 64},
     schema: [
       {type: 'textarea', key: 'text', label: '字幕', default: ''},
-      {type: 'number', key: 'fontSize', label: '字号', default: 64, min: 20, max: 70},
-      {type: 'color', key: 'color', label: '颜色', default: '#172033'},
-      {type: 'number', key: 'bottom', label: '距底部', default: 28, min: 0, max: 300},
+      {type: 'number', key: 'fontSize', label: '字号', default: 60, min: 20, max: 70},
+      {type: 'color', key: 'color', label: '颜色', default: '#ffffff'},
+      {type: 'number', key: 'bottom', label: '距底部', default: 64, min: 0, max: 300},
     ],
   }))),
   overlays: [],

@@ -12,5 +12,5 @@ export const EvaluationScene: React.FC = () => {
  <Reveal at={report+40} style={{background:'#fff',borderRadius:18,padding:40,width:610}}><div style={{fontSize:50,color:'#1456b8'}}>评测报告</div>{['输入与预期结果','逐项判分','统计与分析'].map(s=><div key={s} style={{fontSize:38,marginTop:38,borderBottom:'2px solid #dce2ea',paddingBottom:16}}>{s}</div>)}</Reveal></div>
  :<div style={{display:'flex',gap:36}}><Reveal at={verified} style={{background:'#fff',padding:42,borderRadius:18,flex:1}}><div style={{fontSize:38}}>基础设施回归通过</div><div style={{fontSize:110,color:'#1456b8',fontVariantNumeric:'tabular-nums',marginTop:28}}>{Math.round(interpolate(f,[verified,verified+28],[0,698],ease))}<span style={{fontSize:38}}> 项</span></div></Reveal>
  <div style={{flex:1}}>{['断连后补齐修改','并发更新后内容一致','重连后同步遗忘'].map((s,i)=><Reveal key={s} at={verified+12+i*16} style={{background:'#fff',padding:'28px 32px',marginBottom:18,fontSize:38}}>✓ {s}</Reveal>)}</div></div>}
- </div><Steps labels={['准备样本','记录结果','持续验证']} cues={[18,report,verified]} top={825}/><div style={{position:'absolute',left:135,top:920,fontSize:36,color:'#526477'}}>评测流程示意 · 开发回归与三台 V11 虚拟机场景记录</div></>;
+ </div><Steps labels={['准备样本','记录结果','持续验证']} cues={[18,report,verified]} top={825}/><div style={{position:'absolute',left:135,top: 896,fontSize:36,color:'#526477'}}>评测流程示意 · 开发回归与三台 V11 虚拟机场景记录</div></>;
 };

@@ -1,10 +1,10 @@
 # PIXIU 中文演示视频制作工程
 
-当前配乐版：`renders/演示视频-云枫配乐版.mp4`。使用用户提供的 ZENI — With You，源音乐15秒对应视频0秒，音量70%，在389.533333秒片尾截止，最后1秒线性淡出。已更新正式视频ZIP；无配乐版 `renders/演示视频-云枫02.mp4` 与上一交付ZIP保留。
+当前配乐白字版：`renders/演示视频-云枫配乐白字版.mp4`。使用用户提供的 ZENI — With You，源音乐15秒对应视频0秒，音量70%，在389.533333秒片尾截止，最后1秒线性淡出。字幕统一使用60px粗体、纯白填充、5px黑色描边、30%透明度阴影（向下3px、模糊2px），底部间距64px；全片与工作台同步。靠近字幕的镜头说明上移至y896，避免长字幕与说明碰撞。音轨直接复制已验证的配乐版，字幕时间保持不变。已更新正式视频ZIP；当前无配乐白字版为 `renders/演示视频-云枫白字无配乐版.mp4`，历史无配乐版 `renders/演示视频-云枫02.mp4` 与上一交付ZIP保留。
 
 配乐配置为 `src/bgm.json`。`scripts/mix_bgm.py` 从原音乐生成包含截取与淡出的无增益WAV，再统一应用0.7增益；Remotion和工作台使用同一WAV与增益。全片组件支持 `bgm: false` 关闭音乐。时间轴变化后必须重新执行混音脚本以更新WAV长度。脚本使用已有NumPy及FFmpeg依赖，以已审核的无配乐MP4为输入，复制视频流，仅重编码混合音轨，不自动归一化或压低音乐。
 
-复现：`npm run mix:bgm -- --video renders/演示视频-云枫02.mp4 --output renders/新的配乐版.mp4 --report review/新的配乐检查.json`。输出与报告须选新文件名。技术检查见 `review/zeni-bgm-technical.json`：全片解码通过，视频流摘要一致，混合峰值约−1.09 dBFS、编码后约−1.11 dBFS。
+复现：`npm run mix:bgm -- --video renders/演示视频-云枫02.mp4 --output renders/新的配乐版.mp4 --report review/新的配乐检查.json`。输出与报告须选新文件名。字幕版检查见 `review/caption-white-technical.json`，全片以静音画面重新渲染后复制已验证配乐音轨，音轨压缩数据摘要相同。配乐检查见 `review/zeni-bgm-technical.json`：全片解码通过，视频流摘要一致，混合峰值约−1.09 dBFS、编码后约−1.11 dBFS。
 
 当前云枫版已导出：29镜、约6分30秒，沿用审核文案，按新口白重排字幕、镜尾和动作。使用 video-shotcraft 的 Ink Press 模板，原版镜头源码保存在 `reference/ink-press/` 供逐镜核对；原版其他产品截图不复制、不入片。
 

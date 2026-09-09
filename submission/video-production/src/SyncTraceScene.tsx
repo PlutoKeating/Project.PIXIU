@@ -32,6 +32,6 @@ export const SyncTraceScene: React.FC<{concurrent?: boolean}> = ({concurrent = f
         : '仅中断客厅的同步连接；表内时间为检查点记录时刻。'}
     </div>
     <div style={{fontSize: 36, color: '#526477', marginTop: 16}}>三台 V11 虚拟机 · 同步过程回放</div>
-    <div style={{display:'flex',gap:18,marginTop:34}}>{stage.rows.map((row,i)=><div key={row.device} style={{flex:1,position:'relative',height:5,background:'#dce2ea'}}><div style={{height:5,background:'#1456b8',width:`${interpolate(frame,[stageFrom+i*20,stageFrom+i*20+55],[0,100],ease)}%`}}/></div>)}</div>
+    <div style={{display:'flex',gap:18,marginTop:4}}>{stage.rows.map((row,i)=><div key={row.device} style={{flex:1,position:'relative',height:5,background:'#dce2ea'}}><div style={{height:5,background:'#1456b8',width:`${interpolate(frame,[stageFrom+i*20,stageFrom+i*20+55],[0,100],ease)}%`}}/></div>)}</div>
   </div>;
 };

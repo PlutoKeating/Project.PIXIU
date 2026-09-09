@@ -1,7 +1,7 @@
 import {AbsoluteFill, Audio, Composition, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {BrandInkOpen} from './BrandInkOpen';
 import {Fonts} from './Fonts';
-import {NarratedChapter, SHARED_CHAPTER} from './NarratedChapter';
+import {NarratedChapter, SHARED_CHAPTER, CaptionText} from './NarratedChapter';
 import {FullFilmFinal, FullFilmDraft, BillReview, BILL_DURATION, FILM_DURATION, OutroReview, OUTRO_SHOT, SharedAgentReview, SpotlightReview, SPOTLIGHT_SHOT} from './FullFilm';
 import {SHARED_AGENT_SHOT} from './SharedAgentScene';
 
@@ -20,9 +20,7 @@ export const OpeningReview: React.FC = () => {
     <Sequence from={12} durationInFrames={60}>
       <Audio src={staticFile('audio/transition-soft.mp3')} volume={0.12} />
     </Sequence>
-    <div style={{position: 'absolute', left: 100, right: 100, bottom: 78,
-      textAlign: 'center', fontFamily: '"Noto Sans CJK SC", sans-serif',
-      fontSize: 38, color: '#172033', lineHeight: 1.5}}>{caption}</div>
+    <CaptionText text={caption} />
   </AbsoluteFill>;
 };
 

@@ -40,7 +40,7 @@ export const NativeDeliveryScene: React.FC<{kind: 's24' | 's27'}> = ({kind}) => 
       </>}
     </Reveal>
     {kind==='s27'?<Steps labels={['统一安装','模型连接','维护与更新']} cues={[cue('s27','一个安装包'),cue('s27','检测模型'),upgrade]} top={825}/>:null}
-    <div style={{position: 'absolute', left: 135, top: 920, fontSize: 36, color: '#526477'}}>
+    <div style={{position: 'absolute', left: 135, top: 896, fontSize: 36, color: '#526477'}}>
       {kind === 's27' ? f < settings ? '安装完成 · 版本 0.1.9' : '模型连接与更新检查' : '原生页面裁片与功能说明 · 公开合成便笺'}
     </div>
   </AbsoluteFill>;

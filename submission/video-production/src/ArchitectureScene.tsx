@@ -14,6 +14,6 @@ export const ArchitectureScene:React.FC=()=>{
  <div style={{fontSize:48,fontWeight:700,color:'#1456b8'}}>貔貅记忆系统</div>
  {['多源接入与知识检索','偏好、安全与遗忘','本地存储与设备同步'].map((s,i)=><Reveal key={s} at={engine+i*30} style={{fontSize:38,marginTop:32}}>{s}</Reveal>)}</Reveal>
  <Steps labels={['执行任务','连接记忆','沉淀与复用']} cues={[tools,adapter,engine]}/>
- <div style={{position:'absolute',left:135,top:920,fontSize:36,color:'#526477'}}>架构示意 · 通过公共接口连接</div>
+ <div style={{position:'absolute',left:135,top:896,fontSize:36,color:'#526477'}}>架构示意 · 通过公共接口连接</div>
  </AbsoluteFill>;
 };

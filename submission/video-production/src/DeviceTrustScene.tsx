@@ -32,6 +32,6 @@ export const DeviceTrustScene: React.FC = () => {
         <Crop file={row.file} x={736} y={row.y} w={1300} h={row.h} scale={1.25} />
       </Reveal>)}
     </>}
-    <div style={{position: 'absolute', left: 0, top: 755, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>可信设备，共享记忆 · V11 虚拟机演示</div>
+    <div style={{position: 'absolute', left: 0, top: 731, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>可信设备，共享记忆 · V11 虚拟机演示</div>
   </div>;
 };

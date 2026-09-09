@@ -60,7 +60,7 @@ export const InsightDocumentScene: React.FC = () => {
         沿着洞察找到正文与来源。<br />再次打开记忆，接着完成手头的工作。
       </div>
     </div>}
-    <div style={{position: 'absolute', left: 135, top: 910, fontSize: 36, color: '#526477'}}>
+    <div style={{position: 'absolute', left: 135, top: 896, fontSize: 36, color: '#526477'}}>
       {f < SHOT_START ? '近期记忆，逐条展开' : f < SOURCE_START ? '真实操作录像 · 2 倍速 · 裁切放大跟随' : '真实来源正文放大 · 公开合成示例'}
     </div>
   </AbsoluteFill>;

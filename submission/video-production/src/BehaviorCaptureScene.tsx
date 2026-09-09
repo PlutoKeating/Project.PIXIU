@@ -10,5 +10,5 @@ export const BehaviorCaptureScene:React.FC=()=>{
  <Reveal at={details+45} style={{marginTop:0}}><Crop src="20260909-公开行为来源正文-4K.png" x={1570} y={1318} w={1000} h={133} scale={1.35}/></Reveal></>
  :<><Reveal at={control}><Crop src="33-capture-disabled.png" x={8} y={239} w={620} h={29} scale={2.6} width={1440} height={900}/></Reveal>
  <Reveal at={off} style={{fontSize:48,marginTop:65,color:'#1456b8'}}>行为采集：已关闭</Reveal></>}
- </div><Steps labels={['应用记录','使用时长','管理授权']} cues={[18,details,control]}/><div style={{position:'absolute',left:135,top:920,fontSize:36,color:'#526477'}}>应用使用记录 · X11 窗口演示 · 原生授权设置</div></AbsoluteFill>;
+ </div><Steps labels={['应用记录','使用时长','管理授权']} cues={[18,details,control]}/><div style={{position:'absolute',left:135,top: 896,fontSize:36,color:'#526477'}}>应用使用记录 · X11 窗口演示 · 原生授权设置</div></AbsoluteFill>;
 };
