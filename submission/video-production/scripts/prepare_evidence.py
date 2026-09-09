@@ -78,3 +78,28 @@ output = {'source': str(source.relative_to(REPO)),
 assert len(output['metrics']) == 4
 (ROOT / 'src/evaluation-baseline.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n')
 print('已从原始证据生成同步与遗忘检查点、四项历史评测数据')
+
+# Keep the complete request parameters beside displayed privacy observations.
+privacy_source = ROOT / 'raw/network/共享边界请求与响应-01.json'
+privacy = json.loads(privacy_source.read_text())
+records = privacy['records']
+by_label = {r['label']: r for r in records}
+written = by_label['私有写入']
+query = by_label['本机查询']
+assert written['response']['status'] == query['response']['status'] == 200
+assert written['request']['body']['scope'] == query['request']['body']['context_hint']['scope']
+assert query['response']['body']['source_evidence'] == [written['response']['body']['evidence_id']]
+knowledge = query['response']['body']['source_knowledge']
+remote = [r for r in records if r['label'] == '另一端按同一ID与范围读取']
+assert len(remote) == 2
+assert all(r['response']['status'] == 404 and r['request']['path'] ==
+           f"/memory/items/{knowledge}?scope={written['request']['body']['scope']}" for r in remote)
+state = by_label['私有条目同步状态']
+assert state['request']['path'] == f'/sync/state/knowledge/{knowledge}'
+assert state['response']['status'] == 200 and state['response']['body']['present'] is False
+denied = by_label['合成敏感输入共享拒绝']
+assert denied['request']['body']['scope'] == 'shared:home'
+assert denied['response']['status'] == 422
+assert denied['response']['body']['error'] == 'SENSITIVE_SHARED_SCOPE'
+(ROOT / 'src/privacy-boundary.json').write_bytes(privacy_source.read_bytes())
+print('已核对私有与敏感共享边界请求参数并复制原始记录')

@@ -1,0 +1,38 @@
+{
+  "status": "第十四版初剪，非最终放行",
+  "sha256": "94c294c09077b6511b1d572393f229c474786a7ba82fe3fa1f1d5a1460987d8e",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "r_frame_rate": "30/1",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "561.152000",
+      "size": "56153345"
+    }
+  },
+  "full_decode_passed": true,
+  "source_manifest": "full-draft-14-source.json",
+  "changed_shots": [
+    "s19",
+    "s23"
+  ],
+  "limits": [
+    "只核对具体条目同步状态，不作磁盘日志审计",
+    "暂停设置保存不等于传输抑制性能验收",
+    "未进行主观听审，仍有完整功能与模板余项"
+  ]
+}

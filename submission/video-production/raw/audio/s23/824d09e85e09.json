@@ -1,0 +1,180 @@
+{
+  "shot": "s23",
+  "request": {
+    "text": "共享不意味着所有内容都外传。这条私有记忆未进入同步状态，敏感内容拒绝写入共享范围。停止同步和解除信任，也都有明确的控制入口。",
+    "voice": "zh-CN-YunxiNeural",
+    "rate": "-5%"
+  },
+  "request_sha256": "824d09e85e0939d636e27a8103f672c487fb580945845bc5d585dc36f9703abd",
+  "audio_sha256": "2cc94d98dfd401ea97f3a3ad769aafc4a96b77d87253a2c3a9fc25665399f74a",
+  "duration_seconds": 14.256,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 1026250,
+      "duration": 4473750,
+      "text": "共享"
+    },
+    {
+      "offset": 5763330,
+      "duration": 1184160,
+      "text": "不"
+    },
+    {
+      "offset": 6947500,
+      "duration": 4078750,
+      "text": "意味着"
+    },
+    {
+      "offset": 11289580,
+      "duration": 3552500,
+      "text": "所有"
+    },
+    {
+      "offset": 14973750,
+      "duration": 3289580,
+      "text": "内容"
+    },
+    {
+      "offset": 18526250,
+      "duration": 1315830,
+      "text": "都"
+    },
+    {
+      "offset": 19973750,
+      "duration": 5789580,
+      "text": "外传"
+    },
+    {
+      "offset": 31842080,
+      "duration": 1842080,
+      "text": "这"
+    },
+    {
+      "offset": 33684160,
+      "duration": 2105410,
+      "text": "条"
+    },
+    {
+      "offset": 36052500,
+      "duration": 3421250,
+      "text": "私有"
+    },
+    {
+      "offset": 39605410,
+      "duration": 4736660,
+      "text": "记忆"
+    },
+    {
+      "offset": 45526250,
+      "duration": 2894580,
+      "text": "未"
+    },
+    {
+      "offset": 48421250,
+      "duration": 3026250,
+      "text": "进入"
+    },
+    {
+      "offset": 51710410,
+      "duration": 3421250,
+      "text": "同步"
+    },
+    {
+      "offset": 55263330,
+      "duration": 5000000,
+      "text": "状态"
+    },
+    {
+      "offset": 63947500,
+      "duration": 3815830,
+      "text": "敏感"
+    },
+    {
+      "offset": 67894580,
+      "duration": 3684160,
+      "text": "内容"
+    },
+    {
+      "offset": 71842080,
+      "duration": 4605410,
+      "text": "拒绝"
+    },
+    {
+      "offset": 76578750,
+      "duration": 3684160,
+      "text": "写入"
+    },
+    {
+      "offset": 80526250,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 84342080,
+      "duration": 4342080,
+      "text": "范围"
+    },
+    {
+      "offset": 94736660,
+      "duration": 3815830,
+      "text": "停止"
+    },
+    {
+      "offset": 98684160,
+      "duration": 4473750,
+      "text": "同步"
+    },
+    {
+      "offset": 103421250,
+      "duration": 1447500,
+      "text": "和"
+    },
+    {
+      "offset": 105000000,
+      "duration": 3289580,
+      "text": "解除"
+    },
+    {
+      "offset": 108421250,
+      "duration": 5394580,
+      "text": "信任"
+    },
+    {
+      "offset": 115657910,
+      "duration": 1578750,
+      "text": "也"
+    },
+    {
+      "offset": 117236660,
+      "duration": 1315830,
+      "text": "都"
+    },
+    {
+      "offset": 118552500,
+      "duration": 1578750,
+      "text": "有"
+    },
+    {
+      "offset": 120394580,
+      "duration": 4078750,
+      "text": "明确"
+    },
+    {
+      "offset": 124473750,
+      "duration": 1315830,
+      "text": "的"
+    },
+    {
+      "offset": 126052500,
+      "duration": 3552500,
+      "text": "控制"
+    },
+    {
+      "offset": 129605410,
+      "duration": 3815830,
+      "text": "入口"
+    }
+  ],
+  "status": "原始合成音，待试听及字幕校准"
+}

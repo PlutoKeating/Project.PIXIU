@@ -1,0 +1,32 @@
+{
+  "time": "2026-09-09T01:02:09.462039+00:00",
+  "device": "书房",
+  "database": "隔离演示数据库；只读连接",
+  "queries": [
+    {
+      "sql": "SELECT COUNT(*) FROM sync_oplog WHERE entity = ?",
+      "parameters": [
+        "knw_01M21STN1PTHZG5HH857TD62F1"
+      ],
+      "count": 0
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM sync_state WHERE entity = ?",
+      "parameters": [
+        "knw_01M21STN1PTHZG5HH857TD62F1"
+      ],
+      "count": 0
+    },
+    {
+      "sql": "SELECT COUNT(*) FROM knowledge_items WHERE id = ?",
+      "parameters": [
+        "knw_01M21STN1PTHZG5HH857TD62F1"
+      ],
+      "count": 0
+    }
+  ],
+  "status": "无效核对：知识表目标计数为0，未确认当前服务数据库；同步entity参数缺少knowledge:前缀，不用于任何结论。",
+  "limitations": [
+    "只读未修改数据库；不作为私有记忆同步日志旁证；讲解将收窄到已验证的公共同步状态。"
+  ]
+}
