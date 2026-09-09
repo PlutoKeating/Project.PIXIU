@@ -493,3 +493,5 @@ XLSX 补充适配复用固定 openpyxl 3.1.5 与 Pillow 12.1.1：读取嵌入图
 2026-09-10：文档支持的记忆更正沿 `/memory/update`，body 为 content 与 document_sources 时仍执行账单明细更正，保留原始文档依据。修正“不是旧金额，是新金额”的否定金额误匹配。无新依赖或安装路径变化。dreaming 执行器的逐方案宿主审批不等于用户审批 UI 已完成。
 
 2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并仍在实施。
+
+2026-09-10：PDF 解码保留每一页的完整渲染图像及可提取文字，避免含文字的矢量图表页面被当作纯文本而漏读。复用包内 Kreuzberg/PDFium 和已锁定 Pillow，全程 headless、无 OCR；无多模态能力时仍只能读取文字，并报告未读取的页面图像。21 项文档解码测试通过，包括真实 PDF 文字与矢量图像像素检查。

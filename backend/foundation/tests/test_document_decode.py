@@ -62,6 +62,40 @@ def test_file_version_tracks_original_content():
     assert first.version == decode_document(b"first", "renamed.txt").version
 
 
+def test_text_pdf_keeps_vector_chart_for_vision():
+    import base64
+    import io
+    from PIL import Image
+
+    # A real PDF with selectable text and a blue vector bar, no raster image.
+    # Testing the decoded pixels catches the old text/image-only heuristic.
+    stream = b"BT /F1 12 Tf 20 170 Td (Energy spending) Tj ET\n0 0 1 rg 20 20 80 100 re f\n"
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length " + str(len(stream)).encode() + b" >>\nstream\n" + stream + b"endstream",
+    ]
+    pdf = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for number, value in enumerate(objects, 1):
+        offsets.append(len(pdf))
+        pdf.extend(f"{number} 0 obj\n".encode() + value + b"\nendobj\n")
+    start = len(pdf)
+    pdf.extend(b"xref\n0 6\n0000000000 65535 f \n")
+    for offset in offsets:
+        pdf.extend(f"{offset:010d} 00000 n \n".encode())
+    pdf.extend(f"trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{start}\n%%EOF\n".encode())
+
+    result = decode_document(bytes(pdf), "chart.pdf")
+    assert "Energy spending" in "".join(block.text for block in result.blocks)
+    pages = [block for block in result.blocks if block.kind == "image"]
+    assert len(pages) == 1
+    image = Image.open(io.BytesIO(base64.b64decode(pages[0].data_base64))).convert("RGB")
+    assert image.getpixel((image.width // 4, image.height // 2)) == (0, 0, 255)
+
+
 def test_workbook_keeps_formula_comment_chart_and_embedded_image():
     import io
     from openpyxl import Workbook

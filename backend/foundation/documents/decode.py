@@ -83,11 +83,8 @@ def _extract(document: DecodedDocument, data: bytes, suffix: str):
         raise ValueError("Document decoding failed") from exc
     document.text("正文（含表格与备注）", extracted.content)
     document.warnings.extend(str(warning) for warning in (extracted.processing_warnings or []))
-    image_pages = set()
     for index, item in enumerate(extracted.images or []):
         page = item.get("page_number")
-        if page is not None:
-            image_pages.add(page)
         if suffix != ".pdf":
             document.image(f"第 {page or '?'} 页/幻灯片，图片 {index + 1}", item["data"])
     if suffix == ".xlsx":
@@ -101,8 +98,10 @@ def _extract(document: DecodedDocument, data: bytes, suffix: str):
             source.write_bytes(data)
             for page in extracted.pages or []:
                 number = page["page_number"]
-                if number in image_pages or not page.get("content", "").strip():
-                    document.image(f"第 {number} 页完整图像", k.render_pdf_page(source, number - 1, dpi=144))
+                # Embedded raster detection misses vector charts, diagrams and
+                # spatial relationships on otherwise text-bearing pages. Keep
+                # every page for vision alongside the searchable native text.
+                document.image(f"第 {number} 页完整图像", k.render_pdf_page(source, number - 1, dpi=144))
 
 
 MIME_TYPES = {
