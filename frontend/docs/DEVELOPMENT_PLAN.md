@@ -8,7 +8,7 @@
 
 ## 1. 当前进度摘要
 
-本模块的产品输入是 `frontend/management/CMakeLists.txt` 与宿主导出清单。
+本模块的产品输入是 `frontend/cmake/Management.cmake` 与宿主导出清单。
 根前端 CMake 仅构建保留回归，不是可启动的独立产品。
 
 ### 1.1 已完成
@@ -243,7 +243,7 @@ SDK 生命周期门，以及同版阅读器的来源、分栏和 raw/正文切�
 于仓库根目录执行通用组件验证：
 
 ```bash
-cmake -S frontend/management -B frontend/build/management-tests \
+cmake -S frontend -B frontend/build/management-tests \
   -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
 cmake --build frontend/build/management-tests --parallel 2
 ctest --test-dir frontend/build/management-tests --output-on-failure

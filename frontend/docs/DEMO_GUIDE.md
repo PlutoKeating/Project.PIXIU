@@ -89,7 +89,7 @@
 
 此标题保留用于原有章节定位。测试替身仅用于开发回归，不作为正式演示模式，
 不启动已退役应用，也不把替身响应或离屏画面加入产品截图、答辩和用户手册。
-管理组件回归入口是 `frontend/management/CMakeLists.txt` 的
+管理组件回归入口是 `frontend/cmake/Management.cmake` 的
 `PIXIU_MANAGEMENT_TESTS=ON`；结果只能支持其具体测试覆盖范围。
 
 ### 模式 B：真实后端（麒麟环境或已装依赖的开发机）

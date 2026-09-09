@@ -69,7 +69,7 @@ log "PIXIU ${PIXIU_VERSION}-${PIXIU_REVISION} [${PIXIU_ARCH}] KYSDK=${PIXIU_KYSD
 # 硬编码，S4 曾因硬编码 0.1.0 漏检）及 Module E plugin.yaml 必须与根
 # VERSION 单一事实源一致。
 check_version_consistency() {
-    local frontend_cmake="${PIXIU_ROOT}/frontend/management/CMakeLists.txt"
+    local frontend_cmake="${PIXIU_ROOT}/frontend/cmake/Management.cmake"
     local frontend_main="${PIXIU_ROOT}/frontend/host/patches/0011-product-application-version.patch"
     local frontend_http="${PIXIU_ROOT}/frontend/src/services/HttpBackendTransport.cpp"
     local version_file="${PIXIU_ROOT}/VERSION"
@@ -132,7 +132,7 @@ check_version_consistency() {
        || [ "${source_ver}" != "${provider_ver}" ]; then
         die "版本不一致（发布版本与 Module E 均不得遗漏）：" \
             "VERSION=${source_ver:-<未提取>}，" \
-            "frontend/management/CMakeLists.txt=${cmake_ver:-<未提取>}，" \
+            "frontend/cmake/Management.cmake=${cmake_ver:-<未提取>}，" \
             "PIXIU_VERSION 宏=${pixiu_ver:-<未提取>}，" \
             "provider=${provider_ver:-<未提取>}"
     fi

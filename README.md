@@ -150,3 +150,7 @@ Project.PIXIU/
 依托银河麒麟国产桌面操作系统与 KylinSDK 构建 · 国产化 · 端侧 · 可离线
 
 </div>
+
+## 2026-09-10 正式源码目录
+
+正式桌面代码按 `frontend/src/shell` 和 `frontend/src/workspaces/{memory,devices,settings,delivery}` 组织。`frontend/cmake/Management.cmake` 定义正式管理库，统一从 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON` 构建测试。宿主使用 `frontend-sources.json` 导出清单及生成的兼容 CMake 入口，只有一个正式桌面程序。Agent 位于 `backend/agent`，平台运行实现位于 `backend/platform`，不新增依赖。完整迁移与用户场景台账见 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。

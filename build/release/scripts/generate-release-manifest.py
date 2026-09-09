@@ -93,7 +93,7 @@ def build_manifest(root: Path) -> dict[str, object]:
         raise SystemExit("pixiu-manifest: PIXIU_INSTALL_STRICT must be 0 or 1")
 
     canonical_version = (root / "VERSION").read_text(encoding="utf-8").strip()
-    cmake_source = (root / "frontend/management/CMakeLists.txt").read_text(encoding="utf-8")
+    cmake_source = (root / "frontend/cmake/Management.cmake").read_text(encoding="utf-8")
     if (
         "CMAKE_CURRENT_SOURCE_DIR}/../../VERSION" not in cmake_source
         or 'target_compile_definitions(pixiu-management PRIVATE PIXIU_VERSION="${PIXIU_MANAGEMENT_VERSION}")' not in cmake_source

@@ -61,7 +61,7 @@ jobs:
           WAYLAND_DISPLAY: wayland-0
         run: |
           test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
-          cmake -S frontend/management -B "$RUNNER_TEMP/pixiu-native-dialog-tests" \
+          cmake -S frontend -B "$RUNNER_TEMP/pixiu-native-dialog-tests" \
             -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
           cmake --build "$RUNNER_TEMP/pixiu-native-dialog-tests" --target t_memory_workspace --parallel 2
           mkdir -p "$RUNNER_TEMP/pixiu-native-dialog-config"

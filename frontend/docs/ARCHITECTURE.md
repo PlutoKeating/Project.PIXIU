@@ -500,3 +500,7 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 消息离线渲染资源及许可证统一位于 `frontend/resources/message_renderer/`，由宿主准备脚本打入资源；Agent Python 适配位于 `backend/agent/`。
 
 宿主补丁及兼容代码位于 `frontend/host/{patches,compat}`；`build/release/agent-host/` 仅保留准备与编译脚本。补丁顺序与宿主导出目录保持不变。
+
+## 2026-09-10 正式源码目录
+
+正式桌面代码按 `frontend/src/shell` 和 `frontend/src/workspaces/{memory,devices,settings,delivery}` 组织。`frontend/cmake/Management.cmake` 定义正式管理库，统一从 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON` 构建测试。宿主使用 `frontend-sources.json` 导出清单及生成的兼容 CMake 入口，只有一个正式桌面程序。Agent 位于 `backend/agent`，平台运行实现位于 `backend/platform`，不新增依赖。完整迁移与用户场景台账见 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。

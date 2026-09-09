@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
+option(PIXIU_MANAGEMENT_TESTS "Build the production workspace and its tests" OFF)
+if(PIXIU_MANAGEMENT_TESTS OR PIXIU_EMBEDDED_HOST)
+    include(cmake/Management.cmake)
+    return()
+endif()
+
 # Regression-only build. The product executable is the exported KylinAgent host.
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PIXIU_PRODUCT_VERSION LIMIT_COUNT 1)
 if(NOT PIXIU_PRODUCT_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")

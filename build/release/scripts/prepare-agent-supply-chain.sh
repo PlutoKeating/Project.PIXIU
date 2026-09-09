@@ -34,7 +34,7 @@ sudo -n unshare --net runuser -u "$builder" -- \
     2>&1 | tee "$evidence/logs/host-build.log"
 tar -czf "$evidence/host-corresponding-source.tar.gz" \
     -C build/release/out/agent-host source \
-    -C "$root" build/release/agent-host frontend/resources/message_renderer
+    -C "$root" build/release/agent-host frontend/host frontend/cmake frontend/src frontend/CMakeLists.txt frontend/resources/message_renderer
 record=(python3 build/release/scripts/record-agent-supply-chain.py
     --root . --evidence-dir "$evidence")
 "${record[@]}" host-build --target-arch amd64 --target-os "$target_os" \

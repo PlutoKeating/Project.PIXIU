@@ -19,7 +19,7 @@ def main() -> None:
     parser.add_argument("qt_test", type=Path)
     args = parser.parse_args()
     binary = args.qt_test.resolve(strict=True)
-    root = Path(__file__).resolve().parents[3]
+    root = Path(__file__).resolve().parents[2]
     with tempfile.TemporaryDirectory(prefix="pixiu-edit-live-") as directory:
         task = Path(directory)
         env = {key: value for key, value in os.environ.items() if not key.startswith("PIXIU_")}

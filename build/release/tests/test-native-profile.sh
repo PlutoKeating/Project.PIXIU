@@ -102,8 +102,8 @@ grep -q 'native-sdk-smoke.py' "${ROOT}/.github/workflows/kylin-native.yml"
 # The embedded module does not use CTest's generic BUILD_TESTING option.
 grep -qF -- '-DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF' \
     "${ROOT}/.github/workflows/kylin-native.yml"
-grep -qF 'option(PIXIU_MANAGEMENT_TESTS ' "${ROOT}/frontend/management/CMakeLists.txt"
-grep -qF 'add_executable(t_memory_workspace ' "${ROOT}/frontend/management/CMakeLists.txt"
+grep -qF 'option(PIXIU_MANAGEMENT_TESTS ' "${ROOT}/frontend/cmake/Management.cmake"
+grep -qF 'add_executable(t_memory_workspace ' "${ROOT}/frontend/cmake/Management.cmake"
 
 if PIXIU_PROFILE=kylin-v11-native-x86_64 PIXIU_KYSDK=ON \
         PIXIU_INSTALL_STRICT=0 PIXIU_SKIP_TESTS=1 \

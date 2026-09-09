@@ -11,7 +11,7 @@ mkdir -p "${BUILD_ROOT}"
 cmake -S "${ROOT}/frontend" -B "${BUILD_ROOT}/contracts" -G Ninja -DBUILD_TESTING=ON
 cmake --build "${BUILD_ROOT}/contracts" --parallel 2
 QT_QPA_PLATFORM=offscreen ctest --test-dir "${BUILD_ROOT}/contracts" --output-on-failure
-cmake -S "${ROOT}/frontend/management" -B "${BUILD_ROOT}/management" -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
+cmake -S "${ROOT}/frontend" -B "${BUILD_ROOT}/management" -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
 cmake --build "${BUILD_ROOT}/management" --parallel 2
 QT_QPA_PLATFORM=offscreen ctest --test-dir "${BUILD_ROOT}/management" --output-on-failure
 

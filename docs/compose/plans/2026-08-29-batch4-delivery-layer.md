@@ -194,10 +194,10 @@ def _summarize(item: dict) -> str:
 **Files:**
 - Modify: `frontend/src/services/BackendTransport.h/.cpp`（deliveryInsights() 默认空实现 → 信号 insightsResult(QJsonArray)）
 - Modify: `frontend/src/services/HttpBackendTransport.cpp`（GET /delivery/insights）
-- Maintain: `frontend/management/DeliveryPage.h/.cpp`（洞察候选、标题检索、日期及简报正文）
-- Maintain: `frontend/management/BackendEventStatus.cpp`、`PrivacyPage.cpp`（无正文变化提示、日志刷新及草稿保护）
-- Maintain: `frontend/management/MemoryAudit.cpp`、`HostTray.cpp`（范围隔离的偏好版本基线、固定通知与限流）
-- Test: `frontend/management/tests/t_memory_workspace.cpp`、`t_backend_events.cpp`
+- Maintain: `frontend/src/workspaces/delivery/DeliveryPage.h/.cpp`（洞察候选、标题检索、日期及简报正文）
+- Maintain: `frontend/src/shell/BackendEventStatus.cpp`、`PrivacyPage.cpp`（无正文变化提示、日志刷新及草稿保护）
+- Maintain: `frontend/src/workspaces/memory/MemoryAudit.cpp`、`HostTray.cpp`（范围隔离的偏好版本基线、固定通知与限流）
+- Test: `frontend/tests/t_memory_workspace.cpp`、`t_backend_events.cpp`
 
 **Interfaces:**
 - Consumes: 既有 BackendTransport 的洞察/简报/偏好接口与 WebSocket `capture_event`，不增加模型依赖。

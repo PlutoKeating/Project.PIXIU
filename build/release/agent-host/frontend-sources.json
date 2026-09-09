@@ -1,0 +1,242 @@
+[
+  {
+    "source": "frontend/cmake/Management.cmake",
+    "destination": "pixiu/frontend/cmake/Management.cmake"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryWorkspace.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryWorkspace.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryWorkspace.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryWorkspace.cpp"
+  },
+  {
+    "source": "frontend/src/shell/BackendEventStatus.h",
+    "destination": "pixiu/frontend/src/shell/BackendEventStatus.h"
+  },
+  {
+    "source": "frontend/src/shell/BackendEventStatus.cpp",
+    "destination": "pixiu/frontend/src/shell/BackendEventStatus.cpp"
+  },
+  {
+    "source": "frontend/src/services/WebSocketClient.h",
+    "destination": "pixiu/frontend/src/services/WebSocketClient.h"
+  },
+  {
+    "source": "frontend/src/services/WebSocketClient.cpp",
+    "destination": "pixiu/frontend/src/services/WebSocketClient.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/AgentEvidence.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/AgentEvidence.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/AgentEvidence.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/AgentEvidence.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/AgentEvidenceClient.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/AgentEvidenceClient.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/AgentEvidenceClient.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/AgentEvidenceClient.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryScopes.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryScopes.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryScopeControl.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryScopeControl.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryScopeControl.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryScopeControl.cpp"
+  },
+  {
+    "source": "frontend/src/shell/HostCloseGuard.h",
+    "destination": "pixiu/frontend/src/shell/HostCloseGuard.h"
+  },
+  {
+    "source": "frontend/src/shell/HostCloseGuard.cpp",
+    "destination": "pixiu/frontend/src/shell/HostCloseGuard.cpp"
+  },
+  {
+    "source": "frontend/src/app/ProductInformation.h",
+    "destination": "pixiu/frontend/src/app/ProductInformation.h"
+  },
+  {
+    "source": "frontend/src/widgets/InfoDialog.h",
+    "destination": "pixiu/frontend/src/widgets/InfoDialog.h"
+  },
+  {
+    "source": "frontend/src/widgets/InfoDialog.cpp",
+    "destination": "pixiu/frontend/src/widgets/InfoDialog.cpp"
+  },
+  {
+    "source": "frontend/src/shell/HostTray.h",
+    "destination": "pixiu/frontend/src/shell/HostTray.h"
+  },
+  {
+    "source": "frontend/src/shell/HostTray.cpp",
+    "destination": "pixiu/frontend/src/shell/HostTray.cpp"
+  },
+  {
+    "source": "frontend/src/shell/HostWindowPin.h",
+    "destination": "pixiu/frontend/src/shell/HostWindowPin.h"
+  },
+  {
+    "source": "frontend/src/shell/HostWindowPin.cpp",
+    "destination": "pixiu/frontend/src/shell/HostWindowPin.cpp"
+  },
+  {
+    "source": "frontend/src/app/ShortcutManager.h",
+    "destination": "pixiu/frontend/src/app/ShortcutManager.h"
+  },
+  {
+    "source": "frontend/src/app/ShortcutManager.cpp",
+    "destination": "pixiu/frontend/src/app/ShortcutManager.cpp"
+  },
+  {
+    "source": "frontend/src/services/NotifyService.h",
+    "destination": "pixiu/frontend/src/services/NotifyService.h"
+  },
+  {
+    "source": "frontend/src/services/NotifyService.cpp",
+    "destination": "pixiu/frontend/src/services/NotifyService.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryWriteDialog.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryWriteDialog.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryWriteDialog.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryWriteDialog.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryEditDialog.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryEditDialog.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryEditDialog.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryEditDialog.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryAudit.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryAudit.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/MemoryAudit.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/MemoryAudit.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/settings/PrivacyPage.h",
+    "destination": "pixiu/frontend/src/workspaces/settings/PrivacyPage.h"
+  },
+  {
+    "source": "frontend/src/workspaces/settings/PrivacyPage.cpp",
+    "destination": "pixiu/frontend/src/workspaces/settings/PrivacyPage.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/devices/DevicePage.h",
+    "destination": "pixiu/frontend/src/workspaces/devices/DevicePage.h"
+  },
+  {
+    "source": "frontend/src/workspaces/devices/DevicePage.cpp",
+    "destination": "pixiu/frontend/src/workspaces/devices/DevicePage.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/devices/PairingDialog.h",
+    "destination": "pixiu/frontend/src/workspaces/devices/PairingDialog.h"
+  },
+  {
+    "source": "frontend/src/workspaces/devices/PairingDialog.cpp",
+    "destination": "pixiu/frontend/src/workspaces/devices/PairingDialog.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/delivery/DeliveryPage.h",
+    "destination": "pixiu/frontend/src/workspaces/delivery/DeliveryPage.h"
+  },
+  {
+    "source": "frontend/src/workspaces/delivery/DeliveryPage.cpp",
+    "destination": "pixiu/frontend/src/workspaces/delivery/DeliveryPage.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/ForgetPage.h",
+    "destination": "pixiu/frontend/src/workspaces/memory/ForgetPage.h"
+  },
+  {
+    "source": "frontend/src/workspaces/memory/ForgetPage.cpp",
+    "destination": "pixiu/frontend/src/workspaces/memory/ForgetPage.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/settings/SettingsWorkspace.h",
+    "destination": "pixiu/frontend/src/workspaces/settings/SettingsWorkspace.h"
+  },
+  {
+    "source": "frontend/src/workspaces/settings/SettingsWorkspace.cpp",
+    "destination": "pixiu/frontend/src/workspaces/settings/SettingsWorkspace.cpp"
+  },
+  {
+    "source": "frontend/src/workspaces/settings/ServiceStatusPage.h",
+    "destination": "pixiu/frontend/src/workspaces/settings/ServiceStatusPage.h"
+  },
+  {
+    "source": "frontend/src/workspaces/settings/ServiceStatusPage.cpp",
+    "destination": "pixiu/frontend/src/workspaces/settings/ServiceStatusPage.cpp"
+  },
+  {
+    "source": "frontend/src/app/UpgradeController.h",
+    "destination": "pixiu/frontend/src/app/UpgradeController.h"
+  },
+  {
+    "source": "frontend/src/app/UpgradeController.cpp",
+    "destination": "pixiu/frontend/src/app/UpgradeController.cpp"
+  },
+  {
+    "source": "frontend/src/app/UpgradeUtils.h",
+    "destination": "pixiu/frontend/src/app/UpgradeUtils.h"
+  },
+  {
+    "source": "frontend/src/app/UpgradeUtils.cpp",
+    "destination": "pixiu/frontend/src/app/UpgradeUtils.cpp"
+  },
+  {
+    "source": "frontend/src/widgets/CheckUpdateDialog.h",
+    "destination": "pixiu/frontend/src/widgets/CheckUpdateDialog.h"
+  },
+  {
+    "source": "frontend/src/widgets/CheckUpdateDialog.cpp",
+    "destination": "pixiu/frontend/src/widgets/CheckUpdateDialog.cpp"
+  },
+  {
+    "source": "frontend/src/app/UiTokens.h",
+    "destination": "pixiu/frontend/src/app/UiTokens.h"
+  },
+  {
+    "source": "frontend/src/services/BackendTransport.h",
+    "destination": "pixiu/frontend/src/services/BackendTransport.h"
+  },
+  {
+    "source": "frontend/src/services/BackendTransport.cpp",
+    "destination": "pixiu/frontend/src/services/BackendTransport.cpp"
+  },
+  {
+    "source": "frontend/src/services/HttpBackendTransport.h",
+    "destination": "pixiu/frontend/src/services/HttpBackendTransport.h"
+  },
+  {
+    "source": "frontend/src/services/HttpBackendTransport.cpp",
+    "destination": "pixiu/frontend/src/services/HttpBackendTransport.cpp"
+  },
+  {
+    "source": "frontend/src/services/BackendTypes.h",
+    "destination": "pixiu/frontend/src/services/BackendTypes.h"
+  },
+  {
+    "source": "frontend/CMakeLists.txt",
+    "destination": "pixiu/frontend/CMakeLists.txt"
+  }
+]

@@ -127,7 +127,7 @@ jobs:
           PIXIU_KYSDK: "OFF"
         run: |
           bash build/release/tests/test-desktop-adapter.sh
-          cmake -S frontend/management -B build/release/out/management-tests -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
+          cmake -S frontend -B build/release/out/management-tests -G Ninja -DPIXIU_MANAGEMENT_TESTS=ON
           cmake --build build/release/out/management-tests --parallel 2
           ctest --test-dir build/release/out/management-tests --output-on-failure
 
@@ -139,7 +139,7 @@ jobs:
         run: python -m pip install -r backend/requirements.txt -r backend/foundation/requirements-sync.txt
 
       - name: Verify Qt memory editing against the real portable backend
-        run: python frontend/management/tests/run-memory-edit-live.py build/release/out/management-tests/t_memory_edit_live
+        run: python frontend/tests/run-memory-edit-live.py build/release/out/management-tests/t_memory_edit_live
 
       - name: Build and audit the complete generic Agent distribution
         env:

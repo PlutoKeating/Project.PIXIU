@@ -39,10 +39,7 @@ grep -q 'add_subdirectory(pixiu/frontend/management)' "${fixture}/source/CMakeLi
 grep -q 'new pixiu::MemoryWorkspace(workspaces)' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'privacy->setDirectoryPicker' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'KylinFileDialog::getExistingDirectory(parent,' "${fixture}/source/src/ui/mainwindow.cpp"
-for capture_source in PrivacyPage.h PrivacyPage.cpp; do
-    cmp "${repo_root}/frontend/management/${capture_source}" \
-        "${fixture}/source/pixiu/frontend/management/${capture_source}"
-done
+
 grep -q 'sessionMemorySources' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'titleLayout->insertWidget(titleLayout->count() - 1, sources)' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'memory->showAgentSources(result' "${fixture}/source/src/ui/mainwindow.cpp"
@@ -56,16 +53,16 @@ assert 'if (changed) emit sessionChanged(sessionId);' in load, 'actual session l
 assert load.index('m_currentSessionId = sessionId;') < load.index('emit sessionChanged(sessionId);') < load.index('refreshMessages();')
 PY
 grep -q 'ApiService::sessionEvidenceRequest() const' "${fixture}/source/src/services/pixiu_host_compat.cpp"
-test -f "${fixture}/source/pixiu/frontend/management/MemoryWorkspace.cpp"
+test -f "${fixture}/source/pixiu/frontend/src/workspaces/memory/MemoryWorkspace.cpp"
 test ! -e "${fixture}/source/pixiu/frontend/src/main.cpp"
 cmp "${repo_root}/frontend/src/app/ShortcutManager.cpp" \
     "${fixture}/source/pixiu/frontend/src/app/ShortcutManager.cpp"
 test ! -e "${fixture}/source/pixiu/frontend/tests/fixtures/kysdk/desktop/libkyshortcut.h"
-grep -q 'IMPORTED_TARGET kysdk-shortcut' "${fixture}/source/pixiu/frontend/management/CMakeLists.txt"
-grep -q 'PkgConfig::PIXIU_SHORTCUT' "${fixture}/source/pixiu/frontend/management/CMakeLists.txt"
-grep -q 'Qt5::DBus' "${fixture}/source/pixiu/frontend/management/CMakeLists.txt"
+grep -q 'IMPORTED_TARGET kysdk-shortcut' "${fixture}/source/pixiu/frontend/cmake/Management.cmake"
+grep -q 'PkgConfig::PIXIU_SHORTCUT' "${fixture}/source/pixiu/frontend/cmake/Management.cmake"
+grep -q 'Qt5::DBus' "${fixture}/source/pixiu/frontend/cmake/Management.cmake"
 grep -q '/usr/bin/kdkshortcut' "${fixture}/source/pixiu/frontend/src/app/ShortcutManager.cpp"
-grep -q 'ShortcutManager::availabilityChanged' "${fixture}/source/pixiu/frontend/management/HostTray.cpp"
+grep -q 'ShortcutManager::availabilityChanged' "${fixture}/source/pixiu/frontend/src/shell/HostTray.cpp"
 grep -q 'MemoryAudit::preferencesChanged' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'HostTray::notifyPreferences' "${fixture}/source/src/ui/mainwindow.cpp"
 grep -q 'app.setApplicationVersion(QStringLiteral(PIXIU_PRODUCT_VERSION))' "${fixture}/source/src/main.cpp"
@@ -93,12 +90,9 @@ grep -q 'return window.hasPendingAgentRequests();' "${fixture}/source/src/main.c
 grep -q 'return window.hasUnsentAgentDraft();' "${fixture}/source/src/main.cpp"
 grep -q 'return !m_pendingFallbackReplies.isEmpty();' "${fixture}/source/include/ui/chatwidget.h"
 grep -q 'return !m_inputEdit->toPlainText().isEmpty();' "${fixture}/source/src/ui/chatwidget.cpp"
-test -f "${fixture}/source/pixiu/frontend/management/HostCloseGuard.cpp"
-for close_state_source in HostCloseGuard.cpp HostCloseGuard.h MemoryWorkspace.h MemoryScopeControl.cpp MemoryScopeControl.h DeliveryPage.cpp DeliveryPage.h ServiceStatusPage.cpp ServiceStatusPage.h; do
-    cmp "${repo_root}/frontend/management/${close_state_source}" \
-        "${fixture}/source/pixiu/frontend/management/${close_state_source}"
-done
-grep -q 'guard && guard->confirmExit(updateDialog)' "${fixture}/source/pixiu/frontend/management/SettingsWorkspace.cpp"
+test -f "${fixture}/source/pixiu/frontend/src/shell/HostCloseGuard.cpp"
+
+grep -q 'guard && guard->confirmExit(updateDialog)' "${fixture}/source/pixiu/frontend/src/workspaces/settings/SettingsWorkspace.cpp"
 for information_source in app/ProductInformation.h widgets/InfoDialog.h widgets/InfoDialog.cpp; do
     cmp "${repo_root}/frontend/src/${information_source}" \
         "${fixture}/source/pixiu/frontend/src/${information_source}"
@@ -237,3 +231,11 @@ assert 'workspaces->setCurrentIndex(0)' in session
 PY
 
 echo "agent host adaptation tests: OK"
+
+python3 - "${repo_root}" "${fixture}/source" <<'PYFILES'
+import json, sys
+from pathlib import Path
+root, prepared = map(Path, sys.argv[1:])
+for entry in json.loads((root / 'build/release/agent-host/frontend-sources.json').read_text()):
+    assert (root / entry['source']).read_bytes() == (prepared / entry['destination']).read_bytes(), entry
+PYFILES

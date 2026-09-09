@@ -82,7 +82,7 @@ HttpBackendTransport 兼容统一错误对象及 FastAPI detail 错误形状；�
 
 ```bash
 git submodule update --init --recursive
-cmake -S frontend/management -B <build> -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
+cmake -S frontend -B <build> -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
 cmake --build <build>
 ctest --test-dir <build> --output-on-failure
 ```
@@ -292,7 +292,7 @@ pixiu_memory_search 工具结果。输入上限 2 MiB、来源上限 256，重�
 实际后端联调使用现有依赖和独立临时数据：
 
 ```bash
-python frontend/management/tests/run-memory-edit-live.py <管理构建目录>/t_memory_edit_live
+python frontend/tests/run-memory-edit-live.py <管理构建目录>/t_memory_edit_live
 ```
 
 该脚本启动真实 portable 后端，使用动态端口、临时数据库和独立 XDG 目录，关闭

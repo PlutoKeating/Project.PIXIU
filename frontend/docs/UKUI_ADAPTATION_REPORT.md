@@ -45,7 +45,7 @@
 正式管理库：
 
 ```bash
-cmake -S frontend/management -B <独立构建目录> \
+cmake -S frontend -B <独立构建目录> \
   -DPIXIU_MANAGEMENT_TESTS=ON -DPIXIU_HAVE_KYSDK=OFF
 cmake --build <独立构建目录>
 ctest --test-dir <独立构建目录> --output-on-failure

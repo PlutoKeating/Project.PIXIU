@@ -27,7 +27,7 @@ frontend/management/PrivacyPage，业务配置只由后端持久化；目录浏�
 PUT 全量提交时保留剪贴板和截图字段，失败保留草稿。配置保存成功仅证明持久化，
 不保证 watcher 已应用或所有在途采集已取消。
 
-有效回归位于 frontend/management/tests/t_memory_workspace.cpp：
+有效回归位于 frontend/tests/t_memory_workspace.cpp：
 配置读取前门控、来源字段保留、非法目录、保存失败、草稿保护和目录选择期间退出保护。
 后端配置持久化与 API 测试独立保留，不以旧 QSettings 测试代替它们。
 

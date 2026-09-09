@@ -85,35 +85,7 @@ patch -d "${target_source}" -p1 --forward --batch --fuzz=0 --no-backup-if-mismat
     < "${repo_root}/frontend/host/patches/0026-qt-widget-translations.patch"
 install -D -m 0644 "${repo_root}/frontend/resources/icons/pixiu.svg" \
     "${target_source}/res/pixiu.svg"
-for relative in management/CMakeLists.txt management/MemoryWorkspace.h management/MemoryWorkspace.cpp \
-    management/BackendEventStatus.h management/BackendEventStatus.cpp \
-    src/services/WebSocketClient.h src/services/WebSocketClient.cpp \
-    management/AgentEvidence.h management/AgentEvidence.cpp \
-    management/AgentEvidenceClient.h management/AgentEvidenceClient.cpp \
-    management/MemoryScopes.h \
-    management/MemoryScopeControl.h management/MemoryScopeControl.cpp \
-    management/HostCloseGuard.h management/HostCloseGuard.cpp \
-    src/app/ProductInformation.h src/widgets/InfoDialog.h src/widgets/InfoDialog.cpp \
-    management/HostTray.h management/HostTray.cpp \
-    management/HostWindowPin.h management/HostWindowPin.cpp \
-    src/app/ShortcutManager.h src/app/ShortcutManager.cpp \
-    src/services/NotifyService.h src/services/NotifyService.cpp \
-    management/MemoryWriteDialog.h management/MemoryWriteDialog.cpp \
-    management/MemoryEditDialog.h management/MemoryEditDialog.cpp \
-    management/MemoryAudit.h management/MemoryAudit.cpp \
-    management/PrivacyPage.h management/PrivacyPage.cpp \
-    management/DevicePage.h management/DevicePage.cpp \
-    management/PairingDialog.h management/PairingDialog.cpp \
-    management/DeliveryPage.h management/DeliveryPage.cpp \
-    management/ForgetPage.h management/ForgetPage.cpp \
-    management/SettingsWorkspace.h management/SettingsWorkspace.cpp \
-    management/ServiceStatusPage.h management/ServiceStatusPage.cpp \
-    src/app/UpgradeController.h src/app/UpgradeController.cpp src/app/UpgradeUtils.h src/app/UpgradeUtils.cpp \
-    src/widgets/CheckUpdateDialog.h src/widgets/CheckUpdateDialog.cpp src/app/UiTokens.h \
-    src/services/BackendTransport.h src/services/BackendTransport.cpp \
-    src/services/HttpBackendTransport.h src/services/HttpBackendTransport.cpp src/services/BackendTypes.h; do
-    install -D -m 0644 "${repo_root}/frontend/${relative}" "${target_source}/pixiu/frontend/${relative}"
-done
+python3 "${script_dir}/export-frontend.py" "${repo_root}" "${target_source}"
 install -D -m 0644 "${repo_root}/VERSION" "${target_source}/pixiu/VERSION"
 install -D -m 0644 "${repo_root}/frontend/host/compat/pixiu_desktop.h" \
     "${target_source}/include/utils/pixiu_desktop.h"

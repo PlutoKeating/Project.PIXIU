@@ -31,7 +31,7 @@ UpgradeController。ProductInformation 提供关于、数据联网、许可证�
 **Files:**
 
 - VERSION：产品版本输入。
-- frontend/management/CMakeLists.txt：正式管理库版本宏。
+- frontend/cmake/Management.cmake：正式管理库版本宏。
 - frontend/CMakeLists.txt：仅保留回归目标，无独立产品 main 或安装目标。
 - build/release/scripts/build-deb.sh：派生关系预检与整包构建。
 - build/release/scripts/generate-release-manifest.py：包内发布清单生成。
@@ -51,13 +51,13 @@ UpgradeController。ProductInformation 提供关于、数据联网、许可证�
 
 **Files:**
 
-- frontend/management/SettingsWorkspace.cpp：应用与升级、采集与隐私、服务与能力三个页签。
+- frontend/src/workspaces/settings/SettingsWorkspace.cpp：应用与升级、采集与隐私、服务与能力三个页签。
 - frontend/src/widgets/InfoDialog.h/.cpp：只读纯文本说明页。
 - frontend/src/widgets/CheckUpdateDialog.h/.cpp：实际升级状态与操作。
 - frontend/src/app/ProductInformation.h：事实性正文。
 - frontend/src/app/UpgradeController.h/.cpp：检查、下载、验证、授权安装及受控重启。
 - frontend/tests/t_product_dialogs.cpp：保留组件基础行为，根回归和正式管理测试均编译。
-- frontend/management/tests/t_memory_workspace.cpp：正式信息页入口和宿主归属检查。
+- frontend/tests/t_memory_workspace.cpp：正式信息页入口和宿主归属检查。
 - frontend/tests/t_check_update_dialog.cpp：更新状态与受控重启回归。
 
 **Interfaces:**
@@ -82,7 +82,7 @@ UpgradeController。ProductInformation 提供关于、数据联网、许可证�
 
 - frontend/resources/i18n/pixiu_en_US.ts/.qm：保留组件资源；退役 SettingsDialog 上下文已移除。
 - frontend/tests/t_i18n.cpp：保留资源的加载及译文检查。
-- frontend/management/CMakeLists.txt：正式组件回归入口。
+- frontend/cmake/Management.cmake：正式组件回归入口。
 
 **验证与剩余工作：**
 
