@@ -39,8 +39,30 @@ async def dream_documents(model, document_ids, *, endpoint="http://127.0.0.1:876
             response.raise_for_status()
             return response.json()["choices"][0]["message"]
 
-    return await run_documents(api=MemoryApi(endpoint), model_turn=model_turn,
-        document_ids=document_ids, scope=scope, vision=input_capabilities(model)["images"], approved=True)
+    api = MemoryApi(endpoint)
+    latest = {}
+
+    async def progress(event):
+        reference = event["document_id"]
+        latest[reference] = {"processed_blocks": event["processed_blocks"],
+                             "saved_count": event["saved_count"]}
+        await api("POST", f"/documents/{reference}/progress", {"status": "running", **latest[reference]})
+
+    try:
+        result = await run_documents(api=api, model_turn=model_turn,
+            document_ids=document_ids, scope=scope, vision=input_capabilities(model)["images"],
+            approved=True, progress=progress)
+    except Exception:
+        for reference, counts in latest.items():
+            try:
+                await api("POST", f"/documents/{reference}/progress", {"status": "incomplete", **counts})
+            except (ValueError, httpx.HTTPError):
+                pass  # Revoked documents cannot publish further events.
+        raise
+    for reference, counts in latest.items():
+        await api("POST", f"/documents/{reference}/progress", {"status": result["status"], **counts})
+    return result
+
 
 
 async def prepare_document_attachment(model, payload, *, endpoint="http://127.0.0.1:8765"):

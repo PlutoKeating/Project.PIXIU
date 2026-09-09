@@ -42,6 +42,10 @@ async def run_documents(*, api, model_turn, document_ids, scope, vision,
     for reference in document_ids:
         await server.call_tool("document_describe", {"document_id": reference})
         manifest = session.manifests[reference]
+        processed = 0
+        if progress is not None:
+            await progress({"document_id": reference, "processed_blocks": 0,
+                            "total_blocks": len(manifest["blocks"]), "saved_count": len(session.results)})
         for cursor, entry in enumerate(manifest["blocks"]):
             session._require_active()
             if entry["kind"] == "image" and not vision:
@@ -70,8 +74,9 @@ async def run_documents(*, api, model_turn, document_ids, scope, vision,
                             result = {"error": "TASK_OPERATION_REJECTED_OR_FAILED"}
                     messages.append({"role": "tool", "tool_call_id": call["id"],
                                      "content": json.dumps(result, ensure_ascii=False)})
+            processed += 1
             if progress is not None:
-                await progress({"name": manifest["name"], "processed_blocks": cursor + 1,
+                await progress({"document_id": reference, "processed_blocks": processed,
                                 "total_blocks": len(manifest["blocks"]),
                                 "saved_count": len(session.results)})
     return session.report("资料整理已结束，请根据实际保存和未完成项查看结果。")

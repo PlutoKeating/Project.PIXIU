@@ -47,10 +47,18 @@ async def test_model_uses_fixed_tools_for_every_source_block_and_cannot_run_shel
             return call("memory_apply", {"plan_id": plan_id})
         return {"content": "已记住"}
 
+    updates = []
+
+    async def progress(event):
+        updates.append(event)
+
     result = await run_documents(api=Api(), model_turn=model_turn,
-        document_ids=[reference], scope="user:local", vision=False, approved=True)
+        document_ids=[reference], scope="user:local", vision=False, approved=True, progress=progress)
     assert result["status"] == "completed" and result["saved_count"] == 1
     assert len(written) == 1
     assert written[0]["raw"]["body"]["document_sources"][0]["block"]["text"] == "电费50元"
     assert "电费50元" in model_inputs[0][1]["content"][0]["text"]
     assert set(tool_names) == {"memory_search", "memory_plan", "memory_apply", "dreaming_report"}
+
+    assert [event["processed_blocks"] for event in updates] == [0, 1]
+    assert [event["saved_count"] for event in updates] == [0, 1]

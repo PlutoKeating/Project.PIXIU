@@ -1315,3 +1315,5 @@ KV 持久化（`sync_runtime:enabled` / `sync_runtime:paused`）+ 热生效：
 当前自动媒体入口：Runtime `/api/memory/image-draft` 跟随当前活动模型，`GET /api/memory/input-capabilities` 返回 images/scanned_pdf/message，`POST /api/model/active` 由宿主同步当前模型。后端 `GET /agent/input-capabilities` 供设置页面读取状态。聊天附件通过统一文档 MCP 读取内容块；目录事件通过经过认证的 dreaming 启动器调用受控模型循环。
 
 Runtime 新增认证入口 `POST /api/memory/dreaming {document_ids: [...]}`，仅接受已登记文档引用；使用当前模型逐块运行限定工具，固定私人采集范围 user:local。文档登记可携带内部 source_path 绑定目录授权，该路径不交给模型；描述、读取、计划保存时授权已取消则拒绝。此接口不是模型可调用工具，也不接受模型传入 approved/scope/任意执行指令。
+
+后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。

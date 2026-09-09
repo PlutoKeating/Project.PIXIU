@@ -20,6 +20,7 @@ signals:
 private:
     void updateNotice();
     QLabel *m_notice;
+    QLabel *m_progress;
     QPushButton *m_dismiss;
     QSet<QString> m_changed;
     QElapsedTimer m_lastAttention;

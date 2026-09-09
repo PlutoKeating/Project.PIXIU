@@ -2,6 +2,7 @@
 import asyncio
 import base64
 import zipfile
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
@@ -58,3 +59,28 @@ async def read_document(document_id: str, cursor: int = Query(0, ge=0), db=Depen
 async def revoke_document(document_id: str, db=Depends(get_db)):
     await DocumentRegistry(db).revoke(document_id)
     return {"status": "revoked"}
+
+
+class DocumentProgress(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    status: Literal["running", "completed", "incomplete"]
+    processed_blocks: int = Field(ge=0)
+    saved_count: int = Field(ge=0)
+
+
+@router.post("/{document_id}/progress")
+async def document_progress(document_id: str, body: DocumentProgress, db=Depends(get_db)):
+    """Trusted harness progress; never a model tool or a memory-write authority."""
+    from .ws_manager import ws_manager
+    try:
+        document = await DocumentRegistry(db, authorized_source).describe(document_id)
+    except DocumentUnavailable as exc:
+        raise HTTPException(404, "DOCUMENT_UNAVAILABLE") from exc
+    total = len(document["blocks"])
+    if body.processed_blocks > total or (body.status == "completed" and
+            (body.processed_blocks != total or not document["decoding_complete"])):
+        raise HTTPException(422, "DOCUMENT_PROGRESS_INVALID")
+    await ws_manager.broadcast("dreaming_progress", {
+        **body.model_dump(), "total_blocks": total,
+    })
+    return {"status": "reported"}

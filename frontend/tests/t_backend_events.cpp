@@ -12,6 +12,23 @@
 class BackendEventsTest : public QObject {
     Q_OBJECT
 private slots:
+    void dreamingReportsActualProgressWithoutExtraInteraction() {
+        QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
+        QVERIFY(server.listen(QHostAddress::LocalHost, 0));
+        pixiu::BackendEventStatus status(QString("http://127.0.0.1:%1").arg(server.serverPort()));
+        QTRY_VERIFY(server.hasPendingConnections());
+        auto *peer = server.nextPendingConnection();
+        auto *label = status.findChild<QLabel *>("dreamingProgress");
+        QVERIFY(label);
+        peer->sendTextMessage(R"({"event":"dreaming_progress","data":{"status":"running","processed_blocks":1,"total_blocks":2,"saved_count":1,"name":"private-file"}})");
+        QTRY_VERIFY(label->text().contains("50%"));
+        QVERIFY(!label->text().contains("private-file"));
+        peer->sendTextMessage(R"({"event":"dreaming_progress","data":{"status":"incomplete","processed_blocks":1,"total_blocks":2,"saved_count":1}})");
+        QTRY_VERIFY(label->text().contains(QStringLiteral("尚未完整整理")));
+        QVERIFY(status.findChildren<QDialog *>().isEmpty());
+        peer->close();
+        peer->deleteLater();
+    }
     void invalidFramesCannotDriveWorkspaceActions() {
         QWebSocketServer server("test", QWebSocketServer::NonSecureMode);
         QVERIFY(server.listen(QHostAddress::LocalHost, 0));

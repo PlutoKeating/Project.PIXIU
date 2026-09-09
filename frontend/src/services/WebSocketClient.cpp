@@ -23,6 +23,7 @@ bool isKnownBusinessEvent(const QString &name)
         QStringLiteral("forget_requested"),
         QStringLiteral("sync_event"),
         QStringLiteral("capture_event"),
+        QStringLiteral("dreaming_progress"),
         QStringLiteral("pair_request"),
     };
     return kKnownEvents.contains(name);

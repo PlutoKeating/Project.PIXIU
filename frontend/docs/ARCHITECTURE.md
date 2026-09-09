@@ -516,3 +516,5 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 MemoryWriteDialog 从现有模型配置中选择图片理解模型，直接发送 PNG/JPEG 给模型生成可编辑知识草稿；明确提示发送目的地，并保留人工确认。文本专用麒麟桥接不作为图片模型。MemoryWorkspace 来源提供原图查看，正常文本阅读不展开 base64。
 
 2026-09-10：图片导入移除独立模型选择；MediaInputClient 与宿主补丁 0027 接通当前模型附件请求，设置页显示图片/扫描 PDF 能力，阶段保留去除重复确认。统一 Office/MCP 附件与 dreaming 主动进度尚在接线，当前宿主通用编译通过不代表该扩展已完成。
+
+后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。

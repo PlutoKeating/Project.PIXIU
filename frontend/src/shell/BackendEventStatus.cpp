@@ -23,11 +23,17 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
     m_notice->setTextFormat(Qt::PlainText);
     m_notice->setWordWrap(true);
     layout->addWidget(m_notice, 1);
+    m_progress = new QLabel(this);
+    m_progress->setObjectName(QStringLiteral("dreamingProgress"));
+    m_progress->setTextFormat(Qt::PlainText);
+    m_progress->setWordWrap(true);
+    layout->addWidget(m_progress, 1);
     m_dismiss = new QPushButton(tr("清除提示"), this);
     m_dismiss->setObjectName(QStringLiteral("eventDismiss"));
     layout->addWidget(m_dismiss);
     connect(m_dismiss, &QPushButton::clicked, this, [this]() {
         m_changed.clear();
+        m_progress->clear();
         updateNotice();
     });
     updateNotice();
@@ -71,6 +77,25 @@ BackendEventStatus::BackendEventStatus(const QString &baseUrl, QWidget *parent) 
     });
     connect(client, &WebSocketClient::eventReceived, this, [this, reviewForget](const QJsonObject &event) {
         const QString name = event.value("event").toString();
+        if (name == "dreaming_progress") {
+            const auto data = event.value("data").toObject();
+            const auto status = data.value("status").toString();
+            const int processed = data.value("processed_blocks").toInt(-1);
+            const int total = data.value("total_blocks").toInt(-1);
+            const int saved = data.value("saved_count").toInt(-1);
+            if (processed < 0 || total < processed || saved < 0) return;
+            if (status == "running")
+                m_progress->setText(tr("正在整理资料（%1%），已保存 %2 条记忆。")
+                    .arg(total ? qRound(100.0 * processed / total) : 0).arg(saved));
+            else if (status == "completed")
+                m_progress->setText(tr("资料整理完成，已保存 %1 条记忆。").arg(saved));
+            else if (status == "incomplete")
+                m_progress->setText(tr("资料尚未完整整理，已保存 %1 条记忆。").arg(saved));
+            else return;
+            m_dismiss->setEnabled(true);
+            emit dataChanged(name);
+            return;
+        }
         if (name == "forget_requested") {
             const auto data = event.value("data").toObject();
             const auto command = data.value("command").toString();
@@ -108,6 +133,6 @@ void BackendEventStatus::updateNotice()
     pages.sort();
     m_notice->setText(pages.isEmpty() ? QString() : tr("请刷新核对：%1。提示不会执行操作或覆盖未保存输入。")
         .arg(pages.join(QStringLiteral("、"))));
-    m_dismiss->setEnabled(!pages.isEmpty());
+    m_dismiss->setEnabled(!pages.isEmpty() || !m_progress->text().isEmpty());
 }
 }

@@ -483,3 +483,5 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 ### 文档接入（2026-09-10）
 
 `documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。Office/PDF 使用固定 Kreuzberg 4.10.3（third_party/kreuzberg）；PDFium 和本地库由 wheel 携带，全程 headless，显式禁用 OCR、模型下载和缓存。文本与图片分别交给当前模型；不执行宏、公式或外链；正式目录装配已调用受控 dreaming，目录授权复核与暂存引用撤销贯穿读取和保存。
+
+后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
