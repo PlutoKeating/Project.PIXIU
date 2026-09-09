@@ -1,0 +1,20 @@
+{
+  "frames": [
+    4267,
+    4268,
+    4296
+  ],
+  "pixels_per_frame": 2073600,
+  "differing_pixels": [
+    0,
+    0,
+    0
+  ],
+  "max_channel_difference": [
+    0,
+    0,
+    0
+  ],
+  "log": "bundling; 3 frames all identical",
+  "scope": "工作台与原工程逐帧渲染一致性"
+}

@@ -369,3 +369,5 @@ s09 新增真实来源发牌章节，源码为 `DeckDealMotion.tsx`、`DeckCamer
 原始查询结果和接口响应在raw/network/公开行为采集落库复核-01.json。
 此结果证明该公开X11窗口采集落库，不扩展为Wayland原生采集验收；原生结果画面仍待补录。
 依赖与渲染入口已核对，无新增软件依赖；npm run check与prepare:evidence通过。
+
+提交检查发现DeckCamera空白行尾随空格，已清理当前源码；固定历史源码与审查副本保持原字节以保留摘要对应关系。该变更不影响渲染。

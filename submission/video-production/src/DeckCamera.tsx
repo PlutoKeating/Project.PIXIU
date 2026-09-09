@@ -78,7 +78,7 @@ export const DeckCamera: React.FC<{
             filter: blur > 0 ? `blur(${blur}px)` : undefined,
           }}
         >
-          
+
           {children}
         </div>
       </AbsoluteFill>
@@ -107,7 +107,7 @@ export const DeckCamera: React.FC<{
             filter: blur > 0 ? `blur(${blur}px)` : undefined,
           }}
         >
-          
+
           {children}
         </div>
       </div>
