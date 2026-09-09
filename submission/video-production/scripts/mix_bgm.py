@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--video', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--report', type=Path, required=True)
+parser.add_argument('--reuse-stem', action='store_true', help='Reuse the existing trimmed/faded music when source and timing are unchanged')
 args = parser.parse_args()
 if args.output.exists() or args.report.exists():
     parser.error('Choose new output and report paths to preserve existing exports')
@@ -29,7 +30,11 @@ def ff(*items):
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 # Stem contains trim and fade only. Both preview and export apply the gain once.
-ff('-i', source, '-af', f'atrim=start={start}:duration={duration},asetpts=PTS-STARTPTS,aresample=48000,afade=t=out:st={duration-fade}:d={fade},atrim=end_sample={round(duration*48000)}', '-ac', 2, '-c:a', 'pcm_s16le', '-y', stem)
+if args.reuse_stem:
+    stem_duration = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(stem)]))
+    assert abs(stem_duration - duration) < 1 / 48000, 'Prepared music duration changed'
+else:
+    ff('-i', source, '-af', f'atrim=start={start}:duration={duration},asetpts=PTS-STARTPTS,aresample=48000,afade=t=out:st={duration-fade}:d={fade},atrim=end_sample={round(duration*48000)}', '-ac', 2, '-c:a', 'pcm_s16le', '-y', stem)
 graph = f'[0:a]atrim=duration={duration},asetpts=PTS-STARTPTS[a];[1:a]volume={cfg["volume"]}[b];[a][b]amix=inputs=2:normalize=0:duration=longest,atrim=duration={duration}[mix]'
 inputs = ['-i', args.video, '-i', stem, '-filter_complex', graph]
 pcm = np.frombuffer(ff(*inputs, '-map', '[mix]', '-ar', 48000, '-ac', 2, '-f', 'f32le', '-'), dtype='<f4')

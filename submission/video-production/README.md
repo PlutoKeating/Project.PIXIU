@@ -1,8 +1,8 @@
 # PIXIU 中文演示视频制作工程
 
-当前音量调整版：`renders/演示视频-云枫音量调整版.mp4`。29段云枫口白为原音量的1.7倍，ZENI — With You背景音乐为45%；音乐从源15秒对应视频0秒，最后1秒淡出，视频时长389.533333秒。画面、字幕、语速、口白起点及音效音量沿用已审核版本。字幕为60px粗体纯白、5px黑描边、向下3px/模糊2px/alpha 0.3阴影，底部64px。正式ZIP已同步，当前无配乐版本为 `renders/演示视频-云枫口白170无配乐版.mp4`；历史导出保留。
+当前配乐15%字幕7px版：`renders/演示视频-配乐15字幕07版.mp4`。29段云枫口白为原音量的1.7倍，ZENI — With You背景音乐为15%；音乐从源15秒对应视频0秒，最后1秒淡出，视频时长389.533333秒。画面、字幕、语速、口白起点及音效音量沿用已审核版本。字幕为60px粗体纯白、7px黑描边、向下3px/模糊2px/alpha 0.3阴影，底部57px。正式ZIP已同步，当前无配乐版本为 `renders/演示视频-口白170字幕07无配乐版.mp4`；历史导出保留。
 
-`src/narration-volume.json`记录1.7倍口白增益，`public/audio/narration-170/`保存由原始音频转成的立体声PCM，浏览器使用volume=1播放，避免浏览器把超过1的音量参数截断。主片、章节预览及工作台通过`narrationAudio.ts`使用相同素材；无TTS调用。`scripts/rebalance_audio.py`以原1倍无配乐白字版为基准，按波形测得的原始起点加入额外0.7倍口白，保留原音效，再混入0.45倍音乐，并直接复制画面流。此次只有一个线性混音样本超过满量程（约0.04dB），配乐导出采用关闭自动增益、补偿延迟的0.98峰值限制；编码后峰值约−0.18dBFS。检查记录为`review/audio-rebalance-technical.json`。
+`src/narration-volume.json`记录1.7倍口白增益，`public/audio/narration-170/`保存由原始音频转成的立体声PCM，浏览器使用volume=1播放，避免浏览器把超过1的音量参数截断。主片、章节预览及工作台通过`narrationAudio.ts`使用相同素材；无TTS调用。`scripts/rebalance_audio.py`以原1倍无配乐白字版为基准，按波形测得的原始起点加入额外0.7倍口白，保留原音效，再混入配置指定的音乐增益，并直接复制画面流。此前45%配乐版只有一个线性混音样本超过满量程（约0.04dB），配乐导出采用关闭自动增益、补偿延迟的0.98峰值限制；编码后峰值约−0.18dBFS。此前音量检查记录为`review/audio-rebalance-technical.json`。当前15%版本无需峰值限制，直接沿用170%口白无配乐音轨，以`mix:bgm`混入15%音乐，检查记录为`review/mix15-caption07-technical.json`。
 
 复现入口：`npm run mix:levels -- --baseline renders/演示视频-云枫白字无配乐版.mp4 --output renders/新的音量版.mp4 --no-bgm renders/新的口白版.mp4 --report review/新的音量检查.json`。必须使用原1倍口白、无配乐基准；输出文件使用新名称。依赖沿用现有NumPy与FFmpeg。
 

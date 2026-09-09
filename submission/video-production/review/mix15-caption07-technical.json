@@ -1,0 +1,21 @@
+{
+  "sha256": "3d913af685bd21a0e2c7ed2853033f5a919a0bcff031526d880a9cc1ddb74ec4",
+  "complete_decode": "passed",
+  "source_video": "renders/演示视频-口白170字幕07无配乐版.mp4",
+  "source_video_sha256": "abc3cc7362056d0026a94d122ef8bab8f70a17508fda7042dc5e19efb7320942",
+  "source_music_sha256": "9bec354f3ba7088c3f75687d2cc8252a73b17ba020d16d3ba1c0a67bac0c3940",
+  "stem_sha256": "128edd051fa975e1f222dd73068f3ee9db5bebf0140a88b091698b7224da6990",
+  "settings": {
+    "source": "audio/ZENI - With You (Original Mix).mp3",
+    "prepared": "audio/zeni-with-you-film.wav",
+    "source_start_seconds": 15,
+    "volume": 0.15,
+    "fade_out_seconds": 1
+  },
+  "duration_seconds": 389.53333333333336,
+  "mix_peak_dbfs": -1.710821829290634,
+  "encoded_peak_dbfs": -1.5885978998159478,
+  "picture_bitstream_unchanged": true,
+  "video_bitstream_hash": "SHA256=ad4996d11cf6ee23de8b99c3abf3db831918c6ac83e835cc73dcd61da2ea9b8e",
+  "method": "15s source trim; 15% linear gain; last 1s linear fade on music only; picture stream copied; no normalization or ducking."
+}

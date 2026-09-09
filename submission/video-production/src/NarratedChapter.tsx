@@ -7,10 +7,10 @@ import timeline from './timeline.json';
 export const SHARED_CHAPTER = timeline.shots.find((shot) => shot.id === 's18')!;
 
 export const CaptionText: React.FC<{text?: string; fontSize?: number; color?: string; bottom?: number}> =
-  ({text = '', fontSize = 60, color = '#ffffff', bottom = 64}) =>
+  ({text = '', fontSize = 60, color = '#ffffff', bottom = 57}) =>
     <div style={{position: 'absolute', left: 100, right: 100, bottom,
       fontFamily: '"Noto Sans CJK SC", sans-serif', fontSize, lineHeight: 1.15,
-      fontWeight: 700, WebkitTextStroke: '5px #000000', paintOrder: 'stroke fill',
+      fontWeight: 700, WebkitTextStroke: '7px #000000', paintOrder: 'stroke fill',
       textShadow: '0 3px 2px rgba(0, 0, 0, 0.3)',
       color, textAlign: 'center', transform: 'translateZ(0)'}}>{text}</div>;
 
