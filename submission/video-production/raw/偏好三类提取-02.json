@@ -1,0 +1,218 @@
+{
+  "scope": "user:video-preference-4k-v1",
+  "method": "合成行为与配置经公共接口提取；不证明真实热键监听或安全策略执行",
+  "events": [
+    {
+      "label": "读取原有输出风格版本",
+      "recorded_at": "2026-09-09T07:49:51.253567+00:00",
+      "path": "/preferences?scope=user%3Avideo-preference-4k-v1",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "preferences": [
+            {
+              "id": "pref_01M22J7WJRVKRZH3F5QJXC0VWV",
+              "category": "SECURITY_POLICY",
+              "key": "security.no_exfiltrate",
+              "value": {
+                "no_exfiltrate": true
+              },
+              "confidence": 0.92,
+              "version": 1,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788940120,
+              "updated_at": 1788940120
+            },
+            {
+              "id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+              "category": "OUTPUT_STYLE",
+              "key": "output_style.verbosity",
+              "value": {
+                "verbosity": "verbose"
+              },
+              "confidence": 0.9,
+              "version": 3,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788902312,
+              "updated_at": 1788902554
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "写入合成样例：OP_HABIT",
+      "recorded_at": "2026-09-09T07:49:51.926535+00:00",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "USER_BEHAVIOR",
+        "scope": "user:video-preference-4k-v1",
+        "raw": {
+          "title": "公开操作习惯演示",
+          "events": [
+            {
+              "action": "hotkey"
+            },
+            {
+              "action": "hotkey"
+            },
+            {
+              "action": "hotkey"
+            }
+          ]
+        },
+        "idempotency_key": "video-preference-categories-v2:OP_HABIT"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M22JA1K1HKCZC7AMC2056QTZ",
+          "status": "accepted",
+          "quality_score": 0.715,
+          "sensitivity": 0,
+          "preference_count": 1,
+          "conflict_detected": false,
+          "latency_ms": 272
+        }
+      }
+    },
+    {
+      "label": "读取三类偏好实际结果",
+      "recorded_at": "2026-09-09T07:49:52.193364+00:00",
+      "path": "/preferences?scope=user%3Avideo-preference-4k-v1",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "preferences": [
+            {
+              "id": "pref_01M22JA1QNJ7R8H6C5E786H9RK",
+              "category": "OP_HABIT",
+              "key": "op_habit.prefer_hotkey",
+              "value": {
+                "enabled": true,
+                "signal_count": 1
+              },
+              "confidence": 0.7,
+              "version": 1,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788940191,
+              "updated_at": 1788940191
+            },
+            {
+              "id": "pref_01M22J7WJRVKRZH3F5QJXC0VWV",
+              "category": "SECURITY_POLICY",
+              "key": "security.no_exfiltrate",
+              "value": {
+                "no_exfiltrate": true
+              },
+              "confidence": 0.92,
+              "version": 1,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788940120,
+              "updated_at": 1788940120
+            },
+            {
+              "id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+              "category": "OUTPUT_STYLE",
+              "key": "output_style.verbosity",
+              "value": {
+                "verbosity": "verbose"
+              },
+              "confidence": 0.9,
+              "version": 3,
+              "scope": "user:video-preference-4k-v1",
+              "created_at": 1788902312,
+              "updated_at": 1788902554
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "读取版本历史：OP_HABIT",
+      "recorded_at": "2026-09-09T07:49:52.480807+00:00",
+      "path": "/preference/pref_01M22JA1QNJ7R8H6C5E786H9RK/history",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "id": "pref_01M22JA1QNJ7R8H6C5E786H9RK",
+          "key": "op_habit.prefer_hotkey",
+          "current_version": 1,
+          "history": [
+            {
+              "version": 1,
+              "value": {
+                "enabled": true,
+                "signal_count": 1
+              },
+              "updated_at": 1788940191
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "读取版本历史：SECURITY_POLICY",
+      "recorded_at": "2026-09-09T07:49:52.760984+00:00",
+      "path": "/preference/pref_01M22J7WJRVKRZH3F5QJXC0VWV/history",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "id": "pref_01M22J7WJRVKRZH3F5QJXC0VWV",
+          "key": "security.no_exfiltrate",
+          "current_version": 1,
+          "history": [
+            {
+              "version": 1,
+              "value": {
+                "no_exfiltrate": true
+              },
+              "updated_at": 1788940120
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "读取版本历史：OUTPUT_STYLE",
+      "recorded_at": "2026-09-09T07:49:53.088470+00:00",
+      "path": "/preference/pref_01M21E626SWQNVJ96Y7PNZ298T/history",
+      "input": null,
+      "output": {
+        "status": 200,
+        "body": {
+          "id": "pref_01M21E626SWQNVJ96Y7PNZ298T",
+          "key": "output_style.verbosity",
+          "current_version": 3,
+          "history": [
+            {
+              "version": 1,
+              "value": {
+                "verbosity": "compact"
+              },
+              "updated_at": 1788902312
+            },
+            {
+              "version": 2,
+              "value": {
+                "verbosity": "compact"
+              },
+              "updated_at": 1788902313
+            },
+            {
+              "version": 3,
+              "value": {
+                "verbosity": "verbose"
+              },
+              "updated_at": 1788902554
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

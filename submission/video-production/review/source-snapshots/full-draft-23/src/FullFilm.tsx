@@ -157,7 +157,7 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
         <div style={{position: 'absolute', left: 240, top: 140, width: 1440, height: 810, overflow: 'hidden'}}>
           <div style={{position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.75)', transformOrigin: '0 0'}}><SpotlightHeroCard /></div>
         </div>
-        <div style={{position: 'absolute', right: 135, bottom: 145, color: MUTED, fontSize: 38, background: '#f6f7f9', padding: '8px 16px', borderRadius: 10}}>能力示意 · 每台设备独立保存本地副本</div>
+        <div style={{position: 'absolute', right: 135, bottom: 145, color: MUTED, fontSize: 38}}>能力示意 · 每台设备独立保存本地副本</div>
       </>
       : shot.id === 's07' || shot.id === 's08' ? <BillScene evidence={shot.id === 's08'} />
       : shot.id === 's21' || shot.id === 's22' ? <SyncTraceScene concurrent={shot.id === 's22'} />

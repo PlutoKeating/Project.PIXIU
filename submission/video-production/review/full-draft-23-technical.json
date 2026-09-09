@@ -1,0 +1,23 @@
+{
+  "video": "renders/全片初剪-23.mp4",
+  "sha256": "df6406688d88939449534d16d674b75f109c553a53398354528415d1043850f1",
+  "bytes": 48136908,
+  "duration": "575.146667",
+  "streams": [
+    {
+      "codec": "h264",
+      "frames": "17253",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "codec": "aac",
+      "frames": "26960",
+      "width": null,
+      "height": null
+    }
+  ],
+  "complete_decode": "passed",
+  "frozen_source_matches": true,
+  "boundary": "中间稿；f917注记叠压尚需修订，偏好新增结果未编入，音效与听审未完成"
+}
