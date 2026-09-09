@@ -1,0 +1,44 @@
+import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
+
+const Crop: React.FC<{src: string; x: number; y: number; w: number; h: number; scale?: number}> =
+  ({src, x, y, w, h, scale = 2.6}) => <div style={{position: 'relative', width: w * scale, height: h * scale, overflow: 'hidden'}}>
+    <Img src={staticFile('screens/' + src)} style={{position: 'absolute', width: 1440 * scale,
+      height: 900 * scale, left: -x * scale, top: -y * scale}} />
+  </div>;
+
+export const NativeSetupScene: React.FC<{kind: 's04' | 's10' | 's11'}> = ({kind}) => {
+  const f = useCurrentFrame();
+  return <AbsoluteFill>
+    <div style={{position: 'absolute', left: 135, right: 135, top: 195}}>
+      {kind === 's04' ? <>
+        <div style={{fontSize: 38, color: '#1456b8', marginBottom: 35}}>
+          {f < 258 ? '同一桌面窗口中的四个入口' : '服务与能力 · 本次读取结果'}
+        </div>
+        {f < 258 ? <Crop src="50-service-version.png" x={8} y={145} w={305} h={89} scale={3} />
+          : <Crop src="50-service-version.png" x={22} y={359} w={555} h={219} />}
+      </> : kind === 's10' ? <>
+        <div style={{fontSize: 38, color: '#1456b8', marginBottom: 35}}>
+          {f < 91 ? '录入标题与正文' : f < 358 ? '本例保存在个人范围 · 共享需明确选择' : '保存后检索，核对同一账单正文'}
+        </div>
+        {f < 91 ? <Crop src="10-memory-input.png" x={435} y={232} w={548} h={194} />
+          : f < 358 ? <Crop src="10-memory-input.png" x={435} y={507} w={548} h={78} />
+          : <>
+            <Crop src="11-memory-saved.png" x={436} y={586} w={526} h={24} />
+            <div style={{marginTop: 35}}><Crop src="12-memory-evidence.png" x={486} y={510} w={480} h={135} /></div>
+          </>}
+      </> : <>
+        <div style={{fontSize: 38, color: '#1456b8', marginBottom: 35}}>
+          {f < 215 ? '授权演示目录，开启目录采集' : f < 359 ? '活动日志 · 文件已入库' : '来源详情 · 路径与采集时刻'}
+        </div>
+        {f < 215 ? <>
+          <Crop src="30-privacy-enabled.png" x={7} y={237} w={356} h={61} />
+          <div style={{marginTop: 35}}><Crop src="30-privacy-enabled.png" x={7} y={361} w={430} h={76} /></div>
+        </> : f < 359 ? <Crop src="32-capture-log.png" x={18} y={652} w={365} h={117} />
+          : <Crop src="34-file-source.png" x={486} y={451} w={535} h={88} />}
+      </>}
+    </div>
+    <div style={{position: 'absolute', left: 135, top: 905, fontSize: 36, color: '#526477'}}>
+      {kind === 's04' ? '原生页面裁片 · 演示环境读取快照，不代表最终发布验收' : '原生页面裁片 · 公开合成演示资料'}
+    </div>
+  </AbsoluteFill>;
+};

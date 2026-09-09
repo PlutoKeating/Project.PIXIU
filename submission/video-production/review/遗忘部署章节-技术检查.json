@@ -1,0 +1,33 @@
+{
+  "outputs": [
+    {
+      "video": "renders/遗忘确认与边界-01.mp4",
+      "sha256": "0d49648e6e44b8ff17abc5109bcbb24e4b6d804ddea5bd050fdefc28c7cd15e7",
+      "duration": "33.280000",
+      "size": "2264614",
+      "decode": "passed"
+    },
+    {
+      "video": "renders/遗忘确认与边界-02.mp4",
+      "sha256": "e4d7cfa23c9e224b556a2987026b4f92e81c3b3659fcb256e595e6ef2721194c",
+      "duration": "33.280000",
+      "size": "2277565",
+      "decode": "passed"
+    },
+    {
+      "video": "renders/安装与更新检查-01.mp4",
+      "sha256": "05aac80938ec82403809712e8cbc36e74424dbe48f518434927a69b23f691245",
+      "duration": "20.352000",
+      "size": "1302919",
+      "decode": "passed"
+    },
+    {
+      "video": "renders/安装与更新检查-02.mp4",
+      "sha256": "8e44c3261384d705e798b2c97d1f1a06b985cae7bba3918ec5d39c0b15e21d82",
+      "duration": "20.352000",
+      "size": "1226855",
+      "decode": "passed"
+    }
+  ],
+  "scope": "章节完整解码与格式测量；未听审，未全片放行"
+}

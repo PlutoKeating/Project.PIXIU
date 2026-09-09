@@ -1,0 +1,23 @@
+[
+  {
+    "file": "brand-ink-open.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/brand-ink-open.mp4",
+    "sha256": "1b566ce6d86ee659080f57d3914b4678713242cd05e377104336c4000de7f626",
+    "bytes": 36249,
+    "decode": "passed"
+  },
+  {
+    "file": "paper-title-card.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/paper-title-card.mp4",
+    "sha256": "96cf09acb0348c043c48e0df059e5fa3cf8fa1f694471c68760674134025bf92",
+    "bytes": 61262,
+    "decode": "passed"
+  },
+  {
+    "file": "outro-group-photo-launch.mp4",
+    "source": "https://github.com/Vincentwei1021/video-shotcraft/releases/download/gallery-media/outro-group-photo-launch.mp4",
+    "sha256": "ee0228f97f5549ac76ce8febeab816cec95588f37e21f1d2d31c9ec6c4bc52f2",
+    "bytes": 412445,
+    "decode": "passed"
+  }
+]

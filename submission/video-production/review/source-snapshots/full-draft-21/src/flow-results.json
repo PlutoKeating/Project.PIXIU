@@ -1,0 +1,28 @@
+{
+  "source": "raw/network/生命周期摘要晋升与复用-01.json",
+  "sha256": "f531b2f3b890613cf10e860e6081523c191c838b45b797e66bb579d3556e2205",
+  "cases": [
+    {
+      "tier": "SHORT_TERM",
+      "event": "TURN_END",
+      "summary": "家庭书架整理完成：科普书放在上层，工具书放在下层；下次整理先核对借出清单。",
+      "context_id": "ctx_01M223E82Z18TQ8N4A6HHA1HDG",
+      "knowledge_id": "knw_01M223E91DZBGTQBXZXPW6PGAX",
+      "evidence_id": "evd_01M223E91824RWG39V97ZEYVBP",
+      "title": "manual_config",
+      "promoted_count": 1,
+      "max_chars": 2000
+    },
+    {
+      "tier": "MID_TERM",
+      "event": "PRE_COMPRESS",
+      "summary": "家庭整理会话摘要：已完成书架分类，待办是周末归还借阅图书，并把清单保存到共享目录。",
+      "context_id": "ctx_01M223EAN4G4Z3PWPFV6PSBXHQ",
+      "knowledge_id": "knw_01M223EB015H21K31FEW9KQ5VE",
+      "evidence_id": "evd_01M223EAZYFARVG36CYNGC6DY3",
+      "title": "manual_config",
+      "promoted_count": 1,
+      "max_chars": 2000
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "video": "submission/video-production/renders/遗忘确认与边界-02.mp4",
+  "sha256": "e4d7cfa23c9e224b556a2987026b4f92e81c3b3659fcb256e595e6ef2721194c",
+  "local_frame": 100,
+  "global_frame": 13737,
+  "measure": {
+    "labels": [
+      573,
+      605,
+      33
+    ],
+    "confirm": [
+      664,
+      698,
+      35
+    ],
+    "cancel": [
+      649,
+      682,
+      34
+    ]
+  }
+}

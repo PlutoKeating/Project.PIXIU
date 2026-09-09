@@ -1,0 +1,19 @@
+{
+  "outputs": [
+    {
+      "video": "renders/原生环境-01.mp4",
+      "sha256": "e3c06a0eaff1078a6a0383659c48c40d2fdb788cbc2c3f100822575674573805",
+      "duration": "17.450667",
+      "size": "1126967",
+      "decode": "passed"
+    },
+    {
+      "video": "renders/录入与目录采集-01.mp4",
+      "sha256": "8ae03554ea0c043c5e87ff5ec2739df756659751e4f75b2e0748880951e5d243",
+      "duration": "38.058667",
+      "size": "2390562",
+      "decode": "passed"
+    }
+  ],
+  "scope": "仅指定章节；原配音与时间线不变；未听审，未全片放行"
+}
