@@ -19,7 +19,7 @@ if (PIXIU_VERSION=9.9.9 resolve_version) >/dev/null 2>&1; then
 fi
 
 grep -q 'PIXIU_ROOT}/VERSION' "${ROOT}/build/release/scripts/functions.sh"
-grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../../VERSION' "${ROOT}/frontend/cmake/Management.cmake"
+grep -q 'CMAKE_CURRENT_SOURCE_DIR}/../VERSION' "${ROOT}/frontend/cmake/Management.cmake"
 grep -qx 'version: @VERSION@' \
     "${ROOT}/backend/agent/pixiu/plugin.yaml.in"
 test ! -e "${ROOT}/backend/agent/pixiu/plugin.yaml"
