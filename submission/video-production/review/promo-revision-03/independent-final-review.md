@@ -8,7 +8,7 @@
 
 沿用 `../promo-revision-02/independent-final-review.md` 对未变镜头的审查：该轮已人工查看29镜头的58张中尾帧及全片225张每两秒采样。候选03本轮不是重新全片逐帧检查，而是直接从新MP4提取并人工查看13帧：f1570、f3165、f3400、f4770、f5010、f6400、f7470、f8300、f10750、f11000、f11250、f13400、f13492。
 
-帧号从0开始，时间为帧号÷30；精确帧可通过 `ffmpeg -ss <帧号/30> -i renders/演示视频-候选03.mp4 -frames:v 1 <输出.jpg>` 重现。临时复核帧存于 `/tmp/pixiu-final03/`，工程内另有 `frames/` 的导出帧及若干 `ProjImported-f*.png` 预览；本报告判定以MP4提帧为准。
+帧号从0开始，时间为帧号÷30；精确帧可通过 `ffmpeg -ss <帧号/30> -i renders/演示视频-候选03.mp4 -frames:v 1 <输出.jpg>` 重现。精确复核帧已归档于 `independent-frames/`，工程内另有 `frames/` 的导出帧及若干 `ProjImported-f*.png` 预览；本报告判定以MP4提帧为准。
 
 独立执行sha256和ffprobe，视频13493帧、449.766667秒，与29镜timeline一致。本目录technical.json的完整解码通过、源快照一致性以及ocr-hits.json空数组是制作方检测结果；本审查未重复全量解码，也不把OCR无命中等同于逐像素文案保证。
 
