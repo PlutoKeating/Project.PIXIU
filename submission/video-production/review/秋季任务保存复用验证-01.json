@@ -1,0 +1,10 @@
+{
+  "task_session": "f1cf364c-a676-405c-8864-b4a0d66de79d",
+  "reuse_session": "ab3218c1-1c19-486a-a50a-52dec11cb36b",
+  "stored_evidence_id": "evd_01M22B0S20WPHCY44J60ETGP5J",
+  "reused_knowledge_id": "knw_01M22B0S2378RFPM5DNSJZVT1N",
+  "artifact_four_lines_verified": true,
+  "native_final_citation_seen": "knw_01M22B0S2378RFPM5DNSJZVT1N",
+  "scope": "两轮原生任务操作后，在独立新原生会话显式检索复用；不是自动预取验证",
+  "network_search": "原生任务搜索失败并错误声称openkylin.com为官网；不得作为联网搜索成功证据。网关第三轮的真实搜索另有独立记录。"
+}

@@ -1,0 +1,45 @@
+{
+  "environment": "V11虚拟机已安装Agent网关；公开合成任务",
+  "request": {
+    "title": "新会话：复用阅读预算",
+    "model": "kylin-qwen-plus",
+    "prompt": "请调用 pixiu_memory_search 查询已保存的家庭阅读采购预算。告诉我科普书、工具书、画册各多少钱及合计，并标注记忆来源；只依据检索结果回答，不重新搜索网络。"
+  },
+  "status": "response_received",
+  "events": [
+    {
+      "event": "session_created",
+      "status": 201,
+      "session_id": "13c76197-5157-402b-b0e3-f57bc261dad2",
+      "recorded_at": 1788931653.914713
+    },
+    {
+      "event": "task_response",
+      "status": 200,
+      "session_id": "13c76197-5157-402b-b0e3-f57bc261dad2",
+      "elapsed_seconds": 9.569595575332642,
+      "response": {
+        "id": "chatcmpl-3c337d803d3a4e609ea18f652ebea",
+        "object": "chat.completion",
+        "created": 1788931653,
+        "model": "kylin-qwen-plus",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "根据 PIXIU 记忆检索结果：\n\n- 科普书：33元  \n- 工具书：39元  \n- 画册：28元  \n- 合计：100元  \n\n记忆来源：`knw_01M229EQC03MF2WGGA441FS152`（explicit memory，scope=shared:home）"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "total_tokens": 0
+        }
+      }
+    }
+  ],
+  "ssh_exit_code": 0
+}

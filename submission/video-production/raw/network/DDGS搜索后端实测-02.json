@@ -1,0 +1,4 @@
+{
+  "exit_code": 0,
+  "stdout": "{\"success\": true, \"data\": {\"web\": [{\"title\": \"开放麒麟 - 维基百科，自由的百科全书\", \"url\": \"https://zh.wikipedia.org/zh-hans/開放麒麟\", \"description\": \"开放麒麟（英语：openKylin），是由麒麟软件有限公司等软硬件企业、组织、科研院所等组成的一个开源发行版社区。其首个版本于2022年6月发布，采用5.15版本Linux内核。\", \"position\": 1}, {\"title\": \"openKylin - 开放麒麟\", \"url\": \"https://www.openkylin.top/\", \"description\": \"OpenAtom openKylin （简称“openKylin”） 是由开放原子开源基金会孵化及运营的开源项目，由基础软硬件企业、非营利性组织、社团组织、高等院校、科研机构和个人开发者共同创立，旨在以“为世界提供与人工智能技术深度融合的开源操作系统”为社区愿景，在开源、自愿、平等、协作的基础上，共同打造全球领先的智能操作系统开源根社区，推动Linux开源技术及其软硬件生态繁荣发展。\", \"position\": 2}, {\"title\": \"openKylin 开放麒麟社区官网 | 开源聚力，共创未来\", \"url\": \"https://www.openkylin.top/index-en.html\", \"description\": \"openkylin.top@gmail.com · openKylin Community Values Your Privacy\", \"position\": 3}]}}\n"
+}

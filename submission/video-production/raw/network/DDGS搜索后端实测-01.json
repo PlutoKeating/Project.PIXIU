@@ -1,0 +1,4 @@
+{
+  "exit_code": 0,
+  "stdout": "{\n  \"success\": false,\n  \"error\": \"No web search provider configured. Run `kylin-agent-runtime tools` to set one up.\"\n}\n"
+}

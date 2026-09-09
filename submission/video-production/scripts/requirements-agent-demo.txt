@@ -1,0 +1,5 @@
+# Optional search backend installed only in the V11 video demonstration runtime.
+# This does not change the released PIXIU package's dependency declaration.
+ddgs==9.16.0
+lxml==6.1.3
+primp==2.0.0

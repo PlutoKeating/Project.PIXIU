@@ -1,0 +1,16 @@
+{
+  "gateway_session": "36a5ba2d-1dfa-4ffa-a3eb-73ce0c9a4ce8",
+  "reuse_session": "13c76197-5157-402b-b0e3-f57bc261dad2",
+  "gateway_tools_verified": [
+    "terminal",
+    "write_file",
+    "read_file",
+    "web_search",
+    "pixiu_memory_remember"
+  ],
+  "artifact_four_lines_verified": true,
+  "official_site_search_result_verified": true,
+  "stored_evidence_id": "evd_01M22A280SFVS8V8XCCZ0T1ZCN",
+  "reuse_tool_contains_stored_evidence": true,
+  "limitation": "复用工具同时命中较早的相同预算，最终回复引用较早来源；不声称最终引用唯一指向第三轮。原生秋季任务另行取证。"
+}

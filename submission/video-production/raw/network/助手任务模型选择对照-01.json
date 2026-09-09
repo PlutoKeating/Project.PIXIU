@@ -1,0 +1,63 @@
+{
+  "records": [
+    {
+      "request": {
+        "model": "hermes-agent",
+        "messages": [
+          {
+            "role": "user",
+            "content": "请只回复：你好。"
+          }
+        ],
+        "stream": false
+      },
+      "response": {
+        "status": 502,
+        "body": {
+          "error": {
+            "message": "Kylin GenAI session initialization failed (10)",
+            "type": "kylin_genai_error"
+          }
+        }
+      },
+      "elapsed_seconds": 0.010946035385131836
+    },
+    {
+      "request": {
+        "model": "kylin-qwen-plus",
+        "messages": [
+          {
+            "role": "user",
+            "content": "请只回复：你好。"
+          }
+        ],
+        "stream": false
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "id": "chatcmpl-kylin-fde6ea762b35427eb404ae00aa032fa3",
+          "object": "chat.completion",
+          "created": 1788930840,
+          "model": "通义千问（Qwen-Plus-试用版）",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "你好。"
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      },
+      "elapsed_seconds": 1.1283504962921143
+    }
+  ]
+}

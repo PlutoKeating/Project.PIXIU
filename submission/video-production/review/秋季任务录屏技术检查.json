@@ -1,0 +1,29 @@
+{
+  "scope": "三段真实采样窗口；不覆盖每轮全部等待时长，不代表最终影片或听审",
+  "records": [
+    {
+      "directory": "raw/recordings/秋季助手任务-01",
+      "source_frame_count": 127,
+      "measured_capture_seconds": 75.14605257404037,
+      "video_seconds": "75.133333",
+      "video_bytes": "10213631",
+      "full_decode_passed": true
+    },
+    {
+      "directory": "raw/recordings/秋季助手任务-02-继续",
+      "source_frame_count": 111,
+      "measured_capture_seconds": 65.11427800997626,
+      "video_seconds": "65.100000",
+      "video_bytes": "8784470",
+      "full_decode_passed": true
+    },
+    {
+      "directory": "raw/recordings/秋季助手任务-03-新会话复用",
+      "source_frame_count": 69,
+      "measured_capture_seconds": 40.37956240796484,
+      "video_seconds": "40.366667",
+      "video_bytes": "5147721",
+      "full_decode_passed": true
+    }
+  ]
+}
