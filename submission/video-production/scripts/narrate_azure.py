@@ -4,6 +4,7 @@ import argparse
 import getpass
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import time
@@ -18,7 +19,9 @@ def digest(data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--shots', nargs='+')
-    parser.add_argument('--region', required=True)
+    parser.add_argument('--region', default=os.environ.get('SPEECH_REGION'))
+    parser.add_argument('--key-env', default='SPEECH_KEY', help='Environment variable containing the Speech key')
+    parser.add_argument('--check-cache', action='store_true', help='Check current narration assets without credentials or synthesis')
     parser.add_argument('--phrase', help='Synthesize only this short replacement phrase')
     parser.add_argument('--phrase-id', help='New asset folder for the replacement phrase')
     args = parser.parse_args()
@@ -31,7 +34,31 @@ def main():
         shots = [s for s in shots if s['id'] in args.shots]
     if args.phrase:
         shots = [{'id': args.phrase_id, 'narration': args.phrase}]
-    key = getpass.getpass('Speech key (hidden, memory only): ')
+    coverage = []
+    for shot in shots:
+        source_id = shot.get('audio_reuse', shot['id'])
+        request = {'text': shot['narration'], **settings}
+        request_hash = digest(json.dumps(request, ensure_ascii=False, sort_keys=True).encode())
+        audio = ROOT / 'raw/audio' / source_id / (request_hash[:12] + '.mp3')
+        meta_path = audio.with_suffix('.json')
+        ready = False
+        if audio.exists() and meta_path.exists():
+            meta = json.loads(meta_path.read_text())
+            ready = (meta.get('request_sha256') == request_hash
+                     and meta.get('audio_sha256') == digest(audio.read_bytes())
+                     and bool(meta.get('boundaries')))
+        coverage.append({'shot':shot['id'], 'source':source_id, 'ready':ready})
+    missing = [row['shot'] for row in coverage if not row['ready']]
+    if args.check_cache:
+        print(json.dumps({'shots':len(coverage), 'ready':len(coverage)-len(missing),
+                          'needs_synthesis':missing, 'coverage':coverage}, ensure_ascii=False, indent=2))
+        return
+    if not missing:
+        print('All requested narration assets match the current text and settings.', flush=True)
+        return
+    if not args.region:
+        parser.error('Provide --region or configure SPEECH_REGION for synthesis')
+    key = os.environ.get(args.key_env) or getpass.getpass('Speech key (hidden, memory only): ')
     config = sdk.SpeechConfig(subscription=key, region=args.region)
     config.set_speech_synthesis_output_format(sdk.SpeechSynthesisOutputFormat.Audio24Khz96KBitRateMonoMp3)
     config.set_property(sdk.PropertyId.SpeechServiceResponse_RequestWordBoundary, 'true')

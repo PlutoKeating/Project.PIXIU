@@ -13,7 +13,7 @@ export const hasCurrentScene = (id: string) => Boolean(scenes[id]);
 
 const Media: React.FC<{asset: Asset}> = ({asset}) => {
   const f = useCurrentFrame();
-  const scale = Math.min(1580 / asset.width, 660 / asset.height, 2.2);
+  const scale = Math.min(1580 / asset.width, 660 / asset.height, asset.width < 300 ? 3.2 : 2.2);
   const w = asset.width * scale, h = asset.height * scale;
   const enter = interpolate(f, [0, 16], [0, 1], {extrapolateRight:'clamp'});
   const style = {width:w, height:h, display:'block'};

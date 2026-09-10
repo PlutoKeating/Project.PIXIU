@@ -1,0 +1,177 @@
+{
+  "shots": 30,
+  "ready": 11,
+  "needs_synthesis": [
+    "s02",
+    "s03",
+    "s06",
+    "s11",
+    "s11b",
+    "s08",
+    "s12",
+    "s15",
+    "s16",
+    "s18",
+    "s20",
+    "s21",
+    "s22",
+    "s23",
+    "s13",
+    "s27",
+    "s28",
+    "s26",
+    "s29"
+  ],
+  "coverage": [
+    {
+      "shot": "s01",
+      "source": "s01",
+      "ready": true
+    },
+    {
+      "shot": "s02",
+      "source": "s02",
+      "ready": false
+    },
+    {
+      "shot": "s03",
+      "source": "s03",
+      "ready": false
+    },
+    {
+      "shot": "s04",
+      "source": "s04",
+      "ready": true
+    },
+    {
+      "shot": "s06",
+      "source": "s06",
+      "ready": false
+    },
+    {
+      "shot": "s11",
+      "source": "s11",
+      "ready": false
+    },
+    {
+      "shot": "s11b",
+      "source": "s11b",
+      "ready": false
+    },
+    {
+      "shot": "s07",
+      "source": "s07",
+      "ready": true
+    },
+    {
+      "shot": "s08",
+      "source": "s08",
+      "ready": false
+    },
+    {
+      "shot": "s09",
+      "source": "s09",
+      "ready": true
+    },
+    {
+      "shot": "s10",
+      "source": "s10",
+      "ready": true
+    },
+    {
+      "shot": "s12",
+      "source": "s12",
+      "ready": false
+    },
+    {
+      "shot": "s15",
+      "source": "s15",
+      "ready": false
+    },
+    {
+      "shot": "s14",
+      "source": "s14",
+      "ready": true
+    },
+    {
+      "shot": "s16",
+      "source": "s16",
+      "ready": false
+    },
+    {
+      "shot": "s17",
+      "source": "s17",
+      "ready": true
+    },
+    {
+      "shot": "s18",
+      "source": "s18",
+      "ready": false
+    },
+    {
+      "shot": "s19",
+      "source": "s19",
+      "ready": true
+    },
+    {
+      "shot": "s20",
+      "source": "s20",
+      "ready": false
+    },
+    {
+      "shot": "s21",
+      "source": "s21",
+      "ready": false
+    },
+    {
+      "shot": "s22",
+      "source": "s22",
+      "ready": false
+    },
+    {
+      "shot": "s23",
+      "source": "s23",
+      "ready": false
+    },
+    {
+      "shot": "s24",
+      "source": "s24",
+      "ready": true
+    },
+    {
+      "shot": "s05",
+      "source": "s05",
+      "ready": true
+    },
+    {
+      "shot": "s13",
+      "source": "s13",
+      "ready": false
+    },
+    {
+      "shot": "s27",
+      "source": "s27",
+      "ready": false
+    },
+    {
+      "shot": "s28",
+      "source": "s28",
+      "ready": false
+    },
+    {
+      "shot": "s26",
+      "source": "s26",
+      "ready": false
+    },
+    {
+      "shot": "s29",
+      "source": "s29",
+      "ready": false
+    },
+    {
+      "shot": "s30",
+      "source": "s01",
+      "ready": true
+    }
+  ]
+}

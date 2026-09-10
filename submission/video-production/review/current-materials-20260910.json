@@ -3,8 +3,8 @@
   "version": "0.1.12",
   "stage": "新版画面与文档复核",
   "current_scene_count": 18,
-  "asset_count": 50,
-  "current_scenes_sha256": "2cb653f28adced99b827f9f059a93663ee57e100cde19099e8f29ee02fa1b50a",
+  "asset_count": 51,
+  "current_scenes_sha256": "28f4f34f2c6829566b20198c5fa1701633c37dc3c149e23fe84da1625b10910d",
   "checks": {
     "typescript": "pass",
     "asset_digests": "pass",
@@ -15,18 +15,33 @@
     "presentation_pages": 18,
     "document_horizontal_bounds": "pass",
     "presentation_slideshow_start": "pass",
-    "presentation_embedded_media_import": "pass"
+    "presentation_embedded_media_import": "pass",
+    "current_visual_review_full_decode": "pass",
+    "timeline_pcm_regeneration": "真实片头/片尾原音复用、1.7增益、摘要和缺少音频时保留时间轴验证通过"
   },
   "visual_review": [
     "目录召回25秒画面",
     "审批后新会话结果，裁片起点38秒",
-    "技术方案31页预览"
+    "技术方案31页预览",
+    "18场景静音连续审阅388秒；每镜结果抽帧",
+    "更新跨端片段48–62秒、审批后片段38–48秒",
+    "紧凑授权与遗忘回执裁切及放大"
   ],
   "next_steps": [
-    "PPT嵌入视频连续播放检查：本机放映控制调用等待，媒体导入与独立解码已通过",
+    "PPT自动播放实机复测",
     "新版旁白合成",
     "实际字幕时间轴",
     "整片音画核对与独立终检",
     "最终四项作品装配"
-  ]
+  ],
+  "soundtrack_cache": {
+    "ready": 11,
+    "needs_synthesis": 19,
+    "shots": 30
+  },
+  "review_video": {
+    "path": ".runtime/current-all-scenes-review-v3.mp4",
+    "seconds": 388,
+    "sha256": "8707ae0cf699780b379a23fe12be9a16fecbc35d9b7d5c94dfb90ecbddcfc369"
+  }
 }

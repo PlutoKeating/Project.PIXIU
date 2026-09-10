@@ -17,6 +17,21 @@ import array
 ROOT = Path(__file__).resolve().parents[1]
 story = json.loads((ROOT / 'storyboard/shots.json').read_text())
 settings = json.loads((ROOT / 'storyboard/narration.json').read_text())
+volume = json.loads((ROOT / 'src/narration-volume.json').read_text())
+# Validate the entire requested soundtrack before replacing any playback asset.
+for shot in story['shots']:
+    source_id = shot.get('audio_reuse', shot['id'])
+    valid = []
+    for path in (ROOT / 'raw/audio' / source_id).glob('*.json'):
+        meta = json.loads(path.read_text())
+        if (meta.get('request', {}).get('text') == shot['narration']
+                and all(meta['request'].get(k) == v for k, v in settings.items())
+                and path.with_suffix('.mp3').exists()
+                and meta.get('audio_sha256') == hashlib.sha256(path.with_suffix('.mp3').read_bytes()).hexdigest()
+                and meta.get('boundaries')):
+            valid.append(path)
+    if len(valid) != 1:
+        raise RuntimeError(shot['id'] + ': need one verified current narration, got ' + str(len(valid)))
 fps = story['fps']
 start = 0
 timeline = []
@@ -77,10 +92,19 @@ for shot in story['shots']:
 
     assert all(0 <= cue['from'] < cue['to'] <= duration for cue in captions)
     output = ROOT / 'public/audio' / (source_id + '.mp3')
+    output.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(path.with_suffix('.mp3'), output)
+    prepared = ROOT / 'public' / volume['prepared_directory'] / (source_id + '.wav')
+    prepared.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(path.with_suffix('.mp3')),
+                    '-af', f'aformat=sample_rates=48000:channel_layouts=stereo,volume={volume["gain"]}',
+                    '-c:a', 'pcm_s16le', str(prepared)], check=True)
+    prepared_sha = hashlib.sha256(prepared.read_bytes()).hexdigest()
     timeline.append({**shot, 'from': start, 'duration': duration,
                      'audio': 'audio/' + output.name, 'audio_from': 15,
                      'audio_source': str(path.with_suffix('.mp3').relative_to(ROOT)),
+                     'prepared_audio': str(prepared.relative_to(ROOT / 'public')),
+                     'prepared_audio_sha256': prepared_sha, 'narration_gain': volume['gain'],
                      'speech_end_frame': end_frame, 'tail_frames': duration - end_frame,
                      'captions': captions})
     measurements.append({'shot': shot['id'], 'seconds': meta['duration_seconds'],

@@ -264,15 +264,15 @@
       "end": "current/bill-query-end.png",
       "width": 900,
       "height": 596,
-      "frames": 480,
+      "frames": 300,
       "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
-      "start_seconds": 8,
-      "duration_seconds": 16,
+      "start_seconds": 14,
+      "duration_seconds": 10,
       "speed": 1,
       "crop": "900:596:410:96",
       "source_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
-      "sha256": "c9e8552ab85f14bacfff79fa3e4821e122c2763f53599a0a70a26afced6ee779",
-      "end_sha256": "e10d7b73e2815b1158a1878c03b6ceabd21d4ea1cb465464d14cc1db6bbb1d9a"
+      "sha256": "129b287cee81605251540c7ebe0ae1a94e699d64a5b1cad7c2bca3130fd99aa2",
+      "end_sha256": "53e9fcafd2a05a7effec55010b2e79ff8e0c74bb479dd5472d407094c9caf0a3"
     },
     "bill-citation": {
       "kind": "video",
@@ -280,15 +280,15 @@
       "end": "current/bill-citation-end.png",
       "width": 760,
       "height": 640,
-      "frames": 360,
+      "frames": 300,
       "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
-      "start_seconds": 45,
-      "duration_seconds": 12,
+      "start_seconds": 47,
+      "duration_seconds": 10,
       "speed": 1,
       "crop": "760:640:330:98",
       "source_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
-      "sha256": "c97115387ba52e026e0428ffbb0ca986c52a947cc059ca59900396592e257d1b",
-      "end_sha256": "6929c7763544acb0d3ee7462356faa22e5de8b1eeb27c79a06f3acac2552c95d"
+      "sha256": "b3acc8c362487a3d38464e7e1f67c0c481d73140f2da216b121ce3d73a33779a",
+      "end_sha256": "e694815efec6f4b4df12b3d0123336af7e7ff314545c0f15260d39a27ebb796b"
     },
     "directory-query": {
       "kind": "video",
@@ -296,15 +296,15 @@
       "end": "current/directory-query-end.png",
       "width": 900,
       "height": 596,
-      "frames": 480,
+      "frames": 450,
       "source": "submission/video-production/raw/current-0.1.12/directory-recall-01.mp4",
-      "start_seconds": 8,
-      "duration_seconds": 16,
+      "start_seconds": 9,
+      "duration_seconds": 15,
       "speed": 1,
       "crop": "900:596:410:96",
       "source_sha256": "343679ab93559b575c001195074fcb3accf784654dfa5d0fc92a87d6eee0eb9f",
-      "sha256": "c908af33d16edb64042a051b3b8ddc58adb6b712af1437254dc282a6c492d2dc",
-      "end_sha256": "d21392d7f0d4736398cf26da81141d44ace9668fb7c16d0204632b3c8a74c8eb"
+      "sha256": "605f6e5e41319cc0446faae0272a9237c1e59e9d5372a3e2a531d2dfd99343dd",
+      "end_sha256": "85094ee814ab8d7befc76541e6a4205574a8daa925371a25be3161e28786924c"
     },
     "directory-approval": {
       "kind": "video",
@@ -344,15 +344,15 @@
       "end": "current/shared-query-end.png",
       "width": 900,
       "height": 596,
-      "frames": 660,
+      "frames": 420,
       "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
-      "start_seconds": 31,
-      "duration_seconds": 22,
+      "start_seconds": 48,
+      "duration_seconds": 14,
       "speed": 1,
       "crop": "900:596:410:96",
       "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
-      "sha256": "a45f7647dbe73e352ee488c8220f9df562a5a74379919187537bd3cf1edd9ad0",
-      "end_sha256": "9d35254cf97265d3ca0ab514e15aa8104265a9bccc25375daeb7c7d01b1e5ab9"
+      "sha256": "d8ca6d7e15c8e3e5468f61df8534d277640b03f77f9327755665e1c065c045cd",
+      "end_sha256": "fcff11c20190ccc41c8c46287a885739a481076233ff1233e8ede315676f3272"
     },
     "shared-citation": {
       "kind": "video",
@@ -392,15 +392,15 @@
       "end": "current/edit-change-end.png",
       "width": 620,
       "height": 398,
-      "frames": 690,
+      "frames": 270,
       "source": "submission/video-production/raw/current-0.1.12/current-edit-01.mp4",
-      "start_seconds": 20,
-      "duration_seconds": 23,
+      "start_seconds": 24,
+      "duration_seconds": 9,
       "speed": 1,
       "crop": "620:398:399:187",
       "source_sha256": "95f2dd07692a389a8c2c2d46dfa1e7ae8a5dcfd4a5e2683a725daa57a6fcca0e",
-      "sha256": "9086a5a7e6e4acc08b689be706af9ecefdc98786f2e8a2f936b493babd59859c",
-      "end_sha256": "73467f5025c43f00b810a019777b301624902d6e21408e8787faef949ebb2596"
+      "sha256": "f1bf3d13a1f56a5f652667e05dbe3a2a0c1722cd9367afe37ab9985d7919a969",
+      "end_sha256": "34323828631b39e64cfec4efa78664f7e8535a42b8bbdd9a35ef9c10072de0c4"
     },
     "outro-nav": {
       "kind": "image",
@@ -536,6 +536,21 @@
       "source": "docs/delivery/assets/operations/03-current-workflows/device-controls.png",
       "source_sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310",
       "sha256": "68cb7d63d998e6d05d4f01b685102348b77dd8d2a32a2b94332bc8a8871dff93"
+    },
+    "forget-confirmed": {
+      "kind": "image",
+      "src": "current/forget-confirmed.png",
+      "width": 148,
+      "height": 26,
+      "crop_box": [
+        0,
+        0,
+        148,
+        26
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/forget-completed.png",
+      "source_sha256": "ea871e6ec8c89f60d4b75ef323873c5dd16f1caf66d59dd62afc265d83d93584",
+      "sha256": "134843c6a38a535c8585fdc0c9623c51eeed67eb3b099d586564dacecf74d48e"
     }
   },
   "scenes": {
@@ -769,7 +784,7 @@
         "fraction": 0
       },
       {
-        "asset": "forget-completed",
+        "asset": "forget-confirmed",
         "label": "确认遗忘 1 条演示知识",
         "cue": "系统让知识",
         "fraction": 0.48

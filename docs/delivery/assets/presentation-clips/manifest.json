@@ -13,11 +13,11 @@
     "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
     "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
     "file": "shared-recall.mp4",
-    "start_seconds": 31,
-    "duration_seconds": 22,
+    "start_seconds": 48,
+    "duration_seconds": 14,
     "crop": "900:596:410:96",
     "speed": 1,
-    "sha256": "756d7db6c34e932004d4d3a4dc9d0515185072285d9b0b7a6af7248176957b1a"
+    "sha256": "c5170fecff26a006f3699703a3b372b764860e1e3c77de949d44df1bf0637838"
   },
   {
     "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",

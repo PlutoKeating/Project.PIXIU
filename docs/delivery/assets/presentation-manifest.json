@@ -103,7 +103,7 @@
   "inputs": [
     {
       "path": "build/release/scripts/build-presentation.py",
-      "sha256": "e5becf5615652ee53084cebc2bbb50bd86705870af08e5d0bb1aa032db23b95c"
+      "sha256": "6a2ffdde3f4d6e0acf4416896e83ae10c9fbb7eafd78076ad4b1a8ea863e84dd"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
@@ -151,11 +151,11 @@
     },
     {
       "path": "docs/delivery/assets/presentation-clips/manifest.json",
-      "sha256": "8bd0022cdb67fe9cd7aad8d57bd88afe54824cde737aeef9f1f4cd22a96999b7"
+      "sha256": "d02172f704f8c8f84918a4cb345969d4079ecc8c6d6e643c080d96b73482a137"
     },
     {
       "path": "docs/delivery/assets/presentation-clips/shared-recall.mp4",
-      "sha256": "756d7db6c34e932004d4d3a4dc9d0515185072285d9b0b7a6af7248176957b1a"
+      "sha256": "c5170fecff26a006f3699703a3b372b764860e1e3c77de949d44df1bf0637838"
     },
     {
       "path": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
@@ -172,6 +172,6 @@
   ],
   "output": {
     "path": "docs/delivery/assets/项目报告.pptx",
-    "sha256": "c90ff2c5b822999d12135c280c7235d05f175680b6208136969a78aaa2891451"
+    "sha256": "ae70e5a82d0d735b9b39e364d0183fd1fd7ae02e46d634262e5de40634d10637"
   }
 }

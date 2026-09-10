@@ -6,6 +6,8 @@
 
 2026-09-10 行为实拍环境补齐 V11 仓库的 `x11-utils` 7.7+6-ok1k0.1，通过真实 X11 公开演示窗口生成28秒使用记录。该工具是窗口行为统计的系统前提，安装方式同步写入部署指南。录制结束后已恢复两端助手共享设置及主机采集设置。图片裁切使用制作依赖 Pillow，裁片沿用 FFmpeg；产品源码与运行依赖此次按现有版本核对。
 
+配音准备：`python scripts/narrate_azure.py --check-cache` 按当前文案、音色配置、音频摘要和词边界核对可复用原音。合成时从本机 `SPEECH_KEY`、`SPEECH_REGION` 读取配置，也可用 `--key-env` 指定凭据变量名、用 `--region` 指定区域；交互运行沿用隐藏输入。凭据保存在进程内存中。`prepare:timeline` 会先核对整组原音，再从匹配的音频重建170%音量PCM文件，将来源和播放文件摘要写入时间轴。当前30镜已核对11镜原音，19镜进入新版合成清单。
+
 以下为本次修订前的成片记录。
 
 最终交付：`renders/演示视频-最终封面版.mp4`。用户提供的`raw/cover/approved-cover.png`替换第0帧并作为MP4内嵌封面；总计11706帧、390.2秒，完整AAC音轨直接复制。仅为替换第一帧重新编码首个250帧GOP，其余11456帧直接复制并核对解码像素一致。已验收剪辑工程保持原样。检查见`review/cover-technical.json`，复现工具为`scripts/set_video_cover.py`（`--video`、`--cover`、`--output`、`--report`），沿用FFmpeg与Python标准库，无新增依赖。

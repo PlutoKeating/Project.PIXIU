@@ -30,11 +30,11 @@ def still(name):
                     'source':src.relative_to(REPO).as_posix(),'sha256':digest(dst)}
 
 
-def detail(name, source, box):
+def detail(name, source, box, prefix="outro-"):
     src = IMAGES / (source+'.png')
-    dst = OUT / ('outro-'+name+'.png')
+    dst = OUT / (prefix+name+'.png')
     Image.open(src).crop(box).save(dst)
-    assets['outro-'+name] = {'kind':'image','src':'current/'+dst.name,
+    assets[prefix+name] = {'kind':'image','src':'current/'+dst.name,
         'width':box[2]-box[0],'height':box[3]-box[1], 'crop_box':box,
         'source':src.relative_to(REPO).as_posix(),'source_sha256':digest(src),'sha256':digest(dst)}
 
@@ -63,15 +63,15 @@ for name in ['shared-workspace','sdk-version','directory-folder','directory-reca
              'behavior-enabled','behavior-demo-window','behavior-source-body']:
     still(name)
 for args in [
-    ('bill-query','current-bill-recall-01',8,16,'900:596:410:96'),
-    ('bill-citation','current-bill-recall-01',45,12,'760:640:330:98'),
-    ('directory-query','directory-recall-01',8,16,'900:596:410:96'),
+    ('bill-query','current-bill-recall-01',14,10,'900:596:410:96'),
+    ('bill-citation','current-bill-recall-01',47,10,'760:640:330:98'),
+    ('directory-query','directory-recall-01',9,15,'900:596:410:96'),
     ('directory-approval','dreaming-approve-01',0,4,'880:620:270:108'),
     ('updated-query','dreaming-updated-recall-01',38,10,'900:596:410:96'),
-    ('shared-query','shared-recall-01',31,22,'900:596:410:96'),
+    ('shared-query','shared-recall-01',48,14,'900:596:410:96'),
     ('shared-citation','shared-source-01',0,8,'760:640:330:98'),
     ('manual-form','current-manual-01',23,12,'550:328:434:220'),
-    ('edit-change','current-edit-01',20,23,'620:398:399:187'),
+    ('edit-change','current-edit-01',24,9,'620:398:399:187'),
 ]:
     clip(*args)
 
@@ -87,6 +87,8 @@ for args in [
     ('devices','device-controls',(0,0,1044,181)),
 ]:
     detail(*args)
+
+detail('forget-confirmed','forget-completed',(0,0,148,26),prefix='')
 
 # Each phrase anchors a visual change to the measured narration. Fractions are
 # used by the separate silent visual review until matching speech is prepared.
@@ -106,7 +108,7 @@ scenes = {
  's19':[('device-controls','查看可信设备与配对入口',None,0)],
  's20':[('shared-settings','选择家庭共享空间',None,0),('shared-query','换一台设备，继续查询约定','换到客厅',.26),('shared-citation','打开同一条记忆的来源','它找回',.73)],
  's23':[('shared-settings','读取范围与保存位置分别设置',None,0),('device-controls','选择参与协作的设备','通过共享设置',.56)],
- 's24':[('forget-target','预览并核对目标与版本',None,0),('forget-completed','确认遗忘 1 条演示知识','系统让知识',.48)],
+ 's24':[('forget-target','预览并核对目标与版本',None,0),('forget-confirmed','确认遗忘 1 条演示知识','系统让知识',.48)],
  's26':[('brief','近期知识与当天采集简报',None,0)],
  's27':[('sdk-version','桌面与后端版本一致',None,0),('desktop-shortcut','配置日常桌面使用方式','打开设置',.35)],
 }

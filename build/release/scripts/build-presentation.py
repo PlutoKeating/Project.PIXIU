@@ -128,7 +128,7 @@ def slide(title, sub, chapter, shots, takeaway):
     text(s, takeaway, .64, 6.85, 11.5, .4, 16, BLUE, True)
     text(s, f'{n:02d}', 12.18, 6.85, .5, .35, 14, MUTED, align=PP_ALIGN.RIGHT)
     # A short whole-slide fade keeps navigation calm. Live demonstrations use
-    # the standard embedded media player, triggered by the presenter.
+    # the standard embedded media player, started when the slide appears.
     tr = OxmlElement('p:transition')
     tr.set('spd', 'med')
     tr.append(OxmlElement('p:fade'))
@@ -152,7 +152,9 @@ def movie(s, name, poster, x, y, w, h):
     rect(s, x-.05, y-.05, w+.1, h+.1, WHITE, LINE)
     s.shapes.add_movie(str(p), Inches(x+(w-dw)/2), Inches(y+(h-dh)/2), Inches(dw), Inches(dh),
                        poster_frame_image=str(poster_path), mime_type='video/mp4')
-    text(s, '▶ 点击画面播放 · 真实操作原速片段', x, y+h+.12, w, .4, 12, BLUE)
+    for condition in s._element.xpath('.//p:video/p:cMediaNode/p:cTn/p:stCondLst/p:cond'):
+        condition.set('delay', '0')
+    text(s, '▶ 进入本页自动播放 · 真实操作原速片段', x, y+h+.12, w, .4, 12, BLUE)
 
 
 def prepare_clips():
@@ -160,7 +162,7 @@ def prepare_clips():
     out.mkdir(exist_ok=True)
     edits = [
         ('dreaming-approve-01.mp4', 'dreaming-approval.mp4', 0, 4, '880:620:270:108'),
-        ('shared-recall-01.mp4', 'shared-recall.mp4', 31, 22, '900:596:410:96'),
+        ('shared-recall-01.mp4', 'shared-recall.mp4', 48, 14, '900:596:410:96'),
         ('shared-source-01.mp4', 'shared-source.mp4', 0, 8, '760:640:330:98'),
     ]
     records = []
