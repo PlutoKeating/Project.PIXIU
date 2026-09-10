@@ -338,7 +338,11 @@ class SqliteKnowledgeRepo(KnowledgeRepository):
                 ),
             )
 
-            # 同一事务内写证据关联
+            # 保存完整快照：同步胜出的分支不能继承本地失败分支的来源。
+            # 原始 evidence 仍保留；这里只替换当前知识的引用关系。
+            await self._db.execute(
+                "DELETE FROM knowledge_evidence WHERE knowledge_id = ?", (item.id,)
+            )
             if item.evidence_ids:
                 await self._db.executemany(
                     "INSERT OR IGNORE INTO knowledge_evidence (knowledge_id, evidence_id) VALUES (?, ?)",

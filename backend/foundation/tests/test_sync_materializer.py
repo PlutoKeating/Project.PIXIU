@@ -35,6 +35,7 @@ from backend.foundation.sync import (
     SyncService,
 )
 from backend.foundation.sync.materializer import FoundationMaterializer
+from backend.foundation.sync.models import SyncRecord
 
 PASSPHRASE = "phase3-materializer-passphrase"
 NOW = 2_000_000_000
@@ -90,6 +91,38 @@ async def _node(
         materializer=materializer,
     )
     return service, store, db
+
+
+@pytest.mark.asyncio
+async def test_replaced_snapshot_does_not_attach_late_losing_branch_evidence(tmp_path):
+    _, store, db = await _node(tmp_path, "replaced.db", "receiver", materialize=False)
+    try:
+        repo = SqliteKnowledgeRepo(db)
+        materializer = FoundationMaterializer(
+            evidence_repo=SqliteEvidenceRepo(db), knowledge_repo=repo,
+            preference_repo=SqlitePreferenceRepo(db), sync_store=store,
+        )
+        evidence = Evidence(
+            id="evd_" + "L" * 26, source_type=SourceType.MANUAL_CONFIG,
+            raw={"text": "losing branch"}, scope="shared:home", created_at=NOW,
+        )
+        item = KnowledgeItem(
+            id="knw_" + "L" * 26, kind=KnowledgeKind.FACT,
+            title="branch", scope="shared:home", created_at=NOW,
+            updated_at=NOW, evidence_ids=[evidence.id],
+        )
+        def record(entity, payload):
+            return SyncRecord(entity=entity, payload=payload.model_dump(mode="json"),
+                              ts=NOW, op_id="sync_" + "L" * 26)
+        await materializer(record("knowledge:" + item.id, item))
+        assert await store.list_meta_keys("sync_pending_evidence:")
+        await materializer(record("knowledge:" + item.id,
+                                  item.model_copy(update={"version": 2, "evidence_ids": []})))
+        await materializer(record("evidence:" + evidence.id, evidence))
+        assert (await repo.get(item.id)).evidence_ids == []
+        assert await store.list_meta_keys("sync_pending_evidence:") == []
+    finally:
+        await db.close()
 
 
 @pytest.mark.asyncio

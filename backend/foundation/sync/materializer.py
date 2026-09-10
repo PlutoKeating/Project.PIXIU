@@ -120,6 +120,8 @@ class FoundationMaterializer:
         ]
         missing_evidence = set(item.evidence_ids) - set(available_evidence)
         if self._sync_store is not None:
+            # Pending links belong to the selected snapshot, not an older branch.
+            await self._clear_pending_for_knowledge(item.id)
             for evidence_id in item.evidence_ids:
                 key = _pending_evidence_key(evidence_id, item.id)
                 if evidence_id in missing_evidence:

@@ -411,7 +411,7 @@ sync/
 knowledge op；否则 MERGE 会把仲裁前的新输入广播出去，导致发送端视图与 oplog 分叉。
 当 knowledge 引用的 evidence 尚未到达时，物化器以 `sync_meta` 的逐引用键持久记录，
 先保存无悬空外键的知识；evidence 后续到达后补写 `knowledge_evidence` 并删除待办键。
-墓碑会清除该知识的待补键，防止迟到 evidence 重新挂接已遗忘条目。
+胜出快照先清除旧分支的待补键；仓储保存时事务性替换 knowledge_evidence 引用关系，避免本地失败分支来源混入最终记录。原 evidence 本身保留。墓碑也会清除该知识的待补键，防止迟到 evidence 重新挂接已遗忘条目。
 
 
 **安全与运行边界**：

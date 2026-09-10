@@ -81,6 +81,26 @@ def _knw(**kwargs) -> KnowledgeItem:
 # ═══════════════════════════════════════════════════════
 
 @pytest.mark.asyncio
+async def test_saved_snapshot_replaces_branch_citations_without_deleting_evidence(repo):
+    kr, er, _ = repo
+    evidence = [
+        Evidence(id=_evd_id(tag), source_type=SourceType.MANUAL_CONFIG,
+                 raw={"text": tag}, scope="shared:home", created_at=NOW)
+        for tag in ("original", "loser", "winner")
+    ]
+    for entry in evidence:
+        await er.save(entry)
+    await kr.save(_knw(evidence_ids=[evidence[0].id, evidence[1].id]))
+    await kr.save(_knw(version=2, evidence_ids=[evidence[0].id, evidence[2].id]))
+    assert set((await kr.get(_id("main"))).evidence_ids) == {
+        evidence[0].id, evidence[2].id,
+    }
+    assert await er.get(evidence[1].id) is not None
+    await kr.save(_knw(version=3, evidence_ids=[]))
+    assert (await kr.get(_id("main"))).evidence_ids == []
+
+
+@pytest.mark.asyncio
 async def test_reviewed_merge_preserves_evidence_and_removes_duplicate_search_hits(repo):
     kr, er, _ = repo
     evidence = Evidence(id=_evd_id("merge"), source_type=SourceType.MANUAL_CONFIG,
