@@ -1,4 +1,26 @@
+<div align="center">
+
 # PIXIU · 貔貅
+
+### 面向银河麒麟 OS Agent 的去中心化分布式记忆系统
+
+*聚财守忆 —— 让每一台设备的记忆，彼此相通。*
+
+<br/>
+
+[![Kylin OS](https://img.shields.io/badge/Kylin%20OS-V11-DA291C?style=flat-square&logo=linux&logoColor=white)](https://www.kylinos.cn/)
+[![KylinSDK](https://img.shields.io/badge/KylinSDK-V3.0-0066CC?style=flat-square)](docs/kylin_sdk_docs/README.md)
+[![Engine](https://img.shields.io/badge/Engine-Python%203.10%20%2B%20C%2B%2B-3776AB?style=flat-square&logo=python&logoColor=white)](backend/engine/docs/ARCHITECTURE.md)
+[![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
+[![Frontend](https://img.shields.io/badge/Frontend-Qt5%20%2F%20UKUI-41CD52?style=flat-square&logo=qt&logoColor=white)](frontend/docs/ARCHITECTURE.md)
+[![Latency](https://img.shields.io/badge/检索延迟-%E2%89%A4500ms-success?style=flat-square)](docs/AcceptanceTestSpecification.md)
+[![Status](https://img.shields.io/badge/status-交付版-blue?style=flat-square)](docs/DEVELOPMENT_PLAN.md)
+
+[总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API 规格](docs/API.md) · [验收规范](docs/AcceptanceTestSpecification.md) · [赛题原文](docs/OriginProblemDescription.md)
+
+</div>
+
+---
 
 PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、复用跨会话知识、查看信息来源，并在可信设备之间共享记忆。
 
