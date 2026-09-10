@@ -56,5 +56,11 @@
         }
       ]
     }
-  ]
+  ],
+  "shared_page_identity_check": {
+    "result": "pass",
+    "slide12_xml_sha256": "69346b65c83726d67b1d4270851ece35c4614652f88cb2a34997cdbac4c5e714",
+    "embedded_animation_sha256": "ed410c632cc962995dd24c2a0a42d12d968a52ca86d27e10892ce38d8d81bfba",
+    "method": "对比麒麟机上两次播放检查所用PPT；第12页XML与内嵌动画逐字节一致"
+  }
 }
