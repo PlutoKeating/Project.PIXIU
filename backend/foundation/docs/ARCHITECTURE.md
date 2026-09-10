@@ -466,41 +466,12 @@ scope 隔离正确率；`SyncBenchmark`（两节点 CRDT 收敛率 + 同步耗�
 | 开发计划 | `docs/DEVELOPMENT_PLAN.md` |
 | API 规格 | `docs/API.md` |
 
-## 2026-09-10 助手记忆范围
+## 文档与后台整理
 
-`GET/PUT /agent/settings` 读取/保存 include_capture（默认 true）、shared_scopes（默认空数组，仅 shared:*）、write_scope（默认 null，沿用当前 Agent）。设置保存于本机安全偏好，不随记忆共享同步。`POST /agent/context` 的可选 use_settings 默认 false；Agent 设置为 true 时，默认个人 user:default/user:local 可读取授权采集，另外查询用户选择的共享空间，返回 read_scopes。自定义个人范围保持隔离。显式记忆工具按 write_scope 保存，普通会话保存范围不变；设置页面分别控制读取与保存，不迁移已有数据。不新增依赖或数据库 schema。
+- `documents/` 使用包内 Kreuzberg、Pillow 和 openpyxl 解码文本、PDF 和 Office，保留文字、图像、图表与来源位置。
+- 文档引用有效期为 24 小时，按块读取；当前模型能力决定图像内容的读取范围。
+- schema 15 保存 `dreaming_plans`；公共接口提供计划提交、读取和桌面审批。
+- `dreaming_progress` 报告处理进度，`dreaming_review` 通知待审批计划；页面按事件自动更新。
+- 同步保存完整正文和来源快照，更新时替换来源关联；遗忘传播删除状态并清理检索向量。
 
-## 2026-09-10 偏好与账单使用
-
-普通 CONVERSATION 从用户原话提取输出风格，不从助手回答反向推断；沿用稳定偏好 ID、版本和历史。Agent 上下文返回 preferences 并优先放入当前有效回答风格；首次会话预取未完成时在既有 HTTP 超时内读取当前问题，避免漏掉已保存偏好。金额查询按账单明细类别/标签及日期筛选，汇总同范围的多份有效账单；指定类别没有记录时不再退回整份总额。未改变依赖和数据库 schema。
-
-人工同步冲突解决时，SyncService 将已观察的分支时钟并入本地裁决操作，再解除实体阻塞。阶段记忆由既有 FlowStore 提供列表，用户保留经敏感检查进入长期知识及共享同步。BehaviorCollector 在 flush 时累计未切换的当前应用，并通过已有采集回调进入日志/日报。
-
-会话来源使用既有 memory_contexts 持久化 MEMORY_SOURCES 引用事件，保存知识/证据 ID 和轮次，不保存上下文正文。只有 consumed 的引用返回给桌面；查询时重新核对当前授权、有效知识和证据敏感度。
-
-账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
-
-
-### 文档接入（2026-09-10）
-
-`documents/` 负责无模型解码与私有暂存，`api/documents.py` 提供登记、描述、分块读取和撤销。schema v14 增加 document_inputs；该表不参与共享同步、知识检索和阶段记忆列表。内容保留源版本与位置，解码警告不允许被理解为全文件成功。Office/PDF 使用固定 Kreuzberg 4.10.3（third_party/kreuzberg）；PDFium 和本地库由 wheel 携带，全程 headless，显式禁用 OCR、模型下载和缓存。文本与图片分别交给当前模型；不执行宏、公式或外链；正式目录装配已调用受控 dreaming，目录授权复核与暂存引用撤销贯穿读取和保存。
-
-后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
-
-XLSX 补充适配复用固定 openpyxl 3.1.5 与 Pillow 12.1.1：读取嵌入图片、公式表达式、批注、链接文本和图表结构/数据引用，补全 Kreuzberg 表格提取未覆盖的内容；不执行公式、不访问链接、不保存或修改源工作簿。依赖及 et-xmlfile 一同进入离线 wheel 锁。生成的混合工作簿测试覆盖图片、公式、批注、图表标题与数据引用。
-
-2026-09-10（0.1.10 R2）：统一文档图片适配复用已锁定且随包提供的 Pillow，支持 PNG/JPEG/WebP/BMP/TIFF/GIF，包含多页/多帧与方向校正；Office 内嵌位图沿相同路径处理。损坏/不支持的图像显式报告未完整读取，OCR 不参与知识解码。附件选择过滤同步更新，无新增依赖。20 项真实格式/图片内容测试及 3 项 API/MCP 检查通过；真实模型与最终包验收仍待完成。
-
-2026-09-10：文档支持的记忆更正沿 `/memory/update`，body 为 content 与 document_sources 时仍执行账单明细更正，保留原始文档依据。修正“不是旧金额，是新金额”的否定金额误匹配。无新依赖或安装路径变化。dreaming 执行器的逐方案宿主审批不等于用户审批 UI 已完成。
-
-2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并实现见下文最新记录。
-
-2026-09-10：PDF 解码保留每一页的完整渲染图像及可提取文字，避免含文字的矢量图表页面被当作纯文本而漏读。复用包内 Kreuzberg/PDFium 和已锁定 Pillow，全程 headless、无 OCR；无多模态能力时仍只能读取文字，并报告未读取的页面图像。21 项文档解码测试通过，包括真实 PDF 文字与矢量图像像素检查。
-
-2026-09-10：Word/PPT 原生图表使用 documents/office_charts.py 补充适配，保留图表标题、系列/分类关系、缓存数值及公式引用；主文档、图片及备注仍复用 Kreuzberg。XML 仅作为模型读取的数据，不执行公式、不打开嵌入工作簿、不访问外链。无新增依赖，现有后端目录打包与 CI 测试入口覆盖新模块。23 项解码测试通过；这不表示所有 Office 绘图或真实模型场景已验收。
-
-2026-09-10：受审批合并的底层接口 `KnowledgeService.merge` / `KnowledgeRepository.merge_if_versions` 已实现：固定私人范围、整批 ACTIVE 版本条件更新、保留所有来源证据与实体关联、旧记录 SUPERSEDED 并移出全文检索，目标重新向量化并删除旧记录生产向量。嵌入失败发生在知识更新前；向量存储与 SQLite 不构成跨组件事务。50 项知识服务/仓储测试通过。API、模型工具与桌面审批已接线，真实模型同包验收未完成。无新依赖/schema，沿用现有后端目录打包和 CI 测试入口。
-
-2026-09-10：Dreaming 合并已接入方案 API、MCP 和桌面审批。模型必须先读取全部目标，merge_ids 与冻结版本进入持久方案；桌面展示全部原记录与合并结果，用户批准后执行私人范围合并。旧记录转为 SUPERSEDED，来源保留，生产向量清理。模型工具不提供批准入口。无新增依赖、schema 或源目录变化，已有 CMake/宿主导出清单包含审批组件。真实模型、V11 同包验收尚未完成。
-
-2026-09-10：实际使用的记忆引用增加 `GET /agent/citations/{context_id}/{knowledge_id}`。只读取已消费、未过期的 MEMORY_SOURCES 记录，重新检查知识 ACTIVE 状态、当前读取授权及证据敏感级别，返回当时引用的证据与版本信息。trace 上下文附加 pixiu://citation 链接并遵守原字符预算，普通无记忆回答不增加链接。桌面消息链接处理尚未接通；不能宣称回答内查看已经完成。无新增依赖、数据库或构建输入。
+当前验证结果见[测试报告](../../../docs/delivery/TEST_REPORT.md)。

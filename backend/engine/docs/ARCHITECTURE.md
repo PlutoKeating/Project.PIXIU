@@ -263,12 +263,11 @@ class SecurityService:
 | KylinSDK OCR | `docs/kylin_sdk_docs/9_AI_SDK/9.4.1_OCR.md` |
 | KylinSDK 文本生成 | `docs/kylin_sdk_docs/9_AI_SDK/9.5.1_Text_Generation.md` |
 
-## 2026-09-10 偏好与账单使用
+## 当前记忆处理
 
-普通 CONVERSATION 从用户原话提取输出风格，不从助手回答反向推断；沿用稳定偏好 ID、版本和历史。Agent 上下文返回 preferences 并优先放入当前有效回答风格；首次会话预取未完成时在既有 HTTP 超时内读取当前问题，避免漏掉已保存偏好。金额查询按账单明细类别/标签及日期筛选，汇总同范围的多份有效账单；指定类别没有记录时不再退回整份总额。未改变依赖和数据库 schema。
+- 对话从用户原话提取偏好，保存版本并提供给后续会话。
+- 账单按类别、月份和多份记录汇总，单项更正保留其余明细及来源。
+- 更正通过版本检查保存；合并支持私人范围、来源保留、旧记录退出检索和向量更新。
+- 模型提交更正或合并计划，桌面批准后由公共服务执行。
 
-ConflictService 提供 review_candidates/resolve_manual：按当前同范围实体冲突返回候选，校验用户看到的全部版本，保留选择并将其余候选标记 SUPERSEDED，复用既有知识物化写入。审计 source=manual 表示人工已确认。
-
-多模态知识草稿由 backend/agent/runtime/image_draft.py 通过模型服务产生，用户确认后 MANUAL_CONFIG connector 保留原图到证据顶层；Structurer 不把图片加入知识正文。expense_draft 仅保留聊天金额更正逻辑，不从 OCR 文本推断知识。
-
-2026-09-10：受审批合并的底层接口 `KnowledgeService.merge` / `KnowledgeRepository.merge_if_versions` 已实现：固定私人范围、整批 ACTIVE 版本条件更新、保留所有来源证据与实体关联、旧记录 SUPERSEDED 并移出全文检索，目标重新向量化并删除旧记录生产向量。嵌入失败发生在知识更新前；向量存储与 SQLite 不构成跨组件事务。50 项知识服务/仓储测试通过。API、模型工具与桌面审批的合并接线尚未完成，不能据此宣称 Dreaming 合并可供用户使用。无新依赖/schema，沿用现有后端目录打包和 CI 测试入口。
+当前验证结果见[测试报告](../../../docs/delivery/TEST_REPORT.md)。

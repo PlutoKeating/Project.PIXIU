@@ -1,158 +1,39 @@
-<div align="center">
-
 # PIXIU · 貔貅
 
-### 面向银河麒麟 OS Agent 的去中心化分布式记忆系统
+PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、复用跨会话知识、查看信息来源，并在可信设备之间共享记忆。
 
-*聚财守忆 —— 让每一台设备的记忆，彼此相通。*
+当前版本：[0.1.12](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.12)，提供 amd64 单一安装包。
 
-<br/>
+## 日常使用
 
-[![Kylin OS](https://img.shields.io/badge/Kylin%20OS-V11-DA291C?style=flat-square&logo=linux&logoColor=white)](https://www.kylinos.cn/)
-[![KylinSDK](https://img.shields.io/badge/KylinSDK-V3.0-0066CC?style=flat-square)](docs/kylin_sdk_docs/README.md)
-[![Engine](https://img.shields.io/badge/Engine-Python%203.10%20%2B%20C%2B%2B-3776AB?style=flat-square&logo=python&logoColor=white)](backend/engine/docs/ARCHITECTURE.md)
-[![Foundation](https://img.shields.io/badge/Foundation-FastAPI%20%2B%20SQLite-009688?style=flat-square)](backend/foundation/docs/ARCHITECTURE.md)
-[![Frontend](https://img.shields.io/badge/Frontend-Qt5%20%2F%20UKUI-41CD52?style=flat-square&logo=qt&logoColor=white)](frontend/docs/ARCHITECTURE.md)
-[![Latency](https://img.shields.io/badge/检索延迟-%E2%89%A4500ms-success?style=flat-square)](docs/AcceptanceTestSpecification.md)
-[![Status](https://img.shields.io/badge/status-交付版-blue?style=flat-square)](docs/DEVELOPMENT_PLAN.md)
+- 在会话中说明目标，添加文本、PDF 或 Office 资料。
+- 助手整理内容、保存记忆并主动报告进度。
+- 在新会话中查询过去的信息，点击回答来源阅读原文。
+- 审批更正计划，管理偏好、目录权限与可信设备。
+- 设备联网后自动同步共享资料，软件更新保留已有数据。
 
-[总体架构](docs/ARCHITECTURE.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [API 规格](docs/API.md) · [验收规范](docs/AcceptanceTestSpecification.md) · [赛题原文](docs/OriginProblemDescription.md)
+## 已验证结果
 
-</div>
+0.1.12 已通过通用构建、麒麟原生安装、系统双 SDK 调用、发布签名、升级与自动恢复。三台独立 V11 虚拟机完成共享、断连与并发更正，恢复后完整记录一致。
 
----
+详细版本和测试范围见[测试报告](docs/delivery/TEST_REPORT.md)。
 
-## 这是什么
+## 源码结构
 
-**PIXIU** 是面向银河麒麟桌面操作系统 OS Agent 的**记忆优化与高效应用解决方案**，参赛于麒麟软件《OSAgent 记忆优化及高效应用研究》赛题。
+| 目录 | 职责 |
+|---|---|
+| `frontend/` | 桌面、工作区、消息呈现和宿主补丁 |
+| `backend/engine/` | 知识、偏好、冲突和安全 |
+| `backend/foundation/` | API、文档解码、存储、检索和同步 |
+| `backend/agent/` | Agent 记忆适配、文档工具和后台整理 |
+| `backend/platform/` | 启动、升级与数据迁移 |
+| `tests/acceptance/` | 跨模块场景验证 |
+| `build/release/` | 构建、打包、发布和材料导出 |
+| `third_party/` | 固定版本上游与系统 SDK |
+| `docs/` | 使用、设计、开发和测试文档 |
 
-我们把目光投向**居家 / 办公的多用户协作场景**：你在书房问的问题、客厅大屏记下的待办、办公电脑沉淀的工作流——本应彼此相通，却被困在一台台孤立的设备里。
+## 文档
 
-PIXIU 构建了一张**无中心节点的分布式记忆网络**，让多设备之间的知识与偏好自由共享、自动同步，并以**神经-符号混合检索**在 500ms 内给出可追溯的精准答案。
+[用户手册](docs/delivery/USER_MANUAL.md) · [安装指南](docs/delivery/DEPLOYMENT_GUIDE.md) · [总体架构](docs/ARCHITECTURE.md) · [API](docs/API.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [发布记录](docs/RELEASE_0_1_10_COMPLETION_PLAN.md) · [交付要求](docs/DELIVERY_PLAN.md)
 
-> 全程依托现有 OS Agent 基础架构，调用银河麒麟国产桌面操作系统 **KylinSDK**（embedding / OCR / 桌面环境）进行端侧开发，国产化、可离线、轻量化。
-
-当前正式版本为 [0.1.12](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.12)，提供银河麒麟 V11 amd64 单一安装包及签名校验文件。通用 CI、麒麟原生安装与双 SDK 检查已通过；多模态验证按本次发布范围暂缓。完整验收状态见 [发布记录](docs/RELEASE_0_1_10_COMPLETION_PLAN.md)。
-
-## 典型应用背景
-
-> [!IMPORTANT]
-> 记忆不该被一台台设备割裂。下面这个再普通不过的周末，正是 PIXIU 想要改变的日常。
-
-**周六上午，书房。** 林先生是一名在家办公的设计师，家里有三台跑着银河麒麟的设备：书房的工作站、客厅的一体机、还有一台随身的麒麟笔记本。过去，每台设备的 OS Agent 都像一个"失忆"的助手——在书房交代过的事，换到客厅就得从头再说一遍。
-
-**上个月的某天**，林太太用微信发来一份家庭支出文字清单。林先生让书房工作站的 OS Agent 把清单记到已授权的家庭共享空间。PIXIU 在后台默默完成了一整套动作：由当前聊天模型理解清单文字 → 后端引擎清洗、标准化并做敏感度评分 → 抽取"国家电网""新奥燃气"等实体并挂载到"水电燃气"类目 → 生成端侧向量写入长期记忆。**林先生什么都没多做，一条结构化、可检索、可追溯的知识就这样沉淀了下来**——而且通过去中心化网络，悄悄同步到了客厅一体机和笔记本上。
-
-**今天下午，客厅。** 林先生靠在沙发上，突然想核对一笔开销，却只记得模糊的片段。他按下全局快捷键，PIXIU 的统一会话窗口随即出现，他随口一问：
-
-> 「我们好像在水电燃气方面花了一些钱，花了多少钱来着？」
-
-助手找回清单后回答：*"2026 年 4 月，你们在水电燃气方面共支出 434.50 元，其中电费 210 元、水费 68.50 元、燃气费 156 元。"* 点击回答中的来源链接，就能回溯到最初的清单原文。他没有打开任何文件管理器、没有翻聊天记录、更没有逐条加总——**系统替他记住了，也替他算好了**。
-
-**几分钟后**，他想起燃气费记错了，便补了一句"燃气费不是 156，是 186"。PIXIU 的冲突仲裁模块自动识别出与旧记忆的矛盾，以新版本为准，同时完整保留了修改痕迹。临睡前他又说："忘记那张 4 月的支出清单吧。"——系统先展示目标和范围，确认后让知识失效并清理检索向量，再向可信设备传播共享删除状态。
-
-**这一切，发生在三台设备之间，却像在和同一个懂你的助手对话。** 记忆数据无需云端
-账号、保留在可信设备中，断网时仍可写入与检索；联网推理由系统麒灵模型或用户选择的
-官方服务完成。这就是 PIXIU 想带给每一位麒麟用户的体验——**让设备彼此相通，让记忆为你所用**。
-
-## 核心亮点
-
-- **去中心化记忆网络** — 每台设备对等运行、无中心服务器；设备配对建立信任后，记忆经 Gossip 实时推送 + 反熵周期对账扩散全网，用 CRDT 自动合并并发修改，断网各自可用、重连自动收敛。
-- **多源融合接入** — 工具执行结果、用户行为、手动配置和文档统一接入，自动清洗、标准化与质量校验。
-- **偏好动态捕捉** — 操作习惯、输出风格、安全策略自动提取，版本化管理，跨场景适配与回溯。
-- **神经-符号混合检索** — BM25 + 向量 ANN + 实体关系图三通道融合，结构化聚合，证据可追溯。
-- **冲突智能仲裁** — 新旧知识矛盾自动检测，以新为准并保留完整审计痕迹。
-- **安全与精准遗忘** — 敏感信息识别过滤，自然语言指令驱动级联遗忘。
-- **端侧极致轻量** — 调用麒麟 Embedding 与 Vector Engine SDK，检索 P95 ≤ 500ms。
-- **UKUI 原生体验** — Qt5 统一会话与记忆工作区，全局快捷键唤起，系统通知与主题深度融合。
-- **专业工作型 Agent 界面** — 默认浅色与科技蓝双主题；消息离线渲染 Markdown、表格、KaTeX、Mermaid 与彩色 emoji；工具、记忆、Shell、Web 搜索以可持久化的折叠动态卡片呈现。
-
-## 系统架构
-
-```
-┌────────────────────────────────────────────────────────────┐
-│ 项目选定的 openKylin OS Agent 基座                         │
-│ kylin-agent（桌面） + agent-runtime（会话/规划/工具/审批）   │
-└────────────────────┬───────────────────┬───────────────────┘
-                     │                   └─ Kylin GenAI 回环适配 → 系统云模型
-                     │ MemoryProvider / HTTP adapter
-┌────────────────────▼───────────────────────────────────────┐
-│ PIXIU 记忆系统                                              │
-│ engine：多源接入/偏好/知识/冲突/安全                         │
-│ foundation：API/存储/检索/记忆流转/P2P CRDT/评测             │
-└───────────────┬───────────────────────────┬────────────────┘
-                │                           │
-     Kylin Embedding SDK          Kylin Vector Engine SDK
-                │                           │
-┌───────────────▼───────────────────────────▼────────────────┐
-│ 多台银河麒麟 V11 设备：本地副本 + 可信 P2P 同步             │
-└────────────────────────────────────────────────────────────┘
-
-```
-
-各模块完全解耦，互不依赖代码实现，详情见 [开发计划与分工](docs/DEVELOPMENT_PLAN.md)。
-
-## 技术栈
-
-| 层面 | 选型 |
-|------|------|
-| 前端与 Agent 宿主 | C++17 · Qt5 Widgets/WebEngine · UKUI · KylinSDK（快捷键/通知/主题/Qt 扩展控件）· markdown-it · KaTeX · Mermaid |
-| 引擎 (Module B) | Python 3.10 · C++（KylinEmbedding shim） |
-| 基础设施 (Module C) | Python 3.10 · FastAPI · asyncio · SQLite(WAL) · FTS5 · hnswlib · CRDT |
-| 存储 | Kylin Vector Engine · SQLite (WAL) · FTS5 · 邻接表图 |
-| AI | 麒麟 `coreai/embedding`（文本/图像向量化）· Kylin GenAI 系统云模型 · OCR 脱敏标注 · INT8 量化 |
-| 分布式 | CRDT · mDNS/Gossip · TLS |
-
-## 性能指标
-
-| 指标 | 目标 |
-|------|------|
-| 偏好提取准确率 | ≥ 85% |
-| 知识检索召回率 | ≥ 85% |
-| 知识检索响应时间 | ≤ 500ms (P95) |
-| 知识冲突处理正确率 | ≥ 88% |
-
-## 项目结构
-
-```
-Project.PIXIU/
-├── frontend/                         # PIXIU 记忆控制台（Qt5/UKUI）
-├── backend/agent/         # Module E：原创 Agent/MemoryProvider 适配与契约测试
-├── backend/engine/                   # 记忆业务引擎
-├── backend/foundation/               # API、存储、检索、流转、同步、评测
-├── backend/{engine,foundation}/tests/                    # 自动化测试
-├── build/release/                    # Debian/银河麒麟构建、发布画像与交付校验工具
-├── docs/                             # 架构、API、赛题、验收与报告
-├── submission/                       # 正式提交目录；两层同名结构，云枫配乐宣传片（白字字幕、口白170%、配乐15%、首尾统一及指定封面）及完整制作工程
-└── third_party/
-    ├── kylin-agent/                  # openKylin 官方 Agent 桌面端（submodule）
-    ├── kylin-agent-runtime/          # openKylin 官方 Agent 运行时（submodule）
-    ├── kylin-coreai-embedding/       # 指定文本向量化 SDK（submodule）
-    └── libkysdk-vector-engine-client/# 指定向量数据库客户端（submodule）
-```
-
-## 文档导航
-
-| 文档 | 说明 |
-|------|------|
-| [开发计划与分工](docs/DEVELOPMENT_PLAN.md) | 团队结构、模块划分、契约定义 |
-| [总体架构](docs/ARCHITECTURE.md) | 分层设计、数据模型、端到端流程 |
-| [API 规格](docs/API.md) | 前端↔后端公共通信契约|
-| [Module A 前端架构](frontend/docs/ARCHITECTURE.md) | UKUI 交互形态、组件树、kysdk 集成 |
-| [Module B 引擎架构](backend/engine/docs/ARCHITECTURE.md) | 引擎内部设计与实现机制 |
-| [Module C 基础设施架构](backend/foundation/docs/ARCHITECTURE.md) | 检索、存储、同步设计 |
-| [验收测试规范](docs/AcceptanceTestSpecification.md) | 功能/性能/交付逐条验收条目 |
-| [赛题原文](docs/OriginProblemDescription.md) | 比赛方案与附录 A 场景 |
-| [KylinSDK 指南](docs/kylin_sdk_docs/README.md) | 麒麟 V3.0 SDK API 参考 |
-
----
-
-<div align="center">
-
-依托银河麒麟国产桌面操作系统与 KylinSDK 构建 · 国产化 · 端侧 · 可离线
-
-</div>
-
-## 2026-09-10 正式源码目录
-
-正式桌面代码按 `frontend/src/shell` 和 `frontend/src/workspaces/{memory,devices,settings,delivery}` 组织。`frontend/cmake/Management.cmake` 定义正式管理库，统一从 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON` 构建测试。宿主使用 `frontend-sources.json` 导出清单及生成的兼容 CMake 入口，只有一个正式桌面程序。Agent 位于 `backend/agent`，平台运行实现位于 `backend/platform`，不新增依赖。完整迁移与用户场景台账见 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。
+桌面与 Agent 运行时复用 openKylin 项目，PIXIU 实现记忆服务、分布式同步与集成适配。来源及许可证见[源码说明](docs/delivery/SOURCE_AND_LICENSES.md)。

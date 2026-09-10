@@ -14,7 +14,7 @@
 - 映射 turn start/end、pre-compress、session switch/end、delegation。
 - 暴露记忆 search/remember/update/forget、sync_status 及 `pixiu_document_read` 工具。更正使用目标 ID 和版本；遗忘只预览并交接桌面确认，模型不能执行删除或获得审批凭证。
 - 文档工具每次读取一个原文块；文字返回 JSON，图像复用 Runtime 的 `_multimodal` 内容格式，将页面作为真实图像交给当前模型。模型不支持图片时拒绝视觉读取，纯扫描附件在上传时停用。
-- 超过两个内容块的附件保留既有 24 小时文档引用，模型沿 next_cursor 读取，后续问答可回读；短附件直接传递。分块不等于模型已完整理解，真实模型容量和全文任务验收仍未完成。
+- 超过两个内容块的附件保留既有 24 小时文档引用，模型沿 next_cursor 读取，后续问答可回读；短附件直接传递。分块不等于模型已完整理解，真实模型已通过三块文本连续读取，容量记录见发布记录。
 
 `.deb` 已携带只读 Provider，并由 PIXIU 桌面启动器幂等部署/升级到当前用户 Agent
 profile；激活器会在变更前拒绝不受管插件、符号链接或非 Gateway 用户 unit，并为
@@ -124,4 +124,4 @@ Agent 自有源码统一位于 `backend/agent/`，仓库根目录不再保留 `i
 
 Dreaming 更正与合并先读取目标并冻结版本。MCP memory_plan 在后台整理模式直接将计划保存到 /dreaming/plans，再返回 awaiting_approval；模型不需要额外调用 memory_apply 才能让用户看到计划。重复 apply 复用已保存计划，不重复入队。目录授权仅允许自动新建，更正与合并仍须用户逐计划审批，MCP 不暴露批准能力。无新增依赖，既有递归 Agent 打包覆盖修改。66 项 Agent 回归通过，包含更正／合并直接入队、重复 apply 不重复入队和审批前不写记忆。
 
-2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。更正与合并已接入；真实桌面批准后的同包验收仍待完成。
+2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。更正与合并已接入；真实模型更正与桌面批准已通过，合并验收见内部发布记录。

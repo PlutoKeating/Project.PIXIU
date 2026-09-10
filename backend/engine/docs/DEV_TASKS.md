@@ -1,189 +1,19 @@
-# 模块 B · 记忆业务引擎 —— 开发任务书
+# 记忆业务引擎开发记录
 
-> **目录**：`backend/engine/`
-> **开发人员**：1人
+## 当前状态
 
----
+正式版本为 0.1.12。偏好提取、账单更正、版本检查、知识合并、来源保留和安全遗忘已接入。
 
-## 实现状态（2026-08-11）
+测试结果及后续验收项统一见[发布记录](../../../docs/RELEASE_0_1_10_COMPLETION_PLAN.md)。
 
-> **赛题状态纠偏（2026-09-03）**：下列“已完成”仅表示适配代码和记忆引擎模块
-> 已实现，不表示 H-02/H-03 通过。revision 8 已取得系统 Vector Engine 与 Embedding
-> 产品链强实证；用户态服务、组件依赖与原生取证已进入包体，最终候选仍须同版复验。
-> 团队批准的 Agent 路线同时重新打开 ingest 契约。`CONVERSATION` Connector 与
-> `TOOL_RESULT`/对话 provenance 基础契约已经实现；Foundation 已提供完成态持久化
-> 幂等与失败恢复已由 Foundation 公共契约实现；专用抽取策略和端到端验收仍未完成。
+## 工作范围
 
-### 已批准的 Agent 接入任务
+源码位于 `backend/engine/`，设计见[模块架构](ARCHITECTURE.md)。修改遵循根目录 AGENTS.md、公共 API 和已批准的目录结构。
 
-- ✅ B-A1：`CONVERSATION` raw schema 接收 user/assistant；session/run/turn/time/scope
-  由独立 provenance/evidence 字段承载并持久化。
-- ✅ B-A2：Agent `TOOL_RESULT` provenance 校验 run_id、tool_call_id、工具名、审批状态
-  和时间；保留无 provenance 的旧版非 Agent 工具采集兼容路径。
-- 🟡 B-A3：Connector、清洗、质量评分和 evidence 追溯已支持新来源；Foundation
-  写入入口已调用 Security detector 并执行本地隔离/共享域拒绝，对话/工具专用语义
-  抽取策略仍待补齐。
-- ✅ B-A4：B/C 与 Module E 的完成态、生命周期和工具契约测试已完成；真实宿主模型
-  触发仍按 Agent 验收项单列。禁止用 `TOOL_RESULT` 类型伪装普通对话。
-
-- ✅ **已完成并集成**：`ingest/`、`knowledge/`、`conflict/`、`security/`、`preference/`
-  全部 Service 与测试；引擎已切换到 foundation core 契约（core 模型 / ULID ID /
-  仓储语义 / 偏好版本化），并经 SQLite 全链路集成测试验证。
-- ✅ **已完成**：`kylin/` 真实麒麟 SDK 适配——`embedding.py`（coreai/embedding）、
-  `vector.py`（vector-engine-client）、`cpp/` pybind11 绑定源码与构建脚本；另有
-  Debian 可移植特征哈希向量器作为明确的软件降级路径。
-- ✅ **已完成**：Embedding wrapper 生命周期/维度/并发加固——构造失败回收 session、
-  SDK 结果维度漂移 fail closed、共享 session 互斥、阻塞调用释放 Python GIL；V11
-  真运行时并发证据仍按 H-03 待验。
-- 🟡 **麒麟 SDK 绑定已本机构建成功**（2026-08-24，`backend/engine/kylin/cpp/` pybind11
-  编译导入通过）；后续 V11 已完成写查删产品链，当前标签由原生流水线复验。
-- 🟡 **OCR（kysdk-ocr / libkyocr）已接入**（2026-08-24）：pybind11 绑定
-  `_kylin_ocr` + `engine/kylin/ocr.py` 适配层 + REST `POST /memory/ocr`
-  （auto/kylin/portable 三档，无 SDK 环境返回 OCR_UNAVAILABLE）；当前单包未捆绑 `_kylin_ocr`。
-- 🔴 **向量数据库硬门槛未通过**：生产 DI 已可严格选择系统 Vector Engine，并完成
-  写入/检索/遗忘接线；`engine/kylin/vector.py` 已完成集合装载与 insert/upsert/delete/search
-  生命周期封装和 `KylinVectorStore` 契约测试。真机检查已纠正把 SDK 测试专用
-  host/port 构造误用于生产的问题，默认改走官方 `ConnectParam(appId)` 本地连接。
-  绑定已补齐官方 demo 要求的 `LoadDBFile`/`Disconnect` 数据库生命周期；真机产品
-  探针发现组合根漏调装载后，当前源码已补 `PIXIU_VECTOR_DB_PATH`、strict 启动装载、
-  进程级复用与退出断开。提交 `6f6002e` 的 strict revision 8 已在 V11 证明系统
-  Vector Engine 承担产品写入、检索、遗忘与删除后隐藏；最终 user service/安装包
-  仍须按 H-02 重验。
-- ⬜ **离线文本生成**（AI SDK 9.5.1）：当前麒麟 apt 源未提供对应开发包，需在
-  带该 SDK 的目标环境接入（持续缺口，不作为发布阻塞）。
-- 测试：2026-09-06 CI 在 Python 3.12/3.13 各 823 项组合回归通过；不沿用旧模块数量分拆。新增反向到达测试证明
-  同一对远端矛盾知识按稳定全序选择相同胜者并沿用其时间戳，MERGE 在较新项为字段
-  子集时仍保留扩展；`KnowledgeService.materialize/forget` 现作为生产同步物化接缝，
-  远端快进、更新和自动仲裁重建图/向量，远端墓碑删除 VectorStore 条目；
-  无麒麟 SDK 环境可使用生产 `portable` 路径；`tests/fakes.py` 仅用于隔离单元测试。
-- 打包：`KYSDK=OFF` 包以源码随包安装引擎；`kylin-v11-native-x86_64` 严格画像在
-  打包阶段构建 Embedding/Vector 两个扩展并装入 `/usr/lib/pixiu/backend/engine/kylin`，
-  缺任一扩展即失败；无绑定时仅 portable 核心链路可用且不计原生验收。
-
-> 下文的文件清单为任务定义与优先级；已实现项以"实现状态"为准。
-
----
-
-## 开工要求（本地环境准备）
-
-开始开发前，**必须先补齐仓库内的官方麒麟 SDK submodule**：
+## 验证入口
 
 ```bash
-git submodule update --init --recursive
+python3 -m pytest -q backend/engine/tests
 ```
 
-- `third_party/kylin-coreai-embedding` —— 文本向量化 SDK（C API，`libkysdk-coreai-embedding`）
-- `third_party/libkysdk-vector-engine-client` —— 向量数据库客户端（C++/gRPC）
-
-未补齐 submodule 时，`kylin/` 相关代码无法引用 SDK 头文件，pybind11 绑定
-（`backend/engine/kylin/cpp/`）无法构建，请勿跳过此步骤。
-
-> ✅ 下文各阶段文件清单均已实现（以"实现状态"为准），保留作为实现明细参考。
-
----
-
-## 第一阶段：核心管线
-
-### ingest/ —— 多源数据接入
-
-唯一前端来源回溯：`ingest(..., capture_source=...)` 已接入 schema v13 的独立证据
-字段，沿用核心私有域/来源类型校验，不把路径加入正文或指纹。引擎 162 项本地
-测试通过，新增 SQLite 集成比较来源缺失及不同路径的知识正文、FTS 和向量输入，
-并覆盖非法来源在 save 前拒绝。向量测试为隔离桩，不代表 V11 SDK 验收。
-目录桥接已接入；正式界面与原生新包文件采集仍待验证。无新依赖/SDK 调用；现有整包
-脚本直接纳入 `backend/engine` 源码，无需新增打包文件或编译开关。
-
-| 文件 | 优先级 | 说明 |
-|------|--------|------|
-| `ingest/__init__.py` | ★★★ | 导出 `IngestionService` |
-| `ingest/cleaner.py` | ★★★ | 去噪、去重（内容 hash 指纹）、缺失字段处理 |
-| `ingest/normalizer.py` | ★★★ | 格式标准化 + 实体规范化（别名词典/规则归一） |
-| `ingest/quality.py` | ★★★ | `quality_score` 计算（字段完整度+来源置信度）+ Schema 校验 |
-| `ingest/connectors/__init__.py` | ★★ | Connector 基类 |
-| `ingest/connectors/tool_result.py` | ★★ | 工具执行结果接入适配 |
-| `ingest/connectors/user_behavior.py` | ★★ | 用户行为数据接入适配 |
-| `ingest/connectors/manual_config.py` | ★★ | 手动配置信息接入适配 |
-| `ingest/connectors/ocr.py` | ★★ | OCR 结果接入适配（含实体预提取） |
-
-### knowledge/ —— 知识结构化
-
-| 文件 | 优先级 | 说明 |
-|------|--------|------|
-| `knowledge/__init__.py` | ★★★ | 导出 `KnowledgeService` |
-| `knowledge/structurer.py` | ★★★ | 按 kind（FACT/WORKFLOW/CASE/TEMPLATE）结构化 KnowledgeItem |
-| `knowledge/graph.py` | ★★★ | 实体抽取 + BELONG_TO 等关系构建 |
-| `knowledge/embed_writer.py` | ★★★ | 调 KylinEmbedding，向 VectorStore 提供原始 float 向量 |
-
-### kylin/ —— KylinSDK 适配
-
-| 文件 | 优先级 | 说明 |
-|------|--------|------|
-| `kylin/__init__.py` | ★★★ | 导出 `KylinTextEmbedding` |
-| `kylin/embedding.py` | ★★★ | 麒麟 coreai/embedding 封装 + Debian 可移植向量器 + 能力选择 |
-| `kylin/cpp/` | ★★★ | pybind11 绑定源码 + CMake 构建（SDK 以 third_party submodule 纳入） |
-| `kylin/vector.py` | ★★ | 麒麟向量数据库客户端生命周期封装（含安全的 ID 删除接口） |
-
----
-
-## 第二阶段：辅助功能
-
-### preference/ —— 偏好捕捉
-
-| 文件 | 优先级 | 说明 |
-|------|--------|------|
-| `preference/__init__.py` | ★★ | 导出 `PreferenceService` |
-| `preference/extractor.py` | ★★ | 三类偏好提取（规则信号 + 离线文本生成抽取键值对） |
-| `preference/versioning.py` | ★★ | 版本化（写 history 快照，version+1）+ 回溯接口 |
-| `preference/adapter.py` | ★★ | 跨场景适配（按 scope + 场景标签解析生效版本） |
-
-### conflict/ —— 冲突仲裁
-
-| 文件 | 优先级 | 说明 |
-|------|--------|------|
-| `conflict/__init__.py` | ★★ | 导出 `ConflictService`；同步来源以 updated_at/created_at/id 全序消除反向到达歧义 |
-| `conflict/arbiter.py` | ★★ | 矛盾检测（同实体同字段比较）+ 裁决（NEW_WINS/MERGE/MANUAL）+ 审计（ConflictRecord）；MERGE 扩展判定对输入方向对称 |
-
-### security/ —— 安全与遗忘
-
-唯一前端迁移增加目标快照前置检查：预览包含版本/范围，确认可要求 ID→版本集合
-完全一致；新增匹配或版本变化时拒绝且不删除。引擎已接入仓储批量原子遗忘契约，
-HTTP 预览凭证与跨组件副作用恢复尚待完成，不能凭此测试宣称端到端安全遗忘已完成。
-未新增外部依赖或 SDK 调用。
-
-| 文件 | 优先级 | 说明 |
-|------|--------|------|
-| `security/__init__.py` | ★★ | 导出 `SecurityService` |
-| `security/detector.py` | ★★ | 敏感信息识别（正则：身份证/银行卡/手机号）+ sensitivity 评分 |
-| `security/forget.py` | ★★ | 自然语言遗忘（确认后状态失效 + VectorStore 删除；同步墓碑由 C 处理） |
-
----
-
-## 测试
-
-| 文件 | 说明 |
-|------|------|
-| `tests/test_ingest.py` | 多源接入管线测试（含噪声/缺失/重复数据） |
-| `tests/test_preference.py` | 三类偏好提取+版本化+回溯测试 |
-| `tests/test_knowledge.py` | 四类知识结构化+建图+嵌写入测试 |
-| `tests/test_conflict.py` | 矛盾检测+裁决+审计测试 |
-| `tests/test_security.py` | 敏感识别+遗忘精确性+级联清理测试 |
-| `tests/test_sqlite_integration.py` | 引擎 × SQLite 全链路集成测试 |
-| `tests/test_vector_client.py` | Vector Engine Python 适配器公共生命周期契约测试 |
-| `tests/test_kylin_vector_store.py` | Kylin VectorStore 集合/映射/写入/查询/删除契约测试 |
-
-默认生产配置优先调用真实麒麟 SDK，SDK 缺失时使用可移植软件向量器；严格
-`kylin` 模式会抛出 `KylinSDKUnavailableError`。测试桩仅用于隔离单元测试。
-
-## 2026-09-10 偏好与账单使用
-
-普通 CONVERSATION 从用户原话提取输出风格，不从助手回答反向推断；沿用稳定偏好 ID、版本和历史。Agent 上下文返回 preferences 并优先放入当前有效回答风格；首次会话预取未完成时在既有 HTTP 超时内读取当前问题，避免漏掉已保存偏好。金额查询按账单明细类别/标签及日期筛选，汇总同范围的多份有效账单；指定类别没有记录时不再退回整份总额。未改变依赖和数据库 schema。
-
-2026-09-10：人工冲突选择已接入正式界面/API；测试验证保留 186 元版本、旧版本退出有效检索以及陈旧提交拒绝。
-
-2026-09-10：图片知识采用多模态草稿及人工确认保存，原图保留已完成。先前 V11 OCR 样例有误识别，已按用户要求退出知识提取主路径。
-
-账单修正：聊天 update 可使用搜索返回的 scope；对结构化账单的单项金额更正保留其他明细与日期，目标不明确返回 BILL_ITEM_CORRECTION_REQUIRED。按月查询在明细/正文日期缺失时使用明确的账单标题年月，不猜测录入时间为账单日期。
-
-2026-09-10：文档支持的记忆更正沿 `/memory/update`，body 为 content 与 document_sources 时仍执行账单明细更正，保留原始文档依据。修正“不是旧金额，是新金额”的否定金额误匹配。无新依赖或安装路径变化。dreaming 执行器的逐方案宿主审批不等于用户审批 UI 已完成。
-
-2026-09-10：受审批合并的底层接口 `KnowledgeService.merge` / `KnowledgeRepository.merge_if_versions` 已实现：固定私人范围、整批 ACTIVE 版本条件更新、保留所有来源证据与实体关联、旧记录 SUPERSEDED 并移出全文检索，目标重新向量化并删除旧记录生产向量。嵌入失败发生在知识更新前；向量存储与 SQLite 不构成跨组件事务。50 项知识服务/仓储测试通过。API、模型工具与桌面审批的合并接线尚未完成，不能据此宣称 Dreaming 合并可供用户使用。无新依赖/schema，沿用现有后端目录打包和 CI 测试入口。
+提交时同步接口、依赖、构建配置和对应文档，记录实际执行的测试结果。

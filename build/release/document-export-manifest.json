@@ -3,139 +3,46 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "5c2ff7efd00de31e522b812c8ac0784f47d118680a3cbc70d47b15cbfdf05d46",
+      "sha256": "3aa9cfe94d878b597e2d965020e7b25ab46d70ca8e561b438485a19c25ee6d21",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
-          "sha256": "3a477135689928b704ce6f0ad71cf8cfb5d3c168beb621eed21bcd07a1f2d7d7"
+          "sha256": "c52da05fc1e4e4249062268273c78ca1b09e08a6575da947cc69f553435e5288"
         },
         {
           "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
-          "sha256": "4f4989ac90c36092e7ffd5ad132128a67a6af0b210b884c828e104b192bb6e7b"
+          "sha256": "5b34f2717db98082df41011f0c1e1a01c4088896c2b3cff3cdb97c0ca7337f55"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
-          "sha256": "79e45a366ab05c9a3a49138c1dfd25597af78d0d231cc5a29917ffd0027d6bf4"
+          "sha256": "97214bf4eac6ff745fe069865a80ce8772540f2a1f2145c8c432a36186e0d800"
         },
         {
           "path": "docs/delivery/MEMORY_LIFECYCLE.md",
-          "sha256": "aa73fd0dd2dbaea12a2d4b9868d6841727a79217ea02f972607878a8342516ff"
+          "sha256": "7c2114a45f26bbfd666397dac0161624e395d80a4778e71f4bd42b1ef9f7cbc5"
         },
         {
           "path": "docs/delivery/SOURCE_AND_LICENSES.md",
-          "sha256": "abf15f46b617d063924677069979ac58172df2e95d6133886e4e2eab88b51858"
+          "sha256": "c76f31dc70f8cda378a86cea7253d2871f42db48338d4e125d09c619b9ca2a7b"
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "1f6e1075d829c0d901bfd7ea61e27ceecea7d0ef8a2a1634b7772ceeb086c24a"
+          "sha256": "0337470b167f48e3a350420adaee0a1d880e84dc968f79aa26be7e20fdf2b047"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
-          "sha256": "6ba135aa943e8deb09cbfef264716dd36c99d1d1c75e7dcaef84f5eb1942487a"
+          "sha256": "1a8035236c0803888b5210f30db23ff5bbfa45c76378c10df764c052a4a4d0ed"
         },
         {
           "path": "docs/delivery/USER_MANUAL.md",
-          "sha256": "d24b9316bc2b59b496b99ef1f6950944862cd086a0a0f3a29933a3a79d1c442e"
+          "sha256": "99cc30c11e41345117416238c0a220eaa2b68df0f63b8185aa4b41c52c8d426a"
         }
       ],
-      "images": [
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/02-install-result.png",
-          "sha256": "3ec1b2d767fc016917d1544888d1b4bf899715899c9375b802709a575c643507"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/78-command-and-window.png",
-          "sha256": "df8a7aa178d26b6b3682ffa0a6332d1d68049f42a813f267670c4a74f05f69be"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/75-menu-launch.png",
-          "sha256": "e9ee939221a5befff613b032754f9876d264e6fde28eaa01523d4a6e4e8552fb"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/50-service-version.png",
-          "sha256": "8596c1c08486f035e3c6bd67c57eda8650bcb22b005b21afc4eb5814bc581b85"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/06-agent-remember.png",
-          "sha256": "7e3f4872f07dc3fd75642739c1ad76508c108025a4d8ec70327e0f7f34d9feb1"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
-          "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/17-agent-source.png",
-          "sha256": "446cadd9de3a536335d0c9aded6ee67cf2b76d7913eadfa91fadb8055ca27551"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/10-memory-input.png",
-          "sha256": "32d8720e6fc74b4c7ab0447ec94fa0504e72b3b7457d27041301a6cdbabd0597"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/12-memory-evidence.png",
-          "sha256": "ab6e19d51528f58a9e30211e32419cc5c833a1c862fcbabd4e9c06e5f0fd068e"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/14-memory-edit.png",
-          "sha256": "fd5c1eb86600ae1bb2906b171376bc41ba15c05f35c0a75083e1fe051569bd98"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/15-memory-version.png",
-          "sha256": "d49d7f3f0a9744324d1e2c6f98ef1b78d162a8795c3e9571452357a3a3b34274"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/64-edit-version-conflict.png",
-          "sha256": "4978152783dad68c9ecab7b7ac3a954a903827e1c17bdba0b67ce19daf5297a5"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/62-preference-changed.png",
-          "sha256": "fe2663a31760497f54faab7ab90a07246b01c8cb064ebf68106dd6286f1a3593"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/25-forget-target.png",
-          "sha256": "a2e1a38cb53396e98d30c4afbf036b6295b548c5cfdd211e1267d6c82eed34a5"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/26-forget-cancel-ready.png",
-          "sha256": "bb0d53c907dd3d5a698ec4f9935d329e7d366509336dcbfec3c69dbfdaef435d"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/27-forget-complete.png",
-          "sha256": "20494b714fc45a01acdc5653aca38568d3963009c386b01561d38ba34d156657"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/30-privacy-enabled.png",
-          "sha256": "031f593ce880de0532e79cac553e0fed62043260429fc2666b356adec87f090b"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/32-capture-log.png",
-          "sha256": "7e99b55676a09d7d1fb592193e962dbcee7c464cb84d735dc2aef2d6b519f98c"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/34-file-source.png",
-          "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/41-pair-dialog.png",
-          "sha256": "bc9486d35815ea3ee92039580c367740b80b77117da53c4e97268931a4fe46d7"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/54-model-check.png",
-          "sha256": "1b6758586a1b815c0976d154a44afc7416098740f32200cd791fbaa642cb66f2"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/51-update-check.png",
-          "sha256": "b5829fec233f3252796bcdd3db63ef9df1f8252e6dc42cedf8cc69088251b3f9"
-        },
-        {
-          "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
-          "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
-        }
-      ],
+      "images": [],
       "exports": [
         {
           "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/技术方案.doc",
-          "sha256": "9c00f56a65ee78894898f614ce98c479d00d05b606f04907086b68c5aa435262"
+          "sha256": "9f177c24ef94ccf8100600957caad1611bdd98bf4e5c2b7285441fff797a5dda"
         }
       ]
     }
@@ -143,6 +50,6 @@
   "presentation": {
     "source": "docs/delivery/assets/项目报告.pptx",
     "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/项目报告.pptx",
-    "sha256": "4718b6b1d190e5e6834bd31d97d0c39ab835706d8dc733c0703659ba18e1f822"
+    "sha256": "ffa62d75c13138180ca014a19fe9e65336c16112c47e9e0a68d012896df32bf9"
   }
 }

@@ -495,54 +495,12 @@ auto 可明确降级，kylin 严格失败，portable 提供实际软件写入与
 隔离测试桩不得用于最终安装、功能展示或截图验收。正式演示使用同版实际产品与标明的合成数据，
 不提供第二套小窗口演示流程。
 
-## 2026-09-10 源码归属迁移
+## 当前桌面实现
 
-消息离线渲染资源及许可证统一位于 `frontend/resources/message_renderer/`，由宿主准备脚本打入资源；Agent Python 适配位于 `backend/agent/`。
+- 正式入口为单一宿主，四个主工作区；记忆与设置使用左侧分类导航。
+- 桌面代码位于 `src/shell` 和 `src/workspaces`，宿主补丁位于 `host/patches`，消息资源位于 `resources/message_renderer`。
+- 界面动效默认启用，设置中统一开关；会话流式正文就地更新，富文本就绪后接替文字显示。
+- 来源通过回答内链接打开；后台整理自动报告进度，持久计划显示前后内容并提供审批。
+- 构建入口为 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON`，管理库由 `cmake/Management.cmake` 定义。
 
-宿主补丁及兼容代码位于 `frontend/host/{patches,compat}`；`build/release/agent-host/` 仅保留准备与编译脚本。补丁顺序与宿主导出目录保持不变。
-
-## 2026-09-10 正式源码目录
-
-正式桌面代码按 `frontend/src/shell` 和 `frontend/src/workspaces/{memory,devices,settings,delivery}` 组织。`frontend/cmake/Management.cmake` 定义正式管理库，统一从 `cmake -S frontend -DPIXIU_MANAGEMENT_TESTS=ON` 构建测试。宿主使用 `frontend-sources.json` 导出清单及生成的兼容 CMake 入口，只有一个正式桌面程序。Agent 位于 `backend/agent`，平台运行实现位于 `backend/platform`，不新增依赖。完整迁移与用户场景台账见 `docs/SOURCE_MIGRATION_AND_PRODUCT_PLAN.md`。
-
-## 2026-09-10 助手记忆范围
-
-`GET/PUT /agent/settings` 读取/保存 include_capture（默认 true）、shared_scopes（默认空数组，仅 shared:*）、write_scope（默认 null，沿用当前 Agent）。设置保存于本机安全偏好，不随记忆共享同步。`POST /agent/context` 的可选 use_settings 默认 false；Agent 设置为 true 时，默认个人 user:default/user:local 可读取授权采集，另外查询用户选择的共享空间，返回 read_scopes。自定义个人范围保持隔离。显式记忆工具按 write_scope 保存，普通会话保存范围不变；设置页面分别控制读取与保存，不迁移已有数据。不新增依赖或数据库 schema。
-
-工作台补充：MemoryAudit 调用冲突 review/resolve；MemoryWorkspace 的阶段记忆页调用 flow contexts/promote；BackendEventStatus 的助手遗忘按钮将意图交给 ForgetPage 重新预览。按钮不代替删除确认。隐私页说明监控授权目录的直接子文件及格式/大小范围，日报说明实际覆盖文件与应用采集。
-
-正式宿主的本会话来源入口调用 AgentEvidenceClient.loadMemorySources，从记忆后端读取自动注入及显式搜索的引用；使用独立请求，不转发 Runtime 认证头。旧 Runtime 事件解析接口保留兼容测试。
-
-MemoryWriteDialog 使用当前聊天模型，直接发送 PNG/JPEG 给模型生成可编辑知识草稿；明确提示发送目的地，并保留人工确认。文本专用麒麟桥接不作为图片模型。MemoryWorkspace 来源提供原图查看，正常文本阅读不展开 base64。
-
-2026-09-10：图片导入移除独立模型选择；MediaInputClient 与宿主补丁 0027 接通当前模型附件请求，设置页显示图片/扫描 PDF 能力，阶段保留去除重复确认。统一 Office/MCP 附件与 dreaming 主动进度已接线，当前宿主通用编译通过不代表该扩展已完成。
-
-后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
-
-2026-09-10 日常体验简化：正常连接隐藏状态横幅，删除刷新清单与清除提示按钮；任务报告自动展示并在结束后收起。偏好页删除手动提取和刷新入口，显示时自动读取、事件到达自动更新，冲突操作按需出现。记忆常驻导航为资料/简报/偏好，遗忘与会话记录放入更多菜单；标题栏重复设置删除，会话来源仅在会话页出现。正式宿主使用补丁 0028；不新增依赖。完整决策见 docs/PRODUCT_EXPERIENCE_SIMPLIFICATION.md。
-
-第二批自动读取已接线：简报页显示时自动读取近期建议与当日简报，日期或资料变化合并触发更新；读取按钮改为失败时才出现的重试入口，去掉质量分等工程展示。隐私与设备页首次显示自动加载，配置/连接重试按需出现；不自动提交用户正在编辑的设置。Qt 工作区验证覆盖首次读取、换日期与无隐式写入。
-
-### 2026-09-10 导航与资料阅读布局
-
-正式宿主的四个主入口合并到标题栏，隐藏内部一级标签栏；程序化页面跳转同步主入口，会话侧栏固定显示，折叠入口和槽函数已删除。资料页采用标题/说明/搜索/按需结果的阅读顺序，范围过滤与手动记录在次级菜单，偏好空列表和空详情收起。布局依据与尚待完成的视觉验收见 `docs/PRODUCT_EXPERIENCE_SIMPLIFICATION.md`。复用既有 Qt Widgets 与系统调色板，无新增运行依赖；打包继续通过现有 0028 宿主补丁与 frontend 导出规则纳入。
-
-记忆与设置的二级导航由共用 `widgets/WorkspaceNavigation.h` 呈现在左侧，内部页面跳转保持同步。设置采用限宽滚动分组，设备操作栏按内容宽度布局。构建输入同步登记于 `build/release/agent-host/frontend-sources.json`，无新增依赖。
-
-2026-09-10：按用户要求删除“本会话记忆来源”前端按钮及宿主请求/取消/切页连接，不增加替代入口。后台引用记录和资料检索不变；现有宿主补丁包含删除，打包无新增依赖。
-
-界面动画统一由 `widgets/MotionPreferences.h` 控制：设置 → 应用与升级 → 桌面使用 → 界面动画，默认开启，QSettings 持久保存。关闭立即停止导航动画并显示最终选中状态，同时关闭 Qt 标准 UI 动效；新增产品动画必须遵循此策略。无新依赖，两个共用头文件均登记到 CMake 与宿主源码导出清单。导航回归覆盖快速点击、键盘、程序切页、窗口变化及关闭动画后的状态与偏好保存。
-
-新增 `ContentReveal` 用于任务报告首次出现和账单原图打开，160 ms 淡入，不改变布局或延迟点击；进度文字更新不重播，隐藏或关闭动画总开关立即停止并恢复完整显示。原图仍使用可滚动原尺寸阅读，没有缩略图共享元素转场；关闭预览即时完成。复用 Qt 自带效果，已同步 CMake 与源码导出清单，无新依赖。
-
-### 会话正文短暂空白与重排修复（2026-09-10）
-
-原渲染器以 documentElement.scrollHeight 回传高度，宿主再增加 2 px，形成视口与控件高度反馈；同时高度变化强制滚底并追加延迟滚动。发送和完成回复又清空重建全部 WebView，字体 block 策略允许加载期隐字。这些路径已分别替换：按 content 实际高度去重回报，携带渲染版本并拒绝过期回报；32 ms 合并流式渲染；以用户跟随状态处理滚动，删除延迟强制滚动；发送/完成就地更新，同会话重复选择不重建；初次加载显示可选中的纯文字，富文本就绪后接替，字体使用 swap。切回生成中的会话会恢复未完成正文与工作卡片。
-
-正式宿主变更位于 0029-stable-message-rendering.patch，准备脚本与供应链输入同步登记。未增加产品运行依赖。`node frontend/tests/test-message-renderer-height.cjs` 执行真实渲染脚本的高度协议回归：旧版在独立正文/视口尺寸检查失败，修复版通过；另检查离线资源契约和正式宿主编译。此验证针对代码路径，不冒充对用户机器短暂现象的录像验收。
-
-2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并实现见下文最新记录。
-
-2026-09-10：Dreaming 合并已接入方案 API、MCP 和桌面审批。模型必须先读取全部目标，merge_ids 与冻结版本进入持久方案；桌面展示全部原记录与合并结果，用户批准后执行私人范围合并。旧记录转为 SUPERSEDED，来源保留，生产向量清理。模型工具不提供批准入口。无新增依赖、schema 或源目录变化，已有 CMake/宿主导出清单包含审批组件。真实模型、V11 同包验收尚未完成。
-
-2026-09-10：回答中的 pixiu://citation 来源链接由宿主补丁 0030 在应用内打开 CitationDialog，读取受核验的引用 API，显示原文和原图；普通网络链接沿用现有行为。已删除的全局来源按钮不恢复。新组件登记于 Management.cmake、宿主导出清单和供应链补丁清单，无新依赖。通用宿主编译通过；真实模型生成链接与 V11 同包点击验收仍待完成。
+当前验证结果见[测试报告](../../docs/delivery/TEST_REPORT.md)。

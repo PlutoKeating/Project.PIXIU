@@ -73,7 +73,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 | (6) | 短/中期记忆数据流转兼容 | C foundation/flow | F6-01~F6-03 |
 | (7) | 量化评测机制与测试报告 | C foundation/eval | F7-01~F7-05 |
 | Agent 集成 | 多会话/多轮、规划与工具、记忆生命周期闭环 | E backend/agent + openKylin 宿主 | A-01~A-10、F1-01、F1-02、F6-05 |
-| Agent 宿主 UI | 默认浅色；Ant Design 风格科技蓝浅/暗主题与设置页即时切换；焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息；离线 Markdown/GFM 表格/KaTeX/Mermaid/emoji 渲染与自然词距；发送、流式分段、工作事件和异步富文本高度变化跟随最新位置；工具、记忆、Shell、Web 搜索使用左侧对齐、可持久化的默认折叠动态卡片；麒灵系统云模型优先及 GUI 直连凭据管理 | build/release/agent-host 下游补丁 + frontend/resources/message_renderer | A-10a/A-10b（团队质量门） |
+| Agent 宿主 UI | 默认浅色；Ant Design 风格科技蓝浅/暗主题与设置页即时切换；焦点/缩放、Enter 发送、即时 waiting、分段 LLM 消息；离线 Markdown/GFM 表格/KaTeX/Mermaid/emoji 渲染与自然词距；发送、流式分段、工作事件和异步富文本高度变化跟随最新位置；工具、记忆、Shell、Web 搜索使用左侧对齐、可持久化的默认折叠动态卡片；麒灵系统云模型优先及 GUI 直连凭据管理 | frontend/host 下游补丁 + frontend/resources/message_renderer | A-10a/A-10b（团队质量门） |
 
 ### 1.3 关键约束
 
@@ -122,7 +122,7 @@ PIXIU 后端按架构维度拆分为两个独立开发模块，物理上位于 `
 ### 3.1 写入路径：把"零散信息"变成"结构化记忆"
 
 ```
-事件源(对话/工具结果/用户行为/手动配置/OCR 结构化文本)
+事件源(对话/工具结果/用户行为/手动配置/文档)
   → 敏感前置（engine/security:detector）：sensitivity 评分
   → 接入处理（engine/ingest）：Connector → Cleaner → Normalizer → Quality
   → 同步落 evidence(<50ms) → 立即 ACK
@@ -218,7 +218,7 @@ query + context_hint
   目录浏览只改草稿，不开启采集；旧监控中心、控制器及其专属测试已删除。
   剪贴板与自动截图明确未实现，保存时保留既有字段，不提供虚假可用开关。
 - **目录监视**：后端组件独立于 GUI 生命周期，非递归监视经防抖和稳定性检查后
-  捕获；文本直读与图片 OCR 依赖不同，图片成功必须核对实际 OCR 适配结果。
+  捕获；文档统一解码并交给受控后台整理流程，图片读取跟随当前模型能力。
   入库只接受私有 `user:*` 范围；`sensitive_quarantined` 条目仍可能已经保存，
   不等于拒绝入库或独立隔离库。日志摘要含文件名，不可视为已脱敏。
 - **行为采集**：BehaviorCollector 经 xprop 读取活动窗口并聚合应用活跃时长，
@@ -262,7 +262,7 @@ query + context_hint
 > knowledge 早于 evidence 到达时以 `sync_meta` 持久登记待补引用，后续 evidence
 > 物化会补链并清理记录，避免跨批次乱序造成永久无来源知识。
 > SN-4（2026-08-29）起**网络运行时默认开启**（`PIXIU_SYNC_NETWORK_ENABLED` 缺省 true），
-> 缺 advertise/TLS 证书自动降级不阻塞 API；显式 `false` 或运行时 `enabled=false`
+> 未指定网络地址时自动选择局域网地址，未指定证书时自动生成设备证书；显式 `false` 或运行时 `enabled=false`
 > 停止广播与监听（安全边界见 `backend/foundation/docs/ARCHITECTURE.md` §1.6）。
 
 - **对等架构**：每台设备运行完整副本，AP + 最终一致
