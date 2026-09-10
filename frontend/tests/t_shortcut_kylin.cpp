@@ -8,9 +8,21 @@ static int createResult, updateResult, deletes, legacyDeletes, legacyResult;
 static QStringList calls;
 static QString registeredName;
 static QString registeredKey;
+static bool sameKeyOwned;
+static QString updatedKey;
+KYSDKGlobalShortcutInfoList *kdk_shortcut_get_global_shortcuts_by_key(const char *)
+{
+    static char component[] = "kysdk-keybindings";
+    static char name[] = "pixiu.activate";
+    static KYSDKGlobalShortcutInfo binding{component, name, {}, nullptr};
+    static KYSDKGlobalShortcutInfoList list{&binding, nullptr};
+    return sameKeyOwned ? &list : nullptr;
+}
+void kdk_shortcut_destroy_info_list(KYSDKGlobalShortcutInfoList *) {}
 int kdk_shortcut_create_global_shortcut(const char *name, const char *key, const char *)
 { calls << QStringLiteral("create"); registeredName = QString::fromUtf8(name); registeredKey = QString::fromUtf8(key); return createResult; }
-int kdk_shortcut_set_global_shortcut(const char *, const char *, const char *) { return updateResult; }
+int kdk_shortcut_set_global_shortcut(const char *, const char *key, const char *)
+{ updatedKey = QString::fromUtf8(key); return updateResult; }
 int kdk_shortcut_delete_global_shortcut(const char *name)
 {
     if (QString::fromUtf8(name) == QStringLiteral("pixiu-frontend.toggle-chat")) {
@@ -50,6 +62,18 @@ private slots:
         createResult = updateResult = legacyResult = KYSDK_SUCCESS;
         deletes = legacyDeletes = 0;
         calls.clear();
+        sameKeyOwned = false;
+        updatedKey.clear();
+    }
+    void existingOwnedKeyUpdatesOnlyAction()
+    {
+        QWidget host;
+        createResult = KYSDK_SHORTCUT_EXISTED;
+        sameKeyOwned = true;
+        Probe manager(&host);
+        QVERIFY(manager.registerToggleShortcut());
+        QVERIFY(manager.isGlobal());
+        QVERIFY(updatedKey.isEmpty());
     }
     void removesLegacyBindingBeforeRegisteringReplacement()
     {
