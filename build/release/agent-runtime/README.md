@@ -4,6 +4,9 @@
 CPython 3.12/amd64 构建输入。`build-runtime-wheelhouse.sh prepare` 只按这两份锁及
 固定 Runtime submodule 构建、下载；所有包必须匹配逐包 SHA-256，构建结果会从 wheel
 的 METADATA 重新生成锁并逐字节比对，任何版本、哈希或闭包漂移都会失败。
+源码文件在构建前统一为 0644／0755（保留可执行位），构建进程使用 umask 0022；
+因此 Git 归档与交付源码快照不会因组写权限不同而产生不同 wheel。锁定哈希包含此规范化，
+未放宽逐包校验，也未更换任何依赖版本。
 构建先在归档副本上应用 `backend/agent/runtime/patches/` 中的发行适配；上游 submodule 保持只读。证据记录
 同时绑定发布提交及每个适配输入的 SHA-256，GUI 模型凭据管理不能绕开审计进入安装包。
 锁同时包含 MCP 1.26.0 与 Kreuzberg 4.10.3 及完整 Python 依赖；Kreuzberg wheel 携带 PDFium/ONNX 本地能力，安装和运行不下载文档模型、不调用 LibreOffice。

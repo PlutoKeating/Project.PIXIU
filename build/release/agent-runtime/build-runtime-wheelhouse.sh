@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# The reviewed wheel lock includes Unix mode bits from the original 0002 build.
-# Pin the mask before extracting/building so runner service defaults (0022) do
-# not change wheel hashes while leaving every payload byte identical.
-umask 0002
+# Normalize source permissions below as well as newly generated build files.
+# Git archives and delivered source snapshots otherwise produce different wheels.
+umask 0022
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../../.." && pwd)"
@@ -81,6 +80,9 @@ findings = [
 ]
 if findings != ["agent/redact.py"]:
     raise SystemExit(f"unexpected authenticated URL locations after pruning: {findings}")
+for path in root.rglob("*"):
+    if path.is_file() and not path.is_symlink():
+        path.chmod(0o755 if path.stat().st_mode & 0o111 else 0o644)
 PY
     install -m 0644 "${repo_root}/backend/agent/runtime/image_draft.py" "${output_root}/source/gateway/pixiu_image_draft.py"
     build_venv="${output_root}/build-venv"
