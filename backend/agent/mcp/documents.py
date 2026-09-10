@@ -72,15 +72,19 @@ def build_server(endpoint: str, document_ids: frozenset[str], dreaming=None, api
             return await dreaming.read_memory(knowledge_id)
 
         @server.tool()
-        def memory_plan(title: str, text: str, source_refs: list[dict],
+        async def memory_plan(title: str, text: str, source_refs: list[dict],
                         operation: str = "create", knowledge_id: str | None = None,
                         merge_ids: list[str] | None = None) -> dict:
             """Propose a memory supported by already-read document blocks.
 
-            Each reference has document_id, version and block_id. This does not approve execution.
+            Each reference has document_id, version and block_id. Corrections are
+            submitted for user review immediately; this never approves execution.
             """
-            return dreaming.plan({"title": title, "text": text, "source_refs": source_refs,
+            plan = dreaming.plan({"title": title, "text": text, "source_refs": source_refs,
                                   "operation": operation, "knowledge_id": knowledge_id, "merge_ids": merge_ids or []})
+            if dreaming.queue_reviews and operation in {"update", "merge"}:
+                plan["review"] = await dreaming.apply(plan["plan_id"])
+            return plan
 
         @server.tool()
         async def memory_apply(plan_id: str) -> dict:

@@ -122,6 +122,6 @@ Agent 自有源码统一位于 `backend/agent/`，仓库根目录不再保留 `i
 
 后台整理进度：Runtime harness 在读取开始、每批模型处理后及结束时调用 `POST /documents/{document_id}/progress`，以有效文档引用重新检查授权与数量边界；模型工具不包含该接口。后端经既有 WebSocket 发送 `dreaming_progress`，仅包含状态、处理数量和保存数量，不广播文件名或原文。主窗口自动显示进度/完成/未完整整理，无需刷新或确认；不新增依赖或数据库表。
 
-Dreaming corrections use memory_read + memory_plan(operation="update") and the existing versioned update API. Each update needs trusted per-plan approval, which is never an MCP tool. Directory approval remains create-only. Desktop approval and merge integration remain on the 0.1.10 completion plan; no additional dependencies.
+Dreaming 更正与合并先读取目标并冻结版本。MCP memory_plan 在后台整理模式直接将计划保存到 /dreaming/plans，再返回 awaiting_approval；模型不需要额外调用 memory_apply 才能让用户看到计划。重复 apply 复用已保存计划，不重复入队。目录授权仅允许自动新建，更正与合并仍须用户逐计划审批，MCP 不暴露批准能力。无新增依赖，既有递归 Agent 打包覆盖修改。66 项 Agent 回归通过，包含更正／合并直接入队、重复 apply 不重复入队和审批前不写记忆。
 
-2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。合并仍在实施。
+2026-09-10：Dreaming 更正方案持久化到私有 schema v15 表 dreaming_plans，公共接口 `/dreaming/plans`（GET/POST）及 `/{id}/decision`（POST approve 布尔值）；模型工具只提交方案，审批由桌面操作执行。`dreaming_review` 事件只携带方案 ID 与状态，桌面重新读取方案列表。`dreaming_progress` 新增 awaiting_approval 状态。界面仅有待办时展示入口，审批前后内容可对照；已批准写入沿现有版本化更新服务。新增 Qt 对话框已登记 CMake/宿主导出清单，无新依赖。更正与合并已接入；真实桌面批准后的同包验收仍待完成。
