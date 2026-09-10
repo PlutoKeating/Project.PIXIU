@@ -1,0 +1,24 @@
+{
+  "sha256": "146c75c57a7fadac29ff9d07ce7d894319bf79e19d15bd22664e81453065a169",
+  "complete_decode": "passed",
+  "source_video": ".runtime/current-final-nobgm-v3.mp4",
+  "source_video_sha256": "b405e3e69e364f023d234d9747840feae7c5aa64075ee55bff91e0ae33cc741b",
+  "source_music_sha256": "9bec354f3ba7088c3f75687d2cc8252a73b17ba020d16d3ba1c0a67bac0c3940",
+  "stem_sha256": "c08a7ee2a7d596a6a6d3426790026d13b2ffe7467e6aebcffe4e38ca7d3b9a8a",
+  "settings": {
+    "source": "audio/ZENI - With You (Original Mix).mp3",
+    "prepared": "audio/zeni-with-you-film.wav",
+    "source_start_seconds": 15,
+    "volume": 0.15,
+    "fade_out_seconds": 1,
+    "loop_crossfade_seconds": 4
+  },
+  "music_looped": true,
+  "loop_crossfade_seconds": 4,
+  "duration_seconds": 437.6666666666667,
+  "mix_peak_dbfs": -1.6943637172442207,
+  "encoded_peak_dbfs": -1.7192755685065637,
+  "picture_bitstream_unchanged": true,
+  "video_bitstream_hash": "SHA256=e5d4ffaee3b09cedb69deb6124933e5e525b30b4b2bb0c5574f8ed3cfac2b04c",
+  "method": "15s source trim; 15% linear gain; last 1s linear fade on music only; picture stream copied; no normalization or ducking."
+}

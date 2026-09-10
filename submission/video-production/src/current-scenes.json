@@ -310,17 +310,17 @@
       "kind": "video",
       "src": "current/directory-query.mp4",
       "end": "current/directory-query-end.png",
-      "width": 900,
-      "height": 596,
+      "width": 850,
+      "height": 300,
       "frames": 330,
       "source": "submission/video-production/raw/current-0.1.12/directory-recall-01.mp4",
       "start_seconds": 13,
       "duration_seconds": 11,
       "speed": 1,
-      "crop": "900:596:410:96",
+      "crop": "850:300:460:310",
       "source_sha256": "343679ab93559b575c001195074fcb3accf784654dfa5d0fc92a87d6eee0eb9f",
-      "sha256": "865518577efd595c854248a22e9d0367428e8a001e822ca3d330343c3e8b5e31",
-      "end_sha256": "85094ee814ab8d7befc76541e6a4205574a8daa925371a25be3161e28786924c"
+      "sha256": "3be27540e588a1bb0c57da4eba07dc21c939189fc28d9c742d4c4eff94f7520c",
+      "end_sha256": "dec9668c38669a8292b4a5af1c3f9d20c38e578cbda31b811b001518696bdecd"
     },
     "directory-approval": {
       "kind": "video",
@@ -336,55 +336,56 @@
       "crop": "880:620:270:108",
       "source_sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661",
       "sha256": "c98a050bb50bb9ffa50304c8ad3b87bf1b7927aa01848ffb842be199f33a6df1",
-      "end_sha256": "2c95c51c4381a5d5f3fda55bec639e6c6ce8bebe99a98e5060f9358d23cbc5ee"
+      "end_sha256": "2c95c51c4381a5d5f3fda55bec639e6c6ce8bebe99a98e5060f9358d23cbc5ee",
+      "playback_alignment": "start"
     },
     "updated-query": {
       "kind": "video",
       "src": "current/updated-query.mp4",
       "end": "current/updated-query-end.png",
-      "width": 900,
-      "height": 596,
+      "width": 850,
+      "height": 300,
       "frames": 300,
       "source": "submission/video-production/raw/current-0.1.12/dreaming-updated-recall-01.mp4",
       "start_seconds": 38,
       "duration_seconds": 10,
       "speed": 1,
-      "crop": "900:596:410:96",
+      "crop": "850:300:460:310",
       "source_sha256": "e1eb0c931041bda8fae8c1fad127e93824bb9be23d16699ec60278a3a5eee2f2",
-      "sha256": "99acfb9cbcf0f99d2f8dc6db6c9f8ec118ae8b5811a998af05c53dbc3159493b",
-      "end_sha256": "975c38d8fb5217fc8056145a2ebc129c551e1f3c3b2321e10953a0a8e5fb5c6c"
+      "sha256": "c4f48297194ffec482dad359e3d48f13ffa0b9f990353c3bb401b0da57877b11",
+      "end_sha256": "838a772b60e6785d17ed3ea788023eda202da9b35879501c1f677251e817b7b3"
     },
     "shared-query": {
       "kind": "video",
       "src": "current/shared-query.mp4",
       "end": "current/shared-query-end.png",
-      "width": 900,
-      "height": 596,
+      "width": 850,
+      "height": 300,
       "frames": 420,
       "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
       "start_seconds": 48,
       "duration_seconds": 14,
       "speed": 1,
-      "crop": "900:596:410:96",
+      "crop": "850:300:460:310",
       "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
-      "sha256": "d8ca6d7e15c8e3e5468f61df8534d277640b03f77f9327755665e1c065c045cd",
-      "end_sha256": "fcff11c20190ccc41c8c46287a885739a481076233ff1233e8ede315676f3272"
+      "sha256": "3541fd74461aaa4e82fb37ad50a0cd8b66c84d209859f5c6e239fe22866a3564",
+      "end_sha256": "27d84a5977668b41eb9ef853dbd7ec862a36dd49556ba8c5bf3b642e9199651a"
     },
     "shared-citation": {
       "kind": "video",
       "src": "current/shared-citation.mp4",
       "end": "current/shared-citation-end.png",
-      "width": 760,
-      "height": 640,
+      "width": 740,
+      "height": 150,
       "frames": 240,
       "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
       "start_seconds": 0,
       "duration_seconds": 8,
       "speed": 1,
-      "crop": "760:640:330:98",
+      "crop": "740:150:340:138",
       "source_sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438",
-      "sha256": "38e1a17ddca5fc86e3d08e60ed5155022820c37cf31e17b5aa5742fd9d2e1f83",
-      "end_sha256": "0cde29ab3a54f08e5d84212f42820d341001dd4b7ba58e8320524df6c81a7d16"
+      "sha256": "1f69a92800024114eb6e81f2f457c17c1fd449bf2b5cfab95d6852676ca9de66",
+      "end_sha256": "30cf2639ebf759753fd06509f1cddbe9f511aa571cdff487cc2d76530568cefb"
     },
     "manual-form": {
       "kind": "video",
@@ -392,15 +393,15 @@
       "end": "current/manual-form-end.png",
       "width": 550,
       "height": 328,
-      "frames": 360,
+      "frames": 150,
       "source": "submission/video-production/raw/current-0.1.12/current-manual-01.mp4",
-      "start_seconds": 23,
-      "duration_seconds": 12,
+      "start_seconds": 35,
+      "duration_seconds": 5,
       "speed": 1,
       "crop": "550:328:434:220",
       "source_sha256": "e7cef03d9f66a923dd8489281b6dc9dc60f65cb0d6acbc9dd0ca04bb2ffe71a0",
-      "sha256": "df5d9a8c0f1668ba941c5f2cd781a74c21a58c95afa904c9a6860c4fcf7ba61b",
-      "end_sha256": "5762daefbb3e408dc2a216e71379d9561b3bc4259c5d2f071af05b496c4acb25"
+      "sha256": "121afaf4cc71e46c7e4e63a31cfcdc7ae43f9a2928b25ad11166171e04fe20e0",
+      "end_sha256": "893fa1643e201e6d904f24463c3490c5914cf04ab0f09866f3e16952ffc1230d"
     },
     "edit-change": {
       "kind": "video",
@@ -417,6 +418,52 @@
       "source_sha256": "95f2dd07692a389a8c2c2d46dfa1e7ae8a5dcfd4a5e2683a725daa57a6fcca0e",
       "sha256": "f1bf3d13a1f56a5f652667e05dbe3a2a0c1722cd9367afe37ab9985d7919a969",
       "end_sha256": "34323828631b39e64cfec4efa78664f7e8535a42b8bbdd9a35ef9c10072de0c4"
+    },
+    "model-options": {
+      "kind": "image",
+      "src": "current/model-options.png",
+      "width": 272,
+      "height": 145,
+      "source": "submission/video-production/raw/current-0.1.12/model-options.png",
+      "sha256": "612beebdb2d9bd69c8624c383b405d23416feb8b4b099db225e25202a71b8921"
+    },
+    "update-panel": {
+      "kind": "image",
+      "src": "current/update-panel.png",
+      "width": 750,
+      "height": 163,
+      "source": "submission/video-production/raw/current-0.1.12/update-panel.png",
+      "sha256": "9ed18fdd958fae03b9b706cea070256490229de75bb171bec563ea9e37558b3d"
+    },
+    "keyword-results": {
+      "kind": "image",
+      "src": "current/keyword-results.png",
+      "width": 976,
+      "height": 135,
+      "crop_box": [
+        0,
+        0,
+        976,
+        135
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/keyword-result.png",
+      "source_sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37",
+      "sha256": "4fa9968ef884e3287ee3171856ce89a25aecee397ad44a47c6c5928f9458079d"
+    },
+    "directory-original": {
+      "kind": "image",
+      "src": "current/directory-original.png",
+      "width": 760,
+      "height": 185,
+      "crop_box": [
+        0,
+        0,
+        760,
+        185
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+      "source_sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6",
+      "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb"
     },
     "outro-nav": {
       "kind": "image",
@@ -662,7 +709,7 @@
     ],
     "s13": [
       {
-        "asset": "keyword-result",
+        "asset": "keyword-results",
         "label": "用内容关键词，找回活动资料",
         "cue": null,
         "fraction": 0
@@ -694,7 +741,7 @@
         "fraction": 0.5
       },
       {
-        "asset": "directory-source",
+        "asset": "directory-original",
         "label": "查看活动资料原文",
         "cue": "点击来源",
         "fraction": 0.82
@@ -710,7 +757,7 @@
       {
         "asset": "directory-approval",
         "label": "批准更正，保存新版本",
-        "cue": "对照原内容",
+        "cue": "批准后",
         "fraction": 0.37
       },
       {
@@ -828,10 +875,16 @@
         "fraction": 0
       },
       {
-        "asset": "desktop-shortcut",
-        "label": "配置日常桌面使用方式",
+        "asset": "model-options",
+        "label": "选择模型并配置连接",
         "cue": "打开设置",
         "fraction": 0.35
+      },
+      {
+        "asset": "update-panel",
+        "label": "查看当前版本与更新入口",
+        "cue": "查看更新信息",
+        "fraction": 0.55
       }
     ]
   }

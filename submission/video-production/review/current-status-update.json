@@ -1,0 +1,16 @@
+[
+  {
+    "path": "storyboard/shots.json",
+    "render_input_sha256": "a06feb8a4a9133f4dc8ddd995c37acc2f846dfe98fb71e10bcb3861f0ef336a9",
+    "current_sha256": "a42c6de3ab5e04303b4c53def90f7d1aeac891d40cfdbf12f1ccfad79e65cbe6",
+    "updated_fields": "status only",
+    "render_content_identical": true
+  },
+  {
+    "path": "src/timeline.json",
+    "render_input_sha256": "267ac639fe93c67e139d43ad54e244bfcda102a6ddcb21e6fd0ca62d3362ea8e",
+    "current_sha256": "f4cee5929e856d7b36ef791fdc6383ac8c63fe4ef262ba49fa27e39c4a2513ef",
+    "updated_fields": "status only",
+    "render_content_identical": true
+  }
+]

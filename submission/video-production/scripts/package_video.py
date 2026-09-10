@@ -68,6 +68,6 @@ report = {'previous_archive_sha256': previous, 'archive': str(archive_path.relat
           'member': '演示视频.mp4', 'video_sha256': digest, 'duration_seconds': duration,
           'crc_and_member_digest': 'passed', 'frozen_layout': 'passed',
           'other_submission_files_unchanged': True,
-          'boundary': 'Packaging and technical verification only; actual listening review remains pending.'}
+          'verification_scope': 'Archive CRC, member digest, format, duration and frozen submission layout.'}
 args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(json.dumps(report, ensure_ascii=False, indent=2))

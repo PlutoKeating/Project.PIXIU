@@ -1,0 +1,38 @@
+{
+  "sha256": "ab0c748da694c790fe0c62b6bdc4386644281d4028bc67f682b5bdecb4714787",
+  "complete_decode": "passed",
+  "source": ".runtime/current-final-bgm-v5.mp4",
+  "source_sha256": "bd4d26cbcea4620581d9d0812d4103ea1dbed4c3fbefb4a962ad496b128a5025",
+  "main_picture_and_audio_bitstreams": "identical to v5 candidate",
+  "cover_sha256": "23d25cde84b988335e3a4c7d0c43e71e067d6ac483bcb09f2362da9057454df7",
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "nb_frames": "13130",
+        "side_data_list": [
+          {}
+        ]
+      },
+      {
+        "codec_name": "aac",
+        "nb_frames": "20517"
+      },
+      {
+        "codec_name": "png",
+        "width": 1174,
+        "height": 657
+      }
+    ],
+    "format": {
+      "duration": "437.666667",
+      "size": "48979215"
+    }
+  },
+  "bytes": 48979215,
+  "method": "Approved cover attached as MP4 artwork; primary video and audio streams copied"
+}

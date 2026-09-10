@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-10",
+  "product_version": "0.1.12",
+  "environment": "银河麒麟V11，既有演示桌面",
+  "method": "capture_desktop.py：原生界面区域截图",
+  "images": [
+    {
+      "file": "model-options.png",
+      "region": "272x145+286+202",
+      "sha256": "612beebdb2d9bd69c8624c383b405d23416feb8b4b099db225e25202a71b8921"
+    },
+    {
+      "file": "update-panel.png",
+      "region": "750x163+306+476",
+      "sha256": "9ed18fdd958fae03b9b706cea070256490229de75bb171bec563ea9e37558b3d"
+    }
+  ]
+}

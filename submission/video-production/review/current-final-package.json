@@ -1,0 +1,13 @@
+{
+  "previous_archive_sha256": "2790ca4a6015c003e6fb9b13cacb8d149efc7fc2dd061ebbacf3dc6ace8614e2",
+  "archive": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/演示视频.zip",
+  "bytes": 48979345,
+  "sha256": "63b2519b4bf5f71f2067e6e23af4addac8b7407207ce3f678e13e57c8e5f65f3",
+  "member": "演示视频.mp4",
+  "video_sha256": "ab0c748da694c790fe0c62b6bdc4386644281d4028bc67f682b5bdecb4714787",
+  "duration_seconds": 437.666667,
+  "crc_and_member_digest": "passed",
+  "frozen_layout": "passed",
+  "other_submission_files_unchanged": true,
+  "verification_scope": "Archive CRC, member digest, format, duration and frozen submission layout."
+}

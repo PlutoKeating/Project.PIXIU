@@ -1,0 +1,1118 @@
+[
+  {
+    "file": "s01-middle.jpg",
+    "text": "PIXIU\n\nsree ora\n\nPIXIU © 3854\n\nTE IA) BRR ER FA\n\nabe\n\n7s 50\n\n能体的去中心化记忆系统\n\na\n\nfal\n\n向\n\nBE\n\n作\n\nA\n\n统\n\n0\n\n能体\n\nFRO UNERB i\n"
+  },
+  {
+    "file": "s01-tail.jpg",
+    "text": "iP\n\n[ =e |   记忆 ne im\n\nsee ames\n\nPIXIU 。 325k\n\n面向麒麟操作系\n\nALA\n\n75 50\n\n能体的去中心化记忆系统\n\nnt ，彼此相通\n\nsums smE\n\nisd lady f= pt\n"
+  },
+  {
+    "file": "s02-middle.jpg",
+    "text": "BMAF 换台设备接着用\n\n日常场景\n\nPee eer\n"
+  },
+  {
+    "file": "s02-tail.jpg",
+    "text": "RAFF REA\n\n人MA、几\n\n1 bSz\n\n备接着用\n\n日常场景\n\nmets\n\nPA\n\nWRI Ao\n"
+  },
+  {
+    "file": "s03-middle.jpg",
+    "text": "多设备，共享一份可复用的经验\n\n国\n\n=\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\n图\n\n客厅一体机\n\n能力示意， 每台设备独立保存本地副本\n\nNS\n\n每\n\nE1pbsz:\n\nEe UNE SEN\n"
+  },
+  {
+    "file": "s03-tail.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\n=\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n客厅一体机\n\n共享更新与来源检索\n\n能力示意， 每台设备独立保存本地副本\n\n让工作名\n\n==) Yi\n\nsz\n\nEs\n\nIO\n"
+  },
+  {
+    "file": "s04-middle.jpg",
+    "text": "运行在银河麒麒 V11\n\nPIXIU\n\nQ\n\n加 -=\n\n设备\n\n设置\n\n个人记忆助手\n\n会话与记忆\n\n会话73b139b7\n\nawe yRRERIN (推荐)\n\n我们约好了什么时候整理书房?书籍按什么方式分类，整理后要做什么?请查家庭共\n\n搜索会话\n\n享记忆并给出来源。\n\n1个本地会活\n\n我们约好了什么时候整理书房?\n\nPIX\n\n我们约好每周六上午9:00共同整理书房; 书籍按主题分类上架; 整理后需同步更新借阅登记表[]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\nRR:\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n输入任务，让 Agent 使用工具与跨设备记忆协助你\n\n添加附件      [ae]        停止\n\n统一桌面\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "s04-tail.jpg",
+    "text": "云行在银河麒麟 V11\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTPAPI: 0.5.0 - Agent Memory API: 1 -\n\nHUE schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一臻\n\n台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\n0.1.12 。 麒麟系统向量能力\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n*,\n\nboy\n\nIO\n\n=\n\nES\n\nUSE AC Enh Gul\n\n向\n\nIE\n\n力\n\n据庄\n\nNy\n\n~\n\nKi\n\nNS\n\n人\n\nWy\n\nLAO)\n"
+  },
+  {
+    "file": "s05-middle.jpg",
+    "text": "记忆和能力，接入完整智能\n\n开放麒麟智能体 + SMI IZ ABE\n\n智能体宿主与运行时\n\nBAIS > 规划任务\n\n调用工具\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n"
+  },
+  {
+    "file": "s05-tail.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + SAMI RA\n\n智能体宿主与运行时\n\n记忆适配层\n\nMMIC IZA\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n偏好、安全与遗忘\n\n本地存储与设备同步\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\niS\n\nEI5t-\n\nSB\n\nSE\n\n|狐\n\n3th\n\nERE \\e WER, FRE\n\nSa\n\nia\n\n同\n\na\n\nal\n\ni =©\n"
+  },
+  {
+    "file": "s06-middle.jpg",
+    "text": "从任务执行，到经验沉演\n\n~ 已完成工作， 2 项\n\n完成 write_file\n\n完成 a ee\n\nPIXIU\n\n 采购单已核算完成:\n\n。 书籍: 12E x 38.5元=462.00元\n\n。 标签纸: 5包 x 6.8元 =34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmpypixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "s06-tail.jpg",
+    "text": "从任务执行，到经验沉演\n\nPIXIU\n\n已从 PIXIU 长期记忆中成功检索到采购复核单信息:\n\n[\n\n书籍: 12套 x 38.50元=462.00元\n\n本\n\n标签纸: 5包 x 6.80元= 34.00元\n\n[\n\nBit: 496.00元\n\n.\n\n来源: 公开合成采购单 (2026498108) [knw_01M24RBWJY7D3BYSD4F8KV2WEM]\n\n[knw_01M24RC7H4T2N37V4VCJWTMGD3][knw_01M24RBP5NJNQ7KVCAWSMT6XEY]\n\n明细文件 /tmp/pixiu-demoy/采购复核单.txt 已存在且内容一致，可随时读取或导出。\n\n新会话再次找回采购单。 合计496元\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "s07-middle.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n云端模型\n\n记灵系统云模型 (推荐\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下\n\n。 BEE: 210.00元\n\n。 KE: 68.50元\n\n。 MASE: 156.00元\n\n。 合计: 434.50元\n\n来源 (知识条目ID) :\n\nknw_01M20PZ7GKK7CWQ0CQ9FFE307J 查看来源\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\n该数据为公开合成演示数据，用于展示 PIXIU 跨会话记忆录入、检索与溯源能\n\n[knw_01MITFQ5VQOONK6YBT6WG859RA]。\n\n新会话查询账单\n\nPIXIU 0.1.12 + $83\n\n麒麟 V11 SCH > 公开合成资料\n\nswt Ea 17 We\n"
+  },
+  {
+    "file": "s07-tail.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n云端模型\n\n麒灵系统云模型 (推荐\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下\n\n电费: 210.00元\n\n.\n\n水费: 68.50 7\n\n.\n\n燃气费: 156.00 7\n\n.\n\n合计: 434.5076\n\n知识条目ID) :\n\nkmw_O1M20PZ7GKK7TCWQOCQSFFE3QZ) 查看来源\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\n该数据为公开合成演示数据，用于展示 PIXIU 路会话记忆录入、检索与溯源能\n\n[knw_01M1TFQSVQOONK6YBT6WG859RA],,\n\n电费、水费、燃气费明细\n\nPIXIU 0.1.12 + $83\n\n麒麟 V11 SCH > 公开合成资料\n\nIS\n\nYAN\n\na\n\n到\n\n735;\n\nAm\n\n其\n\n局\n\nIZ\n"
+  },
+  {
+    "file": "s08-middle.jpg",
+    "text": "从答案，直接回到资料来源\n\nPIXIU\n\n口\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n根据 PIXIU 长期记忆检索结果\n\n电费: 210.00元\n\n水\n\n8.50 元\n\n燃气费: 156.00元\n\n“合计: 434.50 70\"\n\n知识条目ID) :“knw_01M20PMP8PXBY2VG5B587WWVB7” (Agent explicit memory)\n\n气\n\n该记录明确存储为:\n\n\"九月家庭电费210元、水费68.50元、燃\n\n费156元，合计434.50元”。\n\nmas PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来\n\n-\n\naera\n\n打开对应记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSeo EEA,\n"
+  },
+  {
+    "file": "s08-tail.jpg",
+    "text": "从答案，直接回到资料来源\n\n加 a\n\nPIXIU\n\n口\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n根据 PIXIU 长期记忆检索结果\n\n电费: 210.00元\n\n水\n\n8.50 元\n\n气费: 156.00元\n\n“合计: 434.50 70\"\n\n来源 (知识条目ID) :“knw_01M20PMP8PXBY2VG5B587WWVB7” (Agent explicit memory)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\nhl PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来\n\n本\n\n-\n\nee\n\n打开对应记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSUE aN ES\n"
+  },
+  {
+    "file": "s09-middle.jpg",
+    "text": "多种来源，\n\n进入统一记忆\n\n同一次写入\n\n1A 洗前后可核对\n\n公开合成输入\n\n实际清洗后证据\n\n核对书目\n\n核对书目\n\n核对书目\n\n归还原位\n\n归还原位\n\n重复项合并，空\n\n注移除，标题去\n\nBae\n\n注; 标题两侧有空\n\nm\n\n质量评分 0.775 + 敏感级别 0\n\nSADR\n\npa\n\n内容整理过程\n\nfe\n\n>,\n\nEE\n\nws\n\naT A\n\nZk\n\nc=} VY)\n\nGIL\n\nree\n\nLa\n\n(ez\n\nHag\n\neS\n\nwy\n"
+  },
+  {
+    "file": "s09-tail.jpg",
+    "text": "多种来源，进入统一记忆\n\n写入完成后，按范围检索到同一来源\n\n家庭物品整理演示\n\n同    私有范围内查询命    °\n\n反回的来源 1D 与本次写入证据一致\n\n写入内容与检索来源一一对应\n\n内容整理过程\n\nFait\n\n‘A\n\n成可\n\nVs\n\n的大\n\nMO\n"
+  },
+  {
+    "file": "s10-middle.jpg",
+    "text": "手动记录，了明确保留范围\n\n导入图片\n\n正文 “每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负\n\n责人为资料管理员。公\n\n合成的工作安排。\n\n其他范围…\n\n范围 Agent记忆 (user:defautt)\n\n添加账单明细\n\n删除所选明细\n\n填写标题、正文与范围\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 AA ARAB\n\nES MASI 5\n"
+  },
+  {
+    "file": "s10-tail.jpg",
+    "text": "手动记录，了明确保留范围\n\n每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管理员。公开\n\n合成的工作安排。\n\n保存后，检索并核对正文\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\ntape Se\n\n(ueeall\n\nPE NITEDCo\n"
+  },
+  {
+    "file": "s11-middle.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n会话\n\n记忆\n\n加\n\n个人记忆助手\n\n“3\n\n资料整理完成，已保存1条记忆。\n\n主窗口显示整理进度与保存数量\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "s11-tail.jpg",
+    "text": "保存一份资料，后台自动整理\n\n¥ 回答来源\n\nPIXIU\n\n口\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，星河观测活动在社区天文台三层集合。器材租赁预算2680元。\n\n准备流程:\n\n页取观测手册，检查望远镜支架，按小组记录月面特征，结束后归还器材。\n\n查看活动资料原文\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nLU\n\n5a\n\n[al\n\n一\n\nER\n"
+  },
+  {
+    "file": "s11b-middle.jpg",
+    "text": "资料更新，先对照，再保存\n\n方案\n\nPIXIU\n\n口\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n原内容\n\n整理后内容\n\n星河观测活动安持\n\n星河观测活动安排\n\n2026年11月8日晚上七点，\n\n星河观测活动在社区天文台三层集\n\n2026年11月15日晚上七\n\n星河观测活动在社区天文台二层\n\n合。器材租赁预算2680元.\n\n合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，\n\n检查望远镜支架，按小组记录月面特\n\n准备流程: 领取观测手册，检查望远锁支架，按小组记录月面特\n\n征，结束后归还器材。\n\n征，结束后归还器材。\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批准更正\n\nnile\n\n对照原内容与更正建议\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nTEA, EEN,\n"
+  },
+  {
+    "file": "s11b-tail.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的最新星河观测活动安排:\n\n。 集合时间: 2026年11月15日晚上七点半\n\n。 集合地点: 社区天文台二层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n(更新通知明确记载:\n\n“星河观测活动调整为2026年11月15日晚上七点半，集合地点改为社区天文台二层。器材租赁\n\n预算保持2680元。”) [knw_01M24NFGWRVQRVOR39GCHYGPVQ]\n\n新会话使用更新后的安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSARA OME, Silo\n"
+  },
+  {
+    "file": "s12-middle.jpg",
+    "text": "使用习惯，按授权记录\n\nbody:\n\nevents:\n\n(1):\n\napp: -\n\nday_type: workday\n\nfocus_seconds: 28\n\nhour_bucket: 12\n\ntitle: PIXIU 公开资料整理演示\n\n本次记录: 窗口标题与28秒使用时长\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nese Ae Sed 0 (eal heKESRE ER SS\n"
+  },
+  {
+    "file": "s12-tail.jpg",
+    "text": "使用习惯，按授权记录\n\nVv 应用行为统计\n\n在采集与隐私中管理授权\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n7 —\n\n随时\n\nES\n\nfel\n\na)\n\nhe\n"
+  },
+  {
+    "file": "s13-middle.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据\n\n星河观测活动安排\n\n口 查看原始数据 (高级)\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nAp\n\nvi\n\nDZ\n\n和上\n\nZee\n"
+  },
+  {
+    "file": "s13-tail.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n2026年11月8日晚上七点，星河观测活动在社区天文台三层集合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，检查望远镜支架，按小组记录月面特征，结束后归还器材。\n\n核对原始安排与准备步骤\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nLU\n\nia\n\nEt\n\nah\n\nBi)\n\narte\n\n=\n\nEe\n\nue\n\nZO)\n"
+  },
+  {
+    "file": "s14-middle.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。     家庭图书归还流程\n\n“书房共有三层书架。\n\n“从借阅登记本逐项核对书名”\n\n案例\n\n书架分类调整案例\n\n模板。 家庭阅读周计划模板\n\n“把常用工具书集中到中层-\n\n“填写本周共同阅读的主\n\n事实、\n\n流程、案例与模板。 来源内容摘录\n"
+  },
+  {
+    "file": "s14-tail.jpg",
+    "text": "事实、流程、案例与模板\n\n活动资料中的图书整理步骤 ， 0.1.12 实拍\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\nAR\n\n资料预算: 38760元。\n\n图书整理流程: 核对书名，按主题分类，上架后更新借阅登记。\n\n01 相似任务\n\n03 作为执行参考\n\n0.1.12 原生来源裁片， 公\n\nSEER Be NEDSS soc\n"
+  },
+  {
+    "file": "s15-middle.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-08722:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nIS\n\nKy\n\nEES\n\noy 7\n\n3\n\n细\n\nBAS\n"
+  },
+  {
+    "file": "s15-tail.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\nS\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n由\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-08722:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nZ\n\neo\n\n和\n\nSA\n\nos\n\n后\n\niS\n\n1\n\nLe\n\n2]\n\n用\n\n新\n\nNy\n\na\n\nJa\n"
+  },
+  {
+    "file": "s16-middle.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default - 版本: 2\n\n标题 ”秋季资料整理清单\n\nEX ”性周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n人\n\nZins\n\n对\n\nee\n\nHY\n"
+  },
+  {
+    "file": "s16-tail.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default .版本: 2\n\n标题 ”秋季资料整理清单\n\n正文 每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "s17-middle.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 76\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\": {\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\n-水费: 68.50元\n\n燃气费: 156.00元\n\n“Bit: 434.50 70\"*\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\ntencuerh ee sotea le wns\n\n从当前任务 ，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n要,长期保留的肉安允\n"
+  },
+  {
+    "file": "s17-tail.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 7\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\": {\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n电费: 210.00元\n\n水费: 68.50元\n\n燃气费: 156.00元\n\n“Bit: 434.50 70\"*\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\ntence rh ee sotealewnsasy\n\n从当前任务 ，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nFiera\n"
+  },
+  {
+    "file": "s18-middle.jpg",
+    "text": "LA a izés 共同记忆\n\n共享开篇\n\n3a ae UIE NB EY\n\nhee Be TAS\n"
+  },
+  {
+    "file": "s18-tail.jpg",
+    "text": "ila (ize EPiclZ\n\n共享开篇\n\nTS\n\nbal\n\n了\n\n与\n\nYR\n\neb eo\n"
+  },
+  {
+    "file": "s19-middle.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1\n\n+ 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM\n\n”记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n"
+  },
+  {
+    "file": "s19-tail.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 .记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM + icStik#5: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nIt Se EO\n"
+  },
+  {
+    "file": "s20-middle.jpg",
+    "text": "这里记住，那里接着使用\n\nPIXIU\n\n我们约好每周六上午9:00共同整理书房} 书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\n来源:\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n换一台设备，继续查询约定\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。公开合成资料\n\nfon | 35 Jap\n"
+  },
+  {
+    "file": "s20-tail.jpg",
+    "text": "这里记住，那里接着使用\n\nAgent explicit memory\n\nAgent explicit memory\n\n家庭共享约定: 每周六上午9:00共同整理书房; 步骤为 (1) 核对书名，\n\n(2) 按主题分类上架，\n\n(3) 同步更新\n\n借阅登记表。该约定适用于所有家庭成员，支持客厅智能助手实时查询。\n\n打开同一条记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\npr,\n\nasda\n\nAR\n\nG\n\n1\n\n的\n"
+  },
+  {
+    "file": "s21-middle.jpg",
+    "text": "离线仍可用，重连再对账\n\n各端使用本地副本，分别记录更新\n\nBARE + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本 2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n更新于 01:49:54 UTC\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nWal\n\nSe\n\nSZ\n\nLe\n\n4击\n\n使用林地\n\n局\n\nto\n"
+  },
+  {
+    "file": "s21-tail.jpg",
+    "text": "离线仍可用，重连再对账\n\n重连完成，三端记录一致\n\n云杉资料移\n\n7 0112\n\n同一知识的实际记录\n\n设备一\n\n云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案\n\n01:49:54 UTC\n\n版本2\n\n更新\n\nBo\n\n设备二\n\n版本 2\n\n云杉资料移交 时间改为2026年11月10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n云杉资料移交 <时间改为2026年11月10日下午三点，地点为三楼档案\n\n01:49:54 UTC\n\n版本 2\n\n更新\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机 + 本次恢复约30.5秒\n\n    致的约AE\n"
+  },
+  {
+    "file": "s22-middle.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\n云杉资料移交。 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n更新于 01:49:54 UTC\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\n和遇按确\n\n性规\n\nNy\n\nWires\n"
+  },
+  {
+    "file": "s22-tail.jpg",
+    "text": "同时修改，也能收敛\n\n重连完成，三端记录一致\n\n云杉资料移交。 0.1.12 + 同一知识的实际记录\n\n设备一\n\n更新于 01:49:54 UTC\n\n版本 2\n\n全。\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\n设备二\n\n版本2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n更新于 01:49:54 UTC\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\noO\n\n重连后，三台设备读到相同内容。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nhase\n\nBR\n\nI)\n\nBS\n\nEN\n"
+  },
+  {
+    "file": "s23-middle.jpg",
+    "text": "个人记忆，有了明确边界\n\n助手与记忆\n\n配置模型…\n\nV 允许助手使用本机已授权采集的记忆\n\nY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n读取范围与保存位置分别设置\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "s23-tail.jpg",
+    "text": "个人记忆，有了明确边界\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 .记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM + icStik#5: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n选择参与协作的设备\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nBUSES TMA\n"
+  },
+  {
+    "file": "s24-middle.jpg",
+    "text": "cae, BRIS\n\n后端确认遗忘 1 条知识。\n\n确认遗忘 1 条演示知识\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\n=?!\n\n统\n\nleva\n\n了\n\nTZ\n\nRE\n\nBee\n\ni\n\n= IB]\n\nEae\n"
+  },
+  {
+    "file": "s24-tail.jpg",
+    "text": "先看影响，再确认遗忘\n\n后端确认遗志 1 条知识。\n\n确认遗忘 1条演示知识\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍。    et CR\n\nWea Se pear eae ER    Rese\n"
+  },
+  {
+    "file": "s26-middle.jpg",
+    "text": "从记住，到主动提供线索\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况。\n\n星河观测活动安排\n\n星河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九点。\n\n-\n\n活动地点; URS HO;\n\n资料预算: 38760元。\n\n图书整理流程: 核对\n\n松涛资料费用信息\n\n松涛资料费用信息\n\n日期\n\n2026-09-10\n\nJ\n\n2026-09-10\n\n当日新增1条记忆\n\n《目录 1)\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍，\n\n公开合成资料\n\nPSSST feushen\n"
+  },
+  {
+    "file": "s26-tail.jpg",
+    "text": "从记住，\n\n到主动提供线索\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况。\n\n星河观测活动安排\n\n星河观测活动安排\n\n秋季读书会安排\n\n活动地点: 社区服务中心六楼。\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九点。\n\n资料预算; 38760元\n\n图书整理流程: 核对\n\n松涛资料费用\n\n松涛资料费用|\n\n日期\n\n2026-09-10\n\n2026-09-10\n\n当日新增1条记忆 (BRD\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nDeira ere\n\nez\n\n和\n\nae\n\nbf\n\nuy\n"
+  },
+  {
+    "file": "s27-middle.jpg",
+    "text": "一个安装包，统一管理\n\n查看当前版本与更新入口\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\neae eh lec\n"
+  },
+  {
+    "file": "s27-tail.jpg",
+    "text": "一个安装包，统一管理\n\n关于与更新\n\nPIXIU 0.1.12\n\nPIXIU 记忆系统与 openKylin Agent 集成。升级前请保存正在进行的工作; 安装和健康检查成功后，由您选择重启整\n\n个应用。\n\n检查更新\n\n查看当前版本与更新入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nFy) ees\n"
+  },
+  {
+    "file": "s28-middle.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100% 15/15 48\n\n100%  50/5048\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS :oo这\n\n96%  24/25 48\n\n逐样本记录与统计结果\n\nsain Hie AEE Va ll»\n"
+  },
+  {
+    "file": "s28-tail.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。 Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100% 15/15 48\n\n100%  50/5048\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS sco x2\n\n96%  24/25 48\n\n0.1.12 V11: 安装、签名升级、双 SDK 与三端协作通过\n\n版本、环境与实际结果共同复核\n\nCPP\n\nBRS\n\nChi E\n\nERS,\n\n<\n\nshi\n\nFad\n\nSS\n\nWM eaMe.\n"
+  },
+  {
+    "file": "s29-middle.jpg",
+    "text": "FET A 2242 BAP fa FRE\n\n价值\n\n和独自动整理\n\nEG\n\n授权咨\n"
+  },
+  {
+    "file": "s29-tail.jpg",
+    "text": "FET A 22542 BAP fa FRE\n\n价值\n\npits\n\n同心\n\nes\n\n同\n\neho\n"
+  },
+  {
+    "file": "s30-middle.jpg",
+    "text": "PIXIU\n\nas ra\n\nFae\n\nPIXIU © 385k\n\n面向麒麟操作系\n\nALA\n\nor 50\n\n能体的去中心化记忆系统\n\nan\n\nfal\n\n向\n\nBEES\n\n作\n\nA\n\n统\n\n0\n\n能体\n\nFRG UNEAB i\n"
+  },
+  {
+    "file": "s30-tail.jpg",
+    "text": "Q\n\n[ =a |   记忆 ne im\n\nsee ames\n\nPIXIU 。 323i\n\n面向麒麟操作系\n\nML三]\n\n7 50\n\n能体的去中心化记忆系统\n\n2 ，彼此相通\n\nsuns eenz\n\n筷此相通\n"
+  },
+  {
+    "file": "sample-001.jpg",
+    "text": "PIXIU\n\n设备\n\nim\n\nGe\n\n20\n\nrs\n\nnoe\n\noe\n\n人和\n\nFSP,\n\nen\n\nse\n\nvow\n\nem:\n\noe\n\nem\n\npH\n\n20760\n\nAMPH 发有\n\nil\n\nRem:\n\nm6\n\nim\n\nati\n\nmana:\n\n+ aH\n\nnee\n\nnT:\n\nait: 4507\n\n0\n\nay\n\nene\n\ncost\n\n和了210于\n\ncog. BIS\n\nsea\n\na\n\n4\n\nsm\n\nfe\n\napm Re\n\nmite\n\nETeNGHG9R\n\nPIXIU 。 3\n\n**\n\nos\n\nom\n\naa\n\nae\n\nas maceaaaw\n\n*\n\none\n\nao\n\noa\n\nane:\n\nananvemns\n\nme\n\nuns\n\nmane\n\n-\n\nid\n\nZins)\n"
+  },
+  {
+    "file": "sample-002.jpg",
+    "text": "PIXIU\n\na\n\nPIXIU >    SSK\n\n面向麒麟操作系\n\n7550\n\nALA\n\n能体的去中心化记忆系\n\nsaree\n\na\n\n向\n\nBEE\n\n作\n\nA\n\n统\n\n=o\n\n能体\n\n的二中\n\n(URC LNGERB Bo\n"
+  },
+  {
+    "file": "sample-003.jpg",
+    "text": "加 RU\n\n[ ais |   记忆 。 设备 。 设置\n\nms ae\n\nPIXIU 。 325k\n\n面向麒麟操作系\n\nJL\n\n2 FO\n\n能体的去中心化记忆系统\n\nae\n\nfume man\n"
+  },
+  {
+    "file": "sample-004.jpg",
+    "text": "加  Ra  _\n\nGa x\n\n设备\n\n设置\n\nseen mien\n\nin\n\ni\n\n时间\n\nPIXIU * 3854\n\n面向麒麟操作系\n\nJL\n\nZe EO 台\n\n月\n\n体的去中心化记忆系统\n\na ，彼此相通 -\n\nsaxon\n"
+  },
+  {
+    "file": "sample-005.jpg",
+    "text": "资料天组积寓换台设备接着用\n"
+  },
+  {
+    "file": "sample-006.jpg",
+    "text": "BMPS MaRS ew\n\n场\n"
+  },
+  {
+    "file": "sample-007.jpg",
+    "text": "BIFEZ\n\n2a 5Jt\n\n1 bSz\n\n备接着用\n\n日常场景\n\ned\n\nEl\n\n入\n\nFreja eB\n\nll\n\nalii\n\n的知ja\n"
+  },
+  {
+    "file": "sample-008.jpg",
+    "text": "BMAF 换台设备接着用\n\n日常场景\n\nPee eer\n"
+  },
+  {
+    "file": "sample-009.jpg",
+    "text": "化A、几\n\nBEPFFIAIAR 换\n\n1 了公\n\n备接着用\n\n日常场景\n\nGZ\n\nEF\n\n2k\n\nZ\n\n(使用\n\nTSE\n\nearl ill\n\na re\n"
+  },
+  {
+    "file": "sample-010.jpg",
+    "text": "葡料从毋航筑\n\n化A、几\n\n1 了公\n\n备接着用\n\n日常场景\n\nwera RY\n\nPAC\n\nWRIA\n"
+  },
+  {
+    "file": "sample-011.jpg",
+    "text": "多设备，共享一份可复用的经验\n\n能力示意， 每台设备独立保存本地副本\n"
+  },
+  {
+    "file": "sample-012.jpg",
+    "text": "多设备，共享一份可复用的经验\n\nbala ee 4,\n\nLL =\n\naN\n\n端侧保存\n\n能力示意， 每台设备独立保存本地副本\n"
+  },
+  {
+    "file": "sample-013.jpg",
+    "text": "多设备，共享一份可复用的经验\n\n享记忆\n\n端侧保存\n\n四4\n\n一-十\n\n泄围\n\n能力示意 ， 每台设备独立保存本地副本\n\n是过要可入说各之问鬼局记。\n"
+  },
+  {
+    "file": "sample-014.jpg",
+    "text": "多设备，共享一份可复用的经验\n\nO\n\nO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n端侧保存\n\n智能体复用\n\n口\n\n客厅一体机\n\n共享更新与来源检索\n\n能力示意。 每台设备独立保存本地副本\n\nNS\n\n每\n\nigh sz\n\nEe UNE EN\n"
+  },
+  {
+    "file": "sample-015.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\n国\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n客厅一体机\n\n共享更新与来源检索\n\n能力示意。 每台设备独立保存本地副本\n"
+  },
+  {
+    "file": "sample-016.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\noO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n客厅一体机\n\n共享更新与来源检索\n\n能力示意。 每台设备独立保存本地副本\n\nim\n\nFee\n\n助\n\nSte\n\nAZ\n\nep可\n\nEAE »\n"
+  },
+  {
+    "file": "sample-017.jpg",
+    "text": "多设备，共享一份可复用的经验\n\noO\n\noO\n\n书房工作站\n\n随身笔记本\n\n沉淀知识与任务经验\n\n随身记录与继续使\n\n@\n\n共享记忆\n\n端侧保存\n\n可信范围\n\n智能体复用\n\nO\n\n客厅一体机\n\n共享更新与来源检索\n\n能力示意。 每台设备独立保存本地副本\n\n二一|\n\n让工作各\n\njay:\n\nsz\n\nEg\n\nFO\n"
+  },
+  {
+    "file": "sample-018.jpg",
+    "text": "行在银河麒麟 V11\n\nPIXIU\n\n@\n\n设备\n\n设置\n\n和记忆助手\n\n会话与记忆\n\n会话73b139b7\n\n=D\n\nRRREN (推荐)\n\n我们约好了什么时候整理书房?书籍按什么方式分类，人整理后要做什么?请查家庭共\n\n会\n\n享记忆并给出来源。\n\n1个本地会活\n\n我们约好了什么时候整理书房\n\nPIX\n\n我们约好每局六上午9:00共同整理书房; 书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\nRR:\n\nknw_01M24POEXKAQZRRZX39YDCAQEV.\n\n任\n\n添加附件   fxs |    停止\n\n统一桌面\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n人\n\nHt.\n\n现\n\nb kar\n\nay\n\n日日o\n"
+  },
+  {
+    "file": "sample-019.jpg",
+    "text": "行在银河麒麟 V11\n\nPIXIU\n\n@\n\n设备\n\n设置\n\n和记忆助手\n\n会话与记忆\n\n会话73b139b7\n\n=D\n\nRRREN (推荐)\n\n我们约好了什么时候整理书房?书籍按什么方式分类，人整理后要做什么?请查家庭共\n\n享记忆并给出来源。\n\n1个本地会活\n\n我们约好了什么时候整理书房\n\nPIX\n\n我们约好每局六上午9:00共同整理书房; 书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\n来源\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n任\n\n止\n\n添加附件      [ae |        fi\n\n统一桌面\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍， 公开合成资\n\n料\n\nPal\n\nPal\n\nfh TZ\n\neal]\n\nSCA\n"
+  },
+  {
+    "file": "sample-020.jpg",
+    "text": "ESR RAB V11\n\nPIXIU\n\n@\n\n=\n\n设备\n\n设置\n\n记忆助手\n\n会话与记忆\n\n会话73b139b7\n\n=D\n\nRRREN (推荐)\n\nEEC\n\n我们约好了什么时候整理书房?书籍按什么方式分类，人整理后要做什么?请查家庭共\n\n会\n\n享记忆并给出来源。\n\n水地会话\n\n我们约好了什么时候整理书房\n\nPIX\n\n我们约好每周六上午9:00共同整理书房; 书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\n来源\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n任\n\n添加附件   fxs |    停止\n\n统一桌面\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍，\n\n合成资\n\nNae\n"
+  },
+  {
+    "file": "sample-021.jpg",
+    "text": "支行在银河麒麟 V11\n\n后端组件与数据库\n\nRA (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTPAPI: 0.5.0 ， Agent Memory API: 1 ， 数据库 schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一致\n\n平台\n\nkylin 11\n\nEmbedding: 配置 kylin > 实际 kylin\n\n向量存储:; 配置 kylin 一 实际 kylin\n\n0.1.12 。 麒麟系统向量能力\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n服务与能怒而，\n"
+  },
+  {
+    "file": "sample-022.jpg",
+    "text": "支行在银河麒麟 V11\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTPAPI: 0.5.0 + Agent Memory API: 1 - 数据库 schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一臻\n\n台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\n5 Ab\n\n0.1.12 。 麒麟系统向\n\nae\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nVES,\n"
+  },
+  {
+    "file": "sample-023.jpg",
+    "text": "支行在银河麒麟 V11\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTPAPI: 0.5.0 - Agent MemoryAPI: 1 -\n\nWUE schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一臻\n\n台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\n0.1.12 。 麒麟系统向量能力\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n米|\n\nTu\n\nAS\n\n=\n\nzs\n\nUSER EG\n\n向\n\nEst\n\n办人\n\nSES\n\nNy\n\n~\n\nKi\n\nNS\n\n人\n\nWy\n\nLAO)\n"
+  },
+  {
+    "file": "sample-024.jpg",
+    "text": "从任务执行，到经验沉淀\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-025.jpg",
+    "text": "从任务执行，到经验沉淀\n\n~ 已完成工作。2 项\n\n完成 write_file\n\nPIXIU\n\n 采购单已核算完成:\n\n。 书籍: 12E x 38.5元= 462.007,\n\n。 标签纸: 5包 x 6.8元=34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmpypixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nEERE DUER EL, FAS,\n"
+  },
+  {
+    "file": "sample-026.jpg",
+    "text": "从任务执行，到经验沉淀\n\n~ 已完成工作 。 2 项\n\n完成 write_file\n\n完成 nese’\n\nPIXIU\n\n 采购单已核算完成;\n\n。 书籍: 12套 x 38.5元= 462.00元\n\n。 标签纸: 5包 x 6.8元= 34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmpy/pixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-027.jpg",
+    "text": "从任务执行，到经验沉演\n\n~ 已完成工作，2 项\n\n完成 write_file\n\n完成 访问 下了\n\nPIXIU\n\n 采购单已核算完成:\n\n。 书籍: 12E x 38.5元= 462.007,\n\n。 标签纸: 5包 x 6.8元=34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmpypixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSERS: +See,\n"
+  },
+  {
+    "file": "sample-028.jpg",
+    "text": "从任务执行，到经验沉演\n\n~ 已完成工作，2 项\n\n完成 write_file\n\n完成 访问 下了\n\nPIXIU\n\n 采购单已核算完成:\n\n。 书籍: 12E x 38.5元= 462.007,\n\n。 标签纸: 5包 x 6.8元=34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmpypixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSERS: +See,\n"
+  },
+  {
+    "file": "sample-029.jpg",
+    "text": "从任务执行，到经验沉淀\n\n* 已完成工作 。2 项\n\n完成 write_file\n\n完成 an\n\nPIXIU\n\n 采购单已核算完成\n\n。 书籍: 12E x 38.5元= 462.00元\n\n。 标签纸: 5包 x 6.8元= 34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmp/pixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU0.1.12 + 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-030.jpg",
+    "text": "从任务执行，到经验沉淀\n\n已完成工作，2 项\n\n完成 write_file\n\n完成 ae ae\n\nPIXIU\n\n 采购单已核算完成:\n\n。 书籍: 12E x 38.5元=462.00元\n\n。 标签纸: 5包 x 6.8元=34.00元\n\n。 Bit: 496.00元\n\n明细已写入文件 /tmpy/pixiu-demo/采购复核单.txt ，并已存入 PIXIU 长期记忆，下次会话可随时查询。\n\n核算采购明细，写入文件并保存记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n=F\n\nES\n\nEP\n\nEs\n\n|\n\n忆\n\nf\n"
+  },
+  {
+    "file": "sample-031.jpg",
+    "text": "从任务执行，到经验沉淀\n\nPIXIU\n\n已从 PIXIU 长期记忆中成功检索到采购复核单信息:\n\n.\n\n书籍: 12E x 38.507 = 462.0075\n\n.\n\n标签纸: SA x 6.807; = 34.0075\n\n二\n\nBit: 496.00元\n\n二\n\n来源: 公开合成采购单 (2026年9月10日) [knw_01M24RBWJY7D3BY5D4F8KV2W6M]\n\n[knw_01M24RC7H4T2N37V4VCJWTMGD3)[knw_01M24RBPSNJNQ7KVCAWSMT6XEY]\n\n明细文件 /tmp/pixiu-demo/采购复核单.txt 已存在且内容一致，可随时读取或导出。\n\n新会话再次找回采购单。 合计496元\n\nPIXIU 0.1.12 。 银河麒麟 V11 SCHR ，公开合成资料\n\n39\n"
+  },
+  {
+    "file": "sample-032.jpg",
+    "text": "从任务执行，到经验沉淀\n\nPIXIU\n\n已从 PIXIU 长期记忆中成功检索到采购复核单信息:\n\n°\n\n书籍: 12E x 38.5075 = 462.0075\n\ne\n\n标签纸: 5包 x 6.805, = 34.0075\n\n.\n\nBit: 496.0075\n\n.\n\n来源: 公开合成采购单 (2026年9月10日) [knw_01M24RBWJY7D3BYSD4F8KV2W6M]\n\n[knw_01M24RC7H4T2N37V4VCJWTMGD3][knw_01M24RBP5NJNQ7KVCAWSMT6XEY]\n\n明细文件 /tmpypixiu-demoy/采购复核单.txt 已存在且内容一致，可随时读取或导出。\n\n新会话再次找回采购单。 合计496元\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-033.jpg",
+    "text": "从任务执行，到经验沉淀\n\nPIXIU\n\n已从 PIXIU 长期记忆中成功检索到采购复核单信息:\n\n本\n\n书籍: 12E x 38.50元=462.00元\n\n[\n\n标签纸: 5包 x 6.80元= 34.00元\n\n[\n\nBit: 496.00元\n\n.\n\n来源: 公开合成采购单 (2026年9月10日) [knw_01M24RBWJY7D3BY5D4F8KV2W6M]\n\n[knw_01M24RC7H4T2N37V4VCJWTMGD3][knw_01M24RBP5NJNQ7KVCAWSMT6XEY]\n\n明细文件 /tmp/pixiu-demoy/采购复核单.txt 已存在且内容一致，可随时读取或导出。\n\n新会话再次找回采购单。 合计496元\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-034.jpg",
+    "text": "保存一份资料，后台自动整理\n\n/tmp/pixiu-demo\n\n添加文件夹…\n\n保存设置\n\n选择目录并保存\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n"
+  },
+  {
+    "file": "sample-035.jpg",
+    "text": "保存一份资料，后台自动整理\n\n/tmp/pixiu-demo\n\n添加文件夹…\n\n保存设置\n\n选择目录并保存\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nEI\n\n9\n"
+  },
+  {
+    "file": "sample-036.jpg",
+    "text": "保存一份资料，后台自动整理\n\n/tmp/pixiu-demo\n\n添加文件夹…\n\n保存设置\n\n选择目录并保存\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n"
+  },
+  {
+    "file": "sample-037.jpg",
+    "text": "保存一份资料，后台自动整理\n\n/tmp/pixiu-demo\n\n添加文件夹…\n\n保存设置\n\n选择目录并保存\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\n把星\n\n测\n\n以\n\n|\n\nY\n\nBi)\n\ntds\n\nEisee)\n"
+  },
+  {
+    "file": "sample-038.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n会话\n\n记忆\n\n四\n\n个人记忆助手\n\n正在整理资料 (0%) ，已保存0条记忆。\n\n主窗口显示整理进度与保存数量\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSTE HLA\n\nJe\n\nEG\n\n2\n\nEl:\n\nEY\n"
+  },
+  {
+    "file": "sample-039.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n会话\n\n记忆\n\n加\n\n个人记忆助手\n\n“3\n\n资料整理完成，已保存1条记忆。\n\n主窗口显示整理进度与保存数量\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-040.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的星河观测活动安排;\n\n。 集合时间: 2026年11月8日晚上七点\n\n。 集合地点: 社区天文台三层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n后台整理后，新会话找回安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nARG ERUT Raleelo\n"
+  },
+  {
+    "file": "sample-041.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的星河观测活动安排\n\n。 集合时间: 2026年11月8日晚上七点\n\n。 集合地点: 社区天文台三层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n后台整理后，新会话找回安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n和-一\n\n7\n\n°\n\n名\n\nY\n\nBi)\n\nBaal?\n\n°\n\n“r—JVelbrads\n"
+  },
+  {
+    "file": "sample-042.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的星河观测活动安排:\n\n。 集合时间: 2026年11月8日晚上七点\n\n。 集合地点: 社区天文台三层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n后台整理后，新会话找回安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-043.jpg",
+    "text": "保存一份资料，后台自动整理\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的星河观测活动安排:\n\n。 集合时间: 2026年11月8日晚上七点\n\n。 集合地点: 社区天文台三层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n后台整理后，新会话找回安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-044.jpg",
+    "text": "保存一份资料，后台自动整理\n\n因 回答来源\n\nPIXIU\n\n口\n\nX\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，星河观测活动在社区天文台三层集合。器材租赁预算2680元\n\n准备流程:\n\n页取观测手册，检查望远镜支架，按小组记录月面特征，结束后归还器材。\n\n查看活动资料原文\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nSee ely\n"
+  },
+  {
+    "file": "sample-045.jpg",
+    "text": "保存一份资料，后台自动整理\n\n¥ 回答来源\n\nPIXIU\n\n口\n\nX\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，星河观测活动在社区天文台三层集合。器材租赁预算2680元\n\n准备流程:\n\n页取观测手册，检查望远镜支架，按小组记录月面特征，结束后归还器材。\n\n查看活动资料原文\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍。 公开合成资料\n\nLU\n\nRy\n\n同\n\n一\n\nER\n"
+  },
+  {
+    "file": "sample-046.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n原内容\n\n整理后内容\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，\n\n星河观测活动在社区天文台三层集\n\n2026年11月15日晚上七点半，星河观测活动在社区天文台二层\n\n合。器材租赁预算2680元.\n\n合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，\n\n检查望远镜支架，按小组记录月面特\n\n准备流程: 领取观测手册，检查望远锁支架，按小组记录月面特\n\n征，结束后归还器材。\n\n征，结束后归还器材。\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批准更正\n\n—\n\n对照原内容与更正建议\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍， AAG,\n\n料\n\n[和\n\n|\n\nBi)\n\naT\n\nAll\n"
+  },
+  {
+    "file": "sample-047.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n原内容\n\n整理后内容\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，\n\n星河观测活动在社区天文台三层集\n\n2026年11月15日晚上七点半，星河观测活动在社区天文台二层\n\n合。器材租赁预算2680元.\n\n合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，\n\n检查望远镜支架，按小组记录月面特\n\n准备流程: 领取观测手册，检查望远锁支架，按小组记录月面特\n\n征，结束后归还器材。\n\n征，结束后归还器材。\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批准更正\n\n—\n\n对照原内容与更正建议\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍， AAG,\n\n后各动手阅遮流和下\n"
+  },
+  {
+    "file": "sample-048.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n星河)\n\n安排\n\n原内容\n\n整理后内容\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，\n\n星河观测活动在社区天文台三层集\n\n2026年11月15日晚上七点:\n\n星河观测活动在社区天文台二层\n\n合。器材租赁预算2680元.\n\n合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，\n\n检查望远镜支架，按小组记录月面特\n\n准备流程: 领取观测手册，检查望远锁支架，按小组记录月面特\n\n征，结束后归还器材。\n\n征，结束后归还器材。\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批准更正\n\n—\n\n对照原内容与更正建议\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nES\n"
+  },
+  {
+    "file": "sample-049.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n原内容\n\n整理后内容\n\n星河观测活动安排\n\n星河观测活动安排\n\n2026年11月8日晚上七点，\n\n星河观测活动在社区天文台三层集\n\n2026年11月15日晚上七点半，星河观测活动在社区天文台二层\n\n合。器材租赁预算2680元.\n\n合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，\n\n检查望远镜支架，按小组记录月面特\n\n准备流程: 领取观测手册，检查望远锁支架，按小组记录月面特\n\n征，结束后归还器材。\n\n征，结束后归还器材。\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批准更正\n\n对照原内容与更正建议\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSa aaesi at call\n"
+  },
+  {
+    "file": "sample-050.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n星河)\n\n安排\n\n原内容\n\n整理后内容\n\n星河观测活动安持\n\n星河观测活动安排\n\n2026年11月8日晚上七点，\n\n星河观测活动在社区天文台三层集\n\n2026年11月15日晚上七点:\n\n星河观测活动在社区天文台二层\n\n合。器材租赁预算2680元.\n\n合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，\n\n检查望远镜支架，按小组记录月面特\n\n准备流程: 领取观测手册，检查望远锁支架，按小组记录月面特\n\n征，结束后归还器材。\n\n征，结束后归还器材。\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批准更正\n\n—\n\n对照原内容与更正建议\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nTEA, ERE,\n"
+  },
+  {
+    "file": "sample-051.jpg",
+    "text": "资料更新，先对照，再保存\n\n© ANBAR\n\nPIXIU\n\n- oO\n\n助手根据新资料提出了以下整理方案。核对原内容与新内容后，批准执行或保留原内容。\n\n原内容\n\n整理后内容\n\n批准前请核对整理内容。\n\n重新读取\n\n保留原内容\n\n批 E\n\n批准更正，保存新版本\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSOLE SN EAA So\n"
+  },
+  {
+    "file": "sample-052.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的最新星河观测活动安排:\n\n。 集合时间: 2026年11月15日晚上七点半\n\n。 集合地点: 社区天文台二层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n(更新通知明确记载:\n\n“星河观测活动调整为2026年11月15日晚上七点半，集合地点改为社区天文台二层。器材租赁\n\n预算保持2680元。”) [knw_01M24NFGWRVQRVOR39GCHYGPVQ]\n\n新会话使用更新后的安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nPES MEh- A ewtet RES\n"
+  },
+  {
+    "file": "sample-053.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的最新星河观测活动安排:\n\n。 集合时间: 2026年11月15日晚上七点半\n\n。 集合地点: 社区天文台二层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n(更新通知明确记载:\n\n“星河观测活动调整为2026年11月15日晚上七点半，集合地点改为社区天文台二层。器材租赁\n\n预算保持2680元。”) [knw_01M24NFGWRVQRVOR39GCHYGPVQ]\n\n新会话使用更新后的安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n盈引岗昌FF一月二于目胸攻局鞋、社区天文台二展品\n"
+  },
+  {
+    "file": "sample-054.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的最新星河观测活动安排:\n\n。 集合时间: 2026年11月15日晚上七点半\n\n。 集合地点: 社区天文台二层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n(更新通知明确记载: “星河观测活动调整为2026年11月15日晚上七点半，集合地点改为社区天文台二层。器材租赁\n\n预算保持2680元。”) [knw_01M24NFGWRVQRVOR39GCHYGPVQ]\n\n新会话使用更新后的安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSEV roel,\n"
+  },
+  {
+    "file": "sample-055.jpg",
+    "text": "资料更新，先对照，再保存\n\nPIXIU\n\n根据 PIXIU 长期记忆中明确记录的最新星河观测活动安排:\n\n。 集合时间: 2026年11月15日晚上七点半\n\n。 集合地点: 社区天文台二层\n\n。 器材预算: 2680元\n\n该信息来源于公开合成的活动资料，原始记忆条目为:\n\nknw_01M24NBPFDSNWYKSQTSGCGWPEX\n\n(更新通知明确记载:\n\n“星河观测活动调整为2026年11月15日晚上七点半，集合地点改为社区天文台二层。器材租赁\n\n预算保持2680元。”) [knw_01M24NFGWRVQRVOR39GCHYGPVQ]\n\n新会话使用更新后的安排\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSAA SME, Silo\n"
+  },
+  {
+    "file": "sample-056.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n云端模型\n\n麒灵系统云模型 (推荐\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n。 电费: 210.00元\n\n。 KE: 68.50元\n\n。 MAE: 156.00元\n\n。 合计: 434.50元\n\n知识条目ID) :\n\nknw_01M20PZ7GKK7CWQ0CQ9FFE307J 查看来源\n\n该记录明确存储为\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元\n\n该数据为公开合成演示数据，用于展示 PIXIU 跨会话记忆录入、检索与溯源能-\n\n[knw_01M1TFQ5VQ0O0NK6YBT6WG859RA]。\n\n新会话查询账单\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n次芝庭帐单区(区靖电深二下和ae坟\n"
+  },
+  {
+    "file": "sample-057.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n云端模型\n\n麒灵系统云模型 (推荐\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n。 电费: 210.00元\n\n。 KE: 68.50元\n\n。 MAE: 156.00元\n\n。 合计: 434.50元\n\n知识条目ID) :\n\nknw_01M20PZ7GKK7CWQ0CQ9FFE307J 查看来源\n\n该记录明确存储为\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元\n\n该数据为公开合成演示数据，用于展示 PIXIU 跨会话记忆录入、检索与溯源能-\n\n[knw_01M1TFQ5VQ0O0NK6YBT6WG859RA]。\n\n新会话查询账单\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\neva: ELSE ae»\n"
+  },
+  {
+    "file": "sample-058.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n云端模型\n\n记灵系统云模型 (推荐)\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下\n\n。 BEE: 210.00元\n\n。 KE: 68.50元\n\n。 MASE: 156.00元\n\n。 合计: 434.50元\n\n来源 (知识条目ID) :\n\nknw_01M20PZ7GKK7CWQ0CQ9FFE307J 查看来源\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\n该数据为公开合成演示数据，用于展示 PIXIU 跨会话记忆录入、检索与溯源能\n\n[knw_01M1TFQSVQOONK6YBT6WG859RA],,\n\n新会话查询账单\n\nPIXIU 0.1.12 + $83\n\n麒麟 V11 SCH > 公开合成资料\n\n炊乞娄一站五十六元。\n"
+  },
+  {
+    "file": "sample-059.jpg",
+    "text": "新会话，也能找到旧知识\n\n电费、水费、燃气费明细\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n保存之后开局曾会诈9\n"
+  },
+  {
+    "file": "sample-060.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n云端模型\n\n麒灵系统云模型 (推荐)\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n。 BEE: 210.00元\n\n© ARE: 68.50元\n\n。 MAB: 156.00元\n\n。 合计: 434.50元\n\n来源 (知识条目ID) :\n\n‘kry_O1M2OPZ7GKK7CWQOCQSFFE3QZ) 查看来源\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\n该数据为公开合成演示数据，用于展示 PIXIU 跨会话记忆录入、检索与溯源能力\n\n[knw_01M1TFQ5VQ00NK6YBT6WG859RA]。\n\n电费、水费、燃气费明细\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-061.jpg",
+    "text": "新会话，也能找到旧知识\n\n会话921210af\n\n型\n\n麒灵系统云模型 (推荐\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下\n\n电费: 210.00元\n\n水费: 68.50元\n\n.\n\n燃气费: 156.00 7\n\n.\n\nBit: 434.5075\n\n知识条目ID) :\n\nkmw_O1M20PZ7GKK7TCWQOCQSFFE3QZ) 查看来源\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\n该数据为公\n\n合成演示数据，用于展示 PIXIU 路会话记忆录入、检索与湖源能力\n\n[knw_01M1TFQSVQOONK6YBT6WG859RA],,\n\n电费、水费、燃气费明细\n\nPIXIU 0.1.12 + $83\n\n麒麟 V11 SCH > 公开合成资料\n\nIS\n\nYAN\n\n“ip\n\n到\n\nZ3N;\n\nAm\n\nHH\n\nB\n\nIZ\n"
+  },
+  {
+    "file": "sample-062.jpg",
+    "text": "从答案，直接回到资料来源\n\n合计 434.50 元\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n"
+  },
+  {
+    "file": "sample-063.jpg",
+    "text": "从答案，直接回到资料来源\n\n会话921210af\n\n云端模型\n\n麒灵系统云模型 (推荐)\n\n请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\nPIXIU\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n© 电费: 210.00元\n\n。 KE: 68.50元\n\n。 MSE: 156.00元\n\n。 合计: 434.50元\n\n来源 (知识条目ID) :\n\nkmw_O1M20PZ7GKK7TCWQOCQSFFE3QZ) 查看来源\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元\n\n该数据为公开合成演示数据，用于展示 PIXIU 跨会话记忆录入、检索与溯源能-\n\n[knw_01M1TFQSVQOONK6YBT6WG859RA],,\n\nBit 434.50 元\n\nPIXIU 0.1.12 + 银河麒麟 V11 S348 - 公开合成资料\n\nSES rea\n"
+  },
+  {
+    "file": "sample-064.jpg",
+    "text": "从答案，直接回到资料来源\n\nPIXIU\n\n口\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源.\n\n根据 PIXIU 长期记忆检索结果\n\n电费: 210.00元\n\n水\n\n8.50 元\n\nBE: 156.00元\n\n“Ait: 434.50 70\"*\n\n知识条目ID) : *knw_01M20PMPSPXBY2VGSBS87WWVB7° (Agent explicit memory)\n\n该记录明确存储为\n\n\"九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”\n\nmae PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来\n\n-\n\n四\n\n打开对应记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSESE,\n"
+  },
+  {
+    "file": "sample-065.jpg",
+    "text": "从答案，直接回到资料来源\n\n“J\n\n答\n\nPIXIU\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n根据 PIXIU 长期记忆检索结果\n\n电费: 210.00元\n\n水\n\n8.50 元\n\n-燃气费: 156.00元\n\n“合计: 434.50 70\"\n\n来源 (知识条目ID) :“knw_01M20PMP8PXBY2VG5B587WWVB7” (Agent explicit memory)\n\n气\n\n该记录明确存储为:\n\n\"九月家庭电费210元、水费68.50元、燃\n\nat\n\n费156元，合计434.50元”。\n\nmae PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来\n\n_\n\n一\n\n-\n\n四\n\n打开对应记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-066.jpg",
+    "text": "从答案，直接回到资料来源\n\nPIXIU\n\n口\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源.\n\n根据 PIXIU 长期记忆检索结果\n\n电费: 210.00元\n\n水\n\n8.50 元\n\nHE: 156.00元\n\n“Ait: 434.50 70\"\n\n知识条目ID) : *knw_01M20PMPSPXBY2VGSBS87WWVB7° (Agent explicit memory)\n\n该记录明确存储为\n\n\"九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”\n\nmae PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来\n\n-\n\n四\n\n打开对应记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n[sz\n\neS\n\n=\n\n依\n\ntie\n\n主\n\nhl\n"
+  },
+  {
+    "file": "sample-067.jpg",
+    "text": "从答案，直接回到资料来源\n\nPIXIU\n\n口\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n请调用 PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来源。\n\n根据 PIXIU 长期记忆检索结果\n\n电费: 210.00元\n\n水\n\n8.50 元\n\n气费: 156.00元\n\n合计: 434.50元\n\n知识条目ID) :“knw_01M20PMP8PXBY2VG5B587WWVB7” (Agent explicit memory)\n\n该记录明确存储为:\n\n\"九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\nane PIXIU 记忆检索工具 pixiu_memory_search 查询“九月家庭电费”，只用返回的记忆回答，并附来\n\n=\n\n—\n\nee\n\n打开对应记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nSUE ANE\n"
+  },
+  {
+    "file": "sample-068.jpg",
+    "text": "多种来源，进入统一记忆\n\n多种来源汇入记忆 + 过程示意\n\n具结:      Y\n\nFR\n\n行\n"
+  },
+  {
+    "file": "sample-069.jpg",
+    "text": "多种来源，进入统一记忆\n\n多种来源汇入记忆 + 过程示意\n\n具结:      Ss\n\nFR\n\n行\n"
+  },
+  {
+    "file": "sample-070.jpg",
+    "text": "多种来源，进入统一记忆\n\n每条证据保留来源、范围与质量\n\n真实会话证据， 家庭共享约定\n\nPIXIU\n\n我们约好每周六上午9:00共同整理书房， 书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[1]。\n\n来源:\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n0.1.12 SHH ”共享约定与来源\n\n会话、配置、文件与行为来源均有实测记录\n\n1\n\nag\n\nse\n\n拉克\n\ntio\n"
+  },
+  {
+    "file": "sample-071.jpg",
+    "text": "多种来源，\n\n进入统一记忆\n\n同一次写入\n\niA 洗前后可核对\n\n公开合成输入\n\n实际清洗后证据\n\n核对书目\n\n核对书目\n\n核对书目\n\n归还原位\n\n归还原位\n\n重复项合并，空\n\n注移除，标题去空\n\nBae\n\n注; 标题两侧有\n\n质量评分 0.775 + 敏感级别 0\n\n写入已接受\n\n内容整理过程\n\nJS\n\nEE\n\nws\n\naT A\n\nZk\n\nea} NY)\n\n月多\n\nree\n\nLE\n\n(iz\n\nHay\n\nLESS\n\nAvy\n"
+  },
+  {
+    "file": "sample-072.jpg",
+    "text": "多种来源，\n\n进入统一记忆\n\n同一次写入\n\niA 洗前后可核对\n\n公开合成输入\n\n实际清洗后证据\n\n核对书目\n\n核对书目\n\n核对书目\n\n归还原位\n\n归还原位\n\n重复项合并，空\n\n注移除，标题去空\n\nBae\n\n注; 标题两侧有\n\n质量评分 0.775 + 敏感级别 0\n\n写入已接受\n\n内容整理过程\n\nJS\n\nEE\n\nws\n\naT A\n\nZk\n\nea} NY)\n\n月多\n\nree\n\nLE\n\n(iz\n\nHay\n\nLESS\n\nAvy\n"
+  },
+  {
+    "file": "sample-073.jpg",
+    "text": "多种来源，进入统一记忆\n\n写入完成后，按范围检索到同一来源\n\n家庭物品整理演示\n\n同    私有范围内查询命    °\n\n反回的来源 1D 与本次写入证据一致\n\n写入内容与检索来源一一对应\n\n内容整理过程\n\n有大\n\n‘A\n\n成可\n\nVs\n\nAine’\n\nYO)\n"
+  },
+  {
+    "file": "sample-074.jpg",
+    "text": "手动记录，了明确保留范围\n\n导入图片\n\nTEX\n\n范围 Agent记忆 (user:default)\n\n其他范围…\n\n添加账单明细\n\n删除所选明细\n\n填写标题、正文与范围\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n1 Ey AUS ey         9\n"
+  },
+  {
+    "file": "sample-075.jpg",
+    "text": "手动记录，了明确保留范围\n\n导入图片\n\nTEX\n\n范围Agent记忆 (user:default)\n\n其他范围…\n\n添加账单明细\n\n删除所选明细\n\n填写标题、正文与范围\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n六\n\nPAS\n\nPEA.\n"
+  },
+  {
+    "file": "sample-076.jpg",
+    "text": "手动记录，了明确保留范围\n\n导入图片\n\n正文 “每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负\n\n责人为资料管理员。公\n\n合成的工作安排。\n\n其他范围…\n\n范围 ”Agent记忆 (user:defautt)\n\n添加账单明细\n\n删除所选明细\n\n填写标题、正文与范围\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n"
+  },
+  {
+    "file": "sample-077.jpg",
+    "text": "手动记录，了明确保留范围\n\n导入图片\n\n正文 “每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负\n\n责人为资料管理员。公\n\n合成的工作安排。\n\n其他范围…\n\n范围 ”Agent记忆 (user:defautt)\n\n添加账单明细\n\n删除所选明细\n\n填写标题、正文与范围\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。公开合成资料\n\nES MASLIS 5\n"
+  },
+  {
+    "file": "sample-078.jpg",
+    "text": "手动记录，了明确保留范围\n\n导入图片\n\n正文 “每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负\n\n责人为资料管理员。公\n\n合成的工作安排。\n\n其他范围…\n\n范围 Agent记忆 (user:defautt)\n\n添加账单明细\n\n删除所选明细\n\n填写标题、正文与范围\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n人>\n\n=F.\n\n型\n\nBA\n\n确\n\nQs\n\neS\n\nfore\n\nKTS\n\n4,\n\n(Es\n\nEale\n"
+  },
+  {
+    "file": "sample-079.jpg",
+    "text": "手动记录，了明确保留范围\n\n保存后，检索并核对正文\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nxc ey VS) eta SED TED Go\n"
+  },
+  {
+    "file": "sample-080.jpg",
+    "text": "手动记录，了明确保留范围\n\n每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管理员。公开\n\n合成的工作安排。\n\n保存后，检索并核对正文\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nace Sle\n\ntuscall\n\nLE NITED Co\n"
+  },
+  {
+    "file": "sample-081.jpg",
+    "text": "使用习惯，按授权记录\n\nPIXIU 公开资料整理演示\n\n= laf X\n\n公开合成的工作场景\n\n投\n\n&\n\n分类\n\n更新借阅登记\n\nPIXIU 0.1.12 + 银河麒麟 V11实拍， 公开合成资料\n"
+  },
+  {
+    "file": "sample-082.jpg",
+    "text": "使用习惯，按授权记录\n\nPIXIU 公开资料整理演示\n\n= laf X\n\n开合成的工作场景\n\n投\n\n&\n\n分类\n\n更新借阅登记\n\nPIXIU 0.1.12 +\n\n银河麒麟 V11实拍。\n\n公开合成资料\n\n也全 RHA.\n"
+  },
+  {
+    "file": "sample-083.jpg",
+    "text": "使用习惯，按授权记录\n\nbody:\n\nevents:\n\n(1):\n\napp: -\n\nday_type: workday\n\nfocus_seconds: 28\n\nhour_bucket: 12\n\ntitle: PIXIU 公开资料整理演示\n\n本次记录: 窗口标题与28秒使用时长\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nese SE AES 0 (eal he ESREE RSS\n"
+  },
+  {
+    "file": "sample-084.jpg",
+    "text": "使用习惯，按授权记录\n\nbody:\n\nevents:\n\n(1):\n\napp: -\n\nday_type: workday\n\nfocus_seconds: 28\n\nhour_bucket: 12\n\ntitle: PIXIU 公开资料整理演示\n\n本次记录: 窗口标题与28秒使用时长\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nese AES 0 (el heKERE ER SS\n"
+  },
+  {
+    "file": "sample-085.jpg",
+    "text": "使用习惯，按授权记录\n\nVv 应用行为统计\n\n在采集与隐私中管理授权\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\n(iD DEE SS AGERE\n"
+  },
+  {
+    "file": "sample-086.jpg",
+    "text": "使用习惯，按授权记录\n\nVv 应用行为统计\n\n在采集与隐私中管理授权\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n7\n\n随时\n\nSS\n\nfel\n\naa)\n\nhe\n"
+  },
+  {
+    "file": "sample-087.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nEN user:pixiu-screenshots\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 ”2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍， 公开合成资\n\n料\n\nPo\n\nQS]\n\nDSI\n\nx!\n\n5\n\nB\n\nIZ\n\nx\n\nES\n\n作\n\nBl)\n\nay\n\n和\n\nbi\n"
+  },
+  {
+    "file": "sample-088.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nEN user:pixiu-screenshots\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-08T22:46:36\n\nverbosity: compact\n\n版本2 ”2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍， 公开合成资\n\n料\n\nPo\n\ngs,\n\nQS]\n\nDSI\n\nx!\n\nS\n\nIZ\n\nx\n\nES\n\n作\n\nBl)\n\nay\n\n和\n\nbi\n"
+  },
+  {
+    "file": "sample-089.jpg",
+    "text": "习惯变化，记忆跟着更新\n\nSa\n\noutput_style.verbosity \"当前版本 3\n\nagent memory_access + user:local\n\ninclude_capture:是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter + user:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-090.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-08T22:46:36\n\nverbosity: compact\n\n版本2 ”2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nKaa司\n\nIS FZ\n\nee 了\n\n上\n\nIK EES\n\n而\n\n站]\n\nY=19\n"
+  },
+  {
+    "file": "sample-091.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nusersacceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08722:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nIS\n\nKy\n\noy 7\n\n3\n\n细\n\nBAS\n"
+  },
+  {
+    "file": "sample-092.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08722:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nEA\n\nLU\n\nShy\n\n十\n\n你存\n\n=F\n\nRA 9\n"
+  },
+  {
+    "file": "sample-093.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08722:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nsy\n\n查\n\n当前\n\nAS\n\nBap\n"
+  },
+  {
+    "file": "sample-094.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\n=\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 + 2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08722:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n和\n\n二<人\n\n和\n\nyal\n\neS\n\n后\n\nLe\n\nY)\n\n用\n\noul\n\nNy\n\nla\n\na\n\n十\n"
+  },
+  {
+    "file": "sample-095.jpg",
+    "text": "习惯变化，记忆跟着更新\n\n=\n\nss\n\noutput_style.verbosity - 当前版本3\n\nagentmemory_access\n\nuser:local\n\ninclude_capture: 是\n\nshared_scopes: shared:home\n\nwrite_scope: shared:home\n\noutput_style.verbosi\n\nser:pixiu-screenshots\n\n中\n\nverbosity: verbose\n\nsecurity.sensitive_filter\n\nuser:acceptance\n\nmin_sensitivity: 2\n\n版本 1 + 2026-09-0822:46:36\n\nverbosity: compact\n\n版本2 ”2026-09-08T22:47:08\n\nverbosity: compact\n\n版本3 + 2026-09-08T22:47:31\n\nverbosity: verbose\n\n当前偏好与版本历史\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nz\n\n和\n\nVal\n\nRAS\n\n后\n\nSAD\n\n1\n\n米\n\n2]\n\n用\n\n新\n\nNy\n\na\n\n73\n"
+  },
+  {
+    "file": "sample-096.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n“书房共有三层书架。\n\n事实、流程、案例与模板。 来源内容摘录\n\nTHOR ME EFE TES ES KES\n"
+  },
+  {
+    "file": "sample-097.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n“书房共有三层书架。\n\n事实、流程、案例与模板。 来源内容摘录\n\nTHOR ME EFE TES ES KES\n"
+  },
+  {
+    "file": "sample-098.jpg",
+    "text": "四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。     家庭图书归还流程\n\n“书房共有三层书架。\n\n从借阅\n\n记本逐项核对书名\n\n事实、 流程 案例与模板， AREAS\n\n这里记录了半妆位生\\\n\n> FB\n\n明\n\n下比\n\nBS\n\noA\n\nEH\n\n整经\n\nJy\n"
+  },
+  {
+    "file": "sample-099.jpg",
+    "text": "四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。     家庭图书归还流程\n\n“书房共有三层书架。\n\n从借阅\n\n记本逐项核对书名\n\n案例\n\n书架分类调整案例\n\n“把常用工具书集中到中层\n\n事实、\n\n流程 案例与模板， 来源内容摘录\n\nReet I SBE RI\n\n> EB\n\n明\n\n下比\n\nBS\n\noA\n\nEH\n\n整经\n\noy\n"
+  },
+  {
+    "file": "sample-100.jpg",
+    "text": "事实、流程、案例与模板\n\n四类公开示例，均已写入并检索到来源\n\n事实。 书房整理事实清单\n\n流程。 家庭图书归还流程\n\n“书房共有三层书架。\n\n“从借阅登记本和逐项核对书名\n\n案例。 书架分类调整案例\n\n模板。 家庭阅读周计划模板\n\n“把常用工具书集中到中层\n\n“填写本周共同阅读的主题\n\n事实、流程、案例与模板。 来源内容摘录\n\nBUSHES ays eae\n"
+  },
+  {
+    "file": "sample-101.jpg",
+    "text": "事实、流程、案例与模板\n\n活动资料中的图书整理步骤 ， 0.1.12 实拍\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\nAR\n\n资料预算: 38760元。\n\n图书整理流程: 核对书名，按主题分类，上架后更新借阅登记。\n\n0.1.12 RERRRA + 公开合成资料\n\nero Eal eS’ 9\n"
+  },
+  {
+    "file": "sample-102.jpg",
+    "text": "事实、流程、案例与模板\n\n活动资料中的图书整理步骤 ， 0.1.12 实拍\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\nAR\n\n资料预算: 38760元。\n\n图书整理流程: 核对书名，按主题分类，上架后更新借阅登记。\n\n0.1.12 原生来源裁片。 公\n\nfey,\n"
+  },
+  {
+    "file": "sample-103.jpg",
+    "text": "事实、流程、案例与模板\n\n活动资料中的图书整理步骤 ， 0.1.12 实拍\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\n资料预算: 38760元。\n\n图书整理流程: 核对书名，按主题分类，上架后更新借阅登记。\n"
+  },
+  {
+    "file": "sample-104.jpg",
+    "text": "事实、流程、案例与模板\n\n活动资料中的图书整理步骤 ， 0.1.12 实拍\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\nAR\n\n资料预算: 38760元。\n\n图书整理流程: 核对书名，按主题分类，上架后更新借阅登记。\n\n01 相似任务\n\n03 作为执行参考\n\n0.1.12 RERRRA + 公开合成资料\n"
+  },
+  {
+    "file": "sample-105.jpg",
+    "text": "事实、流程、案例与模板\n\n活动资料中的图书整理步骤 ， 0.1.12 实拍\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\nAR\n\n资料预算: 38760元。\n\n图书整理流程: 核对书名，按主题分类，上架后更新借阅登记。\n\n01 相似任务\n\n03 作为执行参考\n\n0.1.12 原生来源裁请“ 公\n\na UA a Maeno\n"
+  },
+  {
+    "file": "sample-106.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default + 版本: 1\n\n正文 “每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员\n\n公开合成的工作安排。\n\n读取版本 1\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n=!\n\n|\n\n于里\n\nMELE\n\n于下年四点改为于点。\n"
+  },
+  {
+    "file": "sample-107.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default + 版本: 1\n\n正文 “每周五下午四点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员\n\n公开合成的工作安排。\n\n读取版本 1\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n=!\n\n|\n\n于里\n\nMELE\n\n冠下年四点改为于点。\n"
+  },
+  {
+    "file": "sample-108.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default .版本: 1\n\n标题 秋季资料整理清单\n\nEX “每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公\n\n合成的工作安排。\n\n整理时间更新为周五 17:00\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nPRE RES No\n"
+  },
+  {
+    "file": "sample-109.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default .版本: 1\n\n标题 秋季资料整理清单\n\nEX “每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公\n\n合成的工作安排。\n\n整理时间更新为周五 17:00\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍。 公开合成资料\n\nAe Seales\n"
+  },
+  {
+    "file": "sample-110.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GEOKT6DN60F\n\n范围: user:default + hgas: 1\n\n标题 秋季资料整理清单\n\n正文 每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n整理时间更新为周五 17:00\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-111.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default - 版本: 2\n\n标题 ”秋季资料整理清单\n\n正文 “每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nIX\n\nans\n\n对\n\nTEx\n\nHY\n"
+  },
+  {
+    "file": "sample-112.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default - 版本: 2\n\n标题 ”秋季资料整理清单\n\n正文 “每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nestes\n\nYES) 5 lo\n"
+  },
+  {
+    "file": "sample-113.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default - 版本: 2\n\n标题 ”秋季资料整理清单\n\n正文 “每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nEAA\n\nLie Sees\n"
+  },
+  {
+    "file": "sample-114.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default .版本: 2\n\n标题 ”秋季资料整理清单\n\nEX ”性周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nAS\n\n©\n\nDassy\n\nBentz\n\nRAS\n\nDRED\n\n全9\n"
+  },
+  {
+    "file": "sample-115.jpg",
+    "text": "更新有版本，冲突有记录\n\nknw_01M24QMVBAB84D0GE0KT6DN60F\n\n范围: user:default .版本: 2\n\n标题 ”秋季资料整理清单\n\n正文 。 每周五下午五点，先核对资料名称，再按主题分类，最后更新借阅登记。负责人为资料管\n\n理员。公开合成的工作安排。\n\n重新读取版本 2\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-116.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 76\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\": {\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n电费: 210.00元\n\n水费: 68.50元\n\nHABE: 156.00元\n\n“Bit: 434.5070\"\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QzZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\nonce rh ee sotea le wns\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nERO UP RAS EULIE [S3Cp\n"
+  },
+  {
+    "file": "sample-117.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 70\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\": {\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n电费: 210.00元\n\n水费: 68.50元\n\nHABE: 156.00元\n\n“Bit: 434.5070\"\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QzZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\nonce rh ee sotea le wns\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nra\n\nHD)\n\ni\n\nPZB\n"
+  },
+  {
+    "file": "sample-118.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\nS\n\n-水费: 68.50 75\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段\n\n\"data\": {\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n电费: 210.00元\n\n水费: 68.50元\n\n燃气费: 156.00元\n\n“Bit: 434.5070\"\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\nonce rh ee sotea le wns\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-119.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 76\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\":{\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\n-水费: 68.50元\n\nPRR: 156.00元\n\n“Bit: 434.50 70\"*\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QzZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\ntence rh oe sotea ie wnsasy\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nx\n\nSTKE\n\n=\n\nsai\n\n=a\n\n网\n\niS\n"
+  },
+  {
+    "file": "sample-120.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 76\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\":{\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\n-水费: 68.50元\n\nPRR: 156.00元\n\n“Bit: 434.50 70\"*\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QzZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\ntence rh oe sotea ie wnsasy\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nx\n\nSTKE\n\n二=二\n\nsai\n\n=a\n\n网\n\niS\n"
+  },
+  {
+    "file": "sample-121.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 7\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\":{\n\n\"messages\": [\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n电费: 210.00元\n\n水费: 68.50元\n\nPRB: 156.00元\n\n“Bit: 434.5070\"\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QzZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\ntence rh oe sotea ie wnsasy\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n"
+  },
+  {
+    "file": "sample-122.jpg",
+    "text": "短期关注，中期整理，长期复用\n\n短期 ”根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n-电费: 210.00元\n\ndS\n\n-水费: 68.50 76\n\n-燃气费: 156.00元\n\n“Bit: 434.5\n\n短期 ”请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。\n\n阶段 {\n\n\"data\": {\n\n\"messages\": i\n\n根据 PIXIU 长期记忆检索结果，2026年9月家庭水电燃气费用明细如下:\n\n电费: 210.00元\n\n水费: 68.50元\n\nPRR: 156.00元\n\n“Bit: 434.5070\"\n\n来源 (知识条目ID) :\n\n`“knw_01M20PZ7GKK7CWQ0CQ9FFE3QZJ [查看来源](pixiu://citation/ctx_01M24PKRPH4ZBG2RT49CAS5GK8/knw_01M20PZ7GKK7CWQ0CQ9FFE3QzZJ)\n\n该记录明确存储为:\n\n“九月家庭电费210元、水费68.50元、燃气费156元，合计434.50元”。\n\ntence rh oe sotea ie wnsasy\n\n从当前任务，衔接阶段与长期记忆\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nFiera\n"
+  },
+  {
+    "file": "sample-123.jpg",
+    "text": "LA (a izés 共同记忆\n\n共享开篇\n\n资料\n\npe BEM EIZ\n\n后。\n"
+  },
+  {
+    "file": "sample-124.jpg",
+    "text": "LLA (a izés 共同记忆\n\n共享开篇\n\n3a ae UZ IU NA EY\n\nhes BTS\n"
+  },
+  {
+    "file": "sample-125.jpg",
+    "text": "LLA (a izés 共同记忆\n\n共享开篇\n"
+  },
+  {
+    "file": "sample-126.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01MODSXBMA289GCJABRH56QQG1 -\n\n记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM\n\n记录状态: ONLINE\n\n查找附近设备\n\n断开所有设备…\n\n节点记录已剧新\n\n查看可信设备与配对入口\n\nPIXIU0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-127.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM ”记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nSat\n\nAy,\n\nea\n\nLZ\n\nms\n\n换\n\nifs\n\natl\n\n[一MD\n"
+  },
+  {
+    "file": "sample-128.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM ”记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备…\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 。 银河麒麟 V11 Stig + 公\n\n合成资料\n"
+  },
+  {
+    "file": "sample-129.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1\n\n+ 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM\n\n\"记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-130.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM ”记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n1D\n\nWal\n\n“WH\n\nEY\n\nZN\n\nbf\n\nals\n\n的\n\nJE\n"
+  },
+  {
+    "file": "sample-131.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM ”记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新-\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nEET,\n"
+  },
+  {
+    "file": "sample-132.jpg",
+    "text": "先建立信任，再共享记忆\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM ”记录状态: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n查看可信设备与配对入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nI Se ESO\n"
+  },
+  {
+    "file": "sample-133.jpg",
+    "text": "这里记住，那里接着使用\n\n助手与记忆\n\n配置模型…\n\nV 允许助手使用本机已授权采集的记忆\n\nY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n选择家庭共享空间\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n在书包的会症里。\n"
+  },
+  {
+    "file": "sample-134.jpg",
+    "text": "这里记住，那里接着使用\n\n助手与记忆\n\n配置模型…\n\nV 允许助手使用本机已授权采集的记忆\n\nVY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\nchill i\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\n选择家庭共享空间\n\n[=]\n\nie ESE Py ees\n"
+  },
+  {
+    "file": "sample-135.jpg",
+    "text": "这里记住，那里接着使用\n\n助手与记忆\n\n配置模型…\n\nV 允许助手使用本机已授权采集的记忆\n\nY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\nchill as\n\nPIXIU 0.1.12 + 银河麒麟 V11 S338 。 公开合成资料\n\n选择家庭共享空间\n\n[=]\n\nie PES ESPy ese\n"
+  },
+  {
+    "file": "sample-136.jpg",
+    "text": "这里记住，那里接着使用\n\n助手与记忆\n\n配置模型…\n\nVY 允许助手使用本机已授权采集的记忆\n\nY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n选择家庭共享空间\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n更新信\n\n网\n\nfet\n\nEZ\n\nNi\n\nETS\n"
+  },
+  {
+    "file": "sample-137.jpg",
+    "text": "这里记住，那里接着使用\n\nPIXIU\n\n我们约好每周六上午9:00共同整理书房} 书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\n来源:\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n换一台设备，继续查询约定\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nfra | = ary\n"
+  },
+  {
+    "file": "sample-138.jpg",
+    "text": "这里记住，那里接着使用\n\nPIXIU\n\n我们约好每周六上午9:00共同整理书房书籍按主题分类上架; 整理后需同步更新借阅登记表[]]。\n\n该约定已存入家庭共享记忆，适用于所有家庭成员，并支持客厅智能助手实时查询[]]。\n\n来源:\n\nknw_01M24POEXKAQZRRZX39YDCAQEV\n\n换一台设备，继续查询约定\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nES\n\nN\n\nVig\n\n手耕\n\n找\n\nf\n\nKETC\n"
+  },
+  {
+    "file": "sample-139.jpg",
+    "text": "这里记住，那里接着使用\n\nAgent explicit memory\n\nAgent explicit memory\n\n家庭共享约定: SAKLFI0ORMBBBE; PRA (1) 核对书名，\n\n(2) 按主题分类上架，\n\n(3) 同步更新\n\n借阅登记表。该约定适用于所有家庭成员，支持客厅智能助手实时查询。\n\n打开同一条记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nESE UEesS\n"
+  },
+  {
+    "file": "sample-140.jpg",
+    "text": "这里记住，那里接着使用\n\nAgent explicit memory\n\nAgent explicit memory\n\n家庭共享约定: SAKLFI0ORMBEBE; PRA (1) 核对书名，\n\n(2) 按主题分类上架，\n\n(3) 同步更新\n\n借阅登记表。该约定适用于所有家庭成员，支持客厅智能助手实时查询。\n\n打开同一条记忆的来源\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\npre,\n\nasia\n\nAR\n\nB\n\n四\n\n的\n"
+  },
+  {
+    "file": "sample-141.jpg",
+    "text": "离线仍可用，重连再对账\n\n杉资料移\n\n二0 EL2\n\n同一知识的实际记录\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n"
+  },
+  {
+    "file": "sample-142.jpg",
+    "text": "离线仍可用，重连再对账\n\n共享约定已在三端保存\n\n云杉资料移交\n\n0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\n全。\n\n设备二\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\n|\n\nFx\n\na\n\noS\n\n5)\n\nKE\n\nwee\n\na)\n\nSHILA\n"
+  },
+  {
+    "file": "sample-143.jpg",
+    "text": "离线仍可用，重连再对账\n\n各端使用本地副本，分别记录更新\n\nBARS + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本 2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\n暂时隔离/及备间的\n\n同\n\nAE\n"
+  },
+  {
+    "file": "sample-144.jpg",
+    "text": "离线仍可用，重连再对账\n\n各端使用本地副本，分别记录更新\n\nBARS + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n更新于 01:49:54 UTC\n\n版本2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nWal\n\nSe\n\nx2\n\n米\n\n4击\n\n使用水地\n\n忆\n\nto\n"
+  },
+  {
+    "file": "sample-145.jpg",
+    "text": "离线仍可用，重连再对账\n\n各端使用本地副本，分别记录更新\n\nBARS + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n更新于 01:49:54 UTC\n\n版本2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nWal\n\nSe\n\nx2\n\n米\n\n4击\n\n使用水地\n\n局\n\nto\n"
+  },
+  {
+    "file": "sample-146.jpg",
+    "text": "离线仍可用，重连再对账\n\n各端使用本地副本，分别记录更新\n\n云杉资料移\n\n0.1712 =\n\n同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nEs\n\n设备二\n\n云杉资料移交 <时间改为2026年11月10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\n版本2\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交\n\n时间为2026年11月8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机 。 本次恢复约30.5秒\n\nthossnce t= lab\n"
+  },
+  {
+    "file": "sample-147.jpg",
+    "text": "离线仍可用，重连再对账\n\n重连完成，三端记录一致\n\n云杉资料移\n\nOre.\n\n同一知识的实际记录\n\n设备一\n\n云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案\n\n01:49:54 UTC\n\n版本2\n\n更新\n\nes\n\n设备二\n\n版本 2\n\n云杉资料移交 时间改为2026年11月10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案\n\n版本 2\n\n更新于 01:49:54 UTC\n\nES\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机 。 本次恢复约30.5秒\n\nERS ETT 5\n"
+  },
+  {
+    "file": "sample-148.jpg",
+    "text": "离线仍可用，重连再对账\n\n重连完成，三端记录一致\n\n云杉资料移\n\n- 01,12\n\n同一知识的实际记录\n\n设备一\n\n云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案\n\n01:49:54 UTC\n\n版本 2\n\n更新\n\nes\n\n设备二\n\n版本2\n\n云杉资料移交 <时间改为2026年11月10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n云杉资料移交 <时间改为2026年11月10日下午三点，地点为三楼档案\n\n01:49:54 UTC\n\n版本 2\n\n更新\n\noO\n\n每台设备保有本地副本，恢复连接后交换更新。\n\n三台独立 V11 虚拟机 。 本次恢复约30.5秒\n\n    SUES) 2S\n"
+  },
+  {
+    "file": "sample-149.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\nBARS + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本 2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\n两会恋备从同一[本纪别属政。\n"
+  },
+  {
+    "file": "sample-150.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\n云杉资料移交\n\n0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本 2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n"
+  },
+  {
+    "file": "sample-151.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\n云杉资料移交\n\n0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\n识别学后与并妥关系。\n"
+  },
+  {
+    "file": "sample-152.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\nBARS + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n更新于 01:49:54 UTC\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nPERE A AES SW aie\n"
+  },
+  {
+    "file": "sample-153.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\n云杉资料移交\n\n0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n版本 2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\noO\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nis it SS SUE 5\n"
+  },
+  {
+    "file": "sample-154.jpg",
+    "text": "同时修改，也能收敛\n\n各端使用本地副本，分别记录更新\n\n云杉资料移交\n\n0.1.12 + 同一知识的实际记录\n\n设备一\n\n版本2\n\n云杉资料移交时间改为2026年11月 9日上午十点，地点为二楼档案\n\n更新于 01:49:53 UTC\n\nBo\n\n设备二\n\n版本2\n\n云杉资料移交时间改为2026年11月 10日下午三点，地点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n版本 1\n\n云杉资料移交时间为2026年11月 8日上午九点，地点为一楼档案\n\n更新于 01:23:40 UTC\n\n°\n\n两台设备各自更新，保留修改分支。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n"
+  },
+  {
+    "file": "sample-155.jpg",
+    "text": "同时修改，也能收敛\n\n重连完成，三端记录一致\n\nBARS + 0.1.12 + 同一知识的实际记录\n\n设备一\n\n更新于 01:49:54 UTC\n\n版本2\n\nBo\n\n云杉资料移交时间改为2026年11月10日下千三点，闻点为三楼档案\n\n设备二\n\n版本2\n\n云杉资料移交时间改为2026年11月10日下千三点，节点为三楼档案\n\n更新于 01:49:54 UTC\n\noO\n\n设备三\n\n更新于 01:49:54 UTC\n\n版本 2\n\n云杉资料移交时间改为2026年11月10日下千三点，闻点为三楼档案\n\noO\n\n重连后，三台设备读到相同内容。\n\n三台独立 V11 虚拟机。 本次恢复约30.5秒\n\nhas\n\nBR\n\nSS\n\n本得\n\nEN\n"
+  },
+  {
+    "file": "sample-156.jpg",
+    "text": "个人记忆，有了明确边界\n\n助手与记忆\n\n配置模型…\n\nV 允许助手使用本机已授权采集的记忆\n\nV| 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n读取范围与保存位置分别设置\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍\n\n公开合成资料\n"
+  },
+  {
+    "file": "sample-157.jpg",
+    "text": "个人记忆，有明确边界\n\n助手与记忆\n\n配置模型\n\nY 允许助手使用本机已授权采集的记忆\n\nVY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n读取范围与保存位置分别设置\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍，\n\n公开合成资料\n\nBod\n\nes\n\nHAPS\n\neS\n\nSe\n\n己围\n\n[ape ae\n"
+  },
+  {
+    "file": "sample-158.jpg",
+    "text": "个人记忆，有了明确边界\n\n助手与记忆\n\n配置模型…\n\nV 允许助手使用本机已授权采集的记忆\n\nY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n读取范围与保存位置分别设置\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 + AA AGRA\n"
+  },
+  {
+    "file": "sample-159.jpg",
+    "text": "个人记忆，有了明确边界\n\n助手与记忆\n\n配置模型…\n\nY 允许助手使用本机已授权采集的记忆\n\nY 允许助手查询共享空间\n\nshared:home\n\n新记忆保存到上面的共享空间\n\n读取范围与保存位置分别设置\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\ned\n\n《人as\n\nEHS\n\n洲\n\n的使用\n\n(Es\n\nEale\n"
+  },
+  {
+    "file": "sample-160.jpg",
+    "text": "个人记忆，有了明确边界\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM + icStik#5: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n选择参与协作的设备\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nTE\n\ndj\n\nTS\n\n== IP Sze\n\nEAE eisureey cee)\n"
+  },
+  {
+    "file": "sample-161.jpg",
+    "text": "个人记忆，有了明确边界\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM + icStik#5: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n选择参与协作的设备\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n 择;卖取池围困保存位置旨\n"
+  },
+  {
+    "file": "sample-162.jpg",
+    "text": "个人记忆，有了明确边界\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM + icStik#5: ONLINE\n\n添加设备…\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n选择参与协作的设备\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n 择;卖取池围困保存位置旨\n"
+  },
+  {
+    "file": "sample-163.jpg",
+    "text": "个人记忆，有了明确边界\n\n本机与本地信任节点\n\npixiu-host (本机)\n\ndev_01M0DSXBMA289GCJABRH56QQG1 + 记录状态: ONLINE\n\npixiu-test-b\n\ndev_01M24A3JADQETCBBAMDT144KXM + icStik#5: ONLINE\n\n查找附近设备\n\n移除所选设备\n\n断开所有设备…\n\n节点记录已剧新~\n\n选择参与协作的设备\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nBUSES TMA SAT\n"
+  },
+  {
+    "file": "sample-164.jpg",
+    "text": "先看影响，再确认遗忘\n\n秋季资料整理清单\n\nknw_01M24QMVBAB84DOGEOKT6DN60F + 版本2\n\nuser:default\n\n预览并核对目标与版本\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nbine ae tel  Y PIS\n"
+  },
+  {
+    "file": "sample-165.jpg",
+    "text": "先看影响，再确认遗忘\n\n秋季资料整理清单\n\nknw_01M24QMVBAB84DOGEOKT6DN60F + 版本2\n\nuser:default\n\n预览并核对目标与版本\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n二明确确jA\n"
+  },
+  {
+    "file": "sample-166.jpg",
+    "text": "先看影响，再确认遗忘\n\n后端确认遗志 1 条知识。\n\n确认遗忘 1 条演示知识\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nSF\n\nERA.\n\nall\n\n了\n\nVISES\n\nAy\n\nLar\n\nIEE NO\n"
+  },
+  {
+    "file": "sample-167.jpg",
+    "text": "先看影响，再确认遗忘\n\n后端确认遗忘 1 条知识。\n\n确认遗忘 1 条演示知识\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\nSF\n\nERA.\n\nall\n\n了\n\nVISES\n\nAy\n\nLar\n\nIEE NO\n"
+  },
+  {
+    "file": "sample-168.jpg",
+    "text": "先看影响，再确认遗忘\n\n后端确认遗忘 1 条知识。\n\n确认遗忘 1 条演示知识\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍。 公开合成资料\n\n= ky\n\nTS\n\n1\n\n& a\n\nUe\n\nSAD\n\n忆，\n\n|\n\nAl\n\n=F\n\n主人\n"
+  },
+  {
+    "file": "sample-169.jpg",
+    "text": "先看影响，再确认遗忘\n\n后端确认遗忘 1 条知识。\n\n确认遗忘 1 条演示知识\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nFae wa = Desay\n"
+  },
+  {
+    "file": "sample-170.jpg",
+    "text": "先看影响，再确认遗忘\n\n后端确认遗志 1 条知识。\n\n确认遗忘 1条演示知识\n\nPIXIU 0.1.12 + 银河麒麟 V11实拍。    a =\n\nWea Se pear [ous ER    Rese\n"
+  },
+  {
+    "file": "sample-171.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + 狐肘记忆系统\n\n智能体宿主与运行时\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\nAY\n\nCy\n\nfia)\n\nSeed:\n\nAe\n\n的\n\n和口中\n\nE15\n\n{AST\n\nee 4il\n\nUS侣\n"
+  },
+  {
+    "file": "sample-172.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + 狐肘记忆系统\n\n智能体宿主与运行时\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\nAY\n\nCy\n\nfia)\n\nSeed:\n\nAe\n\n的\n\n05\n\nE15\n\n{AST\n\nee 4il\n\nUS侣\n"
+  },
+  {
+    "file": "sample-173.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + 狐肘记忆系统\n\n智能体宿主与运行时\n\nBESTS > 规划任务\n\n调用工具\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n ha Saco\n"
+  },
+  {
+    "file": "sample-174.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + 狐肘记忆系统\n\n智能体宿主与运行时\n\n记忆适配层\n\n|\n\nBESS > 规划任务\n\nWALA\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n原名\n\n的\n\n忆\n\n1B\n\nea!\n\nBie\n\n层\n"
+  },
+  {
+    "file": "sample-175.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + 狐肘记忆系统\n\n智能体宿主与运行时\n\n记忆适配层\n\nMIC IZA\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n偏好、安全与遗忘\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\niS\n\n各入\n\n局\n\nWE\n\n|狐\n\n3th\n\nERE Ne WER, EES\n\nSa\n\nia\n\n同\n\na\n\nBll\n\n==)\n"
+  },
+  {
+    "file": "sample-176.jpg",
+    "text": "记忆能力，接入完整智能\n\n开放麒麟智能体 + 狐肘记忆系统\n\n智能体宿主与运行时\n\n记忆适配层\n\nMIC IZA\n\n管理会话。 规划任务\n\n“| “多源接入与知识检索\n\n调用工具\n\n偏好、安全与遗忘\n\n本地存储与设备同步\n\n01 执行任务\n\n02 连接记忆\n\n03 沉淀与复用\n\n架构示意\n\n通过公共接口连接\n\niS\n\n各入\n\n局\n\nWE\n\npe\n\nNee\n\n3th\n\nERE Ne WER, ERESl\n\nSa\n\nia\n\n同\n\na\n\nBll\n\n==)\n"
+  },
+  {
+    "file": "sample-177.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据。\n\n口 查看原始数据 (高级)\n\n星河观测活动安排\n\nSs\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nABS EVI »\n"
+  },
+  {
+    "file": "sample-178.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据\n\n口 查看原始数据 (高级)\n\n星河观测活动安排\n\nSs\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n也可以找品记忆。\n"
+  },
+  {
+    "file": "sample-179.jpg",
+    "text": "关键词、\n\nax. KK, KER\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据\n\n星河观测活动安排\n\n查看原始数据 (高级)\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nERB\n\ng\n\nep Gules seis\n\nSVR\n\n=I\n\nLEE\n"
+  },
+  {
+    "file": "sample-180.jpg",
+    "text": "关键词、\n\nax. KK, KER\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据\n\n星河观测活动安排\n\n查看原始数据 (高级)\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nERB\n\ng\n\nep Gules seis\n\nSVR\n\n=I\n\nLEE\n"
+  },
+  {
+    "file": "sample-181.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据。\n\n口 查看原始数据 《高级)\n\n星河观测活动安排\n\nS\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-182.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据。\n\n星河观测活动安排\n\n口 查看原始数据 《高级)\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nes,\n\naT\n\nbaa\n\ntales,\n\n材\n\niw\n"
+  },
+  {
+    "file": "sample-183.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n望远镜 器材预算\n\n搜索\n\n检索完成，选择来源查看证据。\n\n口 查看原始数据 (高级)\n\n星河观测活动安排\n\nS\n\n用内容关键词，找回活动资料\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n"
+  },
+  {
+    "file": "sample-184.jpg",
+    "text": "关键词、语义、关系，联合找回\n\n2026年11月8日晚上七点，星河观测活动在社区天文台三层集合。器材租赁预算2680元。\n\n准备流程: 领取观测手册，检查望远镜支架，按小组记录月面特征，结束后归还器材。\n\n核对原始安排与准备步骤\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nlp\n\nia\n\nEt\n\nzh\n\nBi)\n\nart\n\n=\n\nEis\n\nue\n\nAKO)\n"
+  },
+  {
+    "file": "sample-185.jpg",
+    "text": "一个安装包，统一管理\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTP API: 0.5.0 + Agent Memory API: 1 。 数据库 schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一臻\n\n平台: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kylin\n\n向量存储: 配置 kylin 一 实际 kylin\n\n桌面与后端版本一致\n\nPIXIU 0.1.12 + 银河麒麟 V11 Se:\n\n公开合成资料\n"
+  },
+  {
+    "file": "sample-186.jpg",
+    "text": "一个安装包，统一管理\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTPAPI: 0.5.0 + Agent Memory API: 1 数据库 schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一臻\n\nFA: kylin 11\n\nEmbedding: 配置 kylin > 实际 kytin\n\n向量存储: 配置 kylin 一 实际 kylin\n\n桌面与后端版本一致\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n一人\n\npa ee ore TE SVE\n\n助\n\nUS\n\nfT;\n\nsy\n\n计\n\n与\n\n局\n\nIZ\n\nARSC\n"
+  },
+  {
+    "file": "sample-187.jpg",
+    "text": "一个安装包，统一管理\n\n后端组件与数据库: 就绪 (本次读取)\n\n桌面产品版本: 0.1.12\n\n后端产品版本: 0.1.12\n\nHTTPAPI: 0.5.0 + Agent Memory API: 1 数据库 schema: 15\n\n接口版本: 属于当前已验证范围\n\n产品版本: 一臻\n\nFA: kylin 11\n\nEmbedding: 配置 kylin 一 实际 kytin\n\n向量存储: 配置 kylin 一 实际 kylin\n\n桌面与后端版本一致\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n一人\n\npa ee ore TE SVE\n\n助\n\nUS\n\nfT;\n\nsy\n\n计\n\n与\n\n局\n\nIZ\n\nARSC\n"
+  },
+  {
+    "file": "sample-188.jpg",
+    "text": "一个安装包，统一管理\n\n可用模型\n\n麒灵系统云模型 GF)\n\nDeepSeek Chat (官方云端)\n\nClaude Sonnet 4 (Anthropic)\n\nGPT-4.1 (OpenAl)\n\n选择模型并配置连接\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 公开合成资料\n"
+  },
+  {
+    "file": "sample-189.jpg",
+    "text": "一个安装包，统一管理\n\n关于与更新\n\nPIXIU 0.1.12\n\nPIXIU 记忆系统与 openKylin Agent 集成。升级前请保存正在进行的工作; 安装和健康检查成功后，由您选择重启整\n\n个应用。\n\n检查更新\n\n查看当前版本与更新入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\neae eh lc\n"
+  },
+  {
+    "file": "sample-190.jpg",
+    "text": "一个安装包，统一管理\n\n关于与更新\n\nPIXIU 0.1.12\n\nPIXIU 记忆系统与 openKylin Agent 集成。升级前请保存正在进行的工作; 安装和健康检查成功后，由您选择重启整\n\n个应用。\n\n检查更新\n\n查看当前版本与更新入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n=\n\nozs\n\nTit\n\nZales\n\n二\n\nZG\n\npiety.\n\n省\n\n  健康梯春和上自动|居化\n"
+  },
+  {
+    "file": "sample-191.jpg",
+    "text": "一个安装包，统一管理\n\n关于与更新\n\nPIXIU 0.1.12\n\nPIXIU 记忆系统与 openKylin Agent 集成。升级前请保存正在进行的工作; 安装和健康检查成功后，由您选择重启整\n\n个应用。\n\n检查更新\n\n查看当前版本与更新入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n=\n\nozs\n\nTit\n\nZales\n\n二\n\nZG\n\npiety.\n\n省\n\n  健康梯春和上自动|居化\n"
+  },
+  {
+    "file": "sample-192.jpg",
+    "text": "一个安装包，统一管理\n\n关于与更新\n\nPIXIU 0.1.12\n\nPIXIU 记忆系统与 openKylin Agent 集成。升级前请保存正在进行的工作; 安装和健康检查成功后，由您选择重启整\n\n个应用。\n\n检查更新\n\n查看当前版本与更新入口\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nFy) tea\n"
+  },
+  {
+    "file": "sample-193.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n逐样本记录与统计结果\n\n突处理四\n"
+  },
+  {
+    "file": "sample-194.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS sco x2\n\n96%  24/25 48\n\n逐样本记录与统计结果\n\n(eA Fa TF\n\n突处理四\n"
+  },
+  {
+    "file": "sample-195.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/5048\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS scone\n\n96%  24/25 48\n\n逐样本记录与统计结果\n\n(eA Fa TF\n\n突处理四\n"
+  },
+  {
+    "file": "sample-196.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS scone\n\n96%  24/25 4\n\n逐样本记录与统计结果\n\nPASE VSI NEIEA\n"
+  },
+  {
+    "file": "sample-197.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS :oo这\n\n96%  24/25 48\n\n逐样本记录与统计结果\n\nsain Cie AEE Va lol»\n"
+  },
+  {
+    "file": "sample-198.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS :oo这\n\n96%  24/25\n\n逐样本记录与统计结果\n\npeti Ba feces ULE O\n"
+  },
+  {
+    "file": "sample-199.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS :oo这\n\n96%  24/25 48\n\n逐样本记录与统计结果\n\nSree Seen bose Heel.\n"
+  },
+  {
+    "file": "sample-200.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100%  15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS :oo这\n\n96%  24/25 48\n\n逐样本记录与统计结果\n\nSie Seen bose Heel.\n"
+  },
+  {
+    "file": "sample-201.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100% 15/154\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS :oo这\n\n96%  24/25 48\n\n0.1.12 V11: 安装、签名升级、双 SDK 与三端协作通过\n\n版本、环境与实际结果共同复核\n\nah\n\nBRS\n\nChi E\n\nFONE AS\n\nr aC\n\nsh\n\nSDN\n\nSS\n\nMeee,\n"
+  },
+  {
+    "file": "sample-202.jpg",
+    "text": "用数据，检验记忆优化\n\n历史评测 。 Debian portable\n\npixiu-family-expense-v1\n\n偏好准确率\n\n知识召回率\n\n100% 15/15 48\n\n100%  50/50 48\n\n检索延迟 P95\n\n冲突正确率\n\n115 MS soo x2\n\n96%  24/25 48\n\n0.1.12 V11: 安装、签名升级、双 SDK 与三端协作通过\n\n版本、环境与实际结果共同复核\n\nCGO\n\nBRS\n\nChi E\n\nERS,\n\nF<\n\nsh\n\nSBN\n\nSih\n\naM eee,\n"
+  },
+  {
+    "file": "sample-203.jpg",
+    "text": "从记住，到主动提供线索\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况.\n\n星河观测活动安排\n\n星河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\n资料预算: 38760元。\n\n图书整理流程: 核对\n\n松涛资料费用信息\n\n松涛资料费用信息\n\n日期\n\n2026-09-10\n\nJ\n\n2026-09-10\n\n当日新增1条记忆\n\n《目录 1)\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\nTRESS STEEN\n"
+  },
+  {
+    "file": "sample-204.jpg",
+    "text": "从记住，到主动提供线索\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况.\n\n星河观测活动安排\n\n星河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九点.\n\n活动地点: 社区服务中心六楼:\n\n资料预算; 38760元\n\n图书整理流程: 核对\n\n松涛资料费用\n\n松涛资料费用|\n\n日期\n\n2026-09-10\n\n2026-09-10\n\n当日新增1条记忆 (BRD\n\n近期知识 与当天采集简报\n\nPIXIU 0.1.12 +\n\n银河麒麟 V11 Scie -\n\n合成资\n\n1S\n\n[|\n\n+:\n\n后\n\nHH\n\nzu\n\n了\n\nCN\n\n了里\n\n1\n\nPEER,\n"
+  },
+  {
+    "file": "sample-205.jpg",
+    "text": "a\n\n从记住，\n\n=\n\nVE ahha\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况。\n\n星河观测活动安排\n\n河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排\n\n活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\n资料预算: 38760元。\n\n图书整理流程: 核对\n\n松涛资料费用信息\n\n松涛资料费|\n\n日期\n\n2026-09-10\n\nJ\n\n2026-09-10\n\n当日新增1条记忆 (BRD)\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 。 公开合成资料\n\n 着汇总采集情况。\n"
+  },
+  {
+    "file": "sample-206.jpg",
+    "text": "从记住，到主动提供线索\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况。\n\n星河观测活动安排\n\n星河观测\n\n中\n\n动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九点\n\n活动地点: 社区服务中心六楼。\n\n资料预算\n\n8760元。\n\n图书整理流程: 核对\n\n松涛资料费用信息\n\n松涛资料费用信息\n\n日期\n\n2026-09-10\n\nJ\n\n2026-09-10\n\n当日新增1条记忆《目录 1\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 。 银河麒麟 V11 实拍 ，公开合成资料\n"
+  },
+  {
+    "file": "sample-207.jpg",
+    "text": "a\n\n从记住，\n\n=\n\nVE ahha\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况。\n\n星河观测\n\n动安排\n\n星河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九8\n\n活动地点: 社区服务中心六楼。\n\n资料预算: 38760元。\n\n图书整理流程: 核对\n\n松涛资料费用信息\n\n松涛资料费用信息\n\n日期\n\n2026-09-10\n\nJ\n\n2026-09-10\n\n当日新增1条记忆 (BRD\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nS\n\n查\n\n条\n\nEA\n\n的\n\n;下\n\ni\n\nMy.\n\nal\n"
+  },
+  {
+    "file": "sample-208.jpg",
+    "text": "a\n\n从记住，\n\n=\n\nVE ahha\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况.\n\n星河观测活动安排\n\n星河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九!\n\n活动地点: 社区服务中心六楼。\n\n资料预算: 38760元。\n\n图书整理流程: 核对\n\n松涛资料费用信息\n\n松涛资料费用信息\n\n日期\n\n2026-09-10\n\nJ\n\n2026-09-10\n\n当日新增1条记忆 (BRD\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nSAA aes\n"
+  },
+  {
+    "file": "sample-209.jpg",
+    "text": "从记住，\n\n到主动提供线索\n\n近期值得关注的资料，以及每天整理的文件和应用使用情况。\n\n星河观测活动安排\n\n河观测活动安排\n\n秋季读书会安排\n\n秋季读书会安排: 活动日期: 2026年10月24日，上午九点。\n\n活动地点: 社区服务中心六楼。\n\n图书整理\n\n资料预算:  38760元\n\n核对\n\n松涛资料费用信息\n\n松涛资料费用信息\n\n日期\n\n2026-09-10\n\n2026-09-10\n\n当日新增1条记忆 (BRD\n\n近期知识与当天采集简报\n\nPIXIU 0.1.12 + 银河麒麟 V11 实拍 - 公开合成资料\n\nA\n\nez\n\n和\n\nad\n\nJy\n"
+  },
+  {
+    "file": "sample-210.jpg",
+    "text": "翅个人经验 变成可信协作 能\n\nHf\n\nw/\n\nNAS\n\nee) = Ue\n\nLE\n\n接和\n\nie\n\nWay\n\nZAKS)\n"
+  },
+  {
+    "file": "sample-211.jpg",
+    "text": "双个人经铬变成可信协作能\n\n价值\n\nw/\n\nNAS\n\nee) eG\n\nLE\n\n接和\n\nie\n\naE\n\nEPEj 9\n"
+  },
+  {
+    "file": "sample-212.jpg",
+    "text": "和个人经铬变成可信协作能\n\n价值\n\n和独自动整理\n\n比\n\n授权咨\n"
+  },
+  {
+    "file": "sample-213.jpg",
+    "text": "双个人经铬变成可信协作能\n\n价值\n\non\n\nWeal\n\nUN\n\nrai\n\n生类\n\nMAR DO\n"
+  },
+  {
+    "file": "sample-214.jpg",
+    "text": "和个人经铬变成可信协作能\n\n价值\n"
+  },
+  {
+    "file": "sample-215.jpg",
+    "text": "FET A 2242 BAP (a FRE\n\n价值\n\nTea\n\nmail see\n\neae\n\nfal\n\neho\n"
+  },
+  {
+    "file": "sample-216.jpg",
+    "text": "PIXIU\n\nPIXIU 。 325k\n\n面向麒麟操作系\n\nor 50\n\nco\n\n能体的去中心化记忆系\n\nma。 ean\n\n向\n\nBEES\n\n作\n\nA\n\n统\n\n0\n\n能体\n\nspec\n\n(URS LNIERB Bo\n"
+  },
+  {
+    "file": "sample-217.jpg",
+    "text": "PIX!\n\nPIXIU 。  en\n\nTE IA) BRB ER FA\n\n7s 50\n\nALA\n\n能体的去中心化记忆系统\n\nsoe\n\neae\n\nsansa\n\nams\n\nfal\n\n向\n\nBEES\n\n作\n\nA\n\n统\n\n0\n\n能体\n\nFURS UNERB i\n"
+  },
+  {
+    "file": "sample-218.jpg",
+    "text": "PIXIU\n\n[ as |   记忆 设备 。 设置\n\neon\n\nPIXIU 。 325k\n\n面向麒麟操作系\n\nEM三]\n\nor 50\n\n能体的去中心化记忆系统\n\nae ，彼此相通\n\nWal\n\nI\n\nEnpbsz:\n\n将的\n\n忆\n\nto\n"
+  },
+  {
+    "file": "sample-219.jpg",
+    "text": "PIXIU\n\n[ ss |   记亿设备。 设置\n\nPIXIU + $25\n\n面向麒麟操作系\n\nML三]\n\n75 50\n\n能体的去中心化记忆系统\n\nER ，彼此相通\n\nwwe。 sam\n\nisd lacy f= pte\n"
+  }
+]

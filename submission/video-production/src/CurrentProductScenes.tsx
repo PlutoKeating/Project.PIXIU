@@ -4,7 +4,7 @@ import data from './current-scenes.json';
 import story from '../storyboard/shots.json';
 import {Fonts} from './Fonts';
 
-type Asset = {kind: string; src: string; end?: string; width: number; height: number; frames?: number};
+type Asset = {kind: string; src: string; end?: string; width: number; height: number; frames?: number; playback_alignment?: string};
 type Segment = {asset: string; label: string; cue: string | null; fraction: number};
 type SceneShot = {id: string; duration: number; captions?: {text: string; from: number}[]};
 const assets: Record<string, Asset> = data.assets;
@@ -14,10 +14,10 @@ export const hasCurrentScene = (id: string) => Boolean(scenes[id]);
 const Media: React.FC<{asset: Asset; duration: number}> = ({asset, duration}) => {
   const f = useCurrentFrame();
   const playbackFrames = Math.min(asset.frames ?? 0, Math.max(1, duration - 18));
-  const trimBefore = Math.max(0, (asset.frames ?? 0) - playbackFrames);
+  const trimBefore = asset.playback_alignment === 'start' ? 0 : Math.max(0, (asset.frames ?? 0) - playbackFrames);
   const scale = Math.min(1580 / asset.width, 660 / asset.height, asset.width < 300 ? 3.2 : 2.2);
   const w = asset.width * scale, h = asset.height * scale;
-  const enter = interpolate(f, [0, 16], [0, 1], {extrapolateRight:'clamp'});
+  const enter = asset.kind === 'video' ? 1 : interpolate(f, [0, 16], [0, 1], {extrapolateRight:'clamp'});
   const style = {width:w, height:h, display:'block'};
   return <div style={{position:'absolute',left:(1920-w)/2,top:175+(660-h)/2,
     overflow:'hidden',borderRadius:12,background:'#fff',boxShadow:'0 16px 45px #17203318',

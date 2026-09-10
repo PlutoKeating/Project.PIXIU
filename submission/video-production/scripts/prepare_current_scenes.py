@@ -21,8 +21,8 @@ def digest(p):
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def still(name):
-    src = IMAGES / (name+'.png')
+def still(name, folder=IMAGES):
+    src = folder / (name+'.png')
     dst = OUT / src.name
     shutil.copyfile(src, dst)
     w, h = struct.unpack('>II', src.read_bytes()[16:24])
@@ -66,15 +66,21 @@ for args in [
     ('bill-query','current-bill-recall-01',14,10,'900:596:410:96'),
     ('bill-citation','current-bill-recall-01',47,10,'760:640:330:98'),
     ('directory-progress','directory-dreaming-02',16,9,'600:96:120:38'),
-    ('directory-query','directory-recall-01',13,11,'900:596:410:96'),
+    ('directory-query','directory-recall-01',13,11,'850:300:460:310'),
     ('directory-approval','dreaming-approve-01',0,4,'880:620:270:108'),
-    ('updated-query','dreaming-updated-recall-01',38,10,'900:596:410:96'),
-    ('shared-query','shared-recall-01',48,14,'900:596:410:96'),
-    ('shared-citation','shared-source-01',0,8,'760:640:330:98'),
-    ('manual-form','current-manual-01',23,12,'550:328:434:220'),
+    ('updated-query','dreaming-updated-recall-01',38,10,'850:300:460:310'),
+    ('shared-query','shared-recall-01',48,14,'850:300:460:310'),
+    ('shared-citation','shared-source-01',0,8,'740:150:340:138'),
+    ('manual-form','current-manual-01',35,5,'550:328:434:220'),
     ('edit-change','current-edit-01',24,9,'620:398:399:187'),
 ]:
     clip(*args)
+
+assets['directory-approval']['playback_alignment'] = 'start'
+still('model-options', RAW)
+still('update-panel', RAW)
+detail('keyword-results', 'keyword-result', (0,0,976,135), prefix='')
+detail('directory-original', 'directory-source', (0,0,760,185), prefix='')
 
 for args in [
     ('nav','shared-workspace',(0,0,1200,56)),
@@ -100,9 +106,9 @@ scenes = {
  's08':[('bill-recall','合计 434.50 元',None,0),('bill-citation','打开对应记忆的来源','点击回答',.32)],
  's10':[('manual-form','填写标题、正文与范围',None,0),('manual-recalled-body','保存后，检索并核对正文','保存后',.72)],
  's12':[('behavior-demo-window','公开资料整理 · 实际应用窗口',None,0),('behavior-source-body','本次记录：窗口标题与28秒使用时长','这里的记录',.28),('behavior-enabled','在采集与隐私中管理授权','你可以',.7)],
- 's13':[('keyword-result','用内容关键词，找回活动资料',None,0),('keyword-source-body','核对原始安排与准备步骤','打开来源',.7)],
- 's11':[('directory-folder','选择目录并保存',None,0),('directory-progress','主窗口显示整理进度与保存数量','貔貅自动开始整理',.22),('directory-query','后台整理后，新会话找回安排','完成后',.5),('directory-source','查看活动资料原文','点击来源',.82)],
- 's11b':[('dreaming-review','对照原内容与更正建议',None,0),('directory-approval','批准更正，保存新版本','对照原内容',.37),('updated-query','新会话使用更新后的安排','下次询问',.56)],
+ 's13':[('keyword-results','用内容关键词，找回活动资料',None,0),('keyword-source-body','核对原始安排与准备步骤','打开来源',.7)],
+ 's11':[('directory-folder','选择目录并保存',None,0),('directory-progress','主窗口显示整理进度与保存数量','貔貅自动开始整理',.22),('directory-query','后台整理后，新会话找回安排','完成后',.5),('directory-original','查看活动资料原文','点击来源',.82)],
+ 's11b':[('dreaming-review','对照原内容与更正建议',None,0),('directory-approval','批准更正，保存新版本','批准后',.37),('updated-query','新会话使用更新后的安排','下次询问',.56)],
  's15':[('preference-history','当前偏好与版本历史',None,0)],
  's16':[('edit-version-one','读取版本 1',None,0),('edit-change','整理时间更新为周五 17:00','保存后',.2),('edit-version-two','重新读取版本 2','每次编辑',.65)],
  's17':[('stage-record','从当前任务，衔接阶段与长期记忆',None,0)],
@@ -111,7 +117,7 @@ scenes = {
  's23':[('shared-settings','读取范围与保存位置分别设置',None,0),('device-controls','选择参与协作的设备','通过共享设置',.56)],
  's24':[('forget-target','预览并核对目标与版本',None,0),('forget-confirmed','确认遗忘 1 条演示知识','系统让知识',.48)],
  's26':[('brief','近期知识与当天采集简报',None,0)],
- 's27':[('sdk-version','桌面与后端版本一致',None,0),('desktop-shortcut','配置日常桌面使用方式','打开设置',.35)],
+ 's27':[('sdk-version','桌面与后端版本一致',None,0),('model-options','选择模型并配置连接','打开设置',.35),('update-panel','查看当前版本与更新入口','查看更新信息',.55)],
 }
 data = {'version':'0.1.12','capture_date':'2026-09-10','assets':assets,
         'scenes':{k:[{'asset':a,'label':b,'cue':c,'fraction':f} for a,b,c,f in rows] for k,rows in scenes.items()}}

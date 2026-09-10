@@ -1,0 +1,94 @@
+{
+  "method": "normalized waveform correlation; not a listening review",
+  "rate": 48000,
+  "fps": 30,
+  "numpy": "2.5.3",
+  "video": ".runtime/current-final-nobgm-v3.mp4",
+  "video_sha256": "b405e3e69e364f023d234d9747840feae7c5aa64075ee55bff91e0ae33cc741b",
+  "peak_dbfs": -2.256812572479248,
+  "peak_definition": "maximum decoded sample across original channels; no mono downmix",
+  "mono_downmix_peak_dbfs": 0.7534875163322831,
+  "probes": [
+    {
+      "declared_start_frame": 4027.0,
+      "measured_start_frame": 4028.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.08126840526183486,
+      "source_peak_frame": 21.45,
+      "source": "public/audio/whoosh-big.mp3",
+      "source_sha256": "8af9843a636d3b4961f0c8b3545a21e674bd43d59f97d5c38d3f9a3f04674fd2"
+    },
+    {
+      "declared_start_frame": 4059.0,
+      "measured_start_frame": 4060.28,
+      "pipeline_offset_frames": 1.28,
+      "normalized_correlation": 0.039640152707882514,
+      "source_peak_frame": 21.75,
+      "source": "public/audio/whoosh-fast.mp3",
+      "source_sha256": "b88fd5d484251930efd6eca78c4340339908ea29d1e69bd24fb5191a10da4f78"
+    },
+    {
+      "declared_start_frame": 4075.0,
+      "measured_start_frame": 4076.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.028587771118197706,
+      "source_peak_frame": 21.75,
+      "source": "public/audio/whoosh-fast.mp3",
+      "source_sha256": "b88fd5d484251930efd6eca78c4340339908ea29d1e69bd24fb5191a10da4f78"
+    },
+    {
+      "declared_start_frame": 650.0,
+      "measured_start_frame": 651.29,
+      "pipeline_offset_frames": 1.29,
+      "normalized_correlation": 0.06249006237869162,
+      "source_peak_frame": 21.45,
+      "source": "public/audio/whoosh-big.mp3",
+      "source_sha256": "8af9843a636d3b4961f0c8b3545a21e674bd43d59f97d5c38d3f9a3f04674fd2"
+    },
+    {
+      "declared_start_frame": 639.0,
+      "measured_start_frame": 640.28,
+      "pipeline_offset_frames": 1.28,
+      "normalized_correlation": 0.015384480349350001,
+      "source_peak_frame": 44.25,
+      "source": "public/audio/sparkle.mp3",
+      "source_sha256": "c4ee1a64554bd413082173cd2045aacd5a65189a43c9d8f309530744e86098ad"
+    },
+    {
+      "declared_start_frame": 750.0,
+      "measured_start_frame": 751.28,
+      "pipeline_offset_frames": 1.28,
+      "normalized_correlation": 0.9975578493759425,
+      "source_peak_frame": 3.45,
+      "source": "public/audio/transition-snap.mp3",
+      "source_sha256": "9f7e4edb094569f9cb40e8dbb987a5fc20926b30326a1a9d827236960980f070"
+    },
+    {
+      "declared_start_frame": 12877.0,
+      "measured_start_frame": 12878.27,
+      "pipeline_offset_frames": 1.27,
+      "normalized_correlation": 0.15107396606686885,
+      "source_peak_frame": 30.75,
+      "source": "public/audio/riser-cine.mp3",
+      "source_sha256": "385340df21a87da878c23fa6ba1fdbe4059a4fd15d160bd45d20c9ecf7faecfc"
+    },
+    {
+      "declared_start_frame": 12905.0,
+      "measured_start_frame": 12906.285,
+      "pipeline_offset_frames": 1.285,
+      "normalized_correlation": 0.16157847500074946,
+      "source_peak_frame": 16.65,
+      "source": "public/audio/impact-deep-whoosh.mp3",
+      "source_sha256": "9854bff8a78fcebef95350ff0ec72a41ba449ab372bbd601b55d84de13bd626d"
+    },
+    {
+      "declared_start_frame": 12897.0,
+      "measured_start_frame": 12898.28,
+      "pipeline_offset_frames": 1.28,
+      "normalized_correlation": 0.013270631018782392,
+      "source_peak_frame": 44.25,
+      "source": "public/audio/sparkle.mp3",
+      "source_sha256": "c4ee1a64554bd413082173cd2045aacd5a65189a43c9d8f309530744e86098ad"
+    }
+  ]
+}

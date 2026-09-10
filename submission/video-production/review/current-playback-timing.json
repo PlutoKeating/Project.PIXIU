@@ -55,7 +55,7 @@
     },
     {
       "shot": "s11",
-      "asset": "directory-source",
+      "asset": "directory-original",
       "from": 2590,
       "duration_frames": 89
     },
@@ -63,16 +63,16 @@
       "shot": "s11b",
       "asset": "dreaming-review",
       "from": 2679,
-      "duration_frames": 250
+      "duration_frames": 311
     },
     {
       "shot": "s11b",
       "asset": "directory-approval",
-      "from": 2929,
-      "duration_frames": 121,
+      "from": 2990,
+      "duration_frames": 60,
       "source": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
-      "source_start_seconds": 0.5666666666666667,
-      "play_seconds": 3.433333333333333,
+      "source_start_seconds": 0.0,
+      "play_seconds": 1.4,
       "speed": 1,
       "result_hold_frames": 18
     },
@@ -127,10 +127,10 @@
       "from": 4385,
       "duration_frames": 318,
       "source": "submission/video-production/raw/current-0.1.12/current-manual-01.mp4",
-      "source_start_seconds": 25.0,
-      "play_seconds": 10.0,
+      "source_start_seconds": 35.0,
+      "play_seconds": 5.0,
       "speed": 1,
-      "result_hold_frames": 18
+      "result_hold_frames": 168
     },
     {
       "shot": "s10",
@@ -251,7 +251,7 @@
     },
     {
       "shot": "s13",
-      "asset": "keyword-result",
+      "asset": "keyword-results",
       "from": 10566,
       "duration_frames": 393
     },
@@ -269,9 +269,15 @@
     },
     {
       "shot": "s27",
-      "asset": "desktop-shortcut",
+      "asset": "model-options",
       "from": 11222,
-      "duration_frames": 310
+      "duration_frames": 72
+    },
+    {
+      "shot": "s27",
+      "asset": "update-panel",
+      "from": 11294,
+      "duration_frames": 238
     },
     {
       "shot": "s26",

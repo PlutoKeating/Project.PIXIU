@@ -1,0 +1,195 @@
+{
+  "method": "带配乐成片分段语音回读，结合原稿、词级时间和画面核对",
+  "source_reports": [
+    "review/current-audible-transcript-v3.json",
+    "review/current-audible-transcript-v3-300.json"
+  ],
+  "covered_shots": [
+    {
+      "shot": "s01",
+      "transcript_segments": 1,
+      "from_seconds": 0.0,
+      "to_seconds": 8.566666666666666
+    },
+    {
+      "shot": "s02",
+      "transcript_segments": 1,
+      "from_seconds": 8.566666666666666,
+      "to_seconds": 20.833333333333332
+    },
+    {
+      "shot": "s03",
+      "transcript_segments": 2,
+      "from_seconds": 20.833333333333332,
+      "to_seconds": 33.53333333333333
+    },
+    {
+      "shot": "s04",
+      "transcript_segments": 2,
+      "from_seconds": 33.53333333333333,
+      "to_seconds": 46.86666666666667
+    },
+    {
+      "shot": "s06",
+      "transcript_segments": 2,
+      "from_seconds": 46.86666666666667,
+      "to_seconds": 66.53333333333333
+    },
+    {
+      "shot": "s11",
+      "transcript_segments": 3,
+      "from_seconds": 66.53333333333333,
+      "to_seconds": 89.3
+    },
+    {
+      "shot": "s11b",
+      "transcript_segments": 2,
+      "from_seconds": 89.3,
+      "to_seconds": 109.6
+    },
+    {
+      "shot": "s07",
+      "transcript_segments": 1,
+      "from_seconds": 109.6,
+      "to_seconds": 122.8
+    },
+    {
+      "shot": "s08",
+      "transcript_segments": 1,
+      "from_seconds": 122.8,
+      "to_seconds": 133.8
+    },
+    {
+      "shot": "s09",
+      "transcript_segments": 1,
+      "from_seconds": 133.8,
+      "to_seconds": 146.16666666666666
+    },
+    {
+      "shot": "s10",
+      "transcript_segments": 3,
+      "from_seconds": 146.16666666666666,
+      "to_seconds": 159.76666666666668
+    },
+    {
+      "shot": "s12",
+      "transcript_segments": 2,
+      "from_seconds": 159.76666666666668,
+      "to_seconds": 172.2
+    },
+    {
+      "shot": "s15",
+      "transcript_segments": 2,
+      "from_seconds": 172.2,
+      "to_seconds": 189.26666666666668
+    },
+    {
+      "shot": "s14",
+      "transcript_segments": 3,
+      "from_seconds": 189.26666666666668,
+      "to_seconds": 210.3
+    },
+    {
+      "shot": "s16",
+      "transcript_segments": 3,
+      "from_seconds": 210.3,
+      "to_seconds": 229.2
+    },
+    {
+      "shot": "s17",
+      "transcript_segments": 2,
+      "from_seconds": 229.2,
+      "to_seconds": 243.83333333333334
+    },
+    {
+      "shot": "s18",
+      "transcript_segments": 1,
+      "from_seconds": 243.83333333333334,
+      "to_seconds": 250.66666666666666
+    },
+    {
+      "shot": "s19",
+      "transcript_segments": 2,
+      "from_seconds": 250.66666666666666,
+      "to_seconds": 264.0
+    },
+    {
+      "shot": "s20",
+      "transcript_segments": 2,
+      "from_seconds": 264.0,
+      "to_seconds": 280.7
+    },
+    {
+      "shot": "s21",
+      "transcript_segments": 2,
+      "from_seconds": 280.7,
+      "to_seconds": 296.06666666666666
+    },
+    {
+      "shot": "s22",
+      "transcript_segments": 3,
+      "from_seconds": 296.06666666666666,
+      "to_seconds": 310.5
+    },
+    {
+      "shot": "s23",
+      "transcript_segments": 3,
+      "from_seconds": 310.5,
+      "to_seconds": 325.1
+    },
+    {
+      "shot": "s24",
+      "transcript_segments": 2,
+      "from_seconds": 325.1,
+      "to_seconds": 339.73333333333335
+    },
+    {
+      "shot": "s05",
+      "transcript_segments": 2,
+      "from_seconds": 339.73333333333335,
+      "to_seconds": 352.2
+    },
+    {
+      "shot": "s13",
+      "transcript_segments": 2,
+      "from_seconds": 352.2,
+      "to_seconds": 368.6333333333333
+    },
+    {
+      "shot": "s27",
+      "transcript_segments": 3,
+      "from_seconds": 368.6333333333333,
+      "to_seconds": 384.4
+    },
+    {
+      "shot": "s28",
+      "transcript_segments": 2,
+      "from_seconds": 384.4,
+      "to_seconds": 404.2
+    },
+    {
+      "shot": "s26",
+      "transcript_segments": 1,
+      "from_seconds": 404.2,
+      "to_seconds": 418.3333333333333
+    },
+    {
+      "shot": "s29",
+      "transcript_segments": 1,
+      "from_seconds": 418.3333333333333,
+      "to_seconds": 429.1
+    },
+    {
+      "shot": "s30",
+      "transcript_segments": 2,
+      "from_seconds": 429.1,
+      "to_seconds": 437.6666666666667
+    }
+  ],
+  "scope": "30镜口白内容；首尾品牌介绍与slogan均回读到；数字断句与同音词结合源稿和画面复核",
+  "notes": [
+    "回读将会话写作绘画、复核写作复合；按原稿与词级时间核对。",
+    "量化句中百分之百与十五组被机器连写；原稿、词级时间与画面50/50、15/15共同核对。"
+  ],
+  "audio_bitstream_v3_v4": "a572ecfa6bcb29c7fa921c4dbe5eb0a5c216d7d6ffa1177d55cf57b20aa4110e"
+}

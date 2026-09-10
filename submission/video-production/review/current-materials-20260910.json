@@ -1,10 +1,10 @@
 {
   "date": "2026-09-10",
   "version": "0.1.12",
-  "stage": "新版画面与文档复核",
+  "stage": "当前交付材料已完成装配与检查",
   "current_scene_count": 18,
-  "asset_count": 52,
-  "current_scenes_sha256": "21bc8f85f4bbd6af1a74e1bfd11173a8884c9e88007781fa59c22c500fb752b8",
+  "asset_count": 56,
+  "current_scenes_sha256": "53179b0073097952e063197f291abbd171dbf664456d5e95aa8e31f8c23b6739",
   "checks": {
     "typescript": "pass",
     "asset_digests": "pass",
@@ -16,11 +16,16 @@
     "document_horizontal_bounds": "pass",
     "presentation_slideshow_start": "pass",
     "presentation_embedded_media_import": "包内GIF实录动画，麒麟V11实际播放通过",
-    "current_visual_review_full_decode": "pass",
+    "current_visual_review_full_decode": "pass; review/current-final-delivery-technical.json",
     "timeline_pcm_regeneration": "真实片头/片尾原音复用、1.7增益、摘要和缺少音频时保留时间轴验证通过",
     "presentation_live_playback": "pass; review/presentation-playback-20260910/manifest.json",
     "narration_visual_cue_text": "18个场景的分段提示词均与新版旁白匹配",
-    "functional_coverage": "docs/delivery/MATERIAL_ALIGNMENT.md：Word章节、18页PPT与30镜视频对应表"
+    "functional_coverage": "docs/delivery/MATERIAL_ALIGNMENT.md：Word章节、18页PPT与30镜视频对应表",
+    "final_independent_review": "review/independent-current-v5.md",
+    "final_speech_review": "30镜回读；review/current-speech-review.json",
+    "final_narration_sync": "30镜，误差均小于1帧",
+    "final_sfx_sync": "9项波形核对，峰值/起始点误差均小于1帧",
+    "formal_video_package": "review/current-final-package.json"
   },
   "visual_review": [
     "目录召回25秒画面",
@@ -29,24 +34,19 @@
     "18场景静音连续审阅388秒；每镜结果抽帧",
     "更新跨端片段48–62秒、审批后片段38–48秒",
     "紧凑授权与遗忘回执裁切及放大",
-    "目录进度到保存1条的9秒原速实录；review/directory-progress-20260910/manifest.json"
+    "目录进度到保存1条的9秒原速实录；review/directory-progress-20260910/manifest.json",
+    "审批对照、批准动作、手动录入、模型与更新入口、查询正文近景逐镜复核；56项素材"
   ],
-  "next_steps": [
-    "新版旁白合成",
-    "实际字幕时间轴",
-    "整片音画核对与独立终检",
-    "最终四项作品装配"
-  ],
+  "next_steps": [],
   "soundtrack_cache": {
-    "ready": 11,
-    "needs_synthesis": 19,
+    "ready": 30,
+    "needs_synthesis": 0,
     "shots": 30
   },
   "review_video": {
-    "path": ".runtime/current-all-scenes-review-v4.mp4",
-    "seconds": 388,
-    "container_seconds": 388.053333,
-    "frames": 11640,
-    "sha256": "787dcb6cc824121aaa052b8ef8e73f9d88fc59f2619d8e99a20debef79f71d9c"
+    "path": "renders/演示视频-0.1.12新版.mp4",
+    "seconds": 437.666667,
+    "frames": 13130,
+    "sha256": "ab0c748da694c790fe0c62b6bdc4386644281d4028bc67f682b5bdecb4714787"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "frames_per_bookend": 257,
+  "identical_decoded_frames": 1,
+  "narration_source": "raw/audio/s01/da881c4670c4.mp3",
+  "narration_sha256": "f321cd759029adc080a9aeab58f3e72c7c2cf2188c45c0dd67aa3ab0de1e202f",
+  "text_equal": true,
+  "brand_source_unchanged": true,
+  "first_last_ssim": 0.997901,
+  "opening_v3_v4_ssim": 0.998211,
+  "comparison": "Decoded images with lossy H.264 encoding; SSIM comparison plus unchanged brand source and identical narration",
+  "opening_decoded_hashes_equal_to_v3": false
+}
