@@ -41,7 +41,7 @@ def prepare_images(content: str, source: Path, root: Path) -> tuple[str, list[di
         if data[:8] != b"\x89PNG\r\n\x1a\n":
             raise ValueError(f"Expected a PNG screenshot: {relative}")
         width, height = struct.unpack(">II", data[16:24])
-        display_width = min(width, 640)
+        display_width = min(width, 640, round(width * 480 / height))
         display_height = round(height * display_width / width)
         records.append({"path": relative.as_posix(), "sha256": digest(path)})
         tag = match.group(0)
@@ -49,10 +49,9 @@ def prepare_images(content: str, source: Path, root: Path) -> tuple[str, list[di
         return tag.replace("<img ", f'<img width="{display_width}" height="{display_height}" ')
 
     content = re.sub(r'<img\b[^>]*\bsrc="([^"]+)"[^>]*>', replace, content)
-    # Writer can place a tall inline image above the next page's top margin.
-    # Start each screenshot on its own page and keep its caption immediately after.
+    # Keep screenshots and captions together while allowing normal page flow.
     content = re.sub(r'<p>(<img\b[^>]*>)</p>',
-                     r'<p style="page-break-before:always;page-break-after:avoid">\1</p>', content)
+                     r'<p style="page-break-inside:avoid;page-break-after:avoid">\1</p>', content)
     return content, records
 
 

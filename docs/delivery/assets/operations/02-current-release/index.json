@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-10",
+  "environment": "银河麒麟 V11 amd64，公开合成资料",
+  "images": [
+    {
+      "file": "conversation.png",
+      "version": "0.1.12",
+      "caption": "助手找回会议日期、地点和预算",
+      "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc",
+      "capture": "真实 V11 桌面；来源、设备及 SDK 使用原生区域截图"
+    },
+    {
+      "file": "source.png",
+      "version": "0.1.12",
+      "caption": "点击回答链接，查看原始资料和更正来源",
+      "sha256": "93f7f5519d9e527bd90bb4a84aa137ddc476e6b6ffe31f7b7c318fed2cf46cec",
+      "capture": "真实 V11 桌面；来源、设备及 SDK 使用原生区域截图"
+    },
+    {
+      "file": "approval.png",
+      "version": "055b577 候选包",
+      "caption": "核对原内容和建议，批准更正",
+      "sha256": "0051eb8b4366a2a7ed029b4034ae4be1424d659caeaa8fefd9f495be9100b4d0",
+      "capture": "真实 V11 桌面；来源、设备及 SDK 使用原生区域截图"
+    },
+    {
+      "file": "settings.png",
+      "version": "0.1.12",
+      "caption": "左侧分类、界面动效和全局快捷键",
+      "sha256": "51618b4d05e0d5a4f751e2763e48aa8a436c253b0b23ddd1336f5fa071c40eaa",
+      "capture": "真实 V11 桌面；来源、设备及 SDK 使用原生区域截图"
+    },
+    {
+      "file": "devices.png",
+      "version": "0.1.12",
+      "caption": "查看可信设备及配对入口",
+      "sha256": "0d39ac4f5c48c4faa5fc8157b4d26879a6cdfd0e24cb91eee1dd23f6f7093076",
+      "capture": "真实 V11 桌面；来源、设备及 SDK 使用原生区域截图"
+    },
+    {
+      "file": "sdk.png",
+      "version": "0.1.12",
+      "caption": "桌面与后端版本一致，两个 SDK 使用麒麟实现",
+      "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e",
+      "capture": "真实 V11 桌面；来源、设备及 SDK 使用原生区域截图"
+    }
+  ]
+}

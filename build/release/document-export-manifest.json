@@ -3,23 +3,23 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "3aa9cfe94d878b597e2d965020e7b25ab46d70ca8e561b438485a19c25ee6d21",
+      "sha256": "0519149228001b5caaeda1bedbcdeb477fbf8c370cafa93e5adf33cd92c9e678",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
-          "sha256": "c52da05fc1e4e4249062268273c78ca1b09e08a6575da947cc69f553435e5288"
+          "sha256": "e5dafca3b1be73129c34db4f03ad4eb012b5385c5c63d42743090fac561fffa6"
         },
         {
           "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
-          "sha256": "5b34f2717db98082df41011f0c1e1a01c4088896c2b3cff3cdb97c0ca7337f55"
+          "sha256": "cbc10404e8393ecf8854c1ef00e7748607d7c5325140f01f400c75c8c6f19013"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
-          "sha256": "97214bf4eac6ff745fe069865a80ce8772540f2a1f2145c8c432a36186e0d800"
+          "sha256": "2fc8fe585908e847945279ae005d61f1bb286620531a7eddc930882c3cab64e3"
         },
         {
           "path": "docs/delivery/MEMORY_LIFECYCLE.md",
-          "sha256": "7c2114a45f26bbfd666397dac0161624e395d80a4778e71f4bd42b1ef9f7cbc5"
+          "sha256": "07bda84ee7064f8ab05f97942563f245c16dec8b801f9bbad453593e1d0032c4"
         },
         {
           "path": "docs/delivery/SOURCE_AND_LICENSES.md",
@@ -27,22 +27,75 @@
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "0337470b167f48e3a350420adaee0a1d880e84dc968f79aa26be7e20fdf2b047"
+          "sha256": "27b7a2faa70fec16a62f01f49fb6a33dac34a6e03aad2b25febd6f59aea846b7"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
-          "sha256": "1a8035236c0803888b5210f30db23ff5bbfa45c76378c10df764c052a4a4d0ed"
+          "sha256": "778e452ebc293f1993e733e9caef82ec68b747cb0a5d222467c8d71312cadc72"
         },
         {
           "path": "docs/delivery/USER_MANUAL.md",
-          "sha256": "99cc30c11e41345117416238c0a220eaa2b68df0f63b8185aa4b41c52c8d426a"
+          "sha256": "9de9e41776cd03828182ae4624b39a88838b869354066c6de291f3c2bca18b27"
         }
       ],
-      "images": [],
+      "images": [
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/conversation.png",
+          "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/sdk.png",
+          "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/conversation.png",
+          "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/source.png",
+          "sha256": "93f7f5519d9e527bd90bb4a84aa137ddc476e6b6ffe31f7b7c318fed2cf46cec"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/approval.png",
+          "sha256": "0051eb8b4366a2a7ed029b4034ae4be1424d659caeaa8fefd9f495be9100b4d0"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/devices.png",
+          "sha256": "0d39ac4f5c48c4faa5fc8157b4d26879a6cdfd0e24cb91eee1dd23f6f7093076"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/settings.png",
+          "sha256": "51618b4d05e0d5a4f751e2763e48aa8a436c253b0b23ddd1336f5fa071c40eaa"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/source.png",
+          "sha256": "93f7f5519d9e527bd90bb4a84aa137ddc476e6b6ffe31f7b7c318fed2cf46cec"
+        },
+        {
+          "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
+          "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/approval.png",
+          "sha256": "0051eb8b4366a2a7ed029b4034ae4be1424d659caeaa8fefd9f495be9100b4d0"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/conversation.png",
+          "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/sdk.png",
+          "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e"
+        },
+        {
+          "path": "docs/delivery/assets/operations/02-current-release/sdk.png",
+          "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e"
+        }
+      ],
       "exports": [
         {
           "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/技术方案.doc",
-          "sha256": "9f177c24ef94ccf8100600957caad1611bdd98bf4e5c2b7285441fff797a5dda"
+          "sha256": "0085cd97c50bbffa33d7ba32e6c9e00465fffd707b608b97324f827daf7e38ff"
         }
       ]
     }
@@ -50,6 +103,6 @@
   "presentation": {
     "source": "docs/delivery/assets/项目报告.pptx",
     "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/项目报告.pptx",
-    "sha256": "ffa62d75c13138180ca014a19fe9e65336c16112c47e9e0a68d012896df32bf9"
+    "sha256": "fbd88ee0f9de78180102e3c2307d254e5aa4d2b609595dec817bd6666217a271"
   }
 }

@@ -15,6 +15,12 @@
 | Agent | KylinAgent、agent-runtime、PIXIU MemoryProvider |
 | 发布 | `.deb`、依赖、版本清单、SHA-256、Ed25519 签名 |
 
+
+
+![0.1.12：桌面、后端和两个麒麟 SDK 的实际状态](assets/operations/02-current-release/sdk.png)
+
+0.1.12：桌面、后端和两个麒麟 SDK 的实际状态。
+
 ## 用户会话架构
 
 系统 AI Runtime 的 Unix socket 按桌面用户 UID 隔离。PIXIU 后端因此运行在当前用户的 systemd 会话中，使 Embedding、Vector Engine、Agent Gateway 和本地数据都处于同一安全边界。
