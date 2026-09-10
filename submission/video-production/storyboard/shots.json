@@ -14,7 +14,7 @@
       "planned_duration_seconds": 10,
       "narration": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
       "visual": "真实页面卡片聚合、品牌字标与统一介绍",
-      "status": "current-ui-recapture"
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s02",
@@ -25,7 +25,7 @@
       "planned_duration_seconds": 15,
       "narration": "日常文件进入授权目录，貔貅在后台整理成可复用的知识。换到另一台可信设备，助手继续使用共享的安排和经验，让资料积累服务于每一次协作。",
       "visual": "资料积累与可信设备协作字卡",
-      "status": "current-ui-recapture"
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s03",
@@ -36,7 +36,7 @@
       "planned_duration_seconds": 20,
       "narration": "貔貅的关键创新，是连接可信设备之间的记忆。每台设备在本地保存知识，在授权范围内交换更新，再由助手按需检索和复用，让工作经验随设备接续。",
       "visual": "蓝白共享记忆能力示意；spotlight-hero-card 聚焦、悬浮、归位后展示对等设备网络",
-      "status": "current-ui-recapture"
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s04",
@@ -46,8 +46,8 @@
       "planned_start_seconds": 45,
       "planned_duration_seconds": 15,
       "narration": "现在进入实际产品。会话、记忆、设备和设置，都在同一个桌面窗口中。服务与能力页，可以核对当前版本，以及系统向量化和向量数据库的实际运行状态。",
-      "visual": "原生四入口与服务读取状态裁片，版本和麒麟适配结果放大；明确演示快照边界",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：统一桌面 → 0.1.12 · 麒麟系统向量能力。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s06",
@@ -57,8 +57,8 @@
       "planned_start_seconds": 60,
       "planned_duration_seconds": 25,
       "narration": "助手可以核算预算、写入文件，并保存任务经验。这里展示采购复核单：十二套书籍和五包标签纸，合计四百九十六元。明细写入文件，结果保存到记忆。打开新会话，再次查询采购单，助手找回数量、金额与来源，继续使用。",
-      "visual": "0.1.12 新录制：计算采购明细、实际写入文件、保存记忆、新会话回读496元；文件正文独立核对",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：核算采购明细，写入文件并保存记忆 → 新会话再次找回采购单 · 合计496元。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s11",
@@ -68,8 +68,8 @@
       "planned_start_seconds": 85,
       "planned_duration_seconds": 35,
       "narration": "在采集与隐私中，选择资料目录，开启目录采集并保存。把星河观测活动安排放进目录，貔貅自动开始整理，主窗口显示进度。完成后打开新会话，询问活动安排：十一月八日晚七点，社区天文台三层，器材预算二千六百八十元。点击来源，就能核对同一份原文。",
-      "visual": "0.1.12 新录制：保存目录授权、真实文件新增、Dreaming 进度、保存1条、新会话召回与来源点击；完整操作录像与原图共用到 Word/PPT",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：选择目录并保存 → 主窗口显示整理进度与保存数量 → 后台整理后，新会话找回安排 → 查看活动资料原文。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s11b",
@@ -78,8 +78,8 @@
       "motion": "live",
       "planned_duration_seconds": 30,
       "narration": "收到活动更新通知后，后台助手阅读新资料，检索原来的安排，提出更正计划。打开审批窗口，对照原内容、建议和依据，批准后保存新版本。下次询问，助手找回十一月十五日晚七点半、社区天文台二层和二千六百八十元预算，并提供对应来源。",
-      "visual": "0.1.12 新录制：更新同一活动文件、后台进度、桌面更正方案、批准动作、新会话最新答案与来源；金额2680元保持一致",
-      "status": "current-ui-recapture",
+      "visual": "0.1.12 真实桌面素材：对照原内容与更正建议 → 批准更正，保存新版本 → 新会话使用更新后的安排。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作",
       "planned_start_seconds": 120
     },
     {
@@ -90,8 +90,8 @@
       "planned_start_seconds": 150,
       "planned_duration_seconds": 20,
       "narration": "以家庭账单为例：电费二百一十元，水费六十八元五角，燃气费一百五十六元。保存之后开启新会话，再询问水电燃气支出，就能找到这条长期记忆。",
-      "visual": "原生4K实拍：账单录入、保存成功、新会话实际工具检索回答；三项金额210/68.50/156",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：新会话查询账单 → 电费、水费、燃气费明细。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s08",
@@ -101,8 +101,8 @@
       "planned_start_seconds": 170,
       "planned_duration_seconds": 15,
       "narration": "合计四百三十四元五角。点击回答中的来源链接，查看引用的账单，逐项核对金额。回答与依据连在一起，复核更方便。",
-      "visual": "同一账单回答434.50元 → 原始证据详情；row-embed 只强调截图真实槽位",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：合计 434.50 元 → 打开对应记忆的来源。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s09",
@@ -112,8 +112,8 @@
       "planned_start_seconds": 185,
       "planned_duration_seconds": 18,
       "narration": "对话、工具结果、用户行为和手动配置，统一转成带来源的证据。接入时进行格式校验、清洗、质量评估和敏感检测，再形成可检索的知识。",
-      "visual": "十张真实裁片与十六张复用裁片加速发牌；原生会话来源放大；同次API输入清洗、质量与敏感级别、同来源检索结果。",
-      "status": "current-ui-recapture"
+      "visual": "当前实拍裁片发牌聚合；对话来源与多源接入步骤图。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s10",
@@ -123,8 +123,8 @@
       "planned_start_seconds": 203,
       "planned_duration_seconds": 18,
       "narration": "在记忆页录入标题与正文，并选择保存范围。个人内容保留在私有范围；需要协作的内容，才明确放进已配置的共享范围。保存后可以马上检索和核对正文。",
-      "visual": "0.1.12 实拍：更多→记一条内容，填写秋季资料整理清单、保存并检索正文",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：填写标题、正文与范围 → 保存后，检索并核对正文。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s12",
@@ -134,8 +134,8 @@
       "planned_start_seconds": 221,
       "planned_duration_seconds": 15,
       "narration": "应用使用记录，也能成为了解工作习惯的线索。这里的记录保留了窗口标题和使用时长。你可以在采集与隐私中管理授权，随时关闭行为采集。",
-      "visual": "当前公开演示窗口、28秒行为来源正文和原生授权入口依次展示",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：公开资料整理 · 实际应用窗口 → 本次记录：窗口标题与28秒使用时长 → 在采集与隐私中管理授权。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s15",
@@ -145,8 +145,8 @@
       "planned_start_seconds": 236,
       "planned_duration_seconds": 22,
       "narration": "偏好记忆关注操作习惯、输出风格和安全策略。比如在对话中要求回答简洁，后来改为详细说明。系统随对话保存偏好；打开偏好页，查看当前设置和版本历史，后续会话继续沿用新的回答方式。",
-      "visual": "当前界面重新录制：对话表达回答偏好、自动保存、版本历史、新会话应用",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：当前偏好与版本历史。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s14",
@@ -156,8 +156,8 @@
       "planned_start_seconds": 258,
       "planned_duration_seconds": 28,
       "narration": "记忆可以保存事实、流程、案例和模板。这里记录了书架位置、图书归还步骤、分类调整经验，以及阅读计划的填写说明。打开流程正文，按步骤核对书名、整理图书并更新登记。遇到相似任务时，再检索这些内容，交给助手作为执行参考。",
-      "visual": "四类知识真实正文摘录概览；放大原生图书归还流程长正文，保留四步操作",
-      "status": "current-ui-recapture"
+      "visual": "四类知识的实际记录摘录；0.1.12 图书归还流程正文。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s16",
@@ -167,8 +167,8 @@
       "planned_start_seconds": 286,
       "planned_duration_seconds": 24,
       "narration": "把资料整理时间从周五下午四点改为五点。保存后重新读取，同一条知识更新到版本二。每次编辑都会核对读取版本，记录新的内容与来源。需要人工判断的事实变化，可以在冲突页面对照候选内容，完成选择。",
-      "visual": "0.1.12 实拍：秋季资料整理清单从16点改为17点，版本1到版本2；冲突处理通过原理图解释",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：读取版本 1 → 整理时间更新为周五 17:00 → 重新读取版本 2。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s17",
@@ -178,8 +178,8 @@
       "planned_start_seconds": 310,
       "planned_duration_seconds": 18,
       "narration": "当前轮次形成短期上下文，压缩或会话切换形成中期记录。需要长期保留的内容，再经晋升进入统一知识管线。检索时只注入预算内的相关记忆，并保留来源。",
-      "visual": "短中期上下文创建、各晋升一条、同知识与来源ID复用及完整摘要，全部取自公共接口合成事件实测",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：从当前任务，衔接阶段与长期记忆。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s18",
@@ -190,7 +190,7 @@
       "planned_duration_seconds": 8,
       "narration": "资料整理好之后，再看另一项核心能力：让多台设备上的智能体，共享知识与经验。",
       "visual": "核心亮点字卡",
-      "status": "current-ui-recapture"
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s19",
@@ -200,8 +200,8 @@
       "planned_start_seconds": 336,
       "planned_duration_seconds": 20,
       "narration": "在设备页交换配对信息，建立双向信任。随后查看已信任的设备，核对同步状态，也能发现附近的设备。把需要协作的电脑连接起来，为共享记忆做好准备。",
-      "visual": "真实配对成功裁片；已信任节点、同步状态与附近设备随讲解逐项聚焦",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：查看可信设备与配对入口。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s20",
@@ -211,8 +211,8 @@
       "planned_start_seconds": 356,
       "planned_duration_seconds": 30,
       "narration": "在书房的会话里，记下周六上午九点整理书房、书籍按主题分类、整理后更新借阅登记的约定。换到客厅，请助手查找这份约定。它找回家庭共享内容，回答时间和步骤，并打开同一条记忆的来源。",
-      "visual": "原生4K用户请求裁片 → 客厅完成后核对工具与回答原速录屏 → 来源结果定格",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：选择家庭共享空间 → 换一台设备，继续查询约定 → 打开同一条记忆的来源。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s21",
@@ -222,8 +222,8 @@
       "planned_start_seconds": 386,
       "planned_duration_seconds": 27,
       "narration": "接着，用资料移交约定验证离线工作。暂时隔离设备间的同步连接，每台设备继续使用本地记忆，并保存新的修改。恢复连接后，系统交换更新，补齐记录，三端使用一致的约定。",
-      "visual": "公共接口原始检查点回放：断连前版本一、在线端版本二/客厅版本一、重连后客厅版本二",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 三台V11虚拟机实际检查点：原始版本1、隔离后的本地更新、恢复后的相同记录。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s22",
@@ -233,8 +233,8 @@
       "planned_start_seconds": 413,
       "planned_duration_seconds": 22,
       "narration": "两台设备从同一版本分别修改，系统记录各自的更新，识别先后与并发关系，再按确定性规则合并。零点一点一二版本的三端测试中，恢复连接后，正文、版本和来源取得一致。",
-      "visual": "公共接口原始检查点回放：同一知识版本三的两个正文分支、恢复连接后三端正文一致",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 同条知识的两个版本2分支；恢复后按确定性规则形成一致正文、版本和来源。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s23",
@@ -244,8 +244,8 @@
       "planned_start_seconds": 435,
       "planned_duration_seconds": 21,
       "narration": "个人记忆保存在本机，协作内容按共享范围管理。敏感检查保护资料的使用范围。通过共享设置和可信设备列表，用户选择读取范围、保存位置，以及参与协作的设备。",
-      "visual": "真实接口记录：私有范围本机命中、另两端同ID同范围404、敏感共享422；原生暂停保存录像、解除确认裁片与单侧信任移除结果。",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：读取范围与保存位置分别设置 → 选择参与协作的设备。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s24",
@@ -255,8 +255,8 @@
       "planned_start_seconds": 456,
       "planned_duration_seconds": 22,
       "narration": "说出要忘记的内容，先预览目标和范围，再明确确认。系统让知识失效并清理检索向量。共享记忆的删除标记会同步给其他设备，离线设备重连后，也会更新遗忘状态。",
-      "visual": "本机便笺预览、确认入口、取消预览结果与确认结果原生裁片；随后为独立跨端删除标记检查点",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：预览并核对目标与版本 → 确认遗忘 1 条演示知识。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s05",
@@ -267,7 +267,7 @@
       "planned_duration_seconds": 15,
       "narration": "我们复用开放麒麟的智能体宿主和运行时，提供会话、规划与工具能力。原创的记忆适配层，把它连接到貔貅的接入、检索、安全和分布式同步引擎。",
       "visual": "架构示意",
-      "status": "current-ui-recapture"
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s13",
@@ -277,8 +277,8 @@
       "planned_start_seconds": 493,
       "planned_duration_seconds": 20,
       "narration": "只记得内容中的几个词，也可以找回记忆。系统把关键词、语义和关联信息结合起来，筛选相关结果。输入望远镜和器材预算，找到星河观测活动。打开来源，就能核对活动安排与准备步骤。",
-      "visual": "非标题关键词“详细说明”实际命中“回答风格演示”，同源证据详情；真实4K裁片重排与检索机制示意",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：用内容关键词，找回活动资料 → 核对原始安排与准备步骤。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s27",
@@ -288,8 +288,8 @@
       "planned_start_seconds": 513,
       "planned_duration_seconds": 18,
       "narration": "一个安装包，部署桌面应用、助手运行环境与记忆服务。打开设置，配置模型连接，查看更新信息。升级过程完成签名校验、健康检查和自动恢复，帮助维护日常使用。",
-      "visual": "原始终端安装版本和退出码；原生模型检测与更新结果同时放大，未执行版本升级",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：桌面与后端版本一致 → 配置日常桌面使用方式。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s28",
@@ -299,8 +299,8 @@
       "planned_start_seconds": 531,
       "planned_duration_seconds": 25,
       "narration": "评测从偏好提取、知识召回、检索耗时和冲突处理四方面核对效果。历史兼容环境中，五十组检索的召回率为百分之一百，十五组偏好全部正确，二十五组冲突中正确处理二十四组。原生版本继续通过安装、升级和三端协作验证。",
-      "visual": "四项评测指标依次形成流程，样本记录汇入报告；展示698项基础设施回归与三端同步场景记录",
-      "status": "current-ui-recapture"
+      "visual": "Debian portable 历史数据：50组检索、15组偏好、25组冲突、1000次检索耗时；0.1.12 V11原生验证结论。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s26",
@@ -310,8 +310,8 @@
       "planned_start_seconds": 556,
       "planned_duration_seconds": 20,
       "narration": "洞察与简报，把近期知识整理为可继续检索的线索，并按日期汇总采集情况。打开今天的简报，查看新积累的活动资料；回到相应记录，继续使用已保存的安排和经验。",
-      "visual": "真实候选与采集简报逐行揭示；连续标题检索与来源录像，最终同源正文",
-      "status": "current-ui-recapture"
+      "visual": "0.1.12 真实桌面素材：近期知识与当天采集简报。来源与裁片时段见 src/current-scenes.json。",
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s29",
@@ -322,7 +322,7 @@
       "planned_duration_seconds": 12,
       "narration": "面向家庭协作、办公交接和跨设备任务，貔貅自动整理授权资料，让知识持续积累，让来源可以追溯，让可信设备共同记忆。",
       "visual": "应用价值字卡",
-      "status": "current-ui-recapture"
+      "status": "新版画面已接入；配音与整片终检继续制作"
     },
     {
       "id": "s30",
@@ -333,7 +333,7 @@
       "planned_duration_seconds": 10,
       "narration": "貔貅，面向麒麟操作系统智能体的去中心化记忆系统。让每一台设备的记忆，彼此相通。",
       "visual": "真实页面卡片聚合、品牌字标与统一介绍",
-      "status": "current-ui-recapture",
+      "status": "新版画面已接入；配音与整片终检继续制作",
       "audio_reuse": "s01"
     }
   ]

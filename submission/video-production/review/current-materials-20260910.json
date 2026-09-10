@@ -3,12 +3,12 @@
   "version": "0.1.12",
   "stage": "新版画面与文档复核",
   "current_scene_count": 18,
-  "asset_count": 51,
-  "current_scenes_sha256": "28f4f34f2c6829566b20198c5fa1701633c37dc3c149e23fe84da1625b10910d",
+  "asset_count": 52,
+  "current_scenes_sha256": "21bc8f85f4bbd6af1a74e1bfd11173a8884c9e88007781fa59c22c500fb752b8",
   "checks": {
     "typescript": "pass",
     "asset_digests": "pass",
-    "excerpt_full_decode_count": 9,
+    "excerpt_full_decode_count": 10,
     "documentation_digest": "pass",
     "submission_layout_tests": 9,
     "technical_document_pages": 31,
@@ -18,7 +18,9 @@
     "presentation_embedded_media_import": "包内GIF实录动画，麒麟V11实际播放通过",
     "current_visual_review_full_decode": "pass",
     "timeline_pcm_regeneration": "真实片头/片尾原音复用、1.7增益、摘要和缺少音频时保留时间轴验证通过",
-    "presentation_live_playback": "pass; review/presentation-playback-20260910/manifest.json"
+    "presentation_live_playback": "pass; review/presentation-playback-20260910/manifest.json",
+    "narration_visual_cue_text": "18个场景的分段提示词均与新版旁白匹配",
+    "functional_coverage": "docs/delivery/MATERIAL_ALIGNMENT.md：Word章节、18页PPT与30镜视频对应表"
   },
   "visual_review": [
     "目录召回25秒画面",
@@ -26,7 +28,8 @@
     "技术方案31页预览",
     "18场景静音连续审阅388秒；每镜结果抽帧",
     "更新跨端片段48–62秒、审批后片段38–48秒",
-    "紧凑授权与遗忘回执裁切及放大"
+    "紧凑授权与遗忘回执裁切及放大",
+    "目录进度到保存1条的9秒原速实录；review/directory-progress-20260910/manifest.json"
   ],
   "next_steps": [
     "新版旁白合成",
@@ -40,8 +43,10 @@
     "shots": 30
   },
   "review_video": {
-    "path": ".runtime/current-all-scenes-review-v3.mp4",
+    "path": ".runtime/current-all-scenes-review-v4.mp4",
     "seconds": 388,
-    "sha256": "8707ae0cf699780b379a23fe12be9a16fecbc35d9b7d5c94dfb90ecbddcfc369"
+    "container_seconds": 388.053333,
+    "frames": 11640,
+    "sha256": "787dcb6cc824121aaa052b8ef8e73f9d88fc59f2619d8e99a20debef79f71d9c"
   }
 }

@@ -1,0 +1,32 @@
+{
+  "version": "0.1.12",
+  "scene": "s11",
+  "source": {
+    "kind": "video",
+    "src": "current/directory-progress.mp4",
+    "end": "current/directory-progress-end.png",
+    "width": 600,
+    "height": 96,
+    "frames": 270,
+    "source": "submission/video-production/raw/current-0.1.12/directory-dreaming-02.mp4",
+    "start_seconds": 16,
+    "duration_seconds": 9,
+    "speed": 1,
+    "crop": "600:96:120:38",
+    "source_sha256": "a748096d3cbca974503b47d0e13b812f31255e66461952e6f69d75ba1b80a65d",
+    "sha256": "f4719d982e79e4886ff759daa943b1e7459efe9643376a71108694294b4b62a8",
+    "end_sha256": "cd3b65e176977303b5f937c025a8056dfc491c4fc65048915176af79e5234b47"
+  },
+  "review_seconds": {
+    "before": 9,
+    "after": 16
+  },
+  "observed_states": [
+    "正在整理资料（0%），已保存0条记忆",
+    "资料整理完成，已保存1条记忆"
+  ],
+  "frames": {
+    "after.png": "e1201feaaeca40f53b900569386311f71191cafaf21cf8a56e87a00c65af42b7",
+    "before.png": "d8abd61478c0e0fc9ad27715bf5df83e709254b6410db14608f6535216bfdef7"
+  }
+}

@@ -290,20 +290,36 @@
       "sha256": "b3acc8c362487a3d38464e7e1f67c0c481d73140f2da216b121ce3d73a33779a",
       "end_sha256": "e694815efec6f4b4df12b3d0123336af7e7ff314545c0f15260d39a27ebb796b"
     },
+    "directory-progress": {
+      "kind": "video",
+      "src": "current/directory-progress.mp4",
+      "end": "current/directory-progress-end.png",
+      "width": 600,
+      "height": 96,
+      "frames": 270,
+      "source": "submission/video-production/raw/current-0.1.12/directory-dreaming-02.mp4",
+      "start_seconds": 16,
+      "duration_seconds": 9,
+      "speed": 1,
+      "crop": "600:96:120:38",
+      "source_sha256": "a748096d3cbca974503b47d0e13b812f31255e66461952e6f69d75ba1b80a65d",
+      "sha256": "f4719d982e79e4886ff759daa943b1e7459efe9643376a71108694294b4b62a8",
+      "end_sha256": "cd3b65e176977303b5f937c025a8056dfc491c4fc65048915176af79e5234b47"
+    },
     "directory-query": {
       "kind": "video",
       "src": "current/directory-query.mp4",
       "end": "current/directory-query-end.png",
       "width": 900,
       "height": 596,
-      "frames": 450,
+      "frames": 330,
       "source": "submission/video-production/raw/current-0.1.12/directory-recall-01.mp4",
-      "start_seconds": 9,
-      "duration_seconds": 15,
+      "start_seconds": 13,
+      "duration_seconds": 11,
       "speed": 1,
       "crop": "900:596:410:96",
       "source_sha256": "343679ab93559b575c001195074fcb3accf784654dfa5d0fc92a87d6eee0eb9f",
-      "sha256": "605f6e5e41319cc0446faae0272a9237c1e59e9d5372a3e2a531d2dfd99343dd",
+      "sha256": "865518577efd595c854248a22e9d0367428e8a001e822ca3d330343c3e8b5e31",
       "end_sha256": "85094ee814ab8d7befc76541e6a4205574a8daa925371a25be3161e28786924c"
     },
     "directory-approval": {
@@ -666,10 +682,16 @@
         "fraction": 0
       },
       {
+        "asset": "directory-progress",
+        "label": "主窗口显示整理进度与保存数量",
+        "cue": "貔貅自动开始整理",
+        "fraction": 0.22
+      },
+      {
         "asset": "directory-query",
         "label": "后台整理后，新会话找回安排",
         "cue": "完成后",
-        "fraction": 0.38
+        "fraction": 0.5
       },
       {
         "asset": "directory-source",
