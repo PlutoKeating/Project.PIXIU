@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-10",
+  "version": "0.1.12",
+  "stage": "新版画面与文档复核",
+  "current_scene_count": 18,
+  "asset_count": 50,
+  "current_scenes_sha256": "2cb653f28adced99b827f9f059a93663ee57e100cde19099e8f29ee02fa1b50a",
+  "checks": {
+    "typescript": "pass",
+    "asset_digests": "pass",
+    "excerpt_full_decode_count": 9,
+    "documentation_digest": "pass",
+    "submission_layout_tests": 9,
+    "technical_document_pages": 31,
+    "presentation_pages": 18,
+    "document_horizontal_bounds": "pass",
+    "presentation_slideshow_start": "pass",
+    "presentation_embedded_media_import": "pass"
+  },
+  "visual_review": [
+    "目录召回25秒画面",
+    "审批后新会话结果，裁片起点38秒",
+    "技术方案31页预览"
+  ],
+  "next_steps": [
+    "PPT嵌入视频连续播放检查：本机放映控制调用等待，媒体导入与独立解码已通过",
+    "新版旁白合成",
+    "实际字幕时间轴",
+    "整片音画核对与独立终检",
+    "最终四项作品装配"
+  ]
+}

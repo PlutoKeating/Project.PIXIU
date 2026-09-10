@@ -74,6 +74,62 @@
       "duration_seconds": 80.00020004995167,
       "captured_frames": 320,
       "timing": "current-bill-recall-01-timing.json"
+    },
+    {
+      "file": "current-manual-01.mp4",
+      "sha256": "e7cef03d9f66a923dd8489281b6dc9dc60f65cb0d6acbc9dd0ca04bb2ffe71a0",
+      "duration_seconds": 75.0002139150165,
+      "captured_frames": 300,
+      "timing": "current-manual-01-timing.json"
+    },
+    {
+      "file": "current-edit-01.mp4",
+      "sha256": "95f2dd07692a389a8c2c2d46dfa1e7ae8a5dcfd4a5e2683a725daa57a6fcca0e",
+      "duration_seconds": 70.01170903304592,
+      "captured_frames": 280,
+      "timing": "current-edit-01-timing.json"
+    },
+    {
+      "file": "current-stage-promote-01.mp4",
+      "sha256": "4e36a0db3206eaa8952216ba80c679c3299401cdc8035fd1715baf46b5c79073",
+      "duration_seconds": 30.00009431806393,
+      "captured_frames": 120,
+      "timing": "current-stage-promote-01-timing.json"
+    },
+    {
+      "file": "current-forget-01.mp4",
+      "sha256": "6e66b9080bd2d5c9d3ba4dcddadbf261e6c4305e9f6e0d78d4b652065535e424",
+      "duration_seconds": 50.000091005000286,
+      "captured_frames": 200,
+      "timing": "current-forget-01-timing.json"
+    },
+    {
+      "file": "current-agent-task-01.mp4",
+      "sha256": "36461515a613c8fad9c3bbcf0e569fd19f23f0cdb6428758f46437d92c05df7a",
+      "duration_seconds": 120.0001114460174,
+      "captured_frames": 480,
+      "timing": "current-agent-task-01-timing.json"
+    },
+    {
+      "file": "current-agent-recall-01.mp4",
+      "sha256": "4633bb00113648b7096e66d48ca82cf1831ad2ca524bc99790a02b6977d5e516",
+      "duration_seconds": 65.00017270108219,
+      "captured_frames": 260,
+      "timing": "current-agent-recall-01-timing.json"
+    },
+    {
+      "file": "current-keyword-source-01.mp4",
+      "sha256": "f19a6dedad2e3f3cb9b09e028a1d35174a2f0834ce8af5807231e21dde2f530e",
+      "duration_seconds": 20.00010420300532,
+      "captured_frames": 80,
+      "timing": "current-keyword-source-01-timing.json"
+    },
+    {
+      "file": "current-behavior-window-02.mp4",
+      "sha256": "cd2b3be24828ed471063833014048e8e783cbf8227c52e4d4364758470c93d92",
+      "duration_seconds": 20.000076708034612,
+      "captured_frames": 80,
+      "timing": "current-behavior-window-02-timing.json"
     }
   ]
 }

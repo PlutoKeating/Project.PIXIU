@@ -1,0 +1,136 @@
+{
+  "version": "0.1.12",
+  "date": "2026-09-10",
+  "environment": "同一宿主上的三台独立银河麒麟V11虚拟机",
+  "source": "build/release/evidence/candidate-0.1.12/three-device-concurrency.json",
+  "source_sha256": "236806849c973ece5c72753d22342cdff7288c299aea79f3f1cc0362b64b8bde",
+  "baseline": [
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 1,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间为2026年11月8日上午九点，地点为一楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS"
+      ],
+      "updated_at": 1789003420
+    },
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 1,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间为2026年11月8日上午九点，地点为一楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS"
+      ],
+      "updated_at": 1789003420
+    },
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 1,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间为2026年11月8日上午九点，地点为一楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS"
+      ],
+      "updated_at": 1789003420
+    }
+  ],
+  "isolated": [
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 2,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间改为2026年11月9日上午十点，地点为二楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS",
+        "evd_01M24G3MNQKVMWQQZS4BV5NW4Y"
+      ],
+      "updated_at": 1789004993
+    },
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 2,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS",
+        "evd_01M24G3NT727NW4G4MRZ4058MR"
+      ],
+      "updated_at": 1789004994
+    },
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 1,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间为2026年11月8日上午九点，地点为一楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS"
+      ],
+      "updated_at": 1789003420
+    }
+  ],
+  "converged": [
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 2,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS",
+        "evd_01M24G3NT727NW4G4MRZ4058MR"
+      ],
+      "updated_at": 1789004994
+    },
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 2,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS",
+        "evd_01M24G3NT727NW4G4MRZ4058MR"
+      ],
+      "updated_at": 1789004994
+    },
+    {
+      "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+      "scope": "shared:home",
+      "version": 2,
+      "title": "云杉正式版共享验证",
+      "body": {
+        "content": "云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案室。"
+      },
+      "evidence_ids": [
+        "evd_01M24EKMT3KQK2R07NJBCRJTAS",
+        "evd_01M24G3NT727NW4G4MRZ4058MR"
+      ],
+      "updated_at": 1789004994
+    }
+  ],
+  "elapsed_seconds": 30.467019626987167
+}

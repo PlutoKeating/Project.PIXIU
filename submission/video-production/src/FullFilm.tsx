@@ -3,6 +3,7 @@ import music from './bgm.json';
 import {cue} from './PresentationMotion';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame, staticFile, Easing} from 'remotion';
 import timeline from './timeline.json';
+import story from '../storyboard/shots.json';
 import {ArchitectureScene} from './ArchitectureScene';
 import {Fonts} from './Fonts';
 import {PaperTitleCard} from './PaperTitleCard';
@@ -28,6 +29,7 @@ import {ConflictAuditScene} from './ConflictAuditScene';
 import {AgentTaskScene} from './AgentTaskScene';
 import {NativeSetupScene} from './NativeSetupScenes';
 import {NativeDeliveryScene} from './NativeDeliveryScenes';
+import {CurrentProductScene, hasCurrentScene} from './CurrentProductScenes';
 
 type Shot = typeof timeline.shots[number];
 const INK = '#172033', BLUE = '#1456b8', MUTED = '#526477';
@@ -40,7 +42,7 @@ export const OUTPUT_AUDIO_OFFSET_F = 1.28;
 const peakStart = (target: number, sourcePeak: number) =>
   Math.max(0, Math.round(target - sourcePeak - OUTPUT_AUDIO_OFFSET_F));
 const preferenceHistoryStart = timeline.shots.find((shot) => shot.id === 's15')!
-  .captions.find((cue) => cue.text.startsWith('提取后查看'))!.from;
+  .captions.find((cue) => cue.text.startsWith('打开偏好页') || cue.text.startsWith('提取后查看'))?.from ?? 0;
 type SoundCue = {shot: string; offset: number; src: string; volume: number;
   duration?: number; label?: string};
 export const SFX: SoundCue[] = [
@@ -171,6 +173,7 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
       : title ? <PaperTitleCard duration={shot.duration} fontSize={76}
       words={[{text: shot.title.split('，')[0], accent: true}, {text: shot.title.split('，').slice(1).join('，')}]}
       sub={shot.chapter} />
+      : hasCurrentScene(shot.id) ? <CurrentProductScene shot={shot}/>
       : shot.id === 's03' ? <>
         <div style={{position: 'absolute', left: 240, top: 140, width: 1440, height: 810, overflow: 'hidden'}}>
           <div style={{position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.75)', transformOrigin: '0 0'}}><SpotlightHeroCard /></div>
@@ -224,7 +227,14 @@ export const FullFilmDraft: React.FC<{reviewOverlay?: boolean; bgm?: boolean}> =
   {reviewOverlay ? <DraftOverlay /> : null}
 </AbsoluteFill>;
 
-export const FullFilmFinal: React.FC<{bgm?: boolean}> = ({bgm = true}) => <FullFilmDraft reviewOverlay={false} bgm={bgm} />;
+export const FullFilmFinal: React.FC<{bgm?: boolean}> = ({bgm = true}) => {
+  const actual=timeline.shots.map(s=>[s.id,s.narration]);
+  const expected=story.shots.map(s=>[s.id,s.narration]);
+  if(JSON.stringify(actual)!==JSON.stringify(expected)) {
+    throw new Error('正式渲染需要与当前分镜一致的配音和字幕时间轴，请先运行 prepare:timeline。');
+  }
+  return <FullFilmDraft reviewOverlay={false} bgm={bgm}/>;
+};
 
 const BILL_SHOTS = timeline.shots.filter((s) => ['s07', 's08'].includes(s.id));
 export const BILL_DURATION = BILL_SHOTS.reduce((total, shot) => total + shot.duration, 0);

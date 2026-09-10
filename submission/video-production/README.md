@@ -2,6 +2,10 @@
 
 2026-09-10 正在按当前 0.1.12 界面重新采集和制作。新版分镜在 `storyboard/shots.json`，新增 Dreaming 更正审批镜头 s11b；实际渲染时间轴将在新版素材和旁白就绪后更新。新原始素材位于 `raw/current-0.1.12/`，Word、PPT 共用的当前操作截图位于 `docs/delivery/assets/operations/03-current-workflows/`。制作与覆盖台账见 `docs/delivery/MATERIAL_ALIGNMENT.md`。文案采用正面、平实的行动与结果描述。
 
+新版画面准备：运行 `npm run prepare:current`，从原始录屏按实际速度裁片，并从文档共用截图生成展示素材。`src/current-scenes.json` 记录来源、摘要、尺寸和剪辑时段；发牌与首尾卡片也使用本次实拍。运行 `npm run render:current -- .runtime/current-review.mp4` 导出独立的静音画面审阅，按分镜规划时长检查阅读时间。最终合成入口会核对旁白与分镜文案一致后再开始渲染。
+
+2026-09-10 行为实拍环境补齐 V11 仓库的 `x11-utils` 7.7+6-ok1k0.1，通过真实 X11 公开演示窗口生成28秒使用记录。该工具是窗口行为统计的系统前提，安装方式同步写入部署指南。录制结束后已恢复两端助手共享设置及主机采集设置。图片裁切使用制作依赖 Pillow，裁片沿用 FFmpeg；产品源码与运行依赖此次按现有版本核对。
+
 以下为本次修订前的成片记录。
 
 最终交付：`renders/演示视频-最终封面版.mp4`。用户提供的`raw/cover/approved-cover.png`替换第0帧并作为MP4内嵌封面；总计11706帧、390.2秒，完整AAC音轨直接复制。仅为替换第一帧重新编码首个250帧GOP，其余11456帧直接复制并核对解码像素一致。已验收剪辑工程保持原样。检查见`review/cover-technical.json`，复现工具为`scripts/set_video_cover.py`（`--video`、`--cover`、`--output`、`--report`），沿用FFmpeg与Python标准库，无新增依赖。

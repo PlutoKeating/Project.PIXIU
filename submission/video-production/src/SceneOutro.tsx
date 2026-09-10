@@ -1,5 +1,4 @@
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
-import { PageCam, CamKey } from './PageCam';
 import {BRAND_COPY} from './brandCopy';
 import timeline from './timeline.json';
 
@@ -19,7 +18,6 @@ export const SCENE_OUTRO_DEFAULTS = {
   muted: '#526477',  // oklch(50% 0.006 82)
 };
 type SceneOutroProps = Partial<typeof SCENE_OUTRO_DEFAULTS> & {duration?: number};
-const PAGE_H = 1920 * 740 / 1200;
 
 // real overshoot on landing (the old bezier(0.25,0.9,0.3,1) never crossed 1)
 const FLY_EASE = Easing.bezier(0.34, 1.4, 0.44, 1);
@@ -44,15 +42,15 @@ type FlyEl = {
 
 // render order = cue order, so later arrivals stack on top
 const ELS: FlyEl[] = [
-  {key: 'nav', file: 'nav.png', w: 1440, h: 56, cx: 960, cy: 80, scale: 0.72, rot: 0, dx: 0, dy: -120, radius: 12, cue: 4},
-  {key: 'task', file: 'task.png', w: 600, h: 252, cx: 280, cy: 340, scale: 0.76, rot: -5, dx: -500, dy: 0, radius: 12, cue: 7},
-  {key: 'memory', file: 'memory.png', w: 720, h: 235, cx: 1630, cy: 350, scale: 0.7, rot: 4, dx: 500, dy: 0, radius: 12, cue: 10},
-  {key: 'capture', file: 'capture.png', w: 720, h: 210, cx: 1480, cy: 755, scale: 0.68, rot: -3, dx: 450, dy: 260, radius: 12, cue: 13},
-  {key: 'preference', file: 'preference.png', w: 720, h: 292.5, cx: 280, cy: 750, scale: 0.62, rot: 3, dx: -400, dy: 300, radius: 12, cue: 16},
-  {key: 'forget', file: 'forget.png', w: 720, h: 297, cx: 700, cy: 845, scale: 0.58, rot: 2, dx: 0, dy: 320, radius: 12, cue: 19},
-  {key: 'shared', file: 'shared.png', w: 720, h: 300, cx: 800, cy: 225, scale: 0.62, rot: -1.5, dx: 0, dy: -240, radius: 12, cue: 22},
-  {key: 'insight', file: 'insight.png', w: 720, h: 150, cx: 1210, cy: 895, scale: 0.6, rot: -2, dx: 380, dy: 0, radius: 12, cue: 25},
-  {key: 'devices', file: 'devices.png', w: 720, h: 195, cx: 1550, cy: 170, scale: 0.63, rot: 2.5, dx: 360, dy: -200, radius: 12, cue: 28},
+  {key: 'nav', file: 'nav.png', w: 1440, h: 67.2, cx: 960, cy: 80, scale: 0.72, rot: 0, dx: 0, dy: -120, radius: 12, cue: 4},
+  {key: 'task', file: 'task.png', w: 600, h: 600 * 300 / 780, cx: 280, cy: 340, scale: 0.76, rot: -5, dx: -500, dy: 0, radius: 12, cue: 7},
+  {key: 'memory', file: 'memory.png', w: 720, h: 720 * 275 / 790, cx: 1630, cy: 350, scale: 0.7, rot: 4, dx: 500, dy: 0, radius: 12, cue: 10},
+  {key: 'capture', file: 'capture.png', w: 720, h: 720 * 270 / 1024, cx: 1480, cy: 755, scale: 0.68, rot: -3, dx: 450, dy: 260, radius: 12, cue: 13},
+  {key: 'preference', file: 'preference.png', w: 720, h: 180, cx: 280, cy: 750, scale: 0.62, rot: 3, dx: -400, dy: 300, radius: 12, cue: 16},
+  {key: 'approval', file: 'approval.png', w: 720, h: 720 * 410 / 880, cx: 700, cy: 845, scale: 0.58, rot: 2, dx: 0, dy: 320, radius: 12, cue: 19},
+  {key: 'shared', file: 'shared.png', w: 720, h: 162, cx: 800, cy: 225, scale: 0.62, rot: -1.5, dx: 0, dy: -240, radius: 12, cue: 22},
+  {key: 'insight', file: 'insight.png', w: 720, h: 720 * 309 / 1024, cx: 1210, cy: 895, scale: 0.6, rot: -2, dx: 380, dy: 0, radius: 12, cue: 25},
+  {key: 'devices', file: 'devices.png', w: 720, h: 720 * 181 / 1044, cx: 1550, cy: 170, scale: 0.63, rot: 2.5, dx: 360, dy: -200, radius: 12, cue: 28},
 ];
 
 // 20 gold dust motes, all parameters index-derived (deterministic)
@@ -163,7 +161,6 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
     easing: Easing.bezier(0.3, 0, 0.2, 1),
   });
 
-  const CAM: CamKey[] = [{ frame: 0, cx: 960, cy: PAGE_H / 2, zoom: 0.75 }];
 
   return (
     <AbsoluteFill style={{ opacity: fadeOut }}>
@@ -175,7 +172,7 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
           clipPath: 'inset(0 0 140px 0)',
         }}
       >
-        <PageCam src="screens/20260909-随身笔记本共享证据.png" pageH={PAGE_H} crop={{x: 120, y: 38, w: 1200, h: 740}} keys={CAM} blur={blur} saturate={0.9} />
+        <Img src={staticFile("current/shared-workspace.png")} style={{position:"absolute",left:240,top:96,width:1440,height:888,filter:`blur(${blur}px) saturate(0.9)`}} />
         {/* warm scrim under the flying elements: keeps the center legible without washing them */}
         <AbsoluteFill style={{ background: 'radial-gradient(1200px 800px at 50% 48%, rgba(246,247,249,0.82), rgba(246,247,249,0.55) 60%, rgba(246,247,249,0.35))', pointerEvents: 'none' }} />
 
@@ -247,7 +244,7 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
                   >
                     {(
                       <Img
-                        src={staticFile(`outro/${el.file}`)}
+                        src={staticFile(`current/outro-${el.file}`)}
                         style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }}
                       />
                     )}
@@ -272,7 +269,7 @@ export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
                 >
                   {(
                     <Img
-                      src={staticFile(`outro/${el.file}`)}
+                      src={staticFile(`current/outro-${el.file}`)}
                       style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }}
                     />
                   )}

@@ -17,16 +17,15 @@ export const KnowledgeExamplesScene: React.FC = () => {
           <div style={{fontSize: 38, lineHeight: 1.7, marginTop: 25}}>“{item.quote}”</div>
         </Reveal>)}
       </div> : <>
-        <div style={{fontSize: 38, marginBottom: 30}}>家庭图书归还流程 · 原生正文</div>
-        <div style={{position: 'relative', width: 1620, height: 385, overflow: 'hidden', background: '#fff'}}>
-          <div style={{position:'absolute',left:0,top:Math.min(3,Math.max(0,Math.floor((f-435)/45)))*86+12,height:66,width:5,background:'#1456b8',zIndex:2}} />
-          <Img src={staticFile('screens/20260909-家庭图书归还流程-窄栏正文-4K.png')} style={{position: 'absolute', width: 5184, height: 2916, left: -1870 * 1.35, top: -1235 * 1.35}} />
+        <div style={{fontSize: 38, marginBottom: 30}}>活动资料中的图书整理步骤 · 0.1.12 实拍</div>
+        <div style={{position: 'relative', width: 1620, height: 385, overflow: 'hidden', background: '#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <Img src={staticFile('current/knowledge-workflow-body.png')} style={{width:1430,height:211.2}} />
         </div>
         
       </>}
     </div>
     <div style={{position: 'absolute', left: 135, top: 905, fontSize: 36, color: '#526477'}}>
-      {f < cue('s14','打开流程') ? '事实、流程、案例与模板 · 来源内容摘录' : '原生来源裁片 · 公开合成资料 · 正文保持原样'}
+      {f < cue('s14','打开流程') ? '事实、流程、案例与模板 · 来源内容摘录' : '0.1.12 原生来源裁片 · 公开合成资料'}
     </div>
   {f>=cue('s14','遇到相似')?<Steps labels={['相似任务','检索资料','作为执行参考']} cues={[cue('s14','遇到相似'),cue('s14','再检索'),cue('s14','交给助手')]} top={805}/>:null}</AbsoluteFill>;
 };

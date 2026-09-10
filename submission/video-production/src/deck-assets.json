@@ -1,132 +1,132 @@
 [
   {
-    "src": "screens/20260909-客厅原始会话证据-4K.png",
-    "source": "raw/screenshots/20260909-客厅原始会话证据-4K.png",
-    "imageWidth": 3840,
-    "imageHeight": 2160,
+    "src": "current/bill-recall.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+    "imageWidth": 900,
+    "imageHeight": 596,
     "crop": {
-      "x": 1512,
-      "y": 936,
-      "w": 720,
-      "h": 629
+      "x": 108.7058293269231,
+      "y": 0.0,
+      "w": 682.5883413461538,
+      "h": 596.0
     },
-    "sha256": "6c73a3f8d0543f5182488fbf563633b45dc2f6ea6b7451cea7ad717bb806f40c"
+    "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
   },
   {
-    "src": "screens/20260909-客厅原始会话证据-4K.png",
-    "source": "raw/screenshots/20260909-客厅原始会话证据-4K.png",
-    "imageWidth": 3840,
-    "imageHeight": 2160,
+    "src": "current/directory-recall.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+    "imageWidth": 900,
+    "imageHeight": 596,
     "crop": {
-      "x": 1632,
-      "y": 936,
-      "w": 720,
-      "h": 629
+      "x": 108.7058293269231,
+      "y": 0.0,
+      "w": 682.5883413461538,
+      "h": 596.0
     },
-    "sha256": "6c73a3f8d0543f5182488fbf563633b45dc2f6ea6b7451cea7ad717bb806f40c"
+    "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
   },
   {
-    "src": "screens/20260909-账单原始证据-4K.png",
-    "source": "raw/screenshots/20260909-账单原始证据-4K.png",
-    "imageWidth": 3840,
-    "imageHeight": 2160,
+    "src": "current/dreaming-review.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+    "imageWidth": 880,
+    "imageHeight": 620,
     "crop": {
-      "x": 1512,
-      "y": 936,
-      "w": 720,
-      "h": 629
+      "x": 84.96243990384613,
+      "y": 0.0,
+      "w": 710.0751201923077,
+      "h": 620.0
     },
-    "sha256": "cb0c4ef121325146d937ce2a9123d6e5ffba22e8325f49e1ff924fd2256c49df"
+    "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
   },
   {
-    "src": "screens/20260909-账单原始证据-4K.png",
-    "source": "raw/screenshots/20260909-账单原始证据-4K.png",
-    "imageWidth": 3840,
-    "imageHeight": 2160,
+    "src": "current/updated-recall.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+    "imageWidth": 900,
+    "imageHeight": 596,
     "crop": {
-      "x": 1632,
-      "y": 936,
-      "w": 720,
-      "h": 629
+      "x": 108.7058293269231,
+      "y": 0.0,
+      "w": 682.5883413461538,
+      "h": 596.0
     },
-    "sha256": "cb0c4ef121325146d937ce2a9123d6e5ffba22e8325f49e1ff924fd2256c49df"
+    "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
   },
   {
-    "src": "screens/20260909-洞察来源正文-4K.png",
-    "source": "raw/20260909-洞察来源正文-4K.png",
-    "imageWidth": 3840,
-    "imageHeight": 2160,
+    "src": "current/shared-recall.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+    "imageWidth": 900,
+    "imageHeight": 596,
     "crop": {
-      "x": 1512,
-      "y": 936,
-      "w": 720,
-      "h": 629
+      "x": 108.7058293269231,
+      "y": 0.0,
+      "w": 682.5883413461538,
+      "h": 596.0
     },
-    "sha256": "2f8c104d449fd5b2cc3de48095366e61ae1adfdb0a694b711c7b486671346847"
+    "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
   },
   {
-    "src": "screens/20260909-洞察来源正文-4K.png",
-    "source": "raw/20260909-洞察来源正文-4K.png",
-    "imageWidth": 3840,
-    "imageHeight": 2160,
+    "src": "current/shared-source.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/shared-source.png",
+    "imageWidth": 760,
+    "imageHeight": 640,
     "crop": {
-      "x": 1632,
-      "y": 936,
-      "w": 720,
-      "h": 629
+      "x": 13.509615384615358,
+      "y": -5.684341886080802e-14,
+      "w": 732.9807692307693,
+      "h": 640.0000000000001
     },
-    "sha256": "2f8c104d449fd5b2cc3de48095366e61ae1adfdb0a694b711c7b486671346847"
+    "sha256": "49b0e5de08863f5b28b11d318548d206d15d58cfcab18a62c22ee83e7b74fa7d"
   },
   {
-    "src": "screens/34-file-source.png",
-    "source": "raw/screenshots/34-file-source.png",
-    "imageWidth": 1440,
-    "imageHeight": 900,
+    "src": "current/manual-entry.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/manual-entry.png",
+    "imageWidth": 550,
+    "imageHeight": 328,
     "crop": {
-      "x": 472,
-      "y": 390,
-      "w": 480,
-      "h": 419
+      "x": 87.17367788461539,
+      "y": 0.0,
+      "w": 375.6526442307692,
+      "h": 328.0
     },
-    "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
+    "sha256": "ac34f264322a05aef4f12645be32089f907c69afcda170a9b2a6e56aa32aff12"
   },
   {
-    "src": "screens/34-file-source.png",
-    "source": "raw/screenshots/34-file-source.png",
-    "imageWidth": 1440,
-    "imageHeight": 900,
+    "src": "current/edit-version-two.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/edit-version-two.png",
+    "imageWidth": 620,
+    "imageHeight": 398,
     "crop": {
-      "x": 592,
-      "y": 390,
-      "w": 480,
-      "h": 419
+      "x": 82.08879206730768,
+      "y": 0.0,
+      "w": 455.82241586538464,
+      "h": 398.0
     },
-    "sha256": "6bcd4da8349ab3973938b0c37141d4fbf99dbaf97f899e21b989fec56def6c68"
+    "sha256": "3f5f888d79a683c4c13d52d9fda4a4900d86d71e94cd8073c09fe3f4243c2d48"
   },
   {
-    "src": "screens/81-long-reader.png",
-    "source": "raw/screenshots/81-long-reader.png",
-    "imageWidth": 1440,
-    "imageHeight": 900,
+    "src": "current/preference-history.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+    "imageWidth": 1024,
+    "imageHeight": 650,
     "crop": {
-      "x": 472,
-      "y": 390,
-      "w": 480,
-      "h": 419
+      "x": 139.783203125,
+      "y": 0.0,
+      "w": 744.43359375,
+      "h": 650.0
     },
-    "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062"
+    "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
   },
   {
-    "src": "screens/81-long-reader.png",
-    "source": "raw/screenshots/81-long-reader.png",
-    "imageWidth": 1440,
-    "imageHeight": 900,
+    "src": "current/brief.png",
+    "source": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+    "imageWidth": 1024,
+    "imageHeight": 670,
     "crop": {
-      "x": 592,
-      "y": 390,
-      "w": 480,
-      "h": 419
+      "x": 128.33037860576923,
+      "y": 0.0,
+      "w": 767.3392427884615,
+      "h": 670.0
     },
-    "sha256": "4c312378431ce29b0a52e8299a33d47586ba88f757132ea3eb14391b79f44062"
+    "sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0"
   }
 ]

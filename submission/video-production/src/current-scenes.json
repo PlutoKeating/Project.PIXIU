@@ -1,0 +1,801 @@
+{
+  "version": "0.1.12",
+  "capture_date": "2026-09-10",
+  "assets": {
+    "shared-workspace": {
+      "kind": "image",
+      "src": "current/shared-workspace.png",
+      "width": 1200,
+      "height": 740,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+      "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
+    },
+    "sdk-version": {
+      "kind": "image",
+      "src": "current/sdk-version.png",
+      "width": 980,
+      "height": 198,
+      "source": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+      "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
+    },
+    "directory-folder": {
+      "kind": "image",
+      "src": "current/directory-folder.png",
+      "width": 1024,
+      "height": 270,
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
+      "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+    },
+    "directory-recall": {
+      "kind": "image",
+      "src": "current/directory-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+      "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+    },
+    "directory-source": {
+      "kind": "image",
+      "src": "current/directory-source.png",
+      "width": 760,
+      "height": 640,
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+      "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+    },
+    "dreaming-review": {
+      "kind": "image",
+      "src": "current/dreaming-review.png",
+      "width": 880,
+      "height": 620,
+      "source": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+      "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
+    },
+    "updated-recall": {
+      "kind": "image",
+      "src": "current/updated-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+      "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+    },
+    "bill-recall": {
+      "kind": "image",
+      "src": "current/bill-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+      "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
+    },
+    "bill-source": {
+      "kind": "image",
+      "src": "current/bill-source.png",
+      "width": 760,
+      "height": 640,
+      "source": "docs/delivery/assets/operations/03-current-workflows/bill-source.png",
+      "sha256": "c01a8e1150bc3bd281e225fc5935aabdee9d42edc0402fbf8bd6c461069a7627"
+    },
+    "preference-history": {
+      "kind": "image",
+      "src": "current/preference-history.png",
+      "width": 1024,
+      "height": 650,
+      "source": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+      "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
+    },
+    "shared-settings": {
+      "kind": "image",
+      "src": "current/shared-settings.png",
+      "width": 744,
+      "height": 310,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-settings.png",
+      "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7"
+    },
+    "shared-recall": {
+      "kind": "image",
+      "src": "current/shared-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+      "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
+    },
+    "shared-source": {
+      "kind": "image",
+      "src": "current/shared-source.png",
+      "width": 760,
+      "height": 640,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-source.png",
+      "sha256": "49b0e5de08863f5b28b11d318548d206d15d58cfcab18a62c22ee83e7b74fa7d"
+    },
+    "brief": {
+      "kind": "image",
+      "src": "current/brief.png",
+      "width": 1024,
+      "height": 670,
+      "source": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+      "sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0"
+    },
+    "device-controls": {
+      "kind": "image",
+      "src": "current/device-controls.png",
+      "width": 1044,
+      "height": 385,
+      "source": "docs/delivery/assets/operations/03-current-workflows/device-controls.png",
+      "sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310"
+    },
+    "desktop-shortcut": {
+      "kind": "image",
+      "src": "current/desktop-shortcut.png",
+      "width": 744,
+      "height": 144,
+      "source": "docs/delivery/assets/operations/03-current-workflows/desktop-shortcut.png",
+      "sha256": "90e7d3f87ebde113f7b5393870c67cbfaa69784140fddab0b62ccc03adaf93db"
+    },
+    "manual-entry": {
+      "kind": "image",
+      "src": "current/manual-entry.png",
+      "width": 550,
+      "height": 328,
+      "source": "docs/delivery/assets/operations/03-current-workflows/manual-entry.png",
+      "sha256": "ac34f264322a05aef4f12645be32089f907c69afcda170a9b2a6e56aa32aff12"
+    },
+    "manual-recalled-body": {
+      "kind": "image",
+      "src": "current/manual-recalled-body.png",
+      "width": 650,
+      "height": 68,
+      "source": "docs/delivery/assets/operations/03-current-workflows/manual-recalled-body.png",
+      "sha256": "76317b3278f7a3a363af938190ff7182f972b17a662616cf78d2bb42fef83a61"
+    },
+    "edit-version-one": {
+      "kind": "image",
+      "src": "current/edit-version-one.png",
+      "width": 620,
+      "height": 398,
+      "source": "docs/delivery/assets/operations/03-current-workflows/edit-version-one.png",
+      "sha256": "d636ef7f61a794ff27049683c16a1ba0f383eb49bff91a7039985de2a100228d"
+    },
+    "edit-version-two": {
+      "kind": "image",
+      "src": "current/edit-version-two.png",
+      "width": 620,
+      "height": 398,
+      "source": "docs/delivery/assets/operations/03-current-workflows/edit-version-two.png",
+      "sha256": "3f5f888d79a683c4c13d52d9fda4a4900d86d71e94cd8073c09fe3f4243c2d48"
+    },
+    "stage-record": {
+      "kind": "image",
+      "src": "current/stage-record.png",
+      "width": 1024,
+      "height": 560,
+      "source": "docs/delivery/assets/operations/03-current-workflows/stage-record.png",
+      "sha256": "f8e68117b32b825dd32420f9aa5bd0de1ad7c4a931653b6d7f9c0c4acd46511e"
+    },
+    "forget-target": {
+      "kind": "image",
+      "src": "current/forget-target.png",
+      "width": 1000,
+      "height": 58,
+      "source": "docs/delivery/assets/operations/03-current-workflows/forget-target.png",
+      "sha256": "371f1541179eb0e6ee3f393df3c5f673ea96595a53e5aa34d684c5886d7739f4"
+    },
+    "forget-completed": {
+      "kind": "image",
+      "src": "current/forget-completed.png",
+      "width": 216,
+      "height": 26,
+      "source": "docs/delivery/assets/operations/03-current-workflows/forget-completed.png",
+      "sha256": "ea871e6ec8c89f60d4b75ef323873c5dd16f1caf66d59dd62afc265d83d93584"
+    },
+    "agent-task-result": {
+      "kind": "image",
+      "src": "current/agent-task-result.png",
+      "width": 816,
+      "height": 176,
+      "source": "docs/delivery/assets/operations/03-current-workflows/agent-task-result.png",
+      "sha256": "3f1640a4ea50f13119d14a28efacb5d3c1f673edf4f541a52f6a865329baef7c"
+    },
+    "agent-tools-completed": {
+      "kind": "image",
+      "src": "current/agent-tools-completed.png",
+      "width": 816,
+      "height": 312,
+      "source": "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
+      "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
+    },
+    "agent-task-recall": {
+      "kind": "image",
+      "src": "current/agent-task-recall.png",
+      "width": 816,
+      "height": 226,
+      "source": "docs/delivery/assets/operations/03-current-workflows/agent-task-recall.png",
+      "sha256": "d6acdd90b8e913ba566ce709558045ff73cbf856dec74cc65bf7f28bfa7e0525"
+    },
+    "keyword-result": {
+      "kind": "image",
+      "src": "current/keyword-result.png",
+      "width": 976,
+      "height": 288,
+      "source": "docs/delivery/assets/operations/03-current-workflows/keyword-result.png",
+      "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37"
+    },
+    "keyword-source-body": {
+      "kind": "image",
+      "src": "current/keyword-source-body.png",
+      "width": 650,
+      "height": 66,
+      "source": "docs/delivery/assets/operations/03-current-workflows/keyword-source-body.png",
+      "sha256": "3c1b465b8853e9d0875a06703f5ec77fe25b20468acec8a0fb8a19f22b12d041"
+    },
+    "knowledge-workflow-body": {
+      "kind": "image",
+      "src": "current/knowledge-workflow-body.png",
+      "width": 650,
+      "height": 96,
+      "source": "docs/delivery/assets/operations/03-current-workflows/knowledge-workflow-body.png",
+      "sha256": "10f6242609f13542c64e897fd70a3f11b26e0b47b39c50785e4f68286a0be1cc"
+    },
+    "behavior-enabled": {
+      "kind": "image",
+      "src": "current/behavior-enabled.png",
+      "width": 110,
+      "height": 26,
+      "source": "docs/delivery/assets/operations/03-current-workflows/behavior-enabled.png",
+      "sha256": "34fa9cd4e22e7949c29967f457fbc6876d495d3afd0275e1b5e7190f061ca8e7"
+    },
+    "behavior-demo-window": {
+      "kind": "image",
+      "src": "current/behavior-demo-window.png",
+      "width": 900,
+      "height": 538,
+      "source": "docs/delivery/assets/operations/03-current-workflows/behavior-demo-window.png",
+      "sha256": "f624f7f5f730ce2d624f9b570b4f93b68e9f55972285257e6ad4f815cee59603"
+    },
+    "behavior-source-body": {
+      "kind": "image",
+      "src": "current/behavior-source-body.png",
+      "width": 650,
+      "height": 176,
+      "source": "docs/delivery/assets/operations/03-current-workflows/behavior-source-body.png",
+      "sha256": "f16ffbc8597feee89722040d5053d8e4ee07450c881267bbf6ca1024829d7754"
+    },
+    "bill-query": {
+      "kind": "video",
+      "src": "current/bill-query.mp4",
+      "end": "current/bill-query-end.png",
+      "width": 900,
+      "height": 596,
+      "frames": 480,
+      "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+      "start_seconds": 8,
+      "duration_seconds": 16,
+      "speed": 1,
+      "crop": "900:596:410:96",
+      "source_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
+      "sha256": "c9e8552ab85f14bacfff79fa3e4821e122c2763f53599a0a70a26afced6ee779",
+      "end_sha256": "e10d7b73e2815b1158a1878c03b6ceabd21d4ea1cb465464d14cc1db6bbb1d9a"
+    },
+    "bill-citation": {
+      "kind": "video",
+      "src": "current/bill-citation.mp4",
+      "end": "current/bill-citation-end.png",
+      "width": 760,
+      "height": 640,
+      "frames": 360,
+      "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+      "start_seconds": 45,
+      "duration_seconds": 12,
+      "speed": 1,
+      "crop": "760:640:330:98",
+      "source_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
+      "sha256": "c97115387ba52e026e0428ffbb0ca986c52a947cc059ca59900396592e257d1b",
+      "end_sha256": "6929c7763544acb0d3ee7462356faa22e5de8b1eeb27c79a06f3acac2552c95d"
+    },
+    "directory-query": {
+      "kind": "video",
+      "src": "current/directory-query.mp4",
+      "end": "current/directory-query-end.png",
+      "width": 900,
+      "height": 596,
+      "frames": 480,
+      "source": "submission/video-production/raw/current-0.1.12/directory-recall-01.mp4",
+      "start_seconds": 8,
+      "duration_seconds": 16,
+      "speed": 1,
+      "crop": "900:596:410:96",
+      "source_sha256": "343679ab93559b575c001195074fcb3accf784654dfa5d0fc92a87d6eee0eb9f",
+      "sha256": "c908af33d16edb64042a051b3b8ddc58adb6b712af1437254dc282a6c492d2dc",
+      "end_sha256": "d21392d7f0d4736398cf26da81141d44ace9668fb7c16d0204632b3c8a74c8eb"
+    },
+    "directory-approval": {
+      "kind": "video",
+      "src": "current/directory-approval.mp4",
+      "end": "current/directory-approval-end.png",
+      "width": 880,
+      "height": 620,
+      "frames": 120,
+      "source": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
+      "start_seconds": 0,
+      "duration_seconds": 4,
+      "speed": 1,
+      "crop": "880:620:270:108",
+      "source_sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661",
+      "sha256": "c98a050bb50bb9ffa50304c8ad3b87bf1b7927aa01848ffb842be199f33a6df1",
+      "end_sha256": "2c95c51c4381a5d5f3fda55bec639e6c6ce8bebe99a98e5060f9358d23cbc5ee"
+    },
+    "updated-query": {
+      "kind": "video",
+      "src": "current/updated-query.mp4",
+      "end": "current/updated-query-end.png",
+      "width": 900,
+      "height": 596,
+      "frames": 300,
+      "source": "submission/video-production/raw/current-0.1.12/dreaming-updated-recall-01.mp4",
+      "start_seconds": 38,
+      "duration_seconds": 10,
+      "speed": 1,
+      "crop": "900:596:410:96",
+      "source_sha256": "e1eb0c931041bda8fae8c1fad127e93824bb9be23d16699ec60278a3a5eee2f2",
+      "sha256": "99acfb9cbcf0f99d2f8dc6db6c9f8ec118ae8b5811a998af05c53dbc3159493b",
+      "end_sha256": "975c38d8fb5217fc8056145a2ebc129c551e1f3c3b2321e10953a0a8e5fb5c6c"
+    },
+    "shared-query": {
+      "kind": "video",
+      "src": "current/shared-query.mp4",
+      "end": "current/shared-query-end.png",
+      "width": 900,
+      "height": 596,
+      "frames": 660,
+      "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
+      "start_seconds": 31,
+      "duration_seconds": 22,
+      "speed": 1,
+      "crop": "900:596:410:96",
+      "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
+      "sha256": "a45f7647dbe73e352ee488c8220f9df562a5a74379919187537bd3cf1edd9ad0",
+      "end_sha256": "9d35254cf97265d3ca0ab514e15aa8104265a9bccc25375daeb7c7d01b1e5ab9"
+    },
+    "shared-citation": {
+      "kind": "video",
+      "src": "current/shared-citation.mp4",
+      "end": "current/shared-citation-end.png",
+      "width": 760,
+      "height": 640,
+      "frames": 240,
+      "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
+      "start_seconds": 0,
+      "duration_seconds": 8,
+      "speed": 1,
+      "crop": "760:640:330:98",
+      "source_sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438",
+      "sha256": "38e1a17ddca5fc86e3d08e60ed5155022820c37cf31e17b5aa5742fd9d2e1f83",
+      "end_sha256": "0cde29ab3a54f08e5d84212f42820d341001dd4b7ba58e8320524df6c81a7d16"
+    },
+    "manual-form": {
+      "kind": "video",
+      "src": "current/manual-form.mp4",
+      "end": "current/manual-form-end.png",
+      "width": 550,
+      "height": 328,
+      "frames": 360,
+      "source": "submission/video-production/raw/current-0.1.12/current-manual-01.mp4",
+      "start_seconds": 23,
+      "duration_seconds": 12,
+      "speed": 1,
+      "crop": "550:328:434:220",
+      "source_sha256": "e7cef03d9f66a923dd8489281b6dc9dc60f65cb0d6acbc9dd0ca04bb2ffe71a0",
+      "sha256": "df5d9a8c0f1668ba941c5f2cd781a74c21a58c95afa904c9a6860c4fcf7ba61b",
+      "end_sha256": "5762daefbb3e408dc2a216e71379d9561b3bc4259c5d2f071af05b496c4acb25"
+    },
+    "edit-change": {
+      "kind": "video",
+      "src": "current/edit-change.mp4",
+      "end": "current/edit-change-end.png",
+      "width": 620,
+      "height": 398,
+      "frames": 690,
+      "source": "submission/video-production/raw/current-0.1.12/current-edit-01.mp4",
+      "start_seconds": 20,
+      "duration_seconds": 23,
+      "speed": 1,
+      "crop": "620:398:399:187",
+      "source_sha256": "95f2dd07692a389a8c2c2d46dfa1e7ae8a5dcfd4a5e2683a725daa57a6fcca0e",
+      "sha256": "9086a5a7e6e4acc08b689be706af9ecefdc98786f2e8a2f936b493babd59859c",
+      "end_sha256": "73467f5025c43f00b810a019777b301624902d6e21408e8787faef949ebb2596"
+    },
+    "outro-nav": {
+      "kind": "image",
+      "src": "current/outro-nav.png",
+      "width": 1200,
+      "height": 56,
+      "crop_box": [
+        0,
+        0,
+        1200,
+        56
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+      "source_sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1",
+      "sha256": "6aa20862dec24c2b8a78d0fed607bcdad52087c535f71621b042c3782bb667f3"
+    },
+    "outro-task": {
+      "kind": "image",
+      "src": "current/outro-task.png",
+      "width": 780,
+      "height": 300,
+      "crop_box": [
+        60,
+        215,
+        840,
+        515
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+      "source_sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd",
+      "sha256": "d730b1bae6d864d7bd6b8ce91fa3f6d49a290f81130e8e2587adb473c15805a2"
+    },
+    "outro-memory": {
+      "kind": "image",
+      "src": "current/outro-memory.png",
+      "width": 790,
+      "height": 275,
+      "crop_box": [
+        60,
+        225,
+        850,
+        500
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+      "source_sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa",
+      "sha256": "5a85ee51356fdacd8de19a492e63d8c2cfcee5c2938295764a600566c673084f"
+    },
+    "outro-capture": {
+      "kind": "image",
+      "src": "current/outro-capture.png",
+      "width": 1024,
+      "height": 270,
+      "crop_box": [
+        0,
+        0,
+        1024,
+        270
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
+      "source_sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b",
+      "sha256": "855b9923b658318c46b2364b0a42832223477cb187931c99f25f8b81f16e6939"
+    },
+    "outro-preference": {
+      "kind": "image",
+      "src": "current/outro-preference.png",
+      "width": 1024,
+      "height": 256,
+      "crop_box": [
+        0,
+        394,
+        1024,
+        650
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+      "source_sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341",
+      "sha256": "51805e97841d4a69a9acd2d0bfffe23c5166de4a87eeb95067dc9809944dea71"
+    },
+    "outro-approval": {
+      "kind": "image",
+      "src": "current/outro-approval.png",
+      "width": 880,
+      "height": 410,
+      "crop_box": [
+        0,
+        210,
+        880,
+        620
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+      "source_sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+      "sha256": "053e8cd60587e1c877d11f2d14b3fcd135d3e758f19d88baca3ec18b7215dae8"
+    },
+    "outro-shared": {
+      "kind": "image",
+      "src": "current/outro-shared.png",
+      "width": 800,
+      "height": 180,
+      "crop_box": [
+        60,
+        210,
+        860,
+        390
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+      "source_sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5",
+      "sha256": "8dec773dde8ae3f641feec60a4032bd741a7783e53dc46f6022916a0e8decaab"
+    },
+    "outro-insight": {
+      "kind": "image",
+      "src": "current/outro-insight.png",
+      "width": 1024,
+      "height": 309,
+      "crop_box": [
+        0,
+        0,
+        1024,
+        309
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+      "source_sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0",
+      "sha256": "56beaecc6b476079da624b121ca7ead47de30eeb13e64c8592427b9120be4da5"
+    },
+    "outro-devices": {
+      "kind": "image",
+      "src": "current/outro-devices.png",
+      "width": 1044,
+      "height": 181,
+      "crop_box": [
+        0,
+        0,
+        1044,
+        181
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/device-controls.png",
+      "source_sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310",
+      "sha256": "68cb7d63d998e6d05d4f01b685102348b77dd8d2a32a2b94332bc8a8871dff93"
+    }
+  },
+  "scenes": {
+    "s06": [
+      {
+        "asset": "agent-tools-completed",
+        "label": "核算采购明细，写入文件并保存记忆",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "agent-task-recall",
+        "label": "新会话再次找回采购单 · 合计496元",
+        "cue": "打开新会话",
+        "fraction": 0.63
+      }
+    ],
+    "s04": [
+      {
+        "asset": "shared-workspace",
+        "label": "统一桌面",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "sdk-version",
+        "label": "0.1.12 · 麒麟系统向量能力",
+        "cue": "服务与能力页",
+        "fraction": 0.56
+      }
+    ],
+    "s07": [
+      {
+        "asset": "bill-query",
+        "label": "新会话查询账单",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "bill-recall",
+        "label": "电费、水费、燃气费明细",
+        "cue": "保存之后",
+        "fraction": 0.66
+      }
+    ],
+    "s08": [
+      {
+        "asset": "bill-recall",
+        "label": "合计 434.50 元",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "bill-citation",
+        "label": "打开对应记忆的来源",
+        "cue": "点击回答",
+        "fraction": 0.32
+      }
+    ],
+    "s10": [
+      {
+        "asset": "manual-form",
+        "label": "填写标题、正文与范围",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "manual-recalled-body",
+        "label": "保存后，检索并核对正文",
+        "cue": "保存后",
+        "fraction": 0.72
+      }
+    ],
+    "s12": [
+      {
+        "asset": "behavior-demo-window",
+        "label": "公开资料整理 · 实际应用窗口",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "behavior-source-body",
+        "label": "本次记录：窗口标题与28秒使用时长",
+        "cue": "这里的记录",
+        "fraction": 0.28
+      },
+      {
+        "asset": "behavior-enabled",
+        "label": "在采集与隐私中管理授权",
+        "cue": "你可以",
+        "fraction": 0.7
+      }
+    ],
+    "s13": [
+      {
+        "asset": "keyword-result",
+        "label": "用内容关键词，找回活动资料",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "keyword-source-body",
+        "label": "核对原始安排与准备步骤",
+        "cue": "打开来源",
+        "fraction": 0.7
+      }
+    ],
+    "s11": [
+      {
+        "asset": "directory-folder",
+        "label": "选择目录并保存",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "directory-query",
+        "label": "后台整理后，新会话找回安排",
+        "cue": "完成后",
+        "fraction": 0.38
+      },
+      {
+        "asset": "directory-source",
+        "label": "查看活动资料原文",
+        "cue": "点击来源",
+        "fraction": 0.82
+      }
+    ],
+    "s11b": [
+      {
+        "asset": "dreaming-review",
+        "label": "对照原内容与更正建议",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "directory-approval",
+        "label": "批准更正，保存新版本",
+        "cue": "批准后",
+        "fraction": 0.37
+      },
+      {
+        "asset": "updated-query",
+        "label": "新会话使用更新后的安排",
+        "cue": "下次询问",
+        "fraction": 0.56
+      }
+    ],
+    "s15": [
+      {
+        "asset": "preference-history",
+        "label": "当前偏好与版本历史",
+        "cue": null,
+        "fraction": 0
+      }
+    ],
+    "s16": [
+      {
+        "asset": "edit-version-one",
+        "label": "读取版本 1",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "edit-change",
+        "label": "整理时间更新为周五 17:00",
+        "cue": "保存后",
+        "fraction": 0.2
+      },
+      {
+        "asset": "edit-version-two",
+        "label": "重新读取版本 2",
+        "cue": "每次编辑",
+        "fraction": 0.65
+      }
+    ],
+    "s17": [
+      {
+        "asset": "stage-record",
+        "label": "从当前任务，衔接阶段与长期记忆",
+        "cue": null,
+        "fraction": 0
+      }
+    ],
+    "s19": [
+      {
+        "asset": "device-controls",
+        "label": "查看可信设备与配对入口",
+        "cue": null,
+        "fraction": 0
+      }
+    ],
+    "s20": [
+      {
+        "asset": "shared-settings",
+        "label": "选择家庭共享空间",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "shared-query",
+        "label": "换一台设备，继续查询约定",
+        "cue": "换到客厅",
+        "fraction": 0.26
+      },
+      {
+        "asset": "shared-citation",
+        "label": "打开同一条记忆的来源",
+        "cue": "它找回",
+        "fraction": 0.73
+      }
+    ],
+    "s23": [
+      {
+        "asset": "shared-settings",
+        "label": "读取范围与保存位置分别设置",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "device-controls",
+        "label": "选择参与协作的设备",
+        "cue": "通过共享设置",
+        "fraction": 0.56
+      }
+    ],
+    "s24": [
+      {
+        "asset": "forget-target",
+        "label": "预览并核对目标与版本",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "forget-completed",
+        "label": "确认遗忘 1 条演示知识",
+        "cue": "系统让知识",
+        "fraction": 0.48
+      }
+    ],
+    "s26": [
+      {
+        "asset": "brief",
+        "label": "近期知识与当天采集简报",
+        "cue": null,
+        "fraction": 0
+      }
+    ],
+    "s27": [
+      {
+        "asset": "sdk-version",
+        "label": "桌面与后端版本一致",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "desktop-shortcut",
+        "label": "配置日常桌面使用方式",
+        "cue": "打开设置",
+        "fraction": 0.35
+      }
+    ]
+  }
+}

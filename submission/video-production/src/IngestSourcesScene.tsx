@@ -14,10 +14,10 @@ export const IngestSourcesScene: React.FC = () => {
         </div>
         {f < cue('s09','接入时') ? <>
           <div style={{fontSize: 38, marginBottom: 35}}>真实会话证据 · 家庭共享约定</div>
-          <div style={{position: 'relative', width: 1650, height: 76, overflow: 'hidden', background: '#fff'}}>
-            <Img src={staticFile('screens/20260909-客厅原始会话证据-4K.png')} style={{position: 'absolute', width: 5760, height: 3240, left: -1512*1.5, top: -978*1.5}} />
+          <div style={{position: 'relative', width: 1650, height: 260, overflow: 'hidden', background: '#fff',display:'flex',justifyContent:'center',alignItems:'center'}}>
+            <Img src={staticFile('current/outro-shared.png')} style={{width:1280,height:288}} />
           </div>
-          <div style={{fontSize: 36, color: '#526477', marginTop: 45}}>原生界面裁片 · 会话来源与质量信息</div>
+          <div style={{fontSize: 36, color: '#526477', marginTop: 45}}>0.1.12 实拍 · 共享约定与来源</div>
         </> : f < cue('s09','再形成') ? <>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28}}>
             {[

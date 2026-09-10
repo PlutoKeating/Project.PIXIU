@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:current": "python3 scripts/prepare_current_scenes.py",
+    "render:current": "remotion render src/index.ts PixiuCurrentMaterialsReview",
     "prepare:timeline": "python3 scripts/prepare_timeline.py",
     "dev": "remotion studio src/index.ts",
     "check": "tsc --noEmit",

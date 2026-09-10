@@ -190,6 +190,182 @@
         144
       ],
       "sha256": "90e7d3f87ebde113f7b5393870c67cbfaa69784140fddab0b62ccc03adaf93db"
+    },
+    {
+      "file": "manual-entry.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        434,
+        220,
+        550,
+        328
+      ],
+      "sha256": "ac34f264322a05aef4f12645be32089f907c69afcda170a9b2a6e56aa32aff12"
+    },
+    {
+      "file": "manual-recalled-body.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        635,
+        328,
+        650,
+        68
+      ],
+      "sha256": "76317b3278f7a3a363af938190ff7182f972b17a662616cf78d2bb42fef83a61"
+    },
+    {
+      "file": "edit-version-one.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        399,
+        187,
+        620,
+        398
+      ],
+      "sha256": "d636ef7f61a794ff27049683c16a1ba0f383eb49bff91a7039985de2a100228d"
+    },
+    {
+      "file": "edit-version-two.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        399,
+        187,
+        620,
+        398
+      ],
+      "sha256": "3f5f888d79a683c4c13d52d9fda4a4900d86d71e94cd8073c09fe3f4243c2d48"
+    },
+    {
+      "file": "stage-record.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        287,
+        223,
+        1024,
+        560
+      ],
+      "sha256": "f8e68117b32b825dd32420f9aa5bd0de1ad7c4a931653b6d7f9c0c4acd46511e"
+    },
+    {
+      "file": "forget-target.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        300,
+        301,
+        1000,
+        58
+      ],
+      "sha256": "371f1541179eb0e6ee3f393df3c5f673ea96595a53e5aa34d684c5886d7739f4"
+    },
+    {
+      "file": "forget-completed.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        289,
+        780,
+        216,
+        26
+      ],
+      "sha256": "ea871e6ec8c89f60d4b75ef323873c5dd16f1caf66d59dd62afc265d83d93584"
+    },
+    {
+      "file": "agent-task-result.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        475,
+        342,
+        816,
+        176
+      ],
+      "sha256": "3f1640a4ea50f13119d14a28efacb5d3c1f673edf4f541a52f6a865329baef7c"
+    },
+    {
+      "file": "agent-tools-completed.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        475,
+        197,
+        816,
+        312
+      ],
+      "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
+    },
+    {
+      "file": "agent-task-recall.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        475,
+        289,
+        816,
+        226
+      ],
+      "sha256": "d6acdd90b8e913ba566ce709558045ff73cbf856dec74cc65bf7f28bfa7e0525"
+    },
+    {
+      "file": "keyword-result.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        312,
+        120,
+        976,
+        288
+      ],
+      "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37"
+    },
+    {
+      "file": "keyword-source-body.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        636,
+        329,
+        650,
+        66
+      ],
+      "sha256": "3c1b465b8853e9d0875a06703f5ec77fe25b20468acec8a0fb8a19f22b12d041"
+    },
+    {
+      "file": "knowledge-workflow-body.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        635,
+        333,
+        650,
+        96
+      ],
+      "sha256": "10f6242609f13542c64e897fd70a3f11b26e0b47b39c50785e4f68286a0be1cc"
+    },
+    {
+      "file": "behavior-enabled.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        287,
+        187,
+        110,
+        26
+      ],
+      "sha256": "34fa9cd4e22e7949c29967f457fbc6876d495d3afd0275e1b5e7190f061ca8e7"
+    },
+    {
+      "file": "behavior-demo-window.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        270,
+        200,
+        900,
+        538
+      ],
+      "sha256": "f624f7f5f730ce2d624f9b570b4f93b68e9f55972285257e6ad4f815cee59603"
+    },
+    {
+      "file": "behavior-source-body.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        635,
+        335,
+        650,
+        176
+      ],
+      "sha256": "f16ffbc8597feee89722040d5053d8e4ee07450c881267bbf6ca1024829d7754"
     }
   ]
 }

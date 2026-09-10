@@ -3,7 +3,7 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "3316e0e37e2023ae45fabeb70dc83f34230cce744a62396c074c4f8dfde4f7c8",
+      "sha256": "94d12c28d42ae287d1cee921abcfe1b8744cd2af8634d5ac980388d0f1ecab21",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
@@ -11,7 +11,7 @@
         },
         {
           "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
-          "sha256": "49da46c88b1c0adf13449574d7f6f2e1e9215d2ba03ed3955b507cb543c2751e"
+          "sha256": "132e238b9ca719d4b20d6c09fa3fa64e95ab24c668c4b27e9cb7088a3fb2fb3e"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
@@ -27,11 +27,11 @@
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "aced90712d3f10e0dad9333fa83dc01dc05222788ecdf03a15eb106fc135a57e"
+          "sha256": "c304a1726af548c6c4d6b4afcd7a7da09906dc6e6fdeb5d3986a4197ca0ee506"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
-          "sha256": "59a6cbc0343786cb57835c6992a617f543d180669fa02afbadc76b3477458ade"
+          "sha256": "222b3cdb15548155f447c6240b2ababdb1e5fe1f1caa155939ca59950f3b3f6a"
         },
         {
           "path": "docs/delivery/USER_MANUAL.md",
@@ -111,7 +111,7 @@
       "exports": [
         {
           "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/技术方案.doc",
-          "sha256": "31c9b0af4783556341a263b21ce7db7212ca634e8f336db3645b731858f809d8"
+          "sha256": "40b100450877f8eeb2524fffe895497db7c5279ff5ba56a618fe2e9a80b532f9"
         }
       ]
     }
@@ -119,8 +119,8 @@
   "presentation": {
     "source": "docs/delivery/assets/项目报告.pptx",
     "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/项目报告.pptx",
-    "sha256": "33fa016b494b9f91287e30d8b2ea5272656dfb1ccd861aefa690774393ccf056",
+    "sha256": "c90ff2c5b822999d12135c280c7235d05f175680b6208136969a78aaa2891451",
     "build_manifest": "docs/delivery/assets/presentation-manifest.json",
-    "build_manifest_sha256": "909913258800b9b7a51435816ceddf393bdcf7d81614160e6a3575be9ae0f44c"
+    "build_manifest_sha256": "72312e640adc25618f41397ba677931aaf7d7ba6949349aa370288bc248b6ab7"
   }
 }
