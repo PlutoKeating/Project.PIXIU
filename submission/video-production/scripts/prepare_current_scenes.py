@@ -102,7 +102,7 @@ scenes = {
  's12':[('behavior-demo-window','公开资料整理 · 实际应用窗口',None,0),('behavior-source-body','本次记录：窗口标题与28秒使用时长','这里的记录',.28),('behavior-enabled','在采集与隐私中管理授权','你可以',.7)],
  's13':[('keyword-result','用内容关键词，找回活动资料',None,0),('keyword-source-body','核对原始安排与准备步骤','打开来源',.7)],
  's11':[('directory-folder','选择目录并保存',None,0),('directory-progress','主窗口显示整理进度与保存数量','貔貅自动开始整理',.22),('directory-query','后台整理后，新会话找回安排','完成后',.5),('directory-source','查看活动资料原文','点击来源',.82)],
- 's11b':[('dreaming-review','对照原内容与更正建议',None,0),('directory-approval','批准更正，保存新版本','批准后',.37),('updated-query','新会话使用更新后的安排','下次询问',.56)],
+ 's11b':[('dreaming-review','对照原内容与更正建议',None,0),('directory-approval','批准更正，保存新版本','对照原内容',.37),('updated-query','新会话使用更新后的安排','下次询问',.56)],
  's15':[('preference-history','当前偏好与版本历史',None,0)],
  's16':[('edit-version-one','读取版本 1',None,0),('edit-change','整理时间更新为周五 17:00','保存后',.2),('edit-version-two','重新读取版本 2','每次编辑',.65)],
  's17':[('stage-record','从当前任务，衔接阶段与长期记忆',None,0)],

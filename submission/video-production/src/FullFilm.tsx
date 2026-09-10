@@ -12,23 +12,10 @@ import {PageCam} from './PageCam';
 import {SceneOutroLive} from './SceneOutro';
 import {SharedAgentScene, SHARED_AGENT_SHOT} from './SharedAgentScene';
 import {SpotlightHeroCard} from './SpotlightHeroCard';
-import {BillScene} from './BillScene';
 import {SyncTraceScene} from './SyncTraceScene';
 import {EvaluationScene} from './EvaluationScene';
-import {PreferenceHistoryScene} from './PreferenceHistoryScene';
-import {InsightDocumentScene} from './InsightDocumentScene';
-import {SearchEvidenceScene} from './SearchEvidenceScene';
-import {ForgetTraceScene} from './ForgetTraceScene';
-import {DeviceTrustScene} from './DeviceTrustScene';
-import {SharingBoundaryScene} from './SharingBoundaryScene';
 import {IngestSourcesScene} from './IngestSourcesScene';
-import {BehaviorCaptureScene} from './BehaviorCaptureScene';
-import {MemoryFlowScene} from './MemoryFlowScene';
 import {KnowledgeExamplesScene} from './KnowledgeExamplesScene';
-import {ConflictAuditScene} from './ConflictAuditScene';
-import {AgentTaskScene} from './AgentTaskScene';
-import {NativeSetupScene} from './NativeSetupScenes';
-import {NativeDeliveryScene} from './NativeDeliveryScenes';
 import {CurrentProductScene, hasCurrentScene} from './CurrentProductScenes';
 
 type Shot = typeof timeline.shots[number];
@@ -41,23 +28,9 @@ export const SPOTLIGHT_SHOT = timeline.shots.find((shot) => shot.id === 's03')!;
 export const OUTPUT_AUDIO_OFFSET_F = 1.28;
 const peakStart = (target: number, sourcePeak: number) =>
   Math.max(0, Math.round(target - sourcePeak - OUTPUT_AUDIO_OFFSET_F));
-const preferenceHistoryStart = timeline.shots.find((shot) => shot.id === 's15')!
-  .captions.find((cue) => cue.text.startsWith('打开偏好页') || cue.text.startsWith('提取后查看'))?.from ?? 0;
 type SoundCue = {shot: string; offset: number; src: string; volume: number;
   duration?: number; label?: string};
 export const SFX: SoundCue[] = [
-  // SearchEvidenceScene: keep four typing sounds; source-opening click removed.
-  ...[10, 13, 16, 19].map((target, i) => ({shot: 's13', offset: peakStart(target, 0.6),
-    src: `audio/typewriter-hit-${i % 2 ? 'soft' : 'hard'}-action.wav`, volume: 0.18,
-    duration: 3, label: '搜索输入拟音'})),
-  // PreferenceHistoryScene: cue 6/18/30 + 22-frame flight, tied to caption start.
-  ...[28, 40, 52].map((landing, i) => ({shot: 's15',
-    offset: peakStart(preferenceHistoryStart + landing, 4.65), src: 'audio/paper-slide-action.wav',
-    volume: 0.18 - i * 0.025, duration: 15, label: '历史卡片落定拟音'})),
-  // InsightDocumentScene: paired first lines at 6, third line at 9.5.
-  ...[6, 9.5].map((target, i) => ({shot: 's26', offset: peakStart(target, 0.6),
-    src: `audio/typewriter-hit-${i ? 'soft' : 'hard'}-action.wav`, volume: 0.18,
-    duration: 3, label: '文档揭示拟音'})),
   {shot: 's09', offset: peakStart(36, 21.45), src: 'audio/whoosh-big.mp3', volume: 0.10},
   {shot: 's09', offset: peakStart(68, 21.75), src: 'audio/whoosh-fast.mp3', volume: 0.08},
   {shot: 's09', offset: peakStart(84, 21.75), src: 'audio/whoosh-fast.mp3', volume: 0.06},
@@ -180,25 +153,11 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
         </div>
         <div style={{position: 'absolute', right: 135, bottom: 145, color: MUTED, fontSize: 38, background: '#f6f7f9', padding: '8px 16px', borderRadius: 10}}>能力示意 · 每台设备独立保存本地副本</div>
       </>
-      : shot.id === 's07' || shot.id === 's08' ? <BillScene evidence={shot.id === 's08'} />
       : shot.id === 's21' || shot.id === 's22' ? <SyncTraceScene concurrent={shot.id === 's22'} />
       : shot.id === 's05' ? <ArchitectureScene />
       : shot.id === 's28' ? <EvaluationScene />
-      : shot.id === 's15' ? <PreferenceHistoryScene />
-      : shot.id === 's13' ? <SearchEvidenceScene />
-      : shot.id === 's26' ? <InsightDocumentScene />
-      : shot.id === 's20' ? <SharedAgentScene />
-      : shot.id === 's19' ? <DeviceTrustScene />
-      : shot.id === 's23' ? <SharingBoundaryScene />
       : shot.id === 's09' ? <IngestSourcesScene />
-      : shot.id === 's12' ? <BehaviorCaptureScene />
-      : shot.id === 's17' ? <MemoryFlowScene />
       : shot.id === 's14' ? <KnowledgeExamplesScene />
-      : shot.id === 's16' ? <ConflictAuditScene />
-      : shot.id === 's06' ? <AgentTaskScene />
-      : shot.id === 's04' || shot.id === 's10' || shot.id === 's11' ? <NativeSetupScene kind={shot.id} />
-      : shot.id === 's24' && frame >= cue('s24','共享记忆') ? <ForgetTraceScene />
-      : shot.id === 's24' || shot.id === 's27' ? <NativeDeliveryScene kind={shot.id} />
       : SCREENS[shot.id] ? <ScreenScene shot={shot} /> : <PanelScene shot={shot} />}
     {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: headingSize, color: headingColor, fontWeight: 700}}>{shot.title}</div> : null}
     {includeAudio ? <><Sequence from={Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F))}>

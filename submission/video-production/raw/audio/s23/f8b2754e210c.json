@@ -1,0 +1,204 @@
+{
+  "shot": "s23",
+  "request": {
+    "text": "个人记忆保存在本机，协作内容按共享范围管理。敏感检查保护资料的使用范围。通过共享设置和可信设备列表，用户选择读取范围、保存位置，以及参与协作的设备。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "f8b2754e210c33430d7fdd791d5aec89e1a9d20e2f8018afc04a0f572134f6da",
+  "audio_sha256": "f8bad1a5c82589c4c54ef67e31c1059c80b800733f8ded470c33a2383d55b387",
+  "duration_seconds": 14.664,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3026250,
+      "text": "个人"
+    },
+    {
+      "offset": 3552500,
+      "duration": 2763330,
+      "text": "记忆"
+    },
+    {
+      "offset": 6578750,
+      "duration": 3026250,
+      "text": "保存"
+    },
+    {
+      "offset": 9605410,
+      "duration": 1184160,
+      "text": "在"
+    },
+    {
+      "offset": 10921250,
+      "duration": 1710410,
+      "text": "本"
+    },
+    {
+      "offset": 12631660,
+      "duration": 2368330,
+      "text": "机"
+    },
+    {
+      "offset": 18552500,
+      "duration": 3684160,
+      "text": "协作"
+    },
+    {
+      "offset": 22368330,
+      "duration": 3684160,
+      "text": "内容"
+    },
+    {
+      "offset": 26315830,
+      "duration": 2631660,
+      "text": "按"
+    },
+    {
+      "offset": 28947500,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 32763330,
+      "duration": 2368330,
+      "text": "范围"
+    },
+    {
+      "offset": 35263330,
+      "duration": 3289580,
+      "text": "管理"
+    },
+    {
+      "offset": 44605410,
+      "duration": 3421250,
+      "text": "敏感"
+    },
+    {
+      "offset": 48157910,
+      "duration": 3552500,
+      "text": "检查"
+    },
+    {
+      "offset": 51973750,
+      "duration": 3026250,
+      "text": "保护"
+    },
+    {
+      "offset": 55131660,
+      "duration": 2762910,
+      "text": "资料"
+    },
+    {
+      "offset": 57894580,
+      "duration": 1184160,
+      "text": "的"
+    },
+    {
+      "offset": 59342080,
+      "duration": 2894580,
+      "text": "使用"
+    },
+    {
+      "offset": 62236660,
+      "duration": 3947500,
+      "text": "范围"
+    },
+    {
+      "offset": 72105410,
+      "duration": 3815830,
+      "text": "通过"
+    },
+    {
+      "offset": 76184160,
+      "duration": 3552500,
+      "text": "共享"
+    },
+    {
+      "offset": 79868330,
+      "duration": 3947500,
+      "text": "设置"
+    },
+    {
+      "offset": 84868330,
+      "duration": 1315830,
+      "text": "和"
+    },
+    {
+      "offset": 86315830,
+      "duration": 3421250,
+      "text": "可信"
+    },
+    {
+      "offset": 89868330,
+      "duration": 2368330,
+      "text": "设备"
+    },
+    {
+      "offset": 92236660,
+      "duration": 3815830,
+      "text": "列表"
+    },
+    {
+      "offset": 99210410,
+      "duration": 3157910,
+      "text": "用户"
+    },
+    {
+      "offset": 102368330,
+      "duration": 3026250,
+      "text": "选择"
+    },
+    {
+      "offset": 105657910,
+      "duration": 3026250,
+      "text": "读取"
+    },
+    {
+      "offset": 108815830,
+      "duration": 3684160,
+      "text": "范围"
+    },
+    {
+      "offset": 114868330,
+      "duration": 3421250,
+      "text": "保存"
+    },
+    {
+      "offset": 118289580,
+      "duration": 3815830,
+      "text": "位置"
+    },
+    {
+      "offset": 124078750,
+      "duration": 2894580,
+      "text": "以及"
+    },
+    {
+      "offset": 126973750,
+      "duration": 2763330,
+      "text": "参与"
+    },
+    {
+      "offset": 129868330,
+      "duration": 2894580,
+      "text": "协作"
+    },
+    {
+      "offset": 132763330,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 133815830,
+      "duration": 3421250,
+      "text": "设备"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

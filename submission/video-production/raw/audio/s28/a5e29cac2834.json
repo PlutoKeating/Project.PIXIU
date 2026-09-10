@@ -1,0 +1,259 @@
+{
+  "shot": "s28",
+  "request": {
+    "text": "评测从偏好提取、知识召回、检索耗时和冲突处理四方面核对效果。历史兼容环境中，五十组检索的召回率为百分之一百，十五组偏好全部正确，二十五组冲突中正确处理二十四组。原生版本继续通过安装、升级和三端协作验证。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "a5e29cac28347a334875bb7e9e0a2ab35456a4c13f2f5a2a9bf49c893b9aad10",
+  "audio_sha256": "5238f04b25e94644639f7d844740712b8f25df2b5367cbed905f45fba7a71b6d",
+  "duration_seconds": 19.848,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3815830,
+      "text": "评测"
+    },
+    {
+      "offset": 4473750,
+      "duration": 1710410,
+      "text": "从"
+    },
+    {
+      "offset": 6447500,
+      "duration": 2894580,
+      "text": "偏好"
+    },
+    {
+      "offset": 9473750,
+      "duration": 4210410,
+      "text": "提取"
+    },
+    {
+      "offset": 15657910,
+      "duration": 2894580,
+      "text": "知识"
+    },
+    {
+      "offset": 18684160,
+      "duration": 4868330,
+      "text": "召回"
+    },
+    {
+      "offset": 26710410,
+      "duration": 3289580,
+      "text": "检索"
+    },
+    {
+      "offset": 30131660,
+      "duration": 4342080,
+      "text": "耗时"
+    },
+    {
+      "offset": 35657910,
+      "duration": 1447500,
+      "text": "和"
+    },
+    {
+      "offset": 37236660,
+      "duration": 3289580,
+      "text": "冲突"
+    },
+    {
+      "offset": 40657910,
+      "duration": 2763330,
+      "text": "处理"
+    },
+    {
+      "offset": 43684160,
+      "duration": 1973750,
+      "text": "四"
+    },
+    {
+      "offset": 45657910,
+      "duration": 2763330,
+      "text": "方面"
+    },
+    {
+      "offset": 48684160,
+      "duration": 2368330,
+      "text": "核对"
+    },
+    {
+      "offset": 51184160,
+      "duration": 3552500,
+      "text": "效果"
+    },
+    {
+      "offset": 60789580,
+      "duration": 3289580,
+      "text": "历史"
+    },
+    {
+      "offset": 64210410,
+      "duration": 2894580,
+      "text": "兼容"
+    },
+    {
+      "offset": 67236660,
+      "duration": 3157910,
+      "text": "环境"
+    },
+    {
+      "offset": 70394580,
+      "duration": 2236660,
+      "text": "中"
+    },
+    {
+      "offset": 75263330,
+      "duration": 4473750,
+      "text": "五十组"
+    },
+    {
+      "offset": 79868330,
+      "duration": 3026250,
+      "text": "检索"
+    },
+    {
+      "offset": 82894580,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 83684160,
+      "duration": 3157910,
+      "text": "召回"
+    },
+    {
+      "offset": 86842080,
+      "duration": 1184160,
+      "text": "率"
+    },
+    {
+      "offset": 88026250,
+      "duration": 2105410,
+      "text": "为"
+    },
+    {
+      "offset": 90263330,
+      "duration": 7105410,
+      "text": "百分之一百"
+    },
+    {
+      "offset": 99868330,
+      "duration": 5263330,
+      "text": "十五组"
+    },
+    {
+      "offset": 105263330,
+      "duration": 3947500,
+      "text": "偏好"
+    },
+    {
+      "offset": 109473750,
+      "duration": 3289580,
+      "text": "全部"
+    },
+    {
+      "offset": 112894580,
+      "duration": 3421250,
+      "text": "正确"
+    },
+    {
+      "offset": 118684160,
+      "duration": 5789580,
+      "text": "二十五组"
+    },
+    {
+      "offset": 124605410,
+      "duration": 3026250,
+      "text": "冲突"
+    },
+    {
+      "offset": 127631660,
+      "duration": 2500000,
+      "text": "中"
+    },
+    {
+      "offset": 131315830,
+      "duration": 3157910,
+      "text": "正确"
+    },
+    {
+      "offset": 134473750,
+      "duration": 2763330,
+      "text": "处理"
+    },
+    {
+      "offset": 137500000,
+      "duration": 6184160,
+      "text": "二十四组"
+    },
+    {
+      "offset": 149605410,
+      "duration": 2236660,
+      "text": "原"
+    },
+    {
+      "offset": 151842080,
+      "duration": 1710410,
+      "text": "生"
+    },
+    {
+      "offset": 153684160,
+      "duration": 4605410,
+      "text": "版本"
+    },
+    {
+      "offset": 159342080,
+      "duration": 2894580,
+      "text": "继续"
+    },
+    {
+      "offset": 162368330,
+      "duration": 2763330,
+      "text": "通过"
+    },
+    {
+      "offset": 165131660,
+      "duration": 3684160,
+      "text": "安装"
+    },
+    {
+      "offset": 171052500,
+      "duration": 4868330,
+      "text": "升级"
+    },
+    {
+      "offset": 177105410,
+      "duration": 1710410,
+      "text": "和"
+    },
+    {
+      "offset": 178815830,
+      "duration": 1842080,
+      "text": "三"
+    },
+    {
+      "offset": 180657910,
+      "duration": 1578750,
+      "text": "端"
+    },
+    {
+      "offset": 182500000,
+      "duration": 2631660,
+      "text": "协作"
+    },
+    {
+      "offset": 185263330,
+      "duration": 3815830,
+      "text": "验证"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

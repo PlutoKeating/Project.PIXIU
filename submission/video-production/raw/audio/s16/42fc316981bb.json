@@ -1,0 +1,259 @@
+{
+  "shot": "s16",
+  "request": {
+    "text": "把资料整理时间从周五下午四点改为五点。保存后重新读取，同一条知识更新到版本二。每次编辑都会核对读取版本，记录新的内容与来源。需要人工判断的事实变化，可以在冲突页面对照候选内容，完成选择。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "42fc316981bbf97b435a169078d3a56b91a1ddc54c281006803925be71557904",
+  "audio_sha256": "bb71e1d3c359d847cc3d42b438a742da1f3ad3a8a8cd15544407d385831e6e98",
+  "duration_seconds": 18.936,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2236660,
+      "text": "把"
+    },
+    {
+      "offset": 2894580,
+      "duration": 2894580,
+      "text": "资料"
+    },
+    {
+      "offset": 5921250,
+      "duration": 2368330,
+      "text": "整理"
+    },
+    {
+      "offset": 8289580,
+      "duration": 4605410,
+      "text": "时间"
+    },
+    {
+      "offset": 14078750,
+      "duration": 2236660,
+      "text": "从"
+    },
+    {
+      "offset": 16447500,
+      "duration": 2894580,
+      "text": "周五"
+    },
+    {
+      "offset": 19473750,
+      "duration": 7105410,
+      "text": "下午四点"
+    },
+    {
+      "offset": 27631660,
+      "duration": 2500000,
+      "text": "改为"
+    },
+    {
+      "offset": 30263330,
+      "duration": 3684160,
+      "text": "五点"
+    },
+    {
+      "offset": 40000000,
+      "duration": 3684160,
+      "text": "保存"
+    },
+    {
+      "offset": 43684160,
+      "duration": 1973750,
+      "text": "后"
+    },
+    {
+      "offset": 45921250,
+      "duration": 3815830,
+      "text": "重新"
+    },
+    {
+      "offset": 49868330,
+      "duration": 4210410,
+      "text": "读取"
+    },
+    {
+      "offset": 57763330,
+      "duration": 1973330,
+      "text": "同"
+    },
+    {
+      "offset": 59736660,
+      "duration": 2236660,
+      "text": "一条"
+    },
+    {
+      "offset": 62105410,
+      "duration": 4473750,
+      "text": "知识"
+    },
+    {
+      "offset": 67763330,
+      "duration": 3420830,
+      "text": "更新"
+    },
+    {
+      "offset": 71184160,
+      "duration": 1447500,
+      "text": "到"
+    },
+    {
+      "offset": 72894580,
+      "duration": 2763330,
+      "text": "版本"
+    },
+    {
+      "offset": 75657910,
+      "duration": 2236660,
+      "text": "二"
+    },
+    {
+      "offset": 83815830,
+      "duration": 3552500,
+      "text": "每次"
+    },
+    {
+      "offset": 87500000,
+      "duration": 4342080,
+      "text": "编辑"
+    },
+    {
+      "offset": 92894580,
+      "duration": 1315830,
+      "text": "都"
+    },
+    {
+      "offset": 94210410,
+      "duration": 1052500,
+      "text": "会"
+    },
+    {
+      "offset": 95394580,
+      "duration": 3157910,
+      "text": "核对"
+    },
+    {
+      "offset": 98815830,
+      "duration": 3026250,
+      "text": "读取"
+    },
+    {
+      "offset": 101842080,
+      "duration": 3552500,
+      "text": "版本"
+    },
+    {
+      "offset": 108289580,
+      "duration": 3026250,
+      "text": "记录"
+    },
+    {
+      "offset": 111578750,
+      "duration": 1973750,
+      "text": "新"
+    },
+    {
+      "offset": 113552500,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 114342080,
+      "duration": 2763330,
+      "text": "内容"
+    },
+    {
+      "offset": 117368330,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 118552500,
+      "duration": 3552500,
+      "text": "来源"
+    },
+    {
+      "offset": 128026250,
+      "duration": 3157910,
+      "text": "需要"
+    },
+    {
+      "offset": 131447500,
+      "duration": 3289580,
+      "text": "人工"
+    },
+    {
+      "offset": 134868330,
+      "duration": 3157910,
+      "text": "判断"
+    },
+    {
+      "offset": 138026250,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 139342080,
+      "duration": 3026250,
+      "text": "事实"
+    },
+    {
+      "offset": 142500000,
+      "duration": 3684160,
+      "text": "变化"
+    },
+    {
+      "offset": 149342080,
+      "duration": 2500000,
+      "text": "可以"
+    },
+    {
+      "offset": 151842080,
+      "duration": 1052500,
+      "text": "在"
+    },
+    {
+      "offset": 153157910,
+      "duration": 3157910,
+      "text": "冲突"
+    },
+    {
+      "offset": 156447500,
+      "duration": 3421250,
+      "text": "页面"
+    },
+    {
+      "offset": 160921250,
+      "duration": 2500000,
+      "text": "对照"
+    },
+    {
+      "offset": 163684160,
+      "duration": 3289580,
+      "text": "候选"
+    },
+    {
+      "offset": 167105410,
+      "duration": 3552500,
+      "text": "内容"
+    },
+    {
+      "offset": 172368330,
+      "duration": 3157910,
+      "text": "完成"
+    },
+    {
+      "offset": 175526250,
+      "duration": 4605410,
+      "text": "选择"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

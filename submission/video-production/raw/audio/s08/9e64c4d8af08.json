@@ -1,0 +1,144 @@
+{
+  "shot": "s08",
+  "request": {
+    "text": "合计四百三十四元五角。点击回答中的来源链接，查看引用的账单，逐项核对金额。回答与依据连在一起，复核更方便。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "9e64c4d8af084979620b33dd935c642458efd07d9878e9e0c7995faf11a6ce46",
+  "audio_sha256": "e128d93a1c7161fbf55081136482a831369e4f510b7ff92762d1b6124d107647",
+  "duration_seconds": 11.04,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 4868330,
+      "text": "合计"
+    },
+    {
+      "offset": 5657910,
+      "duration": 9736660,
+      "text": "四百三十四元"
+    },
+    {
+      "offset": 15526250,
+      "duration": 4210410,
+      "text": "五角"
+    },
+    {
+      "offset": 25789580,
+      "duration": 3947500,
+      "text": "点击"
+    },
+    {
+      "offset": 30000000,
+      "duration": 2631660,
+      "text": "回答"
+    },
+    {
+      "offset": 32631660,
+      "duration": 1315830,
+      "text": "中"
+    },
+    {
+      "offset": 33947500,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 35131660,
+      "duration": 2500000,
+      "text": "来源"
+    },
+    {
+      "offset": 37763330,
+      "duration": 4078750,
+      "text": "链接"
+    },
+    {
+      "offset": 43947500,
+      "duration": 3815830,
+      "text": "查看"
+    },
+    {
+      "offset": 48026250,
+      "duration": 2105410,
+      "text": "引用"
+    },
+    {
+      "offset": 50131660,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 50921250,
+      "duration": 4605410,
+      "text": "账单"
+    },
+    {
+      "offset": 57236660,
+      "duration": 4210410,
+      "text": "逐项"
+    },
+    {
+      "offset": 61578750,
+      "duration": 3157910,
+      "text": "核对"
+    },
+    {
+      "offset": 64868330,
+      "duration": 3815830,
+      "text": "金额"
+    },
+    {
+      "offset": 74736660,
+      "duration": 4078750,
+      "text": "回答"
+    },
+    {
+      "offset": 79078750,
+      "duration": 1315830,
+      "text": "与"
+    },
+    {
+      "offset": 80526250,
+      "duration": 3026250,
+      "text": "依据"
+    },
+    {
+      "offset": 83815830,
+      "duration": 1578750,
+      "text": "连"
+    },
+    {
+      "offset": 85394580,
+      "duration": 921250,
+      "text": "在"
+    },
+    {
+      "offset": 86447500,
+      "duration": 3289580,
+      "text": "一起"
+    },
+    {
+      "offset": 92236660,
+      "duration": 3289580,
+      "text": "复核"
+    },
+    {
+      "offset": 95789580,
+      "duration": 1710410,
+      "text": "更"
+    },
+    {
+      "offset": 97500000,
+      "duration": 3684160,
+      "text": "方便"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

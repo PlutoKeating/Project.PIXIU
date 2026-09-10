@@ -1,0 +1,219 @@
+{
+  "shot": "s26",
+  "request": {
+    "text": "洞察与简报，把近期知识整理为可继续检索的线索，并按日期汇总采集情况。打开今天的简报，查看新积累的活动资料；回到相应记录，继续使用已保存的安排和经验。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "28e5a244228df2c86be18cd6e305a9981500364c9d5cdf90de4c6ecacf6ef36a",
+  "audio_sha256": "e7352a5a6e187d4d843d48344a0d791847e9725a3fd7843a7cd6b54e92072982",
+  "duration_seconds": 14.184,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 4078750,
+      "text": "洞察"
+    },
+    {
+      "offset": 4868330,
+      "duration": 1052500,
+      "text": "与"
+    },
+    {
+      "offset": 6052500,
+      "duration": 4210410,
+      "text": "简报"
+    },
+    {
+      "offset": 13684160,
+      "duration": 1842080,
+      "text": "把"
+    },
+    {
+      "offset": 15657910,
+      "duration": 3421250,
+      "text": "近期"
+    },
+    {
+      "offset": 19210410,
+      "duration": 2763330,
+      "text": "知识"
+    },
+    {
+      "offset": 22236660,
+      "duration": 2236660,
+      "text": "整理"
+    },
+    {
+      "offset": 24473750,
+      "duration": 1973750,
+      "text": "为"
+    },
+    {
+      "offset": 26710410,
+      "duration": 2105410,
+      "text": "可"
+    },
+    {
+      "offset": 28815830,
+      "duration": 3157910,
+      "text": "继续"
+    },
+    {
+      "offset": 32105410,
+      "duration": 2762910,
+      "text": "检索"
+    },
+    {
+      "offset": 34868330,
+      "duration": 657910,
+      "text": "的"
+    },
+    {
+      "offset": 35657910,
+      "duration": 3815830,
+      "text": "线索"
+    },
+    {
+      "offset": 41973750,
+      "duration": 1710410,
+      "text": "并"
+    },
+    {
+      "offset": 43684160,
+      "duration": 1184160,
+      "text": "按"
+    },
+    {
+      "offset": 44868330,
+      "duration": 3157910,
+      "text": "日期"
+    },
+    {
+      "offset": 48289580,
+      "duration": 3289580,
+      "text": "汇总"
+    },
+    {
+      "offset": 51842080,
+      "duration": 3421250,
+      "text": "采集"
+    },
+    {
+      "offset": 55394580,
+      "duration": 3684160,
+      "text": "情况"
+    },
+    {
+      "offset": 65131660,
+      "duration": 3947500,
+      "text": "打开"
+    },
+    {
+      "offset": 69342080,
+      "duration": 2368330,
+      "text": "今天"
+    },
+    {
+      "offset": 71710410,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 72763330,
+      "duration": 4342080,
+      "text": "简报"
+    },
+    {
+      "offset": 80131660,
+      "duration": 4342080,
+      "text": "查看"
+    },
+    {
+      "offset": 84736660,
+      "duration": 2236660,
+      "text": "新"
+    },
+    {
+      "offset": 86973750,
+      "duration": 2368330,
+      "text": "积累"
+    },
+    {
+      "offset": 89342080,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 90394580,
+      "duration": 2500000,
+      "text": "活动"
+    },
+    {
+      "offset": 92894580,
+      "duration": 3157910,
+      "text": "资料"
+    },
+    {
+      "offset": 100131660,
+      "duration": 2894580,
+      "text": "回到"
+    },
+    {
+      "offset": 103289580,
+      "duration": 3157910,
+      "text": "相应"
+    },
+    {
+      "offset": 106578750,
+      "duration": 3157910,
+      "text": "记录"
+    },
+    {
+      "offset": 111578750,
+      "duration": 3421250,
+      "text": "继续"
+    },
+    {
+      "offset": 115000000,
+      "duration": 3026250,
+      "text": "使用"
+    },
+    {
+      "offset": 118289580,
+      "duration": 1315830,
+      "text": "已"
+    },
+    {
+      "offset": 119605410,
+      "duration": 2894580,
+      "text": "保存"
+    },
+    {
+      "offset": 122500000,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 123684160,
+      "duration": 4078750,
+      "text": "安排"
+    },
+    {
+      "offset": 128026250,
+      "duration": 1184160,
+      "text": "和"
+    },
+    {
+      "offset": 129342080,
+      "duration": 3289580,
+      "text": "经验"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

@@ -710,7 +710,7 @@
       {
         "asset": "directory-approval",
         "label": "批准更正，保存新版本",
-        "cue": "批准后",
+        "cue": "对照原内容",
         "fraction": 0.37
       },
       {

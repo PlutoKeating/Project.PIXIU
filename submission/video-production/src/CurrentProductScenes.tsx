@@ -11,8 +11,10 @@ const assets: Record<string, Asset> = data.assets;
 const scenes: Record<string, Segment[]> = data.scenes;
 export const hasCurrentScene = (id: string) => Boolean(scenes[id]);
 
-const Media: React.FC<{asset: Asset}> = ({asset}) => {
+const Media: React.FC<{asset: Asset; duration: number}> = ({asset, duration}) => {
   const f = useCurrentFrame();
+  const playbackFrames = Math.min(asset.frames ?? 0, Math.max(1, duration - 18));
+  const trimBefore = Math.max(0, (asset.frames ?? 0) - playbackFrames);
   const scale = Math.min(1580 / asset.width, 660 / asset.height, asset.width < 300 ? 3.2 : 2.2);
   const w = asset.width * scale, h = asset.height * scale;
   const enter = interpolate(f, [0, 16], [0, 1], {extrapolateRight:'clamp'});
@@ -20,8 +22,8 @@ const Media: React.FC<{asset: Asset}> = ({asset}) => {
   return <div style={{position:'absolute',left:(1920-w)/2,top:175+(660-h)/2,
     overflow:'hidden',borderRadius:12,background:'#fff',boxShadow:'0 16px 45px #17203318',
     opacity:enter,transform:`perspective(1600px) translateY(${18*(1-enter)}px) rotateX(${3*(1-enter)}deg)`}}>
-    {asset.kind==='video' && f<(asset.frames ?? 0)
-      ? <OffthreadVideo src={staticFile(asset.src)} muted style={style}/>
+    {asset.kind==='video' && f<playbackFrames
+      ? <OffthreadVideo src={staticFile(asset.src)} trimBefore={trimBefore} muted style={style}/>
       : <Img src={staticFile(asset.kind==='video' ? asset.end! : asset.src)} style={style}/>}
   </div>;
 };
@@ -36,7 +38,7 @@ export const CurrentProductScene: React.FC<{shot:SceneShot}> = ({shot}) => {
   return <>
     {rows.map((row,i)=><Sequence key={row.asset+i} from={starts[i]}
       durationInFrames={Math.max(1,(starts[i+1]??shot.duration)-starts[i])}>
-      <Media asset={assets[row.asset]}/>
+      <Media asset={assets[row.asset]} duration={Math.max(1,(starts[i+1]??shot.duration)-starts[i])}/>
     </Sequence>)}
     <div style={{position:'absolute',top:866,left:140,right:140,color:'#1456b8',fontSize:35,
       fontWeight:700,textAlign:'center'}}>{rows[index].label}</div>

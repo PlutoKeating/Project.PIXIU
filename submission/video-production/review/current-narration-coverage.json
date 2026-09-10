@@ -1,27 +1,7 @@
 {
   "shots": 30,
-  "ready": 11,
-  "needs_synthesis": [
-    "s02",
-    "s03",
-    "s06",
-    "s11",
-    "s11b",
-    "s08",
-    "s12",
-    "s15",
-    "s16",
-    "s18",
-    "s20",
-    "s21",
-    "s22",
-    "s23",
-    "s13",
-    "s27",
-    "s28",
-    "s26",
-    "s29"
-  ],
+  "ready": 30,
+  "needs_synthesis": [],
   "coverage": [
     {
       "shot": "s01",
@@ -31,12 +11,12 @@
     {
       "shot": "s02",
       "source": "s02",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s03",
       "source": "s03",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s04",
@@ -46,17 +26,17 @@
     {
       "shot": "s06",
       "source": "s06",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s11",
       "source": "s11",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s11b",
       "source": "s11b",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s07",
@@ -66,7 +46,7 @@
     {
       "shot": "s08",
       "source": "s08",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s09",
@@ -81,12 +61,12 @@
     {
       "shot": "s12",
       "source": "s12",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s15",
       "source": "s15",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s14",
@@ -96,7 +76,7 @@
     {
       "shot": "s16",
       "source": "s16",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s17",
@@ -106,7 +86,7 @@
     {
       "shot": "s18",
       "source": "s18",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s19",
@@ -116,22 +96,22 @@
     {
       "shot": "s20",
       "source": "s20",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s21",
       "source": "s21",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s22",
       "source": "s22",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s23",
       "source": "s23",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s24",
@@ -146,27 +126,27 @@
     {
       "shot": "s13",
       "source": "s13",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s27",
       "source": "s27",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s28",
       "source": "s28",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s26",
       "source": "s26",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s29",
       "source": "s29",
-      "ready": false
+      "ready": true
     },
     {
       "shot": "s30",

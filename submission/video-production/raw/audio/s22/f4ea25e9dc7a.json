@@ -1,0 +1,209 @@
+{
+  "shot": "s22",
+  "request": {
+    "text": "两台设备从同一版本分别修改，系统记录各自的更新，识别先后与并发关系，再按确定性规则合并。零点一点一二版本的三端测试中，恢复连接后，正文、版本和来源取得一致。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "f4ea25e9dc7aa637c07d8ebbf8414a47733758e22638a94d47541ce1428781b6",
+  "audio_sha256": "42396ff26da59237deb62ca72551c36e0e15bb296a6ea2291975f6603ad35292",
+  "duration_seconds": 14.472,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3157910,
+      "text": "两台"
+    },
+    {
+      "offset": 3815830,
+      "duration": 3421250,
+      "text": "设备"
+    },
+    {
+      "offset": 7500000,
+      "duration": 1710410,
+      "text": "从"
+    },
+    {
+      "offset": 9342080,
+      "duration": 3026250,
+      "text": "同一"
+    },
+    {
+      "offset": 12500000,
+      "duration": 3552500,
+      "text": "版本"
+    },
+    {
+      "offset": 16315830,
+      "duration": 2236660,
+      "text": "分别"
+    },
+    {
+      "offset": 18684160,
+      "duration": 4078750,
+      "text": "修改"
+    },
+    {
+      "offset": 26710410,
+      "duration": 3157910,
+      "text": "系统"
+    },
+    {
+      "offset": 30000000,
+      "duration": 2631660,
+      "text": "记录"
+    },
+    {
+      "offset": 32894580,
+      "duration": 2236660,
+      "text": "各自"
+    },
+    {
+      "offset": 35131660,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 36052500,
+      "duration": 3815830,
+      "text": "更新"
+    },
+    {
+      "offset": 42763330,
+      "duration": 2894580,
+      "text": "识别"
+    },
+    {
+      "offset": 45789580,
+      "duration": 3552500,
+      "text": "先后"
+    },
+    {
+      "offset": 49605410,
+      "duration": 921250,
+      "text": "与"
+    },
+    {
+      "offset": 50657910,
+      "duration": 3157910,
+      "text": "并发"
+    },
+    {
+      "offset": 53947500,
+      "duration": 3684160,
+      "text": "关系"
+    },
+    {
+      "offset": 59868330,
+      "duration": 1710410,
+      "text": "再"
+    },
+    {
+      "offset": 61578750,
+      "duration": 1578750,
+      "text": "按"
+    },
+    {
+      "offset": 63421250,
+      "duration": 4605410,
+      "text": "确定性"
+    },
+    {
+      "offset": 68157910,
+      "duration": 2763330,
+      "text": "规则"
+    },
+    {
+      "offset": 71052500,
+      "duration": 3157910,
+      "text": "合并"
+    },
+    {
+      "offset": 80263330,
+      "duration": 9210410,
+      "text": "零点一点一二"
+    },
+    {
+      "offset": 89605410,
+      "duration": 2762910,
+      "text": "版本"
+    },
+    {
+      "offset": 92368330,
+      "duration": 1052500,
+      "text": "的"
+    },
+    {
+      "offset": 93684160,
+      "duration": 1842080,
+      "text": "三"
+    },
+    {
+      "offset": 95526250,
+      "duration": 1315830,
+      "text": "端"
+    },
+    {
+      "offset": 96973750,
+      "duration": 3026250,
+      "text": "测试"
+    },
+    {
+      "offset": 100000000,
+      "duration": 2105410,
+      "text": "中"
+    },
+    {
+      "offset": 104736660,
+      "duration": 2894580,
+      "text": "恢复"
+    },
+    {
+      "offset": 107763330,
+      "duration": 2762910,
+      "text": "连接"
+    },
+    {
+      "offset": 110526250,
+      "duration": 2105410,
+      "text": "后"
+    },
+    {
+      "offset": 114736660,
+      "duration": 4210410,
+      "text": "正文"
+    },
+    {
+      "offset": 120921250,
+      "duration": 3289580,
+      "text": "版本"
+    },
+    {
+      "offset": 124473750,
+      "duration": 921250,
+      "text": "和"
+    },
+    {
+      "offset": 125526250,
+      "duration": 3421250,
+      "text": "来源"
+    },
+    {
+      "offset": 129210410,
+      "duration": 2368330,
+      "text": "取得"
+    },
+    {
+      "offset": 131710410,
+      "duration": 3815830,
+      "text": "一致"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

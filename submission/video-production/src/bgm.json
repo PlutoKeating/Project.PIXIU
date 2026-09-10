@@ -3,5 +3,6 @@
   "prepared": "audio/zeni-with-you-film.wav",
   "source_start_seconds": 15,
   "volume": 0.15,
-  "fade_out_seconds": 1
+  "fade_out_seconds": 1,
+  "loop_crossfade_seconds": 4
 }

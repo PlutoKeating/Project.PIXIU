@@ -1,0 +1,284 @@
+{
+  "shot": "s11",
+  "request": {
+    "text": "在采集与隐私中，选择资料目录，开启目录采集并保存。把星河观测活动安排放进目录，貔貅自动开始整理，主窗口显示进度。完成后打开新会话，询问活动安排：十一月八日晚七点，社区天文台三层，器材预算二千六百八十元。点击来源，就能核对同一份原文。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "26955feba114681ad33870a5bf237fc70f2d21fb805b9f346181164d239640d3",
+  "audio_sha256": "630acd30dbb48705a1a2c6ab0ccec4e61534572f34b9831a975f3fa17dfbf493",
+  "duration_seconds": 22.824,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2105410,
+      "text": "在"
+    },
+    {
+      "offset": 2763330,
+      "duration": 4078750,
+      "text": "采集"
+    },
+    {
+      "offset": 7105410,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 8421250,
+      "duration": 2894580,
+      "text": "隐私"
+    },
+    {
+      "offset": 11315830,
+      "duration": 2236660,
+      "text": "中"
+    },
+    {
+      "offset": 16710410,
+      "duration": 3289580,
+      "text": "选择"
+    },
+    {
+      "offset": 20263330,
+      "duration": 2500000,
+      "text": "资料"
+    },
+    {
+      "offset": 22763330,
+      "duration": 2763330,
+      "text": "目录"
+    },
+    {
+      "offset": 27763330,
+      "duration": 3421250,
+      "text": "开启"
+    },
+    {
+      "offset": 31447500,
+      "duration": 2236660,
+      "text": "目录"
+    },
+    {
+      "offset": 33815830,
+      "duration": 5000000,
+      "text": "采集"
+    },
+    {
+      "offset": 39078750,
+      "duration": 1578750,
+      "text": "并"
+    },
+    {
+      "offset": 40789580,
+      "duration": 4210410,
+      "text": "保存"
+    },
+    {
+      "offset": 51052500,
+      "duration": 1973750,
+      "text": "把"
+    },
+    {
+      "offset": 53157910,
+      "duration": 3947500,
+      "text": "星河"
+    },
+    {
+      "offset": 57368330,
+      "duration": 2894580,
+      "text": "观测"
+    },
+    {
+      "offset": 60394580,
+      "duration": 2894580,
+      "text": "活动"
+    },
+    {
+      "offset": 63289580,
+      "duration": 3815830,
+      "text": "安排"
+    },
+    {
+      "offset": 67368330,
+      "duration": 1710410,
+      "text": "放"
+    },
+    {
+      "offset": 69078750,
+      "duration": 789580,
+      "text": "进"
+    },
+    {
+      "offset": 70000000,
+      "duration": 2763330,
+      "text": "目录"
+    },
+    {
+      "offset": 76710410,
+      "duration": 4078750,
+      "text": "貔貅"
+    },
+    {
+      "offset": 81052500,
+      "duration": 2368330,
+      "text": "自动"
+    },
+    {
+      "offset": 83421250,
+      "duration": 2500000,
+      "text": "开始"
+    },
+    {
+      "offset": 86052500,
+      "duration": 2894580,
+      "text": "整理"
+    },
+    {
+      "offset": 91578750,
+      "duration": 1710410,
+      "text": "主"
+    },
+    {
+      "offset": 93289580,
+      "duration": 4078750,
+      "text": "窗口"
+    },
+    {
+      "offset": 97631660,
+      "duration": 3157910,
+      "text": "显示"
+    },
+    {
+      "offset": 100921250,
+      "duration": 3552500,
+      "text": "进度"
+    },
+    {
+      "offset": 110526250,
+      "duration": 3421250,
+      "text": "完成"
+    },
+    {
+      "offset": 113947500,
+      "duration": 2236660,
+      "text": "后"
+    },
+    {
+      "offset": 116184160,
+      "duration": 2500000,
+      "text": "打开"
+    },
+    {
+      "offset": 118815830,
+      "duration": 2105410,
+      "text": "新"
+    },
+    {
+      "offset": 120921250,
+      "duration": 3289580,
+      "text": "会话"
+    },
+    {
+      "offset": 127368330,
+      "duration": 2763330,
+      "text": "询问"
+    },
+    {
+      "offset": 130394580,
+      "duration": 2500000,
+      "text": "活动"
+    },
+    {
+      "offset": 132894580,
+      "duration": 3815830,
+      "text": "安排"
+    },
+    {
+      "offset": 139342080,
+      "duration": 7105410,
+      "text": "十一月八日"
+    },
+    {
+      "offset": 146710410,
+      "duration": 5131660,
+      "text": "晚七点"
+    },
+    {
+      "offset": 153947500,
+      "duration": 4078750,
+      "text": "社区"
+    },
+    {
+      "offset": 158157910,
+      "duration": 3947500,
+      "text": "天文台"
+    },
+    {
+      "offset": 162236660,
+      "duration": 4473750,
+      "text": "三层"
+    },
+    {
+      "offset": 168815830,
+      "duration": 3815830,
+      "text": "器材"
+    },
+    {
+      "offset": 172763330,
+      "duration": 3289580,
+      "text": "预算"
+    },
+    {
+      "offset": 176315830,
+      "duration": 10921250,
+      "text": "二千六百八十元"
+    },
+    {
+      "offset": 193289580,
+      "duration": 3684160,
+      "text": "点击"
+    },
+    {
+      "offset": 197105410,
+      "duration": 4342080,
+      "text": "来源"
+    },
+    {
+      "offset": 205000000,
+      "duration": 1578750,
+      "text": "就"
+    },
+    {
+      "offset": 206578750,
+      "duration": 1052500,
+      "text": "能"
+    },
+    {
+      "offset": 207763330,
+      "duration": 3289580,
+      "text": "核对"
+    },
+    {
+      "offset": 211315830,
+      "duration": 3026250,
+      "text": "同一"
+    },
+    {
+      "offset": 214342080,
+      "duration": 1315830,
+      "text": "份"
+    },
+    {
+      "offset": 215789580,
+      "duration": 3157910,
+      "text": "原文"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

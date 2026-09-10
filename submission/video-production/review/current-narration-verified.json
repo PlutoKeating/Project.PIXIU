@@ -1,0 +1,225 @@
+{
+  "approved_commit": "ec9ea3d",
+  "storyboard_unchanged": true,
+  "narration": {
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "shots": [
+    {
+      "shot": "s01",
+      "audio_sha256": "7bdba724402716ee5231a757c290cb8e0d62191c555cd1d36c695f330056eb88",
+      "duration_frames": 257,
+      "tail_frames": 15,
+      "words": 21
+    },
+    {
+      "shot": "s02",
+      "audio_sha256": "e3c44a3df9b9917567ba0d116dedd54ab048000b85a7ec98f001318a1742ff8e",
+      "duration_frames": 368,
+      "tail_frames": 8,
+      "words": 37
+    },
+    {
+      "shot": "s03",
+      "audio_sha256": "ff35d2057e09ea540f92e67f4e423728c742a7b291eacdd7b36639584ebbde13",
+      "duration_frames": 381,
+      "tail_frames": 8,
+      "words": 38
+    },
+    {
+      "shot": "s04",
+      "audio_sha256": "880883647cee8a920944b6307fd863a83cf584bf5886dbc3bc3c18c8144e96cd",
+      "duration_frames": 400,
+      "tail_frames": 8,
+      "words": 35
+    },
+    {
+      "shot": "s06",
+      "audio_sha256": "c675f6d534e5c5aea36284f6084c74eb3d2500f4ede0342ca44076dd5d7247bc",
+      "duration_frames": 590,
+      "tail_frames": 8,
+      "words": 45
+    },
+    {
+      "shot": "s11",
+      "audio_sha256": "630acd30dbb48705a1a2c6ab0ccec4e61534572f34b9831a975f3fa17dfbf493",
+      "duration_frames": 683,
+      "tail_frames": 8,
+      "words": 53
+    },
+    {
+      "shot": "s11b",
+      "audio_sha256": "9024666dc1eae5a26697018c2d0ca3f4b42ddebd4a21d24d6e3150ccbd0f97f0",
+      "duration_frames": 609,
+      "tail_frames": 8,
+      "words": 48
+    },
+    {
+      "shot": "s07",
+      "audio_sha256": "0acb5a414b83ab1496a42e1a8d7ce4a7975d190cbac87e53c9aff37385953703",
+      "duration_frames": 396,
+      "tail_frames": 8,
+      "words": 30
+    },
+    {
+      "shot": "s08",
+      "audio_sha256": "e128d93a1c7161fbf55081136482a831369e4f510b7ff92762d1b6124d107647",
+      "duration_frames": 330,
+      "tail_frames": 8,
+      "words": 25
+    },
+    {
+      "shot": "s09",
+      "audio_sha256": "db8e5f59bbf929fb250de449cfa482da226fbbe78a0778f7a8b23a46d4def663",
+      "duration_frames": 371,
+      "tail_frames": 8,
+      "words": 32
+    },
+    {
+      "shot": "s10",
+      "audio_sha256": "dccaede80dd91fa8c294697135b17b549f308e0b7569f1e08df6ae08f7556644",
+      "duration_frames": 408,
+      "tail_frames": 8,
+      "words": 38
+    },
+    {
+      "shot": "s12",
+      "audio_sha256": "53d631622278ff482ddb2cfd0620c4e5544564b3d2cde1f8a2a41a81288d16db",
+      "duration_frames": 373,
+      "tail_frames": 8,
+      "words": 34
+    },
+    {
+      "shot": "s15",
+      "audio_sha256": "f1a511c240308d564899b8a57cd7c44396ae7bd7fe4767098bf6b9aa05322ea1",
+      "duration_frames": 512,
+      "tail_frames": 8,
+      "words": 42
+    },
+    {
+      "shot": "s14",
+      "audio_sha256": "b4e70c0ffbf9eb5f016b650a0a657ccd7220eb2dfd5b2fedbe43077166301c92",
+      "duration_frames": 631,
+      "tail_frames": 8,
+      "words": 50
+    },
+    {
+      "shot": "s16",
+      "audio_sha256": "bb71e1d3c359d847cc3d42b438a742da1f3ad3a8a8cd15544407d385831e6e98",
+      "duration_frames": 567,
+      "tail_frames": 8,
+      "words": 48
+    },
+    {
+      "shot": "s17",
+      "audio_sha256": "142afd07fc80cbf1722e892b5dba3faae394f5d72df6457033ca65f7277bc676",
+      "duration_frames": 439,
+      "tail_frames": 8,
+      "words": 35
+    },
+    {
+      "shot": "s18",
+      "audio_sha256": "33f46cfcfdd782e437c115c98a1e77ba68aedd60cac3a8f54c5c739a07f50a48",
+      "duration_frames": 205,
+      "tail_frames": 8,
+      "words": 22
+    },
+    {
+      "shot": "s19",
+      "audio_sha256": "384fc86b86caf315c7d82f0c698f10a9d0fd14f89470d0ec23810a71114022d8",
+      "duration_frames": 400,
+      "tail_frames": 8,
+      "words": 36
+    },
+    {
+      "shot": "s20",
+      "audio_sha256": "0e76eed64c11294f1ea477df1a17e86c6febc9faf14dbb7e4860ab939a0359a3",
+      "duration_frames": 501,
+      "tail_frames": 8,
+      "words": 47
+    },
+    {
+      "shot": "s21",
+      "audio_sha256": "d14642431944c2f9701737a5beb19407c24faa1173b3641086ed2eb7c1d786f9",
+      "duration_frames": 461,
+      "tail_frames": 8,
+      "words": 41
+    },
+    {
+      "shot": "s22",
+      "audio_sha256": "42396ff26da59237deb62ca72551c36e0e15bb296a6ea2291975f6603ad35292",
+      "duration_frames": 433,
+      "tail_frames": 8,
+      "words": 38
+    },
+    {
+      "shot": "s23",
+      "audio_sha256": "f8bad1a5c82589c4c54ef67e31c1059c80b800733f8ded470c33a2383d55b387",
+      "duration_frames": 438,
+      "tail_frames": 8,
+      "words": 37
+    },
+    {
+      "shot": "s24",
+      "audio_sha256": "99bbea100eb0f7fa846b4cd3ae2aaa69fc0850376283c67ef3e660f80f07af05",
+      "duration_frames": 439,
+      "tail_frames": 8,
+      "words": 42
+    },
+    {
+      "shot": "s05",
+      "audio_sha256": "c5a6ac7c59b9356d2cfb6627b7b96af22daa38ed00e454cc9a0e3a924a4b3574",
+      "duration_frames": 374,
+      "tail_frames": 8,
+      "words": 36
+    },
+    {
+      "shot": "s13",
+      "audio_sha256": "cf734f46bf8e86ab867b919efb46072379ade7b52fefaf8a13f0aeb4fd1fa923",
+      "duration_frames": 493,
+      "tail_frames": 8,
+      "words": 42
+    },
+    {
+      "shot": "s27",
+      "audio_sha256": "6c8539387f67d0cbf8adff6d93151f67047cb7b5181930402a40514e04ac249c",
+      "duration_frames": 473,
+      "tail_frames": 8,
+      "words": 34
+    },
+    {
+      "shot": "s28",
+      "audio_sha256": "5238f04b25e94644639f7d844740712b8f25df2b5367cbed905f45fba7a71b6d",
+      "duration_frames": 594,
+      "tail_frames": 8,
+      "words": 48
+    },
+    {
+      "shot": "s26",
+      "audio_sha256": "e7352a5a6e187d4d843d48344a0d791847e9725a3fd7843a7cd6b54e92072982",
+      "duration_frames": 424,
+      "tail_frames": 8,
+      "words": 40
+    },
+    {
+      "shot": "s29",
+      "audio_sha256": "0b9b7500de6132a6d4fe1cf7d74450635c5e6d9da038c5e82278c81c31a54eff",
+      "duration_frames": 323,
+      "tail_frames": 8,
+      "words": 27
+    },
+    {
+      "shot": "s30",
+      "audio_sha256": "7bdba724402716ee5231a757c290cb8e0d62191c555cd1d36c695f330056eb88",
+      "duration_frames": 257,
+      "tail_frames": 15,
+      "words": 21
+    }
+  ],
+  "duration_seconds": 437.6666666666667,
+  "result": "passed; metadata and timeline verification, not listening"
+}

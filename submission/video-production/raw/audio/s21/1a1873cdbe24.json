@@ -1,0 +1,224 @@
+{
+  "shot": "s21",
+  "request": {
+    "text": "接着，用资料移交约定验证离线工作。暂时隔离设备间的同步连接，每台设备继续使用本地记忆，并保存新的修改。恢复连接后，系统交换更新，补齐记录，三端使用一致的约定。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "1a1873cdbe24e351e52068fb7dd88e032bc25788d8b46987f9e6217aa0bfab8a",
+  "audio_sha256": "d14642431944c2f9701737a5beb19407c24faa1173b3641086ed2eb7c1d786f9",
+  "duration_seconds": 15.432,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 3552500,
+      "text": "接着"
+    },
+    {
+      "offset": 6710410,
+      "duration": 2368330,
+      "text": "用"
+    },
+    {
+      "offset": 9210410,
+      "duration": 3157910,
+      "text": "资料"
+    },
+    {
+      "offset": 12368330,
+      "duration": 2105410,
+      "text": "移交"
+    },
+    {
+      "offset": 14605410,
+      "duration": 3947500,
+      "text": "约定"
+    },
+    {
+      "offset": 19605410,
+      "duration": 2894580,
+      "text": "验证"
+    },
+    {
+      "offset": 22763330,
+      "duration": 3026250,
+      "text": "离线"
+    },
+    {
+      "offset": 25921250,
+      "duration": 3157910,
+      "text": "工作"
+    },
+    {
+      "offset": 35131660,
+      "duration": 3815830,
+      "text": "暂时"
+    },
+    {
+      "offset": 39078750,
+      "duration": 2236660,
+      "text": "隔离"
+    },
+    {
+      "offset": 41578750,
+      "duration": 2763330,
+      "text": "设备"
+    },
+    {
+      "offset": 44342080,
+      "duration": 921250,
+      "text": "间"
+    },
+    {
+      "offset": 45263330,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 46315830,
+      "duration": 2500000,
+      "text": "同步"
+    },
+    {
+      "offset": 48815830,
+      "duration": 3947500,
+      "text": "连接"
+    },
+    {
+      "offset": 56052500,
+      "duration": 1842080,
+      "text": "每"
+    },
+    {
+      "offset": 57894580,
+      "duration": 1315830,
+      "text": "台"
+    },
+    {
+      "offset": 59342080,
+      "duration": 3684160,
+      "text": "设备"
+    },
+    {
+      "offset": 63289580,
+      "duration": 3026250,
+      "text": "继续"
+    },
+    {
+      "offset": 66315830,
+      "duration": 3026250,
+      "text": "使用"
+    },
+    {
+      "offset": 69605410,
+      "duration": 3421250,
+      "text": "本地"
+    },
+    {
+      "offset": 73157910,
+      "duration": 3684160,
+      "text": "记忆"
+    },
+    {
+      "offset": 78552500,
+      "duration": 1710410,
+      "text": "并"
+    },
+    {
+      "offset": 80394580,
+      "duration": 3552500,
+      "text": "保存"
+    },
+    {
+      "offset": 84210410,
+      "duration": 1710410,
+      "text": "新"
+    },
+    {
+      "offset": 85921250,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 86973750,
+      "duration": 3684160,
+      "text": "修改"
+    },
+    {
+      "offset": 96710410,
+      "duration": 3157910,
+      "text": "恢复"
+    },
+    {
+      "offset": 100000000,
+      "duration": 2631660,
+      "text": "连接"
+    },
+    {
+      "offset": 102631660,
+      "duration": 2368330,
+      "text": "后"
+    },
+    {
+      "offset": 107631660,
+      "duration": 3684160,
+      "text": "系统"
+    },
+    {
+      "offset": 111578750,
+      "duration": 2894580,
+      "text": "交换"
+    },
+    {
+      "offset": 114605410,
+      "duration": 4210410,
+      "text": "更新"
+    },
+    {
+      "offset": 120789580,
+      "duration": 3157910,
+      "text": "补齐"
+    },
+    {
+      "offset": 124078750,
+      "duration": 2763330,
+      "text": "记录"
+    },
+    {
+      "offset": 129736660,
+      "duration": 2500000,
+      "text": "三"
+    },
+    {
+      "offset": 132236660,
+      "duration": 1578750,
+      "text": "端"
+    },
+    {
+      "offset": 133947500,
+      "duration": 3026250,
+      "text": "使用"
+    },
+    {
+      "offset": 137236660,
+      "duration": 3157910,
+      "text": "一致"
+    },
+    {
+      "offset": 140394580,
+      "duration": 789580,
+      "text": "的"
+    },
+    {
+      "offset": 141315830,
+      "duration": 3684160,
+      "text": "约定"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

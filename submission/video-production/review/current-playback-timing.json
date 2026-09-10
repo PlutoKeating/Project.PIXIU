@@ -1,0 +1,283 @@
+{
+  "fps": 30,
+  "segments": [
+    {
+      "shot": "s04",
+      "asset": "shared-workspace",
+      "from": 1006,
+      "duration_frames": 211
+    },
+    {
+      "shot": "s04",
+      "asset": "sdk-version",
+      "from": 1217,
+      "duration_frames": 189
+    },
+    {
+      "shot": "s06",
+      "asset": "agent-tools-completed",
+      "from": 1406,
+      "duration_frames": 410
+    },
+    {
+      "shot": "s06",
+      "asset": "agent-task-recall",
+      "from": 1816,
+      "duration_frames": 180
+    },
+    {
+      "shot": "s11",
+      "asset": "directory-folder",
+      "from": 1996,
+      "duration_frames": 245
+    },
+    {
+      "shot": "s11",
+      "asset": "directory-progress",
+      "from": 2241,
+      "duration_frames": 101,
+      "source": "submission/video-production/raw/current-0.1.12/directory-dreaming-02.mp4",
+      "source_start_seconds": 22.233333333333334,
+      "play_seconds": 2.7666666666666666,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s11",
+      "asset": "directory-query",
+      "from": 2342,
+      "duration_frames": 248,
+      "source": "submission/video-production/raw/current-0.1.12/directory-recall-01.mp4",
+      "source_start_seconds": 16.333333333333332,
+      "play_seconds": 7.666666666666667,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s11",
+      "asset": "directory-source",
+      "from": 2590,
+      "duration_frames": 89
+    },
+    {
+      "shot": "s11b",
+      "asset": "dreaming-review",
+      "from": 2679,
+      "duration_frames": 250
+    },
+    {
+      "shot": "s11b",
+      "asset": "directory-approval",
+      "from": 2929,
+      "duration_frames": 121,
+      "source": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
+      "source_start_seconds": 0.5666666666666667,
+      "play_seconds": 3.433333333333333,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s11b",
+      "asset": "updated-query",
+      "from": 3050,
+      "duration_frames": 238,
+      "source": "submission/video-production/raw/current-0.1.12/dreaming-updated-recall-01.mp4",
+      "source_start_seconds": 40.666666666666664,
+      "play_seconds": 7.333333333333333,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s07",
+      "asset": "bill-query",
+      "from": 3288,
+      "duration_frames": 219,
+      "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+      "source_start_seconds": 17.3,
+      "play_seconds": 6.7,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s07",
+      "asset": "bill-recall",
+      "from": 3507,
+      "duration_frames": 177
+    },
+    {
+      "shot": "s08",
+      "asset": "bill-recall",
+      "from": 3684,
+      "duration_frames": 92
+    },
+    {
+      "shot": "s08",
+      "asset": "bill-citation",
+      "from": 3776,
+      "duration_frames": 238,
+      "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+      "source_start_seconds": 49.666666666666664,
+      "play_seconds": 7.333333333333333,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s10",
+      "asset": "manual-form",
+      "from": 4385,
+      "duration_frames": 318,
+      "source": "submission/video-production/raw/current-0.1.12/current-manual-01.mp4",
+      "source_start_seconds": 25.0,
+      "play_seconds": 10.0,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s10",
+      "asset": "manual-recalled-body",
+      "from": 4703,
+      "duration_frames": 90
+    },
+    {
+      "shot": "s12",
+      "asset": "behavior-demo-window",
+      "from": 4793,
+      "duration_frames": 133
+    },
+    {
+      "shot": "s12",
+      "asset": "behavior-source-body",
+      "from": 4926,
+      "duration_frames": 107
+    },
+    {
+      "shot": "s12",
+      "asset": "behavior-enabled",
+      "from": 5033,
+      "duration_frames": 133
+    },
+    {
+      "shot": "s15",
+      "asset": "preference-history",
+      "from": 5166,
+      "duration_frames": 512
+    },
+    {
+      "shot": "s16",
+      "asset": "edit-version-one",
+      "from": 6309,
+      "duration_frames": 135
+    },
+    {
+      "shot": "s16",
+      "asset": "edit-change",
+      "from": 6444,
+      "duration_frames": 131,
+      "source": "submission/video-production/raw/current-0.1.12/current-edit-01.mp4",
+      "source_start_seconds": 29.233333333333334,
+      "play_seconds": 3.7666666666666666,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s16",
+      "asset": "edit-version-two",
+      "from": 6575,
+      "duration_frames": 301
+    },
+    {
+      "shot": "s17",
+      "asset": "stage-record",
+      "from": 6876,
+      "duration_frames": 439
+    },
+    {
+      "shot": "s19",
+      "asset": "device-controls",
+      "from": 7520,
+      "duration_frames": 400
+    },
+    {
+      "shot": "s20",
+      "asset": "shared-settings",
+      "from": 7920,
+      "duration_frames": 246
+    },
+    {
+      "shot": "s20",
+      "asset": "shared-query",
+      "from": 8166,
+      "duration_frames": 97,
+      "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
+      "source_start_seconds": 59.36666666666667,
+      "play_seconds": 2.6333333333333333,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s20",
+      "asset": "shared-citation",
+      "from": 8263,
+      "duration_frames": 158,
+      "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
+      "source_start_seconds": 3.3333333333333335,
+      "play_seconds": 4.666666666666667,
+      "speed": 1,
+      "result_hold_frames": 18
+    },
+    {
+      "shot": "s23",
+      "asset": "shared-settings",
+      "from": 9315,
+      "duration_frames": 231
+    },
+    {
+      "shot": "s23",
+      "asset": "device-controls",
+      "from": 9546,
+      "duration_frames": 207
+    },
+    {
+      "shot": "s24",
+      "asset": "forget-target",
+      "from": 9753,
+      "duration_frames": 150
+    },
+    {
+      "shot": "s24",
+      "asset": "forget-confirmed",
+      "from": 9903,
+      "duration_frames": 289
+    },
+    {
+      "shot": "s13",
+      "asset": "keyword-result",
+      "from": 10566,
+      "duration_frames": 393
+    },
+    {
+      "shot": "s13",
+      "asset": "keyword-source-body",
+      "from": 10959,
+      "duration_frames": 100
+    },
+    {
+      "shot": "s27",
+      "asset": "sdk-version",
+      "from": 11059,
+      "duration_frames": 163
+    },
+    {
+      "shot": "s27",
+      "asset": "desktop-shortcut",
+      "from": 11222,
+      "duration_frames": 310
+    },
+    {
+      "shot": "s26",
+      "asset": "brief",
+      "from": 12126,
+      "duration_frames": 424
+    }
+  ]
+}

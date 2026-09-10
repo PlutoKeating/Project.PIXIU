@@ -24,7 +24,8 @@ start = cfg['source_start_seconds']
 fade = cfg['fade_out_seconds']
 assert 0 < fade <= duration and start >= 0 and 0 <= cfg['volume'] <= 1
 length = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(source)]))
-assert length >= start + duration, 'Music is shorter than the requested excerpt'
+loop_crossfade = cfg.get('loop_crossfade_seconds', 4)
+assert 0 < loop_crossfade < length / 2
 def ff(*items):
     return subprocess.check_output(['ffmpeg', '-v', 'error', '-nostdin', *map(str, items)])
 def sha(path):
@@ -34,7 +35,14 @@ if args.reuse_stem:
     stem_duration = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(stem)]))
     assert abs(stem_duration - duration) < 1 / 48000, 'Prepared music duration changed'
 else:
-    ff('-i', source, '-af', f'atrim=start={start}:duration={duration},asetpts=PTS-STARTPTS,aresample=48000,afade=t=out:st={duration-fade}:d={fade},atrim=end_sample={round(duration*48000)}', '-ac', 2, '-c:a', 'pcm_s16le', '-y', stem)
+    finish = f'atrim=start={start}:duration={duration},asetpts=PTS-STARTPTS,aresample=48000,afade=t=out:st={duration-fade}:d={fade},atrim=end_sample={round(duration*48000)}'
+    if length >= start + duration:
+        ff('-i', source, '-af', finish, '-ac', 2, '-c:a', 'pcm_s16le', '-y', stem)
+    else:
+        assert 2 * length - loop_crossfade >= start + duration
+        ff('-i', source, '-i', source, '-filter_complex',
+           f'[0:a][1:a]acrossfade=d={loop_crossfade}:c1=tri:c2=tri,{finish}[music]',
+           '-map', '[music]', '-ac', 2, '-c:a', 'pcm_s16le', '-y', stem)
 graph = f'[0:a]atrim=duration={duration},asetpts=PTS-STARTPTS[a];[1:a]volume={cfg["volume"]}[b];[a][b]amix=inputs=2:normalize=0:duration=longest,atrim=duration={duration}[mix]'
 inputs = ['-i', args.video, '-i', stem, '-filter_complex', graph]
 pcm = np.frombuffer(ff(*inputs, '-map', '[mix]', '-ar', 48000, '-ac', 2, '-f', 'f32le', '-'), dtype='<f4')
@@ -51,6 +59,6 @@ assert picture_hash(args.output) == original_picture
 encoded = np.frombuffer(ff('-i', args.output, '-vn', '-ar', 48000, '-ac', 2, '-f', 'f32le', '-'), dtype='<f4')
 encoded_peak = float(np.max(np.abs(encoded)))
 assert encoded_peak < 1, 'Encoded audio exceeds full scale'
-report = {'sha256': sha(args.output), 'complete_decode': 'passed', 'source_video': str(args.video), 'source_video_sha256': sha(args.video), 'source_music_sha256': sha(source), 'stem_sha256': sha(stem), 'settings': cfg, 'duration_seconds': duration, 'mix_peak_dbfs': float(20*np.log10(peak)), 'encoded_peak_dbfs': float(20*np.log10(encoded_peak)), 'picture_bitstream_unchanged': True, 'video_bitstream_hash': original_picture, 'method': f'{start}s source trim; {cfg["volume"]*100:g}% linear gain; last {fade}s linear fade on music only; picture stream copied; no normalization or ducking.'}
+report = {'sha256': sha(args.output), 'complete_decode': 'passed', 'source_video': str(args.video), 'source_video_sha256': sha(args.video), 'source_music_sha256': sha(source), 'stem_sha256': sha(stem), 'settings': cfg, 'music_looped': length < start + duration, 'loop_crossfade_seconds': loop_crossfade if length < start + duration else 0, 'duration_seconds': duration, 'mix_peak_dbfs': float(20*np.log10(peak)), 'encoded_peak_dbfs': float(20*np.log10(encoded_peak)), 'picture_bitstream_unchanged': True, 'video_bitstream_hash': original_picture, 'method': f'{start}s source trim; {cfg["volume"]*100:g}% linear gain; last {fade}s linear fade on music only; picture stream copied; no normalization or ducking.'}
 args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n')
 print(json.dumps(report, ensure_ascii=False), flush=True)

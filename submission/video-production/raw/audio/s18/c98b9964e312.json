@@ -1,0 +1,129 @@
+{
+  "shot": "s18",
+  "request": {
+    "text": "资料整理好之后，再看另一项核心能力：让多台设备上的智能体，共享知识与经验。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "-5%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "c98b9964e3127079ce6e46dcc973f9420b41514a56766761a41c20e59d98f63b",
+  "audio_sha256": "33f46cfcfdd782e437c115c98a1e77ba68aedd60cac3a8f54c5c739a07f50a48",
+  "duration_seconds": 6.888,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 526250,
+      "duration": 2763330,
+      "text": "资料"
+    },
+    {
+      "offset": 3289580,
+      "duration": 2105000,
+      "text": "整理"
+    },
+    {
+      "offset": 5394580,
+      "duration": 1578750,
+      "text": "好"
+    },
+    {
+      "offset": 6973750,
+      "duration": 3421250,
+      "text": "之后"
+    },
+    {
+      "offset": 12763330,
+      "duration": 1710410,
+      "text": "再"
+    },
+    {
+      "offset": 14473750,
+      "duration": 1184160,
+      "text": "看"
+    },
+    {
+      "offset": 15921250,
+      "duration": 920830,
+      "text": "另"
+    },
+    {
+      "offset": 16842080,
+      "duration": 1052500,
+      "text": "一"
+    },
+    {
+      "offset": 17894580,
+      "duration": 1447500,
+      "text": "项"
+    },
+    {
+      "offset": 19605410,
+      "duration": 5394580,
+      "text": "核心能力"
+    },
+    {
+      "offset": 28421250,
+      "duration": 2368330,
+      "text": "让"
+    },
+    {
+      "offset": 30921250,
+      "duration": 1842080,
+      "text": "多"
+    },
+    {
+      "offset": 32763330,
+      "duration": 1710410,
+      "text": "台"
+    },
+    {
+      "offset": 34473750,
+      "duration": 2631660,
+      "text": "设备"
+    },
+    {
+      "offset": 37105410,
+      "duration": 920830,
+      "text": "上"
+    },
+    {
+      "offset": 38026250,
+      "duration": 921250,
+      "text": "的"
+    },
+    {
+      "offset": 39078750,
+      "duration": 2894580,
+      "text": "智能"
+    },
+    {
+      "offset": 41973750,
+      "duration": 2236660,
+      "text": "体"
+    },
+    {
+      "offset": 46973750,
+      "duration": 3684160,
+      "text": "共享"
+    },
+    {
+      "offset": 50789580,
+      "duration": 3947500,
+      "text": "知识"
+    },
+    {
+      "offset": 55000000,
+      "duration": 1184160,
+      "text": "与"
+    },
+    {
+      "offset": 56315830,
+      "duration": 3157910,
+      "text": "经验"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}
