@@ -3,11 +3,11 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "0519149228001b5caaeda1bedbcdeb477fbf8c370cafa93e5adf33cd92c9e678",
+      "sha256": "aa8577f092e6d161403e6f4f92fb2f8ef65a36c34d59b3e0220539071b1bf4d5",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
-          "sha256": "e5dafca3b1be73129c34db4f03ad4eb012b5385c5c63d42743090fac561fffa6"
+          "sha256": "1b2dae2b02cf19d211bffa7f405c77f829e4a42c30e97af0cfcad92bbd754df5"
         },
         {
           "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
@@ -15,27 +15,27 @@
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
-          "sha256": "2fc8fe585908e847945279ae005d61f1bb286620531a7eddc930882c3cab64e3"
+          "sha256": "4eccd895704bafeea4c00015bff115623c078721feeac469b3f5b92c5dc6d823"
         },
         {
           "path": "docs/delivery/MEMORY_LIFECYCLE.md",
-          "sha256": "07bda84ee7064f8ab05f97942563f245c16dec8b801f9bbad453593e1d0032c4"
+          "sha256": "4d07cca1eee14ae2df38c55d598bd70589037cabd8df54f02028030edb37df3f"
         },
         {
           "path": "docs/delivery/SOURCE_AND_LICENSES.md",
-          "sha256": "c76f31dc70f8cda378a86cea7253d2871f42db48338d4e125d09c619b9ca2a7b"
+          "sha256": "78cb7082b61c75a2086103239029163b5385ebffa22915597e6e4ea78d51ceb9"
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "27b7a2faa70fec16a62f01f49fb6a33dac34a6e03aad2b25febd6f59aea846b7"
+          "sha256": "e940d32331f8b1d15c34a3b9c75c24ccbabd15f0f3207f8dfd3a4cc457d283ee"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
-          "sha256": "778e452ebc293f1993e733e9caef82ec68b747cb0a5d222467c8d71312cadc72"
+          "sha256": "42bbb159247b0305b8b5b5d3af3c0c29a84433c59b4556b746c86f718d789f84"
         },
         {
           "path": "docs/delivery/USER_MANUAL.md",
-          "sha256": "9de9e41776cd03828182ae4624b39a88838b869354066c6de291f3c2bca18b27"
+          "sha256": "5bfda09f953bf36c97f521469b09cce944d9329a04194b147a8042bbe532b4be"
         }
       ],
       "images": [
@@ -72,6 +72,22 @@
           "sha256": "93f7f5519d9e527bd90bb4a84aa137ddc476e6b6ffe31f7b7c318fed2cf46cec"
         },
         {
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+          "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+          "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+          "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+          "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+        },
+        {
           "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
           "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
         },
@@ -95,7 +111,7 @@
       "exports": [
         {
           "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/技术方案.doc",
-          "sha256": "0085cd97c50bbffa33d7ba32e6c9e00465fffd707b608b97324f827daf7e38ff"
+          "sha256": "25a52fd096d3a1140f449081c05297dd7c1b18a081a8c76d1ab8a04905ae6256"
         }
       ]
     }

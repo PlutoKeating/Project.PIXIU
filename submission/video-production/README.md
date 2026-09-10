@@ -1,5 +1,9 @@
 # PIXIU 中文演示视频制作工程
 
+2026-09-10 正在按当前 0.1.12 界面重新采集和制作。新版分镜在 `storyboard/shots.json`，新增 Dreaming 更正审批镜头 s11b；实际渲染时间轴将在新版素材和旁白就绪后更新。新原始素材位于 `raw/current-0.1.12/`，Word、PPT 共用的当前操作截图位于 `docs/delivery/assets/operations/03-current-workflows/`。制作与覆盖台账见 `docs/delivery/MATERIAL_ALIGNMENT.md`。文案采用正面、平实的行动与结果描述。
+
+以下为本次修订前的成片记录。
+
 最终交付：`renders/演示视频-最终封面版.mp4`。用户提供的`raw/cover/approved-cover.png`替换第0帧并作为MP4内嵌封面；总计11706帧、390.2秒，完整AAC音轨直接复制。仅为替换第一帧重新编码首个250帧GOP，其余11456帧直接复制并核对解码像素一致。已验收剪辑工程保持原样。检查见`review/cover-technical.json`，复现工具为`scripts/set_video_cover.py`（`--video`、`--cover`、`--output`、`--report`），沿用FFmpeg与Python标准库，无新增依赖。
 
 当前首尾统一版：`renders/演示视频-首尾统一版.mp4`，390.2秒；无配乐版本为`renders/演示视频-首尾统一无配乐版.mp4`。首尾共用片头完整云枫音频`audio/s01.mp3`对应的170% PCM，无重新合成、变速或变调。项目名为“PIXIU · 貔貅”，介绍为“面向麒麟操作系统智能体的去中心化记忆系统”，slogan为“让每一台设备的记忆，彼此相通”。共享画面文案定义在`src/brandCopy.ts`。

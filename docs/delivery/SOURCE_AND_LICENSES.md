@@ -7,7 +7,7 @@
 | `frontend/` | 内嵌记忆管理界面与 UKUI 适配 | 团队原创 |
 | `backend/engine/` | 接入、偏好、知识、冲突、安全 | 团队原创 |
 | `backend/foundation/` | API、存储、检索、流转、同步、评测 | 团队原创 |
-| `backend/agent/` | MemoryProvider 与记忆工具 | 团队原创 |
+| `backend/agent/` | MemoryProvider、文档工具与 Dreaming 后台整理 | 团队原创 |
 | `build/release/` | 构建、打包、发布与源码导出 | 团队原创 |
 | `backend/platform/` | 初始化、启动、升级与数据迁移 | 团队原创 |
 | `tests/acceptance/` | 跨模块用户场景验证及模拟夹具 | 团队原创 |
@@ -15,7 +15,7 @@
 
 ## 原创边界
 
-PIXIU 原创成果包括统一记忆模型、多源接入、偏好与知识引擎、三通道混合检索、冲突仲裁、精准遗忘、CRDT/Gossip/反熵同步、Agent 适配、两个系统 SDK 的集成、管理界面和评测发布工具。
+PIXIU 原创成果包括统一记忆模型、多源接入、目录监控、Dreaming 受控文档整理与审批、偏好与知识引擎、三通道混合检索、冲突仲裁、精准遗忘、CRDT/Gossip/反熵同步、Agent 适配、两个系统 SDK 的集成、管理界面和评测发布工具。
 
 KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运行控制。交付材料记录这些上游组件的来源、版本和许可证。
 

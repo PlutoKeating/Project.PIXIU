@@ -119,6 +119,53 @@ def assemble(root: Path) -> Path:
     return source
 
 
+def fit_word_tables(path: Path) -> None:
+    """Keep imported HTML tables inside the A4 text area when exporting to DOC."""
+    with zipfile.ZipFile(path) as archive:
+        entries = {item.filename: archive.read(item) for item in archive.infolist()}
+    document = minidom.parseString(entries["word/document.xml"])
+    namespace = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+    def children(node, name):
+        return [child for child in node.childNodes
+                if child.nodeType == child.ELEMENT_NODE and child.localName == name]
+
+    def element(parent, name, **attributes):
+        existing = children(parent, name)
+        node = existing[0] if existing else document.createElementNS(namespace, "w:" + name)
+        if not existing:
+            parent.appendChild(node)
+        for key, value in attributes.items():
+            node.setAttributeNS(namespace, "w:" + key, str(value))
+        return node
+
+    for table in document.getElementsByTagNameNS(namespace, "tbl"):
+        grid = children(table, "tblGrid")
+        if not grid:
+            continue
+        columns = children(grid[0], "gridCol")
+        if not columns:
+            continue
+        # 170 mm text area on A4 with 20 mm margins. Equal columns ensure that
+        # long Chinese descriptions wrap instead of extending past the page.
+        width = 9600 // len(columns)
+        properties = element(table, "tblPr")
+        element(properties, "tblW", w=9600, type="dxa")
+        element(properties, "tblLayout", type="fixed")
+        for column in columns:
+            column.setAttributeNS(namespace, "w:w", str(width))
+        for row in children(table, "tr"):
+            for cell in children(row, "tc"):
+                cell_properties = element(cell, "tcPr")
+                span = children(cell_properties, "gridSpan")
+                count = int(span[0].getAttributeNS(namespace, "val")) if span else 1
+                element(cell_properties, "tcW", w=width * count, type="dxa")
+    entries["word/document.xml"] = document.toxml(encoding="utf-8")
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, data in entries.items():
+            archive.writestr(name, data)
+
+
 def convert(source: Path, output: Path, format_name: str, profile: Path) -> Path:
     subprocess.run(
         ["libreoffice", "--headless", f"-env:UserInstallation={profile.as_uri()}",
@@ -159,6 +206,7 @@ def export(root: Path) -> tuple[list[dict], dict]:
             '</style></head><body>' + content + '</body></html>')
         docx = convert(page, output, "docx:Office Open XML Text", work / "profile")
         embed_word_images(docx, root)
+        fit_word_tables(docx)
         doc = convert(docx, materials, "doc:MS Word 97", work / "profile")
         # Inspect the actual delivered binary document, not only the intermediate.
         pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")

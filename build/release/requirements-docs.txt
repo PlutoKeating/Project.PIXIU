@@ -1,4 +1,5 @@
 # Documentation export: Markdown plus system LibreOffice.
 # PNG paths, dimensions and digests use the Python standard library.
+# Word table widths and embedded assets are normalized with standard-library XML.
 # These tools are not product runtime dependencies.
 Markdown==3.10.3

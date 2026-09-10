@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-10",
+  "version": "0.1.12",
+  "environment": "银河麒麟 V11 amd64，真实桌面；公开合成资料；麒灵系统云模型",
+  "recording": "libvirt实际像素，4fps采集，30fps编码；原始时间保持",
+  "scenario": "授权目录新增星河观测活动 → 保存1条 → 新会话查询及来源 → 文件更正 → 桌面批准 → 新会话读到11月15日19:30、二层、2680元",
+  "recordings": [
+    {
+      "file": "directory-dreaming-02.mp4",
+      "sha256": "a748096d3cbca974503b47d0e13b812f31255e66461952e6f69d75ba1b80a65d",
+      "duration_seconds": 90.0002314170124,
+      "captured_frames": 360,
+      "timing": "directory-dreaming-02-timing.json"
+    },
+    {
+      "file": "directory-recall-01.mp4",
+      "sha256": "343679ab93559b575c001195074fcb3accf784654dfa5d0fc92a87d6eee0eb9f",
+      "duration_seconds": 75.00011175801046,
+      "captured_frames": 300,
+      "timing": "directory-recall-01-timing.json"
+    },
+    {
+      "file": "directory-update-01.mp4",
+      "sha256": "25a29cf51c288cec2b4a2db02c0246b35c7fe839452320f7bd0fe6a114323087",
+      "duration_seconds": 150.0000907529611,
+      "captured_frames": 600,
+      "timing": "directory-update-01-timing.json"
+    },
+    {
+      "file": "dreaming-approve-01.mp4",
+      "sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661",
+      "duration_seconds": 25.000164477038197,
+      "captured_frames": 100,
+      "timing": "dreaming-approve-01-timing.json"
+    },
+    {
+      "file": "dreaming-updated-recall-01.mp4",
+      "sha256": "e1eb0c931041bda8fae8c1fad127e93824bb9be23d16699ec60278a3a5eee2f2",
+      "duration_seconds": 60.0001184430439,
+      "captured_frames": 240,
+      "timing": "dreaming-updated-recall-01-timing.json"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "date": "2026-09-10",
+  "version": "0.1.12",
+  "environment": "银河麒麟 V11 amd64，麒灵系统云模型，公开合成资料",
+  "scenario": "目录授权 → 文件新增 → 后台整理保存1条 → 新会话召回 → 点击来源",
+  "images": [
+    {
+      "file": "directory-recall.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        410,
+        96,
+        900,
+        596
+      ],
+      "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+    },
+    {
+      "file": "directory-source.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        330,
+        98,
+        760,
+        640
+      ],
+      "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+    },
+    {
+      "file": "dreaming-review.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        270,
+        108,
+        880,
+        620
+      ],
+      "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
+    },
+    {
+      "file": "updated-recall.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        410,
+        96,
+        900,
+        596
+      ],
+      "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+    }
+  ]
+}
