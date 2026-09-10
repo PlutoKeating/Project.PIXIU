@@ -1,5 +1,13 @@
 [
   {
+    "result_image": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+    "result_image_sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49",
+    "result_hold_seconds": 3,
+    "animation": "dreaming-approval.gif",
+    "animation_sha256": "00bdf03d996cfffe87b9386093011612b215ff42f8be7f91822b2ba50c31965e",
+    "animation_duration_seconds": 7.0,
+    "animation_fps": 4,
+    "animation_plays": 1,
     "source": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
     "source_sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661",
     "file": "dreaming-approval.mp4",
@@ -10,6 +18,11 @@
     "sha256": "d48e43e42b2045875c77b5a79f2f543c4b68d8f846633d634596ae18f6539ebc"
   },
   {
+    "animation": "shared-recall.gif",
+    "animation_sha256": "ed410c632cc962995dd24c2a0a42d12d968a52ca86d27e10892ce38d8d81bfba",
+    "animation_duration_seconds": 14.0,
+    "animation_fps": 4,
+    "animation_plays": 1,
     "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
     "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
     "file": "shared-recall.mp4",
@@ -20,6 +33,11 @@
     "sha256": "c5170fecff26a006f3699703a3b372b764860e1e3c77de949d44df1bf0637838"
   },
   {
+    "animation": "shared-source.gif",
+    "animation_sha256": "8034a7788ed1ce471262ddedfc12dd2abf16dcd4ea3949b8147357c8ea34a6e6",
+    "animation_duration_seconds": 8.0,
+    "animation_fps": 4,
+    "animation_plays": 1,
     "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
     "source_sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438",
     "file": "shared-source.mp4",

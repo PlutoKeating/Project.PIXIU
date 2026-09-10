@@ -119,8 +119,8 @@
   "presentation": {
     "source": "docs/delivery/assets/项目报告.pptx",
     "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/项目报告.pptx",
-    "sha256": "ae70e5a82d0d735b9b39e364d0183fd1fd7ae02e46d634262e5de40634d10637",
+    "sha256": "0d9b42c03158d7381d1f8ef5e4f5663533c5d5835c76d4271de1a2dc483d905b",
     "build_manifest": "docs/delivery/assets/presentation-manifest.json",
-    "build_manifest_sha256": "344cfd388e2a33276834a6c1752c1b9cdfb1134f849d35aeb03b01b63fbaa73a"
+    "build_manifest_sha256": "e63782a3e33da022492bc6b0760ad054216aeea8b34190964f410660341fe538"
   }
 }

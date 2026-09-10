@@ -103,7 +103,7 @@
   "inputs": [
     {
       "path": "build/release/scripts/build-presentation.py",
-      "sha256": "6a2ffdde3f4d6e0acf4416896e83ae10c9fbb7eafd78076ad4b1a8ea863e84dd"
+      "sha256": "a28fda724cd84d6e1dbe20aa0d41df49e18c9929e43ba0b5c809aaf8dcca8d9a"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
@@ -122,20 +122,12 @@
       "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
     },
     {
-      "path": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
-      "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
-    },
-    {
       "path": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
       "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
       "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
-    },
-    {
-      "path": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
-      "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/shared-settings.png",
@@ -146,16 +138,20 @@
       "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
     },
     {
-      "path": "docs/delivery/assets/presentation-clips/dreaming-approval.mp4",
-      "sha256": "d48e43e42b2045875c77b5a79f2f543c4b68d8f846633d634596ae18f6539ebc"
+      "path": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+      "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+    },
+    {
+      "path": "docs/delivery/assets/presentation-clips/dreaming-approval.gif",
+      "sha256": "00bdf03d996cfffe87b9386093011612b215ff42f8be7f91822b2ba50c31965e"
     },
     {
       "path": "docs/delivery/assets/presentation-clips/manifest.json",
-      "sha256": "d02172f704f8c8f84918a4cb345969d4079ecc8c6d6e643c080d96b73482a137"
+      "sha256": "75a2c2b0bdfee5d9f87d28ae2757ddff75fce5c22d13c35f75d0c295ea35e9c8"
     },
     {
-      "path": "docs/delivery/assets/presentation-clips/shared-recall.mp4",
-      "sha256": "c5170fecff26a006f3699703a3b372b764860e1e3c77de949d44df1bf0637838"
+      "path": "docs/delivery/assets/presentation-clips/shared-recall.gif",
+      "sha256": "ed410c632cc962995dd24c2a0a42d12d968a52ca86d27e10892ce38d8d81bfba"
     },
     {
       "path": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
@@ -172,6 +168,6 @@
   ],
   "output": {
     "path": "docs/delivery/assets/项目报告.pptx",
-    "sha256": "ae70e5a82d0d735b9b39e364d0183fd1fd7ae02e46d634262e5de40634d10637"
+    "sha256": "0d9b42c03158d7381d1f8ef5e4f5663533c5d5835c76d4271de1a2dc483d905b"
   }
 }

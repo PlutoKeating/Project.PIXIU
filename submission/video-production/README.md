@@ -8,6 +8,8 @@
 
 配音准备：`python scripts/narrate_azure.py --check-cache` 按当前文案、音色配置、音频摘要和词边界核对可复用原音。合成时从本机 `SPEECH_KEY`、`SPEECH_REGION` 读取配置，也可用 `--key-env` 指定凭据变量名、用 `--region` 指定区域；交互运行沿用隐藏输入。凭据保存在进程内存中。`prepare:timeline` 会先核对整组原音，再从匹配的音频重建170%音量PCM文件，将来源和播放文件摘要写入时间轴。当前30镜已核对11镜原音，19镜进入新版合成清单。
 
+项目报告第6页和第12页使用同一批实拍：静音MP4按原始4fps采样制成单次播放动画，审批实录4秒后展示新会话结果3秒，跨端实录保持14秒，在麒麟V11 LibreOffice 24.2中直接随页面播放。制作依赖沿用FFmpeg和Pillow，来源与动画摘要写入演示片段清单。
+
 以下为本次修订前的成片记录。
 
 最终交付：`renders/演示视频-最终封面版.mp4`。用户提供的`raw/cover/approved-cover.png`替换第0帧并作为MP4内嵌封面；总计11706帧、390.2秒，完整AAC音轨直接复制。仅为替换第一帧重新编码首个250帧GOP，其余11456帧直接复制并核对解码像素一致。已验收剪辑工程保持原样。检查见`review/cover-technical.json`，复现工具为`scripts/set_video_cover.py`（`--video`、`--cover`、`--output`、`--report`），沿用FFmpeg与Python标准库，无新增依赖。

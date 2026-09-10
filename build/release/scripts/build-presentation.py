@@ -2,7 +2,7 @@
 """Build the editable 18-slide project report from current product evidence.
 
 Uses python-pptx, ffmpeg and repository screenshots/recordings. Diagrams and
-text stay editable; MP4 demonstrations are embedded with explicit poster frames.
+text stay editable; original-speed desktop excerpts are embedded as frame animations.
 """
 from __future__ import annotations
 
@@ -143,17 +143,13 @@ def slide(title, sub, chapter, shots, takeaway):
 
 
 def movie(s, name, poster, x, y, w, h):
-    p = ASSETS / 'presentation-clips' / name
-    poster_path = IMAGES / poster
-    inputs.update({p, poster_path})
-    iw, ih = Image.open(poster_path).size
+    p = (ASSETS / 'presentation-clips' / name).with_suffix('.gif')
+    inputs.add(p)
+    iw, ih = Image.open(p).size
     scale = min(w / iw, h / ih)
     dw, dh = iw * scale, ih * scale
     rect(s, x-.05, y-.05, w+.1, h+.1, WHITE, LINE)
-    s.shapes.add_movie(str(p), Inches(x+(w-dw)/2), Inches(y+(h-dh)/2), Inches(dw), Inches(dh),
-                       poster_frame_image=str(poster_path), mime_type='video/mp4')
-    for condition in s._element.xpath('.//p:video/p:cMediaNode/p:cTn/p:stCondLst/p:cond'):
-        condition.set('delay', '0')
+    s.shapes.add_picture(str(p), Inches(x+(w-dw)/2), Inches(y+(h-dh)/2), Inches(dw), Inches(dh))
     text(s, '▶ 进入本页自动播放 · 真实操作原速片段', x, y+h+.12, w, .4, 12, BLUE)
 
 
@@ -173,7 +169,30 @@ def prepare_clips():
                         '-t', str(duration), '-vf', 'crop='+crop, '-an', '-c:v', 'libx264',
                         '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(dst)],
                        check=True)
-        records.append({'source': src.relative_to(ROOT).as_posix(), 'source_sha256': digest(src),
+        animation = dst.with_suffix('.gif')
+        animation_input = ['-i', str(dst)]
+        animation_filter = 'fps=4,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer'
+        result_record = {}
+        expected_duration = duration
+        if target == 'dreaming-approval.mp4':
+            result_image = IMAGES / 'updated-recall.png'
+            inputs.add(result_image)
+            animation_input += ['-loop', '1', '-t', '3', '-i', str(result_image)]
+            animation_filter = ('[1:v]scale=880:620:force_original_aspect_ratio=decrease,'
+                                'pad=880:620:(ow-iw)/2:(oh-ih)/2:color=0xf6f7f9,setsar=1[v1];'
+                                '[0:v][v1]concat=n=2:v=1:a=0,' + animation_filter)
+            expected_duration += 3
+            result_record = {'result_image':result_image.relative_to(ROOT).as_posix(),
+                             'result_image_sha256':digest(result_image), 'result_hold_seconds':3}
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', *animation_input,
+                        '-filter_complex', animation_filter, '-loop', '-1', str(animation)], check=True)
+        with Image.open(animation) as frames:
+            animation_duration = sum((frames.seek(i) or frames.info.get('duration', 0))
+                                     for i in range(frames.n_frames)) / 1000
+        assert abs(animation_duration - expected_duration) < 0.05
+        records.append({**result_record, 'animation':animation.name, 'animation_sha256':digest(animation),
+                        'animation_duration_seconds':animation_duration, 'animation_fps':4,
+                        'animation_plays':1, 'source': src.relative_to(ROOT).as_posix(), 'source_sha256': digest(src),
                         'file': target, 'start_seconds': start, 'duration_seconds': duration,
                         'crop': crop, 'speed': 1, 'sha256': digest(dst)})
     (out / 'manifest.json').write_text(json.dumps(records, ensure_ascii=False, indent=2)+'\n')

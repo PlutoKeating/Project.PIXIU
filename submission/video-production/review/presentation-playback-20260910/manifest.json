@@ -1,0 +1,60 @@
+{
+  "date": "2026-09-10",
+  "environment": "银河麒麟V11 / LibreOffice 24.2.5.2 / X11软件渲染",
+  "presentation_sha256": "0d9b42c03158d7381d1f8ef5e4f5663533c5d5835c76d4271de1a2dc483d905b",
+  "method": "嵌入原始4fps实录逐帧动画；自动播放一次后停留结果",
+  "approval_seconds": 7,
+  "shared_seconds": 14,
+  "checks": [
+    "跨端片段由查询等待进入完整回答并停留",
+    "审批片段由更正方案进入批准完成并衔接实际查询结果",
+    "包内动画帧数、时长与单次播放标记通过",
+    "两段放映录屏完整解码通过"
+  ],
+  "recordings": [
+    {
+      "page": 12,
+      "recording": "shared.mp4",
+      "sha256": "b513bb60adf899d0a55f0ab189138d222064344abb4eac0c4b6df471630d2fdb",
+      "frames": [
+        {
+          "file": "shared-012.png",
+          "capture_frame": 12,
+          "sha256": "b47e92f993e5f93b3a301ad15116c3c186433ee84c62c5b19717b364a39bd564"
+        },
+        {
+          "file": "shared-028.png",
+          "capture_frame": 28,
+          "sha256": "27bd2365a558c3912d8fb661696e6e49a7f1dd7467299d32f3d8ac371aac1da4"
+        },
+        {
+          "file": "shared-076.png",
+          "capture_frame": 76,
+          "sha256": "f742d03386bc8b88ce9bf9653c53f3534fe6eba2824e8ca094190aa7b877d287"
+        }
+      ]
+    },
+    {
+      "page": 6,
+      "recording": "approval.mp4",
+      "sha256": "1e221add999352da06fbbc8483480d80784655ea0e53d818c25e9518cd43ec51",
+      "frames": [
+        {
+          "file": "approval-010.png",
+          "capture_frame": 10,
+          "sha256": "ed8c48c2355aa939793bf0632952c3ce23b40b3d5ee3dee4ef782c1a40646283"
+        },
+        {
+          "file": "approval-018.png",
+          "capture_frame": 18,
+          "sha256": "868c85b051308b21d624bb8f7f7c1d980160da7786e270fce4b736cbb5fc58f2"
+        },
+        {
+          "file": "approval-048.png",
+          "capture_frame": 48,
+          "sha256": "763fa03a57ef94a80a202b28e822cf55184a93065a912f4ee59b3aa6ab3328d3"
+        }
+      ]
+    }
+  ]
+}
