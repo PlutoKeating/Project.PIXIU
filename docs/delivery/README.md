@@ -10,7 +10,7 @@
 
 2026-09-10 起按 [统一修订台账](MATERIAL_ALIGNMENT.md) 重新采集当前界面，并统一目录监控、Dreaming 与多设备协作的功能表述。作品使用正面、平实的语言，直接说明操作与实际结果；测试数字同时注明版本、环境和样本量。
 
-先更新本目录各篇 Markdown 和 `assets/项目报告.pptx`，再运行：
+先更新本目录各篇 Markdown，以及 `build/release/scripts/build-presentation.py` 中的演示叙事和图形，再运行：
 
 ```bash
 python3 build/release/scripts/export-documentation.py
@@ -18,7 +18,9 @@ python3 build/release/scripts/prepare-submission.py build-source
 python3 build/release/scripts/prepare-submission.py check
 ```
 
-文档工具使用 `build/release/requirements-docs.txt` 和系统 LibreOffice，先内嵌图片，再转换为真正的 Word 97 `.doc`。中间 DOCX 和从最终 DOC 回读的 PDF 位于 `build/release/out/documents/`，须逐页观察。原始图片保存在 `assets/operations/`。
+PPT 从源脚本生成18页可编辑图文，并嵌入真实操作短片。图片、视频片段及输入摘要分别保存在 `assets/operations/03-current-workflows/`、`assets/presentation-clips/` 与 `assets/presentation-manifest.json`。页面对应视频分镜见 [项目报告与演示说明](PRESENTATION_AND_VIDEO.md)。
+
+文档工具使用 `build/release/requirements-docs.txt`、系统 LibreOffice 和 FFmpeg，先内嵌图片，再转换为真正的 Word 97 `.doc`。中间 DOCX 和从最终 DOC 回读的 PDF 位于 `build/release/out/documents/`，须逐页观察。原始图片保存在 `assets/operations/`。
 
 `check` 严格核对目录、文件名、文件集合、格式、源码文件清单与摘要。完整材料使用 `check --require-video`。通过实际观看核对视频时长、功能覆盖和匿名内容。
 

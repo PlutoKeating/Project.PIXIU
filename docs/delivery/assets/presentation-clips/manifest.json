@@ -1,0 +1,32 @@
+[
+  {
+    "source": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
+    "source_sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661",
+    "file": "dreaming-approval.mp4",
+    "start_seconds": 0,
+    "duration_seconds": 4,
+    "crop": "880:620:270:108",
+    "speed": 1,
+    "sha256": "d48e43e42b2045875c77b5a79f2f543c4b68d8f846633d634596ae18f6539ebc"
+  },
+  {
+    "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
+    "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
+    "file": "shared-recall.mp4",
+    "start_seconds": 31,
+    "duration_seconds": 22,
+    "crop": "900:596:410:96",
+    "speed": 1,
+    "sha256": "756d7db6c34e932004d4d3a4dc9d0515185072285d9b0b7a6af7248176957b1a"
+  },
+  {
+    "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
+    "source_sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438",
+    "file": "shared-source.mp4",
+    "start_seconds": 0,
+    "duration_seconds": 8,
+    "crop": "760:640:330:98",
+    "speed": 1,
+    "sha256": "cc22ca9d9035490403fb1298d0ec9568b1b4a6d3fc3fba089cb9fbf238fdc2d2"
+  }
+]

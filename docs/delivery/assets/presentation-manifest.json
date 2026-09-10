@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "version": "0.1.12",
+  "design": {
+    "blue": "#1456B8",
+    "ink": "#172033",
+    "paper": "#F6F7F9",
+    "font": "Noto Sans CJK SC"
+  },
+  "audience": "高层领导与评委",
+  "slides": [
+    {
+      "page": 1,
+      "title": "让每一台设备的记忆，彼此相通",
+      "video_shots": "s01"
+    },
+    {
+      "page": 2,
+      "title": "从一份资料，到下一次任务",
+      "video_shots": "s02–s03"
+    },
+    {
+      "page": 3,
+      "title": "一个窗口，完成任务与记忆协作",
+      "video_shots": "s04、s06"
+    },
+    {
+      "page": 4,
+      "title": "授权一个目录，接住日常资料",
+      "video_shots": "s11"
+    },
+    {
+      "page": 5,
+      "title": "Dreaming：把资料联系成知识",
+      "video_shots": "s11"
+    },
+    {
+      "page": 6,
+      "title": "资料更新，先对照，再保存",
+      "video_shots": "s11b"
+    },
+    {
+      "page": 7,
+      "title": "换个会话，继续核对家庭账单",
+      "video_shots": "s07–s08"
+    },
+    {
+      "page": 8,
+      "title": "多种来源，共同积累经验",
+      "video_shots": "s09–s12"
+    },
+    {
+      "page": 9,
+      "title": "回答方式，随偏好更新",
+      "video_shots": "s15"
+    },
+    {
+      "page": 10,
+      "title": "把事实和经验，留给以后的任务",
+      "video_shots": "s14、s16–s17"
+    },
+    {
+      "page": 11,
+      "title": "可信设备之间，共享知识与经验",
+      "video_shots": "s18–s19"
+    },
+    {
+      "page": 12,
+      "title": "这里记住，那里接着使用",
+      "video_shots": "s20"
+    },
+    {
+      "page": 13,
+      "title": "离线继续工作，重连补齐更新",
+      "video_shots": "s21–s22"
+    },
+    {
+      "page": 14,
+      "title": "共享与遗忘，由用户掌握",
+      "video_shots": "s23–s24"
+    },
+    {
+      "page": 15,
+      "title": "四个模块，连成完整的记忆助手",
+      "video_shots": "s05、s13"
+    },
+    {
+      "page": 16,
+      "title": "一个安装包，融入麒麟桌面",
+      "video_shots": "s04、s27"
+    },
+    {
+      "page": 17,
+      "title": "用数据核对效果，用场景验证协作",
+      "video_shots": "s28"
+    },
+    {
+      "page": 18,
+      "title": "自动积累，可信协作",
+      "video_shots": "s26、s29–s30"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "build/release/scripts/build-presentation.py",
+      "sha256": "e5becf5615652ee53084cebc2bbb50bd86705870af08e5d0bb1aa032db23b95c"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+      "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+      "sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
+      "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+      "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+      "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+      "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+      "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+      "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/shared-settings.png",
+      "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+      "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
+    },
+    {
+      "path": "docs/delivery/assets/presentation-clips/dreaming-approval.mp4",
+      "sha256": "d48e43e42b2045875c77b5a79f2f543c4b68d8f846633d634596ae18f6539ebc"
+    },
+    {
+      "path": "docs/delivery/assets/presentation-clips/manifest.json",
+      "sha256": "8bd0022cdb67fe9cd7aad8d57bd88afe54824cde737aeef9f1f4cd22a96999b7"
+    },
+    {
+      "path": "docs/delivery/assets/presentation-clips/shared-recall.mp4",
+      "sha256": "756d7db6c34e932004d4d3a4dc9d0515185072285d9b0b7a6af7248176957b1a"
+    },
+    {
+      "path": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
+      "sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661"
+    },
+    {
+      "path": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
+      "sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082"
+    },
+    {
+      "path": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
+      "sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438"
+    }
+  ],
+  "output": {
+    "path": "docs/delivery/assets/项目报告.pptx",
+    "sha256": "33fa016b494b9f91287e30d8b2ea5272656dfb1ccd861aefa690774393ccf056"
+  }
+}

@@ -34,9 +34,9 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 
 
 
-![0.1.12：记忆保留原始资料及后续更正来源](assets/operations/02-current-release/source.png)
+![0.1.12：记忆保留活动原始资料](assets/operations/03-current-workflows/directory-source.png)
 
-0.1.12：记忆保留原始资料及后续更正来源。
+0.1.12：记忆保留活动原始资料。
 
 ## 保护用户数据
 

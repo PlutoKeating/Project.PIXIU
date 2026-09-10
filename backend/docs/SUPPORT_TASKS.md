@@ -25,3 +25,5 @@
 交付源稿位于 `docs/delivery/`，由 `build/release/scripts/export-documentation.py` 生成材料。文档制作依赖见 `build/release/requirements-docs.txt`；生成后检查文件格式、内容、图片及匿名信息。
 
 文档导出会把 Word 表格限制在 A4 正文宽度内。交付物统一修订与新版界面采集见 `docs/delivery/MATERIAL_ALIGNMENT.md`；图文与视频采用同一组场景事实，逐页检查导出实物。
+
+项目报告由 `build/release/scripts/build-presentation.py` 从零生成18页可编辑图形与文本，嵌入当前版本操作片段；文档导出自动重建项目报告并记录输入摘要。`export-documentation.py --check` 同时核对源脚本、实拍和短片的摘要。制作依赖包含 python-pptx、LibreOffice 与 FFmpeg。

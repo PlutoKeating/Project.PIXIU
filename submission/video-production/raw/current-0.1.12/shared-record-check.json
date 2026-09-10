@@ -1,0 +1,39 @@
+{
+  "version": "0.1.12",
+  "date": "2026-09-10",
+  "environment": "同一宿主的独立银河麒麟 V11 虚拟机",
+  "records": [
+    {
+      "role": "发送端",
+      "record": {
+        "knowledge_id": "knw_01M24P0EXKAQZRRZX39YDCAQEV",
+        "scope": "shared:home",
+        "version": 1,
+        "title": "Agent explicit memory",
+        "body": {
+          "content": "家庭共享约定：每周六上午9:00共同整理书房；步骤为（1）核对书名，（2）按主题分类上架，（3）同步更新借阅登记表。该约定适用于所有家庭成员，支持客厅智能助手实时查询。"
+        },
+        "evidence_ids": [
+          "evd_01M24P0EXG789XHYNGHYPDEXPB"
+        ],
+        "updated_at": 1789011180
+      }
+    },
+    {
+      "role": "接收端",
+      "record": {
+        "knowledge_id": "knw_01M24P0EXKAQZRRZX39YDCAQEV",
+        "scope": "shared:home",
+        "version": 1,
+        "title": "Agent explicit memory",
+        "body": {
+          "content": "家庭共享约定：每周六上午9:00共同整理书房；步骤为（1）核对书名，（2）按主题分类上架，（3）同步更新借阅登记表。该约定适用于所有家庭成员，支持客厅智能助手实时查询。"
+        },
+        "evidence_ids": [
+          "evd_01M24P0EXG789XHYNGHYPDEXPB"
+        ],
+        "updated_at": 1789011180
+      }
+    }
+  ]
+}

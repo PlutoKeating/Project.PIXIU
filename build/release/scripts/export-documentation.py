@@ -15,6 +15,7 @@ import re
 import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
@@ -210,13 +211,16 @@ def export(root: Path) -> tuple[list[dict], dict]:
         doc = convert(docx, materials, "doc:MS Word 97", work / "profile")
         # Inspect the actual delivered binary document, not only the intermediate.
         pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")
+    subprocess.run([sys.executable, str(root / "build/release/scripts/build-presentation.py")], check=True)
     template = root / "docs/delivery/assets/项目报告.pptx"
     ppt = materials / "项目报告.pptx"
     shutil.copyfile(template, ppt)
     record = {"source": source.relative_to(root).as_posix(), "sha256": digest(source),
               "inputs": [{"path": p.relative_to(root).as_posix(), "sha256": digest(p)} for p in sorted((root / "docs/delivery").glob("*.md")) if p.name in {"TECHNICAL_SOLUTION.md", "DEPLOYMENT_GUIDE.md", "USER_MANUAL.md", "MEMORY_LIFECYCLE.md", "APPLICATION_CASES.md", "TEST_REPORT.md", "KYLIN_V11_ADAPTATION_REPORT.md", "SOURCE_AND_LICENSES.md"}],
               "images": images, "exports": [{"path": doc.relative_to(root).as_posix(), "sha256": digest(doc)}]}
-    presentation = {"source": template.relative_to(root).as_posix(), "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt)}
+    build_manifest = root / "docs/delivery/assets/presentation-manifest.json"
+    presentation = {"source": template.relative_to(root).as_posix(), "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt),
+                    "build_manifest": build_manifest.relative_to(root).as_posix(), "build_manifest_sha256": digest(build_manifest)}
     return [record], presentation
 
 
@@ -238,6 +242,11 @@ def main() -> None:
         presentation = data["presentation"]
         assert digest(root / presentation["path"]) == presentation["sha256"]
         assert digest(root / presentation["source"]) == presentation["sha256"]
+        if "build_manifest" in presentation:
+            build_manifest = root / presentation["build_manifest"]
+            assert digest(build_manifest) == presentation["build_manifest_sha256"]
+            for item in json.loads(build_manifest.read_text())["inputs"]:
+                assert digest(root / item["path"]) == item["sha256"], item["path"]
         print("documentation source/export digests: OK")
     else:
         records, presentation = export(root)

@@ -3,7 +3,7 @@
   "version": "0.1.12",
   "environment": "银河麒麟 V11 amd64，真实桌面；公开合成资料；麒灵系统云模型",
   "recording": "libvirt实际像素，4fps采集，30fps编码；原始时间保持",
-  "scenario": "授权目录新增星河观测活动 → 保存1条 → 新会话查询及来源 → 文件更正 → 桌面批准 → 新会话读到11月15日19:30、二层、2680元",
+  "scenario": "授权目录新增星河观测活动 → 保存1条 → 新会话查询及来源 → 文件更正 → 桌面批准 → 新会话读到11月15日19:30、二层、2680元；家庭共享约定由另一端查询并打开同条来源；新版工作区导航及账单回读",
   "recordings": [
     {
       "file": "directory-dreaming-02.mp4",
@@ -39,6 +39,41 @@
       "duration_seconds": 60.0001184430439,
       "captured_frames": 240,
       "timing": "dreaming-updated-recall-01-timing.json"
+    },
+    {
+      "file": "shared-recall-01.mp4",
+      "sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
+      "duration_seconds": 80.00008806795813,
+      "captured_frames": 320,
+      "timing": "shared-recall-01-timing.json"
+    },
+    {
+      "file": "shared-source-01.mp4",
+      "sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438",
+      "duration_seconds": 20.000166877056472,
+      "captured_frames": 80,
+      "timing": "shared-source-01-timing.json"
+    },
+    {
+      "file": "shared-settings-01.mp4",
+      "sha256": "277786e6fecb2ce1593bb75f7335ea86fd137762d7401dc18694ca53a1180f06",
+      "duration_seconds": 22.00013094197493,
+      "captured_frames": 88,
+      "timing": "shared-settings-01-timing.json"
+    },
+    {
+      "file": "current-navigation-01.mp4",
+      "sha256": "0c58fa28f628858380cea9c40c86c2d547887e844c31b6d1c558a9cdfc8d2830",
+      "duration_seconds": 80.0001773199765,
+      "captured_frames": 320,
+      "timing": "current-navigation-01-timing.json"
+    },
+    {
+      "file": "current-bill-recall-01.mp4",
+      "sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
+      "duration_seconds": 80.00020004995167,
+      "captured_frames": 320,
+      "timing": "current-bill-recall-01-timing.json"
     }
   ]
 }

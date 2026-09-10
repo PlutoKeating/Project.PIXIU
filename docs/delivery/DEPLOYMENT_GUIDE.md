@@ -29,7 +29,7 @@ pixiu
 
 
 
-![0.1.12：启动后版本一致，记忆服务和系统 SDK 就绪](assets/operations/02-current-release/sdk.png)
+![0.1.12：启动后版本一致，记忆服务和系统 SDK 就绪](assets/operations/03-current-workflows/sdk-version.png)
 
 0.1.12：启动后版本一致，记忆服务和系统 SDK 就绪。
 

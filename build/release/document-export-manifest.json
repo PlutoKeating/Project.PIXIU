@@ -3,23 +3,23 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "aa8577f092e6d161403e6f4f92fb2f8ef65a36c34d59b3e0220539071b1bf4d5",
+      "sha256": "3316e0e37e2023ae45fabeb70dc83f34230cce744a62396c074c4f8dfde4f7c8",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
-          "sha256": "1b2dae2b02cf19d211bffa7f405c77f829e4a42c30e97af0cfcad92bbd754df5"
+          "sha256": "72efc78baecac912087e219cae978a5409081aa52583599f7b63ab674977dae3"
         },
         {
           "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
-          "sha256": "cbc10404e8393ecf8854c1ef00e7748607d7c5325140f01f400c75c8c6f19013"
+          "sha256": "49da46c88b1c0adf13449574d7f6f2e1e9215d2ba03ed3955b507cb543c2751e"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
-          "sha256": "4eccd895704bafeea4c00015bff115623c078721feeac469b3f5b92c5dc6d823"
+          "sha256": "6badecaea330b15cce90bba5e71acaaebafc711a2345dcfa1fc89d9ce878117d"
         },
         {
           "path": "docs/delivery/MEMORY_LIFECYCLE.md",
-          "sha256": "4d07cca1eee14ae2df38c55d598bd70589037cabd8df54f02028030edb37df3f"
+          "sha256": "87592d109051731f2fed0a344dc283bdfd67c53c6cd1a0e276b4ecf68a5213af"
         },
         {
           "path": "docs/delivery/SOURCE_AND_LICENSES.md",
@@ -27,49 +27,49 @@
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "e940d32331f8b1d15c34a3b9c75c24ccbabd15f0f3207f8dfd3a4cc457d283ee"
+          "sha256": "aced90712d3f10e0dad9333fa83dc01dc05222788ecdf03a15eb106fc135a57e"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
-          "sha256": "42bbb159247b0305b8b5b5d3af3c0c29a84433c59b4556b746c86f718d789f84"
+          "sha256": "59a6cbc0343786cb57835c6992a617f543d180669fa02afbadc76b3477458ade"
         },
         {
           "path": "docs/delivery/USER_MANUAL.md",
-          "sha256": "5bfda09f953bf36c97f521469b09cce944d9329a04194b147a8042bbe532b4be"
+          "sha256": "7acd06145330e588298caf3d55ed0b00e0e737d2f08a1f766faeb75a4ff56100"
         }
       ],
       "images": [
         {
-          "path": "docs/delivery/assets/operations/02-current-release/conversation.png",
-          "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc"
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+          "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/sdk.png",
-          "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e"
+          "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+          "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/conversation.png",
-          "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc"
+          "path": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+          "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/source.png",
-          "sha256": "93f7f5519d9e527bd90bb4a84aa137ddc476e6b6ffe31f7b7c318fed2cf46cec"
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+          "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/approval.png",
-          "sha256": "0051eb8b4366a2a7ed029b4034ae4be1424d659caeaa8fefd9f495be9100b4d0"
+          "path": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+          "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/devices.png",
-          "sha256": "0d39ac4f5c48c4faa5fc8157b4d26879a6cdfd0e24cb91eee1dd23f6f7093076"
+          "path": "docs/delivery/assets/operations/03-current-workflows/device-controls.png",
+          "sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/settings.png",
-          "sha256": "51618b4d05e0d5a4f751e2763e48aa8a436c253b0b23ddd1336f5fa071c40eaa"
+          "path": "docs/delivery/assets/operations/03-current-workflows/desktop-shortcut.png",
+          "sha256": "90e7d3f87ebde113f7b5393870c67cbfaa69784140fddab0b62ccc03adaf93db"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/source.png",
-          "sha256": "93f7f5519d9e527bd90bb4a84aa137ddc476e6b6ffe31f7b7c318fed2cf46cec"
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+          "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
         },
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
@@ -88,30 +88,30 @@
           "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
         },
         {
-          "path": "docs/delivery/assets/operations/01-图片记录/16-agent-recall-result.png",
-          "sha256": "66801c6ca8aa30c703ef8e43467393ebafe44723656495003a8b1714c2f2d826"
+          "path": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+          "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/approval.png",
-          "sha256": "0051eb8b4366a2a7ed029b4034ae4be1424d659caeaa8fefd9f495be9100b4d0"
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+          "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/conversation.png",
-          "sha256": "2bb472841118a53110ee9cf3bd54a8cc590b6e8b2b6ae05e76fd56f4892b3dfc"
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-source.png",
+          "sha256": "49b0e5de08863f5b28b11d318548d206d15d58cfcab18a62c22ee83e7b74fa7d"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/sdk.png",
-          "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e"
+          "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+          "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
         },
         {
-          "path": "docs/delivery/assets/operations/02-current-release/sdk.png",
-          "sha256": "cd3fd81552d2bef6441e903a29461a41190cc422e7f5392597b619a381c4120e"
+          "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+          "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
         }
       ],
       "exports": [
         {
           "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/技术方案.doc",
-          "sha256": "25a52fd096d3a1140f449081c05297dd7c1b18a081a8c76d1ab8a04905ae6256"
+          "sha256": "31c9b0af4783556341a263b21ce7db7212ca634e8f336db3645b731858f809d8"
         }
       ]
     }
@@ -119,6 +119,8 @@
   "presentation": {
     "source": "docs/delivery/assets/项目报告.pptx",
     "path": "submission/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/华南理工大学+PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现+秦基赫/项目报告.pptx",
-    "sha256": "fbd88ee0f9de78180102e3c2307d254e5aa4d2b609595dec817bd6666217a271"
+    "sha256": "33fa016b494b9f91287e30d8b2ea5272656dfb1ccd861aefa690774393ccf056",
+    "build_manifest": "docs/delivery/assets/presentation-manifest.json",
+    "build_manifest_sha256": "909913258800b9b7a51435816ceddf393bdcf7d81614160e6a3575be9ae0f44c"
   }
 }

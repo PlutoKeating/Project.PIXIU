@@ -3,3 +3,4 @@
 # Word table widths and embedded assets are normalized with standard-library XML.
 # These tools are not product runtime dependencies.
 Markdown==3.10.3
+python-pptx==1.0.2

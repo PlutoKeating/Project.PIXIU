@@ -16,9 +16,9 @@
 
 
 
-![0.1.12：助手返回会议日期、地点、预算和来源](assets/operations/02-current-release/conversation.png)
+![0.1.12：助手返回活动日期、地点、预算和来源](assets/operations/03-current-workflows/updated-recall.png)
 
-0.1.12：助手返回会议日期、地点、预算和来源。
+0.1.12：助手返回活动日期、地点、预算和来源。
 
 ## 资料与记忆
 
@@ -30,9 +30,9 @@
 
 
 
-![0.1.12：点击回答来源，阅读原始资料及更正记录](assets/operations/02-current-release/source.png)
+![0.1.12：点击回答来源，阅读活动原始资料](assets/operations/03-current-workflows/directory-source.png)
 
-0.1.12：点击回答来源，阅读原始资料及更正记录。
+0.1.12：点击回答来源，阅读活动原始资料。
 
 ## 文件与后台整理
 
@@ -60,9 +60,9 @@ Dreaming 会分批阅读授权资料，检索已有知识并形成整理方案�
 
 
 
-![055b577 候选包：审批界面对照原内容与更正建议](assets/operations/02-current-release/approval.png)
+![0.1.12：审批界面对照原内容与更正建议](assets/operations/03-current-workflows/dreaming-review.png)
 
-055b577 候选包：审批界面对照原内容与更正建议。
+0.1.12：审批界面对照原内容与更正建议。
 
 ## 连接设备
 
@@ -80,7 +80,7 @@ Dreaming 会分批阅读授权资料，检索已有知识并形成整理方案�
 
 
 
-![0.1.12：可信设备列表及添加设备入口](assets/operations/02-current-release/devices.png)
+![0.1.12：可信设备列表及添加设备入口](assets/operations/03-current-workflows/device-controls.png)
 
 0.1.12：可信设备列表及添加设备入口。
 
@@ -97,9 +97,9 @@ Dreaming 会分批阅读授权资料，检索已有知识并形成整理方案�
 
 
 
-![0.1.12：左侧设置分类，统一控制界面动画与快捷键](assets/operations/02-current-release/settings.png)
+![0.1.12：通过设置控制界面动画与全局快捷键](assets/operations/03-current-workflows/desktop-shortcut.png)
 
-0.1.12：左侧设置分类，统一控制界面动画与快捷键。
+0.1.12：通过设置控制界面动画与全局快捷键。
 
 ## 软件更新
 

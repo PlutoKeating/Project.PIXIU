@@ -31,7 +31,7 @@ PIXIU 通过 MemoryProvider 接口为助手提供记忆读写能力。该适配�
 
 
 
-![0.1.12：统一桌面中的记忆查询与来源入口](assets/operations/02-current-release/conversation.png)
+![0.1.12：统一桌面中的记忆查询与来源入口](assets/operations/03-current-workflows/shared-workspace.png)
 
 0.1.12：统一桌面中的记忆查询与来源入口。
 
@@ -174,7 +174,7 @@ pixiu
 
 
 
-![0.1.12：启动后版本一致，记忆服务和系统 SDK 就绪](assets/operations/02-current-release/sdk.png)
+![0.1.12：启动后版本一致，记忆服务和系统 SDK 就绪](assets/operations/03-current-workflows/sdk-version.png)
 
 0.1.12：启动后版本一致，记忆服务和系统 SDK 就绪。
 
@@ -212,9 +212,9 @@ journalctl --user -u pixiu-backend.service -n 50
 
 
 
-![0.1.12：助手返回会议日期、地点、预算和来源](assets/operations/02-current-release/conversation.png)
+![0.1.12：助手返回活动日期、地点、预算和来源](assets/operations/03-current-workflows/updated-recall.png)
 
-0.1.12：助手返回会议日期、地点、预算和来源。
+0.1.12：助手返回活动日期、地点、预算和来源。
 
 ### 资料与记忆
 
@@ -226,9 +226,9 @@ journalctl --user -u pixiu-backend.service -n 50
 
 
 
-![0.1.12：点击回答来源，阅读原始资料及更正记录](assets/operations/02-current-release/source.png)
+![0.1.12：点击回答来源，阅读活动原始资料](assets/operations/03-current-workflows/directory-source.png)
 
-0.1.12：点击回答来源，阅读原始资料及更正记录。
+0.1.12：点击回答来源，阅读活动原始资料。
 
 ### 文件与后台整理
 
@@ -256,9 +256,9 @@ Dreaming 会分批阅读授权资料，检索已有知识并形成整理方案�
 
 
 
-![055b577 候选包：审批界面对照原内容与更正建议](assets/operations/02-current-release/approval.png)
+![0.1.12：审批界面对照原内容与更正建议](assets/operations/03-current-workflows/dreaming-review.png)
 
-055b577 候选包：审批界面对照原内容与更正建议。
+0.1.12：审批界面对照原内容与更正建议。
 
 ### 连接设备
 
@@ -276,7 +276,7 @@ Dreaming 会分批阅读授权资料，检索已有知识并形成整理方案�
 
 
 
-![0.1.12：可信设备列表及添加设备入口](assets/operations/02-current-release/devices.png)
+![0.1.12：可信设备列表及添加设备入口](assets/operations/03-current-workflows/device-controls.png)
 
 0.1.12：可信设备列表及添加设备入口。
 
@@ -293,9 +293,9 @@ Dreaming 会分批阅读授权资料，检索已有知识并形成整理方案�
 
 
 
-![0.1.12：左侧设置分类，统一控制界面动画与快捷键](assets/operations/02-current-release/settings.png)
+![0.1.12：通过设置控制界面动画与全局快捷键](assets/operations/03-current-workflows/desktop-shortcut.png)
 
-0.1.12：左侧设置分类，统一控制界面动画与快捷键。
+0.1.12：通过设置控制界面动画与全局快捷键。
 
 ### 软件更新
 
@@ -338,9 +338,9 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 
 
 
-![0.1.12：记忆保留原始资料及后续更正来源](assets/operations/02-current-release/source.png)
+![0.1.12：记忆保留活动原始资料](assets/operations/03-current-workflows/directory-source.png)
 
-0.1.12：记忆保留原始资料及后续更正来源。
+0.1.12：记忆保留活动原始资料。
 
 ### 保护用户数据
 
@@ -381,27 +381,25 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 
 ### 家庭支出查询
 
-在 0.1.9 的 V11 实测中，用户通过对话保存电费 210 元、水费 68.50 元和燃气费 156 元。助手计算合计 434.50 元，另建会话后找回相同明细，并打开原文核对来源。
+0.1.12 在银河麒麟 V11 上打开新会话，询问九月家庭账单。助手找回电费 210 元、水费 68.50 元和燃气费 156 元，合计 434.50 元，并提供对应记忆的来源入口。
 
-用户可以直接描述月份和支出类别。系统查找相关记录，提供金额与来源，帮助核对日常开销。
+![0.1.12 实拍：新会话找回账单明细与合计](assets/operations/03-current-workflows/bill-recall.png)
 
-![0.1.9 实拍：新会话找回账单，合计 434.50 元](assets/operations/01-图片记录/16-agent-recall-result.png)
+0.1.12 实拍：新会话找回账单明细与合计。演示使用公开合成资料。
 
-0.1.9 实拍：新会话找回账单，合计 434.50 元。
+### 可信设备接着使用同一条记忆
 
-### 自动整理会议资料
+发送端选择家庭共享空间，保存每周六上午九点整理书房、书籍按主题分类、整理后更新借阅登记的约定。接收端在新会话中询问约定，助手找回时间和步骤，并打开来源。
 
-真实模型读取资料后创建记忆。用户提供新的会议日期和地点时，助手提交更正计划；桌面展示前后内容，批准后保存新版本。
+![0.1.12 实拍：另一台设备找回家庭共享约定](assets/operations/03-current-workflows/shared-recall.png)
 
-本次实测保留预算 38760 元，将会议更正为 10 月 24 日、六楼。随后在对话中正确找回日期、地点和预算，点击回答来源打开原文。
+0.1.12 实拍：另一台设备找回家庭共享约定。
 
+![0.1.12 实拍：接收端打开共享记录的来源](assets/operations/03-current-workflows/shared-source.png)
 
+0.1.12 实拍：接收端打开共享记录的来源。两端通过公共接口核对，同一条知识的编号、正文、版本和证据编号一致。
 
-![真实模型提出会议更正，用户在桌面对照审批；055b577 候选包](assets/operations/02-current-release/approval.png)
-
-真实模型提出会议更正，用户在桌面对照审批；055b577 候选包。
-
-### 三设备继续工作
+### 三设备重连后补齐更新
 
 0.1.12 正式包在同一宿主的三台独立 V11 虚拟机上完成验证：
 
@@ -410,12 +408,6 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 3. 恢复同步，约 30.5 秒后三端正文、版本、来源和同步状态一致。
 
 可信设备各自保存副本，用户可以继续使用本机资料，联网后自动接收更新。
-
-
-
-![0.1.12：更正后的会议日期、地点和预算被再次找回](assets/operations/02-current-release/conversation.png)
-
-0.1.12：更正后的会议日期、地点和预算被再次找回。
 
 ### 用户价值
 
@@ -450,7 +442,7 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 
 
 
-![0.1.12：正式安装版的版本与系统 SDK 读取结果](assets/operations/02-current-release/sdk.png)
+![0.1.12：正式安装版的版本与系统 SDK 读取结果](assets/operations/03-current-workflows/sdk-version.png)
 
 0.1.12：正式安装版的版本与系统 SDK 读取结果。
 
@@ -458,8 +450,8 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 
 | 功能 | 验证版本或范围 | 已取得的结果 |
 |---|---|---|
-| 后台整理 | `055b577` 候选包、真实模型与桌面 | 新建记忆、提交更正计划、桌面审批、版本递增及来源回读通过 |
-| 回答来源 | `055b577` 候选包、真实对话 | 正确回答日期、地点和预算；点击来源打开原文 |
+| 后台整理 | 0.1.12、真实模型、授权目录与桌面 | 文件新增自动保存1条记忆；更新通知形成更正方案，批准后新会话回读通过 |
+| 回答来源 | 0.1.12、真实对话 | 正确回答星河观测活动的日期、地点和预算；点击来源打开原文 |
 | 长文档 | `e9f0a27` 候选包、真实模型 | 连续读取三个文本块，首、中、尾事实回答正确 |
 | Excel 文档 | V11 安装版文档接口 | 工作表名、条目、数量和金额完整返回 |
 | 签名保护 | V11 已安装升级程序验证签名校验 | 安装执行以有效签名为前提，保护现有版本和服务 |
@@ -505,7 +497,7 @@ Provider 的 `sync_turn` 接口保存用户与助手的一轮对话，工具结�
 
 
 
-![0.1.12：桌面、后端和两个麒麟 SDK 的实际状态](assets/operations/02-current-release/sdk.png)
+![0.1.12：桌面、后端和两个麒麟 SDK 的实际状态](assets/operations/03-current-workflows/sdk-version.png)
 
 0.1.12：桌面、后端和两个麒麟 SDK 的实际状态。
 

@@ -2,7 +2,7 @@
   "date": "2026-09-10",
   "version": "0.1.12",
   "environment": "银河麒麟 V11 amd64，麒灵系统云模型，公开合成资料",
-  "scenario": "目录授权 → 文件新增 → 后台整理保存1条 → 新会话召回 → 点击来源",
+  "scenario": "目录授权 → 文件新增 → 后台整理保存1条 → 新会话召回 → 点击来源；共享设置、跨端查询及来源、账单回读、当前工作区",
   "images": [
     {
       "file": "directory-recall.png",
@@ -47,6 +47,149 @@
         596
       ],
       "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+    },
+    {
+      "file": "shared-settings.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        300,
+        126,
+        744,
+        310
+      ],
+      "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7"
+    },
+    {
+      "file": "shared-recall.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        410,
+        96,
+        900,
+        596
+      ],
+      "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
+    },
+    {
+      "file": "shared-source.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        330,
+        98,
+        760,
+        640
+      ],
+      "sha256": "49b0e5de08863f5b28b11d318548d206d15d58cfcab18a62c22ee83e7b74fa7d"
+    },
+    {
+      "file": "preference-history.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        287,
+        130,
+        1024,
+        650
+      ],
+      "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
+    },
+    {
+      "file": "device-controls.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        146,
+        396,
+        1044,
+        385
+      ],
+      "sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310"
+    },
+    {
+      "file": "brief.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        287,
+        103,
+        1024,
+        670
+      ],
+      "sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0"
+    },
+    {
+      "file": "workspace.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        120,
+        38,
+        1200,
+        740
+      ],
+      "sha256": "ad17f010018ba291b520ddf04fd5c164ecdcbc519e1cdf425c820b9f276ef78c"
+    },
+    {
+      "file": "bill-recall.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        410,
+        96,
+        900,
+        596
+      ],
+      "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
+    },
+    {
+      "file": "bill-source.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        330,
+        98,
+        760,
+        640
+      ],
+      "sha256": "c01a8e1150bc3bd281e225fc5935aabdee9d42edc0402fbf8bd6c461069a7627"
+    },
+    {
+      "file": "sdk-version.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        302,
+        218,
+        980,
+        198
+      ],
+      "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
+    },
+    {
+      "file": "directory-folder.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        287,
+        273,
+        1024,
+        270
+      ],
+      "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+    },
+    {
+      "file": "shared-workspace.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        120,
+        38,
+        1200,
+        740
+      ],
+      "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
+    },
+    {
+      "file": "desktop-shortcut.png",
+      "capture": "真实桌面区域直接截图",
+      "region": [
+        300,
+        496,
+        744,
+        144
+      ],
+      "sha256": "90e7d3f87ebde113f7b5393870c67cbfaa69784140fddab0b62ccc03adaf93db"
     }
   ]
 }

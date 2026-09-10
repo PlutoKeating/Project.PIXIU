@@ -17,7 +17,7 @@
 
 
 
-![0.1.12：桌面、后端和两个麒麟 SDK 的实际状态](assets/operations/02-current-release/sdk.png)
+![0.1.12：桌面、后端和两个麒麟 SDK 的实际状态](assets/operations/03-current-workflows/sdk-version.png)
 
 0.1.12：桌面、后端和两个麒麟 SDK 的实际状态。
 

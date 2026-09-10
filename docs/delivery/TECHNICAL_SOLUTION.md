@@ -24,7 +24,7 @@ PIXIU 通过 MemoryProvider 接口为助手提供记忆读写能力。该适配�
 
 
 
-![0.1.12：统一桌面中的记忆查询与来源入口](assets/operations/02-current-release/conversation.png)
+![0.1.12：统一桌面中的记忆查询与来源入口](assets/operations/03-current-workflows/shared-workspace.png)
 
 0.1.12：统一桌面中的记忆查询与来源入口。
 
