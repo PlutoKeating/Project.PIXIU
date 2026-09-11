@@ -231,12 +231,12 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 |----------|------------|------------|------|
 | 项目报告 | 1 份，ppt；目录示例 `项目报告.pptx` | `delivery/PRESENTATION_AND_VIDEO.md` | 项目报告源稿按 0.1.12 更新 |
 | 技术方案 | 1 份，word、pdf；目录示例 `技术方案.doc` | `delivery/TECHNICAL_SOLUTION.md` 及同目录测试、用户手册、部署、流转、案例和适配内容 | 八篇源稿已更新，记录功能、操作与实测结果 |
-| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 宣传修订版29镜、约7分30秒：压缩镜尾、重录14段口白、清理画面诊断旁注并增加分步动作；候选03已打包，约49.1 MB；解码、音轨起点、实帧与目录检查记录见 video-production/review/promo-revision-03 |
+| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 演示增强版30镜、499.333秒：原速口白、真实鼠标操作、逐句画面和实际结果已编排，原字幕与首尾沿用指定版本；整片复核记录位于 video-production/review |
 | 源代码 | 1 份，完整源代码及必要技术规范要素 | `delivery/SOURCE_AND_LICENSES.md` 与项目源码 | 按当前源码及四个固定上游生成，逐文件核对 |
 
 提交作品匿名；团队信息只用于平台信息核对与两层目录命名。内部保留版本和审核追踪。
 
-宣传修订候选 03：29 镜、449.813333 秒；MP4 为 49,063,433 字节，ZIP 为 49,063,563 字节。完整解码、29 段旁白起点、283 张抽帧文字、5 帧工作台对照、ZIP 成员和目录检查已记录于视频工程。
+2026-09-11 演示增强版采用30镜、499.333秒时间轴。阶段记忆、设备配对和遗忘包含真实确认操作，图书流程与来源对应；首尾、原字幕与新增原速口白的核对记录见 `submission/video-production/review/directed-frozen-constraints.json`。
 
 ## 5. 作品材料核对与产品验证边界
 

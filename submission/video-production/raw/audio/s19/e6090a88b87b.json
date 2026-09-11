@@ -1,0 +1,214 @@
+{
+  "shot": "s19",
+  "request": {
+    "text": "共享首先需要确认哪些电脑参与协作。在设备页打开配对入口，双方交换配对信息并建立信任。回到设备列表，可以查看已连接的电脑和同步状态，也可以发现附近的设备。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "e6090a88b87bae4db473ad407c1b8883c4309b1b798d1180bb311efc867cdcbb",
+  "audio_sha256": "92dfd8b95f3441b9fd7c110872604ddc3d7a902068c7844d8e2ec4068235ffde",
+  "duration_seconds": 13.896,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3625000,
+      "text": "共享"
+    },
+    {
+      "offset": 4375000,
+      "duration": 3250000,
+      "text": "首先"
+    },
+    {
+      "offset": 7625000,
+      "duration": 2125000,
+      "text": "需要"
+    },
+    {
+      "offset": 9875000,
+      "duration": 3875000,
+      "text": "确认"
+    },
+    {
+      "offset": 14875000,
+      "duration": 3125000,
+      "text": "哪些"
+    },
+    {
+      "offset": 18125000,
+      "duration": 3125000,
+      "text": "电脑"
+    },
+    {
+      "offset": 21500000,
+      "duration": 2625000,
+      "text": "参与"
+    },
+    {
+      "offset": 24250000,
+      "duration": 3500000,
+      "text": "协作"
+    },
+    {
+      "offset": 33500000,
+      "duration": 2250000,
+      "text": "在"
+    },
+    {
+      "offset": 35875000,
+      "duration": 3625000,
+      "text": "设备"
+    },
+    {
+      "offset": 39500000,
+      "duration": 1500000,
+      "text": "页"
+    },
+    {
+      "offset": 41000000,
+      "duration": 3125000,
+      "text": "打开"
+    },
+    {
+      "offset": 44375000,
+      "duration": 2500000,
+      "text": "配对"
+    },
+    {
+      "offset": 47000000,
+      "duration": 3750000,
+      "text": "入口"
+    },
+    {
+      "offset": 53750000,
+      "duration": 4125000,
+      "text": "双方"
+    },
+    {
+      "offset": 57875000,
+      "duration": 3000000,
+      "text": "交换"
+    },
+    {
+      "offset": 61125000,
+      "duration": 2625000,
+      "text": "配对"
+    },
+    {
+      "offset": 63750000,
+      "duration": 4125000,
+      "text": "信息"
+    },
+    {
+      "offset": 68875000,
+      "duration": 1625000,
+      "text": "并"
+    },
+    {
+      "offset": 70625000,
+      "duration": 2000000,
+      "text": "建立"
+    },
+    {
+      "offset": 72750000,
+      "duration": 3625000,
+      "text": "信任"
+    },
+    {
+      "offset": 82125000,
+      "duration": 2875000,
+      "text": "回到"
+    },
+    {
+      "offset": 85250000,
+      "duration": 2250000,
+      "text": "设备"
+    },
+    {
+      "offset": 87500000,
+      "duration": 3500000,
+      "text": "列表"
+    },
+    {
+      "offset": 93750000,
+      "duration": 2125000,
+      "text": "可以"
+    },
+    {
+      "offset": 95875000,
+      "duration": 3750000,
+      "text": "查看"
+    },
+    {
+      "offset": 99875000,
+      "duration": 1000000,
+      "text": "已"
+    },
+    {
+      "offset": 101000000,
+      "duration": 2625000,
+      "text": "连接"
+    },
+    {
+      "offset": 103625000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 104625000,
+      "duration": 3125000,
+      "text": "电脑"
+    },
+    {
+      "offset": 108000000,
+      "duration": 1125000,
+      "text": "和"
+    },
+    {
+      "offset": 109250000,
+      "duration": 2750000,
+      "text": "同步"
+    },
+    {
+      "offset": 112000000,
+      "duration": 3375000,
+      "text": "状态"
+    },
+    {
+      "offset": 117875000,
+      "duration": 1375000,
+      "text": "也"
+    },
+    {
+      "offset": 119250000,
+      "duration": 1750000,
+      "text": "可以"
+    },
+    {
+      "offset": 121000000,
+      "duration": 2875000,
+      "text": "发现"
+    },
+    {
+      "offset": 124125000,
+      "duration": 2375000,
+      "text": "附近"
+    },
+    {
+      "offset": 126500000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 127250000,
+      "duration": 2875000,
+      "text": "设备"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

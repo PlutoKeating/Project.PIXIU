@@ -1,0 +1,239 @@
+{
+  "shot": "s10",
+  "request": {
+    "text": "对于需要明确记住的约定，可以直接手动记录。假设我们要保留一条资料整理事项。打开录入窗口，填写标题和正文，再选择个人或共享范围。点击保存后，立即查询这条记录，核对刚才填写的内容。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "b7695e0be800b3d8488f810fca7a93dab312722a806969642edb33fc7d465454",
+  "audio_sha256": "4821aa04a4f831ad0fab4b46a673798b40a811353a906868c65d1feb5e07ddcb",
+  "duration_seconds": 16.176,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2500000,
+      "text": "对于"
+    },
+    {
+      "offset": 3125000,
+      "duration": 2500000,
+      "text": "需要"
+    },
+    {
+      "offset": 5875000,
+      "duration": 3500000,
+      "text": "明确"
+    },
+    {
+      "offset": 9500000,
+      "duration": 2375000,
+      "text": "记住"
+    },
+    {
+      "offset": 11875000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 12625000,
+      "duration": 3375000,
+      "text": "约定"
+    },
+    {
+      "offset": 18250000,
+      "duration": 2375000,
+      "text": "可以"
+    },
+    {
+      "offset": 20625000,
+      "duration": 2750000,
+      "text": "直接"
+    },
+    {
+      "offset": 23625000,
+      "duration": 3250000,
+      "text": "手动"
+    },
+    {
+      "offset": 27000000,
+      "duration": 2500000,
+      "text": "记录"
+    },
+    {
+      "offset": 35125000,
+      "duration": 4250000,
+      "text": "假设"
+    },
+    {
+      "offset": 39625000,
+      "duration": 1500000,
+      "text": "我们"
+    },
+    {
+      "offset": 41250000,
+      "duration": 1000000,
+      "text": "要"
+    },
+    {
+      "offset": 42500000,
+      "duration": 2250000,
+      "text": "保留"
+    },
+    {
+      "offset": 44875000,
+      "duration": 2750000,
+      "text": "一条"
+    },
+    {
+      "offset": 47875000,
+      "duration": 2625000,
+      "text": "资料"
+    },
+    {
+      "offset": 50500000,
+      "duration": 2500000,
+      "text": "整理"
+    },
+    {
+      "offset": 53125000,
+      "duration": 3750000,
+      "text": "事项"
+    },
+    {
+      "offset": 62625000,
+      "duration": 3875000,
+      "text": "打开"
+    },
+    {
+      "offset": 66750000,
+      "duration": 1875000,
+      "text": "录入"
+    },
+    {
+      "offset": 68750000,
+      "duration": 4375000,
+      "text": "窗口"
+    },
+    {
+      "offset": 76375000,
+      "duration": 3750000,
+      "text": "填写"
+    },
+    {
+      "offset": 80125000,
+      "duration": 3125000,
+      "text": "标题"
+    },
+    {
+      "offset": 83500000,
+      "duration": 750000,
+      "text": "和"
+    },
+    {
+      "offset": 84375000,
+      "duration": 3875000,
+      "text": "正文"
+    },
+    {
+      "offset": 90250000,
+      "duration": 1375000,
+      "text": "再"
+    },
+    {
+      "offset": 91625000,
+      "duration": 3000000,
+      "text": "选择"
+    },
+    {
+      "offset": 94875000,
+      "duration": 3125000,
+      "text": "个人"
+    },
+    {
+      "offset": 98250000,
+      "duration": 1625000,
+      "text": "或"
+    },
+    {
+      "offset": 100000000,
+      "duration": 3125000,
+      "text": "共享"
+    },
+    {
+      "offset": 103250000,
+      "duration": 3000000,
+      "text": "范围"
+    },
+    {
+      "offset": 112000000,
+      "duration": 2875000,
+      "text": "点击"
+    },
+    {
+      "offset": 114875000,
+      "duration": 3250000,
+      "text": "保存"
+    },
+    {
+      "offset": 118125000,
+      "duration": 2375000,
+      "text": "后"
+    },
+    {
+      "offset": 123125000,
+      "duration": 3125000,
+      "text": "立即"
+    },
+    {
+      "offset": 126375000,
+      "duration": 3625000,
+      "text": "查询"
+    },
+    {
+      "offset": 130250000,
+      "duration": 750000,
+      "text": "这"
+    },
+    {
+      "offset": 131000000,
+      "duration": 1250000,
+      "text": "条"
+    },
+    {
+      "offset": 132375000,
+      "duration": 2750000,
+      "text": "记录"
+    },
+    {
+      "offset": 138375000,
+      "duration": 3500000,
+      "text": "核对"
+    },
+    {
+      "offset": 142000000,
+      "duration": 3250000,
+      "text": "刚才"
+    },
+    {
+      "offset": 145500000,
+      "duration": 3250000,
+      "text": "填写"
+    },
+    {
+      "offset": 148750000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 149750000,
+      "duration": 3125000,
+      "text": "内容"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

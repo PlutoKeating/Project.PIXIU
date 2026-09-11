@@ -1,0 +1,284 @@
+{
+  "shot": "s21",
+  "request": {
+    "text": "外出办公时，设备需要在暂时离线的情况下继续工作。假设一台电脑带出办公室，我们用资料移交约定观察这个过程。同步连接暂停期间，各台电脑使用本地记忆并保存修改。恢复连接后，系统交换更新，三台设备取得一致的约定。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "e1a5b1f9ec6d83f44a216483dbe86945565ecf58815dee6447463cfcefd5125c",
+  "audio_sha256": "a50703996de2502996e76452dc467e1e2445ab25315e7c47b081c3d2ed628914",
+  "duration_seconds": 19.224,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2750000,
+      "text": "外出"
+    },
+    {
+      "offset": 3250000,
+      "duration": 3125000,
+      "text": "办公"
+    },
+    {
+      "offset": 6375000,
+      "duration": 2500000,
+      "text": "时"
+    },
+    {
+      "offset": 11750000,
+      "duration": 3000000,
+      "text": "设备"
+    },
+    {
+      "offset": 14875000,
+      "duration": 2250000,
+      "text": "需要"
+    },
+    {
+      "offset": 17125000,
+      "duration": 1250000,
+      "text": "在"
+    },
+    {
+      "offset": 18625000,
+      "duration": 3250000,
+      "text": "暂时"
+    },
+    {
+      "offset": 21875000,
+      "duration": 3000000,
+      "text": "离线"
+    },
+    {
+      "offset": 24875000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 25750000,
+      "duration": 3000000,
+      "text": "情况"
+    },
+    {
+      "offset": 28750000,
+      "duration": 2375000,
+      "text": "下"
+    },
+    {
+      "offset": 32250000,
+      "duration": 3125000,
+      "text": "继续"
+    },
+    {
+      "offset": 35375000,
+      "duration": 3250000,
+      "text": "工作"
+    },
+    {
+      "offset": 44250000,
+      "duration": 3750000,
+      "text": "假设"
+    },
+    {
+      "offset": 48250000,
+      "duration": 750000,
+      "text": "一"
+    },
+    {
+      "offset": 49000000,
+      "duration": 1250000,
+      "text": "台"
+    },
+    {
+      "offset": 50375000,
+      "duration": 4000000,
+      "text": "电脑"
+    },
+    {
+      "offset": 54625000,
+      "duration": 1375000,
+      "text": "带"
+    },
+    {
+      "offset": 56000000,
+      "duration": 875000,
+      "text": "出"
+    },
+    {
+      "offset": 57000000,
+      "duration": 4750000,
+      "text": "办公室"
+    },
+    {
+      "offset": 65125000,
+      "duration": 1625000,
+      "text": "我们"
+    },
+    {
+      "offset": 66875000,
+      "duration": 1375000,
+      "text": "用"
+    },
+    {
+      "offset": 68375000,
+      "duration": 2750000,
+      "text": "资料"
+    },
+    {
+      "offset": 71375000,
+      "duration": 1875000,
+      "text": "移交"
+    },
+    {
+      "offset": 73375000,
+      "duration": 3500000,
+      "text": "约定"
+    },
+    {
+      "offset": 77750000,
+      "duration": 3500000,
+      "text": "观察"
+    },
+    {
+      "offset": 81375000,
+      "duration": 1625000,
+      "text": "这个"
+    },
+    {
+      "offset": 83125000,
+      "duration": 3125000,
+      "text": "过程"
+    },
+    {
+      "offset": 92000000,
+      "duration": 2625000,
+      "text": "同步"
+    },
+    {
+      "offset": 94625000,
+      "duration": 2750000,
+      "text": "连接"
+    },
+    {
+      "offset": 97625000,
+      "duration": 2500000,
+      "text": "暂停"
+    },
+    {
+      "offset": 100250000,
+      "duration": 3750000,
+      "text": "期间"
+    },
+    {
+      "offset": 107250000,
+      "duration": 1500000,
+      "text": "各"
+    },
+    {
+      "offset": 108750000,
+      "duration": 1500000,
+      "text": "台"
+    },
+    {
+      "offset": 110250000,
+      "duration": 3250000,
+      "text": "电脑"
+    },
+    {
+      "offset": 113750000,
+      "duration": 2750000,
+      "text": "使用"
+    },
+    {
+      "offset": 116750000,
+      "duration": 3500000,
+      "text": "本地"
+    },
+    {
+      "offset": 120375000,
+      "duration": 3625000,
+      "text": "记忆"
+    },
+    {
+      "offset": 124875000,
+      "duration": 1625000,
+      "text": "并"
+    },
+    {
+      "offset": 126625000,
+      "duration": 3125000,
+      "text": "保存"
+    },
+    {
+      "offset": 129750000,
+      "duration": 3875000,
+      "text": "修改"
+    },
+    {
+      "offset": 139250000,
+      "duration": 3250000,
+      "text": "恢复"
+    },
+    {
+      "offset": 142625000,
+      "duration": 2625000,
+      "text": "连接"
+    },
+    {
+      "offset": 145250000,
+      "duration": 2375000,
+      "text": "后"
+    },
+    {
+      "offset": 150125000,
+      "duration": 3750000,
+      "text": "系统"
+    },
+    {
+      "offset": 154125000,
+      "duration": 2750000,
+      "text": "交换"
+    },
+    {
+      "offset": 157000000,
+      "duration": 4000000,
+      "text": "更新"
+    },
+    {
+      "offset": 163500000,
+      "duration": 3625000,
+      "text": "三台"
+    },
+    {
+      "offset": 167250000,
+      "duration": 4250000,
+      "text": "设备"
+    },
+    {
+      "offset": 172625000,
+      "duration": 3125000,
+      "text": "取得"
+    },
+    {
+      "offset": 176000000,
+      "duration": 3000000,
+      "text": "一致"
+    },
+    {
+      "offset": 179000000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 180000000,
+      "duration": 3375000,
+      "text": "约定"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "cursor-flyover",
+  "summary": "整页俯瞰淡入后，相机依次飞到四个角落 zoom-in 特写，SVG 光标同步跟到位指点并留下点击涟漪",
+  "use": "单页产品的功能巡览：一镜带观众看完四个功能区，光标当\"导游手指\"",
+  "duration": "约 6.0s（180f@30fps；俯瞰 0–1.2s · 四步各 0.7s 过渡 + 0.5s 停留）",
+  "energy": "中（匀速巡航，节奏靠点击涟漪打点）",
+  "intention": "替代\"四个功能四段剪辑\"的省镜方案：一个连续相机把四个角串成一条参观动线，光标是观众的注意力代理——它到哪、点哪，观众就看哪。空间连续让功能之间的位置关系也被顺带记住。",
+  "source": "references/shots/camera/cursor-flyover.md",
+  "updatedAt": "2026-08-07T04:03:34.000Z",
+  "styles": [
+    {
+      "key": "cursor-flyover",
+      "label": "cursor-flyover",
+      "description": "整页俯瞰淡入后，相机依次飞到四个角落 zoom-in 特写，SVG 光标同步跟到位指点并留下点击涟漪",
+      "media": {
+        "url": "./media/cursor-flyover.mp4?v=1785600000000",
+        "type": "mp4"
+      }
+    }
+  ],
+  "sourceUrl": "./source/cursor-flyover.md",
+  "category": "camera",
+  "tags": [
+    "camera"
+  ],
+  "addedAt": "2026-08-07T04:03:34.000Z"
+}

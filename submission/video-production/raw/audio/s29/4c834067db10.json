@@ -1,0 +1,179 @@
+{
+  "shot": "s29",
+  "request": {
+    "text": "从一次任务，到一份资料，再到多台电脑协作，貔貅让知识持续积累，让回答带着来源，让日常经验在可信设备之间接续使用。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "4c834067db102ed35fb9e48adff970d660a0e6bd53c31993f1ca7ef7c9e993bd",
+  "audio_sha256": "9b3fadd1c6241020215fbe20db57acab86efa65c500a8e5167c5a34699079803",
+  "duration_seconds": 9.792,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 1750000,
+      "text": "从"
+    },
+    {
+      "offset": 2375000,
+      "duration": 2125000,
+      "text": "一次"
+    },
+    {
+      "offset": 4625000,
+      "duration": 3000000,
+      "text": "任务"
+    },
+    {
+      "offset": 9500000,
+      "duration": 1125000,
+      "text": "到"
+    },
+    {
+      "offset": 10625000,
+      "duration": 750000,
+      "text": "一"
+    },
+    {
+      "offset": 11375000,
+      "duration": 1250000,
+      "text": "份"
+    },
+    {
+      "offset": 12750000,
+      "duration": 2750000,
+      "text": "资料"
+    },
+    {
+      "offset": 17875000,
+      "duration": 1250000,
+      "text": "再"
+    },
+    {
+      "offset": 19125000,
+      "duration": 1125000,
+      "text": "到"
+    },
+    {
+      "offset": 20500000,
+      "duration": 1375000,
+      "text": "多"
+    },
+    {
+      "offset": 21875000,
+      "duration": 1250000,
+      "text": "台"
+    },
+    {
+      "offset": 23250000,
+      "duration": 2500000,
+      "text": "电脑"
+    },
+    {
+      "offset": 25875000,
+      "duration": 3500000,
+      "text": "协作"
+    },
+    {
+      "offset": 32875000,
+      "duration": 3500000,
+      "text": "貔貅"
+    },
+    {
+      "offset": 36500000,
+      "duration": 1250000,
+      "text": "让"
+    },
+    {
+      "offset": 37875000,
+      "duration": 2625000,
+      "text": "知识"
+    },
+    {
+      "offset": 40750000,
+      "duration": 3625000,
+      "text": "持续"
+    },
+    {
+      "offset": 44500000,
+      "duration": 3500000,
+      "text": "积累"
+    },
+    {
+      "offset": 50250000,
+      "duration": 1375000,
+      "text": "让"
+    },
+    {
+      "offset": 51750000,
+      "duration": 2750000,
+      "text": "回答"
+    },
+    {
+      "offset": 54750000,
+      "duration": 1250000,
+      "text": "带"
+    },
+    {
+      "offset": 56000000,
+      "duration": 875000,
+      "text": "着"
+    },
+    {
+      "offset": 57000000,
+      "duration": 4000000,
+      "text": "来源"
+    },
+    {
+      "offset": 63125000,
+      "duration": 1375000,
+      "text": "让"
+    },
+    {
+      "offset": 64625000,
+      "duration": 2875000,
+      "text": "日常"
+    },
+    {
+      "offset": 67625000,
+      "duration": 3250000,
+      "text": "经验"
+    },
+    {
+      "offset": 72000000,
+      "duration": 1250000,
+      "text": "在"
+    },
+    {
+      "offset": 73375000,
+      "duration": 3125000,
+      "text": "可信"
+    },
+    {
+      "offset": 76625000,
+      "duration": 2500000,
+      "text": "设备"
+    },
+    {
+      "offset": 79250000,
+      "duration": 3125000,
+      "text": "之间"
+    },
+    {
+      "offset": 82625000,
+      "duration": 3000000,
+      "text": "接续"
+    },
+    {
+      "offset": 85750000,
+      "duration": 3250000,
+      "text": "使用"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

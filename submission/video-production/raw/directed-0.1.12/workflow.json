@@ -1,0 +1,61 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "timing_basis": "FFmpeg first progress packet, aligned to output timestamp",
+  "size": [
+    1440,
+    900
+  ],
+  "redact_rectangles": [],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 1,
+      "to": [
+        390,
+        432
+      ],
+      "click": true,
+      "label": "打开图书归还流程来源",
+      "actual_start": 1.000211379956454,
+      "actual_click": 1.9204630060121417,
+      "actual_end": 2.01486300106626
+    },
+    {
+      "at": 4,
+      "to": [
+        850,
+        302
+      ],
+      "label": "核对书名",
+      "actual_start": 4.000206058030017,
+      "actual_click": null,
+      "actual_end": 4.800293519045226
+    },
+    {
+      "at": 8,
+      "to": [
+        850,
+        350
+      ],
+      "label": "整理归还图书",
+      "actual_start": 8.000184215954505,
+      "actual_click": null,
+      "actual_end": 8.800399685045704
+    },
+    {
+      "at": 11,
+      "to": [
+        850,
+        400
+      ],
+      "label": "更新借阅登记",
+      "actual_start": 11.000221366994083,
+      "actual_click": null,
+      "actual_end": 11.800374660990201
+    }
+  ],
+  "sha256": "dbcbf978ffa57222d55a1de66b4fbc9fe8d2aff00cd3a60e73fba542265498d1"
+}

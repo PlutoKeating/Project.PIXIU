@@ -1,0 +1,204 @@
+{
+  "shot": "s08",
+  "request": {
+    "text": "核对开销时，答案和原始依据同样重要。这里的合计是四百三十四元五角。沿着回答里的来源链接打开账单，再逐项查看金额，就能完成一次有据可查的复核。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "24b3e8c54b60b8301fdd5d5c114f8f79a1851b972035c07692043e2d4124991f",
+  "audio_sha256": "bdef9bd0552c10852fcb3db98fa6296543d25f3cd06eb6d3b1a0780912433f79",
+  "duration_seconds": 13.344,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3250000,
+      "text": "核对"
+    },
+    {
+      "offset": 3875000,
+      "duration": 3500000,
+      "text": "开销"
+    },
+    {
+      "offset": 7375000,
+      "duration": 2875000,
+      "text": "时"
+    },
+    {
+      "offset": 12250000,
+      "duration": 2625000,
+      "text": "答案"
+    },
+    {
+      "offset": 15125000,
+      "duration": 875000,
+      "text": "和"
+    },
+    {
+      "offset": 16125000,
+      "duration": 3000000,
+      "text": "原始"
+    },
+    {
+      "offset": 19125000,
+      "duration": 3500000,
+      "text": "依据"
+    },
+    {
+      "offset": 23625000,
+      "duration": 3625000,
+      "text": "同样"
+    },
+    {
+      "offset": 27250000,
+      "duration": 3250000,
+      "text": "重要"
+    },
+    {
+      "offset": 36125000,
+      "duration": 2625000,
+      "text": "这里"
+    },
+    {
+      "offset": 38750000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 39750000,
+      "duration": 3250000,
+      "text": "合计"
+    },
+    {
+      "offset": 43000000,
+      "duration": 2875000,
+      "text": "是"
+    },
+    {
+      "offset": 47000000,
+      "duration": 9625000,
+      "text": "四百三十四元"
+    },
+    {
+      "offset": 56750000,
+      "duration": 3875000,
+      "text": "五角"
+    },
+    {
+      "offset": 66375000,
+      "duration": 2625000,
+      "text": "沿着"
+    },
+    {
+      "offset": 69250000,
+      "duration": 2750000,
+      "text": "回答"
+    },
+    {
+      "offset": 72000000,
+      "duration": 875000,
+      "text": "里"
+    },
+    {
+      "offset": 72875000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 74000000,
+      "duration": 2250000,
+      "text": "来源"
+    },
+    {
+      "offset": 76375000,
+      "duration": 4000000,
+      "text": "链接"
+    },
+    {
+      "offset": 81250000,
+      "duration": 2500000,
+      "text": "打开"
+    },
+    {
+      "offset": 83875000,
+      "duration": 4000000,
+      "text": "账单"
+    },
+    {
+      "offset": 90125000,
+      "duration": 1625000,
+      "text": "再"
+    },
+    {
+      "offset": 91750000,
+      "duration": 3125000,
+      "text": "逐项"
+    },
+    {
+      "offset": 95000000,
+      "duration": 2750000,
+      "text": "查看"
+    },
+    {
+      "offset": 97875000,
+      "duration": 3625000,
+      "text": "金额"
+    },
+    {
+      "offset": 104000000,
+      "duration": 1375000,
+      "text": "就"
+    },
+    {
+      "offset": 105375000,
+      "duration": 750000,
+      "text": "能"
+    },
+    {
+      "offset": 106250000,
+      "duration": 2625000,
+      "text": "完成"
+    },
+    {
+      "offset": 109000000,
+      "duration": 3750000,
+      "text": "一次"
+    },
+    {
+      "offset": 113750000,
+      "duration": 1625000,
+      "text": "有"
+    },
+    {
+      "offset": 115375000,
+      "duration": 1250000,
+      "text": "据"
+    },
+    {
+      "offset": 116750000,
+      "duration": 1750000,
+      "text": "可"
+    },
+    {
+      "offset": 118500000,
+      "duration": 1625000,
+      "text": "查"
+    },
+    {
+      "offset": 120125000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 120875000,
+      "duration": 3625000,
+      "text": "复核"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

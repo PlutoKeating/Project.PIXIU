@@ -1,0 +1,71 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "size": [
+    1440,
+    900
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 2,
+      "to": [
+        321,
+        66
+      ],
+      "click": true,
+      "label": "进入会话",
+      "actual_start": 2.000082848011516,
+      "actual_click": 2.92033225891646,
+      "actual_end": 3.0160785019397736
+    },
+    {
+      "at": 5,
+      "to": [
+        250,
+        400
+      ],
+      "click": true,
+      "label": "打开账单会话",
+      "actual_start": 5.000248339027166,
+      "actual_click": 5.92039537592791,
+      "actual_end": 6.015512364916503
+    },
+    {
+      "at": 9,
+      "to": [
+        800,
+        400
+      ],
+      "label": "核对账单金额",
+      "actual_start": 9.000223646988161,
+      "actual_click": null,
+      "actual_end": 9.800296703004278
+    },
+    {
+      "at": 14,
+      "to": [
+        940,
+        475
+      ],
+      "label": "核对总额",
+      "actual_start": 14.000080658937804,
+      "actual_click": null,
+      "actual_end": 14.80016053491272
+    },
+    {
+      "at": 19,
+      "to": [
+        800,
+        580
+      ],
+      "label": "查阅来源入口",
+      "actual_start": 19.000263485941105,
+      "actual_click": null,
+      "actual_end": 19.80043325596489
+    }
+  ],
+  "sha256": "0aa50bfccf1e67e922fbd8ba64515590ac095f9799ac6240b080eb8acd723e49"
+}

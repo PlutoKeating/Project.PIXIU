@@ -26,7 +26,8 @@ for shot, original in zip(timeline['shots'], story['shots']):
     source = ROOT / shot['audio_source']
     meta = json.loads(source.with_suffix('.json').read_text())
     assert meta['request']['text'] == shot['narration']
-    assert all(meta['request'].get(k) == v for k,v in settings.items())
+    effective_settings = {**settings, **original.get('narration_settings', {})}
+    assert all(meta['request'].get(k) == v for k,v in effective_settings.items())
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     assert digest == meta['audio_sha256']
     assert (ROOT/'public'/shot['audio']).read_bytes() == source.read_bytes()

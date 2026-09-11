@@ -1,0 +1,301 @@
+{
+  "reference_commit": "49e463c",
+  "identical_files": [
+    "src/SceneOutro.tsx",
+    "src/brandCopy.ts",
+    "src/NarratedChapter.tsx",
+    "public/current/outro-capture.png",
+    "public/current/outro-task.png",
+    "public/current/outro-insight.png",
+    "public/current/outro-nav.png",
+    "public/current/outro-approval.png",
+    "public/current/outro-devices.png",
+    "public/current/outro-shared.png",
+    "public/current/outro-memory.png",
+    "public/current/outro-preference.png"
+  ],
+  "shots": [
+    {
+      "shot": "s01",
+      "rate": "-5%",
+      "audio_sha256": "7bdba724402716ee5231a757c290cb8e0d62191c555cd1d36c695f330056eb88",
+      "duration_frames": 257,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s02",
+      "rate": "0%",
+      "audio_sha256": "8d690a008d561619f481e848af9f2fb7495dd4e8df84307de19c9a7b81cfba5d",
+      "duration_frames": 438,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s03",
+      "rate": "0%",
+      "audio_sha256": "071bf11c24d6cdbae94d7aa4e6d6bb44b3860a65086a203b50156d2093d3a350",
+      "duration_frames": 422,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s04",
+      "rate": "0%",
+      "audio_sha256": "b7d5378674fb42f273d9aed36853d12933b62ec64bfdd47bcdd60ea28c667b5c",
+      "duration_frames": 454,
+      "visual_anchors": [
+        0,
+        140,
+        195,
+        242,
+        293
+      ]
+    },
+    {
+      "shot": "s06",
+      "rate": "0%",
+      "audio_sha256": "d5a1cdd568d872019e7744f70fe261a304d3b6527928f066011319ba7402c970",
+      "duration_frames": 632,
+      "visual_anchors": [
+        0,
+        494
+      ]
+    },
+    {
+      "shot": "s11",
+      "rate": "0%",
+      "audio_sha256": "85e32f8ce95a50985de8000e7e39e5cb7ef36beda2de703c040953f0df477e5b",
+      "duration_frames": 802,
+      "visual_anchors": [
+        0,
+        474,
+        574,
+        733
+      ]
+    },
+    {
+      "shot": "s11b",
+      "rate": "0%",
+      "audio_sha256": "b04380d8e4434d135c222e0c6361d7ad65affcb685f331d69e93214274d0fd02",
+      "duration_frames": 779,
+      "visual_anchors": [
+        0,
+        512,
+        559
+      ]
+    },
+    {
+      "shot": "s07",
+      "rate": "0%",
+      "audio_sha256": "da005a5d4a89f05a51ccd26e621d9d192c81780ae967d3b3d7319a8cd962323e",
+      "duration_frames": 481,
+      "visual_anchors": [
+        0,
+        297,
+        366
+      ]
+    },
+    {
+      "shot": "s08",
+      "rate": "0%",
+      "audio_sha256": "bdef9bd0552c10852fcb3db98fa6296543d25f3cd06eb6d3b1a0780912433f79",
+      "duration_frames": 400,
+      "visual_anchors": [
+        0,
+        214,
+        285
+      ]
+    },
+    {
+      "shot": "s09",
+      "rate": "0%",
+      "audio_sha256": "581ccfc79f9eccc789f8c3e02ac1a2e1ffeec1f200953b1c4485291d48735d75",
+      "duration_frames": 399,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s10",
+      "rate": "0%",
+      "audio_sha256": "4821aa04a4f831ad0fab4b46a673798b40a811353a906868c65d1feb5e07ddcb",
+      "duration_frames": 485,
+      "visual_anchors": [
+        0,
+        384
+      ]
+    },
+    {
+      "shot": "s12",
+      "rate": "0%",
+      "audio_sha256": "08a618379ecc3d0414b1a6b2845946fa15917db4a8e8136535483cc9038c7cee",
+      "duration_frames": 521,
+      "visual_anchors": [
+        0,
+        286,
+        448
+      ]
+    },
+    {
+      "shot": "s15",
+      "rate": "0%",
+      "audio_sha256": "4df2cb2987878c3b3089c4da9f8494b09e402f7e5d0572d80bbd5e7d866eb16e",
+      "duration_frames": 567,
+      "visual_anchors": [
+        0
+      ]
+    },
+    {
+      "shot": "s14",
+      "rate": "0%",
+      "audio_sha256": "bd7cbf88d2229e8971bec55bd5ec5228d1b52d88c1355942e0a8caa2538e83a1",
+      "duration_frames": 618,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s16",
+      "rate": "0%",
+      "audio_sha256": "ebf4b15d42a334928e560b13cf786bc1f518f97b76775b573fa941899bd070c0",
+      "duration_frames": 578,
+      "visual_anchors": [
+        0,
+        288,
+        364
+      ]
+    },
+    {
+      "shot": "s17",
+      "rate": "0%",
+      "audio_sha256": "2fca39c63c6385b1456c2cf8af20b8cf86e710e7c3b727a28420a02f11644062",
+      "duration_frames": 482,
+      "visual_anchors": [
+        0,
+        375,
+        415
+      ]
+    },
+    {
+      "shot": "s18",
+      "rate": "0%",
+      "audio_sha256": "069620046a145ac602cb1a7fea787b7924036924729808b8ef720c29801351f7",
+      "duration_frames": 258,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s19",
+      "rate": "0%",
+      "audio_sha256": "92dfd8b95f3441b9fd7c110872604ddc3d7a902068c7844d8e2ec4068235ffde",
+      "duration_frames": 417,
+      "visual_anchors": [
+        0,
+        115,
+        176,
+        261
+      ]
+    },
+    {
+      "shot": "s20",
+      "rate": "0%",
+      "audio_sha256": "0fe23705d698e3f7dc6f2a4e6857b8b4655b2f42b6aaf0d1aa86304f45e54fb0",
+      "duration_frames": 606,
+      "visual_anchors": [
+        0,
+        405,
+        525
+      ]
+    },
+    {
+      "shot": "s21",
+      "rate": "0%",
+      "audio_sha256": "a50703996de2502996e76452dc467e1e2445ab25315e7c47b081c3d2ed628914",
+      "duration_frames": 577,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s22",
+      "rate": "0%",
+      "audio_sha256": "e903395e819066f50cd49db42243ba5965c8d705318859993d09ce97a2a7c9d3",
+      "duration_frames": 518,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s23",
+      "rate": "0%",
+      "audio_sha256": "fafb1c2db18ca796536585fc5669d95761da323eda43f7298402b0951f6088f4",
+      "duration_frames": 537,
+      "visual_anchors": [
+        0,
+        381
+      ]
+    },
+    {
+      "shot": "s24",
+      "rate": "0%",
+      "audio_sha256": "4228b7162a05b2193b3e7235e9ea8166560d6e74d04894b54024bcb0c1856f8d",
+      "duration_frames": 580,
+      "visual_anchors": [
+        0,
+        286,
+        325
+      ]
+    },
+    {
+      "shot": "s05",
+      "rate": "0%",
+      "audio_sha256": "f802e1c8b1f2c6f0f41cb7e14f6a30b38c1102b73680870d54bdbb38e4a715ff",
+      "duration_frames": 552,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s13",
+      "rate": "0%",
+      "audio_sha256": "f1f32085a97947ae31c5308bbad86c809ca4fcf545a0e078ee0678e03a9c843a",
+      "duration_frames": 505,
+      "visual_anchors": [
+        0,
+        418
+      ]
+    },
+    {
+      "shot": "s27",
+      "rate": "0%",
+      "audio_sha256": "fa5cb0878e646ec57fa33b59327548e9207b821110de226c7d4af9461598593d",
+      "duration_frames": 501,
+      "visual_anchors": [
+        0,
+        222,
+        294
+      ]
+    },
+    {
+      "shot": "s28",
+      "rate": "0%",
+      "audio_sha256": "b59185992b46c386730fb78ba0f39e2bad7a21d0b1422d981abcef04dd86316f",
+      "duration_frames": 627,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s26",
+      "rate": "0%",
+      "audio_sha256": "087829a1f0d570fec81b374cbc5c9a4bf53c750605987e4216e9d528c33abcb1",
+      "duration_frames": 437,
+      "visual_anchors": [
+        0,
+        220
+      ]
+    },
+    {
+      "shot": "s29",
+      "rate": "0%",
+      "audio_sha256": "9b3fadd1c6241020215fbe20db57acab86efa65c500a8e5167c5a34699079803",
+      "duration_frames": 293,
+      "visual_anchors": []
+    },
+    {
+      "shot": "s30",
+      "rate": "-5%",
+      "audio_sha256": "7bdba724402716ee5231a757c290cb8e0d62191c555cd1d36c695f330056eb88",
+      "duration_frames": 257,
+      "visual_anchors": []
+    }
+  ],
+  "caption_text_matches_narration": true,
+  "cover_sha256": "23d25cde84b988335e3a4c7d0c43e71e067d6ac483bcb09f2362da9057454df7",
+  "result": "passed"
+}

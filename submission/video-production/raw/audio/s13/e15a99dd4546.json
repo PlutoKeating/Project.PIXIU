@@ -1,0 +1,249 @@
+{
+  "shot": "s13",
+  "request": {
+    "text": "查资料时，往往只记得内容中的几个词。貔貅结合关键词、意思相近的表达和关联信息查找知识。回到刚才的观测活动，输入望远镜和器材预算，就能找到活动资料。打开来源，继续阅读安排和准备步骤。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "e15a99dd4546d8c7a60a86aa82ea4e1215c29e326f68e34b02fc1201f1cce71f",
+  "audio_sha256": "f1f32085a97947ae31c5308bbad86c809ca4fcf545a0e078ee0678e03a9c843a",
+  "duration_seconds": 16.8,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2750000,
+      "text": "查"
+    },
+    {
+      "offset": 3250000,
+      "duration": 2625000,
+      "text": "资料"
+    },
+    {
+      "offset": 5875000,
+      "duration": 3125000,
+      "text": "时"
+    },
+    {
+      "offset": 12375000,
+      "duration": 3250000,
+      "text": "往往"
+    },
+    {
+      "offset": 15750000,
+      "duration": 1500000,
+      "text": "只"
+    },
+    {
+      "offset": 17250000,
+      "duration": 2125000,
+      "text": "记得"
+    },
+    {
+      "offset": 19625000,
+      "duration": 2500000,
+      "text": "内容"
+    },
+    {
+      "offset": 22125000,
+      "duration": 1125000,
+      "text": "中"
+    },
+    {
+      "offset": 23250000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 24375000,
+      "duration": 2125000,
+      "text": "几个"
+    },
+    {
+      "offset": 26500000,
+      "duration": 3375000,
+      "text": "词"
+    },
+    {
+      "offset": 35500000,
+      "duration": 3500000,
+      "text": "貔貅"
+    },
+    {
+      "offset": 39125000,
+      "duration": 2875000,
+      "text": "结合"
+    },
+    {
+      "offset": 42250000,
+      "duration": 5625000,
+      "text": "关键词"
+    },
+    {
+      "offset": 50750000,
+      "duration": 2500000,
+      "text": "意思"
+    },
+    {
+      "offset": 53375000,
+      "duration": 3000000,
+      "text": "相近"
+    },
+    {
+      "offset": 56375000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 57375000,
+      "duration": 4000000,
+      "text": "表达"
+    },
+    {
+      "offset": 62500000,
+      "duration": 1750000,
+      "text": "和"
+    },
+    {
+      "offset": 64375000,
+      "duration": 2375000,
+      "text": "关联"
+    },
+    {
+      "offset": 66750000,
+      "duration": 4125000,
+      "text": "信息"
+    },
+    {
+      "offset": 72000000,
+      "duration": 3625000,
+      "text": "查找"
+    },
+    {
+      "offset": 75750000,
+      "duration": 3750000,
+      "text": "知识"
+    },
+    {
+      "offset": 85250000,
+      "duration": 3250000,
+      "text": "回到"
+    },
+    {
+      "offset": 88750000,
+      "duration": 2875000,
+      "text": "刚才"
+    },
+    {
+      "offset": 91625000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 92750000,
+      "duration": 2750000,
+      "text": "观测"
+    },
+    {
+      "offset": 95500000,
+      "duration": 2875000,
+      "text": "活动"
+    },
+    {
+      "offset": 100750000,
+      "duration": 2750000,
+      "text": "输入"
+    },
+    {
+      "offset": 103625000,
+      "duration": 5250000,
+      "text": "望远镜"
+    },
+    {
+      "offset": 109125000,
+      "duration": 1125000,
+      "text": "和"
+    },
+    {
+      "offset": 110375000,
+      "duration": 3000000,
+      "text": "器材"
+    },
+    {
+      "offset": 113500000,
+      "duration": 2875000,
+      "text": "预算"
+    },
+    {
+      "offset": 118250000,
+      "duration": 1375000,
+      "text": "就"
+    },
+    {
+      "offset": 119625000,
+      "duration": 1000000,
+      "text": "能"
+    },
+    {
+      "offset": 120625000,
+      "duration": 2125000,
+      "text": "找到"
+    },
+    {
+      "offset": 123000000,
+      "duration": 2500000,
+      "text": "活动"
+    },
+    {
+      "offset": 125500000,
+      "duration": 3375000,
+      "text": "资料"
+    },
+    {
+      "offset": 134500000,
+      "duration": 2500000,
+      "text": "打开"
+    },
+    {
+      "offset": 137125000,
+      "duration": 3625000,
+      "text": "来源"
+    },
+    {
+      "offset": 143000000,
+      "duration": 3625000,
+      "text": "继续"
+    },
+    {
+      "offset": 146625000,
+      "duration": 2875000,
+      "text": "阅读"
+    },
+    {
+      "offset": 149625000,
+      "duration": 3250000,
+      "text": "安排"
+    },
+    {
+      "offset": 153125000,
+      "duration": 875000,
+      "text": "和"
+    },
+    {
+      "offset": 154125000,
+      "duration": 2125000,
+      "text": "准备"
+    },
+    {
+      "offset": 156250000,
+      "duration": 3250000,
+      "text": "步骤"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

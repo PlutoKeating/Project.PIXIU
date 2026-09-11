@@ -1,0 +1,194 @@
+{
+  "shot": "s09",
+  "request": {
+    "text": "有用的信息还来自日常对话、工具执行结果、应用使用记录和手动录入。貔貅统一整理这些内容，检查格式、质量和敏感信息，保存来源，再形成可以检索的知识。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "2e8727f5c13a1d1aae234def6714c29f24fb94c42011a291507bf1e723315589",
+  "audio_sha256": "581ccfc79f9eccc789f8c3e02ac1a2e1ffeec1f200953b1c4485291d48735d75",
+  "duration_seconds": 13.296,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2875000,
+      "text": "有用"
+    },
+    {
+      "offset": 3375000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 4375000,
+      "duration": 4125000,
+      "text": "信息"
+    },
+    {
+      "offset": 9500000,
+      "duration": 1250000,
+      "text": "还"
+    },
+    {
+      "offset": 10875000,
+      "duration": 2000000,
+      "text": "来自"
+    },
+    {
+      "offset": 13125000,
+      "duration": 2625000,
+      "text": "日常"
+    },
+    {
+      "offset": 15875000,
+      "duration": 3250000,
+      "text": "对话"
+    },
+    {
+      "offset": 21875000,
+      "duration": 2750000,
+      "text": "工具"
+    },
+    {
+      "offset": 24750000,
+      "duration": 2750000,
+      "text": "执行"
+    },
+    {
+      "offset": 27500000,
+      "duration": 3750000,
+      "text": "结果"
+    },
+    {
+      "offset": 33125000,
+      "duration": 2750000,
+      "text": "应用"
+    },
+    {
+      "offset": 36000000,
+      "duration": 2750000,
+      "text": "使用"
+    },
+    {
+      "offset": 38750000,
+      "duration": 3000000,
+      "text": "记录"
+    },
+    {
+      "offset": 42875000,
+      "duration": 1500000,
+      "text": "和"
+    },
+    {
+      "offset": 44500000,
+      "duration": 3750000,
+      "text": "手动"
+    },
+    {
+      "offset": 48375000,
+      "duration": 2250000,
+      "text": "录入"
+    },
+    {
+      "offset": 56250000,
+      "duration": 3875000,
+      "text": "貔貅"
+    },
+    {
+      "offset": 60375000,
+      "duration": 3250000,
+      "text": "统一"
+    },
+    {
+      "offset": 63750000,
+      "duration": 2500000,
+      "text": "整理"
+    },
+    {
+      "offset": 66500000,
+      "duration": 1875000,
+      "text": "这些"
+    },
+    {
+      "offset": 68500000,
+      "duration": 3500000,
+      "text": "内容"
+    },
+    {
+      "offset": 73625000,
+      "duration": 3250000,
+      "text": "检查"
+    },
+    {
+      "offset": 77000000,
+      "duration": 3500000,
+      "text": "格式"
+    },
+    {
+      "offset": 84125000,
+      "duration": 3875000,
+      "text": "质量"
+    },
+    {
+      "offset": 89125000,
+      "duration": 1250000,
+      "text": "和"
+    },
+    {
+      "offset": 90500000,
+      "duration": 2750000,
+      "text": "敏感"
+    },
+    {
+      "offset": 93375000,
+      "duration": 4000000,
+      "text": "信息"
+    },
+    {
+      "offset": 100375000,
+      "duration": 2750000,
+      "text": "保存"
+    },
+    {
+      "offset": 103250000,
+      "duration": 4000000,
+      "text": "来源"
+    },
+    {
+      "offset": 109375000,
+      "duration": 1375000,
+      "text": "再"
+    },
+    {
+      "offset": 110875000,
+      "duration": 3750000,
+      "text": "形成"
+    },
+    {
+      "offset": 114875000,
+      "duration": 2125000,
+      "text": "可以"
+    },
+    {
+      "offset": 117125000,
+      "duration": 2625000,
+      "text": "检索"
+    },
+    {
+      "offset": 119750000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 120625000,
+      "duration": 3500000,
+      "text": "知识"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

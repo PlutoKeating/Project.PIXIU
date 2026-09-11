@@ -1,0 +1,29 @@
+{
+  "status": 200,
+  "body": {
+    "preferences": [],
+    "read_scopes": [
+      "user:local"
+    ],
+    "session_id": "directed-stage-after",
+    "turn_id": "lookup",
+    "context": "- 会话阶段记录: {\"text\":\"{\\\"source_type\\\": \\\"MANUAL_CONFIG\\\", \\\"raw\\\": {\\\"title\\\": \\\"社区图书角阶段记录\\\", \\\"body\\\": {\\\"内容\\\": \\\"已核对书名并整理归还图书，接下来更新借阅登记。\\\"}}}\"} [knowledge=knw_01M27DMDXX4RHNVE93A8MR12YK; evidence=evd_01M27DMDXTAANXQ8Y54X144J4Q]",
+    "items": [
+      {
+        "knowledge_id": "knw_01M27DMDXX4RHNVE93A8MR12YK",
+        "version": 1,
+        "title": "会话阶段记录",
+        "scope": "user:local",
+        "evidence_ids": [
+          "evd_01M27DMDXTAANXQ8Y54X144J4Q"
+        ],
+        "confidence": 1.0,
+        "updated_at": 1789103060,
+        "freshness": "fresh",
+        "conflict_status": "none"
+      }
+    ],
+    "truncated": false,
+    "latency_ms": 33
+  }
+}

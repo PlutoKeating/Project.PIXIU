@@ -1,0 +1,95 @@
+{
+  "data": "公开合成演示资料",
+  "records": [
+    {
+      "label": "准备公开图书归还流程",
+      "path": "/memory/write",
+      "input": {
+        "source_type": "MANUAL_CONFIG",
+        "raw": {
+          "title": "家庭图书归还流程",
+          "body": {
+            "steps": [
+              "第一步：从借阅登记本逐项核对书名，区分已经归还、仍在阅读和需要续借的图书。",
+              "第二步：检查归还图书是否夹有临时便签，将个人便签取出，并整理翘起的书页。",
+              "第三步：按照科普读物、工具书和画册三个分类放回对应书架，书脊朝外，保持同类图书相邻。",
+              "第四步：更新借阅登记，核对剩余待归还数量；如果书架已满，先整理重复资料再放入新书。"
+            ]
+          }
+        },
+        "scope": "user:local",
+        "idempotency_key": "directed-0.1.12-library-return-v1"
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "evidence_id": "evd_01M27DGW7TZCHD6RBJ6VNXQJ79",
+          "status": "accepted",
+          "quality_score": 0.775,
+          "sensitivity": 0,
+          "preference_count": 0,
+          "conflict_detected": false,
+          "latency_ms": 612
+        }
+      }
+    },
+    {
+      "label": "准备公开阶段记忆",
+      "path": "/agent/lifecycle",
+      "input": {
+        "event": "PRE_COMPRESS",
+        "scope": "user:local",
+        "session_id": "directed-stage-demo",
+        "run_id": "directed-stage-run",
+        "turn_id": "directed-stage-turn",
+        "occurred_at": 1789102945,
+        "idempotency_key": "directed-stage-demo-v1",
+        "data": {
+          "source_type": "MANUAL_CONFIG",
+          "raw": {
+            "title": "社区图书角阶段记录",
+            "body": {
+              "内容": "已核对书名并整理归还图书，接下来更新借阅登记。"
+            }
+          }
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "event": "PRE_COMPRESS",
+          "context_id": "ctx_01M27DGX7B8XYBQYJ3X84CT26W",
+          "tier": "MID_TERM",
+          "status": "ACTIVE",
+          "expires_at": 1789707745
+        }
+      }
+    },
+    {
+      "label": "准备便于阅读的公开阶段记录",
+      "path": "/agent/lifecycle",
+      "input": {
+        "event": "PRE_COMPRESS",
+        "scope": "user:local",
+        "session_id": "directed-stage-readable",
+        "run_id": "directed-stage-readable",
+        "turn_id": "directed-stage-readable",
+        "occurred_at": 1789103301,
+        "idempotency_key": "directed-stage-readable-v2",
+        "data": {
+          "summary": "社区图书角：已核对书名并整理归还图书，接下来更新借阅登记。"
+        }
+      },
+      "output": {
+        "status": 200,
+        "body": {
+          "event": "PRE_COMPRESS",
+          "context_id": "ctx_01M27DVSAN777V4TQQMWKH3GMN",
+          "tier": "MID_TERM",
+          "status": "ACTIVE",
+          "expires_at": 1789708101
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "timing_basis": "FFmpeg first progress packet, aligned to output timestamp",
+  "size": [
+    1440,
+    900
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 0.5,
+      "escape": true,
+      "label": "返回会话",
+      "actual_start": 0.5001923949457705,
+      "actual_click": null,
+      "actual_end": 1.3057764889672399
+    },
+    {
+      "at": 2,
+      "to": [
+        386,
+        66
+      ],
+      "click": true,
+      "label": "进入记忆",
+      "actual_start": 2.000193746993318,
+      "actual_click": 2.920539411948994,
+      "actual_end": 3.0159126499202102
+    },
+    {
+      "at": 5,
+      "to": [
+        160,
+        246
+      ],
+      "click": true,
+      "label": "打开偏好",
+      "actual_start": 5.000196626991965,
+      "actual_click": 5.920530757983215,
+      "actual_end": 6.015008562011644
+    },
+    {
+      "at": 9,
+      "to": [
+        475,
+        320
+      ],
+      "label": "查看当前回答方式",
+      "actual_start": 9.000058123026974,
+      "actual_click": null,
+      "actual_end": 9.800278675975278
+    },
+    {
+      "at": 14,
+      "to": [
+        465,
+        540
+      ],
+      "label": "查看早期版本",
+      "actual_start": 14.000073311966844,
+      "actual_click": null,
+      "actual_end": 14.800188050954603
+    },
+    {
+      "at": 19,
+      "to": [
+        465,
+        672
+      ],
+      "label": "查看最新版本",
+      "actual_start": 19.00017658493016,
+      "actual_click": null,
+      "actual_end": 19.80026520800311
+    }
+  ],
+  "sha256": "a32e0b2b991547b8325d920bec55b8b8ccf86f378d55e8e8c90ebc8d40294de6"
+}

@@ -1,0 +1,115 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "timing_basis": "FFmpeg first progress packet, aligned to output timestamp",
+  "size": [
+    1440,
+    900
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 2,
+      "to": [
+        260,
+        173
+      ],
+      "click": true,
+      "label": "新建会话",
+      "actual_start": 2.000096295028925,
+      "actual_click": 2.920449659926817,
+      "actual_end": 3.0166869410313666
+    },
+    {
+      "at": 5,
+      "to": [
+        630,
+        740
+      ],
+      "click": true,
+      "label": "输入问题",
+      "actual_start": 5.000121908029541,
+      "actual_click": 5.920396463014185,
+      "actual_end": 6.015665043029003
+    },
+    {
+      "at": 7,
+      "text": "请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。",
+      "label": "输入公开账单查询",
+      "actual_start": 7.0001031790161505,
+      "actual_click": null,
+      "actual_end": 13.266874814988114
+    },
+    {
+      "at": 15,
+      "to": [
+        1154,
+        748
+      ],
+      "click": true,
+      "label": "发送查询",
+      "actual_start": 15.000207265955396,
+      "actual_click": 15.920607744948938,
+      "actual_end": 16.018068582983688
+    },
+    {
+      "at": 22,
+      "to": [
+        610,
+        404
+      ],
+      "label": "核对费用明细",
+      "actual_start": 22.000224721967243,
+      "actual_click": null,
+      "actual_end": 22.800309048965573
+    },
+    {
+      "at": 27,
+      "to": [
+        612,
+        465
+      ],
+      "label": "核对合计",
+      "actual_start": 27.000192141975276,
+      "actual_click": null,
+      "actual_end": 27.800292600994
+    },
+    {
+      "at": 31,
+      "to": [
+        725,
+        519
+      ],
+      "click": true,
+      "label": "打开账单来源",
+      "actual_start": 31.000182681018487,
+      "actual_click": 31.920473524020053,
+      "actual_end": 32.018549443921074
+    },
+    {
+      "at": 35,
+      "to": [
+        500,
+        302
+      ],
+      "label": "核对原记录",
+      "actual_start": 35.00010535900947,
+      "actual_click": null,
+      "actual_end": 35.80027376092039
+    },
+    {
+      "at": 39,
+      "to": [
+        482,
+        349
+      ],
+      "label": "核对来源合计",
+      "actual_start": 39.000100678997114,
+      "actual_click": null,
+      "actual_end": 39.80033133295365
+    }
+  ],
+  "sha256": "54d748d8619792255f8751bc79a0b132576c01e58c447b337139b69a4995e98d"
+}

@@ -16,7 +16,8 @@ import {SyncTraceScene} from './SyncTraceScene';
 import {EvaluationScene} from './EvaluationScene';
 import {IngestSourcesScene} from './IngestSourcesScene';
 import {KnowledgeExamplesScene} from './KnowledgeExamplesScene';
-import {CurrentProductScene, hasCurrentScene} from './CurrentProductScenes';
+import {JourneyScene} from './JourneyScene';
+import {DirectedProductScene, hasDirectedScene} from './DirectedProductScenes';
 
 type Shot = typeof timeline.shots[number];
 const INK = '#172033', BLUE = '#1456b8', MUTED = '#526477';
@@ -138,15 +139,13 @@ const RecordedScene: React.FC<{shot: Shot}> = ({shot}) => {
 
 export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCaptions?: boolean;
   headingSize?: number; headingColor?: string}> =
-  ({shot, includeAudio = true, includeCaptions = true, headingSize = 45, headingColor = INK}) => {
+  ({shot, includeAudio = true, includeCaptions = true, headingSize = 54, headingColor = INK}) => {
   const title = ['s02', 's18', 's29', 's30'].includes(shot.id);
   const frame = useCurrentFrame();
   return <AbsoluteFill style={{background: '#f6f7f9', color: INK, fontFamily: '"Noto Sans CJK SC", sans-serif'}}>
     {['s01', 's30'].includes(shot.id) ? <SceneOutroLive duration={shot.duration} />
-      : title ? <PaperTitleCard duration={shot.duration} fontSize={76}
-      words={[{text: shot.title.split('，')[0], accent: true}, {text: shot.title.split('，').slice(1).join('，')}]}
-      sub={shot.chapter} />
-      : hasCurrentScene(shot.id) ? <CurrentProductScene shot={shot}/>
+      : title ? <JourneyScene shot={shot}/>
+      : hasDirectedScene(shot.id) ? <DirectedProductScene shot={shot}/>
       : shot.id === 's03' ? <>
         <div style={{position: 'absolute', left: 240, top: 140, width: 1440, height: 810, overflow: 'hidden'}}>
           <div style={{position: 'absolute', width: 1920, height: 1080, transform: 'scale(0.75)', transformOrigin: '0 0'}}><SpotlightHeroCard /></div>
@@ -159,7 +158,7 @@ export const ShotScene: React.FC<{shot: Shot; includeAudio?: boolean; includeCap
       : shot.id === 's09' ? <IngestSourcesScene />
       : shot.id === 's14' ? <KnowledgeExamplesScene />
       : SCREENS[shot.id] ? <ScreenScene shot={shot} /> : <PanelScene shot={shot} />}
-    {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 58, left: 135, fontSize: headingSize, color: headingColor, fontWeight: 700}}>{shot.title}</div> : null}
+    {!title && shot.id !== 's01' ? <div style={{position: 'absolute', top: 48, left: 96, fontSize: headingSize, color: headingColor, fontWeight: 700}}>{shot.title}</div> : null}
     {includeAudio ? <><Sequence from={Math.max(0, Math.round(shot.audio_from - OUTPUT_AUDIO_OFFSET_F))}>
       <Audio src={staticFile(narrationAudio(shot.audio))} />
     </Sequence>

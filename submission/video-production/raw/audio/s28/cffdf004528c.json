@@ -1,0 +1,289 @@
+{
+  "shot": "s28",
+  "request": {
+    "text": "我们从四个方面检查记忆效果：偏好是否准确，资料能否找回，检索需要多久，更正处理是否正确。在历史兼容环境的测试中，五十组检索全部召回，十五组偏好全部正确，二十五组冲突正确处理二十四组。当前麒麟原生版本已完成安装、升级和三端协作验证。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "cffdf004528c7163c84a367022eedb5ba3907ac6a585e83f262a2598f93e2a9c",
+  "audio_sha256": "b59185992b46c386730fb78ba0f39e2bad7a21d0b1422d981abcef04dd86316f",
+  "duration_seconds": 20.904,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 1750000,
+      "text": "我们"
+    },
+    {
+      "offset": 2375000,
+      "duration": 1875000,
+      "text": "从"
+    },
+    {
+      "offset": 4250000,
+      "duration": 2625000,
+      "text": "四个"
+    },
+    {
+      "offset": 6875000,
+      "duration": 3250000,
+      "text": "方面"
+    },
+    {
+      "offset": 11125000,
+      "duration": 3375000,
+      "text": "检查"
+    },
+    {
+      "offset": 14750000,
+      "duration": 2000000,
+      "text": "记忆"
+    },
+    {
+      "offset": 16875000,
+      "duration": 3500000,
+      "text": "效果"
+    },
+    {
+      "offset": 23750000,
+      "duration": 3750000,
+      "text": "偏好"
+    },
+    {
+      "offset": 27750000,
+      "duration": 2500000,
+      "text": "是否"
+    },
+    {
+      "offset": 30250000,
+      "duration": 3625000,
+      "text": "准确"
+    },
+    {
+      "offset": 36375000,
+      "duration": 2875000,
+      "text": "资料"
+    },
+    {
+      "offset": 39500000,
+      "duration": 2250000,
+      "text": "能否"
+    },
+    {
+      "offset": 41750000,
+      "duration": 4625000,
+      "text": "找回"
+    },
+    {
+      "offset": 48625000,
+      "duration": 3125000,
+      "text": "检索"
+    },
+    {
+      "offset": 52000000,
+      "duration": 1875000,
+      "text": "需要"
+    },
+    {
+      "offset": 53875000,
+      "duration": 3250000,
+      "text": "多久"
+    },
+    {
+      "offset": 59750000,
+      "duration": 2750000,
+      "text": "更正"
+    },
+    {
+      "offset": 62625000,
+      "duration": 3000000,
+      "text": "处理"
+    },
+    {
+      "offset": 65875000,
+      "duration": 2500000,
+      "text": "是否"
+    },
+    {
+      "offset": 68375000,
+      "duration": 3250000,
+      "text": "正确"
+    },
+    {
+      "offset": 77250000,
+      "duration": 2500000,
+      "text": "在"
+    },
+    {
+      "offset": 79875000,
+      "duration": 2750000,
+      "text": "历史"
+    },
+    {
+      "offset": 82750000,
+      "duration": 2875000,
+      "text": "兼容"
+    },
+    {
+      "offset": 85750000,
+      "duration": 2625000,
+      "text": "环境"
+    },
+    {
+      "offset": 88375000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 89250000,
+      "duration": 2750000,
+      "text": "测试"
+    },
+    {
+      "offset": 92000000,
+      "duration": 2000000,
+      "text": "中"
+    },
+    {
+      "offset": 96125000,
+      "duration": 4125000,
+      "text": "五十组"
+    },
+    {
+      "offset": 100375000,
+      "duration": 3250000,
+      "text": "检索"
+    },
+    {
+      "offset": 103875000,
+      "duration": 2625000,
+      "text": "全部"
+    },
+    {
+      "offset": 106625000,
+      "duration": 4250000,
+      "text": "召回"
+    },
+    {
+      "offset": 113500000,
+      "duration": 5000000,
+      "text": "十五组"
+    },
+    {
+      "offset": 118625000,
+      "duration": 3500000,
+      "text": "偏好"
+    },
+    {
+      "offset": 122375000,
+      "duration": 2875000,
+      "text": "全部"
+    },
+    {
+      "offset": 125375000,
+      "duration": 3500000,
+      "text": "正确"
+    },
+    {
+      "offset": 130875000,
+      "duration": 5375000,
+      "text": "二十五组"
+    },
+    {
+      "offset": 136375000,
+      "duration": 3750000,
+      "text": "冲突"
+    },
+    {
+      "offset": 140375000,
+      "duration": 2625000,
+      "text": "正确"
+    },
+    {
+      "offset": 143000000,
+      "duration": 2625000,
+      "text": "处理"
+    },
+    {
+      "offset": 145875000,
+      "duration": 5875000,
+      "text": "二十四组"
+    },
+    {
+      "offset": 157375000,
+      "duration": 3875000,
+      "text": "当前"
+    },
+    {
+      "offset": 161500000,
+      "duration": 2500000,
+      "text": "麒麟"
+    },
+    {
+      "offset": 164250000,
+      "duration": 1625000,
+      "text": "原"
+    },
+    {
+      "offset": 165875000,
+      "duration": 1625000,
+      "text": "生"
+    },
+    {
+      "offset": 167625000,
+      "duration": 3875000,
+      "text": "版本"
+    },
+    {
+      "offset": 172500000,
+      "duration": 1125000,
+      "text": "已"
+    },
+    {
+      "offset": 173750000,
+      "duration": 2875000,
+      "text": "完成"
+    },
+    {
+      "offset": 176625000,
+      "duration": 3875000,
+      "text": "安装"
+    },
+    {
+      "offset": 182750000,
+      "duration": 4875000,
+      "text": "升级"
+    },
+    {
+      "offset": 188875000,
+      "duration": 1750000,
+      "text": "和"
+    },
+    {
+      "offset": 190625000,
+      "duration": 1750000,
+      "text": "三"
+    },
+    {
+      "offset": 192375000,
+      "duration": 1500000,
+      "text": "端"
+    },
+    {
+      "offset": 194125000,
+      "duration": 2500000,
+      "text": "协作"
+    },
+    {
+      "offset": 196750000,
+      "duration": 3500000,
+      "text": "验证"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

@@ -20,12 +20,13 @@ settings = json.loads((ROOT / 'storyboard/narration.json').read_text())
 volume = json.loads((ROOT / 'src/narration-volume.json').read_text())
 # Validate the entire requested soundtrack before replacing any playback asset.
 for shot in story['shots']:
+    effective_settings = {**settings, **shot.get('narration_settings', {})}
     source_id = shot.get('audio_reuse', shot['id'])
     valid = []
     for path in (ROOT / 'raw/audio' / source_id).glob('*.json'):
         meta = json.loads(path.read_text())
         if (meta.get('request', {}).get('text') == shot['narration']
-                and all(meta['request'].get(k) == v for k, v in settings.items())
+                and all(meta['request'].get(k) == v for k, v in effective_settings.items())
                 and path.with_suffix('.mp3').exists()
                 and meta.get('audio_sha256') == hashlib.sha256(path.with_suffix('.mp3').read_bytes()).hexdigest()
                 and meta.get('boundaries')):
@@ -37,11 +38,12 @@ start = 0
 timeline = []
 measurements = []
 for shot in story['shots']:
+    effective_settings = {**settings, **shot.get('narration_settings', {})}
     source_id = shot.get('audio_reuse', shot['id'])
     matches = []
     for path in (ROOT / 'raw/audio' / source_id).glob('*.json'):
         meta = json.loads(path.read_text())
-        if meta['request']['text'] == shot['narration'] and all(meta['request'].get(k) == v for k, v in settings.items()):
+        if meta['request']['text'] == shot['narration'] and all(meta['request'].get(k) == v for k, v in effective_settings.items()):
             matches.append((path, meta))
     if len(matches) != 1:
         raise RuntimeError(shot['id'] + ': need one matching narration, got ' + str(len(matches)))
@@ -71,7 +73,8 @@ for shot in story['shots']:
             groups[-1].append(word)
         for group in groups:
             first, last = group[0], group[-1]
-            end = part.end() if last is selected[-1] else last['end']
+            # Preserve punctuation between caption groups, including enumeration marks.
+            end = part.end() if last is selected[-1] else selected[selected.index(last)+1]['at']
             captions.append({'text': text[first['at']:end],
                              'from': 15 + math.floor(first['offset'] / 1e7 * fps),
                              'to': 15 + math.ceil((last['offset'] + last['duration']) / 1e7 * fps) + 3})

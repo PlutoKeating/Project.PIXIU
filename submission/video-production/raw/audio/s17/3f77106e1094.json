@@ -1,0 +1,244 @@
+{
+  "shot": "s17",
+  "request": {
+    "text": "一项工作往往需要分几次完成。当前对话保存正在处理的要点，阶段记忆承接会话之间的进展，需要反复使用的内容再保存为长期知识。打开阶段记录，选择长期保留，后续任务便能检索和引用。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "3f77106e1094d10c0d27272fb98f1e877d82cb8f8520c41469c99de2fc34b120",
+  "audio_sha256": "2fca39c63c6385b1456c2cf8af20b8cf86e710e7c3b727a28420a02f11644062",
+  "duration_seconds": 16.056,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 1375000,
+      "text": "一"
+    },
+    {
+      "offset": 1875000,
+      "duration": 1500000,
+      "text": "项"
+    },
+    {
+      "offset": 3500000,
+      "duration": 4625000,
+      "text": "工作"
+    },
+    {
+      "offset": 9125000,
+      "duration": 3000000,
+      "text": "往往"
+    },
+    {
+      "offset": 12250000,
+      "duration": 2500000,
+      "text": "需要"
+    },
+    {
+      "offset": 15000000,
+      "duration": 1750000,
+      "text": "分"
+    },
+    {
+      "offset": 16750000,
+      "duration": 2125000,
+      "text": "几次"
+    },
+    {
+      "offset": 19000000,
+      "duration": 3875000,
+      "text": "完成"
+    },
+    {
+      "offset": 28625000,
+      "duration": 4375000,
+      "text": "当前"
+    },
+    {
+      "offset": 33250000,
+      "duration": 2500000,
+      "text": "对话"
+    },
+    {
+      "offset": 35875000,
+      "duration": 3750000,
+      "text": "保存"
+    },
+    {
+      "offset": 39875000,
+      "duration": 2000000,
+      "text": "正在"
+    },
+    {
+      "offset": 42000000,
+      "duration": 2750000,
+      "text": "处理"
+    },
+    {
+      "offset": 44750000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 45750000,
+      "duration": 3750000,
+      "text": "要点"
+    },
+    {
+      "offset": 53125000,
+      "duration": 3125000,
+      "text": "阶段"
+    },
+    {
+      "offset": 56375000,
+      "duration": 2500000,
+      "text": "记忆"
+    },
+    {
+      "offset": 59125000,
+      "duration": 3000000,
+      "text": "承接"
+    },
+    {
+      "offset": 62250000,
+      "duration": 2875000,
+      "text": "会话"
+    },
+    {
+      "offset": 65250000,
+      "duration": 2250000,
+      "text": "之间"
+    },
+    {
+      "offset": 67500000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 68500000,
+      "duration": 3750000,
+      "text": "进展"
+    },
+    {
+      "offset": 74375000,
+      "duration": 2500000,
+      "text": "需要"
+    },
+    {
+      "offset": 77125000,
+      "duration": 3625000,
+      "text": "反复"
+    },
+    {
+      "offset": 80750000,
+      "duration": 2250000,
+      "text": "使用"
+    },
+    {
+      "offset": 83000000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 83875000,
+      "duration": 3625000,
+      "text": "内容"
+    },
+    {
+      "offset": 88750000,
+      "duration": 1750000,
+      "text": "再"
+    },
+    {
+      "offset": 90500000,
+      "duration": 2875000,
+      "text": "保存"
+    },
+    {
+      "offset": 93375000,
+      "duration": 1500000,
+      "text": "为"
+    },
+    {
+      "offset": 95125000,
+      "duration": 4000000,
+      "text": "长期"
+    },
+    {
+      "offset": 99250000,
+      "duration": 3875000,
+      "text": "知识"
+    },
+    {
+      "offset": 108875000,
+      "duration": 3375000,
+      "text": "打开"
+    },
+    {
+      "offset": 112500000,
+      "duration": 2375000,
+      "text": "阶段"
+    },
+    {
+      "offset": 115000000,
+      "duration": 3000000,
+      "text": "记录"
+    },
+    {
+      "offset": 120000000,
+      "duration": 2875000,
+      "text": "选择"
+    },
+    {
+      "offset": 123125000,
+      "duration": 3500000,
+      "text": "长期"
+    },
+    {
+      "offset": 126625000,
+      "duration": 3625000,
+      "text": "保留"
+    },
+    {
+      "offset": 133625000,
+      "duration": 3500000,
+      "text": "后续"
+    },
+    {
+      "offset": 137125000,
+      "duration": 3125000,
+      "text": "任务"
+    },
+    {
+      "offset": 140500000,
+      "duration": 1125000,
+      "text": "便"
+    },
+    {
+      "offset": 141625000,
+      "duration": 1125000,
+      "text": "能"
+    },
+    {
+      "offset": 142875000,
+      "duration": 3750000,
+      "text": "检索"
+    },
+    {
+      "offset": 146875000,
+      "duration": 1125000,
+      "text": "和"
+    },
+    {
+      "offset": 148125000,
+      "duration": 3625000,
+      "text": "引用"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

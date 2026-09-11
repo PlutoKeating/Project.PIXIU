@@ -1,0 +1,254 @@
+{
+  "shot": "s02",
+  "request": {
+    "text": "貔貅是一款运行在麒麟电脑上的个人记忆助手。日常工作中，我们需要保存资料、查找过去的安排，也希望换台电脑后接着使用。貔貅把这些资料整理成有来源的知识，并在可信设备之间共享。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "7ed50a7d3edb0cbb363dc3480e27555bfc32b9e0e764647c1d585b8b34b84ccd",
+  "audio_sha256": "8d690a008d561619f481e848af9f2fb7495dd4e8df84307de19c9a7b81cfba5d",
+  "duration_seconds": 14.592,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 4750000,
+      "text": "貔貅"
+    },
+    {
+      "offset": 5500000,
+      "duration": 1000000,
+      "text": "是"
+    },
+    {
+      "offset": 6625000,
+      "duration": 1000000,
+      "text": "一"
+    },
+    {
+      "offset": 7625000,
+      "duration": 2125000,
+      "text": "款"
+    },
+    {
+      "offset": 10000000,
+      "duration": 3000000,
+      "text": "运行"
+    },
+    {
+      "offset": 13000000,
+      "duration": 1500000,
+      "text": "在"
+    },
+    {
+      "offset": 14750000,
+      "duration": 2750000,
+      "text": "麒麟"
+    },
+    {
+      "offset": 17625000,
+      "duration": 2750000,
+      "text": "电脑"
+    },
+    {
+      "offset": 20375000,
+      "duration": 1375000,
+      "text": "上"
+    },
+    {
+      "offset": 21750000,
+      "duration": 1375000,
+      "text": "的"
+    },
+    {
+      "offset": 23375000,
+      "duration": 2750000,
+      "text": "个人"
+    },
+    {
+      "offset": 26250000,
+      "duration": 2250000,
+      "text": "记忆"
+    },
+    {
+      "offset": 28625000,
+      "duration": 3250000,
+      "text": "助手"
+    },
+    {
+      "offset": 37625000,
+      "duration": 5625000,
+      "text": "日常工作"
+    },
+    {
+      "offset": 43250000,
+      "duration": 2250000,
+      "text": "中"
+    },
+    {
+      "offset": 48375000,
+      "duration": 1875000,
+      "text": "我们"
+    },
+    {
+      "offset": 50250000,
+      "duration": 1875000,
+      "text": "需要"
+    },
+    {
+      "offset": 52375000,
+      "duration": 2750000,
+      "text": "保存"
+    },
+    {
+      "offset": 55125000,
+      "duration": 2875000,
+      "text": "资料"
+    },
+    {
+      "offset": 61125000,
+      "duration": 3250000,
+      "text": "查找"
+    },
+    {
+      "offset": 64625000,
+      "duration": 2125000,
+      "text": "过去"
+    },
+    {
+      "offset": 66750000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 67625000,
+      "duration": 3500000,
+      "text": "安排"
+    },
+    {
+      "offset": 73000000,
+      "duration": 1250000,
+      "text": "也"
+    },
+    {
+      "offset": 74375000,
+      "duration": 2500000,
+      "text": "希望"
+    },
+    {
+      "offset": 77125000,
+      "duration": 1625000,
+      "text": "换"
+    },
+    {
+      "offset": 78750000,
+      "duration": 1125000,
+      "text": "台"
+    },
+    {
+      "offset": 79875000,
+      "duration": 2750000,
+      "text": "电脑"
+    },
+    {
+      "offset": 82625000,
+      "duration": 2375000,
+      "text": "后"
+    },
+    {
+      "offset": 85000000,
+      "duration": 2375000,
+      "text": "接着"
+    },
+    {
+      "offset": 87500000,
+      "duration": 3125000,
+      "text": "使用"
+    },
+    {
+      "offset": 96375000,
+      "duration": 4000000,
+      "text": "貔貅"
+    },
+    {
+      "offset": 100625000,
+      "duration": 875000,
+      "text": "把"
+    },
+    {
+      "offset": 101625000,
+      "duration": 1875000,
+      "text": "这些"
+    },
+    {
+      "offset": 103625000,
+      "duration": 3625000,
+      "text": "资料"
+    },
+    {
+      "offset": 108250000,
+      "duration": 2000000,
+      "text": "整理"
+    },
+    {
+      "offset": 110250000,
+      "duration": 1375000,
+      "text": "成"
+    },
+    {
+      "offset": 111625000,
+      "duration": 1125000,
+      "text": "有"
+    },
+    {
+      "offset": 112750000,
+      "duration": 2250000,
+      "text": "来源"
+    },
+    {
+      "offset": 115000000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 115875000,
+      "duration": 3625000,
+      "text": "知识"
+    },
+    {
+      "offset": 121375000,
+      "duration": 1375000,
+      "text": "并"
+    },
+    {
+      "offset": 122750000,
+      "duration": 1250000,
+      "text": "在"
+    },
+    {
+      "offset": 124250000,
+      "duration": 3625000,
+      "text": "可信"
+    },
+    {
+      "offset": 128000000,
+      "duration": 2875000,
+      "text": "设备"
+    },
+    {
+      "offset": 131000000,
+      "duration": 2250000,
+      "text": "之间"
+    },
+    {
+      "offset": 133375000,
+      "duration": 3750000,
+      "text": "共享"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

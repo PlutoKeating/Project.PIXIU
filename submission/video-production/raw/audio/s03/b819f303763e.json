@@ -1,0 +1,224 @@
+{
+  "shot": "s03",
+  "request": {
+    "text": "它主要帮助我们完成两件事：让日常资料持续积累成知识，让多台设备共同使用这些知识。每台电脑都保存自己的记忆，经过授权，设备彼此交换更新，助手便能接着处理工作。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "b819f303763e381bb1874bf9a37ba3a55c7188d75caf4d17d0f36ba3e19e4568",
+  "audio_sha256": "071bf11c24d6cdbae94d7aa4e6d6bb44b3860a65086a203b50156d2093d3a350",
+  "duration_seconds": 14.064,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 1625000,
+      "text": "它"
+    },
+    {
+      "offset": 2250000,
+      "duration": 2625000,
+      "text": "主要"
+    },
+    {
+      "offset": 5000000,
+      "duration": 2625000,
+      "text": "帮助"
+    },
+    {
+      "offset": 7750000,
+      "duration": 1875000,
+      "text": "我们"
+    },
+    {
+      "offset": 9625000,
+      "duration": 2750000,
+      "text": "完成"
+    },
+    {
+      "offset": 12500000,
+      "duration": 2875000,
+      "text": "两件"
+    },
+    {
+      "offset": 15375000,
+      "duration": 2125000,
+      "text": "事"
+    },
+    {
+      "offset": 21375000,
+      "duration": 1500000,
+      "text": "让"
+    },
+    {
+      "offset": 22875000,
+      "duration": 5875000,
+      "text": "日常资料"
+    },
+    {
+      "offset": 29000000,
+      "duration": 4000000,
+      "text": "持续"
+    },
+    {
+      "offset": 33125000,
+      "duration": 2375000,
+      "text": "积累"
+    },
+    {
+      "offset": 35500000,
+      "duration": 1625000,
+      "text": "成"
+    },
+    {
+      "offset": 37250000,
+      "duration": 3750000,
+      "text": "知识"
+    },
+    {
+      "offset": 43125000,
+      "duration": 1750000,
+      "text": "让"
+    },
+    {
+      "offset": 44875000,
+      "duration": 1750000,
+      "text": "多"
+    },
+    {
+      "offset": 46625000,
+      "duration": 1500000,
+      "text": "台"
+    },
+    {
+      "offset": 48125000,
+      "duration": 3875000,
+      "text": "设备"
+    },
+    {
+      "offset": 53125000,
+      "duration": 3500000,
+      "text": "共同"
+    },
+    {
+      "offset": 56625000,
+      "duration": 2750000,
+      "text": "使用"
+    },
+    {
+      "offset": 59625000,
+      "duration": 1875000,
+      "text": "这些"
+    },
+    {
+      "offset": 61625000,
+      "duration": 3500000,
+      "text": "知识"
+    },
+    {
+      "offset": 70875000,
+      "duration": 2000000,
+      "text": "每"
+    },
+    {
+      "offset": 72875000,
+      "duration": 1375000,
+      "text": "台"
+    },
+    {
+      "offset": 74250000,
+      "duration": 3375000,
+      "text": "电脑"
+    },
+    {
+      "offset": 77875000,
+      "duration": 750000,
+      "text": "都"
+    },
+    {
+      "offset": 78750000,
+      "duration": 3250000,
+      "text": "保存"
+    },
+    {
+      "offset": 82000000,
+      "duration": 2000000,
+      "text": "自己"
+    },
+    {
+      "offset": 84000000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 85000000,
+      "duration": 3000000,
+      "text": "记忆"
+    },
+    {
+      "offset": 91250000,
+      "duration": 2625000,
+      "text": "经过"
+    },
+    {
+      "offset": 94000000,
+      "duration": 3750000,
+      "text": "授权"
+    },
+    {
+      "offset": 100375000,
+      "duration": 3250000,
+      "text": "设备"
+    },
+    {
+      "offset": 103750000,
+      "duration": 2750000,
+      "text": "彼此"
+    },
+    {
+      "offset": 106750000,
+      "duration": 3125000,
+      "text": "交换"
+    },
+    {
+      "offset": 110000000,
+      "duration": 3750000,
+      "text": "更新"
+    },
+    {
+      "offset": 117125000,
+      "duration": 3375000,
+      "text": "助手"
+    },
+    {
+      "offset": 120625000,
+      "duration": 1125000,
+      "text": "便"
+    },
+    {
+      "offset": 121750000,
+      "duration": 1250000,
+      "text": "能"
+    },
+    {
+      "offset": 123250000,
+      "duration": 2125000,
+      "text": "接着"
+    },
+    {
+      "offset": 125500000,
+      "duration": 2875000,
+      "text": "处理"
+    },
+    {
+      "offset": 128375000,
+      "duration": 3625000,
+      "text": "工作"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

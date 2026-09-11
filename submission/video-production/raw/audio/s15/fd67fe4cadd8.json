@@ -1,0 +1,269 @@
+{
+  "shot": "s15",
+  "request": {
+    "text": "偏好记忆帮助助手沿用用户喜欢的回答方式。假设平时希望回答简洁，准备详细方案时又希望解释充分。在对话中说明新的要求，系统便保存相应偏好。打开偏好页，查看当前设置与版本历史，后续会话继续使用新的回答方式。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "fd67fe4cadd8226e4513de20d924532d1a10fa7b302019e7237210c7d52a98ba",
+  "audio_sha256": "4df2cb2987878c3b3089c4da9f8494b09e402f7e5d0572d80bbd5e7d866eb16e",
+  "duration_seconds": 18.888,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3750000,
+      "text": "偏好"
+    },
+    {
+      "offset": 4375000,
+      "duration": 3750000,
+      "text": "记忆"
+    },
+    {
+      "offset": 9125000,
+      "duration": 3250000,
+      "text": "帮助"
+    },
+    {
+      "offset": 12500000,
+      "duration": 3750000,
+      "text": "助手"
+    },
+    {
+      "offset": 16500000,
+      "duration": 2875000,
+      "text": "沿用"
+    },
+    {
+      "offset": 19500000,
+      "duration": 3250000,
+      "text": "用户"
+    },
+    {
+      "offset": 22750000,
+      "duration": 3375000,
+      "text": "喜欢"
+    },
+    {
+      "offset": 26125000,
+      "duration": 1125000,
+      "text": "的"
+    },
+    {
+      "offset": 27500000,
+      "duration": 6500000,
+      "text": "回答方式"
+    },
+    {
+      "offset": 39750000,
+      "duration": 3125000,
+      "text": "假设"
+    },
+    {
+      "offset": 43000000,
+      "duration": 4750000,
+      "text": "平时"
+    },
+    {
+      "offset": 48875000,
+      "duration": 2750000,
+      "text": "希望"
+    },
+    {
+      "offset": 51875000,
+      "duration": 1875000,
+      "text": "回答"
+    },
+    {
+      "offset": 53875000,
+      "duration": 4375000,
+      "text": "简洁"
+    },
+    {
+      "offset": 60625000,
+      "duration": 2625000,
+      "text": "准备"
+    },
+    {
+      "offset": 63500000,
+      "duration": 3125000,
+      "text": "详细"
+    },
+    {
+      "offset": 66625000,
+      "duration": 2500000,
+      "text": "方案"
+    },
+    {
+      "offset": 69125000,
+      "duration": 2625000,
+      "text": "时"
+    },
+    {
+      "offset": 72750000,
+      "duration": 1250000,
+      "text": "又"
+    },
+    {
+      "offset": 74000000,
+      "duration": 2625000,
+      "text": "希望"
+    },
+    {
+      "offset": 76875000,
+      "duration": 2500000,
+      "text": "解释"
+    },
+    {
+      "offset": 79500000,
+      "duration": 3625000,
+      "text": "充分"
+    },
+    {
+      "offset": 88875000,
+      "duration": 2000000,
+      "text": "在"
+    },
+    {
+      "offset": 91000000,
+      "duration": 2500000,
+      "text": "对话"
+    },
+    {
+      "offset": 93500000,
+      "duration": 1500000,
+      "text": "中"
+    },
+    {
+      "offset": 95000000,
+      "duration": 2875000,
+      "text": "说明"
+    },
+    {
+      "offset": 98125000,
+      "duration": 1875000,
+      "text": "新"
+    },
+    {
+      "offset": 100000000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 100750000,
+      "duration": 3875000,
+      "text": "要求"
+    },
+    {
+      "offset": 107500000,
+      "duration": 3625000,
+      "text": "系统"
+    },
+    {
+      "offset": 111250000,
+      "duration": 1250000,
+      "text": "便"
+    },
+    {
+      "offset": 112625000,
+      "duration": 3375000,
+      "text": "保存"
+    },
+    {
+      "offset": 116250000,
+      "duration": 3000000,
+      "text": "相应"
+    },
+    {
+      "offset": 119375000,
+      "duration": 3500000,
+      "text": "偏好"
+    },
+    {
+      "offset": 128625000,
+      "duration": 2625000,
+      "text": "打开"
+    },
+    {
+      "offset": 131375000,
+      "duration": 2750000,
+      "text": "偏好"
+    },
+    {
+      "offset": 134125000,
+      "duration": 1500000,
+      "text": "页"
+    },
+    {
+      "offset": 138500000,
+      "duration": 3875000,
+      "text": "查看"
+    },
+    {
+      "offset": 142375000,
+      "duration": 3375000,
+      "text": "当前"
+    },
+    {
+      "offset": 145875000,
+      "duration": 2750000,
+      "text": "设置"
+    },
+    {
+      "offset": 148875000,
+      "duration": 1000000,
+      "text": "与"
+    },
+    {
+      "offset": 150000000,
+      "duration": 2625000,
+      "text": "版本"
+    },
+    {
+      "offset": 152625000,
+      "duration": 3250000,
+      "text": "历史"
+    },
+    {
+      "offset": 158375000,
+      "duration": 3250000,
+      "text": "后续"
+    },
+    {
+      "offset": 161750000,
+      "duration": 3625000,
+      "text": "会话"
+    },
+    {
+      "offset": 165625000,
+      "duration": 2750000,
+      "text": "继续"
+    },
+    {
+      "offset": 168375000,
+      "duration": 2875000,
+      "text": "使用"
+    },
+    {
+      "offset": 171500000,
+      "duration": 2000000,
+      "text": "新"
+    },
+    {
+      "offset": 173500000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 174375000,
+      "duration": 5750000,
+      "text": "回答方式"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

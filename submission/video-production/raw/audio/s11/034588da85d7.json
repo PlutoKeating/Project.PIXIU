@@ -1,0 +1,394 @@
+{
+  "shot": "s11",
+  "request": {
+    "text": "日常资料会持续更新，目录整理帮助我们把新文件及时变成可查询的知识。假设社区正在筹备星河观测活动。先在采集与隐私中选择资料目录，开启目录采集并保存。把活动安排放入目录，助手开始后台整理，窗口显示处理进度。完成后，在新会话询问活动安排，就能找到集合时间、地点和预算。点击来源，还能阅读原文。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "034588da85d75fc1480fe612459d137d8cbbfd336c72b7beba6b12353c590b15",
+  "audio_sha256": "85e32f8ce95a50985de8000e7e39e5cb7ef36beda2de703c040953f0df477e5b",
+  "duration_seconds": 26.712,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3125000,
+      "text": "日常"
+    },
+    {
+      "offset": 3625000,
+      "duration": 3000000,
+      "text": "资料"
+    },
+    {
+      "offset": 6875000,
+      "duration": 1375000,
+      "text": "会"
+    },
+    {
+      "offset": 8375000,
+      "duration": 3125000,
+      "text": "持续"
+    },
+    {
+      "offset": 11500000,
+      "duration": 4125000,
+      "text": "更新"
+    },
+    {
+      "offset": 19875000,
+      "duration": 1875000,
+      "text": "目录"
+    },
+    {
+      "offset": 21875000,
+      "duration": 2375000,
+      "text": "整理"
+    },
+    {
+      "offset": 24500000,
+      "duration": 2625000,
+      "text": "帮助"
+    },
+    {
+      "offset": 27125000,
+      "duration": 3125000,
+      "text": "我们"
+    },
+    {
+      "offset": 31250000,
+      "duration": 1375000,
+      "text": "把"
+    },
+    {
+      "offset": 32750000,
+      "duration": 1750000,
+      "text": "新"
+    },
+    {
+      "offset": 34500000,
+      "duration": 3250000,
+      "text": "文件"
+    },
+    {
+      "offset": 38875000,
+      "duration": 3250000,
+      "text": "及时"
+    },
+    {
+      "offset": 42250000,
+      "duration": 3375000,
+      "text": "变成"
+    },
+    {
+      "offset": 45875000,
+      "duration": 1500000,
+      "text": "可"
+    },
+    {
+      "offset": 47375000,
+      "duration": 3000000,
+      "text": "查询"
+    },
+    {
+      "offset": 50375000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 51250000,
+      "duration": 3375000,
+      "text": "知识"
+    },
+    {
+      "offset": 60375000,
+      "duration": 3500000,
+      "text": "假设"
+    },
+    {
+      "offset": 64000000,
+      "duration": 4500000,
+      "text": "社区"
+    },
+    {
+      "offset": 68750000,
+      "duration": 2375000,
+      "text": "正在"
+    },
+    {
+      "offset": 71125000,
+      "duration": 3875000,
+      "text": "筹备"
+    },
+    {
+      "offset": 75250000,
+      "duration": 3250000,
+      "text": "星河"
+    },
+    {
+      "offset": 78500000,
+      "duration": 2875000,
+      "text": "观测"
+    },
+    {
+      "offset": 81500000,
+      "duration": 2875000,
+      "text": "活动"
+    },
+    {
+      "offset": 90125000,
+      "duration": 2000000,
+      "text": "先"
+    },
+    {
+      "offset": 92125000,
+      "duration": 1250000,
+      "text": "在"
+    },
+    {
+      "offset": 93625000,
+      "duration": 3750000,
+      "text": "采集"
+    },
+    {
+      "offset": 97625000,
+      "duration": 1125000,
+      "text": "与"
+    },
+    {
+      "offset": 98875000,
+      "duration": 3000000,
+      "text": "隐私"
+    },
+    {
+      "offset": 101875000,
+      "duration": 1750000,
+      "text": "中"
+    },
+    {
+      "offset": 103625000,
+      "duration": 2750000,
+      "text": "选择"
+    },
+    {
+      "offset": 106625000,
+      "duration": 2250000,
+      "text": "资料"
+    },
+    {
+      "offset": 108875000,
+      "duration": 2750000,
+      "text": "目录"
+    },
+    {
+      "offset": 114250000,
+      "duration": 3125000,
+      "text": "开启"
+    },
+    {
+      "offset": 117625000,
+      "duration": 2125000,
+      "text": "目录"
+    },
+    {
+      "offset": 119875000,
+      "duration": 4750000,
+      "text": "采集"
+    },
+    {
+      "offset": 124875000,
+      "duration": 1500000,
+      "text": "并"
+    },
+    {
+      "offset": 126500000,
+      "duration": 4000000,
+      "text": "保存"
+    },
+    {
+      "offset": 136250000,
+      "duration": 1625000,
+      "text": "把"
+    },
+    {
+      "offset": 138000000,
+      "duration": 3250000,
+      "text": "活动"
+    },
+    {
+      "offset": 141250000,
+      "duration": 3375000,
+      "text": "安排"
+    },
+    {
+      "offset": 144875000,
+      "duration": 1250000,
+      "text": "放"
+    },
+    {
+      "offset": 146125000,
+      "duration": 875000,
+      "text": "入"
+    },
+    {
+      "offset": 147125000,
+      "duration": 2875000,
+      "text": "目录"
+    },
+    {
+      "offset": 153250000,
+      "duration": 3000000,
+      "text": "助手"
+    },
+    {
+      "offset": 156375000,
+      "duration": 2250000,
+      "text": "开始"
+    },
+    {
+      "offset": 158875000,
+      "duration": 2500000,
+      "text": "后台"
+    },
+    {
+      "offset": 161375000,
+      "duration": 2625000,
+      "text": "整理"
+    },
+    {
+      "offset": 167500000,
+      "duration": 3500000,
+      "text": "窗口"
+    },
+    {
+      "offset": 171000000,
+      "duration": 3875000,
+      "text": "显示"
+    },
+    {
+      "offset": 175125000,
+      "duration": 2750000,
+      "text": "处理"
+    },
+    {
+      "offset": 177875000,
+      "duration": 3125000,
+      "text": "进度"
+    },
+    {
+      "offset": 186625000,
+      "duration": 2750000,
+      "text": "完成"
+    },
+    {
+      "offset": 189375000,
+      "duration": 2125000,
+      "text": "后"
+    },
+    {
+      "offset": 194250000,
+      "duration": 2250000,
+      "text": "在"
+    },
+    {
+      "offset": 196625000,
+      "duration": 2375000,
+      "text": "新"
+    },
+    {
+      "offset": 199000000,
+      "duration": 2750000,
+      "text": "会话"
+    },
+    {
+      "offset": 202000000,
+      "duration": 2500000,
+      "text": "询问"
+    },
+    {
+      "offset": 204625000,
+      "duration": 2750000,
+      "text": "活动"
+    },
+    {
+      "offset": 207375000,
+      "duration": 3500000,
+      "text": "安排"
+    },
+    {
+      "offset": 213000000,
+      "duration": 1500000,
+      "text": "就"
+    },
+    {
+      "offset": 214500000,
+      "duration": 1000000,
+      "text": "能"
+    },
+    {
+      "offset": 215500000,
+      "duration": 2250000,
+      "text": "找到"
+    },
+    {
+      "offset": 218000000,
+      "duration": 2875000,
+      "text": "集合"
+    },
+    {
+      "offset": 220875000,
+      "duration": 3875000,
+      "text": "时间"
+    },
+    {
+      "offset": 226375000,
+      "duration": 2875000,
+      "text": "地点"
+    },
+    {
+      "offset": 229500000,
+      "duration": 875000,
+      "text": "和"
+    },
+    {
+      "offset": 230500000,
+      "duration": 3375000,
+      "text": "预算"
+    },
+    {
+      "offset": 239625000,
+      "duration": 3250000,
+      "text": "点击"
+    },
+    {
+      "offset": 243000000,
+      "duration": 4375000,
+      "text": "来源"
+    },
+    {
+      "offset": 249375000,
+      "duration": 1500000,
+      "text": "还"
+    },
+    {
+      "offset": 250875000,
+      "duration": 875000,
+      "text": "能"
+    },
+    {
+      "offset": 252000000,
+      "duration": 3000000,
+      "text": "阅读"
+    },
+    {
+      "offset": 255000000,
+      "duration": 3375000,
+      "text": "原文"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

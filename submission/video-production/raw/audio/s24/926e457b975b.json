@@ -1,0 +1,294 @@
+{
+  "shot": "s24",
+  "request": {
+    "text": "一项临时事项结束后，可以让助手忘记相关内容。假设这条演示事项已经完成，输入遗忘指令，先查看目标和范围，再点击确认。系统更新知识状态并清理检索向量。对于共享记忆，其他设备也会收到遗忘状态，离线设备在重连后补齐。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "926e457b975bc53903146ac057c07befef8d852cb1738b12044def34a0060174",
+  "audio_sha256": "4228b7162a05b2193b3e7235e9ea8166560d6e74d04894b54024bcb0c1856f8d",
+  "duration_seconds": 19.344,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 1250000,
+      "text": "一"
+    },
+    {
+      "offset": 1750000,
+      "duration": 1750000,
+      "text": "项"
+    },
+    {
+      "offset": 3750000,
+      "duration": 3000000,
+      "text": "临时"
+    },
+    {
+      "offset": 6875000,
+      "duration": 2875000,
+      "text": "事项"
+    },
+    {
+      "offset": 9875000,
+      "duration": 3125000,
+      "text": "结束"
+    },
+    {
+      "offset": 13000000,
+      "duration": 2250000,
+      "text": "后"
+    },
+    {
+      "offset": 17625000,
+      "duration": 2250000,
+      "text": "可以"
+    },
+    {
+      "offset": 19875000,
+      "duration": 1500000,
+      "text": "让"
+    },
+    {
+      "offset": 21375000,
+      "duration": 4000000,
+      "text": "助手"
+    },
+    {
+      "offset": 25625000,
+      "duration": 3000000,
+      "text": "忘记"
+    },
+    {
+      "offset": 28875000,
+      "duration": 3000000,
+      "text": "相关"
+    },
+    {
+      "offset": 32000000,
+      "duration": 3125000,
+      "text": "内容"
+    },
+    {
+      "offset": 40875000,
+      "duration": 3750000,
+      "text": "假设"
+    },
+    {
+      "offset": 44875000,
+      "duration": 875000,
+      "text": "这"
+    },
+    {
+      "offset": 45750000,
+      "duration": 1000000,
+      "text": "条"
+    },
+    {
+      "offset": 47000000,
+      "duration": 2750000,
+      "text": "演示"
+    },
+    {
+      "offset": 49875000,
+      "duration": 3375000,
+      "text": "事项"
+    },
+    {
+      "offset": 53500000,
+      "duration": 1875000,
+      "text": "已经"
+    },
+    {
+      "offset": 55375000,
+      "duration": 4250000,
+      "text": "完成"
+    },
+    {
+      "offset": 62000000,
+      "duration": 3125000,
+      "text": "输入"
+    },
+    {
+      "offset": 65375000,
+      "duration": 2625000,
+      "text": "遗忘"
+    },
+    {
+      "offset": 68125000,
+      "duration": 3500000,
+      "text": "指令"
+    },
+    {
+      "offset": 75000000,
+      "duration": 1750000,
+      "text": "先"
+    },
+    {
+      "offset": 76875000,
+      "duration": 3625000,
+      "text": "查看"
+    },
+    {
+      "offset": 80750000,
+      "duration": 2625000,
+      "text": "目标"
+    },
+    {
+      "offset": 83625000,
+      "duration": 750000,
+      "text": "和"
+    },
+    {
+      "offset": 84500000,
+      "duration": 4125000,
+      "text": "范围"
+    },
+    {
+      "offset": 90375000,
+      "duration": 1750000,
+      "text": "再"
+    },
+    {
+      "offset": 92125000,
+      "duration": 2750000,
+      "text": "点击"
+    },
+    {
+      "offset": 94875000,
+      "duration": 3000000,
+      "text": "确认"
+    },
+    {
+      "offset": 103500000,
+      "duration": 3500000,
+      "text": "系统"
+    },
+    {
+      "offset": 107000000,
+      "duration": 4000000,
+      "text": "更新"
+    },
+    {
+      "offset": 111250000,
+      "duration": 2250000,
+      "text": "知识"
+    },
+    {
+      "offset": 113625000,
+      "duration": 4375000,
+      "text": "状态"
+    },
+    {
+      "offset": 119125000,
+      "duration": 1875000,
+      "text": "并"
+    },
+    {
+      "offset": 121125000,
+      "duration": 3375000,
+      "text": "清理"
+    },
+    {
+      "offset": 124750000,
+      "duration": 3125000,
+      "text": "检索"
+    },
+    {
+      "offset": 128000000,
+      "duration": 3375000,
+      "text": "向量"
+    },
+    {
+      "offset": 137125000,
+      "duration": 2625000,
+      "text": "对于"
+    },
+    {
+      "offset": 140000000,
+      "duration": 3375000,
+      "text": "共享"
+    },
+    {
+      "offset": 143500000,
+      "duration": 2750000,
+      "text": "记忆"
+    },
+    {
+      "offset": 148875000,
+      "duration": 3125000,
+      "text": "其他"
+    },
+    {
+      "offset": 152000000,
+      "duration": 3000000,
+      "text": "设备"
+    },
+    {
+      "offset": 155250000,
+      "duration": 875000,
+      "text": "也"
+    },
+    {
+      "offset": 156125000,
+      "duration": 1000000,
+      "text": "会"
+    },
+    {
+      "offset": 157125000,
+      "duration": 2375000,
+      "text": "收到"
+    },
+    {
+      "offset": 159750000,
+      "duration": 3000000,
+      "text": "遗忘"
+    },
+    {
+      "offset": 162750000,
+      "duration": 3500000,
+      "text": "状态"
+    },
+    {
+      "offset": 168125000,
+      "duration": 3375000,
+      "text": "离线"
+    },
+    {
+      "offset": 171500000,
+      "duration": 3375000,
+      "text": "设备"
+    },
+    {
+      "offset": 175125000,
+      "duration": 1375000,
+      "text": "在"
+    },
+    {
+      "offset": 176500000,
+      "duration": 1625000,
+      "text": "重"
+    },
+    {
+      "offset": 178125000,
+      "duration": 1125000,
+      "text": "连"
+    },
+    {
+      "offset": 179250000,
+      "duration": 1375000,
+      "text": "后"
+    },
+    {
+      "offset": 180750000,
+      "duration": 3875000,
+      "text": "补齐"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

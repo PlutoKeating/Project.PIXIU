@@ -10,9 +10,9 @@ export const IngestSourcesScene: React.FC = () => {
     {f < 130 ? <div style={{position: 'absolute', inset: 0, clipPath: 'inset(145px 0 185px 0)'}}><DeckDealMotion /></div>
       : <div style={{position: 'absolute', left: 135, right: 135, top: 200}}>
         <div style={{fontSize: 38, color: BLUE, fontWeight: 700, marginBottom: 55}}>
-          {f < cue('s09','接入时') ? '每条证据保留来源、范围与质量' : f < cue('s09','再形成') ? '同一次写入：清洗前后可核对' : '写入完成后，按范围检索到同一来源'}
+          {f < cue('s09','检查格式') ? '每条证据保留来源、范围与质量' : f < cue('s09','再形成') ? '同一次写入：清洗前后可核对' : '写入完成后，按范围检索到同一来源'}
         </div>
-        {f < cue('s09','接入时') ? <>
+        {f < cue('s09','检查格式') ? <>
           <div style={{fontSize: 38, marginBottom: 35}}>真实会话证据 · 家庭共享约定</div>
           <div style={{position: 'relative', width: 1650, height: 260, overflow: 'hidden', background: '#fff',display:'flex',justifyContent:'center',alignItems:'center'}}>
             <Img src={staticFile('current/outro-shared.png')} style={{width:1280,height:288}} />
@@ -39,7 +39,7 @@ export const IngestSourcesScene: React.FC = () => {
         </>}
       </div>}
     <div style={{position: 'absolute', left: 135, top: 905, fontSize: 36, color: '#526477', transform: 'translateZ(0)'}}>
-      {f < 130 ? '多种来源汇入记忆 · 过程示意' : f < cue('s09','接入时') ? '会话、配置、文件与行为来源均有实测记录' : '内容整理过程 · 实测记录'}
+      {f < 130 ? '多种来源汇入记忆 · 过程示意' : f < cue('s09','检查格式') ? '会话、配置、文件与行为来源均有实测记录' : '内容整理过程 · 实测记录'}
     </div>
   </AbsoluteFill>;
 };

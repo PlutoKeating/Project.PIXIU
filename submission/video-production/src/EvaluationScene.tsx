@@ -6,7 +6,7 @@ import timeline from './timeline.json';
 export const EvaluationScene: React.FC = () => {
  const f=useCurrentFrame();
  const shot=timeline.shots.find(s=>s.id==='s28')!;
- const verified=shot.captions.find(c=>c.text.startsWith('原生版本'))?.from ?? Math.round(shot.duration*.78);
+ const verified=shot.captions.find(c=>c.text.startsWith('当前麒麟'))?.from ?? Math.round(shot.duration*.78);
  return <>
   <div style={{position:'absolute',left:135,right:135,top:195}}>
    <div style={{fontSize:36,color:'#1456b8',marginBottom:40}}>历史评测 · Debian portable · {baseline.dataset}</div>

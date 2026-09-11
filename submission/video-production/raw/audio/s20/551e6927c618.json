@@ -1,0 +1,304 @@
+{
+  "shot": "s20",
+  "request": {
+    "text": "假设家里有书房工作站和客厅一体机，我们希望两台电脑共用家庭安排。先选择家庭共享空间，在书房记下周六上午九点整理书房、按主题分类书籍、更新借阅登记。换到客厅查询这份约定，助手就能找回时间和步骤。点击来源，继续核对同一份记录。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "551e6927c61877756a801d88727de6c1e9be2ab67b427f341c13ae2ef6bead11",
+  "audio_sha256": "0fe23705d698e3f7dc6f2a4e6857b8b4655b2f42b6aaf0d1aa86304f45e54fb0",
+  "duration_seconds": 20.208,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3500000,
+      "text": "假设"
+    },
+    {
+      "offset": 4125000,
+      "duration": 2250000,
+      "text": "家里"
+    },
+    {
+      "offset": 6500000,
+      "duration": 1375000,
+      "text": "有"
+    },
+    {
+      "offset": 7875000,
+      "duration": 3375000,
+      "text": "书房"
+    },
+    {
+      "offset": 11375000,
+      "duration": 4500000,
+      "text": "工作站"
+    },
+    {
+      "offset": 16875000,
+      "duration": 1375000,
+      "text": "和"
+    },
+    {
+      "offset": 18375000,
+      "duration": 2625000,
+      "text": "客厅"
+    },
+    {
+      "offset": 21125000,
+      "duration": 4875000,
+      "text": "一体机"
+    },
+    {
+      "offset": 29875000,
+      "duration": 1875000,
+      "text": "我们"
+    },
+    {
+      "offset": 31875000,
+      "duration": 2500000,
+      "text": "希望"
+    },
+    {
+      "offset": 34625000,
+      "duration": 2625000,
+      "text": "两台"
+    },
+    {
+      "offset": 37375000,
+      "duration": 3500000,
+      "text": "电脑"
+    },
+    {
+      "offset": 41875000,
+      "duration": 1375000,
+      "text": "共"
+    },
+    {
+      "offset": 43250000,
+      "duration": 1375000,
+      "text": "用"
+    },
+    {
+      "offset": 44875000,
+      "duration": 2875000,
+      "text": "家庭"
+    },
+    {
+      "offset": 47875000,
+      "duration": 3125000,
+      "text": "安排"
+    },
+    {
+      "offset": 56750000,
+      "duration": 2250000,
+      "text": "先"
+    },
+    {
+      "offset": 59000000,
+      "duration": 2750000,
+      "text": "选择"
+    },
+    {
+      "offset": 62000000,
+      "duration": 2750000,
+      "text": "家庭"
+    },
+    {
+      "offset": 64750000,
+      "duration": 2750000,
+      "text": "共享"
+    },
+    {
+      "offset": 67500000,
+      "duration": 3750000,
+      "text": "空间"
+    },
+    {
+      "offset": 73375000,
+      "duration": 1750000,
+      "text": "在"
+    },
+    {
+      "offset": 75125000,
+      "duration": 2750000,
+      "text": "书房"
+    },
+    {
+      "offset": 77875000,
+      "duration": 1250000,
+      "text": "记"
+    },
+    {
+      "offset": 79125000,
+      "duration": 2125000,
+      "text": "下"
+    },
+    {
+      "offset": 82250000,
+      "duration": 2750000,
+      "text": "周六"
+    },
+    {
+      "offset": 85125000,
+      "duration": 6375000,
+      "text": "上午九点"
+    },
+    {
+      "offset": 92500000,
+      "duration": 2125000,
+      "text": "整理"
+    },
+    {
+      "offset": 94750000,
+      "duration": 4125000,
+      "text": "书房"
+    },
+    {
+      "offset": 101000000,
+      "duration": 1625000,
+      "text": "按"
+    },
+    {
+      "offset": 102625000,
+      "duration": 2625000,
+      "text": "主题"
+    },
+    {
+      "offset": 105500000,
+      "duration": 2375000,
+      "text": "分类"
+    },
+    {
+      "offset": 108000000,
+      "duration": 3625000,
+      "text": "书籍"
+    },
+    {
+      "offset": 113750000,
+      "duration": 4500000,
+      "text": "更新"
+    },
+    {
+      "offset": 118500000,
+      "duration": 2375000,
+      "text": "借阅"
+    },
+    {
+      "offset": 121000000,
+      "duration": 3250000,
+      "text": "登记"
+    },
+    {
+      "offset": 130000000,
+      "duration": 2500000,
+      "text": "换"
+    },
+    {
+      "offset": 132500000,
+      "duration": 1000000,
+      "text": "到"
+    },
+    {
+      "offset": 133625000,
+      "duration": 3500000,
+      "text": "客厅"
+    },
+    {
+      "offset": 137375000,
+      "duration": 3250000,
+      "text": "查询"
+    },
+    {
+      "offset": 140750000,
+      "duration": 1000000,
+      "text": "这"
+    },
+    {
+      "offset": 141750000,
+      "duration": 875000,
+      "text": "份"
+    },
+    {
+      "offset": 142750000,
+      "duration": 3000000,
+      "text": "约定"
+    },
+    {
+      "offset": 148625000,
+      "duration": 3625000,
+      "text": "助手"
+    },
+    {
+      "offset": 152500000,
+      "duration": 750000,
+      "text": "就"
+    },
+    {
+      "offset": 153250000,
+      "duration": 875000,
+      "text": "能"
+    },
+    {
+      "offset": 154125000,
+      "duration": 2875000,
+      "text": "找回"
+    },
+    {
+      "offset": 157250000,
+      "duration": 3125000,
+      "text": "时间"
+    },
+    {
+      "offset": 160625000,
+      "duration": 875000,
+      "text": "和"
+    },
+    {
+      "offset": 161625000,
+      "duration": 2875000,
+      "text": "步骤"
+    },
+    {
+      "offset": 170250000,
+      "duration": 3500000,
+      "text": "点击"
+    },
+    {
+      "offset": 173875000,
+      "duration": 4000000,
+      "text": "来源"
+    },
+    {
+      "offset": 180125000,
+      "duration": 3125000,
+      "text": "继续"
+    },
+    {
+      "offset": 183375000,
+      "duration": 3125000,
+      "text": "核对"
+    },
+    {
+      "offset": 186750000,
+      "duration": 2625000,
+      "text": "同一"
+    },
+    {
+      "offset": 189375000,
+      "duration": 1375000,
+      "text": "份"
+    },
+    {
+      "offset": 190875000,
+      "duration": 2375000,
+      "text": "记录"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

@@ -1,0 +1,249 @@
+{
+  "shot": "s27",
+  "request": {
+    "text": "日常部署和维护集中在一个应用中。安装包带齐桌面、助手运行环境与记忆服务。在设置中选择模型、配置连接，也可以查看当前版本和更新入口。升级时会校验签名、检查服务，并提供自动恢复。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "5681dce6bdb10facd446a89add131b4ae9a679244fa6583a23b42b119e6b753c",
+  "audio_sha256": "fa5cb0878e646ec57fa33b59327548e9207b821110de226c7d4af9461598593d",
+  "duration_seconds": 16.68,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3125000,
+      "text": "日常"
+    },
+    {
+      "offset": 3750000,
+      "duration": 3500000,
+      "text": "部署"
+    },
+    {
+      "offset": 7500000,
+      "duration": 1250000,
+      "text": "和"
+    },
+    {
+      "offset": 8875000,
+      "duration": 3875000,
+      "text": "维护"
+    },
+    {
+      "offset": 13875000,
+      "duration": 3000000,
+      "text": "集中"
+    },
+    {
+      "offset": 16875000,
+      "duration": 1125000,
+      "text": "在"
+    },
+    {
+      "offset": 18250000,
+      "duration": 1500000,
+      "text": "一个"
+    },
+    {
+      "offset": 19875000,
+      "duration": 2625000,
+      "text": "应用"
+    },
+    {
+      "offset": 22500000,
+      "duration": 2000000,
+      "text": "中"
+    },
+    {
+      "offset": 30125000,
+      "duration": 3500000,
+      "text": "安装"
+    },
+    {
+      "offset": 33625000,
+      "duration": 1625000,
+      "text": "包"
+    },
+    {
+      "offset": 35500000,
+      "duration": 1250000,
+      "text": "带"
+    },
+    {
+      "offset": 36750000,
+      "duration": 1125000,
+      "text": "齐"
+    },
+    {
+      "offset": 38000000,
+      "duration": 3250000,
+      "text": "桌面"
+    },
+    {
+      "offset": 44375000,
+      "duration": 3625000,
+      "text": "助手"
+    },
+    {
+      "offset": 48250000,
+      "duration": 2625000,
+      "text": "运行"
+    },
+    {
+      "offset": 50875000,
+      "duration": 4125000,
+      "text": "环境"
+    },
+    {
+      "offset": 56000000,
+      "duration": 1750000,
+      "text": "与"
+    },
+    {
+      "offset": 57875000,
+      "duration": 2875000,
+      "text": "记忆"
+    },
+    {
+      "offset": 60875000,
+      "duration": 2625000,
+      "text": "服务"
+    },
+    {
+      "offset": 69125000,
+      "duration": 1875000,
+      "text": "在"
+    },
+    {
+      "offset": 71125000,
+      "duration": 2750000,
+      "text": "设置"
+    },
+    {
+      "offset": 73875000,
+      "duration": 1625000,
+      "text": "中"
+    },
+    {
+      "offset": 75500000,
+      "duration": 2375000,
+      "text": "选择"
+    },
+    {
+      "offset": 78000000,
+      "duration": 4000000,
+      "text": "模型"
+    },
+    {
+      "offset": 83625000,
+      "duration": 2500000,
+      "text": "配置"
+    },
+    {
+      "offset": 86250000,
+      "duration": 3750000,
+      "text": "连接"
+    },
+    {
+      "offset": 93250000,
+      "duration": 1250000,
+      "text": "也"
+    },
+    {
+      "offset": 94500000,
+      "duration": 1875000,
+      "text": "可以"
+    },
+    {
+      "offset": 96375000,
+      "duration": 4000000,
+      "text": "查看"
+    },
+    {
+      "offset": 100625000,
+      "duration": 3375000,
+      "text": "当前"
+    },
+    {
+      "offset": 104000000,
+      "duration": 3125000,
+      "text": "版本"
+    },
+    {
+      "offset": 107375000,
+      "duration": 1375000,
+      "text": "和"
+    },
+    {
+      "offset": 108875000,
+      "duration": 3000000,
+      "text": "更新"
+    },
+    {
+      "offset": 112000000,
+      "duration": 3500000,
+      "text": "入口"
+    },
+    {
+      "offset": 121250000,
+      "duration": 3625000,
+      "text": "升级"
+    },
+    {
+      "offset": 124875000,
+      "duration": 2250000,
+      "text": "时"
+    },
+    {
+      "offset": 127125000,
+      "duration": 1375000,
+      "text": "会"
+    },
+    {
+      "offset": 128625000,
+      "duration": 2625000,
+      "text": "校验"
+    },
+    {
+      "offset": 131375000,
+      "duration": 4250000,
+      "text": "签名"
+    },
+    {
+      "offset": 137375000,
+      "duration": 3500000,
+      "text": "检查"
+    },
+    {
+      "offset": 141000000,
+      "duration": 3125000,
+      "text": "服务"
+    },
+    {
+      "offset": 146500000,
+      "duration": 1375000,
+      "text": "并"
+    },
+    {
+      "offset": 148000000,
+      "duration": 3375000,
+      "text": "提供"
+    },
+    {
+      "offset": 151625000,
+      "duration": 2500000,
+      "text": "自动"
+    },
+    {
+      "offset": 154125000,
+      "duration": 4000000,
+      "text": "恢复"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

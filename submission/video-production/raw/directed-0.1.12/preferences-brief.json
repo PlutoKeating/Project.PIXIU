@@ -1,0 +1,94 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "size": [
+    1440,
+    900
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 2,
+      "to": [
+        386,
+        66
+      ],
+      "click": true,
+      "label": "进入记忆",
+      "actual_start": 2.000175865017809,
+      "actual_click": 2.9205924620619044,
+      "actual_end": 3.0164191169897094
+    },
+    {
+      "at": 5,
+      "to": [
+        160,
+        246
+      ],
+      "click": true,
+      "label": "打开偏好",
+      "actual_start": 5.0001913420856,
+      "actual_click": 5.920507548027672,
+      "actual_end": 6.024024392012507
+    },
+    {
+      "at": 9,
+      "to": [
+        620,
+        270
+      ],
+      "label": "当前偏好",
+      "actual_start": 9.000094232033007,
+      "actual_click": null,
+      "actual_end": 9.800302110030316
+    },
+    {
+      "at": 14,
+      "to": [
+        960,
+        540
+      ],
+      "label": "版本历史",
+      "actual_start": 14.00009297998622,
+      "actual_click": null,
+      "actual_end": 14.800185936037451
+    },
+    {
+      "at": 20,
+      "to": [
+        160,
+        194
+      ],
+      "click": true,
+      "label": "打开简报",
+      "actual_start": 20.00008752604481,
+      "actual_click": 20.9203428120818,
+      "actual_end": 21.016566264093854
+    },
+    {
+      "at": 24,
+      "to": [
+        700,
+        320
+      ],
+      "label": "近期线索",
+      "actual_start": 24.000101293087937,
+      "actual_click": null,
+      "actual_end": 24.8001839320641
+    },
+    {
+      "at": 29,
+      "to": [
+        970,
+        580
+      ],
+      "label": "采集汇总",
+      "actual_start": 29.000086960033514,
+      "actual_click": null,
+      "actual_end": 29.80017516098451
+    }
+  ],
+  "sha256": "1d8fa71bf9f9a5da104594650c7353407beaac47832840402add9f69a8637890"
+}

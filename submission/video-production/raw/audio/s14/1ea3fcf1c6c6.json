@@ -1,0 +1,294 @@
+{
+  "shot": "s14",
+  "request": {
+    "text": "工作经验也可以整理成可重复使用的知识。假设我们负责社区图书角，系统可以分别记住书架位置、图书归还流程、分类调整案例和阅读计划模板。打开归还流程，就能按步骤核对书名、整理图书、更新登记。下次处理相似任务，助手再调用这些经验。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "1ea3fcf1c6c6cc3df3c0327aad3379fe34a7950555838e437be8cd406ebff9a9",
+  "audio_sha256": "bd7cbf88d2229e8971bec55bd5ec5228d1b52d88c1355942e0a8caa2538e83a1",
+  "duration_seconds": 20.616,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3125000,
+      "text": "工作"
+    },
+    {
+      "offset": 3625000,
+      "duration": 3750000,
+      "text": "经验"
+    },
+    {
+      "offset": 8375000,
+      "duration": 1250000,
+      "text": "也"
+    },
+    {
+      "offset": 9625000,
+      "duration": 1875000,
+      "text": "可以"
+    },
+    {
+      "offset": 11625000,
+      "duration": 2375000,
+      "text": "整理"
+    },
+    {
+      "offset": 14000000,
+      "duration": 2625000,
+      "text": "成"
+    },
+    {
+      "offset": 17875000,
+      "duration": 1750000,
+      "text": "可"
+    },
+    {
+      "offset": 19625000,
+      "duration": 4000000,
+      "text": "重复"
+    },
+    {
+      "offset": 23625000,
+      "duration": 2500000,
+      "text": "使用"
+    },
+    {
+      "offset": 26125000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 26875000,
+      "duration": 3750000,
+      "text": "知识"
+    },
+    {
+      "offset": 36375000,
+      "duration": 3375000,
+      "text": "假设"
+    },
+    {
+      "offset": 39875000,
+      "duration": 1875000,
+      "text": "我们"
+    },
+    {
+      "offset": 41875000,
+      "duration": 2375000,
+      "text": "负责"
+    },
+    {
+      "offset": 44500000,
+      "duration": 2750000,
+      "text": "社区"
+    },
+    {
+      "offset": 47375000,
+      "duration": 2625000,
+      "text": "图书"
+    },
+    {
+      "offset": 50000000,
+      "duration": 2500000,
+      "text": "角"
+    },
+    {
+      "offset": 56500000,
+      "duration": 3625000,
+      "text": "系统"
+    },
+    {
+      "offset": 60250000,
+      "duration": 2125000,
+      "text": "可以"
+    },
+    {
+      "offset": 62375000,
+      "duration": 2500000,
+      "text": "分别"
+    },
+    {
+      "offset": 65000000,
+      "duration": 2375000,
+      "text": "记住"
+    },
+    {
+      "offset": 67625000,
+      "duration": 2750000,
+      "text": "书架"
+    },
+    {
+      "offset": 70500000,
+      "duration": 3375000,
+      "text": "位置"
+    },
+    {
+      "offset": 77125000,
+      "duration": 3625000,
+      "text": "图书"
+    },
+    {
+      "offset": 80875000,
+      "duration": 2750000,
+      "text": "归还"
+    },
+    {
+      "offset": 83750000,
+      "duration": 3875000,
+      "text": "流程"
+    },
+    {
+      "offset": 90875000,
+      "duration": 2750000,
+      "text": "分类"
+    },
+    {
+      "offset": 93750000,
+      "duration": 3125000,
+      "text": "调整"
+    },
+    {
+      "offset": 97000000,
+      "duration": 3250000,
+      "text": "案例"
+    },
+    {
+      "offset": 101375000,
+      "duration": 1500000,
+      "text": "和"
+    },
+    {
+      "offset": 103000000,
+      "duration": 2750000,
+      "text": "阅读"
+    },
+    {
+      "offset": 105875000,
+      "duration": 2625000,
+      "text": "计划"
+    },
+    {
+      "offset": 108625000,
+      "duration": 3500000,
+      "text": "模板"
+    },
+    {
+      "offset": 117875000,
+      "duration": 3500000,
+      "text": "打开"
+    },
+    {
+      "offset": 121625000,
+      "duration": 2625000,
+      "text": "归还"
+    },
+    {
+      "offset": 124250000,
+      "duration": 4000000,
+      "text": "流程"
+    },
+    {
+      "offset": 131250000,
+      "duration": 1625000,
+      "text": "就"
+    },
+    {
+      "offset": 132875000,
+      "duration": 1125000,
+      "text": "能"
+    },
+    {
+      "offset": 134000000,
+      "duration": 1375000,
+      "text": "按"
+    },
+    {
+      "offset": 135375000,
+      "duration": 2375000,
+      "text": "步骤"
+    },
+    {
+      "offset": 138000000,
+      "duration": 2375000,
+      "text": "核对"
+    },
+    {
+      "offset": 140500000,
+      "duration": 3500000,
+      "text": "书名"
+    },
+    {
+      "offset": 146250000,
+      "duration": 2375000,
+      "text": "整理"
+    },
+    {
+      "offset": 148750000,
+      "duration": 3500000,
+      "text": "图书"
+    },
+    {
+      "offset": 155000000,
+      "duration": 4000000,
+      "text": "更新"
+    },
+    {
+      "offset": 159125000,
+      "duration": 3625000,
+      "text": "登记"
+    },
+    {
+      "offset": 168500000,
+      "duration": 4000000,
+      "text": "下次"
+    },
+    {
+      "offset": 172625000,
+      "duration": 2750000,
+      "text": "处理"
+    },
+    {
+      "offset": 175625000,
+      "duration": 3500000,
+      "text": "相似"
+    },
+    {
+      "offset": 179250000,
+      "duration": 3125000,
+      "text": "任务"
+    },
+    {
+      "offset": 185125000,
+      "duration": 3250000,
+      "text": "助手"
+    },
+    {
+      "offset": 188625000,
+      "duration": 1250000,
+      "text": "再"
+    },
+    {
+      "offset": 189875000,
+      "duration": 2250000,
+      "text": "调用"
+    },
+    {
+      "offset": 192375000,
+      "duration": 2000000,
+      "text": "这些"
+    },
+    {
+      "offset": 194500000,
+      "duration": 2750000,
+      "text": "经验"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

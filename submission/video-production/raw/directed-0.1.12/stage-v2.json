@@ -1,0 +1,74 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "timing_basis": "FFmpeg first progress packet, aligned to output timestamp",
+  "size": [
+    1440,
+    900
+  ],
+  "redact_rectangles": [],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 1,
+      "to": [
+        531,
+        242
+      ],
+      "click": true,
+      "label": "打开阶段记录",
+      "actual_start": 1.0001794130075723,
+      "actual_click": 1.920578329009004,
+      "actual_end": 2.01840726507362
+    },
+    {
+      "at": 5,
+      "to": [
+        569,
+        514
+      ],
+      "label": "阅读阶段内容",
+      "actual_start": 5.00007391104009,
+      "actual_click": null,
+      "actual_end": 5.8003244859864935
+    },
+    {
+      "at": 11,
+      "to": [
+        796,
+        783
+      ],
+      "label": "定位长期保存按钮",
+      "actual_start": 11.000208329991437,
+      "actual_click": null,
+      "actual_end": 11.800308685051277
+    },
+    {
+      "at": 14,
+      "to": [
+        796,
+        783
+      ],
+      "travel": 0.25,
+      "click": true,
+      "label": "保存为长期记忆",
+      "actual_start": 14.000188748002984,
+      "actual_click": 14.370409780996852,
+      "actual_end": 14.46465561108198
+    },
+    {
+      "at": 17,
+      "to": [
+        571,
+        514
+      ],
+      "label": "查看长期保存结果",
+      "actual_start": 17.00015279802028,
+      "actual_click": null,
+      "actual_end": 17.8003697990207
+    }
+  ],
+  "sha256": "f38f3d045bf12c53bd445d6b540a5e1c5ddc1574ca9393900398ec5b0ddfde32"
+}

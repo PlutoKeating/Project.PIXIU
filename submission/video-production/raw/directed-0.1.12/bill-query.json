@@ -1,0 +1,114 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "size": [
+    1440,
+    900
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 2,
+      "to": [
+        321,
+        66
+      ],
+      "click": true,
+      "label": "进入会话",
+      "actual_start": 2.0000689240405336,
+      "actual_click": 2.920461055007763,
+      "actual_end": 3.0164861161028966
+    },
+    {
+      "at": 5,
+      "to": [
+        260,
+        173
+      ],
+      "click": true,
+      "label": "新建会话",
+      "actual_start": 5.000213799066842,
+      "actual_click": 5.920511370059103,
+      "actual_end": 6.016684040077962
+    },
+    {
+      "at": 8,
+      "to": [
+        630,
+        740
+      ],
+      "click": true,
+      "label": "输入问题",
+      "actual_start": 8.000163735006936,
+      "actual_click": 8.920310048037209,
+      "actual_end": 9.017258858075365
+    },
+    {
+      "at": 10,
+      "text": "请查九月家庭账单，列出电费、水费、燃气费明细，计算合计，并给出资料来源。",
+      "label": "输入公开账单查询",
+      "actual_start": 10.000077342032455,
+      "actual_click": null,
+      "actual_end": 16.263921388075687
+    },
+    {
+      "at": 14,
+      "to": [
+        1154,
+        748
+      ],
+      "click": true,
+      "label": "发送查询",
+      "actual_start": 16.264004390104674,
+      "actual_click": 17.184165619080886,
+      "actual_end": 17.27846602606587
+    },
+    {
+      "at": 19,
+      "to": [
+        960,
+        350
+      ],
+      "label": "阅读检索过程",
+      "actual_start": 19.0000904770568,
+      "actual_click": null,
+      "actual_end": 19.800181101076305
+    },
+    {
+      "at": 32,
+      "to": [
+        800,
+        400
+      ],
+      "label": "核对回答",
+      "actual_start": 32.0001689119963,
+      "actual_click": null,
+      "actual_end": 32.80039003700949
+    },
+    {
+      "at": 48,
+      "to": [
+        625,
+        454
+      ],
+      "label": "核对合计",
+      "actual_start": 48.00009001500439,
+      "actual_click": null,
+      "actual_end": 48.800195366027765
+    },
+    {
+      "at": 61,
+      "to": [
+        730,
+        510
+      ],
+      "label": "定位来源链接",
+      "actual_start": 61.00016924110241,
+      "actual_click": null,
+      "actual_end": 61.80040467600338
+    }
+  ],
+  "sha256": "87b838dc062fa8f8765b7898f01d57aea9324a9794eeb37ba75a87951e963c2c"
+}

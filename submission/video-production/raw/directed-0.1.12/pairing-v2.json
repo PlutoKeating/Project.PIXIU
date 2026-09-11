@@ -1,0 +1,102 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "timing_basis": "FFmpeg first progress packet, aligned to output timestamp",
+  "size": [
+    1440,
+    900
+  ],
+  "redact_rectangles": [
+    [
+      432,
+      311,
+      556,
+      104
+    ],
+    [
+      432,
+      480,
+      556,
+      104
+    ]
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 1,
+      "to": [
+        196,
+        562
+      ],
+      "click": true,
+      "label": "打开配对入口",
+      "actual_start": 1.0000973889837041,
+      "actual_click": 1.9204749939963222,
+      "actual_end": 2.0172025240026414
+    },
+    {
+      "at": 4,
+      "to": [
+        635,
+        520
+      ],
+      "click": true,
+      "text_env": "PIXIU_DEMO_PAIR_TOKEN",
+      "label": "粘贴可信演示电脑的临时配对信息",
+      "actual_start": 4.00022009795066,
+      "actual_click": 4.920687614008784,
+      "actual_end": 10.48231658397708
+    },
+    {
+      "at": 12,
+      "to": [
+        650,
+        613
+      ],
+      "click": true,
+      "text_env": "PIXIU_DEMO_PAIR_PIN",
+      "label": "输入演示配对验证码",
+      "actual_start": 12.00008526595775,
+      "actual_click": 12.920505167916417,
+      "actual_end": 18.442909086006694
+    },
+    {
+      "at": 21,
+      "to": [
+        710,
+        659
+      ],
+      "click": true,
+      "label": "验证并建立信任",
+      "actual_start": 21.000103957019746,
+      "actual_click": 21.92046221892815,
+      "actual_end": 22.018147712922655
+    },
+    {
+      "at": 27,
+      "to": [
+        710,
+        732
+      ],
+      "click": true,
+      "label": "回到设备列表",
+      "actual_start": 27.00009910692461,
+      "actual_click": 27.92050287500024,
+      "actual_end": 28.019970268942416
+    },
+    {
+      "at": 30,
+      "to": [
+        400,
+        502
+      ],
+      "label": "查看可信设备",
+      "actual_start": 30.00010859395843,
+      "actual_click": null,
+      "actual_end": 30.800207459018566
+    }
+  ],
+  "sha256": "5289d8d26bba611a7c73c6e67787c54dc9ac7d17a3ece08b28f0cbe7c0d5398e"
+}

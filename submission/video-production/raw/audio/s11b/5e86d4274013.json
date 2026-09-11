@@ -1,0 +1,339 @@
+{
+  "shot": "s11b",
+  "request": {
+    "text": "活动安排发生变化时，我们希望助手及时使用新通知。接着这份观测活动资料，主办方更新了集合时间和地点。后台助手阅读通知，对照原来的记忆，提出更正建议。在审批窗口逐项核对原内容、建议和依据，然后批准保存。再次查询，时间更新为十一月十五日晚七点半，地点为社区天文台二层，预算为二千六百八十元。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "5e86d42740133caf473275138d2dfc95122b5b82891ff0926709f8710f742f43",
+  "audio_sha256": "b04380d8e4434d135c222e0c6361d7ad65affcb685f331d69e93214274d0fd02",
+  "duration_seconds": 25.968,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3500000,
+      "text": "活动"
+    },
+    {
+      "offset": 4000000,
+      "duration": 2750000,
+      "text": "安排"
+    },
+    {
+      "offset": 7000000,
+      "duration": 2375000,
+      "text": "发生"
+    },
+    {
+      "offset": 9375000,
+      "duration": 2625000,
+      "text": "变化"
+    },
+    {
+      "offset": 12000000,
+      "duration": 2625000,
+      "text": "时"
+    },
+    {
+      "offset": 16875000,
+      "duration": 2000000,
+      "text": "我们"
+    },
+    {
+      "offset": 18875000,
+      "duration": 2500000,
+      "text": "希望"
+    },
+    {
+      "offset": 21500000,
+      "duration": 3625000,
+      "text": "助手"
+    },
+    {
+      "offset": 25375000,
+      "duration": 3625000,
+      "text": "及时"
+    },
+    {
+      "offset": 29000000,
+      "duration": 2625000,
+      "text": "使用"
+    },
+    {
+      "offset": 31875000,
+      "duration": 1625000,
+      "text": "新"
+    },
+    {
+      "offset": 33500000,
+      "duration": 3750000,
+      "text": "通知"
+    },
+    {
+      "offset": 42875000,
+      "duration": 2750000,
+      "text": "接着"
+    },
+    {
+      "offset": 45750000,
+      "duration": 1250000,
+      "text": "这"
+    },
+    {
+      "offset": 47000000,
+      "duration": 1625000,
+      "text": "份"
+    },
+    {
+      "offset": 48875000,
+      "duration": 3125000,
+      "text": "观测"
+    },
+    {
+      "offset": 52000000,
+      "duration": 2375000,
+      "text": "活动"
+    },
+    {
+      "offset": 54500000,
+      "duration": 3375000,
+      "text": "资料"
+    },
+    {
+      "offset": 61625000,
+      "duration": 5500000,
+      "text": "主办方"
+    },
+    {
+      "offset": 67375000,
+      "duration": 3125000,
+      "text": "更新"
+    },
+    {
+      "offset": 70500000,
+      "duration": 1000000,
+      "text": "了"
+    },
+    {
+      "offset": 71750000,
+      "duration": 2750000,
+      "text": "集合"
+    },
+    {
+      "offset": 74500000,
+      "duration": 3375000,
+      "text": "时间"
+    },
+    {
+      "offset": 78125000,
+      "duration": 1000000,
+      "text": "和"
+    },
+    {
+      "offset": 79250000,
+      "duration": 3250000,
+      "text": "地点"
+    },
+    {
+      "offset": 88250000,
+      "duration": 4250000,
+      "text": "后台"
+    },
+    {
+      "offset": 92500000,
+      "duration": 3000000,
+      "text": "助手"
+    },
+    {
+      "offset": 95750000,
+      "duration": 2125000,
+      "text": "阅读"
+    },
+    {
+      "offset": 98000000,
+      "duration": 4000000,
+      "text": "通知"
+    },
+    {
+      "offset": 104375000,
+      "duration": 2625000,
+      "text": "对照"
+    },
+    {
+      "offset": 107250000,
+      "duration": 2625000,
+      "text": "原来"
+    },
+    {
+      "offset": 109875000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 110625000,
+      "duration": 3125000,
+      "text": "记忆"
+    },
+    {
+      "offset": 115625000,
+      "duration": 3750000,
+      "text": "提出"
+    },
+    {
+      "offset": 119625000,
+      "duration": 3250000,
+      "text": "更正"
+    },
+    {
+      "offset": 123000000,
+      "duration": 3250000,
+      "text": "建议"
+    },
+    {
+      "offset": 132000000,
+      "duration": 2250000,
+      "text": "在"
+    },
+    {
+      "offset": 134375000,
+      "duration": 3000000,
+      "text": "审批"
+    },
+    {
+      "offset": 137375000,
+      "duration": 4500000,
+      "text": "窗口"
+    },
+    {
+      "offset": 143000000,
+      "duration": 3250000,
+      "text": "逐项"
+    },
+    {
+      "offset": 146375000,
+      "duration": 2375000,
+      "text": "核对"
+    },
+    {
+      "offset": 149000000,
+      "duration": 1125000,
+      "text": "原"
+    },
+    {
+      "offset": 150125000,
+      "duration": 3500000,
+      "text": "内容"
+    },
+    {
+      "offset": 155750000,
+      "duration": 3000000,
+      "text": "建议"
+    },
+    {
+      "offset": 159000000,
+      "duration": 750000,
+      "text": "和"
+    },
+    {
+      "offset": 159875000,
+      "duration": 3875000,
+      "text": "依据"
+    },
+    {
+      "offset": 165750000,
+      "duration": 2750000,
+      "text": "然后"
+    },
+    {
+      "offset": 168750000,
+      "duration": 3000000,
+      "text": "批准"
+    },
+    {
+      "offset": 171875000,
+      "duration": 4000000,
+      "text": "保存"
+    },
+    {
+      "offset": 181625000,
+      "duration": 2875000,
+      "text": "再次"
+    },
+    {
+      "offset": 184625000,
+      "duration": 4000000,
+      "text": "查询"
+    },
+    {
+      "offset": 191625000,
+      "duration": 3250000,
+      "text": "时间"
+    },
+    {
+      "offset": 194875000,
+      "duration": 2875000,
+      "text": "更新"
+    },
+    {
+      "offset": 197750000,
+      "duration": 2000000,
+      "text": "为"
+    },
+    {
+      "offset": 200000000,
+      "duration": 8500000,
+      "text": "十一月十五日"
+    },
+    {
+      "offset": 208500000,
+      "duration": 6375000,
+      "text": "晚七点半"
+    },
+    {
+      "offset": 217750000,
+      "duration": 2375000,
+      "text": "地点"
+    },
+    {
+      "offset": 220250000,
+      "duration": 1500000,
+      "text": "为"
+    },
+    {
+      "offset": 222000000,
+      "duration": 3250000,
+      "text": "社区"
+    },
+    {
+      "offset": 225375000,
+      "duration": 3750000,
+      "text": "天文台"
+    },
+    {
+      "offset": 229250000,
+      "duration": 4000000,
+      "text": "二层"
+    },
+    {
+      "offset": 235750000,
+      "duration": 2625000,
+      "text": "预算"
+    },
+    {
+      "offset": 238500000,
+      "duration": 1875000,
+      "text": "为"
+    },
+    {
+      "offset": 240625000,
+      "duration": 10250000,
+      "text": "二千六百八十元"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

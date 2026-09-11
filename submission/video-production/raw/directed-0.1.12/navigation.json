@@ -1,0 +1,106 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "size": [
+    1440,
+    900
+  ],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 2,
+      "to": [
+        321,
+        66
+      ],
+      "click": true,
+      "label": "会话入口",
+      "actual_start": 2.000150950974785,
+      "actual_click": 2.920519540901296,
+      "actual_end": 3.0271064589032903
+    },
+    {
+      "at": 5,
+      "to": [
+        850,
+        380
+      ],
+      "label": "回答与结果",
+      "actual_start": 5.000143558951095,
+      "actual_click": null,
+      "actual_end": 5.800355352926999
+    },
+    {
+      "at": 9,
+      "to": [
+        386,
+        66
+      ],
+      "click": true,
+      "label": "记忆入口",
+      "actual_start": 9.000241064932197,
+      "actual_click": 9.920690617989749,
+      "actual_end": 10.01652915100567
+    },
+    {
+      "at": 12,
+      "to": [
+        620,
+        230
+      ],
+      "label": "记忆工作区",
+      "actual_start": 12.000191109953448,
+      "actual_click": null,
+      "actual_end": 12.800350455916487
+    },
+    {
+      "at": 16,
+      "to": [
+        451,
+        66
+      ],
+      "click": true,
+      "label": "设备入口",
+      "actual_start": 16.00017199490685,
+      "actual_click": 16.920574880903587,
+      "actual_end": 17.016681904904544
+    },
+    {
+      "at": 19,
+      "to": [
+        780,
+        310
+      ],
+      "label": "可信设备",
+      "actual_start": 19.00008917390369,
+      "actual_click": null,
+      "actual_end": 19.80027544591576
+    },
+    {
+      "at": 23,
+      "to": [
+        517,
+        66
+      ],
+      "click": true,
+      "label": "设置入口",
+      "actual_start": 23.000169326900505,
+      "actual_click": 23.920559972990304,
+      "actual_end": 24.01703402993735
+    },
+    {
+      "at": 26,
+      "to": [
+        750,
+        290
+      ],
+      "label": "设置内容",
+      "actual_start": 26.00009400397539,
+      "actual_click": null,
+      "actual_end": 26.8003929349361
+    }
+  ],
+  "sha256": "c2a576e85e0055a0ff4157569c2c519db03a7cc8344925a98977eafdaf698daf"
+}

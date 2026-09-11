@@ -1,0 +1,1381 @@
+{
+  "version": "0.1.12",
+  "capture_date": "2026-09-10",
+  "assets": {
+    "shared-workspace": {
+      "kind": "image",
+      "src": "current/shared-workspace.png",
+      "width": 1200,
+      "height": 740,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+      "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
+    },
+    "sdk-version": {
+      "kind": "image",
+      "src": "current/sdk-version.png",
+      "width": 980,
+      "height": 198,
+      "source": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+      "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
+    },
+    "directory-folder": {
+      "kind": "image",
+      "src": "current/directory-folder.png",
+      "width": 1024,
+      "height": 270,
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
+      "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+    },
+    "directory-recall": {
+      "kind": "image",
+      "src": "current/directory-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+      "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+    },
+    "directory-source": {
+      "kind": "image",
+      "src": "current/directory-source.png",
+      "width": 760,
+      "height": 640,
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+      "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+    },
+    "dreaming-review": {
+      "kind": "image",
+      "src": "current/dreaming-review.png",
+      "width": 880,
+      "height": 620,
+      "source": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+      "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+      "native_pointer": true
+    },
+    "updated-recall": {
+      "kind": "image",
+      "src": "current/updated-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
+      "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+    },
+    "bill-recall": {
+      "kind": "image",
+      "src": "current/bill-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+      "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
+    },
+    "bill-source": {
+      "kind": "image",
+      "src": "current/bill-source.png",
+      "width": 760,
+      "height": 640,
+      "source": "docs/delivery/assets/operations/03-current-workflows/bill-source.png",
+      "sha256": "c01a8e1150bc3bd281e225fc5935aabdee9d42edc0402fbf8bd6c461069a7627"
+    },
+    "preference-history": {
+      "kind": "image",
+      "src": "current/preference-history.png",
+      "width": 1024,
+      "height": 650,
+      "source": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+      "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
+    },
+    "shared-settings": {
+      "kind": "image",
+      "src": "current/shared-settings.png",
+      "width": 744,
+      "height": 310,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-settings.png",
+      "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7",
+      "native_pointer": true
+    },
+    "shared-recall": {
+      "kind": "image",
+      "src": "current/shared-recall.png",
+      "width": 900,
+      "height": 596,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+      "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
+    },
+    "shared-source": {
+      "kind": "image",
+      "src": "current/shared-source.png",
+      "width": 760,
+      "height": 640,
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-source.png",
+      "sha256": "49b0e5de08863f5b28b11d318548d206d15d58cfcab18a62c22ee83e7b74fa7d"
+    },
+    "brief": {
+      "kind": "image",
+      "src": "current/outro-insight.png",
+      "width": 1024,
+      "height": 309,
+      "crop_box": [
+        0,
+        0,
+        1024,
+        309
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+      "source_sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0",
+      "sha256": "56beaecc6b476079da624b121ca7ead47de30eeb13e64c8592427b9120be4da5"
+    },
+    "device-controls": {
+      "kind": "image",
+      "src": "current/device-controls.png",
+      "width": 1044,
+      "height": 385,
+      "source": "docs/delivery/assets/operations/03-current-workflows/device-controls.png",
+      "sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310"
+    },
+    "desktop-shortcut": {
+      "kind": "image",
+      "src": "current/desktop-shortcut.png",
+      "width": 744,
+      "height": 144,
+      "source": "docs/delivery/assets/operations/03-current-workflows/desktop-shortcut.png",
+      "sha256": "90e7d3f87ebde113f7b5393870c67cbfaa69784140fddab0b62ccc03adaf93db"
+    },
+    "manual-entry": {
+      "kind": "image",
+      "src": "current/manual-entry.png",
+      "width": 550,
+      "height": 328,
+      "source": "docs/delivery/assets/operations/03-current-workflows/manual-entry.png",
+      "sha256": "ac34f264322a05aef4f12645be32089f907c69afcda170a9b2a6e56aa32aff12"
+    },
+    "manual-recalled-body": {
+      "kind": "image",
+      "src": "current/manual-recalled-body.png",
+      "width": 650,
+      "height": 68,
+      "source": "docs/delivery/assets/operations/03-current-workflows/manual-recalled-body.png",
+      "sha256": "76317b3278f7a3a363af938190ff7182f972b17a662616cf78d2bb42fef83a61"
+    },
+    "edit-version-one": {
+      "kind": "image",
+      "src": "current/edit-version-one.png",
+      "width": 620,
+      "height": 398,
+      "source": "docs/delivery/assets/operations/03-current-workflows/edit-version-one.png",
+      "sha256": "d636ef7f61a794ff27049683c16a1ba0f383eb49bff91a7039985de2a100228d"
+    },
+    "edit-version-two": {
+      "kind": "image",
+      "src": "current/edit-version-two.png",
+      "width": 620,
+      "height": 398,
+      "source": "docs/delivery/assets/operations/03-current-workflows/edit-version-two.png",
+      "sha256": "3f5f888d79a683c4c13d52d9fda4a4900d86d71e94cd8073c09fe3f4243c2d48",
+      "native_pointer": true
+    },
+    "stage-record": {
+      "kind": "image",
+      "src": "current/stage-record.png",
+      "width": 1024,
+      "height": 560,
+      "source": "docs/delivery/assets/operations/03-current-workflows/stage-record.png",
+      "sha256": "f8e68117b32b825dd32420f9aa5bd0de1ad7c4a931653b6d7f9c0c4acd46511e",
+      "native_pointer": true
+    },
+    "forget-target": {
+      "kind": "image",
+      "src": "current/forget-target.png",
+      "width": 1000,
+      "height": 58,
+      "source": "docs/delivery/assets/operations/03-current-workflows/forget-target.png",
+      "sha256": "371f1541179eb0e6ee3f393df3c5f673ea96595a53e5aa34d684c5886d7739f4"
+    },
+    "forget-completed": {
+      "kind": "image",
+      "src": "current/forget-completed.png",
+      "width": 216,
+      "height": 26,
+      "source": "docs/delivery/assets/operations/03-current-workflows/forget-completed.png",
+      "sha256": "ea871e6ec8c89f60d4b75ef323873c5dd16f1caf66d59dd62afc265d83d93584"
+    },
+    "agent-task-result": {
+      "kind": "image",
+      "src": "current/agent-task-result.png",
+      "width": 816,
+      "height": 176,
+      "source": "docs/delivery/assets/operations/03-current-workflows/agent-task-result.png",
+      "sha256": "3f1640a4ea50f13119d14a28efacb5d3c1f673edf4f541a52f6a865329baef7c"
+    },
+    "agent-tools-completed": {
+      "kind": "image",
+      "src": "current/agent-tools-completed.png",
+      "width": 816,
+      "height": 312,
+      "source": "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
+      "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16",
+      "native_pointer": true
+    },
+    "agent-task-recall": {
+      "kind": "image",
+      "src": "current/agent-task-recall.png",
+      "width": 816,
+      "height": 226,
+      "source": "docs/delivery/assets/operations/03-current-workflows/agent-task-recall.png",
+      "sha256": "d6acdd90b8e913ba566ce709558045ff73cbf856dec74cc65bf7f28bfa7e0525"
+    },
+    "keyword-result": {
+      "kind": "image",
+      "src": "current/keyword-result.png",
+      "width": 976,
+      "height": 288,
+      "source": "docs/delivery/assets/operations/03-current-workflows/keyword-result.png",
+      "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37"
+    },
+    "keyword-source-body": {
+      "kind": "image",
+      "src": "current/keyword-source-body.png",
+      "width": 650,
+      "height": 66,
+      "source": "docs/delivery/assets/operations/03-current-workflows/keyword-source-body.png",
+      "sha256": "3c1b465b8853e9d0875a06703f5ec77fe25b20468acec8a0fb8a19f22b12d041"
+    },
+    "knowledge-workflow-body": {
+      "kind": "image",
+      "src": "current/knowledge-workflow-body.png",
+      "width": 650,
+      "height": 96,
+      "source": "docs/delivery/assets/operations/03-current-workflows/knowledge-workflow-body.png",
+      "sha256": "10f6242609f13542c64e897fd70a3f11b26e0b47b39c50785e4f68286a0be1cc"
+    },
+    "behavior-enabled": {
+      "kind": "image",
+      "src": "current/behavior-enabled.png",
+      "width": 110,
+      "height": 26,
+      "source": "docs/delivery/assets/operations/03-current-workflows/behavior-enabled.png",
+      "sha256": "34fa9cd4e22e7949c29967f457fbc6876d495d3afd0275e1b5e7190f061ca8e7"
+    },
+    "behavior-demo-window": {
+      "kind": "image",
+      "src": "current/behavior-demo-window.png",
+      "width": 900,
+      "height": 538,
+      "source": "docs/delivery/assets/operations/03-current-workflows/behavior-demo-window.png",
+      "sha256": "f624f7f5f730ce2d624f9b570b4f93b68e9f55972285257e6ad4f815cee59603",
+      "native_pointer": true
+    },
+    "behavior-source-body": {
+      "kind": "image",
+      "src": "current/behavior-source-body.png",
+      "width": 650,
+      "height": 176,
+      "source": "docs/delivery/assets/operations/03-current-workflows/behavior-source-body.png",
+      "sha256": "f16ffbc8597feee89722040d5053d8e4ee07450c881267bbf6ca1024829d7754"
+    },
+    "bill-query": {
+      "kind": "video",
+      "src": "current/bill-query.mp4",
+      "end": "current/bill-query-end.png",
+      "width": 900,
+      "height": 596,
+      "frames": 300,
+      "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+      "start_seconds": 14,
+      "duration_seconds": 10,
+      "speed": 1,
+      "crop": "900:596:410:96",
+      "source_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
+      "sha256": "129b287cee81605251540c7ebe0ae1a94e699d64a5b1cad7c2bca3130fd99aa2",
+      "end_sha256": "53e9fcafd2a05a7effec55010b2e79ff8e0c74bb479dd5472d407094c9caf0a3"
+    },
+    "bill-citation": {
+      "kind": "video",
+      "src": "current/bill-citation.mp4",
+      "end": "current/bill-citation-end.png",
+      "width": 760,
+      "height": 640,
+      "frames": 300,
+      "source": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+      "start_seconds": 47,
+      "duration_seconds": 10,
+      "speed": 1,
+      "crop": "760:640:330:98",
+      "source_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
+      "sha256": "b3acc8c362487a3d38464e7e1f67c0c481d73140f2da216b121ce3d73a33779a",
+      "end_sha256": "e694815efec6f4b4df12b3d0123336af7e7ff314545c0f15260d39a27ebb796b"
+    },
+    "directory-progress": {
+      "kind": "video",
+      "src": "current/directory-progress.mp4",
+      "end": "current/directory-progress-end.png",
+      "width": 600,
+      "height": 96,
+      "frames": 270,
+      "source": "submission/video-production/raw/current-0.1.12/directory-dreaming-02.mp4",
+      "start_seconds": 16,
+      "duration_seconds": 9,
+      "speed": 1,
+      "crop": "600:96:120:38",
+      "source_sha256": "a748096d3cbca974503b47d0e13b812f31255e66461952e6f69d75ba1b80a65d",
+      "sha256": "f4719d982e79e4886ff759daa943b1e7459efe9643376a71108694294b4b62a8",
+      "end_sha256": "cd3b65e176977303b5f937c025a8056dfc491c4fc65048915176af79e5234b47"
+    },
+    "directory-query": {
+      "kind": "video",
+      "src": "current/directory-query.mp4",
+      "end": "current/directory-query-end.png",
+      "width": 850,
+      "height": 300,
+      "frames": 330,
+      "source": "submission/video-production/raw/current-0.1.12/directory-recall-01.mp4",
+      "start_seconds": 13,
+      "duration_seconds": 11,
+      "speed": 1,
+      "crop": "850:300:460:310",
+      "source_sha256": "343679ab93559b575c001195074fcb3accf784654dfa5d0fc92a87d6eee0eb9f",
+      "sha256": "3be27540e588a1bb0c57da4eba07dc21c939189fc28d9c742d4c4eff94f7520c",
+      "end_sha256": "dec9668c38669a8292b4a5af1c3f9d20c38e578cbda31b811b001518696bdecd"
+    },
+    "directory-approval": {
+      "kind": "video",
+      "src": "current/directory-approval.mp4",
+      "end": "current/directory-approval-end.png",
+      "width": 880,
+      "height": 620,
+      "frames": 120,
+      "source": "submission/video-production/raw/current-0.1.12/dreaming-approve-01.mp4",
+      "start_seconds": 0,
+      "duration_seconds": 4,
+      "speed": 1,
+      "crop": "880:620:270:108",
+      "source_sha256": "8cc79ed4e6747826f5fa5b12ab3f9badf1d0b4261b8fb5058cbd65f8b4ead661",
+      "sha256": "c98a050bb50bb9ffa50304c8ad3b87bf1b7927aa01848ffb842be199f33a6df1",
+      "end_sha256": "2c95c51c4381a5d5f3fda55bec639e6c6ce8bebe99a98e5060f9358d23cbc5ee",
+      "playback_alignment": "start"
+    },
+    "updated-query": {
+      "kind": "video",
+      "src": "current/updated-query.mp4",
+      "end": "current/updated-query-end.png",
+      "width": 850,
+      "height": 300,
+      "frames": 300,
+      "source": "submission/video-production/raw/current-0.1.12/dreaming-updated-recall-01.mp4",
+      "start_seconds": 38,
+      "duration_seconds": 10,
+      "speed": 1,
+      "crop": "850:300:460:310",
+      "source_sha256": "e1eb0c931041bda8fae8c1fad127e93824bb9be23d16699ec60278a3a5eee2f2",
+      "sha256": "c4f48297194ffec482dad359e3d48f13ffa0b9f990353c3bb401b0da57877b11",
+      "end_sha256": "838a772b60e6785d17ed3ea788023eda202da9b35879501c1f677251e817b7b3"
+    },
+    "shared-query": {
+      "kind": "video",
+      "src": "current/shared-query.mp4",
+      "end": "current/shared-query-end.png",
+      "width": 850,
+      "height": 300,
+      "frames": 420,
+      "source": "submission/video-production/raw/current-0.1.12/shared-recall-01.mp4",
+      "start_seconds": 48,
+      "duration_seconds": 14,
+      "speed": 1,
+      "crop": "850:300:460:310",
+      "source_sha256": "f07b2e931e55d3e3b64c29d6bfda2a18169ba742d6b5ba7887b9686f0eefe082",
+      "sha256": "3541fd74461aaa4e82fb37ad50a0cd8b66c84d209859f5c6e239fe22866a3564",
+      "end_sha256": "27d84a5977668b41eb9ef853dbd7ec862a36dd49556ba8c5bf3b642e9199651a"
+    },
+    "shared-citation": {
+      "kind": "video",
+      "src": "current/shared-citation.mp4",
+      "end": "current/shared-citation-end.png",
+      "width": 740,
+      "height": 150,
+      "frames": 240,
+      "source": "submission/video-production/raw/current-0.1.12/shared-source-01.mp4",
+      "start_seconds": 0,
+      "duration_seconds": 8,
+      "speed": 1,
+      "crop": "740:150:340:138",
+      "source_sha256": "8a8e83220643bdb01fb4f678e221ec8c3e3795a59739a8342312ffe92ac9a438",
+      "sha256": "1f69a92800024114eb6e81f2f457c17c1fd449bf2b5cfab95d6852676ca9de66",
+      "end_sha256": "30cf2639ebf759753fd06509f1cddbe9f511aa571cdff487cc2d76530568cefb"
+    },
+    "manual-form": {
+      "kind": "video",
+      "src": "current/manual-form.mp4",
+      "end": "current/manual-form-end.png",
+      "width": 550,
+      "height": 328,
+      "frames": 150,
+      "source": "submission/video-production/raw/current-0.1.12/current-manual-01.mp4",
+      "start_seconds": 35,
+      "duration_seconds": 5,
+      "speed": 1,
+      "crop": "550:328:434:220",
+      "source_sha256": "e7cef03d9f66a923dd8489281b6dc9dc60f65cb0d6acbc9dd0ca04bb2ffe71a0",
+      "sha256": "121afaf4cc71e46c7e4e63a31cfcdc7ae43f9a2928b25ad11166171e04fe20e0",
+      "end_sha256": "893fa1643e201e6d904f24463c3490c5914cf04ab0f09866f3e16952ffc1230d"
+    },
+    "edit-change": {
+      "kind": "video",
+      "src": "current/edit-change.mp4",
+      "end": "current/edit-change-end.png",
+      "width": 620,
+      "height": 398,
+      "frames": 270,
+      "source": "submission/video-production/raw/current-0.1.12/current-edit-01.mp4",
+      "start_seconds": 24,
+      "duration_seconds": 9,
+      "speed": 1,
+      "crop": "620:398:399:187",
+      "source_sha256": "95f2dd07692a389a8c2c2d46dfa1e7ae8a5dcfd4a5e2683a725daa57a6fcca0e",
+      "sha256": "f1bf3d13a1f56a5f652667e05dbe3a2a0c1722cd9367afe37ab9985d7919a969",
+      "end_sha256": "34323828631b39e64cfec4efa78664f7e8535a42b8bbdd9a35ef9c10072de0c4"
+    },
+    "model-options": {
+      "kind": "image",
+      "src": "current/model-options.png",
+      "width": 272,
+      "height": 145,
+      "source": "submission/video-production/raw/current-0.1.12/model-options.png",
+      "sha256": "612beebdb2d9bd69c8624c383b405d23416feb8b4b099db225e25202a71b8921"
+    },
+    "update-panel": {
+      "kind": "image",
+      "src": "current/update-panel.png",
+      "width": 750,
+      "height": 163,
+      "source": "submission/video-production/raw/current-0.1.12/update-panel.png",
+      "sha256": "9ed18fdd958fae03b9b706cea070256490229de75bb171bec563ea9e37558b3d"
+    },
+    "keyword-results": {
+      "kind": "image",
+      "src": "current/keyword-results.png",
+      "width": 976,
+      "height": 135,
+      "crop_box": [
+        0,
+        0,
+        976,
+        135
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/keyword-result.png",
+      "source_sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37",
+      "sha256": "4fa9968ef884e3287ee3171856ce89a25aecee397ad44a47c6c5928f9458079d",
+      "native_pointer": true
+    },
+    "directory-original": {
+      "kind": "image",
+      "src": "current/directory-original.png",
+      "width": 760,
+      "height": 185,
+      "crop_box": [
+        0,
+        0,
+        760,
+        185
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+      "source_sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6",
+      "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb"
+    },
+    "outro-nav": {
+      "kind": "image",
+      "src": "current/outro-nav.png",
+      "width": 1200,
+      "height": 56,
+      "crop_box": [
+        0,
+        0,
+        1200,
+        56
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+      "source_sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1",
+      "sha256": "6aa20862dec24c2b8a78d0fed607bcdad52087c535f71621b042c3782bb667f3"
+    },
+    "outro-task": {
+      "kind": "image",
+      "src": "current/outro-task.png",
+      "width": 780,
+      "height": 300,
+      "crop_box": [
+        60,
+        215,
+        840,
+        515
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
+      "source_sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd",
+      "sha256": "d730b1bae6d864d7bd6b8ce91fa3f6d49a290f81130e8e2587adb473c15805a2"
+    },
+    "outro-memory": {
+      "kind": "image",
+      "src": "current/outro-memory.png",
+      "width": 790,
+      "height": 275,
+      "crop_box": [
+        60,
+        225,
+        850,
+        500
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+      "source_sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa",
+      "sha256": "5a85ee51356fdacd8de19a492e63d8c2cfcee5c2938295764a600566c673084f"
+    },
+    "outro-capture": {
+      "kind": "image",
+      "src": "current/outro-capture.png",
+      "width": 1024,
+      "height": 270,
+      "crop_box": [
+        0,
+        0,
+        1024,
+        270
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
+      "source_sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b",
+      "sha256": "855b9923b658318c46b2364b0a42832223477cb187931c99f25f8b81f16e6939"
+    },
+    "outro-preference": {
+      "kind": "image",
+      "src": "current/outro-preference.png",
+      "width": 1024,
+      "height": 256,
+      "crop_box": [
+        0,
+        394,
+        1024,
+        650
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+      "source_sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341",
+      "sha256": "51805e97841d4a69a9acd2d0bfffe23c5166de4a87eeb95067dc9809944dea71"
+    },
+    "outro-approval": {
+      "kind": "image",
+      "src": "current/outro-approval.png",
+      "width": 880,
+      "height": 410,
+      "crop_box": [
+        0,
+        210,
+        880,
+        620
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
+      "source_sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+      "sha256": "053e8cd60587e1c877d11f2d14b3fcd135d3e758f19d88baca3ec18b7215dae8"
+    },
+    "outro-shared": {
+      "kind": "image",
+      "src": "current/outro-shared.png",
+      "width": 800,
+      "height": 180,
+      "crop_box": [
+        60,
+        210,
+        860,
+        390
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+      "source_sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5",
+      "sha256": "8dec773dde8ae3f641feec60a4032bd741a7783e53dc46f6022916a0e8decaab"
+    },
+    "outro-insight": {
+      "kind": "image",
+      "src": "current/outro-insight.png",
+      "width": 1024,
+      "height": 309,
+      "crop_box": [
+        0,
+        0,
+        1024,
+        309
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+      "source_sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0",
+      "sha256": "56beaecc6b476079da624b121ca7ead47de30eeb13e64c8592427b9120be4da5"
+    },
+    "outro-devices": {
+      "kind": "image",
+      "src": "current/outro-devices.png",
+      "width": 1044,
+      "height": 181,
+      "crop_box": [
+        0,
+        0,
+        1044,
+        181
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/device-controls.png",
+      "source_sha256": "c1950c7759aa0bff2929d31dc8977a4f4d15fe56871d760d89f0ea8e6daa6310",
+      "sha256": "68cb7d63d998e6d05d4f01b685102348b77dd8d2a32a2b94332bc8a8871dff93"
+    },
+    "forget-confirmed": {
+      "kind": "image",
+      "src": "current/forget-confirmed.png",
+      "width": 148,
+      "height": 26,
+      "crop_box": [
+        0,
+        0,
+        148,
+        26
+      ],
+      "source": "docs/delivery/assets/operations/03-current-workflows/forget-completed.png",
+      "source_sha256": "ea871e6ec8c89f60d4b75ef323873c5dd16f1caf66d59dd62afc265d83d93584",
+      "sha256": "134843c6a38a535c8585fdc0c9623c51eeed67eb3b099d586564dacecf74d48e"
+    },
+    "navigation-conversation": {
+      "kind": "video",
+      "src": "directed/navigation-conversation.mp4",
+      "end": "directed/navigation-conversation-end.png",
+      "width": 1200,
+      "height": 56,
+      "frames": 150,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/navigation.mp4",
+      "start_seconds": 1,
+      "duration_seconds": 5,
+      "crop": "1200:56:120:38",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "c2a576e85e0055a0ff4157569c2c519db03a7cc8344925a98977eafdaf698daf",
+      "sha256": "110f73e8620f91c94812f952e18c2a2b9c28b3ee4b408ba8e99d2a3de34d6f8e"
+    },
+    "navigation-memory": {
+      "kind": "video",
+      "src": "directed/navigation-memory.mp4",
+      "end": "directed/navigation-memory-end.png",
+      "width": 1200,
+      "height": 56,
+      "frames": 150,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/navigation.mp4",
+      "start_seconds": 8,
+      "duration_seconds": 5,
+      "crop": "1200:56:120:38",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "c2a576e85e0055a0ff4157569c2c519db03a7cc8344925a98977eafdaf698daf",
+      "sha256": "02d621c591eaef96df6d243a7e8af70a9f6f551aa42b841b28493077bbed33ee"
+    },
+    "navigation-devices": {
+      "kind": "video",
+      "src": "directed/navigation-devices.mp4",
+      "end": "directed/navigation-devices-end.png",
+      "width": 1200,
+      "height": 56,
+      "frames": 150,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/navigation.mp4",
+      "start_seconds": 15,
+      "duration_seconds": 5,
+      "crop": "1200:56:120:38",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "c2a576e85e0055a0ff4157569c2c519db03a7cc8344925a98977eafdaf698daf",
+      "sha256": "0e793fa31c3911cda574259f0b58d0329b1334aaf3430f8612b1a8c5da4af462"
+    },
+    "navigation-settings": {
+      "kind": "video",
+      "src": "directed/navigation-settings.mp4",
+      "end": "directed/navigation-settings-end.png",
+      "width": 1200,
+      "height": 56,
+      "frames": 150,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/navigation.mp4",
+      "start_seconds": 22,
+      "duration_seconds": 5,
+      "crop": "1200:56:120:38",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "c2a576e85e0055a0ff4157569c2c519db03a7cc8344925a98977eafdaf698daf",
+      "sha256": "55e2557045008a834fbc0706212b1b9b0b8744a3c30cfef64a399e874c92de00"
+    },
+    "bill-amounts": {
+      "kind": "video",
+      "src": "directed/bill-amounts.mp4",
+      "end": "directed/bill-amounts-end.png",
+      "width": 820,
+      "height": 286,
+      "frames": 360,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/bill.mp4",
+      "start_seconds": 7,
+      "duration_seconds": 12,
+      "crop": "820:286:480:190",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "0aa50bfccf1e67e922fbd8ba64515590ac095f9799ac6240b080eb8acd723e49",
+      "sha256": "51ddf691c88748211e7832349c8ddd6fedf347af042cf1abf5857355f3699f2c"
+    },
+    "preferences": {
+      "kind": "video",
+      "src": "directed/preferences.mp4",
+      "end": "directed/preferences-end.png",
+      "width": 620,
+      "height": 594,
+      "frames": 450,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/preferences-focus.mp4",
+      "start_seconds": 7,
+      "duration_seconds": 15,
+      "crop": "620:594:290:146",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "a32e0b2b991547b8325d920bec55b8b8ccf86f378d55e8e8c90ebc8d40294de6",
+      "sha256": "557029b13dd9c0f8f2251c675b34460d71daeb75c3655ed48981ec80df87fd1c",
+      "clicks": []
+    },
+    "brief-reading": {
+      "kind": "video",
+      "src": "directed/brief-reading.mp4",
+      "end": "directed/brief-reading-end.png",
+      "width": 984,
+      "height": 244,
+      "frames": 360,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/preferences-brief.mp4",
+      "start_seconds": 21,
+      "duration_seconds": 12,
+      "crop": "984:244:290:410",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "1d8fa71bf9f9a5da104594650c7353407beaac47832840402add9f69a8637890",
+      "sha256": "9d03bdaf2f67493f1da0c9e5d39db16142029e8bf2333113c5a421c778f13c5c"
+    },
+    "new-bill-answer": {
+      "kind": "video",
+      "src": "directed/new-bill-answer.mp4",
+      "end": "directed/new-bill-answer-end.png",
+      "width": 820,
+      "height": 360,
+      "frames": 120,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/bill-full.mp4",
+      "start_seconds": 26,
+      "duration_seconds": 4,
+      "crop": "820:360:470:185",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "54d748d8619792255f8751bc79a0b132576c01e58c447b337139b69a4995e98d",
+      "sha256": "4e61f6c72c9cc6374808b8db5f6d2b40f6af2b4878c7bb450400e4f46d3fc27b",
+      "clicks": []
+    },
+    "new-bill-source": {
+      "kind": "video",
+      "src": "directed/new-bill-source.mp4",
+      "end": "directed/new-bill-source-end.png",
+      "width": 760,
+      "height": 640,
+      "frames": 300,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/bill-full.mp4",
+      "start_seconds": 30,
+      "duration_seconds": 10,
+      "crop": "760:640:330:98",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "54d748d8619792255f8751bc79a0b132576c01e58c447b337139b69a4995e98d",
+      "sha256": "865167b9fdd162202eb12723957bd7ab333768ccdc9bdd67dc78569becf2381e",
+      "clicks": [
+        {
+          "frame": 58,
+          "x": 395,
+          "y": 421
+        }
+      ]
+    },
+    "workflow-source": {
+      "kind": "video",
+      "src": "directed/workflow-source.mp4",
+      "end": "directed/workflow-source-end.png",
+      "width": 660,
+      "height": 112,
+      "frames": 300,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/workflow.mp4",
+      "start_seconds": 2.5,
+      "duration_seconds": 10,
+      "crop": "660:112:628:380",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "dbcbf978ffa57222d55a1de66b4fbc9fe8d2aff00cd3a60e73fba542265498d1",
+      "sha256": "1b4c5c8fada02bef095ed19b9492fc50acdd27aa26b0adf17d7a585ef525c9f0",
+      "clicks": []
+    },
+    "pair-result": {
+      "kind": "video",
+      "src": "directed/pair-result.mp4",
+      "end": "directed/pair-result-end.png",
+      "width": 480,
+      "height": 20,
+      "frames": 60,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/pairing-v2.mp4",
+      "start_seconds": 23.5,
+      "duration_seconds": 2,
+      "crop": "480:20:430:668",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "5289d8d26bba611a7c73c6e67787c54dc9ac7d17a3ece08b28f0cbe7c0d5398e",
+      "sha256": "82095a9390f503836b856fa411fe220e4fa5ce4ce3a7d2e6414a1033fd0d1c17",
+      "clicks": []
+    },
+    "pair-open": {
+      "kind": "video",
+      "src": "directed/pair-open.mp4",
+      "end": "directed/pair-open-end.png",
+      "width": 310,
+      "height": 48,
+      "frames": 26,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/pairing-v2.mp4",
+      "start_seconds": 1,
+      "duration_seconds": 0.85,
+      "crop": "310:48:140:540",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "5289d8d26bba611a7c73c6e67787c54dc9ac7d17a3ece08b28f0cbe7c0d5398e",
+      "sha256": "c24c87d80fe0fe5efc993671ede3d91c4e0dc525ea5d640ca9439baa48ad586a",
+      "clicks": []
+    },
+    "pair-verify": {
+      "kind": "video",
+      "src": "directed/pair-verify.mp4",
+      "end": "directed/pair-verify-end.png",
+      "width": 560,
+      "height": 44,
+      "frames": 42,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/pairing-v2.mp4",
+      "start_seconds": 20.9,
+      "duration_seconds": 1.4,
+      "crop": "560:44:430:630",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "5289d8d26bba611a7c73c6e67787c54dc9ac7d17a3ece08b28f0cbe7c0d5398e",
+      "sha256": "52522f55a0859ec16177cc22e83d0f815cc059bde1ea9d95ec58f31b6ba5a178",
+      "clicks": [
+        {
+          "frame": 31,
+          "x": 280,
+          "y": 29
+        }
+      ],
+      "result_asset": "pair-result",
+      "result_from": 45
+    },
+    "stage-result": {
+      "kind": "video",
+      "src": "directed/stage-result.mp4",
+      "end": "directed/stage-result-end.png",
+      "width": 660,
+      "height": 58,
+      "frames": 120,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/stage-result.mp4",
+      "start_seconds": 0.4,
+      "duration_seconds": 4,
+      "crop": "660:58:628:324",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "5efcf8baabb4a920529a24fc9922a6c6a53bc19f075c82eb9f1373ef7b866baf",
+      "sha256": "93feaf9518b89e7015037341ada6aa1939aa4606c7f410c73d408a166edc2d87",
+      "clicks": []
+    },
+    "stage-open": {
+      "kind": "video",
+      "src": "directed/stage-open.mp4",
+      "end": "directed/stage-open-end.png",
+      "width": 700,
+      "height": 50,
+      "frames": 180,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/stage-v2.mp4",
+      "start_seconds": 1,
+      "duration_seconds": 6,
+      "crop": "700:50:289:220",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "f38f3d045bf12c53bd445d6b540a5e1c5ddc1574ca9393900398ec5b0ddfde32",
+      "sha256": "860c54959c68707deb4d03dec25b8f41dadeb33207a34974d5e6863cb7d6be34",
+      "clicks": [
+        {
+          "frame": 28,
+          "x": 242,
+          "y": 22
+        }
+      ]
+    },
+    "stage-save": {
+      "kind": "video",
+      "src": "directed/stage-save.mp4",
+      "end": "directed/stage-save-end.png",
+      "width": 560,
+      "height": 50,
+      "frames": 51,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/stage-v2.mp4",
+      "start_seconds": 13.7,
+      "duration_seconds": 1.7,
+      "crop": "560:50:520:758",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "f38f3d045bf12c53bd445d6b540a5e1c5ddc1574ca9393900398ec5b0ddfde32",
+      "sha256": "8e314838e109c29289c5ee946ba42b5d53e35d2cd360af5098ef3b9c7bd0bbd3",
+      "clicks": [
+        {
+          "frame": 20,
+          "x": 276,
+          "y": 25
+        }
+      ]
+    },
+    "forget-action": {
+      "kind": "video",
+      "src": "directed/forget-action.mp4",
+      "end": "directed/forget-action-end.png",
+      "width": 650,
+      "height": 48,
+      "frames": 33,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/current-0.1.12/current-forget-01.mp4",
+      "start_seconds": 20.5,
+      "duration_seconds": 1.1,
+      "crop": "650:48:470:730",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "6e66b9080bd2d5c9d3ba4dcddadbf261e6c4305e9f6e0d78d4b652065535e424",
+      "sha256": "ce4f8c91ec96eaa56e4cde9b9cdb93b8a2ac4cac4173e5d506d97c6cb54d0e71"
+    },
+    "new-bill-source-detail": {
+      "kind": "video",
+      "src": "directed/new-bill-source-detail.mp4",
+      "end": "directed/new-bill-source-detail-end.png",
+      "width": 718,
+      "height": 154,
+      "frames": 240,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "source": "raw/directed-0.1.12/bill-full.mp4",
+      "start_seconds": 33,
+      "duration_seconds": 8,
+      "crop": "718:154:350:212",
+      "speed": 1,
+      "capture_fps": 30,
+      "source_sha256": "54d748d8619792255f8751bc79a0b132576c01e58c447b337139b69a4995e98d",
+      "sha256": "c20bdc29ba99649aea1c7c70f2b7ba0150196f6d1eefd61f37a62003e0e8d2ed",
+      "clicks": []
+    },
+    "new-bill-actions": {
+      "kind": "video",
+      "src": "directed/new-bill-actions.mp4",
+      "end": "directed/new-bill-actions-end.png",
+      "width": 1200,
+      "height": 740,
+      "frames": 72,
+      "playback_alignment": "start",
+      "native_pointer": true,
+      "capture_fps": 30,
+      "speed": 1,
+      "crop": "1200:740:120:38",
+      "source": "raw/directed-0.1.12/bill-full.mp4",
+      "pieces": [
+        {
+          "start_seconds": 2.5,
+          "duration_seconds": 0.8
+        },
+        {
+          "start_seconds": 9.7,
+          "duration_seconds": 0.8
+        },
+        {
+          "start_seconds": 15.5,
+          "duration_seconds": 0.8
+        }
+      ],
+      "clicks": [
+        {
+          "frame": 13,
+          "x": 140,
+          "y": 135
+        },
+        {
+          "frame": 61,
+          "x": 1034,
+          "y": 710
+        }
+      ],
+      "source_sha256": "54d748d8619792255f8751bc79a0b132576c01e58c447b337139b69a4995e98d",
+      "sha256": "a6af18b0f6af599c2983e1c5a463410bf9b78f0feb7b770b5c480d4c27f2aec8"
+    }
+  },
+  "scenes": {
+    "s06": [
+      {
+        "asset": "agent-tools-completed",
+        "label": "核算采购明细，写入文件并保存记忆",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "agent-task-recall",
+        "label": "新会话再次找回采购单 · 合计496元",
+        "cue": "打开新会话",
+        "fraction": 0.63
+      }
+    ],
+    "s04": [
+      {
+        "asset": "navigation-conversation",
+        "label": "会话 · 交代任务",
+        "cue": null,
+        "fraction": 0.0
+      },
+      {
+        "asset": "navigation-memory",
+        "label": "记忆 · 管理资料",
+        "cue": "记忆页",
+        "fraction": 0.2
+      },
+      {
+        "asset": "navigation-devices",
+        "label": "设备 · 连接协作电脑",
+        "cue": "设备页",
+        "fraction": 0.4
+      },
+      {
+        "asset": "navigation-settings",
+        "label": "设置 · 管理授权",
+        "cue": "设置页",
+        "fraction": 0.6
+      },
+      {
+        "asset": "sdk-version",
+        "label": "银河麒麟 V11 · 系统能力接入",
+        "cue": "软件运行在",
+        "fraction": 0.8
+      }
+    ],
+    "s07": [
+      {
+        "asset": "bill-recall",
+        "label": "已保存的九月家庭账单",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "new-bill-actions",
+        "label": "新建会话，输入问题并发送",
+        "cue": "打开新会话",
+        "fraction": 0.62
+      },
+      {
+        "asset": "new-bill-answer",
+        "label": "找回三项费用与合计",
+        "cue": "助手找回账单",
+        "fraction": 0.76
+      }
+    ],
+    "s08": [
+      {
+        "asset": "new-bill-answer",
+        "label": "合计 434.50 元",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "new-bill-source",
+        "label": "点击回答中的来源链接",
+        "cue": "沿着回答",
+        "fraction": 0.4
+      },
+      {
+        "asset": "new-bill-source-detail",
+        "label": "账单原记录 · 合计 434.50 元",
+        "cue": "再逐项查看金额",
+        "fraction": 0.65
+      }
+    ],
+    "s10": [
+      {
+        "asset": "manual-form",
+        "label": "填写标题、正文与范围",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "manual-recalled-body",
+        "label": "保存后，检索并核对正文",
+        "cue": "立即查询",
+        "fraction": 0.72
+      }
+    ],
+    "s12": [
+      {
+        "asset": "behavior-demo-window",
+        "label": "公开资料整理 · 实际应用窗口",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "behavior-source-body",
+        "label": "本次记录：窗口标题与28秒使用时长",
+        "cue": "系统记录",
+        "fraction": 0.28
+      },
+      {
+        "asset": "behavior-enabled",
+        "label": "在采集与隐私中管理授权",
+        "cue": "采集权限",
+        "fraction": 0.7
+      }
+    ],
+    "s13": [
+      {
+        "asset": "keyword-results",
+        "label": "用内容关键词，找回活动资料",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "keyword-source-body",
+        "label": "核对原始安排与准备步骤",
+        "cue": "打开来源",
+        "fraction": 0.7
+      }
+    ],
+    "s11": [
+      {
+        "asset": "directory-folder",
+        "label": "选择目录并保存",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "directory-progress",
+        "label": "主窗口显示整理进度与保存数量",
+        "cue": "助手开始后台",
+        "fraction": 0.22
+      },
+      {
+        "asset": "directory-query",
+        "label": "后台整理后，新会话找回安排",
+        "cue": "完成后",
+        "fraction": 0.5
+      },
+      {
+        "asset": "directory-original",
+        "label": "查看活动资料原文",
+        "cue": "点击来源",
+        "fraction": 0.82
+      }
+    ],
+    "s11b": [
+      {
+        "asset": "dreaming-review",
+        "label": "对照原内容与更正建议",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "directory-approval",
+        "label": "批准更正，保存新版本",
+        "cue": "然后批准保存",
+        "fraction": 0.37
+      },
+      {
+        "asset": "updated-query",
+        "label": "新会话使用更新后的安排",
+        "cue": "再次查询",
+        "fraction": 0.56
+      }
+    ],
+    "s15": [
+      {
+        "asset": "preferences",
+        "label": "当前回答方式：详细说明 · 支持查看历史版本",
+        "cue": null,
+        "fraction": 0
+      }
+    ],
+    "s16": [
+      {
+        "asset": "edit-version-one",
+        "label": "读取版本 1",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "edit-change",
+        "label": "整理时间更新为周五 17:00",
+        "cue": "修改时间",
+        "fraction": 0.2
+      },
+      {
+        "asset": "edit-version-two",
+        "label": "重新读取版本 2",
+        "cue": "查看版本二",
+        "fraction": 0.65
+      }
+    ],
+    "s17": [
+      {
+        "asset": "stage-open",
+        "label": "社区图书角 · 阶段记录",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "stage-save",
+        "label": "点击保存为长期记忆",
+        "cue": "选择长期保留",
+        "fraction": 0.78
+      },
+      {
+        "asset": "stage-result",
+        "label": "长期知识检索结果 · 社区图书角",
+        "cue": "后续任务",
+        "fraction": 0.86
+      }
+    ],
+    "s19": [
+      {
+        "asset": "device-controls",
+        "label": "查看参与协作的电脑",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "pair-open",
+        "label": "打开设备配对入口",
+        "cue": "在设备页",
+        "fraction": 0.28
+      },
+      {
+        "asset": "pair-verify",
+        "label": "交换配对信息后，验证可信设备",
+        "cue": "双方交换",
+        "fraction": 0.42
+      },
+      {
+        "asset": "device-controls",
+        "label": "在设备列表查看可信电脑",
+        "cue": "回到设备列表",
+        "fraction": 0.63
+      }
+    ],
+    "s20": [
+      {
+        "asset": "shared-settings",
+        "label": "选择家庭共享空间",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "shared-query",
+        "label": "换一台设备，继续查询约定",
+        "cue": "换到客厅查询",
+        "fraction": 0.26
+      },
+      {
+        "asset": "shared-citation",
+        "label": "打开同一条记忆的来源",
+        "cue": "点击来源",
+        "fraction": 0.73
+      }
+    ],
+    "s23": [
+      {
+        "asset": "shared-settings",
+        "label": "读取范围与保存位置分别设置",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "device-controls",
+        "label": "选择参与协作的设备",
+        "cue": "再到设备页",
+        "fraction": 0.56
+      }
+    ],
+    "s24": [
+      {
+        "asset": "forget-target",
+        "label": "预览并核对目标与版本",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "forget-action",
+        "label": "核对目标后确认遗忘",
+        "cue": "再点击确认",
+        "fraction": 0.49
+      },
+      {
+        "asset": "forget-confirmed",
+        "label": "确认遗忘 1 条演示知识",
+        "cue": "系统更新知识",
+        "fraction": 0.48
+      }
+    ],
+    "s26": [
+      {
+        "asset": "brief",
+        "label": "近期知识线索",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "brief-reading",
+        "label": "按日期查看采集汇总",
+        "cue": "再按日期",
+        "fraction": 0.5
+      }
+    ],
+    "s27": [
+      {
+        "asset": "sdk-version",
+        "label": "桌面与后端版本一致",
+        "cue": null,
+        "fraction": 0
+      },
+      {
+        "asset": "model-options",
+        "label": "选择模型并配置连接",
+        "cue": "在设置中",
+        "fraction": 0.35
+      },
+      {
+        "asset": "update-panel",
+        "label": "查看当前版本与更新入口",
+        "cue": "也可以查看",
+        "fraction": 0.55
+      }
+    ]
+  },
+  "direction": "Narration-led framing; source-speed playback; guided reading on still photographs"
+}

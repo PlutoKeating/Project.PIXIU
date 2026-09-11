@@ -1,0 +1,9 @@
+{
+  "host_python_modules": ["libvirt", "libvirt_qemu"],
+  "host_commands": ["ssh", "scp", "ffmpeg", "ffprobe"],
+  "guest_commands": ["ffmpeg", "xdotool", "wl-copy", "wl-paste"],
+  "guest_clipboard_package": "wl-clipboard",
+  "guest_display": "Xwayland capture with native Wayland clipboard",
+  "speech_python_module": "azure.cognitiveservices.speech",
+  "credentials": "SPEECH_KEY environment variable or hidden terminal input"
+}

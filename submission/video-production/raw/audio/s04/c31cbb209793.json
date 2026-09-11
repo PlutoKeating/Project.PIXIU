@@ -1,0 +1,239 @@
+{
+  "shot": "s04",
+  "request": {
+    "text": "先看软件如何使用。顶部的会话用来交代任务，记忆页管理已保存的内容，设备页连接协作电脑，设置页管理授权。软件运行在银河麒麟十一版，调用系统的文本向量化和向量数据库能力。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "c31cbb2097932e962ecc3adbdb71f6dba59b2372323bb23296da71c7add9d96e",
+  "audio_sha256": "b7d5378674fb42f273d9aed36853d12933b62ec64bfdd47bcdd60ea28c667b5c",
+  "duration_seconds": 15.144,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2500000,
+      "text": "先"
+    },
+    {
+      "offset": 3000000,
+      "duration": 1750000,
+      "text": "看"
+    },
+    {
+      "offset": 4875000,
+      "duration": 4125000,
+      "text": "软件"
+    },
+    {
+      "offset": 9250000,
+      "duration": 3000000,
+      "text": "如何"
+    },
+    {
+      "offset": 12250000,
+      "duration": 3500000,
+      "text": "使用"
+    },
+    {
+      "offset": 21375000,
+      "duration": 1875000,
+      "text": "顶"
+    },
+    {
+      "offset": 23250000,
+      "duration": 875000,
+      "text": "部"
+    },
+    {
+      "offset": 24125000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 25000000,
+      "duration": 4500000,
+      "text": "会话"
+    },
+    {
+      "offset": 30500000,
+      "duration": 2125000,
+      "text": "用来"
+    },
+    {
+      "offset": 32875000,
+      "duration": 2250000,
+      "text": "交代"
+    },
+    {
+      "offset": 35250000,
+      "duration": 3000000,
+      "text": "任务"
+    },
+    {
+      "offset": 41750000,
+      "duration": 2875000,
+      "text": "记忆"
+    },
+    {
+      "offset": 44625000,
+      "duration": 1500000,
+      "text": "页"
+    },
+    {
+      "offset": 46250000,
+      "duration": 2750000,
+      "text": "管理"
+    },
+    {
+      "offset": 49250000,
+      "duration": 1375000,
+      "text": "已"
+    },
+    {
+      "offset": 50625000,
+      "duration": 2875000,
+      "text": "保存"
+    },
+    {
+      "offset": 53500000,
+      "duration": 625000,
+      "text": "的"
+    },
+    {
+      "offset": 54250000,
+      "duration": 3500000,
+      "text": "内容"
+    },
+    {
+      "offset": 60250000,
+      "duration": 3250000,
+      "text": "设备"
+    },
+    {
+      "offset": 63500000,
+      "duration": 1500000,
+      "text": "页"
+    },
+    {
+      "offset": 65250000,
+      "duration": 2625000,
+      "text": "连接"
+    },
+    {
+      "offset": 68125000,
+      "duration": 2375000,
+      "text": "协作"
+    },
+    {
+      "offset": 70625000,
+      "duration": 3500000,
+      "text": "电脑"
+    },
+    {
+      "offset": 75750000,
+      "duration": 3500000,
+      "text": "设置"
+    },
+    {
+      "offset": 79250000,
+      "duration": 1500000,
+      "text": "页"
+    },
+    {
+      "offset": 80750000,
+      "duration": 1875000,
+      "text": "管理"
+    },
+    {
+      "offset": 82750000,
+      "duration": 4250000,
+      "text": "授权"
+    },
+    {
+      "offset": 92750000,
+      "duration": 3125000,
+      "text": "软件"
+    },
+    {
+      "offset": 95875000,
+      "duration": 3750000,
+      "text": "运行"
+    },
+    {
+      "offset": 99750000,
+      "duration": 1625000,
+      "text": "在"
+    },
+    {
+      "offset": 101625000,
+      "duration": 2875000,
+      "text": "银河"
+    },
+    {
+      "offset": 104625000,
+      "duration": 2375000,
+      "text": "麒麟"
+    },
+    {
+      "offset": 107125000,
+      "duration": 4750000,
+      "text": "十一版"
+    },
+    {
+      "offset": 114250000,
+      "duration": 2375000,
+      "text": "调用"
+    },
+    {
+      "offset": 116750000,
+      "duration": 2500000,
+      "text": "系统"
+    },
+    {
+      "offset": 119250000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 120125000,
+      "duration": 4125000,
+      "text": "文本"
+    },
+    {
+      "offset": 125250000,
+      "duration": 3000000,
+      "text": "向量"
+    },
+    {
+      "offset": 128250000,
+      "duration": 1875000,
+      "text": "化"
+    },
+    {
+      "offset": 131125000,
+      "duration": 1250000,
+      "text": "和"
+    },
+    {
+      "offset": 132500000,
+      "duration": 3125000,
+      "text": "向量"
+    },
+    {
+      "offset": 135750000,
+      "duration": 4000000,
+      "text": "数据库"
+    },
+    {
+      "offset": 139875000,
+      "duration": 2750000,
+      "text": "能力"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

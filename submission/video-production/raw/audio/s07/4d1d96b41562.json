@@ -1,0 +1,244 @@
+{
+  "shot": "s07",
+  "request": {
+    "text": "长期记忆让过去的资料在新会话里继续发挥作用。假设我们已经保存一份家庭账单，现在想核对九月份的水电燃气支出。打开新会话，直接提出问题，助手找回账单，并列出电费、水费和燃气费。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "4d1d96b41562c627d0e9b561edcccd77dbb478a41491189e38299d5b56cd912b",
+  "audio_sha256": "da005a5d4a89f05a51ccd26e621d9d192c81780ae967d3b3d7319a8cd962323e",
+  "duration_seconds": 16.032,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 4000000,
+      "text": "长期"
+    },
+    {
+      "offset": 4625000,
+      "duration": 3875000,
+      "text": "记忆"
+    },
+    {
+      "offset": 9500000,
+      "duration": 1625000,
+      "text": "让"
+    },
+    {
+      "offset": 11250000,
+      "duration": 2500000,
+      "text": "过去"
+    },
+    {
+      "offset": 13750000,
+      "duration": 1125000,
+      "text": "的"
+    },
+    {
+      "offset": 15000000,
+      "duration": 3625000,
+      "text": "资料"
+    },
+    {
+      "offset": 19750000,
+      "duration": 1625000,
+      "text": "在"
+    },
+    {
+      "offset": 21500000,
+      "duration": 2500000,
+      "text": "新"
+    },
+    {
+      "offset": 24000000,
+      "duration": 3000000,
+      "text": "会话"
+    },
+    {
+      "offset": 27000000,
+      "duration": 1625000,
+      "text": "里"
+    },
+    {
+      "offset": 28625000,
+      "duration": 3250000,
+      "text": "继续"
+    },
+    {
+      "offset": 32000000,
+      "duration": 2625000,
+      "text": "发挥"
+    },
+    {
+      "offset": 34625000,
+      "duration": 2750000,
+      "text": "作用"
+    },
+    {
+      "offset": 43000000,
+      "duration": 3750000,
+      "text": "假设"
+    },
+    {
+      "offset": 46875000,
+      "duration": 1750000,
+      "text": "我们"
+    },
+    {
+      "offset": 48750000,
+      "duration": 2000000,
+      "text": "已经"
+    },
+    {
+      "offset": 51000000,
+      "duration": 3000000,
+      "text": "保存"
+    },
+    {
+      "offset": 54125000,
+      "duration": 1000000,
+      "text": "一"
+    },
+    {
+      "offset": 55125000,
+      "duration": 1375000,
+      "text": "份"
+    },
+    {
+      "offset": 56750000,
+      "duration": 2500000,
+      "text": "家庭"
+    },
+    {
+      "offset": 59375000,
+      "duration": 4125000,
+      "text": "账单"
+    },
+    {
+      "offset": 66375000,
+      "duration": 2375000,
+      "text": "现在"
+    },
+    {
+      "offset": 68875000,
+      "duration": 1750000,
+      "text": "想"
+    },
+    {
+      "offset": 70625000,
+      "duration": 2875000,
+      "text": "核对"
+    },
+    {
+      "offset": 73750000,
+      "duration": 3875000,
+      "text": "九月份"
+    },
+    {
+      "offset": 77625000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 78750000,
+      "duration": 3375000,
+      "text": "水电"
+    },
+    {
+      "offset": 82250000,
+      "duration": 2625000,
+      "text": "燃气"
+    },
+    {
+      "offset": 85000000,
+      "duration": 3250000,
+      "text": "支出"
+    },
+    {
+      "offset": 94000000,
+      "duration": 2875000,
+      "text": "打开"
+    },
+    {
+      "offset": 97000000,
+      "duration": 1750000,
+      "text": "新"
+    },
+    {
+      "offset": 98750000,
+      "duration": 3250000,
+      "text": "会话"
+    },
+    {
+      "offset": 105875000,
+      "duration": 2875000,
+      "text": "直接"
+    },
+    {
+      "offset": 108875000,
+      "duration": 2375000,
+      "text": "提出"
+    },
+    {
+      "offset": 111250000,
+      "duration": 3625000,
+      "text": "问题"
+    },
+    {
+      "offset": 117250000,
+      "duration": 2875000,
+      "text": "助手"
+    },
+    {
+      "offset": 120375000,
+      "duration": 2750000,
+      "text": "找回"
+    },
+    {
+      "offset": 123125000,
+      "duration": 3875000,
+      "text": "账单"
+    },
+    {
+      "offset": 129000000,
+      "duration": 1500000,
+      "text": "并"
+    },
+    {
+      "offset": 130625000,
+      "duration": 2375000,
+      "text": "列出"
+    },
+    {
+      "offset": 133250000,
+      "duration": 3500000,
+      "text": "电费"
+    },
+    {
+      "offset": 139125000,
+      "duration": 4875000,
+      "text": "水费"
+    },
+    {
+      "offset": 145250000,
+      "duration": 1500000,
+      "text": "和"
+    },
+    {
+      "offset": 146875000,
+      "duration": 2625000,
+      "text": "燃气"
+    },
+    {
+      "offset": 149500000,
+      "duration": 2000000,
+      "text": "费"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

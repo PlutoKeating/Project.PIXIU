@@ -1,0 +1,15 @@
+{
+  "reference_commit": "49e463c",
+  "component": "src/NarratedChapter.tsx",
+  "component_byte_identical": true,
+  "sha256": "ba4aa98c84f80553fe0ff71826b794f24e2c3ddce6a7191988d04700d89b1072",
+  "style": {
+    "font": "Noto Sans CJK SC",
+    "font_size": 60,
+    "weight": 700,
+    "color": "#ffffff",
+    "stroke": "7px #000000",
+    "bottom": 57,
+    "line_height": 1.15
+  }
+}

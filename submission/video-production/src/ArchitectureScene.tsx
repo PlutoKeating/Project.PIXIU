@@ -1,7 +1,7 @@
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {Reveal, Steps, cue, ease} from './PresentationMotion';
 export const ArchitectureScene:React.FC=()=>{
- const f=useCurrentFrame(),tools=cue('s05','提供会话'),adapter=cue('s05','原创的记忆'),engine=cue('s05','把它连接');
+ const f=useCurrentFrame(),tools=cue('s05','负责会话'),adapter=cue('s05','我们实现的'),engine=cue('s05','完成资料接入');
  const link=interpolate(f,[adapter,adapter+32],[0,1],ease);
  return <AbsoluteFill>
  <div style={{position:'absolute',left:135,top:190,fontSize:38,color:'#1456b8'}}>开放麒麟智能体 + 貔貅记忆系统</div>

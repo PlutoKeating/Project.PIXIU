@@ -1,0 +1,40 @@
+{
+  "version": "0.1.12",
+  "platform": "银河麒麟 V11",
+  "capture_fps": 30,
+  "timing_basis": "FFmpeg first progress packet, aligned to output timestamp",
+  "size": [
+    1440,
+    900
+  ],
+  "redact_rectangles": [],
+  "pointer": "native compositor pointer; QEMU input events",
+  "data": "公开合成演示资料",
+  "actions": [
+    {
+      "at": 0.5,
+      "to": [
+        882,
+        347
+      ],
+      "travel": 1.1,
+      "label": "阅读长期知识中的阶段成果",
+      "actual_start": 0.5000991360284388,
+      "actual_click": null,
+      "actual_end": 1.6002836560364813
+    },
+    {
+      "at": 3,
+      "to": [
+        1014,
+        347
+      ],
+      "travel": 1,
+      "label": "核对后续工作内容",
+      "actual_start": 3.0001915780594572,
+      "actual_click": null,
+      "actual_end": 4.000424903002568
+    }
+  ],
+  "sha256": "5efcf8baabb4a920529a24fc9922a6c6a53bc19f075c82eb9f1373ef7b866baf"
+}

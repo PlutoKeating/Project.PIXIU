@@ -6,7 +6,7 @@ import {Fonts} from './Fonts';
 import {CaptionText} from './NarratedChapter';
 import {FullFilmFinal, ShotScene, SFX, OUTPUT_AUDIO_OFFSET_F} from './FullFilm';
 
-const Visual = ({shotId = 's01', text, headingSize = 45, headingColor = '#172033', duration}: {
+const Visual = ({shotId = 's01', text, headingSize = 54, headingColor = '#172033', duration}: {
   shotId?: string; text?: string; headingSize?: number; headingColor?: string; duration?: number;
 }) => {
   const source = timeline.shots.find((shot) => shot.id === shotId)!;
@@ -25,11 +25,11 @@ export const WORKBENCH = {
   shots: timeline.shots.map((shot) => ({
     id: shot.id, label: shot.title, from: shot.from, duration: shot.duration,
     component: Visual, cardId: shot.id, cardName: shot.title, durationProp: 'duration',
-    props: {shotId: shot.id, text: shot.title, headingSize: 45, headingColor: '#172033'},
+    props: {shotId: shot.id, text: shot.title, headingSize: 54, headingColor: '#172033'},
     schema: ['s01', 's30'].includes(shot.id) ? [] : [
       {type: 'textarea', key: 'text', label: '标题', default: shot.title},
       ...(['s02', 's18', 's29'].includes(shot.id) ? [] : [
-        {type: 'number', key: 'headingSize', label: '标题字号', default: 45, min: 24, max: 70},
+        {type: 'number', key: 'headingSize', label: '标题字号', default: 54, min: 24, max: 70},
         {type: 'color', key: 'headingColor', label: '标题颜色', default: '#172033'},
       ]),
     ],

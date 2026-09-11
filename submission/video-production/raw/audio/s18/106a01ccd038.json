@@ -1,0 +1,144 @@
+{
+  "shot": "s18",
+  "request": {
+    "text": "接下来，把使用体验扩展到多台电脑。共享记忆帮助我们换台设备后，继续使用已经保存的安排与经验。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "106a01ccd038accb668780dfa5bed8cde01710b0d0ee3045e00d5b14a476b9c4",
+  "audio_sha256": "069620046a145ac602cb1a7fea787b7924036924729808b8ef720c29801351f7",
+  "duration_seconds": 8.616,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 4750000,
+      "text": "接下来"
+    },
+    {
+      "offset": 7750000,
+      "duration": 1250000,
+      "text": "把"
+    },
+    {
+      "offset": 9125000,
+      "duration": 3125000,
+      "text": "使用"
+    },
+    {
+      "offset": 12250000,
+      "duration": 4000000,
+      "text": "体验"
+    },
+    {
+      "offset": 17375000,
+      "duration": 2875000,
+      "text": "扩展"
+    },
+    {
+      "offset": 20250000,
+      "duration": 1125000,
+      "text": "到"
+    },
+    {
+      "offset": 21625000,
+      "duration": 1375000,
+      "text": "多"
+    },
+    {
+      "offset": 23000000,
+      "duration": 1375000,
+      "text": "台"
+    },
+    {
+      "offset": 24375000,
+      "duration": 3375000,
+      "text": "电脑"
+    },
+    {
+      "offset": 33375000,
+      "duration": 3500000,
+      "text": "共享"
+    },
+    {
+      "offset": 37000000,
+      "duration": 3500000,
+      "text": "记忆"
+    },
+    {
+      "offset": 41500000,
+      "duration": 2875000,
+      "text": "帮助"
+    },
+    {
+      "offset": 44375000,
+      "duration": 1875000,
+      "text": "我们"
+    },
+    {
+      "offset": 46500000,
+      "duration": 1625000,
+      "text": "换"
+    },
+    {
+      "offset": 48125000,
+      "duration": 1000000,
+      "text": "台"
+    },
+    {
+      "offset": 49125000,
+      "duration": 2375000,
+      "text": "设备"
+    },
+    {
+      "offset": 51500000,
+      "duration": 2125000,
+      "text": "后"
+    },
+    {
+      "offset": 56000000,
+      "duration": 3500000,
+      "text": "继续"
+    },
+    {
+      "offset": 59500000,
+      "duration": 3500000,
+      "text": "使用"
+    },
+    {
+      "offset": 63250000,
+      "duration": 2250000,
+      "text": "已经"
+    },
+    {
+      "offset": 65500000,
+      "duration": 3125000,
+      "text": "保存"
+    },
+    {
+      "offset": 68625000,
+      "duration": 875000,
+      "text": "的"
+    },
+    {
+      "offset": 69625000,
+      "duration": 3000000,
+      "text": "安排"
+    },
+    {
+      "offset": 72875000,
+      "duration": 1125000,
+      "text": "与"
+    },
+    {
+      "offset": 74125000,
+      "duration": 3125000,
+      "text": "经验"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

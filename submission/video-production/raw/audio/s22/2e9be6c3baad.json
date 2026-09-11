@@ -1,0 +1,259 @@
+{
+  "shot": "s22",
+  "request": {
+    "text": "协作中还可能同时修改同一份约定。假设两台电脑分别更新资料移交时间。系统记录两边的修改关系，按统一规则选择结果，再同步到各台设备。画面展示三端测试的变化过程，最终正文、版本和来源一致。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "2e9be6c3baada1efbca061b4634483443bda67af731e0733ffb72e31d84b32f4",
+  "audio_sha256": "e903395e819066f50cd49db42243ba5965c8d705318859993d09ce97a2a7c9d3",
+  "duration_seconds": 17.28,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3750000,
+      "text": "协作"
+    },
+    {
+      "offset": 4250000,
+      "duration": 2250000,
+      "text": "中"
+    },
+    {
+      "offset": 7375000,
+      "duration": 2250000,
+      "text": "还"
+    },
+    {
+      "offset": 9625000,
+      "duration": 2250000,
+      "text": "可能"
+    },
+    {
+      "offset": 12125000,
+      "duration": 3500000,
+      "text": "同时"
+    },
+    {
+      "offset": 15750000,
+      "duration": 3750000,
+      "text": "修改"
+    },
+    {
+      "offset": 19750000,
+      "duration": 3000000,
+      "text": "同一"
+    },
+    {
+      "offset": 22750000,
+      "duration": 1125000,
+      "text": "份"
+    },
+    {
+      "offset": 24000000,
+      "duration": 3125000,
+      "text": "约定"
+    },
+    {
+      "offset": 32875000,
+      "duration": 3500000,
+      "text": "假设"
+    },
+    {
+      "offset": 36625000,
+      "duration": 2625000,
+      "text": "两台"
+    },
+    {
+      "offset": 39250000,
+      "duration": 4000000,
+      "text": "电脑"
+    },
+    {
+      "offset": 44250000,
+      "duration": 2750000,
+      "text": "分别"
+    },
+    {
+      "offset": 47125000,
+      "duration": 3375000,
+      "text": "更新"
+    },
+    {
+      "offset": 50500000,
+      "duration": 2625000,
+      "text": "资料"
+    },
+    {
+      "offset": 53375000,
+      "duration": 2500000,
+      "text": "移交"
+    },
+    {
+      "offset": 55875000,
+      "duration": 4125000,
+      "text": "时间"
+    },
+    {
+      "offset": 65625000,
+      "duration": 3625000,
+      "text": "系统"
+    },
+    {
+      "offset": 69375000,
+      "duration": 2250000,
+      "text": "记录"
+    },
+    {
+      "offset": 71875000,
+      "duration": 2500000,
+      "text": "两边"
+    },
+    {
+      "offset": 74375000,
+      "duration": 750000,
+      "text": "的"
+    },
+    {
+      "offset": 75375000,
+      "duration": 2875000,
+      "text": "修改"
+    },
+    {
+      "offset": 78375000,
+      "duration": 3625000,
+      "text": "关系"
+    },
+    {
+      "offset": 85750000,
+      "duration": 1875000,
+      "text": "按"
+    },
+    {
+      "offset": 87875000,
+      "duration": 2625000,
+      "text": "统一"
+    },
+    {
+      "offset": 90625000,
+      "duration": 3125000,
+      "text": "规则"
+    },
+    {
+      "offset": 94000000,
+      "duration": 2375000,
+      "text": "选择"
+    },
+    {
+      "offset": 96500000,
+      "duration": 3625000,
+      "text": "结果"
+    },
+    {
+      "offset": 102000000,
+      "duration": 1625000,
+      "text": "再"
+    },
+    {
+      "offset": 103750000,
+      "duration": 2625000,
+      "text": "同步"
+    },
+    {
+      "offset": 106375000,
+      "duration": 1250000,
+      "text": "到"
+    },
+    {
+      "offset": 107875000,
+      "duration": 1250000,
+      "text": "各"
+    },
+    {
+      "offset": 109125000,
+      "duration": 1375000,
+      "text": "台"
+    },
+    {
+      "offset": 110625000,
+      "duration": 3375000,
+      "text": "设备"
+    },
+    {
+      "offset": 119750000,
+      "duration": 3625000,
+      "text": "画面"
+    },
+    {
+      "offset": 123500000,
+      "duration": 3875000,
+      "text": "展示"
+    },
+    {
+      "offset": 127625000,
+      "duration": 1750000,
+      "text": "三"
+    },
+    {
+      "offset": 129375000,
+      "duration": 1250000,
+      "text": "端"
+    },
+    {
+      "offset": 130750000,
+      "duration": 2875000,
+      "text": "测试"
+    },
+    {
+      "offset": 133625000,
+      "duration": 1125000,
+      "text": "的"
+    },
+    {
+      "offset": 135000000,
+      "duration": 2750000,
+      "text": "变化"
+    },
+    {
+      "offset": 137875000,
+      "duration": 3625000,
+      "text": "过程"
+    },
+    {
+      "offset": 144500000,
+      "duration": 3125000,
+      "text": "最终"
+    },
+    {
+      "offset": 147875000,
+      "duration": 3750000,
+      "text": "正文"
+    },
+    {
+      "offset": 153250000,
+      "duration": 3375000,
+      "text": "版本"
+    },
+    {
+      "offset": 156875000,
+      "duration": 1000000,
+      "text": "和"
+    },
+    {
+      "offset": 158000000,
+      "duration": 2375000,
+      "text": "来源"
+    },
+    {
+      "offset": 160500000,
+      "duration": 3375000,
+      "text": "一致"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

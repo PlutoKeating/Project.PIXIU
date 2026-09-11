@@ -37,7 +37,7 @@ def main():
     coverage = []
     for shot in shots:
         source_id = shot.get('audio_reuse', shot['id'])
-        request = {'text': shot['narration'], **settings}
+        request = {'text': shot['narration'], **settings, **shot.get('narration_settings', {})}
         request_hash = digest(json.dumps(request, ensure_ascii=False, sort_keys=True).encode())
         audio = ROOT / 'raw/audio' / source_id / (request_hash[:12] + '.mp3')
         meta_path = audio.with_suffix('.json')
@@ -49,6 +49,14 @@ def main():
                      and bool(meta.get('boundaries')))
         coverage.append({'shot':shot['id'], 'source':source_id, 'ready':ready})
     missing = [row['shot'] for row in coverage if not row['ready']]
+    frozen_missing = set(missing) & {'s01', 's30'}
+    if frozen_missing:
+        raise RuntimeError('Restore the preserved bookend audio cache: ' + ', '.join(sorted(frozen_missing)))
+    for shot in shots:
+        if shot['id'] not in ('s01', 's30'):
+            rate = shot.get('narration_settings', {}).get('rate', settings['rate'])
+            if rate != '0%':
+                raise ValueError(shot['id'] + ': new narration requires original speed (0%)')
     if args.check_cache:
         print(json.dumps({'shots':len(coverage), 'ready':len(coverage)-len(missing),
                           'needs_synthesis':missing, 'coverage':coverage}, ensure_ascii=False, indent=2))
@@ -67,7 +75,7 @@ def main():
         if shot.get('audio_reuse'):
             print(f"{shot['id']}: reuses {shot['audio_reuse']}; synthesis skipped", flush=True)
             continue
-        request = {'text': shot['narration'], **settings}
+        request = {'text': shot['narration'], **settings, **shot.get('narration_settings', {})}
         request_hash = digest(json.dumps(request, ensure_ascii=False, sort_keys=True).encode())
         folder = ROOT / 'raw/audio' / shot['id']
         folder.mkdir(parents=True, exist_ok=True)
@@ -87,7 +95,7 @@ def main():
                                    'text': event.text})
         synth.synthesis_word_boundary.connect(on_word)
         ssml = ('<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="zh-CN">'
-                f'<voice name="{settings["voice"]}"><prosody rate="{settings["rate"]}">'
+                f'<voice name="{request["voice"]}"><prosody rate="{request["rate"]}">'
                 + escape(shot['narration']) + '</prosody></voice></speak>')
         for attempt in range(3):
             result = synth.speak_ssml_async(ssml).get()

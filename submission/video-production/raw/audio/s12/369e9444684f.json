@@ -1,0 +1,249 @@
+{
+  "shot": "s12",
+  "request": {
+    "text": "了解应用使用情况，可以帮助我们回顾工作习惯。假设正在电脑上整理一份公开资料。在授权开启行为采集后，系统记录应用窗口标题和使用时长。打开对应来源可以查看记录，采集权限由设置页统一管理。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "369e9444684f86d2ccfcea8f3a4c99f20ebb0bdb245f4ee0248fb6fd5cc08d0b",
+  "audio_sha256": "08a618379ecc3d0414b1a6b2845946fa15917db4a8e8136535483cc9038c7cee",
+  "duration_seconds": 17.376,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 3500000,
+      "text": "了解"
+    },
+    {
+      "offset": 4250000,
+      "duration": 2250000,
+      "text": "应用"
+    },
+    {
+      "offset": 6625000,
+      "duration": 2500000,
+      "text": "使用"
+    },
+    {
+      "offset": 9125000,
+      "duration": 3375000,
+      "text": "情况"
+    },
+    {
+      "offset": 15750000,
+      "duration": 2125000,
+      "text": "可以"
+    },
+    {
+      "offset": 18000000,
+      "duration": 2625000,
+      "text": "帮助"
+    },
+    {
+      "offset": 20625000,
+      "duration": 3000000,
+      "text": "我们"
+    },
+    {
+      "offset": 24750000,
+      "duration": 3375000,
+      "text": "回顾"
+    },
+    {
+      "offset": 28375000,
+      "duration": 2250000,
+      "text": "工作"
+    },
+    {
+      "offset": 30625000,
+      "duration": 4000000,
+      "text": "习惯"
+    },
+    {
+      "offset": 40250000,
+      "duration": 4125000,
+      "text": "假设"
+    },
+    {
+      "offset": 44625000,
+      "duration": 2000000,
+      "text": "正在"
+    },
+    {
+      "offset": 46750000,
+      "duration": 3125000,
+      "text": "电脑"
+    },
+    {
+      "offset": 49875000,
+      "duration": 2625000,
+      "text": "上"
+    },
+    {
+      "offset": 53750000,
+      "duration": 2750000,
+      "text": "整理"
+    },
+    {
+      "offset": 56625000,
+      "duration": 1250000,
+      "text": "一"
+    },
+    {
+      "offset": 57875000,
+      "duration": 1625000,
+      "text": "份"
+    },
+    {
+      "offset": 59750000,
+      "duration": 3000000,
+      "text": "公开"
+    },
+    {
+      "offset": 62875000,
+      "duration": 3125000,
+      "text": "资料"
+    },
+    {
+      "offset": 71750000,
+      "duration": 2250000,
+      "text": "在"
+    },
+    {
+      "offset": 74125000,
+      "duration": 3875000,
+      "text": "授权"
+    },
+    {
+      "offset": 78125000,
+      "duration": 2875000,
+      "text": "开启"
+    },
+    {
+      "offset": 81250000,
+      "duration": 2125000,
+      "text": "行为"
+    },
+    {
+      "offset": 83500000,
+      "duration": 2875000,
+      "text": "采集"
+    },
+    {
+      "offset": 86375000,
+      "duration": 1875000,
+      "text": "后"
+    },
+    {
+      "offset": 90625000,
+      "duration": 3375000,
+      "text": "系统"
+    },
+    {
+      "offset": 94000000,
+      "duration": 2875000,
+      "text": "记录"
+    },
+    {
+      "offset": 97125000,
+      "duration": 2500000,
+      "text": "应用"
+    },
+    {
+      "offset": 99625000,
+      "duration": 3250000,
+      "text": "窗口"
+    },
+    {
+      "offset": 103000000,
+      "duration": 4500000,
+      "text": "标题"
+    },
+    {
+      "offset": 108625000,
+      "duration": 1500000,
+      "text": "和"
+    },
+    {
+      "offset": 110250000,
+      "duration": 2375000,
+      "text": "使用"
+    },
+    {
+      "offset": 112625000,
+      "duration": 4125000,
+      "text": "时长"
+    },
+    {
+      "offset": 122375000,
+      "duration": 3625000,
+      "text": "打开"
+    },
+    {
+      "offset": 126250000,
+      "duration": 2000000,
+      "text": "对应"
+    },
+    {
+      "offset": 128375000,
+      "duration": 4125000,
+      "text": "来源"
+    },
+    {
+      "offset": 133500000,
+      "duration": 2125000,
+      "text": "可以"
+    },
+    {
+      "offset": 135750000,
+      "duration": 2875000,
+      "text": "查看"
+    },
+    {
+      "offset": 138750000,
+      "duration": 2625000,
+      "text": "记录"
+    },
+    {
+      "offset": 144375000,
+      "duration": 3250000,
+      "text": "采集"
+    },
+    {
+      "offset": 147750000,
+      "duration": 3875000,
+      "text": "权限"
+    },
+    {
+      "offset": 151875000,
+      "duration": 1625000,
+      "text": "由"
+    },
+    {
+      "offset": 153625000,
+      "duration": 3125000,
+      "text": "设置"
+    },
+    {
+      "offset": 156750000,
+      "duration": 1500000,
+      "text": "页"
+    },
+    {
+      "offset": 158500000,
+      "duration": 3375000,
+      "text": "统一"
+    },
+    {
+      "offset": 162000000,
+      "duration": 3000000,
+      "text": "管理"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

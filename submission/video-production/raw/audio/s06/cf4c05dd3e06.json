@@ -1,0 +1,309 @@
+{
+  "shot": "s06",
+  "request": {
+    "text": "处理采购时，我们既需要核算明细，也需要保留结果供以后查询。假设为社区图书角采购十二套书籍和五包标签纸。把任务交给助手，它计算出合计四百九十六元，写入采购文件，并记住结果。打开新会话，再查这份采购单，数量和金额就能继续使用。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "cf4c05dd3e06dcf436605866c80991b96740034abf56ab3efa8f7a3717a8e400",
+  "audio_sha256": "d5a1cdd568d872019e7744f70fe261a304d3b6527928f066011319ba7402c970",
+  "duration_seconds": 21.048,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2625000,
+      "text": "处理"
+    },
+    {
+      "offset": 3250000,
+      "duration": 3375000,
+      "text": "采购"
+    },
+    {
+      "offset": 6625000,
+      "duration": 2375000,
+      "text": "时"
+    },
+    {
+      "offset": 12750000,
+      "duration": 1750000,
+      "text": "我们"
+    },
+    {
+      "offset": 14625000,
+      "duration": 1375000,
+      "text": "既"
+    },
+    {
+      "offset": 16125000,
+      "duration": 2125000,
+      "text": "需要"
+    },
+    {
+      "offset": 18500000,
+      "duration": 3000000,
+      "text": "核算"
+    },
+    {
+      "offset": 21625000,
+      "duration": 3625000,
+      "text": "明细"
+    },
+    {
+      "offset": 28250000,
+      "duration": 1375000,
+      "text": "也"
+    },
+    {
+      "offset": 29750000,
+      "duration": 2250000,
+      "text": "需要"
+    },
+    {
+      "offset": 32000000,
+      "duration": 2375000,
+      "text": "保留"
+    },
+    {
+      "offset": 34500000,
+      "duration": 4000000,
+      "text": "结果"
+    },
+    {
+      "offset": 39500000,
+      "duration": 1375000,
+      "text": "供"
+    },
+    {
+      "offset": 41000000,
+      "duration": 2375000,
+      "text": "以后"
+    },
+    {
+      "offset": 43500000,
+      "duration": 4000000,
+      "text": "查询"
+    },
+    {
+      "offset": 53250000,
+      "duration": 3375000,
+      "text": "假设"
+    },
+    {
+      "offset": 56625000,
+      "duration": 1625000,
+      "text": "为"
+    },
+    {
+      "offset": 58375000,
+      "duration": 3250000,
+      "text": "社区"
+    },
+    {
+      "offset": 61750000,
+      "duration": 2875000,
+      "text": "图书"
+    },
+    {
+      "offset": 64625000,
+      "duration": 2250000,
+      "text": "角"
+    },
+    {
+      "offset": 68125000,
+      "duration": 3875000,
+      "text": "采购"
+    },
+    {
+      "offset": 72250000,
+      "duration": 4375000,
+      "text": "十二套"
+    },
+    {
+      "offset": 76750000,
+      "duration": 4500000,
+      "text": "书籍"
+    },
+    {
+      "offset": 82500000,
+      "duration": 1750000,
+      "text": "和"
+    },
+    {
+      "offset": 84375000,
+      "duration": 3125000,
+      "text": "五包"
+    },
+    {
+      "offset": 87625000,
+      "duration": 3250000,
+      "text": "标签"
+    },
+    {
+      "offset": 90875000,
+      "duration": 2125000,
+      "text": "纸"
+    },
+    {
+      "offset": 98625000,
+      "duration": 1625000,
+      "text": "把"
+    },
+    {
+      "offset": 100375000,
+      "duration": 2250000,
+      "text": "任务"
+    },
+    {
+      "offset": 102875000,
+      "duration": 2125000,
+      "text": "交给"
+    },
+    {
+      "offset": 105125000,
+      "duration": 3750000,
+      "text": "助手"
+    },
+    {
+      "offset": 112125000,
+      "duration": 1625000,
+      "text": "它"
+    },
+    {
+      "offset": 113875000,
+      "duration": 2625000,
+      "text": "计算"
+    },
+    {
+      "offset": 116500000,
+      "duration": 2500000,
+      "text": "出"
+    },
+    {
+      "offset": 120250000,
+      "duration": 3750000,
+      "text": "合计"
+    },
+    {
+      "offset": 124250000,
+      "duration": 8750000,
+      "text": "四百九十六元"
+    },
+    {
+      "offset": 135125000,
+      "duration": 2875000,
+      "text": "写入"
+    },
+    {
+      "offset": 138250000,
+      "duration": 3250000,
+      "text": "采购"
+    },
+    {
+      "offset": 141500000,
+      "duration": 3125000,
+      "text": "文件"
+    },
+    {
+      "offset": 146500000,
+      "duration": 1500000,
+      "text": "并"
+    },
+    {
+      "offset": 148125000,
+      "duration": 2375000,
+      "text": "记住"
+    },
+    {
+      "offset": 150500000,
+      "duration": 3750000,
+      "text": "结果"
+    },
+    {
+      "offset": 159875000,
+      "duration": 2750000,
+      "text": "打开"
+    },
+    {
+      "offset": 162750000,
+      "duration": 1750000,
+      "text": "新"
+    },
+    {
+      "offset": 164500000,
+      "duration": 3125000,
+      "text": "会话"
+    },
+    {
+      "offset": 171000000,
+      "duration": 1625000,
+      "text": "再"
+    },
+    {
+      "offset": 172625000,
+      "duration": 1750000,
+      "text": "查"
+    },
+    {
+      "offset": 174500000,
+      "duration": 1000000,
+      "text": "这"
+    },
+    {
+      "offset": 175500000,
+      "duration": 1000000,
+      "text": "份"
+    },
+    {
+      "offset": 176625000,
+      "duration": 2875000,
+      "text": "采购"
+    },
+    {
+      "offset": 179500000,
+      "duration": 2125000,
+      "text": "单"
+    },
+    {
+      "offset": 184375000,
+      "duration": 3250000,
+      "text": "数量"
+    },
+    {
+      "offset": 187875000,
+      "duration": 750000,
+      "text": "和"
+    },
+    {
+      "offset": 188750000,
+      "duration": 3750000,
+      "text": "金额"
+    },
+    {
+      "offset": 193500000,
+      "duration": 1250000,
+      "text": "就"
+    },
+    {
+      "offset": 194750000,
+      "duration": 1250000,
+      "text": "能"
+    },
+    {
+      "offset": 196250000,
+      "duration": 2625000,
+      "text": "继续"
+    },
+    {
+      "offset": 198875000,
+      "duration": 3125000,
+      "text": "使用"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}

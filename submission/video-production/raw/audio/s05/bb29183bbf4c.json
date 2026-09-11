@@ -1,0 +1,264 @@
+{
+  "shot": "s05",
+  "request": {
+    "text": "这些体验由几个模块共同完成。开放麒麟的智能体宿主和运行时，负责会话、任务规划与工具。我们实现的记忆适配层连接貔貅引擎，完成资料接入、知识检索、偏好、安全处理和设备同步。系统能力通过明确的接口协作。",
+    "provider": "azure",
+    "voice": "zh-CN-YunfengNeural",
+    "rate": "0%",
+    "style": "default",
+    "output_format": "audio-24khz-96kbitrate-mono-mp3"
+  },
+  "request_sha256": "bb29183bbf4ca8d835454a53f5543bf6813c9f229122384923a79c40ea6bc63b",
+  "audio_sha256": "f802e1c8b1f2c6f0f41cb7e14f6a30b38c1102b73680870d54bdbb38e4a715ff",
+  "duration_seconds": 18.408,
+  "boundary_unit": "100 nanoseconds",
+  "boundaries": [
+    {
+      "offset": 500000,
+      "duration": 2625000,
+      "text": "这些"
+    },
+    {
+      "offset": 3250000,
+      "duration": 4250000,
+      "text": "体验"
+    },
+    {
+      "offset": 8375000,
+      "duration": 1375000,
+      "text": "由"
+    },
+    {
+      "offset": 9750000,
+      "duration": 2000000,
+      "text": "几个"
+    },
+    {
+      "offset": 11875000,
+      "duration": 3750000,
+      "text": "模块"
+    },
+    {
+      "offset": 15875000,
+      "duration": 3125000,
+      "text": "共同"
+    },
+    {
+      "offset": 19125000,
+      "duration": 3625000,
+      "text": "完成"
+    },
+    {
+      "offset": 28500000,
+      "duration": 3875000,
+      "text": "开放"
+    },
+    {
+      "offset": 32625000,
+      "duration": 2625000,
+      "text": "麒麟"
+    },
+    {
+      "offset": 35250000,
+      "duration": 1125000,
+      "text": "的"
+    },
+    {
+      "offset": 36625000,
+      "duration": 2375000,
+      "text": "智能"
+    },
+    {
+      "offset": 39000000,
+      "duration": 2000000,
+      "text": "体"
+    },
+    {
+      "offset": 41125000,
+      "duration": 3250000,
+      "text": "宿主"
+    },
+    {
+      "offset": 44625000,
+      "duration": 875000,
+      "text": "和"
+    },
+    {
+      "offset": 45625000,
+      "duration": 2875000,
+      "text": "运行"
+    },
+    {
+      "offset": 48500000,
+      "duration": 2125000,
+      "text": "时"
+    },
+    {
+      "offset": 52750000,
+      "duration": 2500000,
+      "text": "负责"
+    },
+    {
+      "offset": 55375000,
+      "duration": 3625000,
+      "text": "会话"
+    },
+    {
+      "offset": 62125000,
+      "duration": 2500000,
+      "text": "任务"
+    },
+    {
+      "offset": 64625000,
+      "duration": 3125000,
+      "text": "规划"
+    },
+    {
+      "offset": 68000000,
+      "duration": 750000,
+      "text": "与"
+    },
+    {
+      "offset": 68875000,
+      "duration": 3625000,
+      "text": "工具"
+    },
+    {
+      "offset": 78250000,
+      "duration": 2125000,
+      "text": "我们"
+    },
+    {
+      "offset": 80375000,
+      "duration": 2875000,
+      "text": "实现"
+    },
+    {
+      "offset": 83250000,
+      "duration": 1000000,
+      "text": "的"
+    },
+    {
+      "offset": 84500000,
+      "duration": 2250000,
+      "text": "记忆"
+    },
+    {
+      "offset": 86875000,
+      "duration": 2625000,
+      "text": "适配"
+    },
+    {
+      "offset": 89500000,
+      "duration": 2750000,
+      "text": "层"
+    },
+    {
+      "offset": 93250000,
+      "duration": 3000000,
+      "text": "连接"
+    },
+    {
+      "offset": 96500000,
+      "duration": 2750000,
+      "text": "貔貅"
+    },
+    {
+      "offset": 99375000,
+      "duration": 4250000,
+      "text": "引擎"
+    },
+    {
+      "offset": 106500000,
+      "duration": 3125000,
+      "text": "完成"
+    },
+    {
+      "offset": 109875000,
+      "duration": 2250000,
+      "text": "资料"
+    },
+    {
+      "offset": 112250000,
+      "duration": 2875000,
+      "text": "接入"
+    },
+    {
+      "offset": 118000000,
+      "duration": 2625000,
+      "text": "知识"
+    },
+    {
+      "offset": 120750000,
+      "duration": 3375000,
+      "text": "检索"
+    },
+    {
+      "offset": 126250000,
+      "duration": 3750000,
+      "text": "偏好"
+    },
+    {
+      "offset": 133000000,
+      "duration": 3125000,
+      "text": "安全"
+    },
+    {
+      "offset": 136125000,
+      "duration": 3500000,
+      "text": "处理"
+    },
+    {
+      "offset": 140750000,
+      "duration": 1375000,
+      "text": "和"
+    },
+    {
+      "offset": 142250000,
+      "duration": 2375000,
+      "text": "设备"
+    },
+    {
+      "offset": 144750000,
+      "duration": 3125000,
+      "text": "同步"
+    },
+    {
+      "offset": 153625000,
+      "duration": 3375000,
+      "text": "系统"
+    },
+    {
+      "offset": 157125000,
+      "duration": 3375000,
+      "text": "能力"
+    },
+    {
+      "offset": 161500000,
+      "duration": 2875000,
+      "text": "通过"
+    },
+    {
+      "offset": 164500000,
+      "duration": 3000000,
+      "text": "明确"
+    },
+    {
+      "offset": 167500000,
+      "duration": 1125000,
+      "text": "的"
+    },
+    {
+      "offset": 168875000,
+      "duration": 2750000,
+      "text": "接口"
+    },
+    {
+      "offset": 171750000,
+      "duration": 3375000,
+      "text": "协作"
+    }
+  ],
+  "sdk_version": "1.51.2",
+  "status": "Azure original narration; word boundaries preserved"
+}
