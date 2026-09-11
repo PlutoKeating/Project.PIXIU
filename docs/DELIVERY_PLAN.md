@@ -231,7 +231,7 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 |----------|------------|------------|------|
 | 项目报告 | 1 份，ppt；目录示例 `项目报告.pptx` | `delivery/PRESENTATION_AND_VIDEO.md` | 项目报告源稿按 0.1.12 更新 |
 | 技术方案 | 1 份，word、pdf；目录示例 `技术方案.doc` | `delivery/TECHNICAL_SOLUTION.md` 及同目录测试、用户手册、部署、流转、案例和适配内容 | 八篇源稿已更新，记录功能、操作与实测结果 |
-| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 演示增强版30镜、499.333秒：原速口白、真实鼠标操作、逐句画面和实际结果已编排，原字幕与首尾沿用指定版本；整片复核记录位于 video-production/review |
+| 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 演示增强版30镜、499.333秒，原速口白配合真实鼠标操作；原字幕与首尾沿用指定版本。ZIP为63,102,396字节；整片解码、30段口白起点、310张抽帧文字及装配核对通过，记录见 video-production/review/directed-final-package.json |
 | 源代码 | 1 份，完整源代码及必要技术规范要素 | `delivery/SOURCE_AND_LICENSES.md` 与项目源码 | 按当前源码及四个固定上游生成，逐文件核对 |
 
 提交作品匿名；团队信息只用于平台信息核对与两层目录命名。内部保留版本和审核追踪。

@@ -1,0 +1,19 @@
+{
+  "source_video": ".runtime/directed-bgm-v1.mp4",
+  "source_video_sha256": "b6331eaf230a779d528cf00ff5bd58670d849809ec754a829c36cd777e947ab8",
+  "audio_bitstream_sha256": "c7f73bd5cf792c6b01d840c712e33d601e07a0f2f39024553fad55a558633fce",
+  "transcript": "review/directed-audible-transcript.json",
+  "recognized_segments": 45,
+  "events": [],
+  "reviewed_content": [
+    "品牌首尾",
+    "采购合计496元",
+    "观测时间11月15日晚7点半与预算2680元",
+    "账单合计434元5角",
+    "归还流程步骤",
+    "阶段与长期记忆",
+    "设备配对与共享",
+    "离线与并发更新",
+    "25组冲突24组正确"
+  ]
+}

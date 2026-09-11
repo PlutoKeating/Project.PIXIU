@@ -1,0 +1,26 @@
+{
+  "implementation_commit": "7b6ba83",
+  "checks": {
+    "typescript": "passed",
+    "submission_layout_tests": {
+      "passed": 9
+    },
+    "documentation_export_digests": "matched",
+    "submission_check": {
+      "layout": "pass",
+      "source_files": 11074,
+      "version": "0.1.12",
+      "pending": []
+    },
+    "full_video_decode": "passed",
+    "narration_start_probes": 30,
+    "maximum_narration_error_frames": 0.2900000000008731,
+    "sampled_ocr_frames": 310,
+    "ocr_flagged_frames": 0,
+    "final_video_peak_dbfs": -1.3824114799499512,
+    "package_crc_and_member_sha256": "passed",
+    "frozen_delivery_section_0": "identical to 49e463c"
+  },
+  "artifact_binding": "review/directed-final-binding.json",
+  "package": "review/directed-final-package.json"
+}

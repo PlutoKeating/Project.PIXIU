@@ -1,0 +1,13 @@
+{
+  "sha256": "8e870f0f53af841c67926ae3120cb101564aca438c23d81214c65ffee228a89f",
+  "complete_decode": "passed",
+  "source_sha256": "6d26d70ba16ad3943943a953a8fc7e1b349d45735b64abc98311985784d04315",
+  "cover_sha256": "23d25cde84b988335e3a4c7d0c43e71e067d6ac483bcb09f2362da9057454df7",
+  "duration_seconds": 499.333333,
+  "frames": 14980,
+  "audio_bitstream_identical": true,
+  "embedded_cover_identical": true,
+  "copied_video_from_frame": 250,
+  "later_decoded_frames_identical": true,
+  "method": "Replace frame zero with supplied cover; encode first GOP only; copy remaining GOPs and entire audio; embed original PNG as attached cover."
+}

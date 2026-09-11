@@ -2,7 +2,7 @@
 
 当前制作版本：0.1.12，30镜，1920×1080、30fps，演示增强版时间轴499.333秒。文档、PPT和视频围绕“资料自动整理、可信设备共同记忆”展开。覆盖关系见 `../../docs/delivery/MATERIAL_ALIGNMENT.md`，视觉与声音依据见 `brief/制作依据.md`。
 
-上一交付版：`renders/演示视频-0.1.12新版.mp4`；无配乐制作版：`renders/演示视频-0.1.12新版无配乐.mp4`。正式装配和摘要见 `review/current-final-package.json`，独立复核见 `review/independent-current-v5.md`。
+当前成片：`renders/演示视频-0.1.12演示增强版.mp4`；无配乐版：`renders/演示视频-0.1.12演示增强版-无配乐.mp4`。正式装配见 `review/directed-final-package.json`，整片技术核对见 `review/directed-final/technical.json`，独立复核见 `review/independent-directed-final.md`。
 
 ## 首尾约定
 
@@ -10,13 +10,13 @@
 
 ## 当前素材
 
-18个实拍场景、56项素材、10段原速裁片，来源和摘要记录在 `src/current-scenes.json`。目录与Dreaming包含整理进度、保存、查询、来源、对照、批准和再次查询；多设备包含共享设置、跨端查询、来源及三端更新观测。当前真实设置页补充模型选项与更新入口。
+18个实拍场景、75项素材、29段原速裁片，来源和摘要记录在 `src/directed-scenes.json`。目录与Dreaming包含整理进度、保存、查询、来源、对照、批准和再次查询；多设备包含共享设置、跨端查询、来源及三端更新观测。当前真实设置页补充模型选项与更新入口。
 
-画面裁片按字幕时间选择，审批片段保留开始处的批准动作，查询片段突出结果；结束画面继续停留供阅读。实际源时段见 `review/current-playback-timing.json`。两段PPT实录采用相同原录，已在麒麟V11 LibreOffice 24.2完成放映验证。
+画面裁片按字幕时间选择，审批片段保留开始处的批准动作，查询片段突出结果；结束画面继续停留供阅读。实际源时段与鼠标点击时刻见 `src/directed-scenes.json`。两段PPT实录采用相同原录，已在麒麟V11 LibreOffice 24.2完成放映验证。
 
 ## 配音与配乐
 
-已交付版的30镜配音采用 Azure `zh-CN-YunfengNeural`。演示增强版新增口白统一使用原始语速（0%），首尾复用已指定原音；词级时间与镜头时长随本轮音频重新生成。原音和词级时间保存在 `raw/audio/`，文本、配置、音频摘要和字幕检查见 `review/current-narration-verified.json`。旁白保持170%线性增益。
+已交付版的30镜配音采用 Azure `zh-CN-YunfengNeural`。演示增强版新增口白统一使用原始语速（0%），首尾复用已指定原音；词级时间与镜头时长随本轮音频重新生成。原音和词级时间保存在 `raw/audio/`，文本、配置、音频摘要和字幕检查见 `review/directed-narration-verified.json`。旁白保持170%线性增益。
 
 配乐为用户选定的 ZENI - With You (Original Mix)，从15秒起取、音量15%，曲目接续交叉淡化4秒，结束淡出1秒。配置为 `src/bgm.json`，带配乐与无配乐版本使用同一视频流。运行混音脚本会同步工作台使用的配乐WAV。
 
@@ -63,3 +63,5 @@ python scripts/mix_bgm.py --video .runtime/review-nobgm.mp4 --output .runtime/re
 本轮画面按完整正文和控件范围取景，原图光标记录在 `native_pointer` 字段中。阶段、配对与遗忘分别展示实际确认动作，长期保存后展示检索结果；图书归还流程来自对应的实际来源页。临时配对值通过进程环境传入，采集时覆盖令牌区域；操作计划保存字段名称和发生时刻。
 
 `verify_directed_constraints.py` 核对首尾素材、原音、原字幕组件、28段原速口白和全部画面锚点，并生成用于整片核验的源文件摘要。`transcribe_render.py` 对混合音轨进行语音回读，结果与最终成片通过音轨摘要对应。
+
+本版完成310张成片抽帧文字检查、30段口白起点核对和整片解码。两版画面流一致，正式成片音轨与完整回读音轨一致，记录见 `review/directed-final-binding.json`。正式ZIP为63,102,396字节，保存一份499.333秒的演示视频。

@@ -1,0 +1,14 @@
+{
+  "video": "renders/演示视频-0.1.12演示增强版.mp4",
+  "sha256": "8e870f0f53af841c67926ae3120cb101564aca438c23d81214c65ffee228a89f",
+  "no_bgm_video": "renders/演示视频-0.1.12演示增强版-无配乐.mp4",
+  "no_bgm_sha256": "c667cf57679d116412f06355a79aa5fd2ae5ec31f77f5686031e8a5273c25967",
+  "identical_picture_stream_sha256": "f95fb6e41ef10e26a7582a1ded73fba2f88c83673aa4f36a17e9f13cca53e749",
+  "readback_audio_bitstream_sha256": "c7f73bd5cf792c6b01d840c712e33d601e07a0f2f39024553fad55a558633fce",
+  "readback_report": "review/directed-audible-transcript.json",
+  "readback_audio_identical": true,
+  "picture_streams_identical": true,
+  "new_narration_rate": "0%",
+  "original_caption_component": "49e463c",
+  "frozen_constraints": "review/directed-frozen-constraints.json"
+}

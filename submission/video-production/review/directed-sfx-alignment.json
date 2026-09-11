@@ -1,0 +1,71 @@
+{
+  "video": ".runtime/directed-nobgm-v3.mp4",
+  "video_sha256": "81358eac9bfd91fce04af1b3f1aeba824d8ecc556fab3a9bc4a7c5165b70a0dc",
+  "method": "Normalized source waveform correlation near the declared event",
+  "probes": [
+    {
+      "shot": "s09",
+      "source": "whoosh-big",
+      "expected_source_start": 4679.28,
+      "measured_source_start": 4679.28875,
+      "error_frames": 0.00874999999996362,
+      "correlation": 0.08408492682142157
+    },
+    {
+      "shot": "s09",
+      "source": "whoosh-fast",
+      "expected_source_start": 4711.28,
+      "measured_source_start": 4711.28,
+      "error_frames": 0.0,
+      "correlation": 0.037703632990758976
+    },
+    {
+      "shot": "s09",
+      "source": "whoosh-fast",
+      "expected_source_start": 4727.28,
+      "measured_source_start": 4727.27,
+      "error_frames": -0.009999999999308784,
+      "correlation": 0.03695277004617424
+    },
+    {
+      "shot": "s03",
+      "source": "whoosh-big",
+      "expected_source_start": 721.28,
+      "measured_source_start": 721.27875,
+      "error_frames": -0.0012500000000272848,
+      "correlation": 0.06072173083057137
+    },
+    {
+      "shot": "s03",
+      "source": "sparkle",
+      "expected_source_start": 710.28,
+      "measured_source_start": 710.27,
+      "error_frames": -0.009999999999990905,
+      "correlation": 0.0163595217691116
+    },
+    {
+      "shot": "s03",
+      "source": "transition-snap",
+      "expected_source_start": 821.28,
+      "measured_source_start": 821.27,
+      "error_frames": -0.009999999999990905,
+      "correlation": 0.10159169347246183
+    },
+    {
+      "shot": "s30",
+      "source": "impact-deep-whoosh",
+      "expected_source_start": 14756.28,
+      "measured_source_start": 14756.265,
+      "error_frames": -0.015000000001236913,
+      "correlation": 0.16249420771933087
+    },
+    {
+      "shot": "s30",
+      "source": "sparkle",
+      "expected_source_start": 14748.28,
+      "measured_source_start": 14748.29,
+      "error_frames": 0.010000000000218279,
+      "correlation": 0.02056496889028914
+    }
+  ]
+}
