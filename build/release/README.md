@@ -20,6 +20,17 @@
 > `1751dd6` 已取得 V11 strict user-service 双 SDK compliant/`contest_ready=true` 证据；
 > 完整 Agent、三设备、性能和最终安装矩阵尚未完成，因此不能据包结构宣称完整验收通过。
 
+## 材料下载
+
+打开或导出材料前需安装 Git LFS（麒麟 V11 / Debian 系使用 `sudo apt-get install git-lfs`），并在仓库根目录执行：
+
+```bash
+git lfs install --local
+git lfs pull
+```
+
+仅恢复项目报告时，可将下载命令改为 `git lfs pull --include='docs/delivery/assets/*.pptx,submission/**/*.pptx' --exclude=''`。这会同时恢复源资产和提交目录中的报告，不重新生成内容。约 130 字节、以 `version https://git-lfs.github.com/spec/v1` 开头的文件只是下载指针，WPS 无法将其作为 PPTX 打开。下载完成后应核对 LFS SHA-256、文件大小及 PPTX ZIP 完整性；恢复相同 LFS 对象不会产生 Git 内容差异。
+
 ## 交付治理预检
 
 在开始构建或整理赛事材料前执行：

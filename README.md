@@ -83,6 +83,8 @@ PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、
 
 ## 文档
 
+仓库中的项目报告、截图及交付二进制使用 Git LFS。克隆后须安装 Git LFS，并在仓库根目录执行 `git lfs install --local` 和 `git lfs pull`，再打开材料。若 PPTX 只有约 130 字节且以 `version https://git-lfs.github.com/spec/v1` 开头，它是尚未下载的指针文件；恢复方法见 [材料下载说明](build/release/README.md#材料下载)。
+
 [用户手册](docs/delivery/USER_MANUAL.md) · [安装指南](docs/delivery/DEPLOYMENT_GUIDE.md) · [总体架构](docs/ARCHITECTURE.md) · [API](docs/API.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [发布记录](docs/RELEASE_0_1_10_COMPLETION_PLAN.md) · [交付要求](docs/DELIVERY_PLAN.md)
 
 桌面与 Agent 运行时复用 openKylin 项目，PIXIU 实现记忆服务、分布式同步与集成适配。来源及许可证见[源码说明](docs/delivery/SOURCE_AND_LICENSES.md)。

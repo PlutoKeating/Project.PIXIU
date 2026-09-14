@@ -22,6 +22,8 @@
 
 ## 材料生成
 
+材料与截图使用 Git LFS；首次克隆后先按 [材料下载说明](../../build/release/README.md#材料下载) 安装 Git LFS 并拉取实物。PPTX 下载指针不是演示文稿，不能用 WPS 打开；恢复后核对对象摘要与 ZIP 完整性。
+
 交付源稿位于 `docs/delivery/`，由 `build/release/scripts/export-documentation.py` 生成材料。文档制作依赖见 `build/release/requirements-docs.txt`；生成后检查文件格式、内容、图片及匿名信息。
 
 文档导出会把 Word 表格限制在 A4 正文宽度内。交付物统一修订与新版界面采集见 `docs/delivery/MATERIAL_ALIGNMENT.md`；图文与视频采用同一组场景事实，逐页检查导出实物。
