@@ -6,3 +6,5 @@
 # before opening delivery binaries or rebuilding from LFS-managed screenshots.
 Markdown==3.10.3
 python-pptx==1.0.2
+# Roadshow image sizing and validation; rendering uses WPS or LibreOffice plus Poppler.
+Pillow==11.3.0

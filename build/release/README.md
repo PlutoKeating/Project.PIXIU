@@ -1,7 +1,7 @@
 # PIXIU 发布流水线脚手架（build/release）
 
 赛事要求提交项目报告、技术方案、视频和源码各一份，唯一口径见
-`docs/DELIVERY_PLAN.md` 第 0 节。`submission/` 仅保存规定目录内的项目报告、技术方案、视频和源码。
+`docs/DELIVERY_PLAN.md` 第 0 节。`submission/` 的正式命名目录仅保存规定交付文件；`video-production/` 与 `presentation-production/` 分别保存视频和路演稿制作工程，不属于额外交付作品。
 编写源与截图位于 `docs/delivery/`，中间导出位于 `build/release/out/`。
 运行 `export-documentation.py` 生成 PPTX 和真正的 DOC；运行 `prepare-submission.py build-source`
 生成完整源码包，再用 `prepare-submission.py check` 核对目录与文件。

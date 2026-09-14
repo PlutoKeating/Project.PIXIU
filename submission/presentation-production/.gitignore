@@ -1,0 +1,9 @@
+.venv/
+.runtime/
+__pycache__/
+
+review/*/package/
+.~*
+render/v1/
+render/candidate-v*.pdf
+render/candidate-v*.pptx

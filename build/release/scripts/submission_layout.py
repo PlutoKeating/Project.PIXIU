@@ -14,14 +14,16 @@ def paths(root: Path) -> tuple[Path, Path, Path]:
 
 def validate(root: Path, require_video: bool = False) -> list[str]:
     outer, materials, source = paths(root)
-    # The user authorized this sibling workspace for video production. It is
-    # never part of the formal submission tree; every other sibling is rejected.
-    production = root / "submission" / "video-production"
+    # Human-authorized sibling workspaces are internal production evidence.
+    # Neither workspace becomes part of the strict formal submission tree.
+    production = {root / "submission" / name for name in
+                  ("video-production", "presentation-production")}
     siblings = set((root / "submission").iterdir())
-    if siblings - {outer, production}:
+    if siblings - ({outer} | production):
         raise ValueError("提交根目录包含未授权的额外文件或目录")
-    if production.exists() and (production.is_symlink() or not production.is_dir()):
-        raise ValueError("视频制作工作区必须是独立目录")
+    for workspace in production:
+        if workspace.is_symlink() or (workspace.exists() and not workspace.is_dir()):
+            raise ValueError("制作工作区必须是独立目录")
     expected = {
         materials / "项目报告.pptx", materials / "技术方案.doc",
         source / "PIXIU源代码.tar.gz",

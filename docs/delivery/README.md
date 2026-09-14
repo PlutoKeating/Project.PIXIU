@@ -18,7 +18,7 @@ python3 build/release/scripts/prepare-submission.py build-source
 python3 build/release/scripts/prepare-submission.py check
 ```
 
-PPT 从源脚本生成18页可编辑图文，并嵌入真实操作短片。图片、视频片段及输入摘要分别保存在 `assets/operations/03-current-workflows/`、`assets/presentation-clips/` 与 `assets/presentation-manifest.json`。页面对应视频分镜见 [项目报告与演示说明](PRESENTATION_AND_VIDEO.md)。
+PPT 从源脚本生成31页可编辑路演图文，使用当前版本原始实拍，审批前后以静态关键帧对照。输入摘要保存在 `assets/presentation-manifest.json`；拆解、原版18页与新版31页整页渲染、视觉复核保存在 `submission/presentation-production/`。页面索引见 [项目报告与演示说明](PRESENTATION_AND_VIDEO.md)。
 
 文档工具使用 `build/release/requirements-docs.txt`、系统 LibreOffice 和 FFmpeg，先内嵌图片，再转换为真正的 Word 97 `.doc`。中间 DOCX 和从最终 DOC 回读的 PDF 位于 `build/release/out/documents/`，须逐页观察。原始图片保存在 `assets/operations/`。
 
