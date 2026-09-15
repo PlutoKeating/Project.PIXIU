@@ -1,0 +1,46 @@
+{
+  "input_sha256": "0d52d938547b653ba4ae65000f9b3736d4bd8d8685b8937dde7fcabe799f705f",
+  "output_sha256": "74a05df97b92ab84fa2398b7dd1cba2c8d17db9bf778c01c6ce76534f29ffedf",
+  "pages": 36,
+  "changed_parts": [
+    "ppt/slides/slide15.xml",
+    "ppt/slides/slide16.xml",
+    "ppt/slides/slide17.xml",
+    "ppt/slides/slide18.xml",
+    "ppt/slides/slide19.xml",
+    "ppt/slides/slide20.xml",
+    "ppt/slides/slide21.xml",
+    "ppt/slides/slide22.xml",
+    "ppt/slides/slide23.xml",
+    "ppt/slides/slide24.xml",
+    "ppt/slides/slide25.xml"
+  ],
+  "other_parts_byte_identical": true,
+  "non_navigation_elements_byte_identical": 470,
+  "navigation_items": [
+    "多源接入",
+    "知识检索",
+    "记忆流转",
+    "对等同步",
+    "安全部署",
+    "任务循环",
+    "技术背书"
+  ],
+  "cover": 15,
+  "body_pages": [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "active_technical_endorsement_page": 25,
+  "page_numbers_checked": true,
+  "render_review": "LibreOffice PNG; chapter cover and all chapter headers",
+  "wps_powerpoint_not_tested": true
+}

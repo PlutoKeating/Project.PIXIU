@@ -167,3 +167,17 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 ```bash
 submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/add_logic_introductions.py --source submission/presentation-production/source/user-before-logic-introductions-20260915.pptx --output /tmp/pixiu-introductions-candidate.pptx
 ```
+
+## 第四章目录补齐：技术背书（当前版本）
+
+以用户最新手动保存的正式文件为输入，归档为 `source/user-before-technical-navigation-20260915.pptx`。第15页章节封面及第16—25页全部顶栏统一为七项：多源接入、知识检索、记忆流转、对等同步、安全部署、任务循环、技术背书。第25页高亮技术背书，其他页面沿用对应章节高亮。封面同步补齐原来缺少的任务循环，并统一栏目名称。
+
+直接复用正式稿的原生按钮、填充、字体颜色与高亮下划线，仅调整目录间距及宽度。正文、截图、页码与用户最新修改逐元素保持；其他包部件逐字节不变。总页数36、可见页码02—35复核通过。已检查LibreOffice渲染中的封面及全部10页顶栏；未在WPS或Microsoft PowerPoint检查。
+
+[章节封面](render/technical-navigation/page-15.png) · [技术背书页](render/technical-navigation/page-25.png) · [全部顶栏](render/technical-navigation/headers.png) · [验证记录](review/technical-navigation-validation.json)
+
+无新增依赖及产品构建、部署配置变动；沿用已有Python环境生成独立候选，写回前须重新核验最新正式文件：
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/complete_technical_navigation.py --source submission/presentation-production/source/user-before-technical-navigation-20260915.pptx --output /tmp/pixiu-technical-navigation-candidate.pptx
+```
