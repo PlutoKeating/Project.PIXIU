@@ -75,7 +75,9 @@ def format_captions(path):
     entries['word/document.xml'] = doc.toxml(encoding='utf-8')
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
         for n, b in entries.items(): z.writestr(n, b)
-    print(f'Centered {images} image captions and {len(tables)} table captions')
+    from normalize_table_captions import normalize
+    normalize(path)
+    print(f'Centered {images} image captions')
 
 if __name__ == '__main__':
     format_captions(Path(sys.argv[1]))
