@@ -82,3 +82,5 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 全34页已复核，其中20页的软件截图改为完整应用窗口或完整桌面，取消独立文字条、按钮条拼贴。图下添加图注，关键位置使用可编辑红框；三端页使用三个独立截图，等宽、等距排列。详见[截图审计](review/product-screenshot-audit.md)。
 
 原始录屏抽帧可运行 `python scripts/extract_full_windows.py`，使用现有 FFmpeg，不裁切或重绘像素；实时采集源 PNG 只校验摘要。完整来源和时间点记录于 `source/full-window-captures/manifest.json`。重建、PDF渲染与验证仍使用上方命令。
+
+图注统一为一句简短陈述，不含括号或标注方式说明，每条最多一个逗号；保留图号及可编辑红框。

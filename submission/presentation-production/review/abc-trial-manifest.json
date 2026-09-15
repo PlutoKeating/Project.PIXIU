@@ -315,7 +315,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：桌面助手的完整会话窗口",
+            "caption": "图 1：助手在会话中检索并核对账单",
             "annotations": [
               {
                 "rect_pixels": [
@@ -547,7 +547,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.45,
             "context": "complete application window",
-            "caption": "图 1：可信设备与共享设置",
+            "caption": "图 1：用户配置可信设备与共享范围",
             "annotations": [
               {
                 "rect_pixels": [
@@ -584,7 +584,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.45,
             "context": "complete application window",
-            "caption": "图 2：后台整合与更正审批",
+            "caption": "图 2：用户核对并审批后台生成的更正方案",
             "annotations": [
               {
                 "rect_pixels": [
@@ -745,7 +745,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
-            "caption": "图 1：设备 A 的完整记忆窗口",
+            "caption": "图 1：设备 A 查询同一条共享记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -782,7 +782,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
-            "caption": "图 2：设备 B 的完整记忆窗口",
+            "caption": "图 2：设备 B 查询同一条共享记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -819,7 +819,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
-            "caption": "图 3：设备 C 的完整记忆窗口",
+            "caption": "图 3：设备 C 查询同一条共享记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -960,7 +960,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：自动记忆生成的更正方案",
+            "caption": "图 1：后台整合资料并生成更正方案",
             "annotations": [
               {
                 "rect_pixels": [
@@ -1096,7 +1096,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：新会话中的账单检索结果",
+            "caption": "图 1：助手在新会话中召回账单明细与来源",
             "annotations": [
               {
                 "rect_pixels": [
@@ -1296,7 +1296,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：采集与隐私设置完整窗口",
+            "caption": "图 1：用户选择授权目录并配置采集范围",
             "annotations": [
               {
                 "rect_pixels": [
@@ -1505,7 +1505,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：知识与来源的关联展示",
+            "caption": "图 1：用户查看知识所关联的原始资料",
             "annotations": [
               {
                 "rect_pixels": [
@@ -1665,7 +1665,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：关键词查询与来源入口",
+            "caption": "图 1：用户通过关键词检索知识并查看来源",
             "annotations": [
               {
                 "rect_pixels": [
@@ -1822,7 +1822,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：短期与阶段记忆的完整窗口",
+            "caption": "图 1：用户查看短期记录与阶段记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -1995,7 +1995,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：内容更正的核对与审批窗口",
+            "caption": "图 1：用户对照新旧内容并审批更正",
             "annotations": [
               {
                 "rect_pixels": [
@@ -2167,7 +2167,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：设备共享与同步控制窗口",
+            "caption": "图 1：用户管理可信设备与同步设置",
             "annotations": [
               {
                 "rect_pixels": [
@@ -2326,7 +2326,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：助手记忆权限与共享范围设置",
+            "caption": "图 1：用户设置助手记忆权限与共享范围",
             "annotations": [
               {
                 "rect_pixels": [
@@ -2477,7 +2477,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：服务与能力的完整设置窗口",
+            "caption": "图 1：系统展示当前版本与原生能力状态",
             "annotations": [
               {
                 "rect_pixels": [
@@ -2640,7 +2640,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.447,
             "context": "complete application window",
-            "caption": "图 1：工具任务完成后的会话窗口",
+            "caption": "图 1：助手完成工具任务并保存处理结果",
             "annotations": [
               {
                 "rect_pixels": [
@@ -2717,7 +2717,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.558,
             "context": "complete application window",
-            "caption": "图 1：星河活动的实际查询窗口",
+            "caption": "图 1：助手查询已保存的星河活动安排",
             "annotations": [
               {
                 "rect_pixels": [
@@ -2851,7 +2851,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：活动知识与原始文件内容",
+            "caption": "图 1：助手保留活动知识及其原始资料",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3004,7 +3004,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：新会话召回已保存的活动资料",
+            "caption": "图 1：助手在新会话中召回已保存的活动资料",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3158,7 +3158,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：更正前后对照与批准操作",
+            "caption": "图 1：用户核对活动安排的变化并批准更正",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3336,7 +3336,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
-            "caption": "图 1：批准更正后的查询结果",
+            "caption": "图 1：助手在后续查询中使用更正后的安排",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3619,7 +3619,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
-            "caption": "图 1：设备 A 的完整记忆窗口",
+            "caption": "图 1：设备 A 查询同一条共享记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3656,7 +3656,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
-            "caption": "图 2：设备 B 的完整记忆窗口",
+            "caption": "图 2：设备 B 查询同一条共享记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3693,7 +3693,7 @@
             "role": "primary",
             "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
-            "caption": "图 3：设备 C 的完整记忆窗口",
+            "caption": "图 3：设备 C 查询同一条共享记忆",
             "annotations": [
               {
                 "rect_pixels": [
@@ -3913,7 +3913,7 @@
     },
     {
       "path": "submission/presentation-production/scripts/product_screenshots.py",
-      "sha256": "5b49f3fc62fb03372dacbee5755111347b843a81ae2b1af440c399426437e3fc"
+      "sha256": "ececaeca40ab299ae6aac3901c20075590bbd2b377325d3caffb5ed7448a23fe"
     },
     {
       "path": "submission/presentation-production/source/full-window-captures/bill.png",
@@ -3984,7 +3984,7 @@
       "sha256": "6120477bae9a984bb35b729b5a77f2f626952b3b089ada90747b8c0693a4a28f"
     }
   ],
-  "output_sha256": "149fcd56e0074cb95c121223cc6689eb43deb7c43ae17251c04b5895bdc02cce",
+  "output_sha256": "2f593fb73897eac058cc10ec1c1abb363c3b088770c0ed7ed61ea57be108e58b",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
