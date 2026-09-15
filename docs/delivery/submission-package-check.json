@@ -6,9 +6,9 @@
   "layout": "passed",
   "files": [
     {
-      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.doc",
-      "bytes": 1033216,
-      "sha256": "40b100450877f8eeb2524fffe895497db7c5279ff5ba56a618fe2e9a80b532f9"
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
+      "bytes": 614722,
+      "sha256": "200e7997688db7248269c05647a17eb280325e8e58198f131da37ef1e9e5beaa"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/演示视频.zip",
@@ -22,18 +22,27 @@
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/PIXIU源代码.tar.gz",
-      "bytes": 442620659,
-      "sha256": "e095fb1c82edab4f9f33b0528e976f65e58170b03b5a0df3722366eff44b2c74"
+      "bytes": 22344745,
+      "sha256": "c8f1cdb89a537d8636b3a28f579ecba02b5c8a9e7396cf89f4efc746e1bb731d"
     }
   ],
   "ppt_pages": 34,
   "ppt_matches_accepted": true,
   "speaker_notes": 0,
-  "technical_doc_pages": 31,
+  "technical_doc_pages": 35,
   "video_seconds": 499.333333,
   "video_crc": "passed",
-  "source_files": 11075,
+  "source_files": 1890,
   "fixed_upstreams": 5,
-  "source_commit": "c25b8f20f90a6033028a849d85b3f847ba6167e8",
-  "source_tree_clean": true
+  "source_commit": "27451253420c4245969f0a4b107ec4188b575bc8",
+  "source_tree_clean": true,
+  "source_scope": "minimal-build",
+  "excluded_directories_check": "passed",
+  "technical_doc_format": "DOCX",
+  "build_validation": {
+    "host": "KYSDK=OFF compile, link and --hide smoke passed from no-Git archive",
+    "runtime": "CPython 3.12 wheel rebuilt; full and minimal source digests match",
+    "runtime_wheel_sha256": "a3f1dbeab1c040b41933a4934dfabd46daa5b5561ae7cfad53dfec62ecc02aed",
+    "native_deb_install": "not repeated in this submission refresh"
+  }
 }
