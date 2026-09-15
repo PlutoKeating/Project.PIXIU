@@ -1,0 +1,39 @@
+{
+  "identity": {
+    "work_number": "603821",
+    "work_title": "PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现"
+  },
+  "layout": "passed",
+  "files": [
+    {
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.doc",
+      "bytes": 1033216,
+      "sha256": "40b100450877f8eeb2524fffe895497db7c5279ff5ba56a618fe2e9a80b532f9"
+    },
+    {
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/演示视频.zip",
+      "bytes": 63102396,
+      "sha256": "0f5b977f446fbb1bc59fe7398a4fb069ad79f070dc47b9ca40c6e47b15668777"
+    },
+    {
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
+      "bytes": 36476942,
+      "sha256": "8aaf26a0b66183a065c6b9984a19ffb3c053779015881c816e652c06b0788c6f"
+    },
+    {
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/PIXIU源代码.tar.gz",
+      "bytes": 442620659,
+      "sha256": "e095fb1c82edab4f9f33b0528e976f65e58170b03b5a0df3722366eff44b2c74"
+    }
+  ],
+  "ppt_pages": 34,
+  "ppt_matches_accepted": true,
+  "speaker_notes": 0,
+  "technical_doc_pages": 31,
+  "video_seconds": 499.333333,
+  "video_crc": "passed",
+  "source_files": 11075,
+  "fixed_upstreams": 5,
+  "source_commit": "c25b8f20f90a6033028a849d85b3f847ba6167e8",
+  "source_tree_clean": true
+}
