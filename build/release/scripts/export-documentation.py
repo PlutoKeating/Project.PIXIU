@@ -223,6 +223,10 @@ def export(root: Path) -> tuple[list[dict], dict]:
         # UNO creates and calculates a native TOC and running field values.
         subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/finalize-document-navigation.py"),
                         str(finalized), str(output / "技术方案.pdf")], check=True, timeout=120)
+        subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/number-document-headings.py"),
+                        str(finalized)], check=True)
+        subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/finalize-document-navigation.py"),
+                        str(finalized), str(output / "技术方案.pdf"), "--refresh-only"], check=True, timeout=120)
         shutil.copyfile(finalized, doc)
     # The submitted deck may contain later Human edits; exporting Word never
     # replaces it with a production template.

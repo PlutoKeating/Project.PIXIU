@@ -37,3 +37,5 @@ python3 build/release/scripts/prepare-submission.py check --require-video
 
 
 技术方案包含独立匿名封面、原生自动目录和正文页眉页脚。目录由一级、二级标题生成，使用Word的TOC域；页眉左侧为PIXIU技术方案，右侧通过STYLEREF域读取当前大章节，页脚使用居中的PAGE域。封面不显示页眉页码，目录使用罗马页码，正文从1开始。修改内容后可在Word中右键目录选择“更新域／更新整个目录”。导出脚本通过系统python3-uno调用LibreOffice生成并更新目录及页码，复核PDF仅存于制作输出目录。
+
+标题采用Word原生多级编号：八个一级标题使用一、二、三等汉字编号，59个二级标题使用1.1、1.2、2.1等阿拉伯数字。二级编号启用legal numbering，确保上级汉字不会带入二级编号。编号后刷新原生目录及页码；number-document-headings.py可直接处理现有DOCX以保留人工排版。

@@ -29,7 +29,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('document', type=Path)
     parser.add_argument('pdf', type=Path)
-    parser.add_argument('--inspect-numbering', action='store_true')
+    parser.add_argument('--refresh-only', action='store_true')
     args = parser.parse_args()
     pipe = 'pixiu_doc_' + uuid.uuid4().hex
     with tempfile.TemporaryDirectory(prefix='pixiu-navigation-') as profile:
@@ -52,9 +52,15 @@ def main():
             desktop = context.ServiceManager.createInstanceWithContext('com.sun.star.frame.Desktop', context)
             doc = desktop.loadComponentFromURL(args.document.resolve().as_uri(), '_blank', 0,
                 (prop('Hidden', True), prop('UpdateDocMode', 3)))
-            if args.inspect_numbering:
-                for level in (0, 1):
-                    print(level, [(p.Name, str(p.Value)) for p in doc.getChapterNumberingRules().getByIndex(level)])
+            if args.refresh_only:
+                indexes = doc.getDocumentIndexes()
+                for _ in range(2):
+                    for i in range(indexes.Count): indexes.getByIndex(i).update()
+                    doc.TextFields.refresh(); doc.refresh()
+                doc.DocumentProperties.Author = ''; doc.DocumentProperties.ModifiedBy = ''
+                doc.storeAsURL(args.document.resolve().as_uri(), (prop('FilterName', 'Office Open XML Text'), prop('Overwrite', True)))
+                doc.storeToURL(args.pdf.resolve().as_uri(), (prop('FilterName', 'writer_pdf_Export'), prop('Overwrite', True)))
+                print('Existing DOCX contents and fields updated')
                 return
             styles = doc.StyleFamilies.getByName('PageStyles')
             page_before = uno.Enum('com.sun.star.style.BreakType', 'PAGE_BEFORE')
