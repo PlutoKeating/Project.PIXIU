@@ -26,8 +26,8 @@ for item in m['inputs']:
     assert digest(ROOT / item['path']) == item['sha256'], item['path']
 assert {n for s in m['slides'] + m.get('removed_slides', []) for n in s['source_pages']} == set(range(1, 32))
 count = len(m['slides'])
-assert count == 31
-assert m['revision']['source_page_order'] == list(range(1,8)) + [11,8,9] + list(range(12,33))
+assert count == 34
+assert m['revision']['source_page_order'] == [1,2,33,3,4,34,5,6,35,7,11,8,9] + list(range(12,29)) + [36,30,31,32]
 with zipfile.ZipFile(ppt) as z:
     assert z.testzip() is None
     xml_parts = []
@@ -60,9 +60,9 @@ for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
     visible = [(a.text, a.top / 914400) for a in page.shapes if a.has_text_frame]
     matches = [y for t, y in visible if t == entry['title']]
     assert matches, (n, entry['title'])
-    assert min(matches) < (3.2 if n in {11, 21} else 1.6), (n, matches)
+    assert min(matches) < (3.2 if n in {3,6,9,14,24,31} else 1.6), (n, matches)
     assert any(t == f'{n:02}' and 7.1 < y < 7.3 for t,y in visible), (n, 'folio')
-    if n in {1,2,11,21,31}:
+    if n in {1,2,3,6,9,14,24,31,34}:
         assert 'navigation' not in entry
     else:
         nav=entry['navigation']
@@ -73,11 +73,11 @@ for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
         assert not any(x in t for x in ['风格试作版', '真实界面：', 'PRODUCT  /  MEMORY']), (n, t)
         assert not (y > 7.1 and ('SDK' in t or '实拍' in t)), (n, t)
 # The two product capabilities must remain prominent and consistently named.
-for n in [1,2,5,7,31]:
+for n in [1,2,7,10,34]:
     wording='\n'.join(a.text for a in prs.slides[n-1].shapes if a.has_text_frame)
     assert '自动记忆，持续整合' in wording and '记忆共享，分布互连' in wording, (n, 'flagship names')
-assert [entry['title'] for entry in m['slides'][6:10]] == ['两大核心亮点', '记忆共享，分布互连', '自动记忆，持续整合', '场景示例 · 账单检索']
-assert all('偏好演进' not in a.text for page in prs.slides for a in page.shapes if a.has_text_frame)
+assert [entry['title'] for entry in m['slides'][9:13]] == ['两大核心亮点', '记忆共享，分布互连', '自动记忆，持续整合', '场景示例 · 账单检索']
+assert all(not any(t in a.text for t in ['偏好演进','验证结果与待测范围','持续记忆技术体系']) for page in prs.slides for a in page.shapes if a.has_text_frame)
 for page in prs.slides:
     assert all('目录整理' not in a.text for a in page.shapes if a.has_text_frame)
 for path, expected in [(OUT / 'PIXIU项目报告-科技风试作版.pdf', count),
@@ -102,7 +102,13 @@ ns = {'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
 with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
     for old_page in m['revision']['source_page_order']:
         part = f'ppt/slides/slide{old_page}.xml'
-        old = LET.fromstring(before.read(part))
+        if old_page > 32:
+            import sys
+            sys.path.insert(0,str(WORK/'scripts'))
+            from refine_explanations import cover
+            old = cover(LET.fromstring(before.read('ppt/slides/slide12.xml')), old_page)
+        else:
+            old = LET.fromstring(before.read(part))
         new = LET.fromstring(after.read(part))
         old_shapes = old.find('p:cSld/p:spTree', ns)
         new_shapes = new.find('p:cSld/p:spTree', ns)
@@ -116,6 +122,13 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
             if identity is None:
                 continue
             reason = edits.get(identity)
+            offsets=node.xpath('./p:spPr/a:xfrm/a:off',namespaces=ns)
+            y=int(offsets[0].get('y'))/914400 if offsets else -1
+            if old_page in {9,11} and 1.85 <= y <= 7.1:
+                continue  # Authorized diagram resizing / explanatory body rewrite.
+            if old_page == 12 and ''.join(node.xpath('.//a:t/text()',namespaces=ns)) == '持续记忆技术体系':
+                assert ''.join(actual[identity].xpath('.//a:t/text()',namespaces=ns)) == '技术架构与实现方案'
+                continue
             if reason == 'remove preference navigation':
                 assert identity not in actual
                 continue
@@ -137,7 +150,7 @@ assert digest(WORK / 'render/项目报告.pptx') == baseline
 assert digest(ROOT / 'docs/delivery/assets/项目报告.pptx') == baseline
 
 # A compact overview complements the full-page images and PDF.
-overview = Image.new('RGB', (1600, 8 * 250), '#041F3B')
+overview = Image.new('RGB', (1600, 9 * 250), '#041F3B')
 draw = ImageDraw.Draw(overview)
 for i in range(count):
     with Image.open(OUT / f'slide-{i+1:02}.png') as im:
@@ -154,8 +167,8 @@ result = {
     'checks': ['ZIP CRC and XML parse', 'all input hashes',
                'retained and explicitly removed source pages accounted for', 'original screenshot bytes embedded',
                'no template identity in XML', 'no embedded workbooks or external links',
-               '31 main topics present above body', '31 folios and 26 chapter navigation bars', 'production footnotes removed', 'two flagship names and dedicated feature pages',
-               '51 full-page PNGs verified', 'formal candidate and asset unchanged', 'user-refined shapes preserved except specified moves, navigation and folios'],
+               '34 main topics present above body', '34 folios and 25 chapter navigation bars', 'production footnotes removed', 'two flagship names and dedicated feature pages',
+               '54 full-page PNGs verified', 'formal candidate and asset unchanged', 'user-refined shapes preserved outside requested content edits; chapter artwork copied'],
     'visual_review': 'See abc-style-review.md. XML checks cannot inspect raster identity or layout.',
     'rendered_pages': rendered,
 }
