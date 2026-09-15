@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-15",
+  "version": "0.1.12-1",
+  "platform": "银河麒麟 V11 QEMU 虚拟机",
+  "capture": "virsh screenshot；原始 PNG，无重绘、锐化或内容改写",
+  "devices": {
+    "A": "kylin-v11",
+    "B": "pixiu-video-b",
+    "C": "pixiu-release-c"
+  },
+  "actions": [
+    "恢复三台已安装虚拟机",
+    "分别通过资料页搜索云杉资料移交",
+    "选择查看来源 2，显示更正来源",
+    "打开设备共享页"
+  ],
+  "current_shared_record": {
+    "knowledge_id": "knw_01M24EKMT8CVDJ58NMX7DT6X85",
+    "scope": "shared:home",
+    "version": 2,
+    "title": "云杉正式版共享验证",
+    "body": {
+      "content": "云杉资料移交时间改为2026年11月10日下午三点，地点为三楼档案室。"
+    },
+    "evidence_ids": [
+      "evd_01M24EKMT3KQK2R07NJBCRJTAS",
+      "evd_01M24G3NT727NW4G4MRZ4058MR"
+    ],
+    "updated_at": 1789004994
+  },
+  "equality": "三台公共 API 返回的指定共享知识记录完全一致",
+  "limitations": [
+    "本次云模型新对话返回暂未响应，未作为成功操作素材",
+    "新增截图证明当前检索与来源一致；历史离线并发过程仍以原有验证记录为依据"
+  ],
+  "environment_change": "C 安装 wl-clipboard 作为 Wayland 剪贴板输入工具；未修改产品源码、数据库或模型凭据",
+  "files": {
+    "device-b-memory.png": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
+    "device-c-memory.png": "9db6b891762652c164a8e9b43703f33794254991c0793f6e5b0deb4bf070847d",
+    "device-a-memory.png": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d",
+    "device-sharing-controls.png": "a57efc161aa4762077171c2977ea487f0f01702feaede9d41a79421c25124225"
+  },
+  "resolution": "三端来源均为原生3840×2160、系统缩放2；设备控制页为1440×900。未上采样源PNG。"
+}

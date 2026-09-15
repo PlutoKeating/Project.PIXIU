@@ -250,6 +250,9 @@ if vectors:
     vector.set('size', str(len(vector)))
 blobs['docProps/app.xml'] = encode(app)
 
+from product_screenshots import enrich
+product_evidence = enrich(blobs, parts, ORDER)
+
 with zipfile.ZipFile(OUT, 'w') as target:
     for info in infos:
         if info.filename in blobs:
@@ -270,9 +273,15 @@ for new_page, old_page in enumerate(ORDER, 1):
     entry['user_refined_source_page'] = old_page
     if old_page in {7, 8, 9, 11}:
         entry['navigation']['tabs'] = ['两大亮点', '记忆共享，分布互连', '自动记忆，持续整合', '场景示例']
+    if new_page in product_evidence:
+        entry['product_evidence'] = product_evidence[new_page]
+        entry['screenshots'] = sorted(set(entry['screenshots']) | {i['source'] for i in product_evidence[new_page]['screenshots']})
     manifest['slides'].append(entry)
 manifest['removed_slides'] = [{'user_refined_source_page': n, 'title': base['slides'][n-1]['title'], 'source_pages': base['slides'][n-1]['source_pages']} for n in [10,29]]
 manifest['inputs'] = [{'path': str(p.relative_to(ROOT)), 'sha256': digest(p)} for p in [SOURCE, BASE_MANIFEST, Path(__file__).resolve(), WORK/'scripts/build_reference_deck.py', WORK/'scripts/refine_explanations.py']]
+extra_inputs = {WORK/'scripts/product_screenshots.py', WORK/'source/product-captures/capture-manifest.json'}
+extra_inputs |= {ROOT / i['source'] for v in product_evidence.values() for i in v['screenshots']}
+manifest['inputs'] += [{'path': str(p.relative_to(ROOT)), 'sha256': digest(p)} for p in sorted(extra_inputs)]
 manifest['output_sha256'] = digest(OUT)
 manifest['revision'] = {
     'mode': 'preserve user-refined package', 'source_sha256': digest(SOURCE),

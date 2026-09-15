@@ -121,6 +121,9 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
             identity = key(node)
             if identity is None:
                 continue
+            evidence = next((e.get('product_evidence') for e in m['slides'] if e['user_refined_source_page'] == old_page), None)
+            if evidence and identity in evidence['removed_shape_ids']:
+                continue  # User-authorized replacement of body diagrams with native product screenshots.
             reason = edits.get(identity)
             offsets=node.xpath('./p:spPr/a:xfrm/a:off',namespaces=ns)
             y=int(offsets[0].get('y'))/914400 if offsets else -1
@@ -160,6 +163,24 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
     for part in m['revision']['removed_package_parts']:
         assert part not in after.namelist()
 
+# Every declared screenshot is visibly used on its own slide with native cropping.
+shot_count = 0
+for entry, slide in zip(m['slides'], prs.slides):
+    evidence = entry.get('product_evidence')
+    if not evidence: continue
+    shapes = {s.shape_id:s for s in slide.shapes}
+    for im in evidence['screenshots']:
+        shape = shapes[im['native_shape_id']]
+        assert hashlib.sha256(shape.image.blob).hexdigest() == im['sha256']
+        x,y,w,h = im['box_inches']
+        assert 0 <= x and 1.85 <= y and x+w <= 13.0 and y+h <= 7.1
+        assert abs(shape.width/914400-w)<.001 and abs(shape.height/914400-h)<.001
+        iw,ih=im['native_size'];l,t,cw,ch=im['crop_pixels']
+        assert abs(shape.crop_left-l/iw)<.00002 and abs(shape.crop_top-t/ih)<.00002
+        assert abs((shape.width/shape.height)/(cw/ch)-1)<.001
+        shot_count += 1
+assert {e['page'] for e in m['slides'] if 'product_evidence' in e} == {7,10,11,12,13,15,16,17,18,19,20,21,23,24,25,26,27,28,30}
+
 # Preserve the accepted 31-page candidate and its formal asset byte-for-byte.
 baseline = '4bf08a7c3b504341cf4082b9f98f63fd2db98a521356674c1eecb36d530eef8e'
 assert digest(WORK / 'render/项目报告.pptx') == baseline
@@ -185,6 +206,7 @@ result = {
                'no template identity in XML', 'no embedded workbooks or external links',
                '34 main topics present above body', '34 folios and 25 chapter navigation bars', 'production footnotes removed', 'two flagship names and dedicated feature pages',
                '54 full-page PNGs verified', 'formal candidate and asset unchanged', 'user-refined shapes preserved outside requested content edits; chapter artwork copied'],
+    'product_screenshot_placements': shot_count,
     'visual_review': 'See abc-style-review.md. XML checks cannot inspect raster identity or layout.',
     'rendered_pages': rendered,
 }
