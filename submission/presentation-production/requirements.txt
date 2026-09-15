@@ -1,3 +1,5 @@
+# Python dependencies for the accepted deck and the ABC-reference trial.
+# External rendering tools: LibreOffice, Poppler (pdftoppm); font: Microsoft YaHei.
 lxml==6.1.3
 pillow==11.3.0
 python-pptx==1.0.2

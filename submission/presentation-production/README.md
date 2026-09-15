@@ -32,7 +32,7 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 python3 build/release/scripts/export-documentation.py --check
 ```
 
-本次不是用 LibreOffice 渲染；下载尝试中止，未安装该软件。Poppler 对 WPS 嵌入字体给出类型匹配提示，31页均成功渲染，已逐页检查文字与图形。未另在 Microsoft PowerPoint 验证排版。
+上述 2026-09-14 的31页正式稿使用 WPS 渲染；当时 LibreOffice 下载尝试中止。Poppler 对 WPS 嵌入字体给出类型匹配提示，31页均成功渲染，已逐页检查文字与图形。未另在 Microsoft PowerPoint 验证排版。
 
 ## 内容与证据边界
 
@@ -41,3 +41,22 @@ README 的林先生家庭账单故事用于需求背景；当前账单截图是�
 量化页来自2026-08-24 portable基线，保留样本、阈值和统计口径；0.1.12 V11双SDK、47条升级恢复及同宿主三虚拟机实测分别呈现。未测量项不写为已通过。
 
 商业页的三种服务收费方式和试点流程均为待验证设想。仅“存在公开适配与伙伴申请渠道”参考麒麟官方页面，链接保存在第30页备注。无客户、收入、定价或认证承诺。
+
+## 2026-09-15：参考稿科技风试作版
+
+按用户提供的 `reference/ABC公司产品宣传路演PPT.pptx` 制作32页可编辑试作稿。参考稿20页已全部转换成1600×900整页图片并逐页观看。复用原稿背景、渐变面板、发光展台、弧形装饰及两张科技意境图，重新绘制 PIXIU 的设备、架构、检索和同步图，嵌入仓库原始界面实拍。根据用户美术反馈，保留完整轨道卡片、图表装饰与源主题色，采用居中框饰、底部主题、侧置大字、全景与图表组合等不同构图；主标题统一为短语。青蓝立体记忆核心由内置 imagegen 生成，作为概念插图使用，见 [插图与提示词](source/memory-core-prompt.md)。正文与章节根据原31页内容重组，保留测试环境和未验证范围。
+
+- [试作 PPTX](render/abc-trial/PIXIU项目报告-科技风试作版.pptx)、[审阅 PDF](render/abc-trial/PIXIU项目报告-科技风试作版.pdf)、[32页总览](render/abc-trial/overview.png)。
+- `render/reference/`：参考稿 PDF 与全部20页整页图；`render/abc-trial/`：试作 PDF 与全部32页整页图。
+- [逐页设计与复核记录](review/abc-style-review.md)；`review/abc-trial-manifest.json` 记录输入摘要、源页面映射和复制元素；`review/abc-trial-validation.json` 记录检查及渲染摘要。
+
+本次试作使用 LibreOffice 26.2.4.2 导出 PDF，Poppler 26.01.0 渲染，字体为 Microsoft YaHei。尚未在 WPS 或 Microsoft PowerPoint 中另行打开试作稿验证；原31页正式稿和导出入口保持原有版本。参考文件及试作仅供内部比较，不加入正式作品目录。
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/build_reference_deck.py
+libreoffice -env:UserInstallation=file:///tmp/pixiu-abc-trial-lo --headless --convert-to pdf --outdir submission/presentation-production/render/abc-trial submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx
+bash submission/presentation-production/scripts/render.sh submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pdf submission/presentation-production/render/abc-trial
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/validate_reference_deck.py
+```
+
+参考稿首次导出可用同一 LibreOffice 命令，将输入替换为 `reference/ABC公司产品宣传路演PPT.pptx`、输出目录替换为 `render/reference/`，再用 `render.sh` 渲染。安装依赖仍使用本目录 `requirements.txt`；PPTX、PDF、PNG 通过仓库 Git LFS 管理，虚拟环境和临时文件继续忽略。

@@ -1,6 +1,6 @@
 # PIXIU 交付材料维护
 
-`submission/` 只保存按赛方要求命名的正式文件。编写源、截图、检查记录和中间导出物在该目录之外维护。唯一权威要求见 [交付计划第 0 节](../DELIVERY_PLAN.md#0-赛方交付作品要求唯一权威永久冻结)。
+`submission/` 中按赛方要求命名的作品目录只保存正式文件。内部制作目录 `submission/presentation-production/` 保存 PPT 编写源、参考材料和审阅导出物，不属于正式作品；其他编写源、截图和检查记录在作品目录之外维护。唯一权威要求见 [交付计划第 0 节](../DELIVERY_PLAN.md#0-赛方交付作品要求唯一权威永久冻结)。
 
 提交目录有两层同名目录，名称由学校、作品名称、主申报人姓名以 `+` 连接。外层还包含与内层并列的 `源代码/`。内层保存 `项目报告.pptx`、`技术方案.doc`，视频制作完成后放入同层并命名为 `演示视频.zip`。视频为 5-10 分钟，压缩包大小不超过 200M，讲解演示已实现的核心功能，建议配字幕。
 
@@ -19,6 +19,8 @@ python3 build/release/scripts/prepare-submission.py check
 ```
 
 PPT 从源脚本生成31页可编辑路演图文，使用当前版本原始实拍，审批前后以静态关键帧对照。输入摘要保存在 `assets/presentation-manifest.json`；拆解、原版18页与新版31页整页渲染、视觉复核保存在 `submission/presentation-production/`。页面索引见 [项目报告与演示说明](PRESENTATION_AND_VIDEO.md)。
+
+2026-09-15 按用户提供的 ABC 参考稿另制32页科技风试作版，参考20页与试作32页均已整页渲染和逐页观察。文件、重建方式及证据见 [制作目录说明](../../submission/presentation-production/README.md#2026-09-15参考稿科技风试作版)。该版供比较审阅，尚未替换正式31页报告。
 
 文档工具使用 `build/release/requirements-docs.txt`、系统 LibreOffice 和 FFmpeg，先内嵌图片，再转换为真正的 Word 97 `.doc`。中间 DOCX 和从最终 DOC 回读的 PDF 位于 `build/release/out/documents/`，须逐页观察。原始图片保存在 `assets/operations/`。
 
