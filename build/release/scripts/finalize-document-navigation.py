@@ -29,6 +29,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('document', type=Path)
     parser.add_argument('pdf', type=Path)
+    parser.add_argument('--inspect-numbering', action='store_true')
     args = parser.parse_args()
     pipe = 'pixiu_doc_' + uuid.uuid4().hex
     with tempfile.TemporaryDirectory(prefix='pixiu-navigation-') as profile:
@@ -51,6 +52,10 @@ def main():
             desktop = context.ServiceManager.createInstanceWithContext('com.sun.star.frame.Desktop', context)
             doc = desktop.loadComponentFromURL(args.document.resolve().as_uri(), '_blank', 0,
                 (prop('Hidden', True), prop('UpdateDocMode', 3)))
+            if args.inspect_numbering:
+                for level in (0, 1):
+                    print(level, [(p.Name, str(p.Value)) for p in doc.getChapterNumberingRules().getByIndex(level)])
+                return
             styles = doc.StyleFamilies.getByName('PageStyles')
             page_before = uno.Enum('com.sun.star.style.BreakType', 'PAGE_BEFORE')
             right = uno.Enum('com.sun.star.style.TabAlign', 'RIGHT')
