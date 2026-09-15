@@ -223,6 +223,8 @@ def export(root: Path) -> tuple[list[dict], dict]:
         # UNO creates and calculates a native TOC and running field values.
         subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/finalize-document-navigation.py"),
                         str(finalized), str(output / "技术方案.pdf")], check=True, timeout=120)
+        subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/format-document-captions.py"),
+                        str(finalized)], check=True)
         subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/number-document-headings.py"),
                         str(finalized)], check=True)
         subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/finalize-document-navigation.py"),

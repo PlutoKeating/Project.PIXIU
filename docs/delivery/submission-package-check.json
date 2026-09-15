@@ -7,8 +7,8 @@
   "files": [
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
-      "bytes": 663196,
-      "sha256": "5b918db311ac1c219e060707f05bb261025c57dfac6e20ab30b7529b97dcd302"
+      "bytes": 664228,
+      "sha256": "1fab6227e08c309c8d9805128439bcf789644a491447d29abc29b629c2353084"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/演示视频.zip",
@@ -17,8 +17,8 @@
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
-      "bytes": 35270532,
-      "sha256": "03883a5543085a66d9a6e2afe1943b32e848cbec636770a25f3fcf22932819fa"
+      "bytes": 34396740,
+      "sha256": "d544a75388e8f5371a5c6d8caf357a6444da0fbba3056a7b73e598d439a2cff4"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/PIXIU源代码.tar.gz",
@@ -36,9 +36,9 @@
       "sha256": "3691727de12b192d249aacf209235f0ca77d9d2d95f151a857bb1bac591cea33"
     }
   ],
-  "ppt_pages": 35,
+  "ppt_pages": 36,
   "speaker_notes": 0,
-  "technical_doc_pages": 46,
+  "technical_doc_pages": 47,
   "video_seconds": 499.333333,
   "video_crc": "passed",
   "source_files": 1890,
@@ -78,17 +78,22 @@
   "document_navigation": {
     "cover_pages": 1,
     "toc_pages": 3,
-    "body_pages": 42,
+    "body_pages": 43,
     "toc_field": "TOC \\o \"1-2\" \\h",
     "major_chapters": 8,
     "header_left": "PIXIU 技术方案",
     "header_right": "STYLEREF Heading 1",
     "footer": "centered PAGE",
     "toc_page_numbers": "I-III",
-    "body_page_numbers": "1-42",
+    "body_page_numbers": "1-43",
     "all_page_numbers_verified": true,
     "major_heading_numbers": "一、至八、",
     "subheading_numbers": "Arabic legal multilevel numbering, 59 second-level headings",
     "native_numbering_verified": true
+  },
+  "caption_validation": {
+    "centered_figures_below_images": 16,
+    "centered_table_captions_above_tables": 23,
+    "native_contents_refreshed": true
   }
 }
