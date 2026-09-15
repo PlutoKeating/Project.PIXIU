@@ -155,3 +155,15 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 ```
 
 该入口针对本轮归档输入，不可用旧归档覆盖用户之后的正式文件。正式写回须比较最新文件，对目标页有并行修改时先合并，并在原子替换前重新核验版本。
+
+## 第19—21页增加简短导读（当前版本）
+
+每页标题下保留两句介绍，依次说明分阶段记忆及复用、副本差异与内容矛盾的分层处理、可信设备在线传播及重连补齐。第19页对截图和图示等比缩放留出文字区；第20页下移决策通道、等比缩放截图并下移审批说明；第21页扩展既有导读。原生图形、截图、原有图示文字均保留。
+
+本轮输入备份为 `source/user-before-logic-introductions-20260915.pptx`，仍以正式交付文件为权威。仅修改第19—21页XML，其余包部件逐字节相同；36页总数与页码通过复核，三页LibreOffice渲染检查通过，未在WPS或Microsoft PowerPoint复核。详见 [验证记录](review/logic-introductions-validation.json)；预览：[第19页](render/logic-introductions/page-19.png)、[第20页](render/logic-introductions/page-20.png)、[第21页](render/logic-introductions/page-21.png)。
+
+沿用既有依赖，无新增依赖、产品构建或部署配置变化。生成候选命令如下；写回仍需与最新正式文件比较，保留用户并行编辑。
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/add_logic_introductions.py --source submission/presentation-production/source/user-before-logic-introductions-20260915.pptx --output /tmp/pixiu-introductions-candidate.pptx
+```
