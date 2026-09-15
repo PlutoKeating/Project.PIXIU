@@ -1317,6 +1317,90 @@
     },
     {
       "page": 20,
+      "title": "原生部署与兼容路径",
+      "source_pages": [
+        22
+      ],
+      "copied_artwork": [
+        [
+          6,
+          3
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          6
+        ]
+      ],
+      "screenshots": [
+        "docs/delivery/assets/operations/03-current-workflows/sdk-version.png"
+      ],
+      "navigation": {
+        "chapter": "技术实现",
+        "tabs": [
+          "多源接入",
+          "知识检索",
+          "记忆流转",
+          "对等同步",
+          "安全部署",
+          "任务循环"
+        ],
+        "active": "安全部署"
+      }
+    },
+    {
+      "page": 21,
       "title": "智能体记忆生命周期",
       "source_pages": [
         21
@@ -1405,90 +1489,6 @@
           "任务循环"
         ],
         "active": "任务循环"
-      }
-    },
-    {
-      "page": 21,
-      "title": "原生部署与兼容路径",
-      "source_pages": [
-        22
-      ],
-      "copied_artwork": [
-        [
-          6,
-          3
-        ],
-        [
-          8,
-          1
-        ],
-        [
-          8,
-          2
-        ],
-        [
-          8,
-          1
-        ],
-        [
-          8,
-          2
-        ],
-        [
-          3,
-          2
-        ],
-        [
-          3,
-          3
-        ],
-        [
-          3,
-          4
-        ],
-        [
-          3,
-          5
-        ],
-        [
-          3,
-          6
-        ],
-        [
-          3,
-          6
-        ],
-        [
-          3,
-          6
-        ],
-        [
-          3,
-          6
-        ],
-        [
-          3,
-          6
-        ],
-        [
-          3,
-          6
-        ]
-      ],
-      "screenshots": [
-        "docs/delivery/assets/operations/03-current-workflows/sdk-version.png"
-      ],
-      "navigation": {
-        "chapter": "技术实现",
-        "tabs": [
-          "多源接入",
-          "知识检索",
-          "记忆流转",
-          "对等同步",
-          "安全部署",
-          "任务循环"
-        ],
-        "active": "安全部署"
       }
     },
     {
@@ -2391,8 +2391,8 @@
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
-      "sha256": "d3a56ed613f1d46c4627820d5c6c767ea2b41e48f2f882998c03be3d893e1155"
+      "sha256": "ef0ac21ae1ba23e02c523f94188bbc56560f3a0650df7c6725133ae8e9e6eb50"
     }
   ],
-  "output_sha256": "3f8010e4b822c28f659c171a7c4ceba063c2728b540c2dd406d7bb32eb679013"
+  "output_sha256": "8ae55817c3669ffd46d8abb618e076716bc950c1f9fae65cea76da2d39394dcf"
 }
