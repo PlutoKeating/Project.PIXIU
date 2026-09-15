@@ -1,4 +1,4 @@
-# PIXIU 源代码规范与许可证
+# 源码说明与许可证
 
 ## 源码结构
 
@@ -29,7 +29,7 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 | `kreuzberg` 4.10.3 | 后台 Office/PDF 解码 | MIT（安装包附带本地组件许可证） |
 | `libkysdk-vector-engine-client` | 指定系统向量数据库客户端 | Apache-2.0 |
 
-每个上游组件固定 commit，并随源码归档提供许可证、NOTICE、补丁、构建记录和摘要。Runtime 的 Python 依赖以哈希锁定 wheelhouse 离线安装。
+上游源码以提交编号固定版本，源码归档提供对应许可证和补丁。Runtime 的 Python 依赖按文件摘要锁定，并从构建阶段准备的依赖目录离线安装。构建日志和产物摘要由构建过程生成。
 
 ## 源码质量规范
 
@@ -41,14 +41,14 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 
 ## 源码交付与复现
 
-`源代码/PIXIU源代码.tar.gz` 是最小产品构建归档，包含 frontend、backend、build/release 和必要 third_party 输入。它排除 .git、.github、website、独立测试工程、网站、演示素材、历史文档、缓存及本地产物。产品运行所需的界面资源和 Runtime 技能仍保留。
+源代码/PIXIU源代码.tar.gz 包含 frontend、backend、build/release 和必要的 third_party 构建输入，以及运行所需界面资源和 Runtime 技能。归档范围限于产品复现所需文件。
 
-宿主和 Runtime 保留固定版本的构建源码；两个麒麟 SDK 保留编译接口头文件和许可证，其库由目标系统提供。Kreuzberg 使用依赖锁中的 wheel，归档保留其许可证，不携带 Rust 网站和开发仓库。首次构建需要联网下载依赖，不能将本归档视为离线依赖包。
+宿主和 Runtime 提供固定版本源码；两个麒麟 SDK 提供编译头文件和许可证，运行库由目标系统安装。Kreuzberg 按锁定的预编译包安装。首次构建需要联网下载依赖。
 
-解压后的 README 给出编译及安装命令，与本技术方案首章一致。SOURCE-MANIFEST.json 记录每个文件的摘要、权限和上游提交；运行 python3 verify-source.py 可核对完整性。构建脚本从该清单读取上游版本，无需 Git 仓库。编译步骤、系统依赖、产物路径及故障处理均见本方案首章，不要求评委查阅额外文档。
+按照首章可完成依赖安装、源码核对、编译、安装和操作验证。SOURCE-MANIFEST.json 记录文件摘要、权限和上游提交，运行 python3 verify-source.py 可核对完整性。解压后的 README 提供相同的编译入口。
 
 ## 软件物料清单
 
-安装包内置 SPDX 2.3 SBOM 与 NOTICE，覆盖宿主、Runtime 和全部 wheel 依赖。发布清单同时记录产品版本、架构、构建画像、API/schema/provider 版本、上游 commit 与 SDK 源码版本。
+安装包内置 SPDX 2.3 格式的软件物料清单和 NOTICE，记录桌面宿主、Runtime 及 Python 依赖。发布清单还记录产品版本、架构、构建配置、接口版本和上游源码版本。
 
-供应链审计要求宿主产物、对应源码、构建日志、Runtime wheelhouse、锁文件和离线安装日志摘要一致，并扫描认证信息、私钥、令牌和个人路径。
+构建检查核对源码、程序、依赖锁及安装日志的摘要，并扫描认证信息、私钥、令牌和个人路径，确保组件来源可追溯。

@@ -38,6 +38,8 @@ python3 build/release/scripts/prepare-submission.py check --require-video
 
 技术方案包含独立匿名封面、原生自动目录和正文页眉页脚。目录由一级、二级标题生成，使用Word的TOC域；页眉左侧为PIXIU技术方案，右侧通过STYLEREF域读取当前大章节，页脚使用居中的PAGE域。封面不显示页眉页码，目录使用罗马页码，正文从1开始。修改内容后可在Word中右键目录选择“更新域／更新整个目录”。导出脚本通过系统python3-uno调用LibreOffice生成并更新目录及页码，复核PDF仅存于制作输出目录。
 
-标题采用Word原生多级编号：八个一级标题使用一、二、三等汉字编号，59个二级标题使用1.1、1.2、2.1等阿拉伯数字。二级编号启用legal numbering，确保上级汉字不会带入二级编号。编号后刷新原生目录及页码；number-document-headings.py可直接处理现有DOCX以保留人工排版。
+标题采用Word原生多级编号：八个一级标题使用一、二、三等汉字编号，63个二级标题使用1.1、1.2、2.1等阿拉伯数字。二级编号启用legal numbering，确保上级汉字不会带入二级编号。编号后刷新原生目录及页码；number-document-headings.py可直接处理现有DOCX以保留人工排版。
 
 图注紧随图片并居中；全部23个表格及终端代码框均有上方居中的表注，按全文顺序编号。`format-document-captions.py`维护表注名称与段落对齐，并设置与下方表格同页衔接；应用后刷新自动目录和页码。
+
+全文表述复核以用户最新保存的DOCX为编辑基准，修改记录见editorial-revision.json，工具为revise-document-prose.py。当前文档8个大章节、63个二级标题，43页。效果验证章包含数据集与标注、对比实验设计、量化实施方案和指标分析，实测数字保留对应环境与样本范围。Times New Roman四种常用字形已在本机安装并刷新字体缓存。

@@ -3,39 +3,39 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "09ebd8feaaa995b3808082f825d5e8ac8b62a61d22eeed9596fb1de743130283",
+      "sha256": "fbf1f0cf5baa458d43800b749b9a2ed2b2e9e5314e084a53b7ac9ea2aa591f5b",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
-          "sha256": "72efc78baecac912087e219cae978a5409081aa52583599f7b63ab674977dae3"
+          "sha256": "be71445e2e105140d7f0447b5a87befba2edd7adf3a46964a9cd12940f18d45b"
         },
         {
           "path": "docs/delivery/BUILD_AND_INSTALL.md",
-          "sha256": "6c086fa39216a1258cdb71947facf5e8e8ff30a617da1d56e82d62cda1e78208"
+          "sha256": "73d274566e661e98e709364118fcdec813a27fc9e6d20fc9eb48b7f28c57f517"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
-          "sha256": "6badecaea330b15cce90bba5e71acaaebafc711a2345dcfa1fc89d9ce878117d"
+          "sha256": "393b8343b5539cb9de6ad1ed1975358d611edc6b80ec39a98187a1ac5f361ab6"
         },
         {
           "path": "docs/delivery/MEMORY_LIFECYCLE.md",
-          "sha256": "87592d109051731f2fed0a344dc283bdfd67c53c6cd1a0e276b4ecf68a5213af"
+          "sha256": "46578b3d81f7d834108e26bad8579432edba1354c9132546d7525f5c87c67726"
         },
         {
           "path": "docs/delivery/SOURCE_AND_LICENSES.md",
-          "sha256": "1b02e81ea7fdcd903c751a7cd1a3488984f2a74b6106139e21a6bb971be34c15"
+          "sha256": "8a549d4a303254093848fc3f240c096242d8a35aea697b30030fc3dece0ff3b0"
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "363116f73dee6d781073944a18ea503a4ae938fc4b47061cc1716ac86b8ef9fc"
+          "sha256": "014ed81d25dcd08b055388198de616f0a09973968c6c543e88c3ae979d79c38a"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
-          "sha256": "222b3cdb15548155f447c6240b2ababdb1e5fe1f1caa155939ca59950f3b3f6a"
+          "sha256": "5c28bde89fa00832338222c5f2fd1fb9773bb63d1bacff45c131110902c348dd"
         },
         {
           "path": "docs/delivery/USER_MANUAL.md",
-          "sha256": "7acd06145330e588298caf3d55ed0b00e0e737d2f08a1f766faeb75a4ff56100"
+          "sha256": "2c9bc3868874c2b9660cde373f6f75233e702a19ff81dc175f0f681358db41eb"
         }
       ],
       "images": [
@@ -107,16 +107,16 @@
       "exports": [
         {
           "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
-          "sha256": "1fab6227e08c309c8d9805128439bcf789644a491447d29abc29b629c2353084"
+          "sha256": "cbf30e07605087bfb05fc49b57bf30bc2efc0e53c3d50c67824c4e0360683766"
         }
       ],
-      "layout_provenance": "User-edited DOCX preserved; centered figure/table captions and refreshed native TOC"
+      "layout_provenance": "User latest saved DOCX edited in place; reviewed prose, emphasis and native TOC"
     }
   ],
   "presentation": {
     "source": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
     "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
-    "sha256": "5c0484aff451197dd989e9f43003be94ce0b9b65c96912359c11841b2d22b945",
+    "sha256": "f2c789537f3299bec05c5f4dd6ca5779a7752a017b82bb058316f5970bc9fa83",
     "provenance": "Human-edited submitted deck preserved during DOCX export"
   }
 }
