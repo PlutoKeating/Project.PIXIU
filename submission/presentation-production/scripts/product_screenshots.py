@@ -176,7 +176,7 @@ def enrich(blobs,parts,order):
             remap={}
             for rel in newrels:
                 if not rel.get('Type').endswith('/image'):continue
-                oldrid=rel.get('Id');rid=f'rIdProductShot{page}_{oldrid}'
+                oldrid=rel.get('Id');rid=f'rIdArtRevision{page}_{oldrid}'
                 assert rid not in existing
                 raw=z.read('ppt/'+rel.get('Target').replace('../',''))
                 filename='product-'+hashlib.sha256(raw).hexdigest()[:20]+'.png'
@@ -194,5 +194,5 @@ def enrich(blobs,parts,order):
                 tree.append(deepcopy(node))
         blobs[part]=ET.tostring(root,xml_declaration=True,encoding='UTF-8',standalone=True)
         blobs[rpart]=ET.tostring(rels,xml_declaration=True,encoding='UTF-8',standalone=True)
-        result[page]={'source_page':source,'removed_shape_ids':removed,'screenshots':canvas.images}
+        result[page]={'source_page':source,'removed_shape_ids':removed,'screenshots':canvas.images,'layout':getattr(canvas,'layout','previous'),'artworks':getattr(canvas,'artworks',[])}
     return result

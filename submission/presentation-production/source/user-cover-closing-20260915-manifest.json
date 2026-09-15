@@ -279,19 +279,17 @@
       },
       "user_refined_source_page": 5,
       "product_evidence": {
-        "source_page": 7,
+        "source_page": 5,
         "removed_shape_ids": [
-          "42",
-          "43",
-          "44",
-          "45",
-          "46",
-          "47",
-          "48",
-          "49",
-          "50",
-          "51",
-          "52"
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11"
         ],
         "screenshots": [
           {
@@ -309,13 +307,13 @@
               838
             ],
             "box_inches": [
-              1.8789976133651547,
-              2.28,
-              5.64200477326969,
-              3.94
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.564,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：助手在会话中检索并核对账单",
             "annotations": [
@@ -329,60 +327,7 @@
                 "label": "账单明细、合计与来源"
               }
             ],
-            "native_shape_id": 46
-          }
-        ],
-        "layout": "product stage with feature ribbons",
-        "artworks": [
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              0.65,
-              2.13,
-              8.1,
-              4.55
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.3,
-              2.1,
-              6.6,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              9.0,
-              2.38,
-              3.5,
-              1.48
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              9.0,
-              4.05,
-              3.5,
-              1.48
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 44
           }
         ]
       }
@@ -531,24 +476,56 @@
       },
       "user_refined_source_page": 7,
       "product_evidence": {
-        "source_page": 10,
+        "source_page": 7,
         "removed_shape_ids": [
-          "86",
-          "87",
-          "88",
-          "89",
-          "90",
-          "91",
-          "92",
-          "93",
-          "94",
-          "95",
-          "96",
-          "97"
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51"
         ],
         "screenshots": [
           {
-            "shape_id": 5,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/product-captures/device-sharing-controls.png",
             "sha256": "a57efc161aa4762077171c2977ea487f0f01702feaede9d41a79421c25124225",
             "native_size": [
@@ -562,13 +539,13 @@
               838
             ],
             "box_inches": [
-              1.5306682577565631,
-              2.84,
-              4.238663484486874,
-              2.96
+              1.3767899761336513,
+              2.96,
+              4.496420047732697,
+              3.14
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.424,
+            "pixel_scale_at_1600": 0.45,
             "context": "complete application window",
             "caption": "图 1：用户配置可信设备与共享范围",
             "annotations": [
@@ -582,10 +559,10 @@
                 "label": "共享范围与可信设备列表"
               }
             ],
-            "native_shape_id": 91
+            "native_shape_id": 88
           },
           {
-            "shape_id": 12,
+            "shape_id": 9,
             "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
             "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
@@ -599,15 +576,15 @@
               838
             ],
             "box_inches": [
-              7.580668257756562,
-              2.84,
-              4.238663484486874,
-              2.96
+              7.376789976133652,
+              2.96,
+              4.496420047732697,
+              3.14
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.424,
+            "pixel_scale_at_1600": 0.45,
             "context": "complete application window",
-            "caption": "图 2：用户核对后台生成的更正方案",
+            "caption": "图 2：用户核对并审批后台生成的更正方案",
             "annotations": [
               {
                 "rect_pixels": [
@@ -628,50 +605,7 @@
                 "label": "新旧内容对照与审批按钮"
               }
             ],
-            "native_shape_id": 98
-          }
-        ],
-        "layout": "two flagship podiums",
-        "artworks": [
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              0.5,
-              2.25,
-              12.35,
-              4.52
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.85,
-              6.27,
-              5.6,
-              0.49
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              6.8999999999999995,
-              6.27,
-              5.6,
-              0.49
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 93
           }
         ]
       }
@@ -743,6 +677,37 @@
       "product_evidence": {
         "source_page": 11,
         "removed_shape_ids": [
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "58",
+          "59",
+          "93",
+          "94",
           "95",
           "96",
           "97",
@@ -754,17 +719,11 @@
           "103",
           "104",
           "105",
-          "106",
-          "107",
-          "108",
-          "109",
-          "110",
-          "111",
-          "112"
+          "106"
         ],
         "screenshots": [
           {
-            "shape_id": 7,
+            "shape_id": 6,
             "source": "submission/presentation-production/source/product-captures/device-a-memory.png",
             "sha256": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d",
             "native_size": [
@@ -778,13 +737,13 @@
               2160
             ],
             "box_inches": [
-              0.8500000000000001,
-              3.8340625,
-              3.63,
-              2.041875
+              0.8800000000000002,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.113,
+            "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
             "caption": "图 1：设备 A 查询同一条共享记忆",
             "annotations": [
@@ -798,10 +757,10 @@
                 "label": "共享记录正文"
               }
             ],
-            "native_shape_id": 102
+            "native_shape_id": 99
           },
           {
-            "shape_id": 14,
+            "shape_id": 11,
             "source": "submission/presentation-production/source/product-captures/device-b-memory.png",
             "sha256": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
             "native_size": [
@@ -815,13 +774,13 @@
               2160
             ],
             "box_inches": [
-              4.85,
-              3.8340625,
-              3.63,
-              2.041875
+              4.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.113,
+            "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
             "caption": "图 2：设备 B 查询同一条共享记忆",
             "annotations": [
@@ -835,10 +794,10 @@
                 "label": "共享记录正文"
               }
             ],
-            "native_shape_id": 109
+            "native_shape_id": 104
           },
           {
-            "shape_id": 21,
+            "shape_id": 16,
             "source": "submission/presentation-production/source/product-captures/device-c-memory.png",
             "sha256": "9db6b891762652c164a8e9b43703f33794254991c0793f6e5b0deb4bf070847d",
             "native_size": [
@@ -852,13 +811,13 @@
               2160
             ],
             "box_inches": [
-              8.850000000000001,
-              3.8340625,
-              3.63,
-              2.041875
+              8.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.113,
+            "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
             "caption": "图 3：设备 C 查询同一条共享记忆",
             "annotations": [
@@ -872,80 +831,7 @@
                 "label": "共享记录正文"
               }
             ],
-            "native_shape_id": 116
-          }
-        ],
-        "layout": "three device columns",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              2.68,
-              3.73,
-              3.52
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              0.9,
-              3.75,
-              3.53,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              4.8,
-              2.68,
-              3.73,
-              3.52
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              4.8999999999999995,
-              3.75,
-              3.53,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              8.8,
-              2.68,
-              3.73,
-              3.52
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              8.9,
-              3.75,
-              3.53,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 109
           }
         ]
       }
@@ -1030,24 +916,29 @@
       },
       "user_refined_source_page": 8,
       "product_evidence": {
-        "source_page": 12,
+        "source_page": 8,
         "removed_shape_ids": [
-          "70",
-          "71",
-          "72",
-          "73",
-          "74",
-          "75",
-          "76",
-          "77",
-          "78",
-          "79",
-          "80",
-          "81"
+          "3",
+          "4",
+          "5",
+          "6",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35"
         ],
         "screenshots": [
           {
-            "shape_id": 13,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
             "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
@@ -1061,13 +952,13 @@
               838
             ],
             "box_inches": [
-              6.4508353221957035,
-              2.6400000000000006,
-              5.298329355608592,
-              3.6999999999999997
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.53,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：后台整合资料并生成更正方案",
             "annotations": [
@@ -1090,60 +981,7 @@
                 "label": "新旧内容对照与审批按钮"
               }
             ],
-            "native_shape_id": 83
-          }
-        ],
-        "layout": "vertical integration process beside full review",
-        "artworks": [
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.8,
-              2.65,
-              4.6,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.8,
-              4.0,
-              4.6,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.8,
-              5.35,
-              4.6,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              5.75,
-              2.6,
-              6.75,
-              4.14
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 72
           }
         ]
       }
@@ -1216,8 +1054,14 @@
       },
       "user_refined_source_page": 9,
       "product_evidence": {
-        "source_page": 13,
+        "source_page": 9,
         "removed_shape_ids": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "53",
+          "54",
           "55",
           "56",
           "57",
@@ -1226,13 +1070,11 @@
           "60",
           "61",
           "62",
-          "63",
-          "64",
-          "65"
+          "63"
         ],
         "screenshots": [
           {
-            "shape_id": 5,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/full-window-captures/bill.png",
             "sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9",
             "native_size": [
@@ -1246,13 +1088,13 @@
               838
             ],
             "box_inches": [
-              6.966431980906921,
-              1.99,
-              4.797136038186157,
-              3.35
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.48,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：助手在新会话中召回账单明细与来源",
             "annotations": [
@@ -1266,80 +1108,7 @@
                 "label": "账单明细、合计与来源"
               }
             ],
-            "native_shape_id": 60
-          }
-        ],
-        "layout": "bill total and evidence with lower value cards",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.85,
-              6.02,
-              3.733333333333333,
-              0.85
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.1,
-              5.9799999999999995,
-              3.233333333333333,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              4.783333333333333,
-              6.02,
-              3.733333333333333,
-              0.85
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              5.033333333333333,
-              5.9799999999999995,
-              3.233333333333333,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              8.716666666666667,
-              6.02,
-              3.733333333333333,
-              0.85
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              8.966666666666667,
-              5.9799999999999995,
-              3.233333333333333,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              7.02,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 57
           }
         ]
       }
@@ -1456,23 +1225,56 @@
       },
       "user_refined_source_page": 13,
       "product_evidence": {
-        "source_page": 15,
+        "source_page": 13,
         "removed_shape_ids": [
-          "99",
-          "100",
-          "101",
-          "102",
-          "103",
-          "104",
-          "105",
-          "106",
-          "107",
-          "108",
-          "109"
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56",
+          "57",
+          "58",
+          "59",
+          "60",
+          "61",
+          "62"
         ],
         "screenshots": [
           {
-            "shape_id": 14,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/full-window-captures/directory.png",
             "sha256": "d6574fdd13bb61097c95593783f7754491fc1ece86e901f896f27fa65a7d374e",
             "native_size": [
@@ -1486,13 +1288,13 @@
               838
             ],
             "box_inches": [
-              2.081145584725537,
-              3.68,
-              3.837708830548926,
-              2.68
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.384,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户选择授权目录并配置采集范围",
             "annotations": [
@@ -1506,90 +1308,7 @@
                 "label": "授权目录与采集设置"
               }
             ],
-            "native_shape_id": 113
-          }
-        ],
-        "layout": "three input paths above software settings",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              2.05,
-              3.766666666666666,
-              1.3
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.05,
-              2.01,
-              3.266666666666666,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              4.766666666666667,
-              2.05,
-              3.766666666666666,
-              1.3
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              5.016666666666667,
-              2.01,
-              3.266666666666666,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              8.733333333333333,
-              2.05,
-              3.766666666666666,
-              1.3
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              8.983333333333333,
-              2.01,
-              3.266666666666666,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              7.4,
-              3.74,
-              5.0,
-              2.5
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 101
           }
         ]
       }
@@ -1719,23 +1438,52 @@
       },
       "user_refined_source_page": 14,
       "product_evidence": {
-        "source_page": 16,
+        "source_page": 14,
         "removed_shape_ids": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "48",
+          "49",
+          "51",
+          "52",
+          "54",
+          "55",
+          "90",
+          "91",
           "92",
           "93",
           "94",
-          "95",
-          "96",
-          "97",
-          "98",
-          "99",
-          "100",
-          "101",
-          "102"
+          "95"
         ],
         "screenshots": [
           {
-            "shape_id": 18,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/02-directory-source.png",
             "sha256": "be0b5ec2cad0d5ecd67d9dee1907ba66a363efc470553ef69ba28e0fdb6195f7",
             "native_size": [
@@ -1749,13 +1497,13 @@
               838
             ],
             "box_inches": [
-              7.049832935560859,
-              2.0999999999999996,
-              4.940334128878282,
-              3.4500000000000006
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.494,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户查看知识所关联的原始资料",
             "annotations": [
@@ -1769,110 +1517,7 @@
                 "label": "来源窗口中的知识与原始资料"
               }
             ],
-            "native_shape_id": 110
-          }
-        ],
-        "layout": "knowledge categories and provenance chain",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              2.25,
-              2.5,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.05,
-              2.21,
-              2.0,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              3.55,
-              2.25,
-              2.5,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              3.8,
-              2.21,
-              2.0,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              3.7,
-              2.5,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.05,
-              3.66,
-              2.0,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              3.55,
-              3.7,
-              2.5,
-              1.17
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              3.8,
-              3.66,
-              2.0,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.8,
-              6.24,
-              11.7,
-              0.6
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 94
           }
         ]
       }
@@ -1970,24 +1615,35 @@
       },
       "user_refined_source_page": 15,
       "product_evidence": {
-        "source_page": 17,
+        "source_page": 15,
         "removed_shape_ids": [
-          "66",
-          "67",
-          "68",
-          "69",
-          "70",
-          "71",
-          "72",
-          "73",
-          "74",
-          "75",
-          "76",
-          "77"
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "64"
         ],
         "screenshots": [
           {
-            "shape_id": 17,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/full-window-captures/keyword.png",
             "sha256": "79ffb51b8becd8e051eda0c0abbd32cdd21e246e9c2338e61feeb4457c0a89a1",
             "native_size": [
@@ -2001,13 +1657,13 @@
               838
             ],
             "box_inches": [
-              7.402267303102625,
-              3.51,
-              4.09546539379475,
-              2.86
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.41,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户通过关键词检索知识并查看来源",
             "annotations": [
@@ -2030,90 +1686,7 @@
                 "label": "查询条件、结果与来源入口"
               }
             ],
-            "native_shape_id": 83
-          }
-        ],
-        "layout": "three retrieval lanes feeding result",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              2.05,
-              3.766666666666666,
-              1.27
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.05,
-              2.01,
-              3.266666666666666,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              4.766666666666667,
-              2.05,
-              3.766666666666666,
-              1.27
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              5.016666666666667,
-              2.01,
-              3.266666666666666,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              8.733333333333333,
-              2.05,
-              3.766666666666666,
-              1.27
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              8.983333333333333,
-              2.01,
-              3.266666666666666,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              0.8,
-              3.65,
-              5.4,
-              2.66
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 68
           }
         ]
       }
@@ -2199,23 +1772,35 @@
       },
       "user_refined_source_page": 16,
       "product_evidence": {
-        "source_page": 18,
+        "source_page": 16,
         "removed_shape_ids": [
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85",
-          "86",
-          "87",
-          "88"
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41"
         ],
         "screenshots": [
           {
-            "shape_id": 2,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/full-window-captures/stage.png",
             "sha256": "e6874e2828461d036e5786d50746ac3d170c0bc8c3f524a401e7c3548fb2ad79",
             "native_size": [
@@ -2229,13 +1814,13 @@
               838
             ],
             "box_inches": [
-              1.2147971360381866,
-              2.1400000000000006,
-              5.570405727923627,
-              3.8899999999999997
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.557,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户查看短期记录与阶段记忆",
             "annotations": [
@@ -2250,49 +1835,6 @@
               }
             ],
             "native_shape_id": 80
-          }
-        ],
-        "layout": "ascending memory timeline",
-        "artworks": [
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              7.35,
-              2.2,
-              4.5,
-              1.23
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              7.63,
-              3.6500000000000004,
-              4.5,
-              1.23
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              7.91,
-              5.1,
-              4.5,
-              1.23
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
           }
         ]
       }
@@ -2407,24 +1949,31 @@
       },
       "user_refined_source_page": 17,
       "product_evidence": {
-        "source_page": 19,
+        "source_page": 17,
         "removed_shape_ids": [
-          "73",
-          "74",
-          "75",
-          "76",
-          "77",
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84"
+          "3",
+          "4",
+          "5",
+          "6",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "71"
         ],
         "screenshots": [
           {
-            "shape_id": 10,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
             "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
@@ -2438,13 +1987,13 @@
               838
             ],
             "box_inches": [
-              1.9951073985680194,
-              3.63,
-              4.109785202863962,
-              2.87
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.411,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户对照新旧内容并审批更正",
             "annotations": [
@@ -2467,70 +2016,7 @@
                 "label": "新旧内容对照与审批按钮"
               }
             ],
-            "native_shape_id": 83
-          }
-        ],
-        "layout": "two conflict layers above approval evidence",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              2.05,
-              5.75,
-              1.37
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.05,
-              2.01,
-              5.25,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              6.75,
-              2.05,
-              5.75,
-              1.37
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              7.0,
-              2.01,
-              5.25,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 1,
-            "box": [
-              7.53,
-              3.91,
-              4.8,
-              2.15
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 75
           }
         ]
       }
@@ -2632,23 +2118,34 @@
       },
       "user_refined_source_page": 18,
       "product_evidence": {
-        "source_page": 20,
+        "source_page": 18,
         "removed_shape_ids": [
-          "76",
-          "77",
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85",
-          "86"
+          "3",
+          "4",
+          "5",
+          "6",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "74"
         ],
         "screenshots": [
           {
-            "shape_id": 9,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/product-captures/device-sharing-controls.png",
             "sha256": "a57efc161aa4762077171c2977ea487f0f01702feaede9d41a79421c25124225",
             "native_size": [
@@ -2662,13 +2159,13 @@
               838
             ],
             "box_inches": [
-              6.7724343675417655,
-              2.6899999999999995,
-              5.155131264916468,
-              3.6000000000000005
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.516,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户管理可信设备与同步设置",
             "annotations": [
@@ -2682,40 +2179,7 @@
                 "label": "共享范围与可信设备列表"
               }
             ],
-            "native_shape_id": 85
-          }
-        ],
-        "layout": "online and reconnect swimlanes",
-        "artworks": [
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.8,
-              2.83,
-              5.1,
-              1.43
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.8,
-              4.52,
-              5.1,
-              1.43
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 78
           }
         ]
       }
@@ -2809,23 +2273,38 @@
       },
       "user_refined_source_page": 19,
       "product_evidence": {
-        "source_page": 21,
+        "source_page": 19,
         "removed_shape_ids": [
-          "70",
-          "71",
-          "72",
-          "73",
-          "74",
-          "75",
-          "76",
-          "77",
-          "78",
-          "79",
-          "80"
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33"
         ],
         "screenshots": [
           {
-            "shape_id": 14,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/full-window-captures/settings.png",
             "sha256": "83e627570420c5d7d2585bd529fd2772280d59f5c4adbe101b8b18781c74d388",
             "native_size": [
@@ -2839,13 +2318,13 @@
               838
             ],
             "box_inches": [
-              8.037541766109786,
-              4.19,
-              3.2649164677804294,
-              2.28
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.326,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户设置助手记忆权限与共享范围",
             "annotations": [
@@ -2859,80 +2338,7 @@
                 "label": "记忆授权与共享范围"
               }
             ],
-            "native_shape_id": 84
-          }
-        ],
-        "layout": "security quadrants with permissions window",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.85,
-              2.18,
-              5.58,
-              1.78
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.1,
-              2.14,
-              5.08,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              6.85,
-              2.18,
-              5.58,
-              1.78
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              7.1,
-              2.14,
-              5.08,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.85,
-              4.550000000000001,
-              5.58,
-              1.78
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.1,
-              4.510000000000001,
-              5.08,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 72
           }
         ]
       }
@@ -3023,23 +2429,33 @@
       },
       "user_refined_source_page": 20,
       "product_evidence": {
-        "source_page": 22,
+        "source_page": 20,
         "removed_shape_ids": [
-          "76",
-          "77",
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85",
-          "86"
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39"
         ],
         "screenshots": [
           {
-            "shape_id": 8,
+            "shape_id": 4,
             "source": "submission/presentation-production/source/full-window-captures/service.png",
             "sha256": "7815469ffc3f6755af68e91f1edafa190dd292a1d3efe1f2c3dc60f4aa906577",
             "native_size": [
@@ -3053,13 +2469,13 @@
               838
             ],
             "box_inches": [
-              1.8868735083532218,
-              2.9699999999999998,
-              5.026252983293556,
-              3.5100000000000002
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.503,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：系统展示当前版本与原生能力状态",
             "annotations": [
@@ -3073,50 +2489,7 @@
                 "label": "版本与系统能力状态"
               }
             ],
-            "native_shape_id": 84
-          }
-        ],
-        "layout": "native platform bands and recovery metric",
-        "artworks": [
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.85,
-              2.04,
-              3.62,
-              0.6
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              4.85,
-              2.04,
-              3.62,
-              0.6
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              8.85,
-              2.04,
-              3.62,
-              0.6
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 78
           }
         ]
       }
@@ -3215,35 +2588,37 @@
       },
       "user_refined_source_page": 21,
       "product_evidence": {
-        "source_page": 23,
+        "source_page": 21,
         "removed_shape_ids": [
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85",
-          "86",
-          "87",
-          "88",
-          "89",
-          "90",
-          "91",
-          "92",
-          "93",
-          "94",
-          "95",
-          "96",
-          "97",
-          "98",
-          "99",
-          "100",
-          "101",
-          "102"
+          "3",
+          "4",
+          "5",
+          "6",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43"
         ],
         "screenshots": [
           {
-            "shape_id": 22,
+            "shape_id": 18,
             "source": "submission/presentation-production/source/full-window-captures/task.png",
             "sha256": "281ef0d7cbaf2d2ea2afd4e7f941206ef8418a685d0c1586a7fa412c9dfed54d",
             "native_size": [
@@ -3257,13 +2632,13 @@
               838
             ],
             "box_inches": [
-              7.287708830548926,
-              3.45,
-              4.324582338902148,
-              3.02
+              2.4661097852028635,
+              3.2,
+              4.4677804295942725,
+              3.12
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.432,
+            "pixel_scale_at_1600": 0.447,
             "context": "complete application window",
             "caption": "图 1：助手完成工具任务并保存处理结果",
             "annotations": [
@@ -3277,100 +2652,7 @@
                 "label": "工具完成记录与记忆保存结果"
               }
             ],
-            "native_shape_id": 102
-          }
-        ],
-        "layout": "four-step lifecycle with reverse evidence placement",
-        "artworks": [
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              0.8,
-              2.04,
-              2.775,
-              1.13
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              1.05,
-              2.0,
-              2.275,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              3.7750000000000004,
-              2.04,
-              2.775,
-              1.13
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              4.025,
-              2.0,
-              2.275,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              6.75,
-              2.04,
-              2.775,
-              1.13
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              7.0,
-              2.0,
-              2.275,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 18,
-            "box": [
-              9.725000000000001,
-              2.04,
-              2.775,
-              1.13
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              9.975000000000001,
-              2.0,
-              2.275,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 96
           }
         ]
       }
@@ -3530,21 +2812,24 @@
       },
       "user_refined_source_page": 23,
       "product_evidence": {
-        "source_page": 25,
+        "source_page": 23,
         "removed_shape_ids": [
-          "67",
-          "68",
-          "69",
-          "70",
-          "71",
-          "72",
-          "73",
-          "74",
-          "75"
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30"
         ],
         "screenshots": [
           {
-            "shape_id": 9,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/02-directory-source.png",
             "sha256": "be0b5ec2cad0d5ecd67d9dee1907ba66a363efc470553ef69ba28e0fdb6195f7",
             "native_size": [
@@ -3558,13 +2843,13 @@
               838
             ],
             "box_inches": [
-              6.485596658711216,
-              2.29,
-              5.498806682577565,
-              3.84
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.55,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：助手保留活动知识及其原始资料",
             "annotations": [
@@ -3578,30 +2863,7 @@
                 "label": "来源窗口中的知识与原始资料"
               }
             ],
-            "native_shape_id": 76
-          }
-        ],
-        "layout": "activity facts above process with full source",
-        "artworks": [
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              0.8,
-              2.12,
-              5.0,
-              4.63
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 69
           }
         ]
       }
@@ -3693,21 +2955,34 @@
       },
       "user_refined_source_page": 24,
       "product_evidence": {
-        "source_page": 26,
+        "source_page": 24,
         "removed_shape_ids": [
-          "77",
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85"
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40"
         ],
         "screenshots": [
           {
-            "shape_id": 7,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/01-directory-recall.png",
             "sha256": "d282204836889ea9bf67588698b42fbcd131fe10bb79dbebeb000b9901d14f89",
             "native_size": [
@@ -3721,13 +2996,13 @@
               838
             ],
             "box_inches": [
-              6.521718377088305,
-              2.17,
-              5.756563245823388,
-              4.02
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.576,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：助手在新会话中召回已保存的活动资料",
             "annotations": [
@@ -3741,30 +3016,7 @@
                 "label": "跨会话回答与来源链接"
               }
             ],
-            "native_shape_id": 84
-          }
-        ],
-        "layout": "cross-session editorial statement",
-        "artworks": [
-          {
-            "reference_page": 11,
-            "shape_index": 1,
-            "box": [
-              0.85,
-              4.05,
-              5.1,
-              2.41
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 79
           }
         ]
       }
@@ -3857,24 +3109,34 @@
       },
       "user_refined_source_page": 25,
       "product_evidence": {
-        "source_page": 27,
+        "source_page": 25,
         "removed_shape_ids": [
-          "77",
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85",
-          "86",
-          "87",
-          "88"
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40"
         ],
         "screenshots": [
           {
-            "shape_id": 2,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
             "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
@@ -3888,13 +3150,13 @@
               838
             ],
             "box_inches": [
-              1.4437589498806684,
-              2.06,
-              5.842482100238663,
-              4.08
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.584,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：用户核对活动安排的变化并批准更正",
             "annotations": [
@@ -3918,29 +3180,6 @@
               }
             ],
             "native_shape_id": 79
-          }
-        ],
-        "layout": "approval comparison with change callout",
-        "artworks": [
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              8.35,
-              2.28,
-              4.02,
-              3.92
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
           }
         ]
       }
@@ -4046,23 +3285,36 @@
       },
       "user_refined_source_page": 26,
       "product_evidence": {
-        "source_page": 28,
+        "source_page": 26,
         "removed_shape_ids": [
-          "68",
-          "69",
-          "70",
-          "71",
-          "72",
-          "73",
-          "74",
-          "75",
-          "76",
-          "77",
-          "78"
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31"
         ],
         "screenshots": [
           {
-            "shape_id": 8,
+            "shape_id": 4,
             "source": "submission/video-production/raw/current-0.1.12/04-updated-recall.png",
             "sha256": "6120477bae9a984bb35b729b5a77f2f626952b3b089ada90747b8c0693a4a28f",
             "native_size": [
@@ -4076,13 +3328,13 @@
               838
             ],
             "box_inches": [
-              6.451718377088307,
-              2.19,
-              5.756563245823388,
-              4.02
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.576,
+            "pixel_scale_at_1600": 0.508,
             "context": "complete application window",
             "caption": "图 1：助手在后续查询中使用更正后的安排",
             "annotations": [
@@ -4096,40 +3348,7 @@
                 "label": "更新后的安排与引用依据"
               }
             ],
-            "native_shape_id": 76
-          }
-        ],
-        "layout": "updated activity outcome with retained budget",
-        "artworks": [
-          {
-            "reference_page": 11,
-            "shape_index": 1,
-            "box": [
-              0.82,
-              2.14,
-              5.1,
-              2.52
-            ]
-          },
-          {
-            "reference_page": 7,
-            "shape_index": 34,
-            "box": [
-              0.82,
-              5.01,
-              5.1,
-              1.53
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 70
           }
         ]
       }
@@ -4352,30 +3571,33 @@
       },
       "user_refined_source_page": 28,
       "product_evidence": {
-        "source_page": 30,
+        "source_page": 28,
         "removed_shape_ids": [
-          "76",
-          "77",
-          "78",
-          "79",
-          "80",
-          "81",
-          "82",
-          "83",
-          "84",
-          "85",
-          "86",
-          "87",
-          "88",
-          "89",
-          "90",
-          "91",
-          "92",
-          "93"
+          "3",
+          "4",
+          "5",
+          "6",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39"
         ],
         "screenshots": [
           {
-            "shape_id": 7,
+            "shape_id": 6,
             "source": "submission/presentation-production/source/product-captures/device-a-memory.png",
             "sha256": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d",
             "native_size": [
@@ -4389,13 +3611,13 @@
               2160
             ],
             "box_inches": [
-              0.8500000000000001,
-              3.8340625,
-              3.63,
-              2.041875
+              0.8800000000000002,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.113,
+            "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
             "caption": "图 1：设备 A 查询同一条共享记忆",
             "annotations": [
@@ -4409,10 +3631,10 @@
                 "label": "共享记录正文"
               }
             ],
-            "native_shape_id": 83
+            "native_shape_id": 80
           },
           {
-            "shape_id": 13,
+            "shape_id": 11,
             "source": "submission/presentation-production/source/product-captures/device-b-memory.png",
             "sha256": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
             "native_size": [
@@ -4426,13 +3648,13 @@
               2160
             ],
             "box_inches": [
-              4.85,
-              3.8340625,
-              3.63,
-              2.041875
+              4.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.113,
+            "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
             "caption": "图 2：设备 B 查询同一条共享记忆",
             "annotations": [
@@ -4446,10 +3668,10 @@
                 "label": "共享记录正文"
               }
             ],
-            "native_shape_id": 89
+            "native_shape_id": 85
           },
           {
-            "shape_id": 19,
+            "shape_id": 16,
             "source": "submission/presentation-production/source/product-captures/device-c-memory.png",
             "sha256": "9db6b891762652c164a8e9b43703f33794254991c0793f6e5b0deb4bf070847d",
             "native_size": [
@@ -4463,13 +3685,13 @@
               2160
             ],
             "box_inches": [
-              8.850000000000001,
-              3.8340625,
-              3.63,
-              2.041875
+              8.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.113,
+            "pixel_scale_at_1600": 0.112,
             "context": "complete desktop",
             "caption": "图 3：设备 C 查询同一条共享记忆",
             "annotations": [
@@ -4483,60 +3705,7 @@
                 "label": "共享记录正文"
               }
             ],
-            "native_shape_id": 95
-          }
-        ],
-        "layout": "three-device verification stage",
-        "artworks": [
-          {
-            "reference_page": 12,
-            "shape_index": 1,
-            "box": [
-              0.5,
-              2.64,
-              12.3,
-              3.98
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              0.9,
-              3.75,
-              3.53,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              4.8999999999999995,
-              3.75,
-              3.53,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 3,
-            "shape_index": 59,
-            "box": [
-              8.9,
-              3.75,
-              3.53,
-              0.16
-            ]
-          },
-          {
-            "reference_page": 11,
-            "shape_index": 26,
-            "box": [
-              0.55,
-              6.86,
-              12.25,
-              0.15
-            ]
+            "native_shape_id": 90
           }
         ]
       }
@@ -4719,20 +3888,32 @@
   ],
   "inputs": [
     {
-      "path": "submission/presentation-production/reference/ABC公司产品宣传路演PPT.pptx",
-      "sha256": "526b6f5196791bc9d544575c01a685862f0bf3479641243f8c798c3c8543cc41"
+      "path": "submission/presentation-production/source/user-refined-20260915.pptx",
+      "sha256": "08fac263452d86fcb46278c71332272d775878b087e7545fef648a853f08fa71"
     },
     {
-      "path": "submission/presentation-production/scripts/build_varied_deck.py",
-      "sha256": "52864a43a4201f10051196f70768641c5632a1cacf9f64df718e7843def27c73"
+      "path": "submission/presentation-production/source/user-refined-20260915-manifest.json",
+      "sha256": "04fe66d9cb33b73c2301f20c807e2a42c0b6ff9c0186476aaf768d8d225a3538"
+    },
+    {
+      "path": "submission/presentation-production/scripts/reorder_refined_deck.py",
+      "sha256": "c54b1d5d3ca9e6e846e207ea26dbfd96c9f531b5b83126e093bea6e20d7dca40"
+    },
+    {
+      "path": "submission/presentation-production/scripts/build_reference_deck.py",
+      "sha256": "8d647e361f78c694d2213481d13e8ff7371feabd319221559ace4f2363e48e5b"
+    },
+    {
+      "path": "submission/presentation-production/scripts/refine_explanations.py",
+      "sha256": "7d167ba2502f9d16c3bd8e77d79ad7dc254255da807e3978ddc094b1f9d5c39e"
+    },
+    {
+      "path": "submission/presentation-production/scripts/extract_full_windows.py",
+      "sha256": "4de0749572354819fae4635010bbd21641a934c353d0192b7c51b111a02cc5e6"
     },
     {
       "path": "submission/presentation-production/scripts/product_screenshots.py",
-      "sha256": "08fbd3fe3cac875e218c8b2c7d6ccfc431aa877be91e1129899bf1f46bd9830e"
-    },
-    {
-      "path": "submission/presentation-production/scripts/varied_layouts.py",
-      "sha256": "cc80c2813c2cfc67a9704bb4e966cf33e9c1e239095625c5951db0673d9dac53"
+      "sha256": "ececaeca40ab299ae6aac3901c20075590bbd2b377325d3caffb5ed7448a23fe"
     },
     {
       "path": "submission/presentation-production/source/full-window-captures/bill.png",
@@ -4745,6 +3926,10 @@
     {
       "path": "submission/presentation-production/source/full-window-captures/keyword.png",
       "sha256": "79ffb51b8becd8e051eda0c0abbd32cdd21e246e9c2338e61feeb4457c0a89a1"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/manifest.json",
+      "sha256": "e7b0f83012961c90a8ae3274deda42eeb01ce8285ba1554e151027afa4da4878"
     },
     {
       "path": "submission/presentation-production/source/full-window-captures/service.png",
@@ -4763,6 +3948,10 @@
       "sha256": "281ef0d7cbaf2d2ea2afd4e7f941206ef8418a685d0c1586a7fa412c9dfed54d"
     },
     {
+      "path": "submission/presentation-production/source/product-captures/capture-manifest.json",
+      "sha256": "09442f8a606c604de389627ccaa8767d5061674201a258f2f45de7c844d66fe5"
+    },
+    {
       "path": "submission/presentation-production/source/product-captures/device-a-memory.png",
       "sha256": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d"
     },
@@ -4777,14 +3966,6 @@
     {
       "path": "submission/presentation-production/source/product-captures/device-sharing-controls.png",
       "sha256": "a57efc161aa4762077171c2977ea487f0f01702feaede9d41a79421c25124225"
-    },
-    {
-      "path": "submission/presentation-production/source/user-cover-closing-20260915-manifest.json",
-      "sha256": "ebc2fd8e84413c0c41bff7a16b945d8a49e6b72797b9e4fb85811ebd261fff3f"
-    },
-    {
-      "path": "submission/presentation-production/source/user-cover-closing-20260915.pptx",
-      "sha256": "a88c4bb639c7aba6e6b834672a710b5ccd26d589c3ca72c1cf2760d188af0a66"
     },
     {
       "path": "submission/video-production/raw/current-0.1.12/01-directory-recall.png",
@@ -4803,7 +3984,7 @@
       "sha256": "6120477bae9a984bb35b729b5a77f2f626952b3b089ada90747b8c0693a4a28f"
     }
   ],
-  "output_sha256": "5d635ba2c280172f8ff18ca96ab0041e07f12451376ef30f5d21099c62c90137",
+  "output_sha256": "2f593fb73897eac058cc10ec1c1abb363c3b088770c0ed7ed61ea57be108e58b",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -5552,71 +4733,6 @@
       "ppt/slides/_rels/slide29.xml.rels",
       "ppt/slides/slide10.xml",
       "ppt/slides/slide29.xml"
-    ]
-  },
-  "layout_revision": {
-    "source": "submission/presentation-production/source/user-cover-closing-20260915.pptx",
-    "source_sha256": "a88c4bb639c7aba6e6b834672a710b5ccd26d589c3ca72c1cf2760d188af0a66",
-    "parts": {
-      "1": "ppt/slides/slide1.xml",
-      "2": "ppt/slides/slide2.xml",
-      "3": "ppt/slides/slide3.xml",
-      "4": "ppt/slides/slide4.xml",
-      "5": "ppt/slides/slide5.xml",
-      "6": "ppt/slides/slide6.xml",
-      "7": "ppt/slides/slide7.xml",
-      "8": "ppt/slides/slide8.xml",
-      "9": "ppt/slides/slide9.xml",
-      "10": "ppt/slides/slide10.xml",
-      "11": "ppt/slides/slide11.xml",
-      "12": "ppt/slides/slide12.xml",
-      "13": "ppt/slides/slide13.xml",
-      "14": "ppt/slides/slide14.xml",
-      "15": "ppt/slides/slide15.xml",
-      "16": "ppt/slides/slide16.xml",
-      "17": "ppt/slides/slide17.xml",
-      "18": "ppt/slides/slide18.xml",
-      "19": "ppt/slides/slide19.xml",
-      "20": "ppt/slides/slide20.xml",
-      "21": "ppt/slides/slide21.xml",
-      "22": "ppt/slides/slide22.xml",
-      "23": "ppt/slides/slide23.xml",
-      "24": "ppt/slides/slide24.xml",
-      "25": "ppt/slides/slide25.xml",
-      "26": "ppt/slides/slide26.xml",
-      "27": "ppt/slides/slide27.xml",
-      "28": "ppt/slides/slide28.xml",
-      "29": "ppt/slides/slide29.xml",
-      "30": "ppt/slides/slide30.xml",
-      "31": "ppt/slides/slide31.xml",
-      "32": "ppt/slides/slide32.xml",
-      "33": "ppt/slides/slide33.xml",
-      "34": "ppt/slides/slide34.xml"
-    },
-    "modified_pages": [
-      7,
-      10,
-      11,
-      12,
-      13,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      25,
-      26,
-      27,
-      28,
-      30
-    ],
-    "preserved_user_pages": [
-      1,
-      34
     ]
   }
 }

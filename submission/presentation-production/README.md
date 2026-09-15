@@ -84,3 +84,9 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 原始录屏抽帧可运行 `python scripts/extract_full_windows.py`，使用现有 FFmpeg，不裁切或重绘像素；实时采集源 PNG 只校验摘要。完整来源和时间点记录于 `source/full-window-captures/manifest.json`。重建、PDF渲染与验证仍使用上方命令。
 
 图注统一为一句简短陈述，不含括号或标注方式说明，每条最多一个逗号；保留图号及可编辑红框。
+
+## 当前多版式修订
+
+最新输入为 `source/user-cover-closing-20260915.pptx`，完整保留用户本轮修改的封面和尾页。19个正文页根据内容重新设计，直接复制ABC原稿的原生异形底框、渐变卡片、弧面和光效；第25页重叠文字改为时间地点、预算与流程的独立区域。
+
+原有构建/验证命令不变，入口自动选择 `build_varied_deck.py` / `validate_varied_deck.py`；版式维护于 `scripts/varied_layouts.py`。无新依赖。此前“统一窗口配右侧说明”的记录属于旧轮次，当前逐页设计与保护范围以[本轮复核](review/product-screenshot-audit.md)为准。未来若用户再次手动编辑，必须先归档最新文件，构建保护检查会阻止覆盖。

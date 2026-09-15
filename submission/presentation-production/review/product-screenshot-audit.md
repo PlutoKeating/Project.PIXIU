@@ -1,67 +1,43 @@
-# 全34页产品截图审计（2026-09-15）
+# 本轮版式复核与截图审计
 
-## 范围与来源
+## 最新文件与保护范围
 
-以归档的用户美工修订稿为基底，20页重新安排完整软件窗口与说明；保留页序、页码、章节导航、顶部主题及未授权区域的原生 XML。未修改正式31页资产。
+用户本轮修改了封面和尾页，最新34页文件已完整归档为 `source/user-cover-closing-20260915.pptx`，SHA-256为 `a88c4bb639c7aba6e6b834672a710b5ccd26d589c3ca72c1cf2760d188af0a66`。当前生成直接以该文件的整个PPTX包为基底，避免从旧版重新生成而丢失用户美工。封面、尾页、其他未改页、母版与关联素材均保留原始字节。19个正文页仅替换授权的正文区域，顶部主题、导航、页码保留。
 
-新增三端来源与设备控制截图来自本机安装的 PIXIU 0.1.12-1 / 银河麒麟 V11 QEMU。三端来源采用原生3840×2160、缩放2，保存原始 PNG；A/B/C分别独立打开同一条记录的来源2。清单见 `source/product-captures/capture-manifest.json`，公共 API 返回的正文、版本和证据 ID 已核对一致。
+## 排版调整
 
-Dreaming、账单与星河活动沿用2026-09-10已有真实操作截图：`submission/video-production/public/current/`；源头与操作记录见 `submission/video-production/raw/current-0.1.12/manifest.json` 和 `submission/video-production/scripts/prepare_current_scenes.py`。这些是软件实际运行的公开合成案例，不宣称真实家庭消费或真实活动发生。此次新云模型对话未响应，未用作成功演示。
+第25页不再用固定高度的说明列表。日期、时间地点、预算和操作流程分区排列，预算与下一段标题之间设分隔线与留白，修复原三行正文挤入下一标题的问题。
 
-## 逐页处理
+参考ABC原稿第3、7、11、12页的原生渐变卡片、半透明弧面、异形舞台和底部投影，按内容分别采用双亮点舞台、三端并列、纵向步骤、金额主视觉、横向接入/检索、知识分类网格、阶梯流转、冲突对照、安全分区、恢复数字和活动时间变化等结构。原生形状和光条直接复制，原稿无关正文与公司信息不导入。具体来源页、形状索引与坐标写入构建清单的 `artworks`。
 
-| 页 | 主题 | 本次处理 |
-|---|---|---|
-| 01 | PIXIU · 貔貅 | 封面：保留品牌和主张。 |
-| 02 | 汇报导览 | 目录：保留六部分导航。 |
-| 03 | 场景需求与使用背景 | 章节标题页：保留已认可模板。 |
-| 04 | 多设备 Agent 的记忆断点 | 需求引入：设备与痛点示意更直接。 |
-| 05 | 需求缺口与方案回应 | 需求与回应：保留三列对应关系。 |
-| 06 | 产品定位与方案架构 | 章节标题页：保留已认可模板。 |
-| 07 | 桌面智能体记忆中枢 | 完整窗口：bill.png；原生红框、图注与图外说明。 |
-| 08 | 业务与技术全景 | 架构页：保留分层关系图。 |
-| 09 | 两大核心功能亮点 | 章节标题页：保留已认可模板。 |
-| 10 | 两大核心亮点 | 完整窗口：03-dreaming-review.png、device-sharing-controls.png；原生红框、图注与图外说明。 |
-| 11 | 记忆共享，分布互连 | 完整窗口：device-a-memory.png、device-b-memory.png、device-c-memory.png；原生红框、图注与图外说明。 |
-| 12 | 自动记忆，持续整合 | 完整窗口：03-dreaming-review.png；原生红框、图注与图外说明。 |
-| 13 | 场景示例 · 账单检索 | 完整窗口：bill.png；原生红框、图注与图外说明。 |
-| 14 | 技术架构与实现方案 | 章节标题页：保留技术全景入口。 |
-| 15 | 多源知识接入 | 完整窗口：directory.png；原生红框、图注与图外说明。 |
-| 16 | 知识结构与来源关联 | 完整窗口：02-directory-source.png；原生红框、图注与图外说明。 |
-| 17 | 三路混合检索 | 完整窗口：keyword.png；原生红框、图注与图外说明。 |
-| 18 | 记忆阶段流转 | 完整窗口：stage.png；原生红框、图注与图外说明。 |
-| 19 | 双层冲突治理 | 完整窗口：03-dreaming-review.png；原生红框、图注与图外说明。 |
-| 20 | 去中心化同步协议 | 完整窗口：device-sharing-controls.png；原生红框、图注与图外说明。 |
-| 21 | 全生命周期安全 | 完整窗口：settings.png；原生红框、图注与图外说明。 |
-| 22 | 原生部署与兼容路径 | 完整窗口：service.png；原生红框、图注与图外说明。 |
-| 23 | 智能体记忆生命周期 | 完整窗口：task.png；原生红框、图注与图外说明。 |
-| 24 | 真实操作案例 | 完整窗口：01-directory-recall.png；原生红框、图注与图外说明。 |
-| 25 | 活动资料与任务要素 | 完整窗口：02-directory-source.png；原生红框、图注与图外说明。 |
-| 26 | 自动记忆，持续整合｜跨会话召回 | 完整窗口：01-directory-recall.png；原生红框、图注与图外说明。 |
-| 27 | 自动记忆，持续整合｜更正审批 | 完整窗口：03-dreaming-review.png；原生红框、图注与图外说明。 |
-| 28 | 场景应用价值 | 完整窗口：04-updated-recall.png；原生红框、图注与图外说明。 |
-| 29 | 开发基线量化评测 | 保留真实量化评测图表及环境口径，软件界面不能代替指标证据。 |
-| 30 | 记忆共享，分布互连｜三端收敛 | 完整窗口：device-a-memory.png、device-b-memory.png、device-c-memory.png；原生红框、图注与图外说明。 |
-| 31 | 服务模式与商业探索 | 章节标题页：保留已认可模板。 |
-| 32 | 服务模式与持续运营 | 商业探索：服务模式为设想，保留模式说明。 |
-| 33 | 商业试点路线 | 试点规划：保留路线和待验证边界。 |
-| 34 | PIXIU · 貔貅 | 结尾：保留产品主张。 |
+| 页码 | 当前版式 |
+|---|---|
+| 07 | product stage with feature ribbons |
+| 10 | two flagship podiums |
+| 11 | three device columns |
+| 12 | vertical integration process beside full review |
+| 13 | bill total and evidence with lower value cards |
+| 15 | three input paths above software settings |
+| 16 | knowledge categories and provenance chain |
+| 17 | three retrieval lanes feeding result |
+| 18 | ascending memory timeline |
+| 19 | two conflict layers above approval evidence |
+| 20 | online and reconnect swimlanes |
+| 21 | security quadrants with permissions window |
+| 22 | native platform bands and recovery metric |
+| 23 | four-step lifecycle with reverse evidence placement |
+| 25 | activity facts above process with full source |
+| 26 | cross-session editorial statement |
+| 27 | approval comparison with change callout |
+| 28 | updated activity outcome with retained budget |
+| 30 | three-device verification stage |
 
-## 完整窗口修订
+## 真实截图与图注
 
-本轮逐页复核34页。20个含软件截图的页面全部改用完整应用窗口或完整桌面；第22页的能力报告窄条同样替换。其余14页为封面、目录、章节、需求/架构图、量化图表和商业规划，无此类软件截图。
+全稿仍为25处完整软件窗口/桌面截图。原始像素、长宽比、来源清单和红框保留，三端素材来自三个独立文件；图注为一句简短陈述，不含括号或标注方法说明，最多一个逗号。软件画面仅证明可见状态，不将设备列表视为实时送达证明，当前记录一致不替代历史并发验证。
 
-- 第11、30页：分别嵌入三台虚拟机独立原始截图，保留桌面、应用导航、查询与来源上下文，使用相同长宽比、等宽等距布局。A/B/C对应原采集清单中的三个域，图外标注域名；没有把设备身份伪造到截图中。三份图片摘要不同，当前一致状态不替代历史并发过程记录。
-- 第15、17、25页：取消零散文字条与按钮拼贴，分别使用完整采集设置、检索窗口或带宿主窗口的来源对话框。正文在右侧解释机制与操作；窗口截图只能证明可见结果，不能单独证明所有后台算法。
-- Dreaming与审批页：保留完整应用与模态窗口，新旧内容及批准按钮用两处红框定位。
-- 所有截图附“图 x：…”简短陈述句，不含括号或“红框：”措辞，每条最多一个逗号；红框为可编辑的无填充PowerPoint矩形，不覆盖或改写原始像素。
-- 其余查询、阶段流转、权限、工具任务与章节案例截图同步替换。第22页重新读取麒麟V11服务与能力页，保留完整应用标题、导航、读取时间和能力报告。
-- 原始录屏抽帧不裁切、不缩放，原始 PNG 直接嵌入；只裁去完整窗口之外的桌面留白。三端保留全桌面，图片长宽比一致。图像、图注和说明之间保留统一间距。
+## 构建与验证
 
-## 构建与环境
+原有入口 `build_reference_deck.py` 在发现最新归档后调用 `build_varied_deck.py`，版式由 `varied_layouts.py` 生成，复用原有截图嵌入逻辑。验证入口调用 `validate_varied_deck.py`，比对最新归档的非修改包内容、正文以外形状、截图字节、图注规则与34页渲染。依赖仍为现有 python-pptx、lxml、Pillow、LibreOffice、Poppler；无新增产品或构建依赖。
 
-构建入口追加 `scripts/product_screenshots.py`，记录逐张源文件、SHA-256、原生尺寸、完整窗口边界、放置尺寸、图注、红框坐标和页面形状 ID。验证脚本检查图片确实位于指定页面、裁切比例与边界正确、源字节一致，并检查原有保护区域。
-
-Python 依赖不变；完整录屏抽帧使用现有 FFmpeg，复现命令为 `python scripts/extract_full_windows.py`（在本制作目录执行）。新增抽帧及实时采集来源见 `source/full-window-captures/manifest.json`。人工虚拟机采集使用 libvirt/virsh、SSH、kscreen-doctor、Wayland 剪贴板工具；C 新安装 wl-clipboard，仅用于输入。未修改产品源码或模型凭据，未直接编辑数据库。A/C临时提升分辨率后恢复原1440×900、缩放1；B保持原4K、缩放2；三台恢复原暂停状态。本轮仅恢复A读取服务能力，重启客户端使原分辨率下字体恢复正常，采集后再次暂停；未修改后端。
-
-LibreOffice PDF、Poppler全34页渲染及结构验证完成后交付；尚未另用 WPS/PowerPoint 打开此次试作版验证。
+已使用LibreOffice/Poppler整页渲染，逐页总览并重点查看第7、12、13、16、19、21、23、25页，修复长句孤字换行。未另用WPS/PowerPoint打开新版。正式31页资产未修改。

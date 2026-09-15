@@ -14,6 +14,11 @@ ROOT = Path(__file__).resolve().parents[3]
 WORK = ROOT / 'submission/presentation-production'
 OUT = WORK / 'render/abc-trial'
 
+if (WORK / 'source/user-cover-closing-20260915.pptx').exists():
+    import runpy
+    runpy.run_path(str(WORK / 'scripts/validate_varied_deck.py'), run_name='__main__')
+    raise SystemExit(0)
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()

@@ -17,6 +17,11 @@ from pptx.oxml.xmlchemy import OxmlElement
 
 ROOT = Path(__file__).resolve().parents[3]
 WORK = ROOT / 'submission/presentation-production'
+if (WORK / 'source/user-cover-closing-20260915.pptx').exists():
+    import runpy
+    runpy.run_path(str(WORK / 'scripts/build_varied_deck.py'), run_name='__main__')
+    raise SystemExit(0)
+
 # Once manually refined, the native deck is the authoritative artwork source.
 if (WORK / 'source/user-refined-20260915.pptx').exists():
     import runpy
