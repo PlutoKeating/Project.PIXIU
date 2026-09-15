@@ -96,3 +96,20 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 第 7、11、12、13、15、25 页补充场景、用户操作、系统处理与后续用途，保留不同版式和完整软件截图。设备按书房台式机、客厅功能机、出差笔记本标注；账单先显示合计标题，再以同一行同样加粗显示金额和元。自动整合卡片统一上边距和正文基线。
 
 构建入口调用 `remove_slide_notes.py` 删除全部备注页、备注母版及关系引用，归档源文件保持不变。校验新增无备注与关键文案检查，无新增依赖。
+
+## 2026-09-15：36页交付版定点修订（当前权威）
+
+本轮完整读取并归档用户直接编辑的正式交付版：`source/user-submission-20260915-36pages.pptx`，输入 SHA-256 为 `03883a5543085a66d9a6e2afe1943b32e848cbec636770a25f3fcf22932819fa`。当前权威是 submission 两层 603821 同名目录内的 `项目报告.pptx`；本页上方31/34页构建记录与 `render/` 旧候选均为历史版本，不可覆盖当前正式稿。
+
+- 第6页：保留全部原生形状、顺序、位置和尺寸；替换 Agent 领域文案，以及三份政策的名称、机关、日期、截图和解读。页码复用现有页脚形状，无新增或删除页面元素。
+- 第12页：保留三张独立实拍及其对应红框；增加每端 Agent / PIXIU 本地记忆模块、双向对等连线与离线重连路径。
+- 第25页：在左下补充结构化记忆、持续整合、共享与上下文三项工程说明；原论文表与图片保留。
+- 按物理页序校准02—35页的可见页码。封面及结束页沿用原来的无页码设计，仍计入36页总数。
+
+重建本轮修订必须使用以下入口并指定**不存在的候选路径**；脚本不会覆盖已有文件。依赖沿用当前 requirements.txt、LibreOffice 和 Poppler，无新增依赖或产品构建变化。
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/update_submission_deck.py --output /tmp/pixiu-submission-candidate.pptx
+```
+
+脚本从归档的36页用户原件进行包级定点修改，保留其余包部件。候选需重新渲染、复核后才能更新正式文件。验证及版本摘要见 [36页修订复核](review/submission-36page-review.md) 和 `review/submission-36page-validation.json`。完整36页文本见 `review/submission-36page-text.md`。

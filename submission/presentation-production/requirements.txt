@@ -1,4 +1,4 @@
-# Python dependencies for the accepted deck and the ABC-reference trial.
+# Python dependencies for the accepted deck, ABC-reference trial and 36-page submission patch.
 # Optional VM capture tools (not product dependencies): virsh, SSH, kscreen-doctor, wl-clipboard.
 # External rendering tools: LibreOffice, Poppler (pdftoppm); font: Microsoft YaHei.
 lxml==6.1.3
