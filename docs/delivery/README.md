@@ -18,7 +18,7 @@
 
 ## 当前产物与更新入口
 
-项目报告为用户已验收的34页科技风版本，直接复制 `submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx`，保留新封面和尾页且无备注。导出脚本核对其审阅摘要，禁止重新生成旧31页覆盖最终稿。
+项目报告保留用户最新编辑的35页正式版本及新封面、尾页，全部备注为空。文档导出只保留并记录当前正式PPT，不再复制制作模板覆盖用户的新编辑；本轮仅清除办公文件作者元数据，页面内容未改。
 
 技术方案从八篇最新技术、部署、手册、流转、案例、测试、适配及源码说明合并，使用 LibreOffice 导出真正的 DOCX，首章给出独立可执行的编译和安装说明。复核用 PDF 留在 `build/release/out/documents/`。依赖沿用 `build/release/requirements-docs.txt`。
 

@@ -7,8 +7,8 @@
   "files": [
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
-      "bytes": 614722,
-      "sha256": "200e7997688db7248269c05647a17eb280325e8e58198f131da37ef1e9e5beaa"
+      "bytes": 616901,
+      "sha256": "0e33fc92c6185b043e789e1e33f865382c6acb4b905a2f1100ff9c648cb9a2d2"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/演示视频.zip",
@@ -17,24 +17,33 @@
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
-      "bytes": 36476942,
-      "sha256": "8aaf26a0b66183a065c6b9984a19ffb3c053779015881c816e652c06b0788c6f"
+      "bytes": 28514703,
+      "sha256": "9ebe2f260b7a8cb2c65b173bb689f42ed78685bfaebd0e72eb9f26d2044d4d19"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/PIXIU源代码.tar.gz",
-      "bytes": 22344745,
-      "sha256": "c8f1cdb89a537d8636b3a28f579ecba02b5c8a9e7396cf89f4efc746e1bb731d"
+      "bytes": 22345374,
+      "sha256": "32460b11cc39f7135303d29b13bc95fe38134605601f7ebba2fb2cc108c9a3ef"
+    },
+    {
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/pixiu_0.1.12-1_amd64.deb",
+      "bytes": 208108672,
+      "sha256": "8d2f4082460e2933a062ac771b207d795749028536321c14f485c6cc36a8dda7"
+    },
+    {
+      "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/pixiu_0.1.12-1_amd64.deb.sha256",
+      "bytes": 91,
+      "sha256": "3691727de12b192d249aacf209235f0ca77d9d2d95f151a857bb1bac591cea33"
     }
   ],
-  "ppt_pages": 34,
-  "ppt_matches_accepted": true,
+  "ppt_pages": 35,
   "speaker_notes": 0,
-  "technical_doc_pages": 35,
+  "technical_doc_pages": 36,
   "video_seconds": 499.333333,
   "video_crc": "passed",
   "source_files": 1890,
   "fixed_upstreams": 5,
-  "source_commit": "27451253420c4245969f0a4b107ec4188b575bc8",
+  "source_commit": "487572437404dff2dd95a73b664325cc3b457cd8",
   "source_tree_clean": true,
   "source_scope": "minimal-build",
   "excluded_directories_check": "passed",
@@ -44,5 +53,25 @@
     "runtime": "CPython 3.12 wheel rebuilt; full and minimal source digests match",
     "runtime_wheel_sha256": "a3f1dbeab1c040b41933a4934dfabd46daa5b5561ae7cfad53dfec62ecc02aed",
     "native_deb_install": "not repeated in this submission refresh"
+  },
+  "ppt_preserves_user_latest_pages": true,
+  "ppt_only_metadata_sanitized": true,
+  "installer": {
+    "version": "0.1.12-1",
+    "architecture": "amd64",
+    "sha256": "8d2f4082460e2933a062ac771b207d795749028536321c14f485c6cc36a8dda7",
+    "published_asset_match": true
+  },
+  "guidance_review": {
+    "personal_hosting_links": "removed from all delivery manuscripts and source README",
+    "office_author_metadata": "empty",
+    "embedded_image_ocr_count": 11,
+    "image_suspect_hits_visually_cleared": true,
+    "docx_tables_and_code_boxes": 23,
+    "terminal_blocks": 8,
+    "black_solid_borders": "passed",
+    "plain_list_markers": "passed",
+    "emoji_text": "none",
+    "other_platforms": "source build with unsupported-architecture boundaries stated"
   }
 }
