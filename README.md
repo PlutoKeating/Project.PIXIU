@@ -90,7 +90,7 @@ PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、
 
 ## 文档
 
-当前项目报告为用户最新编辑的36页科技风路演稿，已补充第12页立体终端三角构图及第19—21页记忆、冲突与同步逻辑图，使用典型家庭场景铺垫需求，并通过真实录制的活动资料更新案例展示完整闭环；页序与事实边界见 [路演说明](docs/delivery/PRESENTATION_AND_VIDEO.md)，逐页图像与制作记录见 [PPT制作工程](submission/presentation-production/README.md)。
+当前项目报告为用户最新编辑的36页科技风路演稿，已补充第12页立体终端三角构图及第19—21页采用渐变材质与悬浮底座的可编辑记忆、冲突与同步逻辑图，使用典型家庭场景铺垫需求，并通过真实录制的活动资料更新案例展示完整闭环；页序与事实边界见 [路演说明](docs/delivery/PRESENTATION_AND_VIDEO.md)，逐页图像与制作记录见 [PPT制作工程](submission/presentation-production/README.md)。
 
 仓库中的项目报告、截图及交付二进制使用 Git LFS。克隆后须安装 Git LFS，并在仓库根目录执行 `git lfs install --local` 和 `git lfs pull`，再打开材料。若 PPTX 只有约 130 字节且以 `version https://git-lfs.github.com/spec/v1` 开头，它是尚未下载的指针文件；恢复方法见 [材料下载说明](build/release/README.md#材料下载)。
 

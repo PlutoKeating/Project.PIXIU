@@ -141,3 +141,17 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 ```bash
 submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/logic_diagrams.py --source submission/presentation-production/source/user-before-logic-diagrams-20260915.pptx --output /tmp/pixiu-logic-candidate.pptx
 ```
+
+## 第19—21页图示质感修订（当前版本）
+
+在最新正式稿上重绘三页图示，采用渐变材质、悬浮底座、分层图标、明暗边缘与细线通道；第19页为错层记忆阶梯，第20页为双层决策通道，第21页为设备分发与差异操作块。逻辑关系保持，全部为可编辑原生图形。
+
+写回前备份为 `source/user-before-logic-art-20260915.pptx`。仅三个 slide XML 发生变化，其余33页及其他包部件逐字节保持；94个受保护元素原样保留，第20页两个既有背景仅调整渐变。36页总数及02—35页可见页码复核通过。验证见 [检查记录](review/logic-art-validation.json)，预览：[第19页](render/logic-art/page-19.png)、[第20页](render/logic-art/page-20.png)、[第21页](render/logic-art/page-21.png)。已检查LibreOffice实际渲染，未在WPS或Microsoft PowerPoint中验证。
+
+使用现有依赖，无新增依赖或产品编译、部署配置变动；候选构建入口为：
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/refine_logic_art.py --source submission/presentation-production/source/user-before-logic-art-20260915.pptx --output /tmp/pixiu-logic-art-candidate.pptx
+```
+
+该入口针对本轮归档输入，不可用旧归档覆盖用户之后的正式文件。正式写回须比较最新文件，对目标页有并行修改时先合并，并在原子替换前重新核验版本。

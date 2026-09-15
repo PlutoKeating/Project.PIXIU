@@ -1,0 +1,22 @@
+{
+  "input_sha256": "3c41ebba9eb2db8b3be8183ca1ba98d8c9478a830873f5f6020be6a9ac014642",
+  "output_sha256": "a852a9d0b08b5138c3901ddb1fd4ea31682a88d4aa2dd978838fb5cd4caff8bc",
+  "pages": 36,
+  "changed_parts": [
+    "ppt/slides/slide19.xml",
+    "ppt/slides/slide20.xml",
+    "ppt/slides/slide21.xml"
+  ],
+  "other_parts_byte_identical": true,
+  "protected_shapes_identical": 94,
+  "additional_style_only_changes": {
+    "slide20": [
+      75,
+      79
+    ]
+  },
+  "visible_page_numbers": "02–35; cover and ending unnumbered",
+  "editable_native_diagrams": true,
+  "visual_review": "LibreOffice PDF rendered at 1800px; pages 19–21",
+  "office_wps_not_tested": true
+}
