@@ -1,13 +1,15 @@
-"""Paths and strict file checks for the frozen competition submission tree."""
+"""Paths and strict checks for the user-confirmed competition submission tree."""
 from pathlib import Path
-import re
+import json
 import zipfile
 
 
 def paths(root: Path) -> tuple[Path, Path, Path]:
-    specification = (root / "docs/DELIVERY_PLAN.md").read_text()
-    section = specification.split("### 0.4", 1)[1].split("### 0.5", 1)[0]
-    name = re.findall(r"```text\n([^\n]+)\n```", section)[0]
+    identity = json.loads((root / "docs/submission-identity.json").read_text())
+    number, title = identity["work_number"], identity["work_title"]
+    if not number.isdigit() or any(c in number + title for c in "/\\\n"):
+        raise ValueError("作品编号或作品名称无效")
+    name = number + "-" + title
     outer = root / "submission" / name
     return outer, outer / name, outer / "源代码"
 

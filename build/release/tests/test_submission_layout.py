@@ -1,5 +1,6 @@
 """Reject plausible but invalid competition submission trees."""
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -29,6 +30,17 @@ class LayoutTests(unittest.TestCase):
         self.patcher = patch.object(layout, "paths", return_value=(self.outer, self.materials, self.source))
         self.patcher.start()
         self.addCleanup(self.patcher.stop)
+
+    def test_platform_identity_preserves_exact_title(self):
+        (self.root / "docs").mkdir()
+        title = "PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现"
+        (self.root / "docs/submission-identity.json").write_text(json.dumps({"work_number":"603821","work_title":title}, ensure_ascii=False))
+        self.patcher.stop()
+        outer, materials, source = layout.paths(self.root)
+        self.assertEqual(outer.name, "603821-" + title)
+        self.assertEqual(materials, outer / outer.name)
+        self.assertEqual(source, outer / "源代码")
+        self.patcher.start()
 
     def test_only_video_may_be_pending(self):
         self.assertEqual(len(layout.validate(self.root)), 1)

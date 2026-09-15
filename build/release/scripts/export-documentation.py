@@ -211,14 +211,15 @@ def export(root: Path) -> tuple[list[dict], dict]:
         doc = convert(docx, materials, "doc:MS Word 97", work / "profile")
         # Inspect the actual delivered binary document, not only the intermediate.
         pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")
-    subprocess.run([sys.executable, str(root / "build/release/scripts/build-presentation.py")], check=True)
-    template = root / "docs/delivery/assets/项目报告.pptx"
+    template = root / "submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx"
+    accepted = json.loads((root / "submission/presentation-production/review/abc-trial-validation.json").read_text())
+    assert digest(template) == accepted["pptx_sha256"], "PPT must match the reviewed output"
     ppt = materials / "项目报告.pptx"
     shutil.copyfile(template, ppt)
     record = {"source": source.relative_to(root).as_posix(), "sha256": digest(source),
               "inputs": [{"path": p.relative_to(root).as_posix(), "sha256": digest(p)} for p in sorted((root / "docs/delivery").glob("*.md")) if p.name in {"TECHNICAL_SOLUTION.md", "DEPLOYMENT_GUIDE.md", "USER_MANUAL.md", "MEMORY_LIFECYCLE.md", "APPLICATION_CASES.md", "TEST_REPORT.md", "KYLIN_V11_ADAPTATION_REPORT.md", "SOURCE_AND_LICENSES.md"}],
               "images": images, "exports": [{"path": doc.relative_to(root).as_posix(), "sha256": digest(doc)}]}
-    build_manifest = root / "docs/delivery/assets/presentation-manifest.json"
+    build_manifest = root / "submission/presentation-production/review/abc-trial-manifest.json"
     presentation = {"source": template.relative_to(root).as_posix(), "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt),
                     "build_manifest": build_manifest.relative_to(root).as_posix(), "build_manifest_sha256": digest(build_manifest)}
     return [record], presentation

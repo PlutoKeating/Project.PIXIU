@@ -23,7 +23,7 @@ RUNTIME_SOURCE_DIRS = {
     "packaging", "plans", "plugins", "pre-llm", "providers", "quick-test", "scripts",
     "skills-old", "skills", "tests", "tools", "tui_gateway", "ui-tui", "web",
 }
-TECH_DOCS = {"docs/decisions/0007-reuse-headless-document-decoding.md",
+TECH_DOCS = {"docs/submission-identity.json","docs/decisions/0007-reuse-headless-document-decoding.md",
              "docs/DREAMING_AND_DOCUMENT_HARNESS.md","docs/ARCHITECTURE.md", "docs/API.md", "docs/QUICK_START.md",
              "docs/acceptance/acceptance-baseline-2026-08-24.md",
              "docs/acceptance/acceptance-baseline-2026-08-24.json"}
