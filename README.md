@@ -31,7 +31,7 @@ PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、
 
 产品命名与能力边界见[两大核心功能说明](submission/presentation-production/source/feature-naming.md)。
 
-当前版本：[0.1.12](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.12)，提供 amd64 单一安装包。
+当前版本：0.1.12，提供 amd64 单一安装包。
 
 ## 典型应用背景
 

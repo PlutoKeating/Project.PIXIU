@@ -1,6 +1,7 @@
 """Reject plausible but invalid competition submission trees."""
 import importlib.util
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -26,6 +27,9 @@ class LayoutTests(unittest.TestCase):
         with zipfile.ZipFile(self.doc, "w") as archive:
             archive.writestr("word/document.xml", "<document/>")
         (self.source / "PIXIU源代码.tar.gz").write_bytes(b"fixture")
+        deb = self.source / "pixiu_0.1.12-1_amd64.deb"
+        deb.write_bytes(b"!<arch>\nfixture")
+        deb.with_name(deb.name + ".sha256").write_text(hashlib.sha256(deb.read_bytes()).hexdigest() + "  " + deb.name + "\n")
         with zipfile.ZipFile(self.materials / "项目报告.pptx", "w") as archive:
             archive.writestr("ppt/presentation.xml", "<presentation/>")
         self.patcher = patch.object(layout, "paths", return_value=(self.outer, self.materials, self.source))
@@ -86,6 +90,11 @@ class LayoutTests(unittest.TestCase):
 
     def test_wrong_filename_rejected(self):
         self.doc.rename(self.doc.with_name("技术方案及测试结果.doc"))
+        with self.assertRaises(ValueError):
+            layout.validate(self.root)
+
+    def test_corrupt_installer_rejected(self):
+        (self.source / "pixiu_0.1.12-1_amd64.deb").write_bytes(b"changed")
         with self.assertRaises(ValueError):
             layout.validate(self.root)
 

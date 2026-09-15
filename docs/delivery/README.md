@@ -9,7 +9,9 @@
 │   ├── 技术方案.docx
 │   └── 演示视频.zip
 └── 源代码/
-    └── PIXIU源代码.tar.gz
+    ├── PIXIU源代码.tar.gz
+    ├── pixiu_0.1.12-1_amd64.deb
+    └── pixiu_0.1.12-1_amd64.deb.sha256
 ```
 
 当前命名覆盖 DELIVERY_PLAN.md §0 的历史命名，冻结原文保留作为历史记录。四项作品内容及匿名要求继续适用。制作目录与复核记录放在正式作品目录之外，不额外交付。
@@ -29,4 +31,6 @@ python3 build/release/scripts/prepare-submission.py build-source
 python3 build/release/scripts/prepare-submission.py check --require-video
 ```
 
-先提交制作脚本和文档，再生成源码包，可使归档记录清洁的源码提交。作品目录中只保留规定文件，不放独立手册、额外PDF、README、安装包或原始证据。具体核对记录见 PREPARATION_CHECK.md。
+先提交制作脚本和文档，再生成源码包，可使归档记录清洁的源码提交。作品目录中只保留规定文件，不放独立手册、额外PDF、README或原始证据；用户明确要求的x64安装包及摘要与源码归档并列。具体核对记录见 PREPARATION_CHECK.md。
+
+随包文档不得出现参赛者身份、个人代码托管地址或本机用户路径。DOCX使用黑色实线全边框表格和带提示符的终端代码框，禁止emoji及符号字体列表。

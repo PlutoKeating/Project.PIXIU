@@ -780,3 +780,6 @@ search/delete/drop，并验证产品 API 写入/召回/遗忘。Agent profile �
 正式源码归档只包含产品构建输入。无Git归档通过SOURCE-MANIFEST.json读取固定上游版本；完整操作命令见docs/delivery/BUILD_AND_INSTALL.md，导出后位于技术方案.docx首章及源码README。构建前准备宿主与Runtime供应链，最小归档使用PIXIU_SKIP_TESTS=1跳过开发回归工程，不跳过产品宿主、原生SDK和供应链检查。
 
 Runtime构建和源码导出共用agent-runtime/source_scope.py，剔除历史技能备份、使用状态、测试和插件说明素材。runtime-cp312.lock同步锁定精简后的wheel；实际运行包、技能参考资料和界面资源保留。此交付重建不改动已发布0.1.12资产，发布包仍可用于直接安装。
+
+
+2026-09-15匿名提交补充：源代码目录并列保存最小源码归档、已核对的x64 DEB和SHA-256文件，指导文档不再引导访问个人托管主页。DOCX导出使用format_submission_docx.py规范终端框、普通列表与空作者元数据，表格使用黑色实线全边框。导出Word只保留正式PPT，不再用制作模板覆盖用户的新编辑。

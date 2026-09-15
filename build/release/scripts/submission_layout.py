@@ -1,6 +1,7 @@
 """Paths and strict checks for the user-confirmed competition submission tree."""
 from pathlib import Path
 import json
+import hashlib
 import zipfile
 
 
@@ -29,6 +30,8 @@ def validate(root: Path, require_video: bool = False) -> list[str]:
     expected = {
         materials / "项目报告.pptx", materials / "技术方案.docx",
         source / "PIXIU源代码.tar.gz",
+        source / "pixiu_0.1.12-1_amd64.deb",
+        source / "pixiu_0.1.12-1_amd64.deb.sha256",
     }
     video = materials / "演示视频.zip"
     if require_video or video.exists():
@@ -43,6 +46,12 @@ def validate(root: Path, require_video: bool = False) -> list[str]:
         raise ValueError("提交目录层级错误或包含多余目录")
     if outer.is_symlink() or any(p.is_symlink() for p in outer.rglob("*")):
         raise ValueError("提交目录不允许符号链接")
+    installer = source / "pixiu_0.1.12-1_amd64.deb"
+    checksum = (source / (installer.name + ".sha256")).read_text().split()
+    if checksum != [hashlib.sha256(installer.read_bytes()).hexdigest(), installer.name]:
+        raise ValueError("随附x64安装包与校验文件不一致")
+    if installer.read_bytes()[:8] != b"!<arch>\n":
+        raise ValueError("随附安装包不是DEB归档")
     with zipfile.ZipFile(materials / "技术方案.docx") as archive:
         if archive.testzip() or "word/document.xml" not in archive.namelist():
             raise ValueError("技术方案.docx必须是真正的Word Open XML文档")

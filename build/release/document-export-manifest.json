@@ -3,7 +3,7 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "508e43108dd4a1c4d8e2b7f906ba1276597899ecddfc6972931b8b8f246b9415",
+      "sha256": "09ebd8feaaa995b3808082f825d5e8ac8b62a61d22eeed9596fb1de743130283",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
@@ -11,7 +11,7 @@
         },
         {
           "path": "docs/delivery/BUILD_AND_INSTALL.md",
-          "sha256": "f0678a5dd2dcd37fbcebc2d1ecd80bb0b69665a186a9198184f9c1d41bd6b8f6"
+          "sha256": "6c086fa39216a1258cdb71947facf5e8e8ff30a617da1d56e82d62cda1e78208"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
@@ -107,16 +107,15 @@
       "exports": [
         {
           "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
-          "sha256": "200e7997688db7248269c05647a17eb280325e8e58198f131da37ef1e9e5beaa"
+          "sha256": "0e33fc92c6185b043e789e1e33f865382c6acb4b905a2f1100ff9c648cb9a2d2"
         }
       ]
     }
   ],
   "presentation": {
-    "source": "submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx",
+    "source": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
     "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
-    "sha256": "8aaf26a0b66183a065c6b9984a19ffb3c053779015881c816e652c06b0788c6f",
-    "build_manifest": "submission/presentation-production/review/abc-trial-manifest.json",
-    "build_manifest_sha256": "6617d09c83c4d15710cad78f47e0cc056779ddd6f651e075468db3e99ec49cee"
+    "sha256": "9ebe2f260b7a8cb2c65b173bb689f42ed78685bfaebd0e72eb9f26d2044d4d19",
+    "provenance": "Human-edited submitted deck preserved during DOCX export"
   }
 }

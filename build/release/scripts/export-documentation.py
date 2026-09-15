@@ -22,6 +22,7 @@ from xml.dom import minidom
 import zipfile
 from urllib.parse import unquote, urlsplit
 from submission_layout import paths
+from format_submission_docx import format_document
 
 
 def digest(path: Path) -> str:
@@ -156,6 +157,9 @@ def fit_word_tables(path: Path) -> None:
         properties = element(table, "tblPr")
         element(properties, "tblW", w=9600, type="dxa")
         element(properties, "tblLayout", type="fixed")
+        borders = element(properties, "tblBorders")
+        for side in ("top", "left", "bottom", "right", "insideH", "insideV"):
+            element(borders, side, val="single", sz=8, color="000000")
         for column in columns:
             column.setAttributeNS(namespace, "w:w", str(width))
         for row in children(table, "tr"):
@@ -212,21 +216,22 @@ def export(root: Path) -> tuple[list[dict], dict]:
         docx = convert(page, output, "docx:Office Open XML Text", work / "profile")
         embed_word_images(docx, root)
         fit_word_tables(docx)
+        format_document(docx)
         doc = materials / "技术方案.docx"
         shutil.copyfile(docx, doc)
         # Inspect the actual delivered binary document, not only the intermediate.
         pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")
-    template = root / "submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx"
-    accepted = json.loads((root / "submission/presentation-production/review/abc-trial-validation.json").read_text())
-    assert digest(template) == accepted["pptx_sha256"], "PPT must match the reviewed output"
+    # The submitted deck may contain later Human edits; exporting Word never
+    # replaces it with a production template.
     ppt = materials / "项目报告.pptx"
-    shutil.copyfile(template, ppt)
+    if not ppt.is_file():
+        raise ValueError("Missing the Human-reviewed submitted presentation")
     record = {"source": source.relative_to(root).as_posix(), "sha256": digest(source),
               "inputs": [{"path": p.relative_to(root).as_posix(), "sha256": digest(p)} for p in sorted((root / "docs/delivery").glob("*.md")) if p.name in {"TECHNICAL_SOLUTION.md", "BUILD_AND_INSTALL.md", "USER_MANUAL.md", "MEMORY_LIFECYCLE.md", "APPLICATION_CASES.md", "TEST_REPORT.md", "KYLIN_V11_ADAPTATION_REPORT.md", "SOURCE_AND_LICENSES.md"}],
               "images": images, "exports": [{"path": doc.relative_to(root).as_posix(), "sha256": digest(doc)}]}
-    build_manifest = root / "submission/presentation-production/review/abc-trial-manifest.json"
-    presentation = {"source": template.relative_to(root).as_posix(), "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt),
-                    "build_manifest": build_manifest.relative_to(root).as_posix(), "build_manifest_sha256": digest(build_manifest)}
+    presentation = {"source": ppt.relative_to(root).as_posix(),
+                    "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt),
+                    "provenance": "Human-edited submitted deck preserved during DOCX export"}
     return [record], presentation
 
 
@@ -257,7 +262,7 @@ def main() -> None:
     else:
         records, presentation = export(root)
         manifest.write_text(json.dumps({"schema": 1, "documents": records, "presentation": presentation}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print("已导出项目报告.pptx 和技术方案.docx；复核 PDF 位于 build/release/out/documents")
+        print("已导出技术方案.docx并保留当前项目报告.pptx；复核 PDF 位于 build/release/out/documents")
 
 
 if __name__ == "__main__":

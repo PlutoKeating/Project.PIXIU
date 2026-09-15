@@ -1,6 +1,6 @@
 # DOCX documentation export: Markdown plus system LibreOffice.
 # PNG paths, dimensions and digests use the Python standard library.
-# Word table widths and embedded assets are normalized with standard-library XML.
+# Word borders, terminal blocks, plain lists and embedded assets use standard-library XML.
 # These tools are not product runtime dependencies.
 # System prerequisite: git-lfs; run git lfs install --local and git lfs pull
 # before opening delivery binaries or rebuilding from LFS-managed screenshots.
