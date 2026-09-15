@@ -84,6 +84,7 @@ for path in root.rglob("*"):
     if path.is_file() and not path.is_symlink():
         path.chmod(0o755 if path.stat().st_mode & 0o111 else 0o644)
 PY
+    python3 "${script_dir}/source_scope.py" "${output_root}/source"
     install -m 0644 "${repo_root}/backend/agent/runtime/image_draft.py" "${output_root}/source/gateway/pixiu_image_draft.py"
     build_venv="${output_root}/build-venv"
     python3 -m venv "${build_venv}"

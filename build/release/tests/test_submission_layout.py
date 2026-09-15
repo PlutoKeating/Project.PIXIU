@@ -22,8 +22,9 @@ class LayoutTests(unittest.TestCase):
         self.source = self.outer / "源代码"
         self.materials.mkdir(parents=True)
         self.source.mkdir()
-        self.doc = self.materials / "技术方案.doc"
-        self.doc.write_bytes(bytes.fromhex("d0cf11e0a1b11ae1"))
+        self.doc = self.materials / "技术方案.docx"
+        with zipfile.ZipFile(self.doc, "w") as archive:
+            archive.writestr("word/document.xml", "<document/>")
         (self.source / "PIXIU源代码.tar.gz").write_bytes(b"fixture")
         with zipfile.ZipFile(self.materials / "项目报告.pptx", "w") as archive:
             archive.writestr("ppt/presentation.xml", "<presentation/>")
@@ -77,9 +78,9 @@ class LayoutTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             layout.validate(self.root)
 
-    def test_renamed_docx_rejected(self):
+    def test_wrong_office_package_rejected(self):
         with zipfile.ZipFile(self.doc, "w") as archive:
-            archive.writestr("word/document.xml", "<document/>")
+            archive.writestr("ppt/presentation.xml", "<presentation/>")
         with self.assertRaises(ValueError):
             layout.validate(self.root)
 

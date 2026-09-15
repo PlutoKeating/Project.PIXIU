@@ -6,7 +6,7 @@
 603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/
 ├── 603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/
 │   ├── 项目报告.pptx
-│   ├── 技术方案.doc
+│   ├── 技术方案.docx
 │   └── 演示视频.zip
 └── 源代码/
     └── PIXIU源代码.tar.gz
@@ -18,9 +18,9 @@
 
 项目报告为用户已验收的34页科技风版本，直接复制 `submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx`，保留新封面和尾页且无备注。导出脚本核对其审阅摘要，禁止重新生成旧31页覆盖最终稿。
 
-技术方案从八篇最新技术、部署、手册、流转、案例、测试、适配及源码说明合并，使用 LibreOffice 导出真正的 Word 97 DOC。复核用 DOCX/PDF 留在 `build/release/out/documents/`。依赖沿用 `build/release/requirements-docs.txt`。
+技术方案从八篇最新技术、部署、手册、流转、案例、测试、适配及源码说明合并，使用 LibreOffice 导出真正的 DOCX，首章给出独立可执行的编译和安装说明。复核用 PDF 留在 `build/release/out/documents/`。依赖沿用 `build/release/requirements-docs.txt`。
 
-演示视频采用已审阅的499.333秒版本，ZIP内部为演示视频.mp4，保留原始视频字节。源码包按当前产品源码、五个固定上游、许可证和构建配置重新生成，并逐文件核对。
+演示视频采用已审阅的499.333秒版本，ZIP内部为演示视频.mp4，保留原始视频字节。源码包按当前产品源码、必要固定上游输入、许可证和构建配置重新生成，并逐文件核对。
 
 ```bash
 python3 build/release/scripts/export-documentation.py

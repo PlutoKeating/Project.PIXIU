@@ -160,16 +160,14 @@ rm -rf "${STAGE}" "${OUT}"
 mkdir -p "${STAGE}" "${OUT}"
 
 # ── 1/5 前端：构建 + 安装到 stage ──────────────────────────────
-log "[1/5] retained frontend regression tests (no product executable)"
-cmake -S "${PIXIU_ROOT}/frontend" -B "${PIXIU_FRONTEND_BUILD_DIR}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_TESTING=ON \
-    -G Ninja
-cmake --build "${PIXIU_FRONTEND_BUILD_DIR}" -j"$(nproc)"
-
 if [ "${PIXIU_SKIP_TESTS}" != "1" ]; then
-    log "[1.5/5] frontend tests (offscreen ctest)"
+    log "[1/5] retained frontend regression tests (no product executable)"
+    cmake -S "${PIXIU_ROOT}/frontend" -B "${PIXIU_FRONTEND_BUILD_DIR}" \
+        -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -G Ninja
+    cmake --build "${PIXIU_FRONTEND_BUILD_DIR}" -j"$(nproc)"
     (cd "${PIXIU_FRONTEND_BUILD_DIR}" && QT_QPA_PLATFORM=offscreen ctest --output-on-failure)
+else
+    log "[1/5] product host already verified; regression-only frontend build skipped"
 fi
 
 # Regression helpers are not product executables; install only shared assets.

@@ -3,15 +3,15 @@
   "documents": [
     {
       "source": "docs/delivery/COMBINED_TECHNICAL.md",
-      "sha256": "94d12c28d42ae287d1cee921abcfe1b8744cd2af8634d5ac980388d0f1ecab21",
+      "sha256": "508e43108dd4a1c4d8e2b7f906ba1276597899ecddfc6972931b8b8f246b9415",
       "inputs": [
         {
           "path": "docs/delivery/APPLICATION_CASES.md",
           "sha256": "72efc78baecac912087e219cae978a5409081aa52583599f7b63ab674977dae3"
         },
         {
-          "path": "docs/delivery/DEPLOYMENT_GUIDE.md",
-          "sha256": "132e238b9ca719d4b20d6c09fa3fa64e95ab24c668c4b27e9cb7088a3fb2fb3e"
+          "path": "docs/delivery/BUILD_AND_INSTALL.md",
+          "sha256": "f0678a5dd2dcd37fbcebc2d1ecd80bb0b69665a186a9198184f9c1d41bd6b8f6"
         },
         {
           "path": "docs/delivery/KYLIN_V11_ADAPTATION_REPORT.md",
@@ -23,11 +23,11 @@
         },
         {
           "path": "docs/delivery/SOURCE_AND_LICENSES.md",
-          "sha256": "78cb7082b61c75a2086103239029163b5385ebffa22915597e6e4ea78d51ceb9"
+          "sha256": "1b02e81ea7fdcd903c751a7cd1a3488984f2a74b6106139e21a6bb971be34c15"
         },
         {
           "path": "docs/delivery/TECHNICAL_SOLUTION.md",
-          "sha256": "c304a1726af548c6c4d6b4afcd7a7da09906dc6e6fdeb5d3986a4197ca0ee506"
+          "sha256": "363116f73dee6d781073944a18ea503a4ae938fc4b47061cc1716ac86b8ef9fc"
         },
         {
           "path": "docs/delivery/TEST_REPORT.md",
@@ -42,10 +42,6 @@
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
           "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
-        },
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
-          "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
         },
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
@@ -110,8 +106,8 @@
       ],
       "exports": [
         {
-          "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.doc",
-          "sha256": "40b100450877f8eeb2524fffe895497db7c5279ff5ba56a618fe2e9a80b532f9"
+          "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
+          "sha256": "200e7997688db7248269c05647a17eb280325e8e58198f131da37ef1e9e5beaa"
         }
       ]
     }

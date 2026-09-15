@@ -8,10 +8,9 @@
 | `backend/engine/` | 接入、偏好、知识、冲突、安全 | 团队原创 |
 | `backend/foundation/` | API、存储、检索、流转、同步、评测 | 团队原创 |
 | `backend/agent/` | MemoryProvider、文档工具与 Dreaming 后台整理 | 团队原创 |
-| `build/release/` | 构建、打包、发布与源码导出 | 团队原创 |
+| `build/release/` | 产品构建、打包及依赖锁定 | 团队原创 |
 | `backend/platform/` | 初始化、启动、升级与数据迁移 | 团队原创 |
-| `tests/acceptance/` | 跨模块用户场景验证及模拟夹具 | 团队原创 |
-| `third_party/` | 固定版本的上游与系统 SDK 源码 | 上游依赖 |
+| `third_party/` | 固定版本的宿主和运行时源码、SDK 头文件及许可证 | 上游依赖 |
 
 ## 原创边界
 
@@ -37,16 +36,16 @@ KylinAgent 与 agent-runtime 提供通用会话、规划、工具、审批和运
 - Python 使用类型标注、清晰命名和 pytest；C++/Qt 遵循模块现有风格与 CTest。
 - Engine 只通过 Repository 接口访问基础设施；Agent 适配只调用公共 HTTP API。
 - 专有 Kylin SDK 位于适配层后，Debian 构建提供明确降级路径。
-- 源码归档使用公开配置模板、测试夹具和必要构建文件。
+- 源码归档仅包含产品构建输入、公开配置模板和必要许可证。
 - 一个逻辑变更对应一个本地 Git 提交，版本由根目录 `VERSION` 单一派生。
 
 ## 源码交付与复现
 
-`源代码/PIXIU源代码.tar.gz` 包含产品版本对应的前端、后端、Agent 适配、构建配置、测试、技术规范和全部固定版本上游源码。源码清单记录文件摘要、可执行权限和上游提交；保留第三方许可证及版权声明。
+`源代码/PIXIU源代码.tar.gz` 是最小产品构建归档，包含 frontend、backend、build/release 和必要 third_party 输入。它排除 .git、.github、website、独立测试工程、网站、演示素材、历史文档、缓存及本地产物。产品运行所需的界面资源和 Runtime 技能仍保留。
 
-解压后先运行包内 `verify-source.py` 核对文件。后端测试使用 `backend/requirements.txt` 与 `backend/foundation/requirements-sync.txt` 的依赖，前端使用 CMake。严格安装包需在银河麒麟 V11 安装官方 SDK 和画像列出的开发依赖，按构建说明执行。依赖清单与源码一起提供，系统软件与 Python wheels 按依赖清单在构建时准备。
+宿主和 Runtime 保留固定版本的构建源码；两个麒麟 SDK 保留编译接口头文件和许可证，其库由目标系统提供。Kreuzberg 使用依赖锁中的 wheel，归档保留其许可证，不携带 Rust 网站和开发仓库。首次构建需要联网下载依赖，不能将本归档视为离线依赖包。
 
-Git 工作区通过固定提交核验上游；解压源码通过 SOURCE-MANIFEST.json 核验上游文件、版本及构建时间。先运行 `python3 verify-source.py`，再按 `build/release/README.md` 准备系统与 Python 依赖，使用同一宿主和 Runtime 构建入口。原生安装验证在 V11 进行。
+解压后的 README 给出编译及安装命令，与本技术方案首章一致。SOURCE-MANIFEST.json 记录每个文件的摘要、权限和上游提交；运行 python3 verify-source.py 可核对完整性。构建脚本从该清单读取上游版本，无需 Git 仓库。编译步骤、系统依赖、产物路径及故障处理均见本方案首章，不要求评委查阅额外文档。
 
 ## 软件物料清单
 

@@ -97,3 +97,6 @@ PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、
 [用户手册](docs/delivery/USER_MANUAL.md) · [安装指南](docs/delivery/DEPLOYMENT_GUIDE.md) · [总体架构](docs/ARCHITECTURE.md) · [API](docs/API.md) · [开发计划](docs/DEVELOPMENT_PLAN.md) · [发布记录](docs/RELEASE_0_1_10_COMPLETION_PLAN.md) · [交付要求](docs/DELIVERY_PLAN.md)
 
 桌面与 Agent 运行时复用 openKylin 项目，PIXIU 实现记忆服务、分布式同步与集成适配。来源及许可证见[源码说明](docs/delivery/SOURCE_AND_LICENSES.md)。
+
+
+评委从提交材料开始使用时，请阅读“技术方案.docx”首章：其中包含直接安装、最小源码编译、首次模型配置和操作验证的完整步骤。维护源稿为[编译与安装说明](docs/delivery/BUILD_AND_INSTALL.md)，交付范围与格式见[材料维护说明](docs/delivery/README.md)。

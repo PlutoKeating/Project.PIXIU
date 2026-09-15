@@ -107,10 +107,13 @@ def embed_word_images(path: Path, root: Path) -> None:
 
 def assemble(root: Path) -> Path:
     directory = root / "docs/delivery"
-    names = ["TECHNICAL_SOLUTION", "DEPLOYMENT_GUIDE", "USER_MANUAL",
+    names = ["BUILD_AND_INSTALL", "TECHNICAL_SOLUTION", "USER_MANUAL",
              "MEMORY_LIFECYCLE", "APPLICATION_CASES", "TEST_REPORT",
              "KYLIN_V11_ADAPTATION_REPORT", "SOURCE_AND_LICENSES"]
-    body = ["# PIXIU 技术方案\n\n版本：" + (root / "VERSION").read_text().strip()
+    identity = json.loads((root / "docs/submission-identity.json").read_text())
+    body = ["# 技术方案\n\n" + identity["work_title"]
+            + "\n\n作品编号：" + identity["work_number"]
+            + "\n\n版本：" + (root / "VERSION").read_text().strip()
             + "\n\n平台：银河麒麟桌面操作系统 V11\n"]
     for name in names:
         content = (directory / (name + ".md")).read_text()
@@ -156,6 +159,7 @@ def fit_word_tables(path: Path) -> None:
         for column in columns:
             column.setAttributeNS(namespace, "w:w", str(width))
         for row in children(table, "tr"):
+            element(element(row, "trPr"), "cantSplit")
             for cell in children(row, "tc"):
                 cell_properties = element(cell, "tcPr")
                 span = children(cell_properties, "gridSpan")
@@ -208,7 +212,8 @@ def export(root: Path) -> tuple[list[dict], dict]:
         docx = convert(page, output, "docx:Office Open XML Text", work / "profile")
         embed_word_images(docx, root)
         fit_word_tables(docx)
-        doc = convert(docx, materials, "doc:MS Word 97", work / "profile")
+        doc = materials / "技术方案.docx"
+        shutil.copyfile(docx, doc)
         # Inspect the actual delivered binary document, not only the intermediate.
         pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")
     template = root / "submission/presentation-production/render/abc-trial/PIXIU项目报告-科技风试作版.pptx"
@@ -217,7 +222,7 @@ def export(root: Path) -> tuple[list[dict], dict]:
     ppt = materials / "项目报告.pptx"
     shutil.copyfile(template, ppt)
     record = {"source": source.relative_to(root).as_posix(), "sha256": digest(source),
-              "inputs": [{"path": p.relative_to(root).as_posix(), "sha256": digest(p)} for p in sorted((root / "docs/delivery").glob("*.md")) if p.name in {"TECHNICAL_SOLUTION.md", "DEPLOYMENT_GUIDE.md", "USER_MANUAL.md", "MEMORY_LIFECYCLE.md", "APPLICATION_CASES.md", "TEST_REPORT.md", "KYLIN_V11_ADAPTATION_REPORT.md", "SOURCE_AND_LICENSES.md"}],
+              "inputs": [{"path": p.relative_to(root).as_posix(), "sha256": digest(p)} for p in sorted((root / "docs/delivery").glob("*.md")) if p.name in {"TECHNICAL_SOLUTION.md", "BUILD_AND_INSTALL.md", "USER_MANUAL.md", "MEMORY_LIFECYCLE.md", "APPLICATION_CASES.md", "TEST_REPORT.md", "KYLIN_V11_ADAPTATION_REPORT.md", "SOURCE_AND_LICENSES.md"}],
               "images": images, "exports": [{"path": doc.relative_to(root).as_posix(), "sha256": digest(doc)}]}
     build_manifest = root / "submission/presentation-production/review/abc-trial-manifest.json"
     presentation = {"source": template.relative_to(root).as_posix(), "path": ppt.relative_to(root).as_posix(), "sha256": digest(ppt),
@@ -252,7 +257,7 @@ def main() -> None:
     else:
         records, presentation = export(root)
         manifest.write_text(json.dumps({"schema": 1, "documents": records, "presentation": presentation}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print("已导出项目报告.pptx 和技术方案.doc；复核 PDF 位于 build/release/out/documents")
+        print("已导出项目报告.pptx 和技术方案.docx；复核 PDF 位于 build/release/out/documents")
 
 
 if __name__ == "__main__":

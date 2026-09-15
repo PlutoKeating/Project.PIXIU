@@ -27,7 +27,7 @@ def validate(root: Path, require_video: bool = False) -> list[str]:
         if workspace.is_symlink() or (workspace.exists() and not workspace.is_dir()):
             raise ValueError("制作工作区必须是独立目录")
     expected = {
-        materials / "项目报告.pptx", materials / "技术方案.doc",
+        materials / "项目报告.pptx", materials / "技术方案.docx",
         source / "PIXIU源代码.tar.gz",
     }
     video = materials / "演示视频.zip"
@@ -43,8 +43,9 @@ def validate(root: Path, require_video: bool = False) -> list[str]:
         raise ValueError("提交目录层级错误或包含多余目录")
     if outer.is_symlink() or any(p.is_symlink() for p in outer.rglob("*")):
         raise ValueError("提交目录不允许符号链接")
-    if (materials / "技术方案.doc").read_bytes()[:8] != bytes.fromhex("d0cf11e0a1b11ae1"):
-        raise ValueError("技术方案.doc 必须是真正的 Word 二进制文档")
+    with zipfile.ZipFile(materials / "技术方案.docx") as archive:
+        if archive.testzip() or "word/document.xml" not in archive.namelist():
+            raise ValueError("技术方案.docx必须是真正的Word Open XML文档")
     with zipfile.ZipFile(materials / "项目报告.pptx") as archive:
         if archive.testzip() or "ppt/presentation.xml" not in archive.namelist():
             raise ValueError("项目报告.pptx 无法解析")

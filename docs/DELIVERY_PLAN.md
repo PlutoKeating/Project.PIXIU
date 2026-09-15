@@ -95,7 +95,9 @@
 - 作品名称：PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现
 - 两层同名目录：603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现
 
-机器读取值维护在 `docs/submission-identity.json`。内层只有项目报告.pptx、技术方案.doc、演示视频.zip；源代码目录与内层并列，保存 PIXIU源代码.tar.gz。已验收34页报告成为当前正式提交源，旧31页仅为历史制作资产。
+用户随后明确要求技术方案采用 DOCX，源码只交付复现产品编译所需的最小范围，排除 .git、.github、website 等无关内容。此要求作为最新执行口径记录，历史冻结原文不改动。
+
+机器读取值维护在 `docs/submission-identity.json`。内层只有项目报告.pptx、技术方案.docx、演示视频.zip；源代码目录与内层并列，保存 PIXIU源代码.tar.gz。已验收34页报告成为当前正式提交源，旧31页仅为历史制作资产。
 
 ## 1. 单一安装产物
 
@@ -226,7 +228,7 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 ## 4. 赛事交付文档台账
 
 `submission/` 按本次命名更新保留两层同名目录。内层只放 `项目报告.pptx`、
-`技术方案.doc` 和制作完成后的 `演示视频.zip`；与内层并列的 `源代码/` 保存完整源码。
+`技术方案.docx` 和制作完成后的 `演示视频.zip`；与内层并列的 `源代码/` 保存完整源码。
 技术方案汇入用户手册、安装部署、测试结果和效果验证报告。编写材料、原图和内部
 检查记录在 `docs/delivery/` 维护，中间导出在 `build/release/out/`，不进入提交目录。
 
@@ -240,7 +242,7 @@ Kylin V11 amd64 跨 revision 健康失败注入均已证明退出码 5、旧版�
 | 交付作品 | 份数及格式 | 内部维护源 | 状态 |
 |----------|------------|------------|------|
 | 项目报告 | 1 份，ppt；目录示例 `项目报告.pptx` | `delivery/PRESENTATION_AND_VIDEO.md` | 项目报告源稿按 0.1.12 更新 |
-| 技术方案 | 1 份，word、pdf；目录示例 `技术方案.doc` | `delivery/TECHNICAL_SOLUTION.md` 及同目录测试、用户手册、部署、流转、案例和适配内容 | 八篇源稿已更新，记录功能、操作与实测结果 |
+| 技术方案 | 1 份，word、pdf；目录示例 `技术方案.docx` | `delivery/TECHNICAL_SOLUTION.md` 及同目录测试、用户手册、部署、流转、案例和适配内容 | 八篇源稿已更新，记录功能、操作与实测结果 |
 | 功能演示视频 | 1 份，5-10 分钟，`演示视频.zip`，大小不超过 200M | `delivery/PRESENTATION_AND_VIDEO.md`、`submission/video-production/` | 演示增强版30镜、499.333秒，原速口白配合真实鼠标操作；原字幕与首尾沿用指定版本。ZIP为63,102,396字节；整片解码、30段口白起点、310张抽帧文字及装配核对通过，记录见 video-production/review/directed-final-package.json |
 | 源代码 | 1 份，完整源代码及必要技术规范要素 | `delivery/SOURCE_AND_LICENSES.md` 与项目源码 | 按当前源码及四个固定上游生成，逐文件核对 |
 

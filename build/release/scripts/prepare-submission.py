@@ -10,23 +10,61 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
+import sys
 import tarfile
 
 from submission_layout import paths, validate
 
 ROOT = Path(__file__).resolve().parents[3]
-SOURCE_DIRS = {"frontend", "backend", "tests", "build", "third_party", ".github"}
+sys.path.insert(0, str(ROOT / "build/release/agent-runtime"))
+from source_scope import retained as runtime_retained
+
+FRONTEND_INPUTS = {row["source"] for row in json.loads((ROOT / "build/release/agent-host/frontend-sources.json").read_text())}
+SOURCE_DIRS = {"frontend", "backend", "build", "third_party"}
+TECH_DOCS = {"docs/delivery/BUILD_AND_INSTALL.md"}
+EXCLUDED_PARTS = {".git", ".github", ".gitlab", "website", "node_modules", "__pycache__", ".venv"}
 RUNTIME_SOURCE_DIRS = {
-    ".github", ".plans", "acp_adapter", "acp_registry", "agent", "assets", "cron",
-    "datagen-config-examples", "docker", "docs", "draw", "embeddings", "evals",
-    "gateway", "kylin_agent_runtime_cli", "locales", "models", "nix", "optional-skills",
-    "packaging", "plans", "plugins", "pre-llm", "providers", "quick-test", "scripts",
-    "skills-old", "skills", "tests", "tools", "tui_gateway", "ui-tui", "web",
+    "agent", "tools", "kylin_agent_runtime_cli", "gateway", "tui_gateway", "cron",
+    "acp_adapter", "plugins", "providers", "skills", "optional-skills",
 }
-TECH_DOCS = {"docs/submission-identity.json","docs/decisions/0007-reuse-headless-document-decoding.md",
-             "docs/DREAMING_AND_DOCUMENT_HARNESS.md","docs/ARCHITECTURE.md", "docs/API.md", "docs/QUICK_START.md",
-             "docs/acceptance/acceptance-baseline-2026-08-24.md",
-             "docs/acceptance/acceptance-baseline-2026-08-24.json"}
+BUILD_SCRIPTS = {
+    "build-deb.sh", "functions.sh", "provision-target.sh", "prepare-agent-supply-chain.sh",
+    "audit-agent-supply-chain.py", "record-agent-supply-chain.py", "source_checkout.py",
+    "generate-release-manifest.py",
+}
+
+
+def upstream_selected(prefix: str, name: str) -> bool:
+    parts = PurePosixPath(name).parts
+    if EXCLUDED_PARTS.intersection(parts):
+        return False
+    if prefix in {"third_party/kylin-coreai-embedding/", "third_party/libkysdk-vector-engine-client/"}:
+        return parts[0] == "include" or name in {"LICENSE", "COPYING", "NOTICE"}
+    if prefix == "third_party/kylin-agent/":
+        return parts[0] in {"include", "src", "res"} or name in {
+            "CMakeLists.txt", "LICENSE", "README.md",
+            "scripts/agent_runtime_install.sh", "scripts/agent_runtime_install_bak.sh",
+        }
+    if prefix == "third_party/kreuzberg/":
+        # PIXIU consumes the hash-locked wheel, not the Rust/website monorepo.
+        return name in {"LICENSE", "NOTICE"}
+    if prefix == "third_party/kylin-agent-runtime/":
+        if not runtime_retained(name):
+            return False
+        if len(parts) > 1:
+            return parts[0] in RUNTIME_SOURCE_DIRS
+        return name in {
+            "run_agent.py", "model_tools.py", "toolsets.py", "batch_runner.py",
+            "trajectory_compressor.py", "toolset_distributions.py", "cli.py",
+            "kylin_agent_runtime_bootstrap.py", "kylin_agent_runtime_constants.py",
+            "kylin_agent_runtime_state.py", "kylin_agent_runtime_time.py",
+            "kylin_agent_runtime_logging.py", "utils.py", "setup.py",
+            "pyproject.toml", "LICENSE", "README.md", "version",
+        }
+    if any(p in {"test", "tests", "docs", "doc", "demo", "examples", ".vscode", ".idea"} for p in parts):
+        return False
+    return not parts[0].startswith(".")
+
 VERIFY = '''#!/usr/bin/env python3
 """Verify every delivered source file against SOURCE-MANIFEST.json."""
 import hashlib, json
@@ -51,14 +89,31 @@ def sha(data: bytes) -> str:
 
 def selected(name: str) -> bool:
     path = PurePosixPath(name)
-    if name == "build/release/document-export-manifest.json":
+    if EXCLUDED_PARTS.intersection(path.parts) or path.name in {".gitkeep", ".gitignore"}:
         return False
-    if path.parts[0] in SOURCE_DIRS:
-        return not name.startswith(("build/release/out/", "build/release/evidence/", "build/release/dist/"))
-    return name in TECH_DOCS or (len(path.parts) == 1 and name in {
-        "VERSION", "LICENSE", "NOTICE", ".gitmodules", ".gitignore", "pyproject.toml",
-        "requirements.txt", "CMakeLists.txt", "Makefile", "uv.lock",
-    })
+    if path.suffix == ".md" and name != "backend/agent/SOUL.md":
+        return False
+    if name in {"VERSION", "LICENSE", "NOTICE"}:
+        return True
+    if path.parts[0] == "third_party":
+        return len(path.parts) == 2  # pinned submodule traversal only
+    if path.parts[0] == "frontend":
+        return name in FRONTEND_INPUTS or name == "frontend/CMakeLists.txt" or name.startswith(("frontend/host/", "frontend/resources/"))
+    if path.parts[0] == "backend":
+        if any(p in {"tests", "test", "docs", "scripts", "evidence"} for p in path.parts[2:]):
+            return False
+        # foundation/eval is imported by the application and is product code.
+        if "eval" in path.parts[2:] and not name.startswith("backend/foundation/eval/"):
+            return False
+        return len(path.parts)>1 and path.parts[1] in {"engine", "foundation", "agent", "platform", "requirements.txt"}
+    if name.startswith("build/release/"):
+        rel=path.parts[2:]
+        if len(rel)==1:
+            return rel[0] in {"Makefile", "agent-supply-chain-policy.json", "README.md"}
+        if rel[0]=="scripts":
+            return len(rel)==2 and rel[1] in BUILD_SCRIPTS
+        return rel[0] in {"agent-host", "agent-runtime", "debian", "profiles", "keys"}
+    return False
 
 
 def collect(root: Path) -> tuple[dict, dict]:
@@ -74,7 +129,7 @@ def collect(root: Path) -> tuple[dict, dict]:
             name = raw.decode()
             target = prefix + name
             parts = PurePosixPath(name).parts
-            if prefix == "third_party/kylin-agent-runtime/" and len(parts) > 1 and parts[0] not in RUNTIME_SOURCE_DIRS:
+            if prefix and not upstream_selected(prefix, name):
                 continue
             if not prefix and not selected(target):
                 continue
@@ -104,7 +159,7 @@ def collect(root: Path) -> tuple[dict, dict]:
 
     walk(root)
     for name, data in {
-        "README.md": (root / "docs/delivery/SOURCE_AND_LICENSES.md").read_bytes(),
+        "README.md": (root / "docs/delivery/BUILD_AND_INSTALL.md").read_bytes(),
         "verify-source.py": VERIFY.encode(),
     }.items():
         entries[name] = {"mode": "100755" if name.endswith(".py") else "100644", "data": data}
@@ -119,7 +174,7 @@ def build_source(root: Path, output: Path | None = None) -> None:
     if not required.issubset(modules):
         raise ValueError("缺少正式产品依赖的固定上游源码")
     manifest = {
-        "schema": 1, "version": (root / "VERSION").read_text().strip(),
+        "source_scope": "minimal-build", "schema": 1, "version": (root / "VERSION").read_text().strip(),
         "sourceCommit": git(root, "rev-parse", "HEAD").decode().strip(),
         "sourceTreeClean": not bool(git(root, "status", "--porcelain", "--", *sorted(SOURCE_DIRS), *sorted(TECH_DOCS))),
         "submodules": modules,
