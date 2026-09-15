@@ -111,7 +111,25 @@ for new_page, old_page in enumerate(ORDER, 1):
         x, y = int(off.get('x')) / EMU, int(off.get('y')) / EMU
         text = shape_text(node)
         reason = None
-        if old_page in {7, 8, 9, 11} and y < .8 and x >= 2.77:
+        if old_page == 4 and text in {
+            '知识偏好演变', '新旧通知与偏好存在冲突', '版本与来源', '保留历史，更正经过审批'
+        }:
+            replacements = {
+                '知识偏好演变': ['记忆依赖手动'],
+                '新旧通知与偏好存在冲突': ['资料不断积累', '难以逐条交代与整合'],
+                '版本与来源': ['自动记忆，持续整合'],
+                '保留历史，更正经过审批': ['后台整合，更正合并经审批'],
+            }
+            runs = node.xpath('.//a:t', namespaces=NS)
+            assert len(runs) == len(replacements[text])
+            for run, value in zip(runs, replacements[text]):
+                run.text = value
+            size = {'版本与来源': '1800', '保留历史，更正经过审批': '1600'}.get(text)
+            if size:
+                for props in node.xpath('.//a:rPr | .//a:defRPr | .//a:endParaRPr', namespaces=NS):
+                    props.set('sz', size)
+            reason = 'align need and response with auto dreaming'
+        elif old_page in {7, 8, 9, 11} and y < .8 and x >= 2.77:
             slot = int((x - 2.78 + .015) // 1.61)
             if slot in {0, 1, 2, 3, 4}:
                 if slot == 3:
@@ -221,7 +239,7 @@ manifest['output_sha256'] = digest(OUT)
 manifest['revision'] = {
     'mode': 'preserve user-refined package', 'source_sha256': digest(SOURCE),
     'source_page_order': ORDER, 'shape_changes': changes,
-    'content_revised_source_pages': [9,11,12,14,15,17,18], 'cloned_chapter_sources': {str(k):12 for k in COVERS},
+    'content_revised_source_pages': [4,9,11,12,14,15,17,18], 'cloned_chapter_sources': {str(k):12 for k in COVERS},
     'unchanged_package_parts': sum(blobs.get(k) == v for k,v in original_blobs.items()),
     'removed_package_parts': sorted(removed),
 }

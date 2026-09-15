@@ -133,6 +133,16 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
                 assert identity not in actual
                 continue
             other = actual[identity]
+            if reason == 'align need and response with auto dreaming':
+                expected = {
+                    '知识偏好演变': '记忆依赖手动',
+                    '新旧通知与偏好存在冲突': '资料不断积累难以逐条交代与整合',
+                    '版本与来源': '自动记忆，持续整合',
+                    '保留历史，更正经过审批': '后台整合，更正合并经审批',
+                }
+                assert ''.join(other.xpath('.//a:t/text()', namespaces=ns)) == expected[''.join(node.xpath('.//a:t/text()', namespaces=ns))]
+                assert LET.tostring(node.find('p:spPr', ns)) == LET.tostring(other.find('p:spPr', ns))
+                continue
             if reason in {'reorder feature navigation', 'swap complete flagship panels'}:
                 for element in [node, other]:
                     element.xpath('./p:spPr/a:xfrm/a:off | ./p:grpSpPr/a:xfrm/a:off', namespaces=ns)[0].set('x', '0')

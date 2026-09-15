@@ -2277,7 +2277,7 @@
     },
     {
       "path": "submission/presentation-production/scripts/reorder_refined_deck.py",
-      "sha256": "3030b4e2b382200f0b629bc57e9e11c9c7bcfd7c2dba1e976c68aab4b7a48a6f"
+      "sha256": "6669f94e04e7700a67fe1dfe72b86c092e46808b133e4293cb1aac9c6fdac296"
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
@@ -2288,7 +2288,7 @@
       "sha256": "7d167ba2502f9d16c3bd8e77d79ad7dc254255da807e3978ddc094b1f9d5c39e"
     }
   ],
-  "output_sha256": "2a1abda7f3af06b270630db07937f25212e4a1da19db25828824a6b3c720932e",
+  "output_sha256": "373cd017a5c105d38367a09d8dd0c7b54bd95c4ac7f49258e111a3b8adf429a9",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -2363,6 +2363,22 @@
         }
       ],
       "4": [
+        {
+          "shape_id": "33",
+          "reason": "align need and response with auto dreaming"
+        },
+        {
+          "shape_id": "34",
+          "reason": "align need and response with auto dreaming"
+        },
+        {
+          "shape_id": "37",
+          "reason": "align need and response with auto dreaming"
+        },
+        {
+          "shape_id": "38",
+          "reason": "align need and response with auto dreaming"
+        },
         {
           "shape_id": "70",
           "reason": "renumber folio"
@@ -2868,6 +2884,7 @@
       ]
     },
     "content_revised_source_pages": [
+      4,
       9,
       11,
       12,
