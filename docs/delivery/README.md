@@ -45,3 +45,5 @@ python3 build/release/scripts/prepare-submission.py check --require-video
 全文表述复核以用户最新保存的DOCX为编辑基准，修改记录见editorial-revision.json，工具为revise-document-prose.py。当前文档8个大章节、63个二级标题，43页。效果验证章包含数据集与标注、对比实验设计、量化实施方案和指标分析，实测数字保留对应环境与样本范围。Times New Roman四种常用字形已在本机安装并刷新字体缓存。
 
 正文首行缩进两字符；正文列表使用独立的PIXIU Body List样式，按悬挂缩进对齐续行，避免叠加正文首行缩进。fix-document-list-indent.py可处理最新保存的DOCX，随后刷新原生目录。
+
+图注按全文顺序使用“图1：”至“图16：”前缀，采用用户表注样式“1”并居中；number-figure-captions.py从最新DOCX的表注读取该样式与格式，应用后刷新目录和页码。
