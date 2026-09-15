@@ -118,3 +118,6 @@ submission/video-production/**/__pycache__/
 submission/video-production/**/.cache/
 submission/video-production/**/*.log
 submission/video-production/.runtime/
+
+# Office editing locks are transient, including inside submission workspaces.
+submission/**/.~*

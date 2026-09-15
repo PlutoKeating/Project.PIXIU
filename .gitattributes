@@ -28,3 +28,6 @@ submission/video-production/**/*.ttf filter=lfs diff=lfs merge=lfs -text
 submission/video-production/**/*.otf filter=lfs diff=lfs merge=lfs -text
 # Preserve the speech service's original SRT block separator at EOF.
 submission/video-production/raw/**/*.srt whitespace=-blank-at-eof
+
+# Preserve original policy HTML and intentional Markdown hard line breaks.
+submission/presentation-production/reference/赛题政策素材/** -whitespace
