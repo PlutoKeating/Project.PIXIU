@@ -125,3 +125,19 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 ```bash
 submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/triangle_devices.py --source submission/presentation-production/source/user-before-triangle-20260915.pptx --output /tmp/pixiu-triangle-candidate.pptx
 ```
+
+## 当前第19—21页：记忆、冲突与同步逻辑图
+
+用户再次编辑后的正式文件作为本轮输入，已备份为 `source/user-before-logic-diagrams-20260915.pptx`。仅替换三处指定文字区域：
+
+- 第19页：短／中／长期状态节点，带压缩、会话切换／结束、长期保留选择的转换条件，以及长期记忆检索回到任务的虚线回路。
+- 第20页：版本汇聚、版本向量判断、因果更新／并发LWW分支、一致副本；另一侧为新旧知识比较后进入更新／合并／人工确认分支。两层处理对象保持区别。
+- 第21页：Gossip分发到对端与ACK回传；本机／对端摘要的缺失操作示例及补齐、CRDT合并。
+
+全部图标、节点和连接线均为PowerPoint原生可编辑元素。三页截图、导航、图注及页码均保留；其余33页和所有其他包部件逐字节不变。写回前重新校验当前文件，防止覆盖并行编辑。检查摘要见 `review/logic-diagrams-validation.json`；[第19页](render/logic-diagrams/page-19.png)、[第20页](render/logic-diagrams/page-20.png)、[第21页](render/logic-diagrams/page-21.png)已用LibreOffice导出并以1800像素检查，无新增遮挡。未另在WPS或Microsoft PowerPoint中验证。此前审阅PDF为历史快照。
+
+构建采用现有依赖，不改产品构建或部署配置；独立候选命令如下，已有输出不会被覆盖：
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/logic_diagrams.py --source submission/presentation-production/source/user-before-logic-diagrams-20260915.pptx --output /tmp/pixiu-logic-candidate.pptx
+```

@@ -1,0 +1,18 @@
+{
+  "input_sha256": "e74404124b76116f91214a2338d90e399100a13c328cad119451ec27aea85599",
+  "output_sha256": "3c41ebba9eb2db8b3be8183ca1ba98d8c9478a830873f5f6020be6a9ac014642",
+  "pages": 36,
+  "changed_parts": [
+    "ppt/slides/slide19.xml",
+    "ppt/slides/slide20.xml",
+    "ppt/slides/slide21.xml"
+  ],
+  "remaining_33_slides_and_other_parts_byte_identical": true,
+  "original_shapes_outside_requested_regions_identical": true,
+  "new_elements": "native editable PowerPoint shapes, icons and connectors",
+  "rendered_pages": [
+    19,
+    20,
+    21
+  ]
+}
