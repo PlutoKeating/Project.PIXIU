@@ -1,0 +1,12 @@
+{
+  "source_sha256": "5bd003a8c7a40a2b9520a26a15732002502751a6c9b54858295c1717ff41e98f",
+  "output_sha256": "a73d1434ba8ed8952aa5e38be79657de13879ab0dfd1cbe58222b4eafd829de6",
+  "source_backup": "submission/presentation-production/source/user-before-triangle-20260915.pptx",
+  "changed_package_parts": [
+    "ppt/slides/slide12.xml"
+  ],
+  "other_35_pages_and_all_other_parts_byte_identical": true,
+  "user_slide25_preserved": true,
+  "slides": 36,
+  "preview": "render/submission-current/triangle-page12.png"
+}

@@ -113,3 +113,15 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 ```
 
 脚本从归档的36页用户原件进行包级定点修改，保留其余包部件。候选需重新渲染、复核后才能更新正式文件。验证及版本摘要见 [36页修订复核](review/submission-36page-review.md) 和 `review/submission-36page-validation.json`。完整36页文本见 `review/submission-36page-text.md`。
+
+## 当前第12页：立体终端三角构图
+
+用户确认写回三角形终端版本后，仅替换最新正式文件中的 `ppt/slides/slide12.xml`。上方为书房台式机、左下为客厅一体机、右下为随身笔记本；机身、支架、键盘、底座与双向连线为可编辑原生图形，屏幕使用原始实拍。
+
+本轮以 `source/user-before-triangle-20260915.pptx` 保存写回前的最新用户文件，包括用户同时编辑的第25页。其余35页及全部其他包部件与该备份逐字节一致；总页数36、页码12保持。验证摘要见 `review/triangle-merge-validation.json`，[第12页预览](render/submission-current/triangle-page12.png)已通过LibreOffice渲染检查。前一轮36页PDF、总览与验证记录为历史快照，不包含本次三角形构图及用户随后对第25页的编辑。
+
+制作脚本沿用现有 python-pptx/lxml 依赖，无新增依赖或产品构建配置变化。以下命令从本轮用户备份生成独立候选，禁止覆盖已有输出；正式写回使用最新文件的包级合并及写入前版本核验。
+
+```bash
+submission/presentation-production/.venv/bin/python submission/presentation-production/scripts/triangle_devices.py --source submission/presentation-production/source/user-before-triangle-20260915.pptx --output /tmp/pixiu-triangle-candidate.pptx
+```
