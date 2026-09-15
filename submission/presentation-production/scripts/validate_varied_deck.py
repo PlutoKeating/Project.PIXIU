@@ -11,11 +11,14 @@ def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 assert digest(ppt)==m['output_sha256'] and digest(source)==rev['source_sha256']
 for i in m['inputs']:assert digest(ROOT/i['path'])==i['sha256'],i['path']
 ns={'p':'http://schemas.openxmlformats.org/presentationml/2006/main','a':'http://schemas.openxmlformats.org/drawingml/2006/main'}
-changed=set()
+changed=set(rev['notes_removed_parts'])
 for n in rev['modified_pages']:
  part=rev['parts'][str(n)];changed|={part,str(Path(part).parent/'_rels'/(Path(part).name+'.rels'))}
 with zipfile.ZipFile(source) as before,zipfile.ZipFile(ppt) as after:
  assert after.testzip() is None
+ assert not any(n.startswith(('ppt/notesSlides/','ppt/notesMasters/')) for n in after.namelist())
+ for name in after.namelist():
+  if name.endswith('.rels'):assert b'/notesSlide' not in after.read(name) and b'/notesMaster' not in after.read(name)
  for name in before.namelist():
   if name not in changed:assert before.read(name)==after.read(name),name
  for name in after.namelist():
@@ -29,6 +32,10 @@ with zipfile.ZipFile(source) as before,zipfile.ZipFile(ppt) as after:
    if key not in removed:assert ET.tostring(shape,method='c14n')==ET.tostring(new[key],method='c14n'),(n,key)
 prs=Presentation(ppt);assert len(prs.slides)==34
 captions=[];shots=0
+texts={i:'\n'.join(s.text for s in slide.shapes if s.has_text_frame) for i,slide in enumerate(prs.slides,1)}
+assert '434.50 元' in texts[13] and texts[13].index('本例家庭账单合计')<texts[13].index('434.50 元')
+for t in ['书房的台式机','客厅的功能机','随身出差用的笔记本']:assert t in texts[11]
+for n,t in {7:'持续保存和复用记忆',11:'先配对设备并选择共享范围',12:'用户核对并批准后',13:'无需重新上传或逐项翻查',15:'供后续整合和检索使用',25:'跨会话查询、活动改期和更正复用'}.items():assert t in texts[n],n
 for i,slide in enumerate(prs.slides,1):
  shapes={s.shape_id:s for s in slide.shapes}
  if i in rev['modified_pages']:
@@ -51,5 +58,5 @@ overview=Image.new('RGB',(1600,2250),'#041F3B');d=ImageDraw.Draw(overview)
 for i in range(34):
  im=Image.open(OUT/f'slide-{i+1:02}.png');assert im.size==(1600,900);im.load();im.thumbnail((400,225));x=i%4*400;y=i//4*250;overview.paste(im,(x,y));d.text((x+10,y+230),str(i+1),fill='white')
 overview.save(OUT/'overview.png')
-r={'pages':34,'captions':25,'redesigned_bodies':19,'source_sha256':digest(source),'pptx_sha256':digest(ppt),'pdf_sha256':digest(pdf),'checks':['Latest cover and closing bytes preserved','All unmodified package parts preserved','Headers and folios preserved','Original screenshot bytes and aspect ratios verified','Native ABC artwork recorded per slide','Single-sentence captions','34 rendered pages','Formal assets unchanged']}
+r={'pages':34,'captions':25,'redesigned_bodies':19,'source_sha256':digest(source),'pptx_sha256':digest(ppt),'pdf_sha256':digest(pdf),'checks':['Latest cover and closing bytes preserved','All unmodified package parts preserved except removed notes','All speaker notes removed','Headers and folios preserved','Original screenshot bytes and aspect ratios verified','Native ABC artwork recorded per slide','Single-sentence captions','34 rendered pages','Formal assets unchanged']}
 (WORK/'review/abc-trial-validation.json').write_text(json.dumps(r,ensure_ascii=False,indent=2)+'\n');print(json.dumps(r,ensure_ascii=False))

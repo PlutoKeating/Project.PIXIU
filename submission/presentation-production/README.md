@@ -90,3 +90,9 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 最新输入为 `source/user-cover-closing-20260915.pptx`，完整保留用户本轮修改的封面和尾页。19个正文页根据内容重新设计，直接复制ABC原稿的原生异形底框、渐变卡片、弧面和光效；第25页重叠文字改为时间地点、预算与流程的独立区域。
 
 原有构建/验证命令不变，入口自动选择 `build_varied_deck.py` / `validate_varied_deck.py`；版式维护于 `scripts/varied_layouts.py`。无新依赖。此前“统一窗口配右侧说明”的记录属于旧轮次，当前逐页设计与保护范围以[本轮复核](review/product-screenshot-audit.md)为准。未来若用户再次手动编辑，必须先归档最新文件，构建保护检查会阻止覆盖。
+
+### 六页讲述衔接与无备注版本
+
+第 7、11、12、13、15、25 页补充场景、用户操作、系统处理与后续用途，保留不同版式和完整软件截图。设备按书房台式机、客厅功能机、出差笔记本标注；账单先显示合计标题，再以同一行同样加粗显示金额和元。自动整合卡片统一上边距和正文基线。
+
+构建入口调用 `remove_slide_notes.py` 删除全部备注页、备注母版及关系引用，归档源文件保持不变。校验新增无备注与关键文案检查，无新增依赖。

@@ -295,7 +295,7 @@
         ],
         "screenshots": [
           {
-            "shape_id": 4,
+            "shape_id": 5,
             "source": "submission/presentation-production/source/full-window-captures/bill.png",
             "sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9",
             "native_size": [
@@ -309,13 +309,13 @@
               838
             ],
             "box_inches": [
-              1.8789976133651547,
-              2.28,
-              5.64200477326969,
-              3.94
+              2.365871121718377,
+              2.85,
+              4.6682577565632455,
+              3.26
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.564,
+            "pixel_scale_at_1600": 0.467,
             "context": "complete application window",
             "caption": "图 1：助手在会话中检索并核对账单",
             "annotations": [
@@ -329,7 +329,7 @@
                 "label": "账单明细、合计与来源"
               }
             ],
-            "native_shape_id": 46
+            "native_shape_id": 47
           }
         ],
         "layout": "product stage with feature ribbons",
@@ -339,9 +339,9 @@
             "shape_index": 1,
             "box": [
               0.65,
-              2.13,
+              2.72,
               8.1,
-              4.55
+              3.95
             ]
           },
           {
@@ -349,7 +349,7 @@
             "shape_index": 59,
             "box": [
               1.3,
-              2.1,
+              2.7,
               6.6,
               0.16
             ]
@@ -359,9 +359,9 @@
             "shape_index": 34,
             "box": [
               9.0,
-              2.38,
+              2.83,
               3.5,
-              1.48
+              1.36
             ]
           },
           {
@@ -369,9 +369,9 @@
             "shape_index": 34,
             "box": [
               9.0,
-              4.05,
+              4.3100000000000005,
               3.5,
-              1.48
+              1.36
             ]
           },
           {
@@ -1061,13 +1061,13 @@
               838
             ],
             "box_inches": [
-              6.4508353221957035,
-              2.6400000000000006,
-              5.298329355608592,
-              3.6999999999999997
+              6.679952267303102,
+              2.88,
+              4.840095465393794,
+              3.3799999999999994
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.53,
+            "pixel_scale_at_1600": 0.484,
             "context": "complete application window",
             "caption": "图 1：后台整合资料并生成更正方案",
             "annotations": [
@@ -1100,9 +1100,9 @@
             "shape_index": 34,
             "box": [
               0.8,
-              2.65,
+              2.83,
               4.6,
-              1.17
+              1.15
             ]
           },
           {
@@ -1110,9 +1110,9 @@
             "shape_index": 34,
             "box": [
               0.8,
-              4.0,
+              4.11,
               4.6,
-              1.17
+              1.15
             ]
           },
           {
@@ -1120,9 +1120,9 @@
             "shape_index": 34,
             "box": [
               0.8,
-              5.35,
+              5.390000000000001,
               4.6,
-              1.17
+              1.15
             ]
           },
           {
@@ -1130,9 +1130,9 @@
             "shape_index": 1,
             "box": [
               5.75,
-              2.6,
+              2.82,
               6.75,
-              4.14
+              3.92
             ]
           },
           {
@@ -1232,7 +1232,7 @@
         ],
         "screenshots": [
           {
-            "shape_id": 5,
+            "shape_id": 6,
             "source": "submission/presentation-production/source/full-window-captures/bill.png",
             "sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9",
             "native_size": [
@@ -1246,13 +1246,13 @@
               838
             ],
             "box_inches": [
-              6.966431980906921,
-              1.99,
-              4.797136038186157,
-              3.35
+              7.374546539379475,
+              2.77,
+              3.9809069212410497,
+              2.78
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.48,
+            "pixel_scale_at_1600": 0.398,
             "context": "complete application window",
             "caption": "图 1：助手在新会话中召回账单明细与来源",
             "annotations": [
@@ -1266,7 +1266,7 @@
                 "label": "账单明细、合计与来源"
               }
             ],
-            "native_shape_id": 60
+            "native_shape_id": 61
           }
         ],
         "layout": "bill total and evidence with lower value cards",
@@ -1472,7 +1472,7 @@
         ],
         "screenshots": [
           {
-            "shape_id": 14,
+            "shape_id": 15,
             "source": "submission/presentation-production/source/full-window-captures/directory.png",
             "sha256": "d6574fdd13bb61097c95593783f7754491fc1ece86e901f896f27fa65a7d374e",
             "native_size": [
@@ -1486,13 +1486,13 @@
               838
             ],
             "box_inches": [
-              2.081145584725537,
-              3.68,
-              3.837708830548926,
-              2.68
+              2.568019093078759,
+              4.34,
+              2.863961813842482,
+              2.0
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.384,
+            "pixel_scale_at_1600": 0.286,
             "context": "complete application window",
             "caption": "图 1：用户选择授权目录并配置采集范围",
             "annotations": [
@@ -1506,7 +1506,7 @@
                 "label": "授权目录与采集设置"
               }
             ],
-            "native_shape_id": 113
+            "native_shape_id": 114
           }
         ],
         "layout": "three input paths above software settings",
@@ -1516,7 +1516,7 @@
             "shape_index": 18,
             "box": [
               0.8,
-              2.05,
+              2.85,
               3.766666666666666,
               1.3
             ]
@@ -1526,7 +1526,7 @@
             "shape_index": 59,
             "box": [
               1.05,
-              2.01,
+              2.81,
               3.266666666666666,
               0.16
             ]
@@ -1536,7 +1536,7 @@
             "shape_index": 18,
             "box": [
               4.766666666666667,
-              2.05,
+              2.85,
               3.766666666666666,
               1.3
             ]
@@ -1546,7 +1546,7 @@
             "shape_index": 59,
             "box": [
               5.016666666666667,
-              2.01,
+              2.81,
               3.266666666666666,
               0.16
             ]
@@ -1556,7 +1556,7 @@
             "shape_index": 18,
             "box": [
               8.733333333333333,
-              2.05,
+              2.85,
               3.766666666666666,
               1.3
             ]
@@ -1566,7 +1566,7 @@
             "shape_index": 59,
             "box": [
               8.983333333333333,
-              2.01,
+              2.81,
               3.266666666666666,
               0.16
             ]
@@ -1576,9 +1576,9 @@
             "shape_index": 1,
             "box": [
               7.4,
-              3.74,
+              4.38,
               5.0,
-              2.5
+              2.02
             ]
           },
           {
@@ -3544,7 +3544,7 @@
         ],
         "screenshots": [
           {
-            "shape_id": 9,
+            "shape_id": 10,
             "source": "submission/video-production/raw/current-0.1.12/02-directory-source.png",
             "sha256": "be0b5ec2cad0d5ecd67d9dee1907ba66a363efc470553ef69ba28e0fdb6195f7",
             "native_size": [
@@ -3558,13 +3558,13 @@
               838
             ],
             "box_inches": [
-              6.485596658711216,
-              2.29,
-              5.498806682577565,
-              3.84
+              6.89371121718377,
+              2.93,
+              4.682577565632458,
+              3.27
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.55,
+            "pixel_scale_at_1600": 0.468,
             "context": "complete application window",
             "caption": "图 1：助手保留活动知识及其原始资料",
             "annotations": [
@@ -3578,7 +3578,7 @@
                 "label": "来源窗口中的知识与原始资料"
               }
             ],
-            "native_shape_id": 76
+            "native_shape_id": 77
           }
         ],
         "layout": "activity facts above process with full source",
@@ -3588,9 +3588,9 @@
             "shape_index": 1,
             "box": [
               0.8,
-              2.12,
+              2.85,
               5.0,
-              4.63
+              3.9
             ]
           },
           {
@@ -4724,15 +4724,19 @@
     },
     {
       "path": "submission/presentation-production/scripts/build_varied_deck.py",
-      "sha256": "52864a43a4201f10051196f70768641c5632a1cacf9f64df718e7843def27c73"
+      "sha256": "7d75ec5b1400563cfa0a7d27363307ebce1ebaa38ea196ecf53fb65a94087672"
     },
     {
       "path": "submission/presentation-production/scripts/product_screenshots.py",
       "sha256": "08fbd3fe3cac875e218c8b2c7d6ccfc431aa877be91e1129899bf1f46bd9830e"
     },
     {
+      "path": "submission/presentation-production/scripts/remove_slide_notes.py",
+      "sha256": "6a0b47d41731a61b301c3941443dbbae114bdd10647bb59e881d6e596efaf97b"
+    },
+    {
       "path": "submission/presentation-production/scripts/varied_layouts.py",
-      "sha256": "cc80c2813c2cfc67a9704bb4e966cf33e9c1e239095625c5951db0673d9dac53"
+      "sha256": "99e5273d39c96167d8f637da8d998c9b32eb622927effe455595b1f6789c5ffe"
     },
     {
       "path": "submission/presentation-production/source/full-window-captures/bill.png",
@@ -4803,7 +4807,7 @@
       "sha256": "6120477bae9a984bb35b729b5a77f2f626952b3b089ada90747b8c0693a4a28f"
     }
   ],
-  "output_sha256": "5d635ba2c280172f8ff18ca96ab0041e07f12451376ef30f5d21099c62c90137",
+  "output_sha256": "8aaf26a0b66183a065c6b9984a19ffb3c053779015881c816e652c06b0788c6f",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -5617,6 +5621,107 @@
     "preserved_user_pages": [
       1,
       34
+    ],
+    "notes_removed_parts": [
+      "[Content_Types].xml",
+      "ppt/_rels/presentation.xml.rels",
+      "ppt/notesMasters/",
+      "ppt/notesMasters/_rels/",
+      "ppt/notesMasters/_rels/notesMaster1.xml.rels",
+      "ppt/notesMasters/notesMaster1.xml",
+      "ppt/notesSlides/",
+      "ppt/notesSlides/_rels/",
+      "ppt/notesSlides/_rels/notesSlide1.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide10.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide11.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide12.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide13.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide14.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide15.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide16.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide17.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide18.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide19.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide2.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide20.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide21.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide22.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide23.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide24.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide25.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide26.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide27.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide28.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide29.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide3.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide30.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide4.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide5.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide6.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide7.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide8.xml.rels",
+      "ppt/notesSlides/_rels/notesSlide9.xml.rels",
+      "ppt/notesSlides/notesSlide1.xml",
+      "ppt/notesSlides/notesSlide10.xml",
+      "ppt/notesSlides/notesSlide11.xml",
+      "ppt/notesSlides/notesSlide12.xml",
+      "ppt/notesSlides/notesSlide13.xml",
+      "ppt/notesSlides/notesSlide14.xml",
+      "ppt/notesSlides/notesSlide15.xml",
+      "ppt/notesSlides/notesSlide16.xml",
+      "ppt/notesSlides/notesSlide17.xml",
+      "ppt/notesSlides/notesSlide18.xml",
+      "ppt/notesSlides/notesSlide19.xml",
+      "ppt/notesSlides/notesSlide2.xml",
+      "ppt/notesSlides/notesSlide20.xml",
+      "ppt/notesSlides/notesSlide21.xml",
+      "ppt/notesSlides/notesSlide22.xml",
+      "ppt/notesSlides/notesSlide23.xml",
+      "ppt/notesSlides/notesSlide24.xml",
+      "ppt/notesSlides/notesSlide25.xml",
+      "ppt/notesSlides/notesSlide26.xml",
+      "ppt/notesSlides/notesSlide27.xml",
+      "ppt/notesSlides/notesSlide28.xml",
+      "ppt/notesSlides/notesSlide29.xml",
+      "ppt/notesSlides/notesSlide3.xml",
+      "ppt/notesSlides/notesSlide30.xml",
+      "ppt/notesSlides/notesSlide4.xml",
+      "ppt/notesSlides/notesSlide5.xml",
+      "ppt/notesSlides/notesSlide6.xml",
+      "ppt/notesSlides/notesSlide7.xml",
+      "ppt/notesSlides/notesSlide8.xml",
+      "ppt/notesSlides/notesSlide9.xml",
+      "ppt/presentation.xml",
+      "ppt/slides/_rels/slide1.xml.rels",
+      "ppt/slides/_rels/slide10.xml.rels",
+      "ppt/slides/_rels/slide11.xml.rels",
+      "ppt/slides/_rels/slide12.xml.rels",
+      "ppt/slides/_rels/slide13.xml.rels",
+      "ppt/slides/_rels/slide14.xml.rels",
+      "ppt/slides/_rels/slide15.xml.rels",
+      "ppt/slides/_rels/slide16.xml.rels",
+      "ppt/slides/_rels/slide17.xml.rels",
+      "ppt/slides/_rels/slide18.xml.rels",
+      "ppt/slides/_rels/slide19.xml.rels",
+      "ppt/slides/_rels/slide2.xml.rels",
+      "ppt/slides/_rels/slide20.xml.rels",
+      "ppt/slides/_rels/slide21.xml.rels",
+      "ppt/slides/_rels/slide22.xml.rels",
+      "ppt/slides/_rels/slide23.xml.rels",
+      "ppt/slides/_rels/slide24.xml.rels",
+      "ppt/slides/_rels/slide25.xml.rels",
+      "ppt/slides/_rels/slide26.xml.rels",
+      "ppt/slides/_rels/slide27.xml.rels",
+      "ppt/slides/_rels/slide28.xml.rels",
+      "ppt/slides/_rels/slide29.xml.rels",
+      "ppt/slides/_rels/slide30.xml.rels",
+      "ppt/slides/_rels/slide32.xml.rels",
+      "ppt/slides/_rels/slide33.xml.rels",
+      "ppt/slides/_rels/slide34.xml.rels",
+      "ppt/slides/_rels/slide4.xml.rels",
+      "ppt/slides/_rels/slide5.xml.rels",
+      "ppt/slides/_rels/slide7.xml.rels",
+      "ppt/slides/_rels/slide8.xml.rels"
     ]
   }
 }
