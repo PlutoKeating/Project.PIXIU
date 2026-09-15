@@ -111,7 +111,25 @@ for new_page, old_page in enumerate(ORDER, 1):
         x, y = int(off.get('x')) / EMU, int(off.get('y')) / EMU
         text = shape_text(node)
         reason = None
-        if old_page == 4 and text in {
+        ids = node.xpath('.//p:cNvPr/@id', namespaces=NS)
+        identity = int(ids[0]) if ids else -1
+        if old_page == 21 and 23 <= identity <= 37:
+            slot, component = divmod(identity - 23, 4)
+            left = .85 + slot * 2.99
+            positions = {
+                0: (left, 2.18, 2.66, .46),
+                1: (left + .07, 2.25, 2.52, .32),
+                2: (left, 2.83, 2.66, .35),
+                3: (left + 2.74, 2.41, .17, 0),
+            }
+            px, py, width, height = positions[component]
+            off.set('x', str(round(px * EMU)))
+            off.set('y', str(round(py * EMU)))
+            extent = node.xpath('./p:spPr/a:xfrm/a:ext', namespaces=NS)[0]
+            extent.set('cx', str(round(width * EMU)))
+            extent.set('cy', str(round(height * EMU)))
+            reason = 'align lifecycle steps within panel'
+        elif old_page == 4 and text in {
             '知识偏好演变', '新旧通知与偏好存在冲突', '版本与来源', '保留历史，更正经过审批'
         }:
             replacements = {

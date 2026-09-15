@@ -2277,7 +2277,7 @@
     },
     {
       "path": "submission/presentation-production/scripts/reorder_refined_deck.py",
-      "sha256": "6669f94e04e7700a67fe1dfe72b86c092e46808b133e4293cb1aac9c6fdac296"
+      "sha256": "cd3c7ffc0464655b379b5c75ebcef941791c8fbca0c9c86d99a4166598d3f8f8"
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
@@ -2288,7 +2288,7 @@
       "sha256": "7d167ba2502f9d16c3bd8e77d79ad7dc254255da807e3978ddc094b1f9d5c39e"
     }
   ],
-  "output_sha256": "373cd017a5c105d38367a09d8dd0c7b54bd95c4ac7f49258e111a3b8adf429a9",
+  "output_sha256": "93ed024f912c738688a28abdf067b7c8d6b5a8a50699a6474f41cfb09c074811",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -2811,6 +2811,66 @@
         }
       ],
       "21": [
+        {
+          "shape_id": "23",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "24",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "25",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "26",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "27",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "28",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "29",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "30",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "31",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "32",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "33",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "34",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "35",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "36",
+          "reason": "align lifecycle steps within panel"
+        },
+        {
+          "shape_id": "37",
+          "reason": "align lifecycle steps within panel"
+        },
         {
           "shape_id": "77",
           "reason": "renumber folio"

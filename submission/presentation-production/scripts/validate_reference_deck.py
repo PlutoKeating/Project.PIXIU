@@ -133,6 +133,12 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
                 assert identity not in actual
                 continue
             other = actual[identity]
+            if reason == 'align lifecycle steps within panel':
+                for element in [node, other]:
+                    transform = element.find('p:spPr/a:xfrm', ns)
+                    for coordinate in transform:
+                        for attr in list(coordinate.attrib):
+                            coordinate.set(attr, '0')
             if reason == 'align need and response with auto dreaming':
                 expected = {
                     '知识偏好演变': '记忆依赖手动',
