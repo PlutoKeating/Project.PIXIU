@@ -67,6 +67,14 @@ for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
     for t, y in visible:
         assert not any(x in t for x in ['风格试作版', '真实界面：', 'PRODUCT  /  MEMORY']), (n, t)
         assert not (y > 7.1 and ('SDK' in t or '实拍' in t)), (n, t)
+# The two product capabilities must remain prominent and consistently named.
+for n in [1,2,5,7,32]:
+    wording='\n'.join(a.text for a in prs.slides[n-1].shapes if a.has_text_frame)
+    assert '记忆焕新' in wording and '记忆互联' in wording, (n, 'flagship names')
+assert m['slides'][7]['title'] == '记忆焕新'
+assert m['slides'][10]['title'] == '记忆互联'
+for page in prs.slides:
+    assert all('目录整理' not in a.text for a in page.shapes if a.has_text_frame)
 for path, expected in [(OUT / 'PIXIU项目报告-科技风试作版.pdf', 32),
                        (WORK / 'render/reference/ABC公司产品宣传路演PPT.pdf', 20)]:
     info = subprocess.run(['pdfinfo', str(path)], check=True, capture_output=True, text=True).stdout
@@ -104,7 +112,7 @@ result = {
     'checks': ['ZIP CRC and XML parse', 'all input hashes',
                'all 31 original pages mapped', 'original screenshot bytes embedded',
                'no template identity in XML', 'no embedded workbooks or external links',
-               '32 main topics present above body', '32 folios and 27 chapter navigation bars', 'production footnotes removed',
+               '32 main topics present above body', '32 folios and 27 chapter navigation bars', 'production footnotes removed', 'two flagship names and dedicated feature pages',
                '52 full-page PNGs verified', 'formal candidate and asset unchanged'],
     'visual_review': 'See abc-style-review.md. XML checks cannot inspect raster identity or layout.',
     'rendered_pages': rendered,

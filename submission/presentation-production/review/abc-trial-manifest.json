@@ -257,7 +257,7 @@
     },
     {
       "page": 7,
-      "title": "核心功能矩阵",
+      "title": "两大核心亮点",
       "source_pages": [
         7
       ],
@@ -265,10 +265,6 @@
         [
           16,
           23
-        ],
-        [
-          1,
-          5
         ],
         [
           3,
@@ -314,18 +310,18 @@
       "navigation": {
         "chapter": "功能亮点",
         "tabs": [
-          "功能矩阵",
-          "目录整理",
+          "两大亮点",
+          "记忆焕新",
           "场景示例",
           "偏好演进",
-          "设备协作"
+          "记忆互联"
         ],
-        "active": "功能矩阵"
+        "active": "两大亮点"
       }
     },
     {
       "page": 8,
-      "title": "授权目录整理",
+      "title": "记忆焕新",
       "source_pages": [
         8
       ],
@@ -333,14 +329,6 @@
         [
           6,
           3
-        ],
-        [
-          8,
-          1
-        ],
-        [
-          8,
-          2
         ],
         [
           11,
@@ -396,18 +384,18 @@
         ]
       ],
       "screenshots": [
-        "docs/delivery/assets/operations/03-current-workflows/directory-folder.png"
+        "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png"
       ],
       "navigation": {
         "chapter": "功能亮点",
         "tabs": [
-          "功能矩阵",
-          "目录整理",
+          "两大亮点",
+          "记忆焕新",
           "场景示例",
           "偏好演进",
-          "设备协作"
+          "记忆互联"
         ],
-        "active": "目录整理"
+        "active": "记忆焕新"
       }
     },
     {
@@ -468,11 +456,11 @@
       "navigation": {
         "chapter": "功能亮点",
         "tabs": [
-          "功能矩阵",
-          "目录整理",
+          "两大亮点",
+          "记忆焕新",
           "场景示例",
           "偏好演进",
-          "设备协作"
+          "记忆互联"
         ],
         "active": "场景示例"
       }
@@ -556,18 +544,18 @@
       "navigation": {
         "chapter": "功能亮点",
         "tabs": [
-          "功能矩阵",
-          "目录整理",
+          "两大亮点",
+          "记忆焕新",
           "场景示例",
           "偏好演进",
-          "设备协作"
+          "记忆互联"
         ],
         "active": "偏好演进"
       }
     },
     {
       "page": 11,
-      "title": "可信设备协作",
+      "title": "记忆互联",
       "source_pages": [
         12
       ],
@@ -617,13 +605,13 @@
       "navigation": {
         "chapter": "功能亮点",
         "tabs": [
-          "功能矩阵",
-          "目录整理",
+          "两大亮点",
+          "记忆焕新",
           "场景示例",
           "偏好演进",
-          "设备协作"
+          "记忆互联"
         ],
-        "active": "设备协作"
+        "active": "记忆互联"
       }
     },
     {
@@ -1594,7 +1582,7 @@
     },
     {
       "page": 24,
-      "title": "目录采集与跨会话召回",
+      "title": "记忆焕新与跨会话召回",
       "source_pages": [
         26
       ],
@@ -1679,7 +1667,7 @@
     },
     {
       "page": 25,
-      "title": "更正审批与知识更新",
+      "title": "记忆焕新与更正审批",
       "source_pages": [
         9,
         27
@@ -1965,7 +1953,7 @@
     },
     {
       "page": 28,
-      "title": "三端并发与恢复收敛",
+      "title": "记忆互联与三端收敛",
       "source_pages": [
         24
       ],
@@ -2387,8 +2375,8 @@
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
-      "sha256": "3627de940757b02f875ab74a5e4df4929219450ced14c14aa11b71a1eb9ecd88"
+      "sha256": "048f6ce3bca8db58d0f3a4fbf9743fc455e36fe462a38feb53620e72a063ca6f"
     }
   ],
-  "output_sha256": "587b2f60941f8d3e6d0b45afe185e978206525b4f397f25f6ea7bfb95f1de7c0"
+  "output_sha256": "371e6692ac48bef0feba977d46dcd9a1fc2cb58f1f93873c519984713ca24a1b"
 }

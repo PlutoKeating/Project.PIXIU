@@ -24,6 +24,13 @@
 
 PIXIU 是银河麒麟 V11 的个人记忆助手。它帮助用户整理资料、复用跨会话知识、查看信息来源，并在可信设备之间共享记忆。
 
+两大核心功能：
+
+- **记忆焕新**：后台理解已授权资料，关联已有记忆，生成新建、更正与合并方案；更正与合并由用户审批。对应工程中的 Dreaming。
+- **记忆互联**：分布式多设备 Agent 记忆共享。可信设备按授权范围对等同步，各端保存本地副本，重连后补齐差异。
+
+产品命名与能力边界见[两大核心功能说明](submission/presentation-production/source/feature-naming.md)。
+
 当前版本：[0.1.12](https://github.com/PlutoKeating/Project.PIXIU/releases/tag/v0.1.12)，提供 amd64 单一安装包。
 
 ## 典型应用背景
