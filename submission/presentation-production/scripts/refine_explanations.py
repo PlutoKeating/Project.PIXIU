@@ -111,3 +111,52 @@ def explain(root, kind):
         for identity in node.xpath('.//p:cNvPr',namespaces=NS):identity.set('id',str(next_id));next_id+=1
         tree.append(node)
     return root
+
+
+def align_knowledge(root):
+    """Align the four categories and the source/knowledge/index flow to a grid."""
+    tree=root.find('p:cSld/p:spTree',NS)
+    nodes=list(tree)
+    # spTree has two non-shape children before the authored shapes.
+    shapes=[n for n in nodes if n.tag.rsplit('}',1)[-1] in {'sp','pic','cxnSp','grpSp','graphicFrame'}]
+    def box(index,x,y,w,h):
+        node=shapes[index]
+        transform=node.xpath('./p:spPr/a:xfrm',namespaces=NS)[0]
+        transform.find('a:off',NS).set('x',str(round(x*EMU)))
+        transform.find('a:off',NS).set('y',str(round(y*EMU)))
+        transform.find('a:ext',NS).set('cx',str(round(w*EMU)))
+        transform.find('a:ext',NS).set('cy',str(round(h*EMU)))
+    for i in range(4):
+        x=.85+3.0*i;start=7+4*i
+        box(start,x,2.20,2.70,1.25)
+        box(start+1,x+.945,2.20,.81,0)
+        box(start+2,x+.10,2.43,2.50,.35)
+        box(start+3,x+.10,3.00,2.50,.32)
+    box(26,.85,4.40,3.10,1.80)
+    box(27,1.935,4.40,.93,0)
+    box(28,1.00,4.78,2.80,.46)
+    box(29,1.00,5.49,2.80,.38)
+    box(23,5.10,4.40,3.10,1.80)
+    box(24,5.25,4.78,2.80,.46)
+    box(25,5.25,5.49,2.80,.38)
+    box(30,4.08,5.30,.87,0)
+    for i,(card,label) in enumerate([(32,33),(35,36),(38,39)]):
+        y=4.35+.72*i
+        box(card,9.65,y,2.90,.46)
+        box(label,9.72,y+.07,2.76,.32)
+    # Native right-angle distribution replaces three diagonal fans.
+    template=deepcopy(shapes[34])
+    for index in [31,34,37]:tree.remove(shapes[index])
+    next_id=max(int(v) for v in root.xpath('.//p:cNvPr/@id',namespaces=NS))+1
+    for x,y,w,h,arrow in [(8.32,5.30,.58,0,False),(8.90,4.58,0,1.44,False),
+                          (8.90,4.58,.61,0,True),(8.90,5.30,.61,0,True),(8.90,6.02,.61,0,True)]:
+        node=deepcopy(template)
+        xf=node.xpath('./p:spPr/a:xfrm',namespaces=NS)[0]
+        xf.attrib.pop('flipH',None);xf.attrib.pop('flipV',None)
+        xf.find('a:off',NS).set('x',str(round(x*EMU)));xf.find('a:off',NS).set('y',str(round(y*EMU)))
+        xf.find('a:ext',NS).set('cx',str(round(w*EMU)));xf.find('a:ext',NS).set('cy',str(round(h*EMU)))
+        if not arrow:
+            for end in node.xpath('.//a:tailEnd | .//a:headEnd',namespaces=NS):end.set('type','none')
+        for identity in node.xpath('.//p:cNvPr',namespaces=NS):identity.set('id',str(next_id));next_id+=1
+        tree.append(node)
+    return root

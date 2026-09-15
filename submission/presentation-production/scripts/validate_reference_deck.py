@@ -124,7 +124,7 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
             reason = edits.get(identity)
             offsets=node.xpath('./p:spPr/a:xfrm/a:off',namespaces=ns)
             y=int(offsets[0].get('y'))/914400 if offsets else -1
-            if old_page in {9,11} and 1.85 <= y <= 7.1:
+            if old_page in {9,11,14} and 1.85 <= y <= 7.1:
                 continue  # Authorized diagram resizing / explanatory body rewrite.
             if old_page == 12 and ''.join(node.xpath('.//a:t/text()',namespaces=ns)) == '持续记忆技术体系':
                 assert ''.join(actual[identity].xpath('.//a:t/text()',namespaces=ns)) == '技术架构与实现方案'

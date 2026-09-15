@@ -70,3 +70,5 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 `source/user-refined-20260915.pptx` 保存用户手动美工修订的32页原件，SHA-256 为 `08fac263452d86fcb46278c71332272d775878b087e7545fef648a853f08fa71`；相邻 manifest 保存原来源映射。构建入口调用 `reorder_refined_deck.py`，由 `refine_explanations.py` 执行限定的正文补充和章节复制。没有新手动修改的页保留原始包与原生形状；如果输出存在未归档的手动变化，构建会停止，避免覆盖。
 
 验证包含34页顺序与主题、导航和页码、显式删除记录、真实截图字节、章节版式复制，以及本次授权修改范围之外的逐形状XML一致性。依赖沿用现有 python-pptx、lxml、LibreOffice 和 Poppler，无新增运行或发布依赖。原有正式31页资产不变。具体复核见 `review/abc-style-review.md`。
+
+第16页“知识结构与来源关联”采用统一网格：四张类别卡片等宽等距；Evidence 与 Knowledge 同高并居中对齐，三个输出节点等宽等距，以直角分支连线连接。沿用原生文本、框饰、字体与现有构建依赖。

@@ -7,7 +7,7 @@ import posixpath
 import zipfile
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from refine_explanations import COVERS, cover, explain, set_text
+from refine_explanations import COVERS, cover, explain, set_text, align_knowledge
 from lxml import etree as ET
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -138,10 +138,12 @@ for new_page, old_page in enumerate(ORDER, 1):
             modified.append({'shape_id': ids[0] if ids else None, 'reason': reason})
     if old_page in {9,11}:
         root = explain(root, 'sharing' if old_page == 11 else 'billing')
+    if old_page == 14:
+        root = align_knowledge(root)
     if old_page == 12:
         for node in tree:
             if shape_text(node) == '持续记忆技术体系':set_text(node,'技术架构与实现方案')
-    if modified or old_page in {9,11,12}:
+    if modified or old_page in {9,11,12,14}:
         blobs[part] = encode(root)
     changes[old_page] = modified
 
@@ -217,7 +219,7 @@ manifest['output_sha256'] = digest(OUT)
 manifest['revision'] = {
     'mode': 'preserve user-refined package', 'source_sha256': digest(SOURCE),
     'source_page_order': ORDER, 'shape_changes': changes,
-    'content_revised_source_pages': [9,11,12], 'cloned_chapter_sources': {str(k):12 for k in COVERS},
+    'content_revised_source_pages': [9,11,12,14], 'cloned_chapter_sources': {str(k):12 for k in COVERS},
     'unchanged_package_parts': sum(blobs.get(k) == v for k,v in original_blobs.items()),
     'removed_package_parts': sorted(removed),
 }
