@@ -2391,8 +2391,8 @@
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
-      "sha256": "0b7cdff98d2c8cb35bc931e46092921b9c268c534ef2d6b9cf917889b8abe973"
+      "sha256": "d3a56ed613f1d46c4627820d5c6c767ea2b41e48f2f882998c03be3d893e1155"
     }
   ],
-  "output_sha256": "b0ab2f448568a33a3176f5ccf07412ea504aa020b6dd7a12f505ed8a6080e052"
+  "output_sha256": "3f8010e4b822c28f659c171a7c4ceba063c2728b540c2dd406d7bb32eb679013"
 }
