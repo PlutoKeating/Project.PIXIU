@@ -37,6 +37,8 @@ with zipfile.ZipFile(ppt) as z:
             if name.endswith('.rels'):
                 assert all(e.get('TargetMode') != 'External' for e in root), name
     text = '\n'.join(xml_parts)
+    for obsolete in ['记忆焕新', '记忆互联']:
+        assert obsolete not in text, obsolete
     for forbidden in ['ABC', 'XYZ', '人从众', '1234567890', '华南理工',
                       '秦基赫', 'InnoSync', '/home/pluto', 'localhost', '127.0.0.1']:
         assert forbidden not in text, forbidden
@@ -49,7 +51,7 @@ with zipfile.ZipFile(ppt) as z:
 prs = Presentation(ppt)
 assert len(prs.slides) == len(m['slides']) == 32
 for slide in m['slides']:
-    assert not any(c in slide['title'] for c in '，。？！：'), slide['title']
+    assert not any(c in slide['title'] for c in '。？！：'), slide['title']
 # Main topics must be present above the body; chapter covers have a separate hierarchy.
 for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
     visible = [(a.text, a.top / 914400) for a in page.shapes if a.has_text_frame]
@@ -61,7 +63,7 @@ for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
         assert 'navigation' not in entry
     else:
         nav=entry['navigation']
-        header={t for t,y in visible if y < .8}
+        header={t.replace('\n','') for t,y in visible if y < .8}
         assert nav['chapter'] in header and set(nav['tabs']) <= header, (n, nav)
         assert nav['active'] in nav['tabs']
     for t, y in visible:
@@ -70,9 +72,9 @@ for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
 # The two product capabilities must remain prominent and consistently named.
 for n in [1,2,5,7,32]:
     wording='\n'.join(a.text for a in prs.slides[n-1].shapes if a.has_text_frame)
-    assert '记忆焕新' in wording and '记忆互联' in wording, (n, 'flagship names')
-assert m['slides'][7]['title'] == '记忆焕新'
-assert m['slides'][10]['title'] == '记忆互联'
+    assert '自动记忆，持续整合' in wording and '记忆共享，分布互连' in wording, (n, 'flagship names')
+assert m['slides'][7]['title'] == '自动记忆，持续整合'
+assert m['slides'][10]['title'] == '记忆共享，分布互连'
 for page in prs.slides:
     assert all('目录整理' not in a.text for a in page.shapes if a.has_text_frame)
 for path, expected in [(OUT / 'PIXIU项目报告-科技风试作版.pdf', 32),
