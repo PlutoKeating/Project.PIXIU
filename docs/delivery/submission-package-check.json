@@ -17,8 +17,8 @@
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
-      "bytes": 28514703,
-      "sha256": "9ebe2f260b7a8cb2c65b173bb689f42ed78685bfaebd0e72eb9f26d2044d4d19"
+      "bytes": 28515722,
+      "sha256": "80bd96c2af3e7aa462a3aa796c2fcae2f39725dc5f94ce2f585faac781ae439a"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/PIXIU源代码.tar.gz",
@@ -73,5 +73,6 @@
     "plain_list_markers": "passed",
     "emoji_text": "none",
     "other_platforms": "source build with unsupported-architecture boundaries stated"
-  }
+  },
+  "policy_reference_source_exclusion": "verified; reference materials are Git-only production assets"
 }
