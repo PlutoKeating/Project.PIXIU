@@ -233,18 +233,43 @@ line(s,7.16,5.91,11.52,5.91,'2386A3',.8)
 
 # 03 – Introduce the person, fragmented context and the product's purpose.
 s=base('',1,0,[3])
-txt(s,'设想一位在家办公的用户：书房处理文件，客厅核对安排，出门使用笔记本。\n三台设备都有 Agent（智能助手），但资料、对话和更正记录可能各留一处。',.76,1.98,11.85,.91,20,WHITE)
-for i,(place,title,body) in enumerate([
-    ('书房','01  保存过，还要重新交代','以家庭账单为例：用户把清单交给书房\n的助手。换个会话或设备，若没有持续\n记忆，就得重新找文件、补充背景。'),
-    ('客厅','02  想查询，却缺少上下文','到了客厅，他只记得“水电燃气花了钱”。\n这里的助手需要找到先前的明细和来源，\n才能核对开销，而非让用户从头描述。'),
-    ('随身','03  已更正，旧记录仍在','出门后，他发现其中一项金额有误。\n如果更新只留在笔记本，其他助手仍可能\n沿用旧信息；更正需要跨设备接续。')]):
+# Native rich text retains editable emphasis and intentional line breaks.
+def narrative(text, x, y, w, h, highlights, size=16, align=None):
+    box = txt(s,text,x,y,w,h,size,WHITE,align=align)
+    for p in box.text_frame.paragraphs:
+        content = p.text
+        p.clear(); p.space_after = Pt(0); p.line_spacing = 1.10
+        while content:
+            matches = [(content.find(term), term, color) for term,color in highlights if term in content]
+            pos,term,color = min(matches, default=(len(content),'',WHITE), key=lambda item:item[0])
+            if pos:
+                r=p.add_run(); r.text=content[:pos]
+            if term:
+                r=p.add_run(); r.text=term; r.font.bold=True; r.font.color.rgb=RGBColor.from_string(color)
+            content=content[pos+len(term):]
+        for r in p.runs:
+            r.font.name=FONT; r.font.size=Pt(size)
+            r._r.get_or_add_rPr().append(xml('a:ea',typeface=FONT))
+    return box
+
+clone(s,11,1,.65,1.92,12.03,.86)
+line(s,.82,2.08,.82,2.60,C,2)
+narrative('设想一位在家办公的用户：书房处理文件，客厅核对安排，出门使用笔记本。\n三台设备都有 Agent（智能助手），资料、对话和更正记录却可能各留一处。',1.02,2.04,11.30,.66,
+          [('在家办公',GOLD),('三台设备',C),('Agent（智能助手）',C),('各留一处',GOLD)],18)
+for i,(place,title,body,emphasis) in enumerate([
+    ('书房','保存过，还要重新交代','以家庭账单为例，用户把清单\n交给书房的助手。换个会话或设备，\n若没有持续记忆，就得重新找文件、\n补充背景。',[('家庭账单为例',GOLD),('持续记忆',C),('重新找文件',GOLD),('补充背景',GOLD)]),
+    ('客厅','想查询，却缺少上下文','到了客厅，他只记得“水电燃气”。\n助手需要找回先前的明细与来源，\n才能核对开销，无需让用户\n从头描述。',[('明细与来源',C),('核对开销',GOLD),('从头描述',GOLD)]),
+    ('随身','已更正，旧记录仍在','出门后，他发现一项金额有误。\n若更新只留在笔记本，其他助手\n仍可能沿用旧信息；更正记录\n需要跨设备接续。',[('金额有误',GOLD),('沿用旧信息',GOLD),('跨设备接续',C)])]):
     x=.66+i*4.20
-    clone(s,1,5,x+.07,3.96,3.67,1.03)
-    device(s,x+.72,3.10,2.27,place,'Agent · 本地信息')
-    txt(s,title,x,4.95,3.86,.40,20,C,True)
-    txt(s,body,x,5.48,3.90,.98,15,WHITE)
-center(s,'PIXIU 为 Agent 持续保存、整合记忆，并在可信设备间按授权共享。',.72,6.60,11.89,.37,20,C)
-center(s,'同样的需求，也存在于项目资料、会议记录和活动安排中。',.72,7.02,11.89,.28,14,PALE,False)
+    clone(s,1,5,x+.29,3.78,3.20,.91)
+    device(s,x+.80,2.96,2.13,place,'Agent · 本地信息')
+    clone(s,11,1,x,4.78,3.85,1.80)
+    txt(s,f'{i+1:02}',x+.17,4.91,.40,.33,18,GOLD,True)
+    txt(s,title,x+.68,4.93,3.05,.32,16,C,True)
+    narrative(body,x+.22,5.40,3.44,1.02,emphasis,14)
+narrative('PIXIU 为 Agent 持续保存、整合记忆，并在可信设备间按授权共享。',.8,6.76,11.73,.34,
+          [('PIXIU',C),('持续保存、整合记忆',C),('按授权共享',GOLD)],19,PP_ALIGN.CENTER)
+center(s,'同样的需求，也存在于项目资料、会议记录和活动安排中。',.8,7.13,11.4,.24,12,PALE,False)
 note(s,'本页为需求引入：设想用户在多台设备间使用 Agent，但缺乏持续、共享记忆时会反复说明背景、丢失来源或使用旧版本。家庭账单仅为场景示例，不是产品专用领域或新增实测。共享必须经过授权，断连期间不保证即时一致。')
 
 # 04 – Directly copy the pain/solution two-row composition.
