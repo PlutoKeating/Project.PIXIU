@@ -17,6 +17,12 @@ from pptx.oxml.xmlchemy import OxmlElement
 
 ROOT = Path(__file__).resolve().parents[3]
 WORK = ROOT / 'submission/presentation-production'
+# Once manually refined, the native deck is the authoritative artwork source.
+if (WORK / 'source/user-refined-20260915.pptx').exists():
+    import runpy
+    runpy.run_path(str(WORK / 'scripts/reorder_refined_deck.py'), run_name='__main__')
+    raise SystemExit(0)
+
 REF = WORK / 'reference/ABC公司产品宣传路演PPT.pptx'
 OUT = WORK / 'render/abc-trial'
 OUT.mkdir(parents=True, exist_ok=True)
