@@ -56,6 +56,14 @@ for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
     matches = [y for t, y in visible if t == entry['title']]
     assert matches, (n, entry['title'])
     assert min(matches) < (3.2 if n in {12, 22} else 1.6), (n, matches)
+    assert any(t == f'{n:02}' and 7.1 < y < 7.3 for t,y in visible), (n, 'folio')
+    if n in {1,2,12,22,32}:
+        assert 'navigation' not in entry
+    else:
+        nav=entry['navigation']
+        header={t for t,y in visible if y < .8}
+        assert nav['chapter'] in header and set(nav['tabs']) <= header, (n, nav)
+        assert nav['active'] in nav['tabs']
     for t, y in visible:
         assert not any(x in t for x in ['风格试作版', '真实界面：', 'PRODUCT  /  MEMORY']), (n, t)
         assert not (y > 7.1 and ('SDK' in t or '实拍' in t)), (n, t)
@@ -96,7 +104,7 @@ result = {
     'checks': ['ZIP CRC and XML parse', 'all input hashes',
                'all 31 original pages mapped', 'original screenshot bytes embedded',
                'no template identity in XML', 'no embedded workbooks or external links',
-               '32 main topics present above body', 'production footnotes removed',
+               '32 main topics present above body', '32 folios and 27 chapter navigation bars', 'production footnotes removed',
                '52 full-page PNGs verified', 'formal candidate and asset unchanged'],
     'visual_review': 'See abc-style-review.md. XML checks cannot inspect raster identity or layout.',
     'rendered_pages': rendered,

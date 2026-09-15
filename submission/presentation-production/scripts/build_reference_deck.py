@@ -65,7 +65,7 @@ def clone(s, page, idx, x=None, y=None, w=None, h=None):
     a = s.shapes[-1]
     for name, val in [('left', x), ('top', y), ('width', w), ('height', h)]:
         if val is not None: setattr(a, name, Inches(val))
-    manifest['slides'][-1]['copied_artwork'].append([page, idx])
+    manifest['slides'][list(prs.slides).index(s)]['copied_artwork'].append([page, idx])
     return a
 
 def shape(s, x, y, w, h, color=PANEL, kind=S.RECTANGLE, border=None, alpha=None):
@@ -596,6 +596,99 @@ for n,s in enumerate(prs.slides,1):
         title=TITLES[n-1]
         arttext(s,title,.64,.57,10.0,.73,39,PP_ALIGN.LEFT)
         line(s,.68,1.47,8.30,1.47,C,1.3)
+
+# Persistent chapter navigation, copied from the reference's native header artwork.
+NAV_GROUPS = [
+    ('场景需求', [('使用场景',[3]),('需求回应',[4])]),
+    ('方案架构', [('产品定位',[5]),('技术全景',[6])]),
+    ('功能亮点', [('功能矩阵',[7]),('目录整理',[8]),('场景示例',[9]),('偏好演进',[10]),('设备协作',[11])]),
+    ('技术实现', [('多源接入',[13]),('知识检索',[14,15]),('记忆流转',[16,17]),('对等同步',[18]),('安全部署',[19,21]),('任务循环',[20])]),
+    ('案例验证', [('资料准备',[23]),('跨会话查询',[24]),('更正审批',[25]),('应用价值',[26]),('量化评测',[27]),('协作验证',[28,29])]),
+    ('商业探索', [('服务模式',[30]),('试点路线',[31])]),
+]
+EXCLUDE_NAV = {1,2,12,22,32}
+GLASS_PAGES = {8,10,14,17,18,20,28,29}
+for n,s in enumerate(prs.slides,1):
+    if n not in EXCLUDE_NAV:
+        # Keep the approved body geometry; create room by moving only the title band.
+        for a in list(s.shapes)[1:]:
+            y=a.top/914400
+            if n == 6:
+                if y >= 1.40 or a.shape_type == 13:
+                    a.top=Inches(1.98+(y-1.40)*.86)
+                    a.height=int(a.height*.86)
+                    if a.shape_type == 13:
+                        old_width=a.width
+                        a.width=int(a.width*.86)
+                        a.left+=(old_width-a.width)//2
+                    if a.has_text_frame:
+                        for p in a.text_frame.paragraphs:
+                            if p.font.size:p.font.size=int(p.font.size*.86)
+                            for r in p.runs:
+                                if r.font.size:r.font.size=int(r.font.size*.86)
+                elif y > .15:
+                    a.top=Inches(.96 if a.has_text_frame else 1.59)
+                    if not a.has_text_frame:a.height=Inches(.25)
+            elif n == 27:
+                if y < 1.0:
+                    a.top=Inches(.94 if not a.has_text_frame else 1.02)
+                    a.height=Inches(.67)
+                elif y < 1.90:a.top+=Inches(.30)
+            elif n == 30:
+                if y < 1.2:a.top+=Inches(.48)
+                elif y < 1.8:a.top+=Inches(.26)
+                elif y < 2.5:a.top+=Inches(.10)
+            elif n == 31:
+                if y < 1.4:
+                    a.top=Inches(.93 if not a.has_text_frame else 1.00)
+                    a.height=Inches(.73 if not a.has_text_frame else .65)
+            elif y < 1.80:
+                if a.has_text_frame and a.text:
+                    a.top=Inches(.98);a.height=Inches(.60)
+                elif a.height/914400 > .60:
+                    a.top=Inches(.92);a.height=Inches(.72)
+                else:
+                    a.top=Inches(1.66);a.height=Inches(.22 if a.height else 0)
+            if a.has_text_frame and a.text == TITLES[n-1]:
+                for p in a.text_frame.paragraphs:
+                    p.font.size=Pt(32)
+                    for r in p.runs:r.font.size=Pt(32)
+        # Source translucent dome and rotated side fins go behind the existing body.
+        if n in GLASS_PAGES:
+            additions=[]
+            for idx,x,y,w,h in [(1,.46,1.91,12.41,4.90),(26,.46,6.83,12.41,.20)]:
+                additions.append(clone(s,11,idx,x,y,w,h))
+            for idx,x in [(18,-1.86),(20,10.21)]:
+                additions.append(clone(s,11,idx,x,4.14,4.98,.60))
+            anchor=list(s.shapes)[0]._element
+            for a in additions:
+                a._element.getparent().remove(a._element)
+                anchor.addnext(a._element);anchor=a._element
+            # Rounded translucent cards replace solid strips on sparse comparison pages.
+            if n in {17,18,28,29}:
+                # Preserve native card effects and put the editable wording above them.
+                for a in list(s.shapes):
+                    if a.shape_type == 1 and .43 < a.height/914400 < .48 and a.top/914400 > 1.9:
+                        e=clone(s,11,24,a.left/914400,a.top/914400,a.width/914400,a.height/914400)
+                        e._element.getparent().remove(e._element);a._element.addprevious(e._element)
+                        a._element.getparent().remove(a._element)
+        chapter,tabs=next((c,t) for c,t in NAV_GROUPS if any(n in pages for _,pages in t))
+        clone(s,3,2,.65,.12,12.10,.01)
+        clone(s,3,3,.48,.07,1.85,.08)
+        clone(s,3,4,.20,.65,2.10,.08)
+        clone(s,3,5,2.38,.23,.18,.37)
+        arttext(s,chapter,.45,.23,1.9,.44,25,PP_ALIGN.LEFT)
+        for i,(t,pages) in enumerate(tabs):
+            x=2.78+i*1.61
+            clone(s,3,6,x,.22,1.49,.42)
+            active=n in pages
+            if active:
+                a=shape(s,x+.02,.24,1.45,.38,BLUE,S.ROUNDED_RECTANGLE,None,33000)
+                line(s,x+.23,.66,x+1.26,.66,C,1.5)
+            center(s,t,x+.03,.29,1.43,.29,15,C if active else WHITE,active)
+        manifest['slides'][n-1]['navigation']={'chapter':chapter,'tabs':[t for t,_ in tabs],'active':next(t for t,pages in tabs if n in pages)}
+    # Restore quiet page numbers without bringing back production footnotes.
+    txt(s,f'{n:02}',12.02,7.19,.72,.22,11,PALE,False,PP_ALIGN.RIGHT)
 
 # Normalize all copied IDs and remove template-only metadata before saving.
 for s in prs.slides:

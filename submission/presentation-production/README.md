@@ -62,3 +62,5 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 参考稿首次导出可用同一 LibreOffice 命令，将输入替换为 `reference/ABC公司产品宣传路演PPT.pptx`、输出目录替换为 `render/reference/`，再用 `render.sh` 渲染。安装依赖仍使用本目录 `requirements.txt`；PPTX、PDF、PNG 通过仓库 Git LFS 管理，虚拟环境和临时文件继续忽略。
 
 科技风试作已按最新标注修订主标题位置、案例层级、三设备网状示意和图文间距，移除制作式页脚。逐项记录见 [复核记录](review/abc-style-review.md)。
+
+最新细节版恢复全部32页页码，并在27页正文顶部加入六章节导航与当前分项高亮；封面、目录、章节封面和结尾页不加导航。第8、10、14、17、18、20、28、29页复用参考稿原生异形侧翼、半透明面板与发光底边，部分条形卡片替换为弧光胶囊卡片。构建和验证脚本同步维护，依赖与导出命令不变。
