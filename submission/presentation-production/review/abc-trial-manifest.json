@@ -2277,7 +2277,7 @@
     },
     {
       "path": "submission/presentation-production/scripts/reorder_refined_deck.py",
-      "sha256": "cd3c7ffc0464655b379b5c75ebcef941791c8fbca0c9c86d99a4166598d3f8f8"
+      "sha256": "dfeac5cc77dc6a3654a96e5a08888954d4d3ad5cf45d1e80b7151c36a82da47f"
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
@@ -2288,7 +2288,7 @@
       "sha256": "7d167ba2502f9d16c3bd8e77d79ad7dc254255da807e3978ddc094b1f9d5c39e"
     }
   ],
-  "output_sha256": "93ed024f912c738688a28abdf067b7c8d6b5a8a50699a6474f41cfb09c074811",
+  "output_sha256": "ad98f47070fba1e9a1c0a5c12c346bdf825634ebb0b89cdc0680933cfe8adf30",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -2913,6 +2913,74 @@
         }
       ],
       "28": [
+        {
+          "shape_id": "23",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "24",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "25",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "26",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "27",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "28",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "29",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "30",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "31",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "32",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "33",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "34",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "35",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "36",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "37",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "38",
+          "reason": "align convergence cards arrows and result"
+        },
+        {
+          "shape_id": "39",
+          "reason": "align convergence cards arrows and result"
+        },
         {
           "shape_id": "73",
           "reason": "renumber folio"

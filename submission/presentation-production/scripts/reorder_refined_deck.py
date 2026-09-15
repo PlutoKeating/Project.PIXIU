@@ -113,7 +113,27 @@ for new_page, old_page in enumerate(ORDER, 1):
         reason = None
         ids = node.xpath('.//p:cNvPr/@id', namespaces=NS)
         identity = int(ids[0]) if ids else -1
-        if old_page == 21 and 23 <= identity <= 37:
+        if old_page == 28 and 23 <= identity <= 39:
+            if identity <= 37:
+                slot, component = divmod(identity - 23, 5)
+                left = .85 + slot * 4
+                positions = {
+                    0: (left, 2.25, 3.63, 2.4),
+                    1: (left + 1.245, 2.25, 1.14, 0),
+                    2: (left + .15, 2.53, 3.33, .5),
+                    3: (left + .20, 3.35, 3.23, 1),
+                    4: ((2.665 if slot == 0 else 6.665), 4.80, (0 if slot == 1 else 4), .55),
+                }
+                px, py, width, height = positions[component]
+            else:
+                px, py, width, height = ((.85, 5.55, 11.63, .5) if identity == 38 else (.92, 5.64, 11.49, .32))
+            off.set('x', str(round(px * EMU)))
+            off.set('y', str(round(py * EMU)))
+            extent = node.xpath('./p:spPr/a:xfrm/a:ext', namespaces=NS)[0]
+            extent.set('cx', str(round(width * EMU)))
+            extent.set('cy', str(round(height * EMU)))
+            reason = 'align convergence cards arrows and result'
+        elif old_page == 21 and 23 <= identity <= 37:
             slot, component = divmod(identity - 23, 4)
             left = .85 + slot * 2.99
             positions = {

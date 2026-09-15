@@ -133,7 +133,7 @@ with zipfile.ZipFile(source) as before, zipfile.ZipFile(ppt) as after:
                 assert identity not in actual
                 continue
             other = actual[identity]
-            if reason == 'align lifecycle steps within panel':
+            if reason in {'align lifecycle steps within panel', 'align convergence cards arrows and result'}:
                 for element in [node, other]:
                     transform = element.find('p:spPr/a:xfrm', ns)
                     for coordinate in transform:
