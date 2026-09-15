@@ -178,8 +178,13 @@ for entry, slide in zip(m['slides'], prs.slides):
         iw,ih=im['native_size'];l,t,cw,ch=im['crop_pixels']
         assert abs(shape.crop_left-l/iw)<.00002 and abs(shape.crop_top-t/ih)<.00002
         assert abs((shape.width/shape.height)/(cw/ch)-1)<.001
+        assert im['context'] in {'complete application window', 'complete desktop'}
+        assert im['caption'] and im['annotations']
+        for mark in im['annotations']:
+            rx,ry,rw,rh=mark['rect_pixels']
+            assert l<=rx and t<=ry and rx+rw<=l+cw and ry+rh<=t+ch
         shot_count += 1
-assert {e['page'] for e in m['slides'] if 'product_evidence' in e} == {7,10,11,12,13,15,16,17,18,19,20,21,23,24,25,26,27,28,30}
+assert {e['page'] for e in m['slides'] if 'product_evidence' in e} == {7,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,30}
 
 # Preserve the accepted 31-page candidate and its formal asset byte-for-byte.
 baseline = '4bf08a7c3b504341cf4082b9f98f63fd2db98a521356674c1eecb36d530eef8e'

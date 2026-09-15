@@ -1,0 +1,50 @@
+[
+  {
+    "image": "submission/presentation-production/source/full-window-captures/bill.png",
+    "recording": "submission/video-production/raw/current-0.1.12/current-bill-recall-01.mp4",
+    "second": 24,
+    "recording_sha256": "7f0054ca65b1dadb2f67e07ce3934e8114a68fc01fa51d88e0a78cd4b8f6d9fb",
+    "image_sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9"
+  },
+  {
+    "image": "submission/presentation-production/source/full-window-captures/task.png",
+    "recording": "submission/video-production/raw/current-0.1.12/current-agent-task-01.mp4",
+    "second": 110,
+    "recording_sha256": "36461515a613c8fad9c3bbcf0e569fd19f23f0cdb6428758f46437d92c05df7a",
+    "image_sha256": "281ef0d7cbaf2d2ea2afd4e7f941206ef8418a685d0c1586a7fa412c9dfed54d"
+  },
+  {
+    "image": "submission/presentation-production/source/full-window-captures/stage.png",
+    "recording": "submission/video-production/raw/current-0.1.12/current-stage-promote-01.mp4",
+    "second": 20,
+    "recording_sha256": "4e36a0db3206eaa8952216ba80c679c3299401cdc8035fd1715baf46b5c79073",
+    "image_sha256": "e6874e2828461d036e5786d50746ac3d170c0bc8c3f524a401e7c3548fb2ad79"
+  },
+  {
+    "image": "submission/presentation-production/source/full-window-captures/keyword.png",
+    "recording": "submission/video-production/raw/current-0.1.12/current-keyword-source-01.mp4",
+    "second": 10,
+    "recording_sha256": "f19a6dedad2e3f3cb9b09e028a1d35174a2f0834ce8af5807231e21dde2f530e",
+    "image_sha256": "79ffb51b8becd8e051eda0c0abbd32cdd21e246e9c2338e61feeb4457c0a89a1"
+  },
+  {
+    "image": "submission/presentation-production/source/full-window-captures/settings.png",
+    "recording": "submission/video-production/raw/current-0.1.12/shared-settings-01.mp4",
+    "second": 8,
+    "recording_sha256": "277786e6fecb2ce1593bb75f7335ea86fd137762d7401dc18694ca53a1180f06",
+    "image_sha256": "83e627570420c5d7d2585bd529fd2772280d59f5c4adbe101b8b18781c74d388"
+  },
+  {
+    "image": "submission/presentation-production/source/full-window-captures/directory.png",
+    "recording": "submission/video-production/raw/current-0.1.12/directory-dreaming-02.mp4",
+    "second": 5,
+    "recording_sha256": "a748096d3cbca974503b47d0e13b812f31255e66461952e6f69d75ba1b80a65d",
+    "image_sha256": "d6574fdd13bb61097c95593783f7754491fc1ece86e901f896f27fa65a7d374e"
+  },
+  {
+    "image": "submission/presentation-production/source/full-window-captures/service.png",
+    "capture": "virsh screenshot kylin-v11; Settings > Services > Read",
+    "date": "2026-09-15",
+    "image_sha256": "7815469ffc3f6755af68e91f1edafa190dd292a1d3efe1f2c3dc60f4aa906577"
+  }
+]

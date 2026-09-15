@@ -267,7 +267,7 @@
       ],
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
-        "submission/video-production/public/current/bill-recall.png"
+        "submission/presentation-production/source/full-window-captures/bill.png"
       ],
       "navigation": {
         "chapter": "方案架构",
@@ -293,28 +293,41 @@
         ],
         "screenshots": [
           {
-            "shape_id": 3,
-            "source": "submission/video-production/public/current/bill-recall.png",
-            "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd",
+            "shape_id": 4,
+            "source": "submission/presentation-production/source/full-window-captures/bill.png",
+            "sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9",
             "native_size": [
-              900,
-              596
+              1440,
+              900
             ],
             "crop_pixels": [
-              55,
-              90,
-              800,
-              430
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              0.9000000000000005,
-              2.3440625,
-              7.6499999999999995,
-              4.1118749999999995
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.147,
-            "native_shape_id": 43
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：桌面助手的完整会话窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  470,
+                  320,
+                  760,
+                  280
+                ],
+                "label": "账单明细、合计与来源"
+              }
+            ],
+            "native_shape_id": 44
           }
         ]
       }
@@ -445,8 +458,8 @@
         ]
       ],
       "screenshots": [
-        "submission/presentation-production/source/product-captures/device-b-memory.png",
-        "submission/video-production/public/current/dreaming-review.png"
+        "submission/presentation-production/source/product-captures/device-sharing-controls.png",
+        "submission/video-production/raw/current-0.1.12/03-dreaming-review.png"
       ],
       "illustrations": [
         "submission/presentation-production/assets/memory-core-illustration.png"
@@ -512,52 +525,87 @@
         ],
         "screenshots": [
           {
-            "shape_id": 7,
-            "source": "submission/presentation-production/source/product-captures/device-b-memory.png",
-            "sha256": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
+            "shape_id": 4,
+            "source": "submission/presentation-production/source/product-captures/device-sharing-controls.png",
+            "sha256": "a57efc161aa4762077171c2977ea487f0f01702feaede9d41a79421c25124225",
             "native_size": [
-              3840,
-              2160
+              1440,
+              900
             ],
             "crop_pixels": [
-              1734,
-              596,
-              1324,
-              634
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              1.620205047318612,
-              3.44,
-              4.009589905362776,
-              1.92
+              1.3767899761336513,
+              2.96,
+              4.496420047732697,
+              3.14
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.363,
-            "native_shape_id": 91
+            "pixel_scale_at_1600": 0.45,
+            "context": "complete application window",
+            "caption": "图 1：可信设备与共享设置",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  145,
+                  200,
+                  755,
+                  390
+                ],
+                "label": "共享范围与可信设备列表"
+              }
+            ],
+            "native_shape_id": 88
           },
           {
-            "shape_id": 8,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+            "shape_id": 9,
+            "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
+            "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
-              880,
-              620
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              220,
-              880,
-              190
+              1200,
+              838
             ],
             "box_inches": [
-              6.9,
-              3.811647727272727,
-              5.45,
-              1.1767045454545455
+              7.376789976133652,
+              2.96,
+              4.496420047732697,
+              3.14
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.743,
-            "native_shape_id": 92
+            "pixel_scale_at_1600": 0.45,
+            "context": "complete application window",
+            "caption": "图 2：后台整合与更正审批",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  280,
+                  357,
+                  857,
+                  285
+                ],
+                "label": "新旧内容对照与审批按钮"
+              },
+              {
+                "rect_pixels": [
+                  880,
+                  674,
+                  255,
+                  44
+                ],
+                "label": "新旧内容对照与审批按钮"
+              }
+            ],
+            "native_shape_id": 93
           }
         ]
       }
@@ -675,7 +723,7 @@
         ],
         "screenshots": [
           {
-            "shape_id": 9,
+            "shape_id": 6,
             "source": "submission/presentation-production/source/product-captures/device-a-memory.png",
             "sha256": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d",
             "native_size": [
@@ -683,47 +731,36 @@
               2160
             ],
             "crop_pixels": [
-              1734,
-              596,
-              900,
-              90
-            ],
-            "box_inches": [
-              4.55,
-              3.46,
-              4.199999999999999,
-              0.41999999999999993
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.56,
-            "native_shape_id": 102
-          },
-          {
-            "shape_id": 10,
-            "source": "submission/presentation-production/source/product-captures/device-a-memory.png",
-            "sha256": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d",
-            "native_size": [
+              0,
+              0,
               3840,
               2160
             ],
-            "crop_pixels": [
-              1785,
-              1052,
-              1010,
-              44
-            ],
             "box_inches": [
-              4.02,
-              3.9854257425742574,
-              5.26,
-              0.22914851485148513
+              0.8800000000000002,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.625,
-            "native_shape_id": 103
+            "role": "primary",
+            "pixel_scale_at_1600": 0.112,
+            "context": "complete desktop",
+            "caption": "图 1：设备 A 的完整记忆窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  1770,
+                  1035,
+                  1150,
+                  105
+                ],
+                "label": "共享记录正文"
+              }
+            ],
+            "native_shape_id": 99
           },
           {
-            "shape_id": 13,
+            "shape_id": 11,
             "source": "submission/presentation-production/source/product-captures/device-b-memory.png",
             "sha256": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
             "native_size": [
@@ -731,47 +768,36 @@
               2160
             ],
             "crop_pixels": [
-              1734,
-              596,
-              900,
-              90
-            ],
-            "box_inches": [
-              1.4700000000000002,
-              5.2,
-              4.199999999999999,
-              0.41999999999999993
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.56,
-            "native_shape_id": 106
-          },
-          {
-            "shape_id": 14,
-            "source": "submission/presentation-production/source/product-captures/device-b-memory.png",
-            "sha256": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
-            "native_size": [
+              0,
+              0,
               3840,
               2160
             ],
-            "crop_pixels": [
-              1785,
-              1052,
-              1010,
-              44
-            ],
             "box_inches": [
-              0.94,
-              5.725425742574258,
-              5.26,
-              0.22914851485148513
+              4.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.625,
-            "native_shape_id": 107
+            "role": "primary",
+            "pixel_scale_at_1600": 0.112,
+            "context": "complete desktop",
+            "caption": "图 2：设备 B 的完整记忆窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  1770,
+                  1035,
+                  1150,
+                  105
+                ],
+                "label": "共享记录正文"
+              }
+            ],
+            "native_shape_id": 104
           },
           {
-            "shape_id": 17,
+            "shape_id": 16,
             "source": "submission/presentation-production/source/product-captures/device-c-memory.png",
             "sha256": "9db6b891762652c164a8e9b43703f33794254991c0793f6e5b0deb4bf070847d",
             "native_size": [
@@ -779,44 +805,33 @@
               2160
             ],
             "crop_pixels": [
-              1479,
-              438,
-              900,
-              90
-            ],
-            "box_inches": [
-              7.61,
-              5.2,
-              4.199999999999999,
-              0.41999999999999993
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.56,
-            "native_shape_id": 110
-          },
-          {
-            "shape_id": 18,
-            "source": "submission/presentation-production/source/product-captures/device-c-memory.png",
-            "sha256": "9db6b891762652c164a8e9b43703f33794254991c0793f6e5b0deb4bf070847d",
-            "native_size": [
+              0,
+              0,
               3840,
               2160
             ],
-            "crop_pixels": [
-              1530,
-              895,
-              1010,
-              44
-            ],
             "box_inches": [
-              7.08,
-              5.725425742574258,
-              5.26,
-              0.22914851485148513
+              8.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.625,
-            "native_shape_id": 111
+            "role": "primary",
+            "pixel_scale_at_1600": 0.112,
+            "context": "complete desktop",
+            "caption": "图 3：设备 C 的完整记忆窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  1520,
+                  875,
+                  1100,
+                  100
+                ],
+                "label": "共享记录正文"
+              }
+            ],
+            "native_shape_id": 109
           }
         ]
       }
@@ -887,7 +902,7 @@
       ],
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
-        "submission/video-production/public/current/dreaming-review.png"
+        "submission/video-production/raw/current-0.1.12/03-dreaming-review.png"
       ],
       "navigation": {
         "chapter": "功能亮点",
@@ -924,51 +939,49 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+            "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
+            "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
-              880,
-              620
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              220,
-              880,
-              190
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              3.0379545454545456,
-              7.8,
-              1.684090909090909
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.064,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：自动记忆生成的更正方案",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  280,
+                  357,
+                  857,
+                  285
+                ],
+                "label": "新旧内容对照与审批按钮"
+              },
+              {
+                "rect_pixels": [
+                  880,
+                  674,
+                  255,
+                  44
+                ],
+                "label": "新旧内容对照与审批按钮"
+              }
+            ],
             "native_shape_id": 72
-          },
-          {
-            "shape_id": 5,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
-            "native_size": [
-              880,
-              620
-            ],
-            "crop_pixels": [
-              0,
-              540,
-              880,
-              80
-            ],
-            "box_inches": [
-              0.9,
-              5.080454545454545,
-              7.8,
-              0.7090909090909091
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 1.064,
-            "native_shape_id": 73
           }
         ]
       }
@@ -1027,7 +1040,7 @@
       ],
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
-        "submission/video-production/public/current/bill-recall.png"
+        "submission/presentation-production/source/full-window-captures/bill.png"
       ],
       "navigation": {
         "chapter": "功能亮点",
@@ -1062,26 +1075,39 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/bill-recall.png",
-            "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd",
+            "source": "submission/presentation-production/source/full-window-captures/bill.png",
+            "sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9",
             "native_size": [
-              900,
-              596
+              1440,
+              900
             ],
             "crop_pixels": [
-              55,
-              95,
-              800,
-              415
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              1.2626506024096384,
-              2.88,
-              7.074698795180723,
-              3.67
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.061,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：新会话中的账单检索结果",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  470,
+                  320,
+                  760,
+                  280
+                ],
+                "label": "账单明细、合计与来源"
+              }
+            ],
             "native_shape_id": 57
           }
         ]
@@ -1180,8 +1206,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/agent-tools-completed.png",
-        "submission/video-production/public/current/directory-folder.png"
+        "submission/presentation-production/source/full-window-captures/directory.png"
       ],
       "illustrations": [
         "submission/presentation-production/assets/memory-core-illustration.png"
@@ -1250,75 +1275,40 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/directory-folder.png",
-            "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b",
+            "source": "submission/presentation-production/source/full-window-captures/directory.png",
+            "sha256": "d6574fdd13bb61097c95593783f7754491fc1ece86e901f896f27fa65a7d374e",
             "native_size": [
-              1024,
-              270
+              1440,
+              900
             ],
             "crop_pixels": [
-              0,
-              0,
-              700,
-              90
-            ],
-            "box_inches": [
-              0.9,
-              3.071428571428571,
-              6.9,
-              0.8871428571428572
-            ],
-            "role": "primary",
-            "pixel_scale_at_1600": 1.183,
-            "native_shape_id": 101
-          },
-          {
-            "shape_id": 5,
-            "source": "submission/video-production/public/current/directory-folder.png",
-            "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b",
-            "native_size": [
-              1024,
-              270
-            ],
-            "crop_pixels": [
-              200,
-              186,
-              620,
-              80
-            ],
-            "box_inches": [
-              1.8312499999999998,
-              4.1,
-              5.0375000000000005,
-              0.65
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 0.975,
-            "native_shape_id": 102
-          },
-          {
-            "shape_id": 6,
-            "source": "submission/video-production/public/current/agent-tools-completed.png",
-            "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16",
-            "native_size": [
-              816,
-              312
-            ],
-            "crop_pixels": [
-              0,
               120,
-              816,
-              185
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              1.3727027027027026,
-              5.07,
-              5.954594594594595,
-              1.35
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.876,
-            "native_shape_id": 103
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：采集与隐私设置完整窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  285,
+                  165,
+                  1030,
+                  290
+                ],
+                "label": "授权目录与采集设置"
+              }
+            ],
+            "native_shape_id": 101
           }
         ]
       }
@@ -1432,7 +1422,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/directory-original.png"
+        "submission/video-production/raw/current-0.1.12/02-directory-source.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -1494,26 +1484,39 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/directory-original.png",
-            "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb",
+            "source": "submission/video-production/raw/current-0.1.12/02-directory-source.png",
+            "sha256": "be0b5ec2cad0d5ecd67d9dee1907ba66a363efc470553ef69ba28e0fdb6195f7",
             "native_size": [
-              760,
-              185
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              0,
-              760,
-              185
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              3.0204276315789476,
-              7.35,
-              1.7891447368421052
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.161,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：知识与来源的关联展示",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  347,
+                  210,
+                  726,
+                  395
+                ],
+                "label": "来源窗口中的知识与原始资料"
+              }
+            ],
             "native_shape_id": 94
           }
         ]
@@ -1596,8 +1599,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/directory-original.png",
-        "submission/video-production/public/current/keyword-result.png"
+        "submission/presentation-production/source/full-window-captures/keyword.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -1642,51 +1644,49 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/keyword-result.png",
-            "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37",
+            "source": "submission/presentation-production/source/full-window-captures/keyword.png",
+            "sha256": "79ffb51b8becd8e051eda0c0abbd32cdd21e246e9c2338e61feeb4457c0a89a1",
             "native_size": [
-              976,
-              288
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              0,
-              650,
-              145
+              1200,
+              838
             ],
             "box_inches": [
-              1.4120689655172414,
-              3.0,
-              6.275862068965517,
-              1.4
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.159,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：关键词查询与来源入口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  307,
+                  118,
+                  992,
+                  50
+                ],
+                "label": "查询条件、结果与来源入口"
+              },
+              {
+                "rect_pixels": [
+                  630,
+                  322,
+                  650,
+                  66
+                ],
+                "label": "查询条件、结果与来源入口"
+              }
+            ],
             "native_shape_id": 68
-          },
-          {
-            "shape_id": 5,
-            "source": "submission/video-production/public/current/directory-original.png",
-            "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb",
-            "native_size": [
-              760,
-              185
-            ],
-            "crop_pixels": [
-              0,
-              0,
-              760,
-              185
-            ],
-            "box_inches": [
-              0.9,
-              4.656513157894738,
-              7.3,
-              1.7769736842105261
-            ],
-            "role": "primary",
-            "pixel_scale_at_1600": 1.153,
-            "native_shape_id": 69
           }
         ]
       }
@@ -1756,7 +1756,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/stage-record.png"
+        "submission/presentation-production/source/full-window-captures/stage.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -1801,51 +1801,40 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/stage-record.png",
-            "sha256": "f8e68117b32b825dd32420f9aa5bd0de1ad7c4a931653b6d7f9c0c4acd46511e",
+            "source": "submission/presentation-production/source/full-window-captures/stage.png",
+            "sha256": "e6874e2828461d036e5786d50746ac3d170c0bc8c3f524a401e7c3548fb2ad79",
             "native_size": [
-              1024,
-              560
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              0,
-              650,
-              150
+              1200,
+              838
             ],
             "box_inches": [
-              1.4499999999999997,
-              2.97,
-              6.5,
-              1.5
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.2,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：短期与阶段记忆的完整窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  285,
+                  215,
+                  1025,
+                  570
+                ],
+                "label": "短期记录与阶段记忆"
+              }
+            ],
             "native_shape_id": 80
-          },
-          {
-            "shape_id": 6,
-            "source": "submission/video-production/public/current/stage-record.png",
-            "sha256": "f8e68117b32b825dd32420f9aa5bd0de1ad7c4a931653b6d7f9c0c4acd46511e",
-            "native_size": [
-              1024,
-              560
-            ],
-            "crop_pixels": [
-              0,
-              275,
-              650,
-              145
-            ],
-            "box_inches": [
-              1.5620689655172413,
-              5.15,
-              6.275862068965517,
-              1.4
-            ],
-            "role": "primary",
-            "pixel_scale_at_1600": 1.159,
-            "native_shape_id": 82
           }
         ]
       }
@@ -1944,7 +1933,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/dreaming-review.png"
+        "submission/video-production/raw/current-0.1.12/03-dreaming-review.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -1985,51 +1974,49 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+            "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
+            "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
-              880,
-              620
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              220,
-              880,
-              190
+              1200,
+              838
             ],
             "box_inches": [
-              0.8999999999999996,
-              3.18375,
-              7.700000000000001,
-              1.6625
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.05,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：内容更正的核对与审批窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  280,
+                  357,
+                  857,
+                  285
+                ],
+                "label": "新旧内容对照与审批按钮"
+              },
+              {
+                "rect_pixels": [
+                  880,
+                  674,
+                  255,
+                  44
+                ],
+                "label": "新旧内容对照与审批按钮"
+              }
+            ],
             "native_shape_id": 75
-          },
-          {
-            "shape_id": 5,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
-            "native_size": [
-              880,
-              620
-            ],
-            "crop_pixels": [
-              0,
-              540,
-              880,
-              80
-            ],
-            "box_inches": [
-              0.9000000000000005,
-              5.1,
-              7.699999999999999,
-              0.7
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 1.05,
-            "native_shape_id": 76
           }
         ]
       }
@@ -2166,19 +2153,32 @@
               900
             ],
             "crop_pixels": [
-              144,
-              198,
-              760,
-              390
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              1.193974358974358,
-              2.9799999999999995,
-              6.762051282051283,
-              3.4700000000000006
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.068,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：设备共享与同步控制窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  145,
+                  200,
+                  755,
+                  390
+                ],
+                "label": "共享范围与可信设备列表"
+              }
+            ],
             "native_shape_id": 78
           }
         ]
@@ -2257,7 +2257,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/shared-settings.png"
+        "submission/presentation-production/source/full-window-captures/settings.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -2304,28 +2304,41 @@
         ],
         "screenshots": [
           {
-            "shape_id": 3,
-            "source": "submission/video-production/public/current/shared-settings.png",
-            "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7",
+            "shape_id": 4,
+            "source": "submission/presentation-production/source/full-window-captures/settings.png",
+            "sha256": "83e627570420c5d7d2585bd529fd2772280d59f5c4adbe101b8b18781c74d388",
             "native_size": [
-              744,
-              310
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              0,
-              744,
-              310
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              2.554583333333333,
-              7.25,
-              3.0208333333333335
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.169,
-            "native_shape_id": 71
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：助手记忆权限与共享范围设置",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  300,
+                  220,
+                  740,
+                  210
+                ],
+                "label": "记忆授权与共享范围"
+              }
+            ],
+            "native_shape_id": 72
           }
         ]
       }
@@ -2399,7 +2412,8 @@
         ]
       ],
       "screenshots": [
-        "docs/delivery/assets/operations/03-current-workflows/sdk-version.png"
+        "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
+        "submission/presentation-production/source/full-window-captures/service.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -2413,7 +2427,72 @@
         ],
         "active": "安全部署"
       },
-      "user_refined_source_page": 20
+      "user_refined_source_page": 20,
+      "product_evidence": {
+        "source_page": 20,
+        "removed_shape_ids": [
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39"
+        ],
+        "screenshots": [
+          {
+            "shape_id": 4,
+            "source": "submission/presentation-production/source/full-window-captures/service.png",
+            "sha256": "7815469ffc3f6755af68e91f1edafa190dd292a1d3efe1f2c3dc60f4aa906577",
+            "native_size": [
+              1440,
+              900
+            ],
+            "crop_pixels": [
+              120,
+              0,
+              1200,
+              838
+            ],
+            "box_inches": [
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
+            ],
+            "role": "primary",
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：服务与能力的完整设置窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  298,
+                  214,
+                  720,
+                  225
+                ],
+                "label": "版本与系统能力状态"
+              }
+            ],
+            "native_shape_id": 78
+          }
+        ]
+      }
     },
     {
       "page": 23,
@@ -2493,7 +2572,7 @@
       ],
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
-        "submission/video-production/public/current/agent-tools-completed.png"
+        "submission/presentation-production/source/full-window-captures/task.png"
       ],
       "navigation": {
         "chapter": "技术实现",
@@ -2540,26 +2619,39 @@
         "screenshots": [
           {
             "shape_id": 18,
-            "source": "submission/video-production/public/current/agent-tools-completed.png",
-            "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16",
+            "source": "submission/presentation-production/source/full-window-captures/task.png",
+            "sha256": "281ef0d7cbaf2d2ea2afd4e7f941206ef8418a685d0c1586a7fa412c9dfed54d",
             "native_size": [
-              816,
-              312
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              0,
-              816,
-              312
+              1200,
+              838
             ],
             "box_inches": [
-              0.9000000000000005,
-              3.4829411764705887,
-              7.699999999999999,
-              2.9441176470588233
+              2.4661097852028635,
+              3.2,
+              4.4677804295942725,
+              3.12
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.132,
+            "pixel_scale_at_1600": 0.447,
+            "context": "complete application window",
+            "caption": "图 1：工具任务完成后的会话窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  465,
+                  185,
+                  755,
+                  325
+                ],
+                "label": "工具完成记录与记忆保存结果"
+              }
+            ],
             "native_shape_id": 96
           }
         ]
@@ -2593,7 +2685,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/directory-recall.png"
+        "submission/video-production/raw/current-0.1.12/01-directory-recall.png"
       ],
       "user_refined_source_page": 22,
       "product_evidence": {
@@ -2604,26 +2696,39 @@
         "screenshots": [
           {
             "shape_id": 2,
-            "source": "submission/video-production/public/current/directory-recall.png",
-            "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa",
+            "source": "submission/video-production/raw/current-0.1.12/01-directory-recall.png",
+            "sha256": "d282204836889ea9bf67588698b42fbcd131fe10bb79dbebeb000b9901d14f89",
             "native_size": [
-              900,
-              596
+              1440,
+              900
             ],
             "crop_pixels": [
-              55,
-              215,
-              800,
-              210
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              7.05,
-              3.6768750000000003,
-              5.7,
-              1.49625
+              7.08763723150358,
+              2.4,
+              5.58472553699284,
+              3.9
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 0.855,
+            "pixel_scale_at_1600": 0.558,
+            "context": "complete application window",
+            "caption": "图 1：星河活动的实际查询窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  470,
+                  320,
+                  775,
+                  220
+                ],
+                "label": "跨会话回答与来源链接"
+              }
+            ],
             "native_shape_id": 13
           }
         ]
@@ -2691,8 +2796,7 @@
       ],
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
-        "submission/video-production/public/current/directory-folder.png",
-        "submission/video-production/public/current/directory-original.png"
+        "submission/video-production/raw/current-0.1.12/02-directory-source.png"
       ],
       "navigation": {
         "chapter": "案例验证",
@@ -2726,51 +2830,40 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/directory-original.png",
-            "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb",
+            "source": "submission/video-production/raw/current-0.1.12/02-directory-source.png",
+            "sha256": "be0b5ec2cad0d5ecd67d9dee1907ba66a363efc470553ef69ba28e0fdb6195f7",
             "native_size": [
-              760,
-              185
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              0,
-              760,
-              185
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              2.961315789473684,
-              8.0,
-              1.9473684210526316
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.263,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：活动知识与原始文件内容",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  347,
+                  210,
+                  726,
+                  395
+                ],
+                "label": "来源窗口中的知识与原始资料"
+              }
+            ],
             "native_shape_id": 69
-          },
-          {
-            "shape_id": 5,
-            "source": "submission/video-production/public/current/directory-folder.png",
-            "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b",
-            "native_size": [
-              1024,
-              270
-            ],
-            "crop_pixels": [
-              200,
-              186,
-              620,
-              80
-            ],
-            "box_inches": [
-              0.9,
-              5.208870967741936,
-              8.0,
-              1.032258064516129
-            ],
-            "role": "primary",
-            "pixel_scale_at_1600": 1.548,
-            "native_shape_id": 70
           }
         ]
       }
@@ -2846,8 +2939,7 @@
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
         "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
-        "submission/video-production/public/current/directory-original.png",
-        "submission/video-production/public/current/directory-recall.png"
+        "submission/video-production/raw/current-0.1.12/01-directory-recall.png"
       ],
       "navigation": {
         "chapter": "案例验证",
@@ -2891,51 +2983,40 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/directory-recall.png",
-            "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa",
+            "source": "submission/video-production/raw/current-0.1.12/01-directory-recall.png",
+            "sha256": "d282204836889ea9bf67588698b42fbcd131fe10bb79dbebeb000b9901d14f89",
             "native_size": [
-              900,
-              596
+              1440,
+              900
             ],
             "crop_pixels": [
-              55,
-              90,
-              800,
-              330
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              3.1309375,
-              7.85,
-              3.238125
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.177,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：新会话召回已保存的活动资料",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  470,
+                  320,
+                  775,
+                  220
+                ],
+                "label": "跨会话回答与来源链接"
+              }
+            ],
             "native_shape_id": 79
-          },
-          {
-            "shape_id": 9,
-            "source": "submission/video-production/public/current/directory-original.png",
-            "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb",
-            "native_size": [
-              760,
-              185
-            ],
-            "crop_pixels": [
-              0,
-              0,
-              760,
-              185
-            ],
-            "box_inches": [
-              9.08445945945946,
-              5.8,
-              3.081081081081081,
-              0.75
-            ],
-            "role": "overview",
-            "pixel_scale_at_1600": 0.486,
-            "native_shape_id": 84
           }
         ]
       }
@@ -3012,7 +3093,7 @@
       "screenshots": [
         "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
         "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
-        "submission/video-production/public/current/dreaming-review.png"
+        "submission/video-production/raw/current-0.1.12/03-dreaming-review.png"
       ],
       "navigation": {
         "chapter": "案例验证",
@@ -3056,51 +3137,49 @@
         "screenshots": [
           {
             "shape_id": 4,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
+            "source": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
+            "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e",
             "native_size": [
-              880,
-              620
+              1440,
+              900
             ],
             "crop_pixels": [
+              120,
               0,
-              220,
-              880,
-              190
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              3.190965909090909,
-              8.05,
-              1.7380681818181822
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.098,
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：更正前后对照与批准操作",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  280,
+                  357,
+                  857,
+                  285
+                ],
+                "label": "新旧内容对照与审批按钮"
+              },
+              {
+                "rect_pixels": [
+                  880,
+                  674,
+                  255,
+                  44
+                ],
+                "label": "新旧内容对照与审批按钮"
+              }
+            ],
             "native_shape_id": 79
-          },
-          {
-            "shape_id": 11,
-            "source": "submission/video-production/public/current/dreaming-review.png",
-            "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993",
-            "native_size": [
-              880,
-              620
-            ],
-            "crop_pixels": [
-              0,
-              540,
-              880,
-              80
-            ],
-            "box_inches": [
-              0.9,
-              5.41909090909091,
-              8.05,
-              0.7318181818181819
-            ],
-            "role": "detail",
-            "pixel_scale_at_1600": 1.098,
-            "native_shape_id": 86
           }
         ]
       }
@@ -3190,7 +3269,7 @@
         ]
       ],
       "screenshots": [
-        "submission/video-production/public/current/updated-recall.png"
+        "submission/video-production/raw/current-0.1.12/04-updated-recall.png"
       ],
       "navigation": {
         "chapter": "案例验证",
@@ -3235,28 +3314,41 @@
         ],
         "screenshots": [
           {
-            "shape_id": 3,
-            "source": "submission/video-production/public/current/updated-recall.png",
-            "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49",
+            "shape_id": 4,
+            "source": "submission/video-production/raw/current-0.1.12/04-updated-recall.png",
+            "sha256": "6120477bae9a984bb35b729b5a77f2f626952b3b089ada90747b8c0693a4a28f",
             "native_size": [
-              900,
-              596
+              1440,
+              900
             ],
             "crop_pixels": [
-              55,
-              90,
-              800,
-              375
+              120,
+              0,
+              1200,
+              838
             ],
             "box_inches": [
-              0.9,
-              2.66015625,
-              7.85,
-              3.6796875
+              2.1582338902147966,
+              2.8499999999999996,
+              5.083532219570406,
+              3.5500000000000003
             ],
             "role": "primary",
-            "pixel_scale_at_1600": 1.177,
-            "native_shape_id": 69
+            "pixel_scale_at_1600": 0.508,
+            "context": "complete application window",
+            "caption": "图 1：批准更正后的查询结果",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  470,
+                  320,
+                  775,
+                  260
+                ],
+                "label": "更新后的安排与引用依据"
+              }
+            ],
+            "native_shape_id": 70
           }
         ]
       }
@@ -3505,7 +3597,7 @@
         ],
         "screenshots": [
           {
-            "shape_id": 5,
+            "shape_id": 6,
             "source": "submission/presentation-production/source/product-captures/device-a-memory.png",
             "sha256": "a76e469a2fbfa42f42dd312b211d22834538e034acde28bc77c19eedf0a13b1d",
             "native_size": [
@@ -3513,23 +3605,36 @@
               2160
             ],
             "crop_pixels": [
-              1785,
-              1052,
-              1010,
-              44
+              0,
+              0,
+              3840,
+              2160
             ],
             "box_inches": [
-              2.52,
-              3.270891089108911,
-              9.6,
-              0.4182178217821782
+              0.8800000000000002,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
-            "role": "detail",
-            "pixel_scale_at_1600": 1.141,
-            "native_shape_id": 79
+            "role": "primary",
+            "pixel_scale_at_1600": 0.112,
+            "context": "complete desktop",
+            "caption": "图 1：设备 A 的完整记忆窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  1770,
+                  1035,
+                  1150,
+                  105
+                ],
+                "label": "共享记录正文"
+              }
+            ],
+            "native_shape_id": 80
           },
           {
-            "shape_id": 8,
+            "shape_id": 11,
             "source": "submission/presentation-production/source/product-captures/device-b-memory.png",
             "sha256": "3a81e646e3b703c0100877199e84736b08b7c84a55876ea81c87b79ecc92b36c",
             "native_size": [
@@ -3537,23 +3642,36 @@
               2160
             ],
             "crop_pixels": [
-              1785,
-              1052,
-              1010,
-              44
+              0,
+              0,
+              3840,
+              2160
             ],
             "box_inches": [
-              2.52,
-              4.270891089108911,
-              9.6,
-              0.4182178217821782
+              4.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
-            "role": "detail",
-            "pixel_scale_at_1600": 1.141,
-            "native_shape_id": 82
+            "role": "primary",
+            "pixel_scale_at_1600": 0.112,
+            "context": "complete desktop",
+            "caption": "图 2：设备 B 的完整记忆窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  1770,
+                  1035,
+                  1150,
+                  105
+                ],
+                "label": "共享记录正文"
+              }
+            ],
+            "native_shape_id": 85
           },
           {
-            "shape_id": 11,
+            "shape_id": 16,
             "source": "submission/presentation-production/source/product-captures/device-c-memory.png",
             "sha256": "9db6b891762652c164a8e9b43703f33794254991c0793f6e5b0deb4bf070847d",
             "native_size": [
@@ -3561,20 +3679,33 @@
               2160
             ],
             "crop_pixels": [
-              1530,
-              895,
-              1010,
-              44
+              0,
+              0,
+              3840,
+              2160
             ],
             "box_inches": [
-              2.52,
-              5.270891089108911,
-              9.6,
-              0.4182178217821782
+              8.88,
+              3.87,
+              3.5999999999999996,
+              2.025
             ],
-            "role": "detail",
-            "pixel_scale_at_1600": 1.141,
-            "native_shape_id": 85
+            "role": "primary",
+            "pixel_scale_at_1600": 0.112,
+            "context": "complete desktop",
+            "caption": "图 3：设备 C 的完整记忆窗口",
+            "annotations": [
+              {
+                "rect_pixels": [
+                  1520,
+                  875,
+                  1100,
+                  100
+                ],
+                "label": "共享记录正文"
+              }
+            ],
+            "native_shape_id": 90
           }
         ]
       }
@@ -3766,7 +3897,7 @@
     },
     {
       "path": "submission/presentation-production/scripts/reorder_refined_deck.py",
-      "sha256": "2e19c11443ec3fcd0465cd1934c6e42456e19fe6670e73208bdf9ac443679789"
+      "sha256": "c54b1d5d3ca9e6e846e207ea26dbfd96c9f531b5b83126e093bea6e20d7dca40"
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
@@ -3777,8 +3908,44 @@
       "sha256": "7d167ba2502f9d16c3bd8e77d79ad7dc254255da807e3978ddc094b1f9d5c39e"
     },
     {
+      "path": "submission/presentation-production/scripts/extract_full_windows.py",
+      "sha256": "4de0749572354819fae4635010bbd21641a934c353d0192b7c51b111a02cc5e6"
+    },
+    {
       "path": "submission/presentation-production/scripts/product_screenshots.py",
-      "sha256": "325fadda8545a62e0afa559df1300509d4455194adadde3f7a54428fa5b727bf"
+      "sha256": "5b49f3fc62fb03372dacbee5755111347b843a81ae2b1af440c399426437e3fc"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/bill.png",
+      "sha256": "c3dcf3821d58f71e51f8db526b41afd0865c4e2fdff0ed3b1a176fea83c58ed9"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/directory.png",
+      "sha256": "d6574fdd13bb61097c95593783f7754491fc1ece86e901f896f27fa65a7d374e"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/keyword.png",
+      "sha256": "79ffb51b8becd8e051eda0c0abbd32cdd21e246e9c2338e61feeb4457c0a89a1"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/manifest.json",
+      "sha256": "e7b0f83012961c90a8ae3274deda42eeb01ce8285ba1554e151027afa4da4878"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/service.png",
+      "sha256": "7815469ffc3f6755af68e91f1edafa190dd292a1d3efe1f2c3dc60f4aa906577"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/settings.png",
+      "sha256": "83e627570420c5d7d2585bd529fd2772280d59f5c4adbe101b8b18781c74d388"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/stage.png",
+      "sha256": "e6874e2828461d036e5786d50746ac3d170c0bc8c3f524a401e7c3548fb2ad79"
+    },
+    {
+      "path": "submission/presentation-production/source/full-window-captures/task.png",
+      "sha256": "281ef0d7cbaf2d2ea2afd4e7f941206ef8418a685d0c1586a7fa412c9dfed54d"
     },
     {
       "path": "submission/presentation-production/source/product-captures/capture-manifest.json",
@@ -3801,47 +3968,23 @@
       "sha256": "a57efc161aa4762077171c2977ea487f0f01702feaede9d41a79421c25124225"
     },
     {
-      "path": "submission/video-production/public/current/agent-tools-completed.png",
-      "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
+      "path": "submission/video-production/raw/current-0.1.12/01-directory-recall.png",
+      "sha256": "d282204836889ea9bf67588698b42fbcd131fe10bb79dbebeb000b9901d14f89"
     },
     {
-      "path": "submission/video-production/public/current/bill-recall.png",
-      "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
+      "path": "submission/video-production/raw/current-0.1.12/02-directory-source.png",
+      "sha256": "be0b5ec2cad0d5ecd67d9dee1907ba66a363efc470553ef69ba28e0fdb6195f7"
     },
     {
-      "path": "submission/video-production/public/current/directory-folder.png",
-      "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+      "path": "submission/video-production/raw/current-0.1.12/03-dreaming-review.png",
+      "sha256": "052641f43f3651c2d9c69a971a7b0e24c3bd6aaaddfe55c5da42dc692657355e"
     },
     {
-      "path": "submission/video-production/public/current/directory-original.png",
-      "sha256": "b5920dcd618fec08e57caffcb033bbe7fc8115301b41c64b8598189b511ccafb"
-    },
-    {
-      "path": "submission/video-production/public/current/directory-recall.png",
-      "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
-    },
-    {
-      "path": "submission/video-production/public/current/dreaming-review.png",
-      "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
-    },
-    {
-      "path": "submission/video-production/public/current/keyword-result.png",
-      "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37"
-    },
-    {
-      "path": "submission/video-production/public/current/shared-settings.png",
-      "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7"
-    },
-    {
-      "path": "submission/video-production/public/current/stage-record.png",
-      "sha256": "f8e68117b32b825dd32420f9aa5bd0de1ad7c4a931653b6d7f9c0c4acd46511e"
-    },
-    {
-      "path": "submission/video-production/public/current/updated-recall.png",
-      "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+      "path": "submission/video-production/raw/current-0.1.12/04-updated-recall.png",
+      "sha256": "6120477bae9a984bb35b729b5a77f2f626952b3b089ada90747b8c0693a4a28f"
     }
   ],
-  "output_sha256": "b51005075765e4d2f0f0a55e1c733af2a5b57e292de640ff769816c58a3ae064",
+  "output_sha256": "149fcd56e0074cb95c121223cc6689eb43deb7c43ae17251c04b5895bdc02cce",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -4580,7 +4723,7 @@
       "35": 12,
       "36": 12
     },
-    "unchanged_package_parts": 143,
+    "unchanged_package_parts": 142,
     "removed_package_parts": [
       "ppt/notesSlides/_rels/notesSlide10.xml.rels",
       "ppt/notesSlides/_rels/notesSlide29.xml.rels",

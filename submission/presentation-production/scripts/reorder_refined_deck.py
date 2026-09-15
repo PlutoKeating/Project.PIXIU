@@ -279,7 +279,7 @@ for new_page, old_page in enumerate(ORDER, 1):
     manifest['slides'].append(entry)
 manifest['removed_slides'] = [{'user_refined_source_page': n, 'title': base['slides'][n-1]['title'], 'source_pages': base['slides'][n-1]['source_pages']} for n in [10,29]]
 manifest['inputs'] = [{'path': str(p.relative_to(ROOT)), 'sha256': digest(p)} for p in [SOURCE, BASE_MANIFEST, Path(__file__).resolve(), WORK/'scripts/build_reference_deck.py', WORK/'scripts/refine_explanations.py']]
-extra_inputs = {WORK/'scripts/product_screenshots.py', WORK/'source/product-captures/capture-manifest.json'}
+extra_inputs = {WORK/'scripts/extract_full_windows.py', WORK/'source/full-window-captures/manifest.json', WORK/'scripts/product_screenshots.py', WORK/'source/product-captures/capture-manifest.json'}
 extra_inputs |= {ROOT / i['source'] for v in product_evidence.values() for i in v['screenshots']}
 manifest['inputs'] += [{'path': str(p.relative_to(ROOT)), 'sha256': digest(p)} for p in sorted(extra_inputs)]
 manifest['output_sha256'] = digest(OUT)

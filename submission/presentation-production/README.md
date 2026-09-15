@@ -73,6 +73,12 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 
 ## 当前真实截图版
 
-已检查全部34页，19页补充或放大实际产品界面，覆盖产品定位、两大亮点、账单场景、主要技术说明及第05部分操作案例。三端共享采用本机三台麒麟虚拟机的原生4K来源截图；Dreaming审批、账单和星河活动采用已有同版真实实录。第23页保留对齐的四步流程，第30页改为三行等距实际记录。
+已检查全部34页，20页配置完整产品窗口与标注，覆盖产品定位、两大亮点、账单场景、主要技术说明及第05部分操作案例。三端共享采用本机三台麒麟虚拟机的原生4K来源截图；Dreaming审批、账单和星河活动采用已有同版真实实录。第23页保留对齐的四步流程，第30页改为三台独立桌面并列、等宽等距展示。
 
 逐页取舍、证据边界与采集条件见 [产品截图审计](review/product-screenshot-audit.md)。生成流程由 `reorder_refined_deck.py` 调用 `product_screenshots.py`；清单记录每张原始图片的摘要、裁切与页面位置，验证同时检查实际嵌入关系。制作依赖及现有重建命令保持一致，原始 PNG 通过 Git LFS 管理。
+
+### 完整窗口与截图标注修订
+
+全34页已复核，其中20页的软件截图改为完整应用窗口或完整桌面，取消独立文字条、按钮条拼贴。图下添加图注，关键位置使用可编辑红框；三端页使用三个独立截图，等宽、等距排列。详见[截图审计](review/product-screenshot-audit.md)。
+
+原始录屏抽帧可运行 `python scripts/extract_full_windows.py`，使用现有 FFmpeg，不裁切或重绘像素；实时采集源 PNG 只校验摘要。完整来源和时间点记录于 `source/full-window-captures/manifest.json`。重建、PDF渲染与验证仍使用上方命令。
