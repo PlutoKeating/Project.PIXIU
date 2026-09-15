@@ -1,6 +1,6 @@
 {
-  "pptx_sha256": "df3a187f45212e341733a6826dc96c23765719f7b92c3a5e25c5b3f8ccee2a32",
-  "pdf_sha256": "b6a2904fe2e8aa8312869b1b517c12d73de26caa5dcf2adc47aefd31c6037e45",
+  "pptx_sha256": "2a1abda7f3af06b270630db07937f25212e4a1da19db25828824a6b3c720932e",
+  "pdf_sha256": "19116dac2e0bdd28c82eca17bd1b7606373ea1880b2cd56ed9832b7bde745675",
   "reference_pdf_sha256": "35df7b9bcd789990147aa7f039c2c7875f180aa75a8268126f0a1ed8222e2ab8",
   "pages": 34,
   "reference_pages": 20,
@@ -163,11 +163,11 @@
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-16.png",
-      "sha256": "6a127924220e7ef4ef17a17eda1e907e2c75856fd59b13d04940436f06253300"
+      "sha256": "fee0d3cac7f55c4513eb7f5d8820da3030a6b0be58c4071682eb572b7df322c4"
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-17.png",
-      "sha256": "ff8de796feeb18b02ad85014648d07828ce4c5c0b1f022e995ca2ccc8873ecd9"
+      "sha256": "67191aa4c117c1f1c04ed5db4b195e272b46d1c757a72f57c8a6dc6343618a66"
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-18.png",
@@ -175,11 +175,11 @@
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-19.png",
-      "sha256": "dee0b6eba56fc0a6d4530e9a88515229aa1c65a7b509bd27e5907f65337c0cc9"
+      "sha256": "24e12811cc504a728877d5d65a765c68fe9ccf6f72a9351be7d6c6e6f64c6ec5"
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-20.png",
-      "sha256": "cfe56c5aa7f54996fbc86f34417cb89f4785872606aaf0790dfa2aeb61c68b3d"
+      "sha256": "08cad53adb4d173d52968f5d4fd59cfa78c5beba5dd2bed9905eb8ba9eeb2857"
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-21.png",
@@ -231,7 +231,7 @@
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-33.png",
-      "sha256": "7981c82c6c103862d6b970408bbd8fe519024ff93eae438b914faba06122d21f"
+      "sha256": "5b735e6214e072ae39b6c9601febacc00ec3b4a0d04bb36e042faa7259c44e0d"
     },
     {
       "path": "submission/presentation-production/render/abc-trial/slide-34.png",

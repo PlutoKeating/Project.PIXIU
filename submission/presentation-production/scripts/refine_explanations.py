@@ -160,3 +160,43 @@ def align_knowledge(root):
         for identity in node.xpath('.//p:cNvPr',namespaces=NS):identity.set('id',str(next_id));next_id+=1
         tree.append(node)
     return root
+
+
+TECH_EXPLANATIONS = {
+    14: ('PIXIU 保留原文、图片和文档块作为来源证据，再将内容整理成事实、流程、案例或模板。\n'
+         '每条知识记录状态、授权范围与版本，并关联实体和索引，使检索结果能回到原始依据。'),
+    15: ('用户可能只记得关键词，也可能只记得大意，或与内容相关的人和事。\n'
+         '系统从关键词、语义相似度和实体关系三路召回，再融合排序、按条件过滤，并附上来源。'),
+    17: ('同一条知识在多设备上被修改，与两条记录的内容相互矛盾，需要分别处理。\n'
+         '副本层按版本规则使各端收敛；业务层判断内容如何更正或合并，更正方案由用户审批后保存。'),
+    18: ('一台设备写入共享记忆后，通过 Gossip 向在线设备传播操作，各端合并并更新本地副本。\n'
+         '离线设备重连时先交换摘要、找出缺失，再补齐操作并重建索引，使共享记忆逐步收敛。'),
+}
+
+
+def explain_technical(root, source_page):
+    """Give each technical diagram a readable two-sentence introduction."""
+    tree=root.find('p:cSld/p:spTree',NS)
+    for node in tree:
+        offsets=node.xpath('./p:spPr/a:xfrm/a:off',namespaces=NS)
+        if not offsets:continue
+        y=int(offsets[0].get('y'))/EMU
+        if not 1.85 < y < 7.1:continue
+        offsets[0].set('y',str(round((3.02+(y-1.91)*.77)*EMU)))
+        for ext in node.xpath('./p:spPr/a:xfrm/a:ext',namespaces=NS):
+            ext.set('cy',str(round(int(ext.get('cy'))*.77)))
+        for run in node.xpath('.//a:rPr | .//a:defRPr | .//a:endParaRPr',namespaces=NS):
+            if run.get('sz'):run.set('sz',str(round(int(run.get('sz'))*.84)))
+    temp=Presentation();slide=temp.slides.add_slide(temp.slide_layouts[6])
+    box=slide.shapes.add_textbox(Inches(.78),Inches(1.98),Inches(11.87),Inches(.82))
+    tf=box.text_frame;tf.word_wrap=True
+    tf.margin_left=tf.margin_right=tf.margin_top=tf.margin_bottom=0
+    for i,line in enumerate(TECH_EXPLANATIONS[source_page].split('\n')):
+        p=tf.paragraphs[0] if i==0 else tf.add_paragraph()
+        p.text=line;p.font.name='Microsoft YaHei';p.font.size=Pt(17);p.font.color.rgb=RGBColor.from_string(WHITE)
+        p.line_spacing=1.10;p.space_after=Pt(5)
+    node=ET.fromstring(ET.tostring(box._element))
+    identity=max(int(v) for v in root.xpath('.//p:cNvPr/@id',namespaces=NS))+1
+    node.xpath('.//p:cNvPr',namespaces=NS)[0].set('id',str(identity))
+    tree.append(node)
+    return root

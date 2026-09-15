@@ -2277,7 +2277,7 @@
     },
     {
       "path": "submission/presentation-production/scripts/reorder_refined_deck.py",
-      "sha256": "c267c5905954885c41091132e9bff00f7367d9097fe13fca0f6abc67e5c664bc"
+      "sha256": "3030b4e2b382200f0b629bc57e9e11c9c7bcfd7c2dba1e976c68aab4b7a48a6f"
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
@@ -2285,10 +2285,10 @@
     },
     {
       "path": "submission/presentation-production/scripts/refine_explanations.py",
-      "sha256": "67a31f4b028615cce7efbc191398ba9f2dcab0a8c543c0c16d4d2c66ee6b93b2"
+      "sha256": "7d167ba2502f9d16c3bd8e77d79ad7dc254255da807e3978ddc094b1f9d5c39e"
     }
   ],
-  "output_sha256": "df3a187f45212e341733a6826dc96c23765719f7b92c3a5e25c5b3f8ccee2a32",
+  "output_sha256": "2a1abda7f3af06b270630db07937f25212e4a1da19db25828824a6b3c720932e",
   "removed_slides": [
     {
       "user_refined_source_page": 10,
@@ -2871,7 +2871,10 @@
       9,
       11,
       12,
-      14
+      14,
+      15,
+      17,
+      18
     ],
     "cloned_chapter_sources": {
       "33": 12,

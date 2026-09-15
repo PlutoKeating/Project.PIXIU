@@ -72,3 +72,5 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 验证包含34页顺序与主题、导航和页码、显式删除记录、真实截图字节、章节版式复制，以及本次授权修改范围之外的逐形状XML一致性。依赖沿用现有 python-pptx、lxml、LibreOffice 和 Poppler，无新增运行或发布依赖。原有正式31页资产不变。具体复核见 `review/abc-style-review.md`。
 
 第16页“知识结构与来源关联”采用统一网格：四张类别卡片等宽等距；Evidence 与 Knowledge 同高并居中对齐，三个输出节点等宽等距，以直角分支连线连接。沿用原生文本、框饰、字体与现有构建依赖。
+
+技术章节第16、17、19、20页在图前增加两句解释，交代知识与证据的关系、三路检索的原因、两类冲突的处理边界、在线传播与离线补齐流程。框图保留并下移，文字与图形分区；依赖及构建命令不变。
