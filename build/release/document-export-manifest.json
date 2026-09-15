@@ -107,10 +107,10 @@
       "exports": [
         {
           "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
-          "sha256": "cbf30e07605087bfb05fc49b57bf30bc2efc0e53c3d50c67824c4e0360683766"
+          "sha256": "6577b549a83a007e77e03f820569b3745fe2730d1169fb24957ed6d2a75933f7"
         }
       ],
-      "layout_provenance": "User latest saved DOCX edited in place; reviewed prose, emphasis and native TOC"
+      "layout_provenance": "Latest user DOCX; separate numbered body style with hanging indentation, two-character prose indentation"
     }
   ],
   "presentation": {
