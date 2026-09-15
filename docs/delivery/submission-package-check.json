@@ -22,8 +22,8 @@
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/PIXIU源代码.tar.gz",
-      "bytes": 22345374,
-      "sha256": "32460b11cc39f7135303d29b13bc95fe38134605601f7ebba2fb2cc108c9a3ef"
+      "bytes": 22344875,
+      "sha256": "9cddbc6e90ab2dd53cf24fa45f86be185b3b88788baa2556829d6763e9820950"
     },
     {
       "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/源代码/pixiu_0.1.12-1_amd64.deb",
@@ -43,7 +43,7 @@
   "video_crc": "passed",
   "source_files": 1890,
   "fixed_upstreams": 5,
-  "source_commit": "487572437404dff2dd95a73b664325cc3b457cd8",
+  "source_commit": "6e5578ab2068d74a2909c6f6d63169dc802b5b23",
   "source_tree_clean": true,
   "source_scope": "minimal-build",
   "excluded_directories_check": "passed",
