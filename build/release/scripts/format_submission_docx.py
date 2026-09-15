@@ -76,6 +76,15 @@ def format_document(path: Path) -> None:
                 child(rp, 'color', val='E6EDF3')
                 child(rp, 'sz', val=18);child(rp, 'szCs', val=18)
             cell.appendChild(p)
+    # Writer merges directly adjacent tables on import; keep terminal examples
+    # separate from preceding data tables with a minimal paragraph boundary.
+    for table in list(body.childNodes):
+        if table.nodeType == table.ELEMENT_NODE and table.localName == 'tbl':
+            previous = table.previousSibling
+            if previous is not None and previous.nodeType == previous.ELEMENT_NODE and previous.localName == 'tbl':
+                gap = d.createElementNS(W, 'w:p')
+                child(child(gap, 'pPr'), 'spacing', before=0, after=0, line=40, lineRule='exact')
+                body.insertBefore(gap, table)
     entries['word/document.xml'] = d.toxml(encoding='utf-8')
     # Symbol-font bullets are rendered as emoji by some office applications.
     if 'word/numbering.xml' in entries:

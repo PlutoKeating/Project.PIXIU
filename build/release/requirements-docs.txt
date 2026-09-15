@@ -1,4 +1,5 @@
-# DOCX documentation export: Markdown plus system LibreOffice.
+# DOCX export: Markdown plus system LibreOffice Writer and python3-uno.
+# Native TOC/header/footer refresh uses /usr/bin/python3 with Debian python3-uno.
 # PNG paths, dimensions and digests use the Python standard library.
 # Word borders, terminal blocks, plain lists and embedded assets use standard-library XML.
 # These tools are not product runtime dependencies.

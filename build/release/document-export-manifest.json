@@ -107,7 +107,7 @@
       "exports": [
         {
           "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/技术方案.docx",
-          "sha256": "0e33fc92c6185b043e789e1e33f865382c6acb4b905a2f1100ff9c648cb9a2d2"
+          "sha256": "d8bc1ccdd09fbf895b5ea6fa5e5f9dec22567d3903c2df5a425230f817942733"
         }
       ]
     }
@@ -115,7 +115,7 @@
   "presentation": {
     "source": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
     "path": "submission/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/603821-PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现/项目报告.pptx",
-    "sha256": "80bd96c2af3e7aa462a3aa796c2fcae2f39725dc5f94ce2f585faac781ae439a",
+    "sha256": "33824ce3c34b59a3dfdac77a8bc0865798757671a079315579c1c36f6860ec2b",
     "provenance": "Human-edited submitted deck preserved during DOCX export"
   }
 }

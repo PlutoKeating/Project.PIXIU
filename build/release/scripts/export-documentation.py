@@ -218,9 +218,12 @@ def export(root: Path) -> tuple[list[dict], dict]:
         fit_word_tables(docx)
         format_document(docx)
         doc = materials / "技术方案.docx"
-        shutil.copyfile(docx, doc)
-        # Inspect the actual delivered binary document, not only the intermediate.
-        pdf = convert(doc, output, "pdf:writer_pdf_Export", work / "profile")
+        finalized = work / "技术方案.docx"
+        shutil.copyfile(docx, finalized)
+        # UNO creates and calculates a native TOC and running field values.
+        subprocess.run(["/usr/bin/python3", str(root / "build/release/scripts/finalize-document-navigation.py"),
+                        str(finalized), str(output / "技术方案.pdf")], check=True, timeout=120)
+        shutil.copyfile(finalized, doc)
     # The submitted deck may contain later Human edits; exporting Word never
     # replaces it with a production template.
     ppt = materials / "项目报告.pptx"
