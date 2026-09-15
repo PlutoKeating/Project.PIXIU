@@ -51,7 +51,7 @@
     },
     {
       "page": 3,
-      "title": "跨设备记忆场景",
+      "title": "多设备 Agent 的记忆断点",
       "source_pages": [
         3
       ],
@@ -2375,8 +2375,8 @@
     },
     {
       "path": "submission/presentation-production/scripts/build_reference_deck.py",
-      "sha256": "85694b440c5b0b5efd48cd784b37b0b7cd95c2ace9bc76f378a2d85f99fb37d4"
+      "sha256": "b5cdfd032e86efef5ff56cbd07bfe76c8c71f729163adc2d3912b5f59092ab39"
     }
   ],
-  "output_sha256": "8a6de92d69fc06d70f00a9f6ddd84057988d48972c1e754d7f6520dfc6e9ec31"
+  "output_sha256": "4e86bb529a5d91c57cada6bd766e827bab5c886944ea5ced6662698dcf7c3ae2"
 }
