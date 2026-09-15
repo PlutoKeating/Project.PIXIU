@@ -110,10 +110,10 @@ def label(s,t,x,y,w,color=C):
     center(s,t,x+.07,y+.07,w-.14,.32,18,color)
 
 def foot(s,t):
-    center(s,t,.72,6.57,11.9,.38,16,PALE,False)
+    s.notes_slide.notes_text_frame.text += '\n' + t
 
 def note(s,t):
-    txt(s,t,.63,7.19,11.9,.23,9.2,PALE)
+    s.notes_slide.notes_text_frame.text += '\n' + t
 
 def shot(s,name,x,y,w,h):
     p=ROOT/'docs/delivery/assets/operations/03-current-workflows'/name
@@ -128,10 +128,9 @@ def shot(s,name,x,y,w,h):
     manifest['slides'][-1]['screenshots'].append(str(p.relative_to(ROOT)))
     return a
 
-TITLES = ['PIXIU · 貔貅','汇报导览','跨设备记忆场景','需求缺口与方案回应','桌面智能体记忆中枢','业务与技术全景','核心功能矩阵','授权目录整理','账单检索与来源追溯','偏好演进与版本历史','可信设备协作','持续记忆技术体系','多源知识接入','知识结构与来源关联','三路混合检索','记忆阶段流转','双层冲突治理','去中心化同步协议','全生命周期安全','智能体记忆生命周期','原生部署与兼容路径','星河观测活动案例','活动资料与任务要素','目录采集与跨会话召回','更正审批与知识更新','场景应用价值','开发基线量化评测','三端并发与恢复收敛','验证结果与待测范围','服务模式与持续运营','商业试点路线','PIXIU · 貔貅']
-BOTTOM = {4,8,10,14,17,20,24,25}
+TITLES = ['PIXIU · 貔貅','汇报导览','跨设备记忆场景','需求缺口与方案回应','桌面智能体记忆中枢','业务与技术全景','核心功能矩阵','授权目录整理','场景示例 · 账单检索','偏好演进与版本历史','可信设备协作','持续记忆技术体系','多源知识接入','知识结构与来源关联','三路混合检索','记忆阶段流转','双层冲突治理','去中心化同步协议','全生命周期安全','智能体记忆生命周期','原生部署与兼容路径','真实操作案例','活动资料与任务要素','目录采集与跨会话召回','更正审批与知识更新','场景应用价值','开发基线量化评测','三端并发与恢复收敛','验证结果与待测范围','服务模式与持续运营','商业试点路线','PIXIU · 貔貅']
 SIDE = {5,9}
-CUSTOM = {1,2,6,12,21,22,27,30,31,32}
+CUSTOM = {1,2,6,12,22,27,30,31,32}
 
 def gradient(element, colors=('E9FFFF','57F1FF','18A4D3'), angle=5400000):
     for tag in ('a:solidFill','a:gradFill','a:noFill'):
@@ -176,9 +175,7 @@ def base(title,chapter=0,tab=0,sources=(),cover=False):
         master=ref.slides[4].slide_layout.slide_master
         s.shapes.add_picture(BytesIO(master.part.related_part('rId4').blob),0,0,prs.slide_width,prs.slide_height)
         # Chapter is a quiet folio; each page determines its own title composition.
-        txt(s,['路演导览','场景需求','方案架构','功能亮点','技术实现','案例验证','商业探索'][chapter],.48,.13,2,.2,9,PALE)
-        txt(s,f'PIXIU   /   {n:02}',11.3,7.16,1.5,.2,9,PALE,False,PP_ALIGN.RIGHT)
-        if n not in CUSTOM and n not in BOTTOM and n not in SIDE:
+        if n not in CUSTOM and n not in SIDE:
             if n in {2,7,15,19,26,29}:
                 clone(s,16,23,.0,.40,13.33,.91)
                 arttext(s,title,.8,.56,11.73,.7,35)
@@ -209,27 +206,30 @@ def steps(s,items,y=2.15,x=.65,w=3.8,h=3.95,gap=.32):
 
 # 01 – Copy the original cover stage; replace product hardware with editable devices.
 s=base('PIXIU · 貔貅',sources=[1],cover=True)
-txt(s,'PIXIU',.7,.42,2,.45,27,C,True);txt(s,'OS AGENT MEMORY',9.3,.47,3.25,.28,13,PALE,True,PP_ALIGN.RIGHT)
+txt(s,'PIXIU',.7,.42,2,.45,27,C,True)
 center(s,'PIXIU · 貔貅',.55,1.28,12.2,1.05,76,C,True)
 arttext(s,'跨会话 · 跨设备 · 持续记忆',1,2.52,11.3,.65,34)
 center(s,'面向麒麟 OS Agent 的去中心化记忆系统设计与实现',1.1,3.25,11.1,.5,23,PALE,False)
 for x,y,w,t in [(1.0,4.32,2.55,'持续积累'),(5.1,4.68,2.85,'有据可查'),(9.5,4.32,2.55,'可信协作')]:
     clone(s,1,5,x-.35,y+.68,w+.7,1.55)
     device(s,x,y,w,t,'知识 · 来源 · 版本')
-center(s,'PIXIU 0.1.12    /    银河麒麟 V11    /    项目报告 · 风格试作版',1,7.02,11.3,.27,13,PALE,False)
 
 # 02 – Editorial chapter index, using a large original digital-vortex illustration.
 s=base('',sources=[2])
 clone(s,18,22,6.10,1.50,6.75,4.47)
 arttext(s,'汇报导览',.72,.67,5.4,.85,48,PP_ALIGN.LEFT)
-txt(s,'PIXIU  /  PROJECT OVERVIEW',.78,1.72,6.2,.30,14,PALE)
 for i,(t,b) in enumerate([('场景需求','持续记忆的使用背景'),('方案架构','智能体与记忆的分工'),('功能亮点','积累、追溯与协作'),('技术实现','数据、算法与边界'),('案例验证','完整操作与量化证据'),('商业探索','部署服务与试点路径')]):
     y=2.45+i*.62
     arttext(s,f'0{i+1}',.78,y,.65,.43,25)
     txt(s,t,1.66,y+.02,2.2,.39,22,WHITE,True)
     txt(s,b,4.00,y+.08,3.45,.32,15,PALE)
     line(s,1.66,y+.48,6.92,y+.48,'226186',.6)
-arttext(s,'持续记忆\n可信协作',8.07,5.14,4.37,1.28,35)
+a=arttext(s,'持续记忆',7.12,5.06,4.8,.76,43,PP_ALIGN.LEFT)
+for r in a.text_frame.paragraphs[0].runs:r.font.italic=True;r._r.get_or_add_rPr().set('spc','160')
+a=arttext(s,'可信协作',8.22,5.98,4.7,.76,43,PP_ALIGN.LEFT)
+for r in a.text_frame.paragraphs[0].runs:r.font.italic=True;r._r.get_or_add_rPr().set('spc','160')
+for i in range(3):shape(s,7.31+i*.23,6.18,.13,.32,C,S.PARALLELOGRAM)
+line(s,7.16,5.91,11.52,5.91,'2386A3',.8)
 
 # 03 – Three floating device scenes.
 s=base('同一个人，不该一次次重新解释自己',1,0,[3])
@@ -239,19 +239,21 @@ note(s,'林先生家庭账单为需求故事；图示为设备与使用场景说
 
 # 04 – Directly copy the pain/solution two-row composition.
 s=base('',1,1,[4])
-for idx in (13,14,19,31,40,42,44,45,27,47,48): clone(s,5,idx)
-center(s,'需求\n缺口',.48,1.6,1.15,1.2,30,WHITE)
-center(s,'方案\n回应',.48,4.3,1.15,1.2,30,WHITE)
-for i,(a,b,c,d) in enumerate([('多源资料分散','文件、工具与行为\n来源格式不同','统一接入','清洗、标准化、质量校验'),('知识偏好演变','新旧通知和偏好相互冲突','版本与来源','保留历史，更正经过审批'),('跨域使用需求','新会话、不同设备和权限','可信连续性','按范围召回\n仅授权后共享')]):
-    x=2.35+i*3.79;center(s,a,x,1.55,3.15,.65,27,GOLD);center(s,b,x,2.53,3.15,.8,19,WHITE,False)
-    label(s,c,x,4.35,3.15);center(s,d,x,5.15,3.15,.8,19,WHITE,False)
-foot(s,'可用的记忆，同时管理内容、来源、版本和使用范围')
+for y in (2.0,4.35):frame(s,.55,y,12.23,1.72)
+for y,t in [(2.51,'需求缺口'),(4.86,'方案回应')]:arttext(s,t,.70,y,1.9,.52,23)
+for i,(a,b,c,d) in enumerate([('多源资料分散','文件、工具与行为\n来源格式不同','统一接入','清洗、标准化、质量校验'),('知识偏好演变','新旧通知与偏好\n存在冲突','版本与来源','保留历史，更正经过审批'),('跨域使用需求','新会话、多设备\n不同权限范围','可信连续性','按范围召回，授权后共享')]):
+    x=2.9+i*3.24
+    center(s,a,x,2.26,2.97,.45,23,GOLD)
+    center(s,b,x,2.85,2.97,.65,17,WHITE,False)
+    a=shape(s,x+1.35,3.82,.26,.46,C,S.CHEVRON);a.rotation=90;gradient(a._element.spPr,('E9FFFF','57F1FF','159EC4'))
+    label(s,c,x,4.60,2.97)
+    center(s,d,x,5.35,2.97,.46,16,WHITE,False)
 
 # 05 – Large product screenshot, asymmetrical three statements.
 s=base('为桌面智能体，接上一份持续可用的记忆',2,0,[5])
 panel(s,.6,1.92,8.0,4.55);shot(s,'shared-workspace.png',.82,2.12,7.55,4.12)
 for i,(t,b) in enumerate([('面向用户','日常保存资料，减少反复说明'),('面向智能体','按当前问题召回\n已授权知识与偏好'),('面向设备','各自保存副本\n重连后补齐差异')]):
-    y=2.0+i*1.49;label(s,t,9.0,y,3.66);txt(s,b,9.05,y+.67,3.55,.68,19)
+    y=2.0+i*1.49;label(s,t,9.0,y,3.66);txt(s,b,9.05,y+.61,3.55,.68,17)
 foot(s,'会话、记忆、设备与设置，集成在同一个应用')
 note(s,'真实界面：0.1.12 · 银河麒麟 V11；记忆存储与检索本地运行，云模型推理链路单独适用。')
 
@@ -324,12 +326,19 @@ note(s,'安全策略由明确配置管理，模型不能随意放宽授权。')
 
 # 11 – P2P product evidence.
 s=base('换一台设备，接着使用同一份经验',3,3,[12])
-shot(s,'shared-workspace.png',5.7,1.98,6.98,4.4)
-device(s,.9,2.3,3.6,'书房 → 客厅','可信设备 · 授权空间')
-for i,t in enumerate(['配对建立信任','选择共享范围','新会话继续使用']):label(s,t,.93,4.80+i*.52,3.65)
-line(s,4.65,3.4,5.45,3.4,C,2.5,True)
-foot(s,'共享记忆和来源，各设备独立保存副本')
-note(s,'接收端实拍：每周六 9:00 整理书籍；断连时不承诺即时一致，重连后补齐差异。')
+# Three illustrated interfaces form a complete peer mesh; this is a topology diagram.
+for x1,y1,x2,y2 in [(4.9,3.23,2.95,4.78),(8.43,3.23,10.4,4.78),(4.2,5.35,9.1,5.35)]:
+    line(s,x1,y1,x2,y2,C,2)
+for x,y,t in [(4.98,1.92,'设备 A · 书房'),(.85,4.28,'设备 B · 客厅'),(9.12,4.28,'设备 C · 随身')]:
+    device(s,x,y,3.35,t,'')
+    label(s,'会话   记忆   设备',x+.24,y+.73,2.87)
+    for j,(a,b) in enumerate([('活动安排','时间 / 地点'),('资料来源','原文 / 版本')]):
+        txt(s,a,x+.28,y+1.28+j*.25,1.12,.22,10,C,True)
+        txt(s,b,x+1.53,y+1.28+j*.25,1.54,.22,10,WHITE)
+arttext(s,'授权共享空间',4.55,4.32,4.23,.48,27)
+center(s,'本地副本 · 对等连接',4.61,5.83,4.11,.37,17,WHITE,False)
+center(s,'配对信任     范围授权     重连同步',3.2,6.69,6.93,.43,20,C)
+note(s,'三台电脑界面为可编辑协作示意，非三端截图。接收端实拍见产品页；三端验证见第28页。')
 
 # 12 – Chapter hero, keeping ABC's technology illustration.
 s=base('技术实现',cover=True,sources=[13,14,15,16,17,18,19,20,21,22])
@@ -345,13 +354,13 @@ for i,(t,b) in enumerate([('对话与工具','用户原话 / 执行结果'),('�
     medallion(s,str(i+1),.70,y,.85)
     arttext(s,t,1.80,y+.06,2.63,.44,23,PP_ALIGN.LEFT)
     txt(s,b,1.82,y+.65,2.85,.30,14,PALE)
-    line(s,4.43,y+.42,5.21,y+.42,C,1);line(s,5.21,y+.42,5.63,3.76,C,1)
+    line(s,4.55,y+.58,5.04,y+.58,C,1);line(s,5.04,y+.58,5.56,3.98,C,1)
 clone(s,1,5,4.82,3.72,3.60,2.20);chip(s,5.72,3.24,1.65,'接入核心')
-arttext(s,'清洗 · 标准化 · 质量校验',4.70,2.15,4.15,.49,20)
+arttext(s,'清洗 · 标准化 · 质量校验',4.72,1.95,4.12,.43,19)
 center(s,'来源 / 幂等键 / 授权范围',4.89,5.40,3.70,.55,17,WHITE,False)
 for i,(t,b) in enumerate([('Evidence','内容 · 依据 · 位置'),('Knowledge','结构 · 状态 · 版本'),('Preference','类别 · 当前值 · 历史')]):
     y=2.10+i*1.32
-    line(s,7.62,3.76,8.22,y+.42,C,1);line(s,8.22,y+.42,8.78,y+.42,C,1,True)
+    line(s,7.75,3.98,8.29,y+.58,C,1);line(s,8.29,y+.58,8.78,y+.58,C,1,True)
     frame(s,8.91,y,3.80,1.03)
     arttext(s,t,9.06,y+.13,3.49,.39,22)
     center(s,b,9.06,y+.65,3.49,.28,15,WHITE,False)
@@ -389,7 +398,7 @@ note(s,'阶段记忆按到期规则清理；长期知识持续受授权、状态
 
 # 17 – Two conflict lanes.
 s=base('两层冲突处理，让更新可解释、可核对',4,2,[18,9])
-for x,t,b,c in [(.65,'副本层：同一知识 ID','版本向量判断因果\nLWW 选择确定的并发胜者','解决副本一致'),(6.94,'业务层：不同记录矛盾','比较实体与字段\nNEW_WINS / MERGE / MANUAL','判断内容如何变化')]:
+for x,t,b,c in [(.65,'副本层：同一知识 ID','版本向量判断因果\nLWW 选择确定的并发胜者','副本一致性'),(6.94,'业务层：不同记录矛盾','比较实体与字段\nNEW_WINS / MERGE / MANUAL','内容更新策略')]:
     panel(s,x,2.02,5.74,2.33);center(s,t,x+.2,2.3,5.34,.48,25,C);center(s,b,x+.25,3.03,5.24,1.0,20,WHITE,False)
     label(s,c,x+.1,4.67,5.54)
 center(s,'物化正文、版本与来源',.82,5.57,5.34,.4,18,WHITE,False)
@@ -425,28 +434,31 @@ for i,(t,b) in enumerate([('任务开始','按问题召回有效记忆'),('上�
     if i<3:line(s,x+2.94,2.21,x+3.15,2.21,C,1.4,True)
 panel(s,.65,3.35,6.28,3.03);shot(s,'agent-tools-completed.png',.82,3.52,5.94,2.68)
 arttext(s,'上下文注入边界',7.36,3.8,5.25,.58,27)
-txt(s,'保留来源与实际消费记录\n按预算注入当前任务\n记忆文本不升级为系统指令',7.62,4.75,4.95,1.42,21)
+txt(s,'保留来源与记忆实际使用记录\n按预算注入当前任务\n记忆文本不升级为系统指令',7.62,4.75,4.95,1.42,21)
 foot(s,'通用任务能力复用上游，持续记忆与对等协作由 PIXIU 提供')
 
 # 21 – Exact source technical-feature panel and proof panel composition.
 s=base('',4,4,[22])
-for idx in [6,7,9,10,20,21,42]:clone(s,9,idx)
-arttext(s,'部署能力',.84,1.42,3.72,.42,25)
-arttext(s,'原生验证与恢复记录',6.08,1.40,6.36,.45,26)
-for y,t,b in [(2.20,'银河麒麟 V11','Embedding / Vector Engine'),(3.65,'Debian 兼容','基本记忆读写与检索'),(5.0,'签名升级','版本校验与失败恢复')]:
-    arttext(s,t,.95,y,3.6,.43,24);center(s,b,.86,y+.52,3.8,.47,16,WHITE,False)
-shot(s,'sdk-version.png',5.82,2.18,6.76,2.62)
-arttext(s,'47',6.03,4.97,1.65,.82,59)
-txt(s,'条记忆\n升级与恢复前后摘要一致',7.96,5.07,4.54,.80,21,WHITE)
-arttext(s,'原生部署与兼容路径',2.50,6.43,8.32,.52,32)
+panel(s,.60,1.93,4.0,4.75);panel(s,4.97,1.93,7.76,4.75)
+label(s,'部署能力',.85,2.14,3.50)
+label(s,'原生验证与恢复记录',5.25,2.14,7.20)
+for y,t,b in [(3.01,'银河麒麟 V11','Embedding / Vector Engine'),(4.23,'Debian 兼容','基本记忆读写与检索'),(5.45,'签名升级','版本校验与失败恢复')]:
+    arttext(s,t,.88,y,3.44,.43,23)
+    center(s,b,.79,y+.54,3.62,.37,15,WHITE,False)
+    if y<5:line(s,1.25,y+.99,3.95,y+.99,'2386A3',.7)
+shot(s,'sdk-version.png',5.30,2.95,7.06,1.70)
+arttext(s,'47',5.62,5.23,1.8,.94,62)
+txt(s,'条记忆',7.8,5.22,3.8,.41,24,WHITE)
+txt(s,'升级与恢复前后摘要一致',7.8,5.86,4.38,.42,20,WHITE)
 note(s,'0.1.12 升级恢复实测；严格原生画像缺少 SDK 即失败。常驻资源、CPU 和索引增长仍需专项测量。')
 
 # 22 – Case chapter with original atmospheric artwork.
 s=base('完整用户案例',cover=True,sources=[25,26,27,28])
 clone(s,18,21,7.1,2.68,5.83,3.51)
-txt(s,'05',.85,1.08,3.4,1.33,99,C,True);arttext(s,'星河观测\n活动案例',.9,2.77,7.2,1.75,44,PP_ALIGN.LEFT)
-txt(s,'星河观测活动 · 从资料保存到更正复用',.96,5.05,10.8,.57,25,PALE)
-label(s,'同次操作实录 · 公开合成场景',.95,6.31,10.95)
+txt(s,'05',.85,1.08,3.4,1.33,99,C,True);arttext(s,'真实操作案例',.9,2.77,10.6,.85,48,PP_ALIGN.LEFT)
+arttext(s,'星河观测活动记录',.96,4.05,8.8,.62,31,PP_ALIGN.LEFT)
+txt(s,'资料采集  /  跨会话查询  /  更正复用',.96,5.26,10.8,.57,23,PALE)
+note(s,'真实软件操作，使用公开合成的星河观测活动资料。案例展示通用记忆能力，不限定产品行业。')
 
 # 23 – Case setup.
 s=base('起点：组织者要安排时间、器材与预算',5,0,[25])
@@ -458,18 +470,27 @@ foot(s,'资料会更新、沟通跨会话，行动依据需要持续维护')
 
 # 24 – Two real screens from source to recall.
 s=base('保存资料 → 自动整理 → 新会话找回',5,0,[26])
-for x,title,name in [(.65,'01  授权目录采集','directory-folder.png'),(6.95,'02  跨会话资料召回','directory-recall.png')]:
-    panel(s,x,2.02,5.72,4.26);label(s,title,x+.15,2.18,5.42);shot(s,name,x+.22,2.96,5.28,3.10)
-line(s,6.42,4.03,6.85,4.03,C,2,True)
-foot(s,'不必重新粘贴整份通知，也能查回安排并核对原文')
+panel(s,.60,1.95,5.78,4.97);panel(s,6.95,1.95,5.78,4.97)
+label(s,'01  目录授权与资料采集',.80,2.14,5.38)
+shot(s,'directory-folder.png',.87,2.85,5.24,1.42)
+label(s,'活动记录 · 初始安排',.89,4.56,5.2)
+for i,(a,b) in enumerate([('集合时间','11月8日 19:00'),('集合地点','社区天文台三层'),('器材预算','2680 元')]):
+    y=5.25+i*.46;txt(s,a,1.02,y,1.4,.32,16,PALE);txt(s,b,2.72,y,3.1,.32,18,WHITE,True)
+label(s,'02  新会话查询与来源核对',7.15,2.14,5.38)
+shot(s,'directory-recall.png',7.17,2.88,5.34,3.53)
+line(s,6.43,4.33,6.85,4.33,C,2,True)
+center(s,'时间 · 地点 · 预算 · 来源',7.22,6.52,5.22,.30,17,C)
 note(s,'同次实录：后台保存 1 条记忆；新会话返回初始时间、地点与 2680 元预算。')
 
-# 25 – Actual correction vs updated answer.
-s=base('通知更正 → 用户审批 → 新答案生效',5,1,[9,27])
-for x,title,name in [(.65,'01  内容对照与审批','dreaming-review.png'),(6.95,'02  更新知识召回','updated-recall.png')]:
-    panel(s,x,2.01,5.72,4.31);label(s,title,x+.15,2.18,5.42);shot(s,name,x+.20,2.96,5.32,3.12)
-line(s,6.42,4.04,6.85,4.04,C,2,True)
-foot(s,'11月15日 19:30 · 社区天文台二层 · 预算 2680 元保持')
+# 25 – Approval and updated recall with explicit changes.
+s=base('',5,1,[9,27])
+for x,title,name in [(.60,'01  内容对照与审批','dreaming-review.png'),(6.95,'02  更新知识召回','updated-recall.png')]:
+    panel(s,x,1.95,5.78,4.44);label(s,title,x+.18,2.14,5.42)
+    shot(s,name,x+.19,2.91,5.40,3.23)
+line(s,6.43,4.28,6.85,4.28,C,2,True)
+for x,t,b in [(.65,'时间调整','11/8 19:00 → 11/15 19:30'),(4.86,'地点调整','三层 → 二层'),(9.07,'预算保留','2680 元')]:
+    label(s,t,x,6.42,3.62)
+    center(s,b,x,6.95,3.62,.27,15,WHITE,False)
 note(s,'Dreaming 提出对照方案，用户批准后保存；更正以冻结的目标版本核验，避免误覆盖。')
 
 # 26 – Transformation value table.
@@ -570,23 +591,11 @@ center(s,'聚财守忆',.7,6.76,11.9,.45,23,PALE,False)
 
 # Page-specific title hierarchy; no sentence is used as a page title.
 for n,s in enumerate(prs.slides,1):
-    if n in BOTTOM:
-        # Move the body up into the former title area, then anchor the topic at the bottom.
-        for a in list(s.shapes)[1:]:
-            y=a.top/914400
-            if 1.45 <= y < 6.50:a.top-=Inches(.72)
-            elif 6.50 <= y < 7.05:
-                a._element.getparent().remove(a._element)
-        clone(s,9,42,.30,6.40,12.7,.60)
-        # clone provenance needs the current slide entry, not the final one.
-        manifest['slides'][n-1]['copied_artwork'].append(manifest['slides'][-1]['copied_artwork'].pop())
-        arttext(s,TITLES[n-1],1.15,6.34,11.03,.62,34)
-    elif n in SIDE:
+    if n in SIDE:
         # Break the centred layout with a large two-part masthead and asymmetric rule.
         title=TITLES[n-1]
         arttext(s,title,.64,.57,10.0,.73,39,PP_ALIGN.LEFT)
         line(s,.68,1.47,8.30,1.47,C,1.3)
-        txt(s,'PRODUCT  /  MEMORY',9.27,1.23,3.42,.25,11,PALE,False,PP_ALIGN.RIGHT)
 
 # Normalize all copied IDs and remove template-only metadata before saving.
 for s in prs.slides:

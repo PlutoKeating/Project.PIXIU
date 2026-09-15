@@ -50,6 +50,15 @@ prs = Presentation(ppt)
 assert len(prs.slides) == len(m['slides']) == 32
 for slide in m['slides']:
     assert not any(c in slide['title'] for c in '，。？！：'), slide['title']
+# Main topics must be present above the body; chapter covers have a separate hierarchy.
+for n, (page, entry) in enumerate(zip(prs.slides, m['slides']), 1):
+    visible = [(a.text, a.top / 914400) for a in page.shapes if a.has_text_frame]
+    matches = [y for t, y in visible if t == entry['title']]
+    assert matches, (n, entry['title'])
+    assert min(matches) < (3.2 if n in {12, 22} else 1.6), (n, matches)
+    for t, y in visible:
+        assert not any(x in t for x in ['风格试作版', '真实界面：', 'PRODUCT  /  MEMORY']), (n, t)
+        assert not (y > 7.1 and ('SDK' in t or '实拍' in t)), (n, t)
 for path, expected in [(OUT / 'PIXIU项目报告-科技风试作版.pdf', 32),
                        (WORK / 'render/reference/ABC公司产品宣传路演PPT.pdf', 20)]:
     info = subprocess.run(['pdfinfo', str(path)], check=True, capture_output=True, text=True).stdout
@@ -87,6 +96,7 @@ result = {
     'checks': ['ZIP CRC and XML parse', 'all input hashes',
                'all 31 original pages mapped', 'original screenshot bytes embedded',
                'no template identity in XML', 'no embedded workbooks or external links',
+               '32 main topics present above body', 'production footnotes removed',
                '52 full-page PNGs verified', 'formal candidate and asset unchanged'],
     'visual_review': 'See abc-style-review.md. XML checks cannot inspect raster identity or layout.',
     'rendered_pages': rendered,

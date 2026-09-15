@@ -44,7 +44,7 @@ README 的林先生家庭账单故事用于需求背景；当前账单截图是�
 
 ## 2026-09-15：参考稿科技风试作版
 
-按用户提供的 `reference/ABC公司产品宣传路演PPT.pptx` 制作32页可编辑试作稿。参考稿20页已全部转换成1600×900整页图片并逐页观看。复用原稿背景、渐变面板、发光展台、弧形装饰及两张科技意境图，重新绘制 PIXIU 的设备、架构、检索和同步图，嵌入仓库原始界面实拍。根据用户美术反馈，保留完整轨道卡片、图表装饰与源主题色，采用居中框饰、底部主题、侧置大字、全景与图表组合等不同构图；主标题统一为短语。青蓝立体记忆核心由内置 imagegen 生成，作为概念插图使用，见 [插图与提示词](source/memory-core-prompt.md)。正文与章节根据原31页内容重组，保留测试环境和未验证范围。
+按用户提供的 `reference/ABC公司产品宣传路演PPT.pptx` 制作32页可编辑试作稿。参考稿20页已全部转换成1600×900整页图片并逐页观看。复用原稿背景、渐变面板、发光展台、弧形装饰及两张科技意境图，重新绘制 PIXIU 的设备、架构、检索和同步图，嵌入仓库原始界面实拍。根据用户美术反馈，保留完整轨道卡片、图表装饰与源主题色，采用顶部框饰、横幅、左侧大字、全景与图表组合等不同构图；主标题统一为短语。青蓝立体记忆核心由内置 imagegen 生成，作为概念插图使用，见 [插图与提示词](source/memory-core-prompt.md)。正文与章节根据原31页内容重组，保留测试环境和未验证范围。
 
 - [试作 PPTX](render/abc-trial/PIXIU项目报告-科技风试作版.pptx)、[审阅 PDF](render/abc-trial/PIXIU项目报告-科技风试作版.pdf)、[32页总览](render/abc-trial/overview.png)。
 - `render/reference/`：参考稿 PDF 与全部20页整页图；`render/abc-trial/`：试作 PDF 与全部32页整页图。
@@ -60,3 +60,5 @@ submission/presentation-production/.venv/bin/python submission/presentation-prod
 ```
 
 参考稿首次导出可用同一 LibreOffice 命令，将输入替换为 `reference/ABC公司产品宣传路演PPT.pptx`、输出目录替换为 `render/reference/`，再用 `render.sh` 渲染。安装依赖仍使用本目录 `requirements.txt`；PPTX、PDF、PNG 通过仓库 Git LFS 管理，虚拟环境和临时文件继续忽略。
+
+科技风试作已按最新标注修订主标题位置、案例层级、三设备网状示意和图文间距，移除制作式页脚。逐项记录见 [复核记录](review/abc-style-review.md)。
