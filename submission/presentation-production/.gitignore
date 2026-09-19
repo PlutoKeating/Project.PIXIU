@@ -7,3 +7,5 @@ review/*/package/
 render/v1/
 render/candidate-v*.pdf
 render/candidate-v*.pptx
+
+render/video-v*/

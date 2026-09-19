@@ -1,3 +1,5 @@
+> 历史复核记录（2026-09-14）。其中“新版”指已替代的31页稿；当前34页终稿以 [final-review.md](final-review.md) 为准。
+
 # 原版逐页审阅
 
 输入摘要见 original/inventory.json：18页、121个包内文件、402个顶层元素（包含每页形状树属性节点）。已提取完整ZIP包、逐元素XML、文本、备注、媒体与关系；原包由 source/original.pptx保留，可重新拆解。

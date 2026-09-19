@@ -1,332 +1,666 @@
 {
-  "schema": 2,
+  "schema": 3,
   "version": "0.1.12",
+  "content_authority": "正式宣传片演示增强版",
+  "video_sha256": "8e870f0f53af841c67926ae3120cb101564aca438c23d81214c65ffee228a89f",
   "slides": [
     {
       "page": 1,
-      "title": "",
-      "section": "项目报告 / ROADSHOW",
-      "notes": "",
-      "screenshots": []
+      "title": "PIXIU·貔貅",
+      "chapter": "项目报告",
+      "layout": "brand-stage",
+      "shots": [
+        "s01"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+          "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+          "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
+          "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
+        }
+      ],
+      "video_range": [
+        "00:00",
+        "00:09"
+      ]
     },
     {
       "page": 2,
-      "title": "从真实需求出发，解释每一层价值",
-      "section": "目录",
-      "notes": "",
+      "title": "目录",
+      "chapter": "内容导航",
+      "layout": "editorial-index",
+      "shots": [],
       "screenshots": []
     },
     {
       "page": 3,
-      "title": "同一个人，常常要向设备重新解释自己",
-      "section": "01 / 场景与需求",
-      "notes": "用户需求来自README典型应用背景与赛题附录A。林先生为场景人物；四月434.50元、更正燃气156到186、遗忘清单是需求叙事，不宣称这整条同一记录已全程实测。当前九月账单实拍另见第10页。",
-      "screenshots": []
+      "title": "日常资料，\n持续积累",
+      "chapter": "第1章",
+      "layout": "chapter-files",
+      "shots": [
+        "s02"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "00:09",
+        "00:23"
+      ]
     },
     {
       "page": 4,
-      "title": "难点不在保存更多，而在维持可用的记忆",
-      "section": "01 / 需求缺口",
-      "notes": "依据：赛题背景、七项功能要求；跨设备是团队扩展创新。",
-      "screenshots": []
+      "title": "两件事，让日常经验继续发挥作用",
+      "chapter": "01 / 使用价值",
+      "layout": "two-worlds",
+      "shots": [
+        "s02",
+        "s03"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "00:09",
+        "00:37"
+      ]
     },
     {
       "page": 5,
-      "title": "PIXIU：嵌入桌面智能体的持续记忆服务",
-      "section": "02 / 服务定位",
-      "notes": "上游会话、规划、工具和审批来自openKylin宿主/Runtime；PIXIU贡献记忆业务与集成。",
+      "title": "一个应用，四个清晰入口",
+      "chapter": "01 / 原生桌面",
+      "layout": "product-spotlight",
+      "shots": [
+        "s04"
+      ],
       "screenshots": [
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
           "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
         }
+      ],
+      "video_range": [
+        "00:37",
+        "00:52"
       ]
     },
     {
       "page": 6,
-      "title": "总架构：智能体、记忆引擎与可信设备协同",
-      "section": "02 / 总体架构",
-      "notes": "依据 docs/ARCHITECTURE.md、docs/API.md、ADR-0001及正式目录迁移记录。",
-      "screenshots": []
-    },
-    {
-      "page": 7,
-      "title": "四项亮点，形成经验复用的持续循环",
-      "section": "03 / 功能亮点",
-      "notes": "",
-      "screenshots": []
-    },
-    {
-      "page": 8,
-      "title": "亮点一：照常保存文件，后台接续整理",
-      "section": "03 / 自动积累",
-      "notes": "0.1.12目录场景：保存1条记忆，新会话查回成功。授权非递归目录；新增和更新等待文件稳定。",
+      "title": "从采购任务，到可复用的结果",
+      "chapter": "01 / 任务执行",
+      "layout": "giant-number-ledger",
+      "shots": [
+        "s06"
+      ],
       "screenshots": [
         {
-          "path": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
-          "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+          "path": "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
+          "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/agent-task-recall.png",
+          "sha256": "d6acdd90b8e913ba566ce709558045ff73cbf856dec74cc65bf7f28bfa7e0525"
         }
+      ],
+      "video_range": [
+        "00:52",
+        "01:13"
       ]
     },
     {
-      "page": 9,
-      "title": "亮点二：新通知到来，先对照再更正",
-      "section": "03 / 更新可控",
-      "notes": "",
+      "page": 7,
+      "title": "保存一份资料，后台自动整理",
+      "chapter": "01 / 目录整理",
+      "layout": "vertical-journey",
+      "shots": [
+        "s11"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
+          "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+          "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+        }
+      ],
+      "video_range": [
+        "01:13",
+        "01:40"
+      ]
+    },
+    {
+      "page": 8,
+      "title": "资料更新，先对照，再保存",
+      "chapter": "01 / Dreaming 更正",
+      "layout": "dark-before-after",
+      "shots": [
+        "s11b"
+      ],
       "screenshots": [
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
           "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
         }
+      ],
+      "video_range": [
+        "01:40",
+        "02:06"
       ]
     },
     {
-      "page": 10,
-      "title": "亮点三：得到答案，也能找到依据",
-      "section": "03 / 追溯检索",
-      "notes": "当前实拍为2026年9月公开合成账单；与赛题附录4月样例不是同一笔真实家庭消费。",
+      "page": 9,
+      "title": "新会话查账，沿来源复核",
+      "chapter": "01 / 跨会话与来源",
+      "layout": "bill-evidence-spread",
+      "shots": [
+        "s07",
+        "s08"
+      ],
       "screenshots": [
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
           "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/bill-source.png",
+          "sha256": "c01a8e1150bc3bd281e225fc5935aabdee9d42edc0402fbf8bd6c461069a7627"
         }
+      ],
+      "video_range": [
+        "02:06",
+        "02:36"
+      ]
+    },
+    {
+      "page": 10,
+      "title": "让经验\n留下来",
+      "chapter": "第2章",
+      "layout": "chapter-orbit",
+      "shots": [
+        "s09"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "02:36",
+        "02:49"
       ]
     },
     {
       "page": 11,
-      "title": "亮点四：理解现在的偏好，保留变化的来路",
-      "section": "03 / 个性化",
-      "notes": "",
+      "title": "多种来源，进入统一记忆",
+      "chapter": "02 / 多源接入",
+      "layout": "radial-ingest",
+      "shots": [
+        "s09"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "02:36",
+        "02:49"
+      ]
+    },
+    {
+      "page": 12,
+      "title": "明确的约定，手动记下来",
+      "chapter": "02 / 手动记录",
+      "layout": "form-with-annotations",
+      "shots": [
+        "s10"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/manual-entry.png",
+          "sha256": "ac34f264322a05aef4f12645be32089f907c69afcda170a9b2a6e56aa32aff12"
+        }
+      ],
+      "video_range": [
+        "02:49",
+        "03:05"
+      ]
+    },
+    {
+      "page": 13,
+      "title": "使用习惯，按授权记录",
+      "chapter": "02 / 行为采集",
+      "layout": "behavior-collage",
+      "shots": [
+        "s12"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/behavior-demo-window.png",
+          "sha256": "f624f7f5f730ce2d624f9b570b4f93b68e9f55972285257e6ad4f815cee59603"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/behavior-source-body.png",
+          "sha256": "f16ffbc8597feee89722040d5053d8e4ee07450c881267bbf6ca1024829d7754"
+        }
+      ],
+      "video_range": [
+        "03:05",
+        "03:22"
+      ]
+    },
+    {
+      "page": 14,
+      "title": "习惯变化，记忆跟着更新",
+      "chapter": "02 / 偏好记忆",
+      "layout": "preference-timeline",
+      "shots": [
+        "s15"
+      ],
       "screenshots": [
         {
           "path": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
           "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
         }
+      ],
+      "video_range": [
+        "03:22",
+        "03:41"
       ]
-    },
-    {
-      "page": 12,
-      "title": "可信设备，接着使用同一份经验",
-      "section": "03 / 跨端协作",
-      "notes": "0.1.12实拍：同宿主独立V11虚拟机；两端公共API核对知识ID、正文、版本与证据ID一致。",
-      "screenshots": [
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
-          "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
-        }
-      ]
-    },
-    {
-      "page": 13,
-      "title": "多源接入：把杂乱输入变成带出处的知识",
-      "section": "04 / 接入实现",
-      "notes": "据公共API与现有接入服务。图片知识为当前多模态模型理解和用户确认；不宣称自动截图/剪贴板已实现。",
-      "screenshots": []
-    },
-    {
-      "page": 14,
-      "title": "混合检索：语义找到，结构算清，来源可追",
-      "section": "04 / 检索实现",
-      "notes": "当前实现为FTS5、VectorStore和Graph并行；RRF融合、词法/年月重排，未加载神经网络reranker。",
-      "screenshots": []
     },
     {
       "page": 15,
-      "title": "知识组织：一条事实，连着来源与可复用经验",
-      "section": "04 / 知识结构",
-      "notes": "",
-      "screenshots": []
+      "title": "把工作经验，整理成四类知识",
+      "chapter": "02 / 知识复用",
+      "layout": "knowledge-books",
+      "shots": [
+        "s14"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/knowledge-workflow-body.png",
+          "sha256": "10f6242609f13542c64e897fd70a3f11b26e0b47b39c50785e4f68286a0be1cc"
+        }
+      ],
+      "video_range": [
+        "03:41",
+        "04:02"
+      ]
     },
     {
       "page": 16,
-      "title": "偏好版本：把“现在怎么做”与历史分开",
-      "section": "04 / 偏好实现",
-      "notes": "",
-      "screenshots": []
+      "title": "更新有版本，冲突有记录",
+      "chapter": "02 / 维护知识",
+      "layout": "version-comparison",
+      "shots": [
+        "s16"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/edit-version-one.png",
+          "sha256": "d636ef7f61a794ff27049683c16a1ba0f383eb49bff91a7039985de2a100228d"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/edit-version-two.png",
+          "sha256": "3f5f888d79a683c4c13d52d9fda4a4900d86d71e94cd8073c09fe3f4243c2d48"
+        }
+      ],
+      "video_range": [
+        "04:02",
+        "04:21"
+      ]
     },
     {
       "page": 17,
-      "title": "短、中、长期记忆，接住不同时间尺度的任务",
-      "section": "04 / 记忆流转",
-      "notes": "生命周期API：TURN事件短期；压缩/切换/结束/委派事件中期。桌面可选长期保留；TTL清理；并非全部会话永久化。",
-      "screenshots": []
+      "title": "短期关注，中期整理，长期复用",
+      "chapter": "02 / 记忆流转",
+      "layout": "tier-staircase",
+      "shots": [
+        "s17"
+      ],
+      "screenshots": [
+        {
+          "path": "submission/presentation-production/assets/video-frames/s17-72.png",
+          "sha256": "ee494bac3d097a48c253d8623a5676946355e503833d97c39d448a3287f4dd0d"
+        }
+      ],
+      "video_range": [
+        "04:21",
+        "04:37"
+      ]
     },
     {
       "page": 18,
-      "title": "两类冲突，两层处理，避免把“收敛”当成“正确”",
-      "section": "04 / 更正与冲突",
-      "notes": "",
-      "screenshots": []
+      "title": "可信设备，\n共同记忆",
+      "chapter": "第3章",
+      "layout": "chapter-devices",
+      "shots": [
+        "s18"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "04:37",
+        "04:46"
+      ]
     },
     {
       "page": 19,
-      "title": "对等同步：在线扩散，离线累积，重连对账",
-      "section": "04 / 同步时序",
-      "notes": "三设备现有实测为同一宿主上的独立V11虚拟机。30.5秒来自一次0.1.12断连并发恢复。",
-      "screenshots": []
+      "title": "先建立信任，再共享记忆",
+      "chapter": "03 / 设备配对",
+      "layout": "pairing-cinema",
+      "shots": [
+        "s19"
+      ],
+      "screenshots": [
+        {
+          "path": "submission/presentation-production/assets/video-frames/s19-72.png",
+          "sha256": "17ee106a14e46bc1fa7b8cd5595927aac041424bfe24879e3578eff80f635054"
+        }
+      ],
+      "video_range": [
+        "04:46",
+        "05:00"
+      ]
     },
     {
       "page": 20,
-      "title": "安全边界贯穿采集、使用、共享与遗忘",
-      "section": "04 / 隐私与遗忘",
-      "notes": "",
-      "screenshots": []
+      "title": "这里记住，那里接着使用",
+      "chapter": "03 / 跨端使用",
+      "layout": "two-device-bridge",
+      "shots": [
+        "s20"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+          "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
+        }
+      ],
+      "video_range": [
+        "05:00",
+        "05:20"
+      ]
     },
     {
       "page": 21,
-      "title": "Agent 生命周期：让记忆真正进入任务执行",
-      "section": "04 / Agent 接入",
-      "notes": "不能把检索API当作聊天API；上游负责通用规划和工具循环。Module E通过公共HTTP契约访问PIXIU。",
-      "screenshots": [
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
-          "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
-        }
+      "title": "离线仍可用，重连再对账",
+      "chapter": "03 / 离线协作",
+      "layout": "offline-swimlane",
+      "shots": [
+        "s21"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "05:20",
+        "05:39"
       ]
     },
     {
       "page": 22,
-      "title": "端侧部署：麒麟原生优先，兼容路径清晰",
-      "section": "04 / 平台与维护",
-      "notes": "0.1.12正式包为amd64；不能声称ARM已完成相同验收。部署实测见TEST_REPORT。",
-      "screenshots": [
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
-          "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
-        }
+      "title": "同时修改，也能收敛",
+      "chapter": "03 / 并发更正",
+      "layout": "branch-convergence",
+      "shots": [
+        "s22"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "05:39",
+        "05:56"
       ]
     },
     {
       "page": 23,
-      "title": "四项量化结果：说明样本，也说明适用环境",
-      "section": "04 / 量化评测",
-      "notes": "数值来源 docs/acceptance/acceptance-baseline-2026-08-24.json；日期2026-08-24。50组检索、15组偏好、25组冲突、1000次检索。不是0.1.12最终V11双SDK性能报告。",
-      "screenshots": []
+      "title": "每份记忆，\n都有边界",
+      "chapter": "第4章",
+      "layout": "chapter-scope",
+      "shots": [
+        "s23"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "05:56",
+        "06:14"
+      ]
     },
     {
       "page": 24,
-      "title": "原生实测与未覆盖项，分别呈现",
-      "section": "04 / 证据边界",
-      "notes": "",
-      "screenshots": []
+      "title": "读取、保存与信任，分别管理",
+      "chapter": "04 / 范围控制",
+      "layout": "scope-settings",
+      "shots": [
+        "s23"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-settings.png",
+          "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7"
+        }
+      ],
+      "video_range": [
+        "05:56",
+        "06:14"
+      ]
     },
     {
       "page": 25,
-      "title": "完整案例：社区活动资料，怎样变成可靠行动依据",
-      "section": "05 / 完整用户案例",
-      "notes": "人物为场景化叙事；活动资料是公开合成演示数据。后续三页使用同一0.1.12 V11真实录制链路，不宣称真实客户试点。",
+      "title": "先看影响，再确认遗忘",
+      "chapter": "04 / 精准遗忘",
+      "layout": "forget-sequence",
+      "shots": [
+        "s24"
+      ],
       "screenshots": [
         {
-          "path": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
-          "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+          "path": "submission/presentation-production/assets/video-frames/s24-72.png",
+          "sha256": "d38f65c37530ea3fc8cffa353db759510246a559580137380c5d9e38a903c2ca"
         }
+      ],
+      "video_range": [
+        "06:14",
+        "06:34"
       ]
     },
     {
       "page": 26,
-      "title": "第一段：保存资料 → 自动整理 → 新会话找回",
-      "section": "05 / 案例 · 积累与复用",
-      "notes": "",
-      "screenshots": [
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
-          "sha256": "588152f1e22f4b54cc647d314a3c203461866ce7dd7d5e4acee8a4307b17e6aa"
-        }
+      "title": "体验背后，\n如何协同",
+      "chapter": "第5章",
+      "layout": "chapter-layers",
+      "shots": [
+        "s05"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "06:34",
+        "06:52"
       ]
     },
     {
       "page": 27,
-      "title": "第二段：通知更正 → 用户审批 → 新答案生效",
-      "section": "05 / 案例 · 更新闭环",
-      "notes": "",
-      "screenshots": [
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/dreaming-review.png",
-          "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
-        },
-        {
-          "path": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
-          "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
-        }
+      "title": "记忆能力，接入完整智能体",
+      "chapter": "05 / 系统分工",
+      "layout": "layered-architecture",
+      "shots": [
+        "s05"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "06:34",
+        "06:52"
       ]
     },
     {
       "page": 28,
-      "title": "从一份通知，看到可重复使用的服务价值",
-      "section": "05 / 价值分析",
-      "notes": "下面为基于已展示功能的定性价值分析，未测量节省时间比例、用户留存或实际活动差错率。",
-      "screenshots": []
+      "title": "关键词、语义、关系，联合找回",
+      "chapter": "05 / 联合检索",
+      "layout": "query-lens",
+      "shots": [
+        "s13"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/keyword-result.png",
+          "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/keyword-source-body.png",
+          "sha256": "3c1b465b8853e9d0875a06703f5ec77fe25b20468acec8a0fb8a19f22b12d041"
+        }
+      ],
+      "video_range": [
+        "06:52",
+        "07:09"
+      ]
     },
     {
       "page": 29,
-      "title": "商业探索：围绕部署与持续服务验证付费价值",
-      "section": "06 / 商业模式探索",
-      "notes": "不是既有客户、订单或营收。生态渠道事实来自麒麟软件伙伴指南和适配申请页面，2026-09-14访问；不代表PIXIU已获认证或已成为伙伴。",
-      "screenshots": []
+      "title": "一个安装包，统一管理",
+      "chapter": "05 / 部署维护",
+      "layout": "package-and-maintenance",
+      "shots": [
+        "s27"
+      ],
+      "screenshots": [
+        {
+          "path": "submission/video-production/raw/current-0.1.12/model-options.png",
+          "sha256": "612beebdb2d9bd69c8624c383b405d23416feb8b4b099db225e25202a71b8921"
+        },
+        {
+          "path": "submission/video-production/raw/current-0.1.12/update-panel.png",
+          "sha256": "9ed18fdd958fae03b9b706cea070256490229de75bb171bec563ea9e37558b3d"
+        }
+      ],
+      "video_range": [
+        "07:09",
+        "07:26"
+      ]
     },
     {
       "page": 30,
-      "title": "先验证客户价值，再讨论规模化运营",
-      "section": "06 / 运营验证",
-      "notes": "外部依据仅证明麒麟生态存在适配与伙伴申请渠道；试点流程和商业判断为团队推演。https://www.kylinos.cn/eco/vipPartner/partnerGuide/index.html ; https://www.kylinos.cn/eco/ecoPartner/partnerApply/",
-      "screenshots": []
+      "title": "用结果，\n检验价值",
+      "chapter": "第6章",
+      "layout": "chapter-metrics",
+      "shots": [
+        "s28"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "07:26",
+        "07:46"
+      ]
     },
     {
       "page": 31,
-      "title": "",
-      "section": "07 / SLOGAN",
-      "notes": "",
-      "screenshots": []
+      "title": "用数据，检验记忆优化",
+      "chapter": "06 / 效果验证",
+      "layout": "metric-dashboard",
+      "shots": [
+        "s28"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "07:26",
+        "07:46"
+      ]
+    },
+    {
+      "page": 32,
+      "title": "从记住，到主动提供线索",
+      "chapter": "06 / 洞察与简报",
+      "layout": "insight-editorial",
+      "shots": [
+        "s26"
+      ],
+      "screenshots": [
+        {
+          "path": "submission/presentation-production/assets/video-frames/s26-72.png",
+          "sha256": "85438f1f2e071c35ba9d4a080bfeed8d47bb655adfa0eb095c2fdf155cee99d7"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+          "sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0"
+        }
+      ],
+      "video_range": [
+        "07:46",
+        "08:01"
+      ]
+    },
+    {
+      "page": 33,
+      "title": "把个人经验，变成可信协作能力",
+      "chapter": "06 / 应用价值",
+      "layout": "value-triptych",
+      "shots": [
+        "s29"
+      ],
+      "screenshots": [
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
+          "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/directory-source.png",
+          "sha256": "6899df99fc397e69a5072823ad055e585f26ca8a1749bca6f54a6c0f5d0120d6"
+        },
+        {
+          "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
+          "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
+        }
+      ],
+      "video_range": [
+        "08:01",
+        "08:11"
+      ]
+    },
+    {
+      "page": 34,
+      "title": "让每一台设备的记忆，彼此相通",
+      "chapter": "结束语",
+      "layout": "brand-close",
+      "shots": [
+        "s30"
+      ],
+      "screenshots": [],
+      "video_range": [
+        "08:11",
+        "08:19"
+      ]
     }
   ],
   "inputs": [
-    {
-      "path": "README.md",
-      "sha256": "46ca8b2598570c519a41cc14e34fa852f9ed540b19910a956595a3552d314a50"
-    },
     {
       "path": "build/release/requirements-docs.txt",
       "sha256": "c1eccba1d9a9943cd7b1e268d3afd9785fec069d379918e854d6b39161b7ff36"
     },
     {
       "path": "build/release/scripts/build-presentation.py",
-      "sha256": "1236c565c3cf6be889a748ac7c0713711a81632b4baf9ee46e9d4b029dce1221"
+      "sha256": "bf8c629d0e6fc1e678b4ffc60864f7f924024e3c5a619b3c964b6aa3831140c8"
     },
     {
-      "path": "docs/API.md",
-      "sha256": "f6e860c7ba25676163d361e481d51ed4564604addce209d39f538bfd51889a02"
-    },
-    {
-      "path": "docs/ARCHITECTURE.md",
-      "sha256": "298f16de16107cfc8a3d230fea2cca790b3cc308502d3def8bd6200721be85ec"
-    },
-    {
-      "path": "docs/DELIVERY_PLAN.md",
-      "sha256": "22264bf173c78034c83303baa566e29f3031358cd4fd85e118417b33f22e14b1"
-    },
-    {
-      "path": "docs/acceptance/acceptance-baseline-2026-08-24.json",
-      "sha256": "16d4b4a832134be992691abee7fed5cf9d79795de2d0e5f5cb718388e1e8f0c4"
-    },
-    {
-      "path": "docs/delivery/APPLICATION_CASES.md",
-      "sha256": "72efc78baecac912087e219cae978a5409081aa52583599f7b63ab674977dae3"
-    },
-    {
-      "path": "docs/delivery/TEST_REPORT.md",
-      "sha256": "222b3cdb15548155f447c6240b2ababdb1e5fe1f1caa155939ca59950f3b3f6a"
+      "path": "docs/delivery/assets/operations/03-current-workflows/agent-task-recall.png",
+      "sha256": "d6acdd90b8e913ba566ce709558045ff73cbf856dec74cc65bf7f28bfa7e0525"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/agent-tools-completed.png",
       "sha256": "b17b5bff7a4213c990ca9c600b7194ae64c3999221fa2fa6f69cb0d0f8432f16"
     },
     {
+      "path": "docs/delivery/assets/operations/03-current-workflows/behavior-demo-window.png",
+      "sha256": "f624f7f5f730ce2d624f9b570b4f93b68e9f55972285257e6ad4f815cee59603"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/behavior-source-body.png",
+      "sha256": "f16ffbc8597feee89722040d5053d8e4ee07450c881267bbf6ca1024829d7754"
+    },
+    {
       "path": "docs/delivery/assets/operations/03-current-workflows/bill-recall.png",
       "sha256": "05639783c9e700d3a800c8e1a6b3535859af0e8ef4d1d46863ca021e104b6bbd"
     },
     {
-      "path": "docs/delivery/assets/operations/03-current-workflows/directory-folder.png",
-      "sha256": "269ddd553bd56dbaec68fab7062378330847d0412a3da534672e4fd31e5e1a3b"
+      "path": "docs/delivery/assets/operations/03-current-workflows/bill-source.png",
+      "sha256": "c01a8e1150bc3bd281e225fc5935aabdee9d42edc0402fbf8bd6c461069a7627"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/brief.png",
+      "sha256": "5c8040959f8757b393ad2208a71e9362f467eb6b8d333076904cdd4a0636ece0"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/directory-recall.png",
@@ -341,40 +675,100 @@
       "sha256": "d0458a5481917826e1082adfb56328a752bab78be5196b70cb40454e788df993"
     },
     {
+      "path": "docs/delivery/assets/operations/03-current-workflows/edit-version-one.png",
+      "sha256": "d636ef7f61a794ff27049683c16a1ba0f383eb49bff91a7039985de2a100228d"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/edit-version-two.png",
+      "sha256": "3f5f888d79a683c4c13d52d9fda4a4900d86d71e94cd8073c09fe3f4243c2d48"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/keyword-result.png",
+      "sha256": "b2d03350a5b1c83a2117dd633e54d34de077a33f381bac5571a1c8c5f82a9b37"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/keyword-source-body.png",
+      "sha256": "3c1b465b8853e9d0875a06703f5ec77fe25b20468acec8a0fb8a19f22b12d041"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/knowledge-workflow-body.png",
+      "sha256": "10f6242609f13542c64e897fd70a3f11b26e0b47b39c50785e4f68286a0be1cc"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/manual-entry.png",
+      "sha256": "ac34f264322a05aef4f12645be32089f907c69afcda170a9b2a6e56aa32aff12"
+    },
+    {
       "path": "docs/delivery/assets/operations/03-current-workflows/preference-history.png",
       "sha256": "ffc88a3c2ea408226c18696311228037cb2453e9ae08020421c05d43afe9e341"
     },
     {
-      "path": "docs/delivery/assets/operations/03-current-workflows/sdk-version.png",
-      "sha256": "74c2820beac10f2e6c9b24dfd76eaf7d25df0b7d2ad615eefc9597f7458f2b2c"
+      "path": "docs/delivery/assets/operations/03-current-workflows/shared-recall.png",
+      "sha256": "e8e5c9cbf0114cca63447073d47a83a1c3db984e38c4685edf1b85dd84de4ca5"
+    },
+    {
+      "path": "docs/delivery/assets/operations/03-current-workflows/shared-settings.png",
+      "sha256": "b7d7f6f292e18d5d53b2d27821016d6e2a92659c9ed1b822325f0a85735c41c7"
     },
     {
       "path": "docs/delivery/assets/operations/03-current-workflows/shared-workspace.png",
       "sha256": "613cfbba25294c45c4f7df59ab1a53a734a79b421685dc1fa89701f704f2b4e1"
     },
     {
-      "path": "docs/delivery/assets/operations/03-current-workflows/updated-recall.png",
-      "sha256": "408662a043aebf475983e8d42d63c31dc534b701d793892772aa93a7039ffa49"
+      "path": "submission/presentation-production/assets/video-frames/s17-72.png",
+      "sha256": "ee494bac3d097a48c253d8623a5676946355e503833d97c39d448a3287f4dd0d"
+    },
+    {
+      "path": "submission/presentation-production/assets/video-frames/s19-72.png",
+      "sha256": "17ee106a14e46bc1fa7b8cd5595927aac041424bfe24879e3578eff80f635054"
+    },
+    {
+      "path": "submission/presentation-production/assets/video-frames/s24-72.png",
+      "sha256": "d38f65c37530ea3fc8cffa353db759510246a559580137380c5d9e38a903c2ca"
+    },
+    {
+      "path": "submission/presentation-production/assets/video-frames/s26-72.png",
+      "sha256": "85438f1f2e071c35ba9d4a080bfeed8d47bb655adfa0eb095c2fdf155cee99d7"
     },
     {
       "path": "submission/presentation-production/requirements.txt",
-      "sha256": "063a2f5f229c238d12b7256e40402fe1e7111fc98d28dee1e5d7bd421c4737fb"
+      "sha256": "b7829053a5d20fcf50b2d0d816c8ca7a268a5ba76c6aa64e32f16b86330c0b1a"
     },
     {
       "path": "submission/presentation-production/scripts/build_deck.py",
-      "sha256": "0124464076a86eb952cf07998ab88f99bf45df74127c7536155ec48dff56ece1"
+      "sha256": "4f1546661bba20677360e02109543f36a36df2219bcc010e9ea1ca8bd96474f1"
     },
     {
-      "path": "submission/presentation-production/source/storyboard.md",
-      "sha256": "b5f9b0b8396811b387fbb7b6ea40a4d4033c67b62d5a0c5771d0c9d3b8cd758b"
+      "path": "submission/presentation-production/source/video-aligned-plan.md",
+      "sha256": "02076215dba613bfa1d43e7892353101a21d32c916e53e3dd3ff084ba5bfde92"
+    },
+    {
+      "path": "submission/video-production/raw/current-0.1.12/model-options.png",
+      "sha256": "612beebdb2d9bd69c8624c383b405d23416feb8b4b099db225e25202a71b8921"
+    },
+    {
+      "path": "submission/video-production/raw/current-0.1.12/update-panel.png",
+      "sha256": "9ed18fdd958fae03b9b706cea070256490229de75bb171bec563ea9e37558b3d"
+    },
+    {
+      "path": "submission/video-production/review/directed-final-package.json",
+      "sha256": "409a005ca467803c7703e814cf91ccb43ee461b70fdb771409b8549c2edc0652"
+    },
+    {
+      "path": "submission/video-production/src/directed-scenes.json",
+      "sha256": "115e295ae031639c4c8a82ebe49149c656642f6e03093d27bd3fd0d813e4e11e"
     },
     {
       "path": "submission/video-production/src/sync-trace.json",
       "sha256": "1a01b5a4fc9555fa3ceebd7f8da6f91731b189494647ae7923cedecbe46de4c8"
+    },
+    {
+      "path": "submission/video-production/src/timeline.json",
+      "sha256": "ad3d6536ce73b5faaef579a5a7a81684c4d0da5826b84818b138832f0c451c20"
     }
   ],
   "output": {
     "path": "submission/presentation-production/render/项目报告.pptx",
-    "sha256": "4bf08a7c3b504341cf4082b9f98f63fd2db98a521356674c1eecb36d530eef8e"
+    "sha256": "15ac9d0aa73c5be90bc0c6a7aa906e890d7b2ee5ddac44ddff85de83770b4edc"
   }
 }

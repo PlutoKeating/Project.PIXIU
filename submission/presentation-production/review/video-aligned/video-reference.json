@@ -1,0 +1,427 @@
+{
+  "video": "submission/video-production/renders/演示视频-0.1.12演示增强版.mp4",
+  "video_sha256": "8e870f0f53af841c67926ae3120cb101564aca438c23d81214c65ffee228a89f",
+  "duration_seconds": 499.3333333333333,
+  "frames": [
+    {
+      "shot": "s01",
+      "frame": 90,
+      "seconds": 3.0,
+      "path": "submission/presentation-production/assets/video-frames/s01-35.png",
+      "sha256": "ae331837fdb89c6b3428e31992860bf7262a1d79028a0475c3f6b1c900ca33a8"
+    },
+    {
+      "shot": "s01",
+      "frame": 185,
+      "seconds": 6.166666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s01-72.png",
+      "sha256": "52a09339a6f2dfcefca64a94b2038bc573ab2bbea3ce9c4b023c76d367d69f6e"
+    },
+    {
+      "shot": "s02",
+      "frame": 410,
+      "seconds": 13.666666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s02-35.png",
+      "sha256": "6c88d8a95baf9c675198e744f0c001f9f7a6d437026092d4271d9efb8a6dfc57"
+    },
+    {
+      "shot": "s02",
+      "frame": 572,
+      "seconds": 19.066666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s02-72.png",
+      "sha256": "c76d94c55013e159cb4aa8039d5234bb8d7712f6807491b97c79150fd1474f85"
+    },
+    {
+      "shot": "s03",
+      "frame": 843,
+      "seconds": 28.1,
+      "path": "submission/presentation-production/assets/video-frames/s03-35.png",
+      "sha256": "eb1ecbd821bf6c2e92d0cb07281a42b75a404380a94d85565019f038517915cf"
+    },
+    {
+      "shot": "s03",
+      "frame": 999,
+      "seconds": 33.3,
+      "path": "submission/presentation-production/assets/video-frames/s03-72.png",
+      "sha256": "bb7c30930760b2773483b898fc4619c45aa9aa8883c4eb18270887a80db6dfb4"
+    },
+    {
+      "shot": "s04",
+      "frame": 1276,
+      "seconds": 42.53333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s04-35.png",
+      "sha256": "1d96d14bda2637fa66f525b2236a6c79c4c2b4d5edff043785415321f063b04d"
+    },
+    {
+      "shot": "s04",
+      "frame": 1444,
+      "seconds": 48.13333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s04-72.png",
+      "sha256": "02ccfe6476867d8ca827239299ef57d13b2c5660c545854410541a4e1666d8c4"
+    },
+    {
+      "shot": "s06",
+      "frame": 1792,
+      "seconds": 59.733333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s06-35.png",
+      "sha256": "5761b08ecb886931adf660da33d9533a29400b95b7562a28679d5698a8886e0c"
+    },
+    {
+      "shot": "s06",
+      "frame": 2026,
+      "seconds": 67.53333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s06-72.png",
+      "sha256": "c830ae621bf4d4095cd6ebee14e4264c992792a383a2d414258a0efc3b367479"
+    },
+    {
+      "shot": "s11",
+      "frame": 2484,
+      "seconds": 82.8,
+      "path": "submission/presentation-production/assets/video-frames/s11-35.png",
+      "sha256": "2f5f116d1cb20f2bb9203bcd306645ccbcf4c68ac728e02a4d4cb47bcce1ba37"
+    },
+    {
+      "shot": "s11",
+      "frame": 2780,
+      "seconds": 92.66666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s11-72.png",
+      "sha256": "d67c5f4b7d473cf818c9ea7e13ec28226707e2e67bc0c2df6314b9c1107bfc5a"
+    },
+    {
+      "shot": "s11b",
+      "frame": 3278,
+      "seconds": 109.26666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s11b-35.png",
+      "sha256": "55b0bbcfab12a0733b1bc9e008f0fdc449d879850b6c8a925bf8402fca9b65d9"
+    },
+    {
+      "shot": "s11b",
+      "frame": 3566,
+      "seconds": 118.86666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s11b-72.png",
+      "sha256": "85bf70035b150db5ac54f9185d4a6a854603b901a62aae09b5a3889a1a54ac76"
+    },
+    {
+      "shot": "s07",
+      "frame": 3952,
+      "seconds": 131.73333333333332,
+      "path": "submission/presentation-production/assets/video-frames/s07-35.png",
+      "sha256": "f0fbd497229d0d2896f991851f968f71df45247e53593da170de2c07970749c5"
+    },
+    {
+      "shot": "s07",
+      "frame": 4130,
+      "seconds": 137.66666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s07-72.png",
+      "sha256": "8950995492ad02e29ffdf8b0c7915610c1a77918132ddf6f724bb3f9af9606d5"
+    },
+    {
+      "shot": "s08",
+      "frame": 4405,
+      "seconds": 146.83333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s08-35.png",
+      "sha256": "c731738cd92b5f1c1cafbb6cb3a4fa5424bcb2c4c8bbcd5b5500157e09995748"
+    },
+    {
+      "shot": "s08",
+      "frame": 4553,
+      "seconds": 151.76666666666668,
+      "path": "submission/presentation-production/assets/video-frames/s08-72.png",
+      "sha256": "1afef383f5375f6295bfe0a894ebb509ef70dacf39e1c8e5c8af4f3dcfdddd8d"
+    },
+    {
+      "shot": "s09",
+      "frame": 4805,
+      "seconds": 160.16666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s09-35.png",
+      "sha256": "3a26439f74906da13fb98a334c0ed0fbb039447cae16c8d47d0ca751454307e3"
+    },
+    {
+      "shot": "s09",
+      "frame": 4952,
+      "seconds": 165.06666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s09-72.png",
+      "sha256": "e84848148653280f81350ccd1496af6c99752c2efdd059296516a12b4516ac6d"
+    },
+    {
+      "shot": "s10",
+      "frame": 5234,
+      "seconds": 174.46666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s10-35.png",
+      "sha256": "a097674867668d9bd17d265898731b7367ece6e5048d7690d5cef08fc42343b0"
+    },
+    {
+      "shot": "s10",
+      "frame": 5413,
+      "seconds": 180.43333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s10-72.png",
+      "sha256": "dfbe8d44607ff92076a46d08ea02bbdb3ae059db509e9c69398f755b98aecd9c"
+    },
+    {
+      "shot": "s12",
+      "frame": 5731,
+      "seconds": 191.03333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s12-35.png",
+      "sha256": "48ff7cc2fb1800acca931144e9299cbd5c8a8da6df8df409840ee84d1feb659c"
+    },
+    {
+      "shot": "s12",
+      "frame": 5924,
+      "seconds": 197.46666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s12-72.png",
+      "sha256": "ecc4f87c0e9d383944e59a82f6c735fd5e44ee43837de577b74473be95276f43"
+    },
+    {
+      "shot": "s15",
+      "frame": 6268,
+      "seconds": 208.93333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s15-35.png",
+      "sha256": "eca2e2615761e888137e486f022d166d85bf76c183fdefdf56249ff56dfa4550"
+    },
+    {
+      "shot": "s15",
+      "frame": 6478,
+      "seconds": 215.93333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s15-72.png",
+      "sha256": "ea3fc008fef6b10dbacc5ac0184f0f4252661c70423b5636f536bd3274dae337"
+    },
+    {
+      "shot": "s14",
+      "frame": 6853,
+      "seconds": 228.43333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s14-35.png",
+      "sha256": "d8f05999e436187abc4bc28520f7916b1f89b1f83520ee3692a2cac7c9814d4f"
+    },
+    {
+      "shot": "s14",
+      "frame": 7082,
+      "seconds": 236.06666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s14-72.png",
+      "sha256": "822d9465d3203b8765b1f10daca519caf944be05bdc0c3ed6fd1b8dc9b2a591f"
+    },
+    {
+      "shot": "s16",
+      "frame": 7457,
+      "seconds": 248.56666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s16-35.png",
+      "sha256": "843e34de60902b2d3800cc54aeef370846c589fda551e11e857890d973b507d2"
+    },
+    {
+      "shot": "s16",
+      "frame": 7671,
+      "seconds": 255.7,
+      "path": "submission/presentation-production/assets/video-frames/s16-72.png",
+      "sha256": "14c20ee4c3710516305fdeb35960be94c8e244d3ca93a872d26d902875871931"
+    },
+    {
+      "shot": "s17",
+      "frame": 8002,
+      "seconds": 266.73333333333335,
+      "path": "submission/presentation-production/assets/video-frames/s17-35.png",
+      "sha256": "7b6f7176fd56b6031d98444db60270914d3878aedffc771bd39dbea919740388"
+    },
+    {
+      "shot": "s17",
+      "frame": 8180,
+      "seconds": 272.6666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s17-72.png",
+      "sha256": "ee494bac3d097a48c253d8623a5676946355e503833d97c39d448a3287f4dd0d"
+    },
+    {
+      "shot": "s18",
+      "frame": 8405,
+      "seconds": 280.1666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s18-35.png",
+      "sha256": "07c31391f8a1c9b252f996c678e1da2d826ca4dc145c5ea6a47e7f65f23107bf"
+    },
+    {
+      "shot": "s18",
+      "frame": 8501,
+      "seconds": 283.3666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s18-72.png",
+      "sha256": "f1fd836b5eb99dc882d40c52b5bd69c39ad5d0496357ebbd12488eee461653a1"
+    },
+    {
+      "shot": "s19",
+      "frame": 8719,
+      "seconds": 290.6333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s19-35.png",
+      "sha256": "4ebb6dad5af02217e076bc7af0565906bea76d7b8a7216f94b12ed40e7d6b34b"
+    },
+    {
+      "shot": "s19",
+      "frame": 8873,
+      "seconds": 295.76666666666665,
+      "path": "submission/presentation-production/assets/video-frames/s19-72.png",
+      "sha256": "17ee106a14e46bc1fa7b8cd5595927aac041424bfe24879e3578eff80f635054"
+    },
+    {
+      "shot": "s20",
+      "frame": 9202,
+      "seconds": 306.73333333333335,
+      "path": "submission/presentation-production/assets/video-frames/s20-35.png",
+      "sha256": "b40770cd3f56e971e2a1b5e7fe17990dedd2c8fb96222a9b4fe5f72501a9eaa2"
+    },
+    {
+      "shot": "s20",
+      "frame": 9426,
+      "seconds": 314.2,
+      "path": "submission/presentation-production/assets/video-frames/s20-72.png",
+      "sha256": "0b09805624ee9c321c62aa798424aa49ff2f4b54eba19398f86e4723ee86900c"
+    },
+    {
+      "shot": "s21",
+      "frame": 9798,
+      "seconds": 326.6,
+      "path": "submission/presentation-production/assets/video-frames/s21-35.png",
+      "sha256": "af2ca651e09d3010e099e7caf74c9e0495fbdbfb005a0d41596b12300fd046f4"
+    },
+    {
+      "shot": "s21",
+      "frame": 10011,
+      "seconds": 333.7,
+      "path": "submission/presentation-production/assets/video-frames/s21-72.png",
+      "sha256": "1592a357bdfa2bb7ccec179a6a34a2dcac333c74c4374ca177e4a653259b6577"
+    },
+    {
+      "shot": "s22",
+      "frame": 10354,
+      "seconds": 345.1333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s22-35.png",
+      "sha256": "6431e0a91b0d18cb0a2c95095dd82b46e4a9e18e8408eced52e8febe48468047"
+    },
+    {
+      "shot": "s22",
+      "frame": 10546,
+      "seconds": 351.53333333333336,
+      "path": "submission/presentation-production/assets/video-frames/s22-72.png",
+      "sha256": "b3cab002e59fbdf1b2dca50c34c089c661c2466aeb60ce54d15c6c5320191c08"
+    },
+    {
+      "shot": "s23",
+      "frame": 10879,
+      "seconds": 362.6333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s23-35.png",
+      "sha256": "7d3382d5cbe3ca70b473826dc633a80c6f08e3b4338455cc0c4714329817dbc0"
+    },
+    {
+      "shot": "s23",
+      "frame": 11078,
+      "seconds": 369.26666666666665,
+      "path": "submission/presentation-production/assets/video-frames/s23-72.png",
+      "sha256": "226e956f3090619c002975d4a4f87654b7f42d4afa9eba361e88ca91a7e6432e"
+    },
+    {
+      "shot": "s24",
+      "frame": 11431,
+      "seconds": 381.03333333333336,
+      "path": "submission/presentation-production/assets/video-frames/s24-35.png",
+      "sha256": "64fbe060704795a98aa6a30f90d82bef9d7bb12b85eb7a7b4e41a698a4ba9078"
+    },
+    {
+      "shot": "s24",
+      "frame": 11646,
+      "seconds": 388.2,
+      "path": "submission/presentation-production/assets/video-frames/s24-72.png",
+      "sha256": "d38f65c37530ea3fc8cffa353db759510246a559580137380c5d9e38a903c2ca"
+    },
+    {
+      "shot": "s05",
+      "frame": 12001,
+      "seconds": 400.03333333333336,
+      "path": "submission/presentation-production/assets/video-frames/s05-35.png",
+      "sha256": "46a8e568706b0f84c171fbdf0ac331cfd498d31e26c563a98282b08be8b38541"
+    },
+    {
+      "shot": "s05",
+      "frame": 12205,
+      "seconds": 406.8333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s05-72.png",
+      "sha256": "cb12cb2d8ac3e54f43c659e772a4641243efef07fdb1ed89f54b1423c398e9b5"
+    },
+    {
+      "shot": "s13",
+      "frame": 12537,
+      "seconds": 417.9,
+      "path": "submission/presentation-production/assets/video-frames/s13-35.png",
+      "sha256": "cba5deb344832668837afa8422d312ee5b0126ef196ca6f7571a85cdf833fa13"
+    },
+    {
+      "shot": "s13",
+      "frame": 12724,
+      "seconds": 424.1333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s13-72.png",
+      "sha256": "c87f2a894a93ec0ea9bf0e619f334d1af4b0a745de7a720573ae781a0e1b396a"
+    },
+    {
+      "shot": "s27",
+      "frame": 13040,
+      "seconds": 434.6666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s27-35.png",
+      "sha256": "a2407f2725fce3dbc4d529cc4aceb4bcfc370332dbb9456e4599d4c9269752be"
+    },
+    {
+      "shot": "s27",
+      "frame": 13226,
+      "seconds": 440.8666666666667,
+      "path": "submission/presentation-production/assets/video-frames/s27-72.png",
+      "sha256": "64d4c4da109c5ca727e83592038fc5408238446efde5b65d69ed0efc4374fe70"
+    },
+    {
+      "shot": "s28",
+      "frame": 13585,
+      "seconds": 452.8333333333333,
+      "path": "submission/presentation-production/assets/video-frames/s28-35.png",
+      "sha256": "ef9cc324517571db3181d641c5bd498ff235943c891e77407239258546eaa280"
+    },
+    {
+      "shot": "s28",
+      "frame": 13817,
+      "seconds": 460.56666666666666,
+      "path": "submission/presentation-production/assets/video-frames/s28-72.png",
+      "sha256": "324ad481d44b11881883e8b02bafa2c86ff75f54c7587dd46f6501954997f136"
+    },
+    {
+      "shot": "s26",
+      "frame": 14146,
+      "seconds": 471.53333333333336,
+      "path": "submission/presentation-production/assets/video-frames/s26-35.png",
+      "sha256": "c6d184732818cf313c4fecb4ac82e24a2d308cff5707fc98ac1171c36051dd72"
+    },
+    {
+      "shot": "s26",
+      "frame": 14308,
+      "seconds": 476.93333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s26-72.png",
+      "sha256": "85438f1f2e071c35ba9d4a080bfeed8d47bb655adfa0eb095c2fdf155cee99d7"
+    },
+    {
+      "shot": "s29",
+      "frame": 14533,
+      "seconds": 484.43333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s29-35.png",
+      "sha256": "953f745296d61c55f8cb4b0f11f906dcbddf18086fca2574556d50a569d5d7fb"
+    },
+    {
+      "shot": "s29",
+      "frame": 14641,
+      "seconds": 488.03333333333336,
+      "path": "submission/presentation-production/assets/video-frames/s29-72.png",
+      "sha256": "0c19ea31e88c7e7525670efbfa32402c06664306361b555847c9608dffdcfe90"
+    },
+    {
+      "shot": "s30",
+      "frame": 14813,
+      "seconds": 493.76666666666665,
+      "path": "submission/presentation-production/assets/video-frames/s30-35.png",
+      "sha256": "d26b6e4078921f66b946033da9d3793753e3ba514f6c832070364763e9268ec7"
+    },
+    {
+      "shot": "s30",
+      "frame": 14908,
+      "seconds": 496.93333333333334,
+      "path": "submission/presentation-production/assets/video-frames/s30-72.png",
+      "sha256": "180dcec1b9da629c2ab576d3011df10337f77adfb0dcbabb6375c938e341b45c"
+    }
+  ]
+}

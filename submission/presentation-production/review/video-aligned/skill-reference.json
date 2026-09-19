@@ -1,0 +1,14 @@
+{
+  "source": "https://github.com/anthropics/skills/blob/main/skills/pptx/SKILL.md",
+  "retrieved": "2026-09-19",
+  "skill_sha256": "a7ff03e2c85b636f55232a6b1555f5dd90216b7a1a359ab289d8364e6acbc6a0",
+  "application": [
+    "content-driven layout variation",
+    "dark/light contrast and hierarchy",
+    "editable native graphics",
+    "complete rendered-page review",
+    "Office package validation"
+  ],
+  "validator_result": "All validations PASSED!",
+  "validated_pptx_sha256": "15ac9d0aa73c5be90bc0c6a7aa906e890d7b2ee5ddac44ddff85de83770b4edc"
+}

@@ -1,392 +1,314 @@
-"""Build a self-contained, editable roadshow deck from verified PIXIU evidence."""
+"""Editable video-aligned presentation: every claim maps to the delivered film."""
 from pathlib import Path
-import json, math, hashlib
+import json, hashlib, math
 from PIL import Image
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE as S, MSO_CONNECTOR
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import PP_ALIGN
 from pptx.oxml.xmlchemy import OxmlElement
-ROOT=Path(__file__).resolve().parents[3]
-WORK=ROOT/'submission/presentation-production'
-ASSET=ROOT/'docs/delivery/assets/operations/03-current-workflows'
-BLUE='1456B8'; INK='172D4D'; MUTED='536B89'; PALE='EAF2FF'; WHITE='FFFFFF'; CYAN='28B4CD'; LINE='C9DAF1'; DARK='102A50'
-FONT='Noto Sans CJK SC'
+R=Path(__file__).resolve().parents[3];W=R/'submission/presentation-production';V=R/'submission/video-production';A=R/'docs/delivery/assets/operations/03-current-workflows'
+B='1456B8';D='102A50';I='182E4D';M='58708C';P='EAF2FF';C='37B6D3';L='CEDFF2';F='FFFFFF';FONT='Noto Sans CJK SC'
 prs=Presentation();prs.slide_width=Inches(13.333333);prs.slide_height=Inches(7.5)
-prs.core_properties.title='PIXIU·貔貅：面向麒麟OS Agent的去中心化记忆系统设计与实现'
-prs.core_properties.author='PIXIU';prs.core_properties.last_modified_by='PIXIU'
-prs.core_properties.subject='竞赛路演项目报告 · 0.1.12'
-inputs={Path(__file__).resolve(),WORK/'source/storyboard.md',ROOT/'build/release/scripts/build-presentation.py',ROOT/'build/release/requirements-docs.txt',WORK/'requirements.txt'}; records=[]
-
-def xml(tag,**attrs):
+prs.core_properties.title='PIXIU·貔貅｜个人记忆助手';prs.core_properties.author='PIXIU';prs.core_properties.last_modified_by='PIXIU'
+timeline=json.loads((V/'src/timeline.json').read_text());shots={s['id']:s for s in timeline['shots']};records=[];toc_links=[]
+inputs={Path(__file__).resolve(),W/'source/video-aligned-plan.md',V/'src/timeline.json',V/'src/directed-scenes.json',V/'review/directed-final-package.json',V/'src/sync-trace.json',R/'build/release/scripts/build-presentation.py',R/'build/release/requirements-docs.txt',W/'requirements.txt'}
+def el(tag,**attrs):
  e=OxmlElement(tag)
  for k,v in attrs.items():e.set(k,str(v))
  return e
-
-def shape(s,kind,x,y,w,h,fill=WHITE,line=LINE,width=1,shadow=False):
- a=s.shapes.add_shape(kind,Inches(x),Inches(y),Inches(w),Inches(h))
- if kind==S.ROUNDED_RECTANGLE:a.adjustments[0]=.1
+def shape(s,k,x,y,w,h,fill=F,stroke=None,sw=1):
+ a=s.shapes.add_shape(k,Inches(x),Inches(y),Inches(w),Inches(h))
+ if k==S.ROUNDED_RECTANGLE:a.adjustments[0]=.08
  if fill:a.fill.solid();a.fill.fore_color.rgb=RGBColor.from_string(fill)
  else:a.fill.background()
- if line:a.line.color.rgb=RGBColor.from_string(line);a.line.width=Pt(width)
+ if stroke:a.line.color.rgb=RGBColor.from_string(stroke);a.line.width=Pt(sw)
  else:a.line.fill.background()
- ef=xml('a:effectLst');a._element.spPr.append(ef)
- if shadow:
-  sh=xml('a:outerShdw',blurRad=65000,dist=30000,dir=5400000,algn='ctr',rotWithShape='0');c=xml('a:srgbClr',val='173866');c.append(xml('a:alpha',val=13000));sh.append(c);ef.append(sh)
- return a
-
-def box(s,x,y,w,h,fill=WHITE,line=LINE,shadow=False):return shape(s,S.ROUNDED_RECTANGLE,x,y,w,h,fill,line,shadow=shadow)
-def text(s,t,x,y,w,h,size=18,color=INK,bold=False,align=None):
- a=s.shapes.add_textbox(Inches(x),Inches(y),Inches(w),Inches(h));tf=a.text_frame;tf.word_wrap=True
- tf.margin_left=tf.margin_right=Inches(.015);tf.margin_top=tf.margin_bottom=0
- for i,tline in enumerate(t.split('\n')):
-  p=tf.paragraphs[0] if i==0 else tf.add_paragraph();p.text=tline;p.font.name=FONT;p.font.size=Pt(size);p.font.bold=bold;p.font.color.rgb=RGBColor.from_string(color);p.space_after=Pt(4);p.line_spacing=1.10
+ a._element.spPr.append(el('a:effectLst'));return a
+def rect(s,x,y,w,h,fill=F,stroke=None):return shape(s,S.ROUNDED_RECTANGLE,x,y,w,h,fill,stroke)
+def circle(s,x,y,d,fill=P,stroke=None,sw=1):return shape(s,S.OVAL,x,y,d,d,fill,stroke,sw)
+def txt(s,t,x,y,w,h,size=20,col=I,bold=False,align=None):
+ a=s.shapes.add_textbox(Inches(x),Inches(y),Inches(w),Inches(h));tf=a.text_frame;tf.word_wrap=True;tf.margin_left=tf.margin_right=tf.margin_top=tf.margin_bottom=0
+ for j,row in enumerate(t.split('\n')):
+  p=tf.paragraphs[0] if j==0 else tf.add_paragraph();p.text=row;p.font.name=FONT;p.font.size=Pt(size);p.font.bold=bold;p.font.color.rgb=RGBColor.from_string(col);p.space_after=Pt(6);p.line_spacing=1.08
   if align is not None:p.alignment=align
-  for r in p.runs:
-   r._r.get_or_add_rPr().append(xml('a:ea',typeface=FONT))
+  for run in p.runs:run._r.get_or_add_rPr().append(el('a:ea',typeface=FONT))
  return a
-
-def gradient(a,c1,c2):
+def line(s,x,y,x2,y2,col=B,width=2,arrow=False,dash=False):
+ a=s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,Inches(x),Inches(y),Inches(x2),Inches(y2));a.line.color.rgb=RGBColor.from_string(col);a.line.width=Pt(width);a._element.spPr.append(el('a:effectLst'));ln=a.line._get_or_add_ln()
+ if dash:ln.append(el('a:prstDash',val='dash'))
+ if arrow:ln.append(el('a:tailEnd',type='triangle'))
+ return a
+def grad(a,c1,c2):
  sp=a._element.spPr
- for ch in list(sp):
-  if ch.tag.split('}')[-1] in ('solidFill','noFill','gradFill'):sp.remove(ch)
- gf=xml('a:gradFill',rotWithShape='1');ls=xml('a:gsLst')
+ for e in list(sp):
+  if e.tag.split('}')[-1] in ('solidFill','noFill','gradFill'):sp.remove(e)
+ g=el('a:gradFill',rotWithShape='1');ls=el('a:gsLst')
  for pos,col in [(0,c1),(100000,c2)]:
-  gs=xml('a:gs',pos=pos);gs.append(xml('a:srgbClr',val=col));ls.append(gs)
- gf.append(ls);gf.append(xml('a:lin',ang=2700000,scaled='1'));sp.append(gf)
-
-def line(s,x1,y1,x2,y2,color=BLUE,width=1.6,arrow=False,dash=False):
- a=s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,Inches(x1),Inches(y1),Inches(x2),Inches(y2));a.line.color.rgb=RGBColor.from_string(color);a.line.width=Pt(width);ln=a.line._get_or_add_ln()
- a._element.spPr.append(xml('a:effectLst'))
- if arrow:ln.append(xml('a:tailEnd',type='triangle'))
- if dash:ln.append(xml('a:prstDash',val='dash'))
- return a
-
-def circle(s,x,y,d,fill=PALE,linecol=LINE):return shape(s,S.OVAL,x,y,d,d,fill,linecol)
-def pill(s,t,x,y,w,color=BLUE):
- box(s,x,y,w,.34,PALE,None);text(s,t,x+.07,y+.055,w-.14,.25,11,color,True)
-
-def mesh(s,dark=False):
- # Quiet contour field, not a flat empty canvas.
- c='25466F' if dark else 'E1EBF8'
- pts=[(10.25,.2),(11.25,.5),(12.45,.12),(12.85,1.1),(11.6,1.4),(10.9,2.0),(12.7,2.6)]
- for i,j in [(0,1),(1,2),(1,3),(2,3),(3,4),(4,5),(5,6),(4,6),(1,4),(0,5)]:line(s,*pts[i],*pts[j],c,.65)
- for x,y in pts:circle(s,x-.035,y-.035,.07,c,c)
- for i in range(4):
-  a=shape(s,S.ARC,9.7+i*.17,3.35+i*.17,3.1,3.1,None,c,.7)
-  a.rotation=18+i*8
-
-def base(title,sub,section,note='',dark=False):
- s=prs.slides.add_slide(prs.slide_layouts[6]);bg=shape(s,S.RECTANGLE,0,0,13.33333,7.5,None,None);gradient(bg,DARK if dark else 'FFFFFF','153F75' if dark else 'F1F6FE');mesh(s,dark)
- n=len(prs.slides);text(s,'PIXIU / 貔貅',.52,.28,2,.35,15,'FFFFFF' if dark else BLUE,True)
- text(s,section,8,.3,4.75,.28,11,'A9C7ED' if dark else MUTED,align=PP_ALIGN.RIGHT)
- text(s,title,.62,.91,12.05,.66,29,WHITE if dark else INK,True)
- if sub:text(s,sub,.65,1.66,11.95,.58,16,'C3D8F3' if dark else MUTED)
- line(s,.65,7.02,12.65,7.02,'43658A' if dark else LINE,.7)
- text(s,'PIXIU 0.1.12 · 银河麒麟 V11 · 图示为机制说明，实拍使用公开合成资料',.67,7.16,11.3,.21,9,'A9C7ED' if dark else MUTED)
- text(s,f'{n:02d}',12.05,7.1,.6,.3,13,'A9C7ED' if dark else BLUE,True,PP_ALIGN.RIGHT)
- s.notes_slide.notes_text_frame.text=title+'\n'+note+'\n截图：0.1.12，银河麒麟V11 amd64，2026-09-10。测试场景使用公开合成资料。'
- records.append({'page':n,'title':title,'section':section,'notes':note,'screenshots':[]})
+  st=el('a:gs',pos=pos);st.append(el('a:srgbClr',val=col));ls.append(st)
+ g.append(ls);g.append(el('a:lin',ang=2700000,scaled='1'))
+ # Fill precedes line/effects per DrawingML schema.
+ sp.insert(next((i for i,e in enumerate(sp) if e.tag.split('}')[-1] in ('ln','effectLst','effectDag')),len(sp)),g)
+def badge(s,t,x,y,w=1.55,dark=False):
+ rect(s,x,y,w,.38,'244E80' if dark else P);txt(s,t,x+.1,y+.065,w-.2,.23,12,'BDDFF8' if dark else B,True)
+def num(s,n,x,y,d=.5,dark=False):
+ circle(s,x,y,d,C if dark else B);txt(s,str(n),x,y+.1,d,.29,16,D if dark else F,True,PP_ALIGN.CENTER)
+def timecode(f):
+ t=round(f/30);return f'{t//60:02}:{t%60:02}'
+def page(title,chapter,ids,layout,dark=False):
+ s=prs.slides.add_slide(prs.slide_layouts[6]);bg=shape(s,S.RECTANGLE,0,0,13.333333,7.5,F)
+ if dark:grad(bg,D,'1C518B')
+ rec={'page':len(prs.slides),'title':title,'chapter':chapter,'layout':layout,'shots':ids,'screenshots':[]};records.append(rec)
+ txt(s,'PIXIU / 貔貅',.55,.30,2.4,.32,14,F if dark else B,True)
+ txt(s,chapter,8.0,.32,4.72,.3,12,'B6CEE8' if dark else M,align=PP_ALIGN.RIGHT)
+ if ids:
+  start=min(shots[k]['from'] for k in ids);end=max(shots[k]['from']+shots[k]['duration'] for k in ids);rec['video_range']=[timecode(start),timecode(end)]
+  txt(s,'宣传片 '+timecode(start)+'–'+timecode(end),.55,7.12,4,.22,10,'B6CEE8' if dark else M)
+ txt(s,f'{len(prs.slides):02}',12.12,7.04,.6,.37,14,'B6CEE8' if dark else B,True,PP_ALIGN.RIGHT)
+ s.notes_slide.notes_text_frame.text=title+'\n内容依据：正式演示增强版499.333秒；以下为对应镜头原口白。\n'+'\n\n'.join(k+' '+shots[k]['title']+'\n'+shots[k]['narration'] for k in ids)+'\n实拍为0.1.12银河麒麟V11公开合成演示资料。'
  return s
-
-def takeaway(s,t):
- a=box(s,.65,6.43,12.02,.42,PALE,None);text(s,t,.83,6.50,11.65,.3,14 if len(t)>57 else 15,BLUE,True)
-
-def node(s,title,body,x,y,w=2.5,h=1.3,color=BLUE,number=None):
- box(s,x+.055,y+.055,w,h,'DFEAF9',None);box(s,x,y,w,h,WHITE,LINE,True)
- shape(s,S.RECTANGLE,x+.02,y+.18,.035,h-.36,color,None)
- dx=.2
- if number:
-  circle(s,x+.18,y+.16,.4,PALE,None);text(s,str(number),x+.18,y+.225,.4,.25,12,color,True,PP_ALIGN.CENTER);dx=.7
- text(s,title,x+dx,y+(.11 if h<1.2 else .16),w-dx-.15,.42,17 if h<1.2 else 19,color,True)
- text(s,body,x+.2,y+(.53 if h<1.2 else .68),w-.4,max(.32,h-.73),14 if h<1.2 else 16,INK)
-
-def shot(s,name,x,y,w,h,caption=None):
- p=ASSET/name
- if p.read_bytes().startswith(b'version https://git-lfs'):p=WORK/'assets'/name
- if caption:h=min(h,6.0-y)
- inputs.add(p);im=Image.open(p);iw,ih=im.size;scale=min(w/iw,h/ih);dw,dh=iw*scale,ih*scale
- # Picture mat, recessed border, subtle shadow; source image bytes remain untouched.
- box(s,x+(w-dw)/2-.07,y+(h-dh)/2-.07,dw+.14,dh+.14,WHITE,LINE,True)
- s.shapes.add_picture(str(p),Inches(x+(w-dw)/2),Inches(y+(h-dh)/2),Inches(dw),Inches(dh))
- records[-1]['screenshots'].append({'path':p.relative_to(ROOT).as_posix(),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
- if caption:text(s,caption,x,y+h+.09,w,.30,11,MUTED)
-
-def device(s,x,y,label,w=2.4):
- a=box(s,x,y,w,1.35,'F5F9FF',BLUE);box(s,x+.09,y+.09,w-.18,1.06,WHITE,LINE)
- for i in range(3):line(s,x+.27,y+.34+i*.22,x+w-.28,y+.34+i*.22,LINE,2)
- shape(s,S.TRAPEZOID,x-.13,y+1.35,w+.26,.19,PALE,BLUE)
- text(s,label,x-.12,y+1.68,w+.24,.4,17,BLUE,True,PP_ALIGN.CENTER)
-
-def flow(s,items,y=3.4,x=.8,w=2.65,gap=.38,h=1.45):
- for i,(t,b) in enumerate(items):
-  xx=x+i*(w+gap);node(s,t,b,xx,y,w,h,number=i+1)
-  if i<len(items)-1:line(s,xx+w,y+h/2,xx+w+gap-.06,y+h/2,BLUE,1.8,True)
-
-# 01: a genuine opening cover, not a feature page.
-s=base('','', '项目报告 / ROADSHOW',dark=True)
-text(s,'让经验跨越\n会话与设备',.72,1.35,7.1,1.8,44,WHITE,True)
-text(s,'PIXIU · 貔貅',.77,3.5,6.3,.7,31,WHITE,True)
-text(s,'面向麒麟 OS Agent 的去中心化记忆系统\n设计与实现',.8,4.42,6.25,1.05,22,'C7DCF5')
-for i,t in enumerate(['持续积累','有据可查','可信协作']):
- box(s,.82+i*1.9,6.05,1.67,.45,'214D82','4978AD');text(s,t,.94+i*1.9,6.14,1.43,.26,14,WHITE,True)
-# Abstract distributed memory constellation with layered device screens.
-for i,(x,y) in enumerate([(8.1,2.0),(10.25,3.3),(8.15,4.75)]):
- circle(s,x-.13,y-.13,1.57,None,'396597');circle(s,x,y,1.31,'214D82','6BA5DC');text(s,['资料','记忆','任务'][i],x+.1,y+.44,1.1,.38,21,WHITE,True,PP_ALIGN.CENTER)
-line(s,9.45,2.8,10.35,3.7,'61B6E1',2,True);line(s,10.4,4.5,9.25,5.1,'61B6E1',2,True);line(s,8.63,4.74,8.63,3.34,'61B6E1',2,True)
-
-# 02: Explicit six-part agenda and slogan endpoint.
-s=base('从真实需求出发，解释每一层价值','先理解用户为什么需要记忆，再看功能如何落地，以及价值如何被验证。','目录')
-agenda=[('01','场景与需求','资料分散、经验中断、版本失控'),('02','方案与架构','为 OS Agent 提供持续记忆服务'),('03','功能亮点','自动积累、追溯、偏好、跨端'),('04','功能与技术实现','数据、算法、同步、安全与部署'),('05','完整用户案例','活动资料从保存到更正复用'),('06','商业模式探索','从小范围试点验证持续服务价值')]
-for i,(n,t,b) in enumerate(agenda):
- x=.78+(i%3)*4.21;y=2.5+(i//3)*1.68;node(s,t,b,x,y,3.85,1.4,number=n)
-text(s,'需求缺口',1,6.22,1.6,.35,15,BLUE,True);line(s,2.55,6.4,4.3,6.4,BLUE,1.2,True);text(s,'可用方案',4.45,6.22,1.6,.35,15,BLUE,True);line(s,6.1,6.4,7.8,6.4,BLUE,1.2,True);text(s,'证据与价值',7.95,6.22,2,.35,15,BLUE,True);text(s,'→ 一句话收束',10.4,6.22,2.2,.35,15,MUTED)
-
+def heading(s,title,sub=None,dark=False):
+ txt(s,title,.66,1.02,12,.76,34,F if dark else I,True)
+ if sub:txt(s,sub,.69,1.99,11.9,.54,18,'C7DDF2' if dark else M)
+def pic(s,name,x,y,w,h,caption=None):
+ p=Path(name) if isinstance(name,Path) else A/(name+'.png');inputs.add(p)
+ im=Image.open(p);iw,ih=im.size;scale=min(w/iw,h/ih);dw,dh=iw*scale,ih*scale;px=x+(w-dw)/2;py=y+(h-dh)/2
+ rect(s,px-.035,py-.035,dw+.07,dh+.07,F,L)
+ s.shapes.add_picture(str(p),Inches(px),Inches(py),Inches(dw),Inches(dh))
+ records[-1]['screenshots'].append({'path':p.relative_to(R).as_posix(),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+ if caption:txt(s,caption,x,y+h+.1,w,.34,12,M)
+def film(s,sid,x,y,w,h,phase=72):pic(s,W/f'assets/video-frames/{sid}-{phase}.png',x,y,w,h)
+def label(s,title,body,x,y,w=3.4,col=B):
+ txt(s,title,x,y,w,.42,22,col,True);txt(s,body,x,y+.63,w,1.15,18,I)
+def monitor(s,x,y,w=2.8,title='本地记忆',dark=False):
+ col='7EC9EB' if dark else B;rect(s,x,y,w,w*.62,'214B7B' if dark else P,col)
+ rect(s,x+.1,y+.1,w-.2,w*.43,'183A65' if dark else F)
+ txt(s,title,x+.18,y+w*.18,w-.36,.4,18,F if dark else B,True,PP_ALIGN.CENTER)
+ line(s,x+w*.5,y+w*.62,x+w*.5,y+w*.76,col,3);line(s,x+w*.25,y+w*.76,x+w*.75,y+w*.76,col,3)
+def chapter(n,title,sub,ids,icon):
+ s=page(title,f'第{n}章',ids,'chapter-'+icon,True)
+ txt(s,f'{n:02}',.65,1.23,3.3,2.1,106,'4376AA',True)
+ txt(s,title,.73,3.56,7.7,1.45,39,F,True);txt(s,sub,.77,5.56,7.5,.9,20,'C5DFF6')
+ if icon=='files':
+  for j,(t,xx,yy) in enumerate([('任务',8.45,2.0),('资料',9.5,2.75),('来源',10.53,3.5)]):
+   shape(s,S.FOLDED_CORNER,xx,yy,1.76,2.2,'234E80','73B8DF',1.4);txt(s,t,xx+.3,yy+1.1,1.2,.4,23,F,True)
+ elif icon=='orbit':
+  for d in [3.0,4.0]:circle(s,10-d/2,3.65-d/2,d,None,'5185B7')
+  for k,t in enumerate(['对话','工具','记录','行为']):
+   x=9.55+1.6*math.cos(k*math.pi/2);y=3.25+1.6*math.sin(k*math.pi/2);circle(s,x,y,.95,'245887','6FB8DE');txt(s,t,x,y+.3,.95,.35,17,F,True,PP_ALIGN.CENTER)
+ elif icon=='devices':
+  for x,y in [(8.1,1.8),(10.4,3.6),(7.9,5.0)]:monitor(s,x,y,1.8,'记忆',True)
+  line(s,9.9,2.8,10.7,3.7,C,2,True);line(s,10.45,4.7,9.7,5.4,C,2,True);line(s,8.8,4.9,8.8,3.35,C,2,True)
+ elif icon=='scope':
+  for x,y,d in [(8,1.9,4.3),(8.55,2.45,3.2),(9.13,3.03,2.04)]:circle(s,x,y,d,None,'6AB4DE',2)
+  txt(s,'用户\n掌握边界',9.21,3.59,1.86,1.03,22,F,True,PP_ALIGN.CENTER)
+ elif icon=='layers':
+  for j,t in enumerate(['智能体宿主','记忆适配','知识与同步']):
+   rect(s,8.3+j*.2,2.0+j*1.33,3.58,1.04,'255588','79BCE2');txt(s,t,8.55+j*.2,2.29+j*1.33,3.08,.4,22,F,True)
+ else:
+  for j,(t,v) in enumerate([('偏好','准确'),('检索','召回'),('响应','时延'),('更正','正确')]):
+   x=8.3+(j%2)*2.05;y=2+(j//2)*2.1;circle(s,x,y,1.7,None,'66B5DD',2);txt(s,t,x,y+.32,1.7,.35,18,'A7DDF2',align=PP_ALIGN.CENTER);txt(s,v,x,y+.82,1.7,.45,24,F,True,PP_ALIGN.CENTER)
+ return s
+# 01 — film identity, not an invented proposition.
+s=page('PIXIU·貔貅','项目报告',['s01'],'brand-stage',True)
+txt(s,'PIXIU',.7,1.25,6.1,1.2,72,F,True);txt(s,'貔貅',.79,2.65,4,.9,43,F,True)
+txt(s,'面向麒麟操作系统智能体的\n去中心化记忆系统',.79,4.02,6.4,1.14,27,'CAE4F8')
+txt(s,'让每一台设备的记忆，彼此相通。',.81,6.18,10.8,.6,26,F,True)
+for n,(a,x,y,w,h) in enumerate([('shared-workspace',7.55,1.2,4.9,3.1),('directory-recall',8.45,3.8,3.95,2.0),('preference-history',6.72,4.16,2.32,1.4)]):pic(s,a,x,y,w,h)
+# 02 — explicit TOC, actual pages and internal links.
+s=page('目录','内容导航',[],'editorial-index')
+txt(s,'目\n录',.7,1.38,2.2,3.7,70,B,True);txt(s,'沿着一次使用，\n理解记忆如何积累、\n复用和共享。',.78,5.02,3.8,1.3,21,M)
+chapters=[('01','日常资料，持续积累','任务执行 / 目录整理 / 账单追溯',3),('02','让经验留下来','多源接入 / 偏好 / 版本 / 分层记忆',10),('03','可信设备，共同记忆','配对 / 跨端使用 / 离线与并发',18),('04','每份记忆，都有边界','读取与保存范围 / 信任 / 精准遗忘',23),('05','体验背后，如何协同','系统分工 / 联合检索 / 安装更新',26),('06','用结果，检验价值','量化测试 / 洞察简报 / 应用价值',30)]
+for j,(n,t,b,p) in enumerate(chapters):
+ y=1.29+j*.91;num(s,n,4.68,y,.5);link=txt(s,t,5.47,y-.01,5.9,.38,23,I,True);txt(s,b,5.48,y+.45,6.15,.29,13,M);txt(s,f'{p:02}',12.05,y,.56,.43,24,B,True,PP_ALIGN.RIGHT);toc_links.append((link,p));line(s,5.47,y+.78,12.63,y+.78,L,.7)
 # 03
-s=base('同一个人，常常要向设备重新解释自己','林先生在书房、客厅与随身设备之间处理家庭账单，却常常需要反复交代已经说过的信息。','01 / 场景与需求', '用户需求来自README典型应用背景与赛题附录A。林先生为场景人物；四月434.50元、更正燃气156到186、遗忘清单是需求叙事，不宣称这整条同一记录已全程实测。当前九月账单实拍另见第10页。')
-for i,(t,b,lab) in enumerate([('书房保存账单','收到家庭支出清单\n希望助手记住并供以后核对','资料难以沉淀'),('客厅核对账单','只记得模糊片段\n要翻记录和核算明细','答案难以追溯'),('更正与遗忘','账单有误需要修正\n不再需要时希望停止使用','控制难以贯穿')]):
- x=.85+i*4.18;device(s,x+.58,2.5,t,2.65);text(s,b,x+.1,4.64,3.65,.91,18,INK,align=PP_ALIGN.CENTER);pill(s,lab,x+.65,5.86,2.5)
-line(s,3.8,3.18,5.32,3.18,LINE,2,True,True);line(s,8,3.18,9.5,3.18,LINE,2,True,True)
-takeaway(s,'用户真正需要的，是不必反复解释、能够核对、能够接着使用的经验。')
-
+chapter(1,'日常资料，\n持续积累','从一次任务开始，让过去的安排在下一次使用中继续发挥作用。',['s02'],'files')
 # 04
-s=base('难点不在保存更多，而在维持可用的记忆','赛题聚焦多源质量、偏好版本、新旧冲突与关联检索；跨设备工作进一步放大这些问题。','01 / 需求缺口','依据：赛题背景、七项功能要求；跨设备是团队扩展创新。')
-for i,(t,b) in enumerate([('来源不一致','文档、工具与行为格式不同'),('知识会变化','新旧通知、偏好与事实矛盾'),('使用跨边界','换会话、换设备、换授权范围')]):
- y=2.45+i*1.16;node(s,t,b,.85,y,3.8,.98)
-line(s,4.75,2.94,6,3.85,BLUE,1.5,True);line(s,4.75,4.1,6,4.1,BLUE,1.5,True);line(s,4.75,5.26,6,4.35,BLUE,1.5,True)
-shape(s,S.HEXAGON,5.85,3.05,2.15,2.05,PALE,BLUE,2);text(s,'记忆质量\n与可控性',6.2,3.56,1.48,.95,22,BLUE,True,PP_ALIGN.CENTER)
-for i,(t,b) in enumerate([('可信','保留出处与当前有效版本'),('连续','按任务召回，授权后跨端'),('可控','采集授权、审批、更正与遗忘')]):
- y=2.45+i*1.16;line(s,8,4.05,8.6,y+.49,CYAN,1.3,True);node(s,t,b,8.65,y,3.8,.98)
-takeaway(s,'因此，方案必须同时管理内容、来源、版本、使用范围和记忆生命周期。')
-
+s=page('两件事，让日常经验继续发挥作用','01 / 使用价值',['s02','s03'],'two-worlds')
+rect(s,0,3.0,6.55,3.55,P);rect(s,6.77,3.0,6.57,3.55,'F2F7FC');heading(s,'把资料留下，把经验接续')
+txt(s,'01',.78,2.12,1.0,.7,40,B,True);txt(s,'持续积累成知识',1.85,2.25,4.5,.45,26,I,True)
+for j,t in enumerate(['保存资料','查找安排','带着来源']):
+ shape(s,S.FOLDED_CORNER,1.0+j*1.73,3.45,1.22,1.5,F,L);txt(s,t,1.0+j*1.73,5.2,1.6,.39,18,B,True)
+txt(s,'从日常内容，整理出可查询的记忆。',.94,6.0,5.3,.4,20,I)
+txt(s,'02',7.08,2.12,1,.7,40,B,True);txt(s,'可信设备共同使用',8.15,2.25,4.6,.45,26,I,True)
+for x,y in [(7.25,3.5),(10.15,3.5),(8.7,4.9)]:monitor(s,x,y,1.75,'本地副本')
+line(s,9.04,4,10.07,4,C,2,True);line(s,10.5,4.91,10.2,5.3,C,2,True);line(s,8.75,5.3,8.2,4.9,C,2,True)
+txt(s,'经过授权，彼此交换更新。',7.13,6.39,5.4,.4,20,I)
 # 05
-s=base('PIXIU：嵌入桌面智能体的持续记忆服务','让助手在新任务里找回已授权的知识与偏好，并把新的有效经验继续沉淀。','02 / 服务定位','上游会话、规划、工具和审批来自openKylin宿主/Runtime；PIXIU贡献记忆业务与集成。')
-shot(s,'shared-workspace.png',.83,2.42,7.0,3.57,'真实界面：会话、记忆、设备与设置集成在同一应用')
-for i,(t,b) in enumerate([('面向用户','日常保存资料，后续按需使用'),('面向智能体','按当前问题注入有来源的记忆'),('面向设备','本机可读写，可信副本最终一致')]):node(s,t,b,8.32,2.43+i*1.18,4.12,1.03)
-takeaway(s,'记忆留在可信设备；联网模型负责理解与表达，本地检索负责找回依据。')
-
+s=page('一个应用，四个清晰入口','01 / 原生桌面',['s04'],'product-spotlight');heading(s,'一个应用，四个清晰入口')
+pic(s,'shared-workspace',2.82,2.25,7.73,4.4)
+for t,b,x,y in [('会话','交代任务',.77,2.65),('记忆','管理已保存内容',.77,4.6),('设备','连接协作电脑',10.78,2.65),('设置','管理授权',10.78,4.6)]:label(s,t,b,x,y,1.95)
+badge(s,'银河麒麟 V11',4.02,1.84,2.13);badge(s,'系统文本向量化 / 向量数据库',6.33,1.84,4.33)
 # 06
-s=base('总架构：智能体、记忆引擎与可信设备协同','明确上游基础能力、自有记忆能力和麒麟系统能力，建立可以落地的服务边界。','02 / 总体架构','依据 docs/ARCHITECTURE.md、docs/API.md、ADR-0001及正式目录迁移记录。')
-box(s,.8,2.33,11.72,.72,BLUE,BLUE);text(s,'用户桌面  ·  会话 / 记忆 / 设备 / 设置',1,2.5,11.2,.36,22,WHITE,True,PP_ALIGN.CENTER)
-node(s,'openKylin 基座','宿主 + Runtime\n会话、规划、工具、审批',.8,3.43,3.22,1.63)
-node(s,'PIXIU 原创记忆能力','Provider → 公共 API\n接入 / 偏好 / 知识 / 检索 / 流转',4.37,3.43,4.38,1.63)
-node(s,'可信对等设备','各自保存记忆副本\n授权共享 / CRDT / 反熵',9.12,3.43,3.4,1.63)
-line(s,2.4,3.05,2.4,3.4,BLUE,1.8,True);line(s,6.5,3.05,6.5,3.4,BLUE,1.8,True);line(s,10.8,3.05,10.8,3.4,BLUE,1.8,True);line(s,4.02,4.22,4.34,4.22,BLUE,1.8,True);line(s,8.75,4.22,9.09,4.22,BLUE,1.8,True)
-for i,(t,b) in enumerate([('结构化存储','SQLite · 来源/版本/关系/审计'),('系统双 SDK','Embedding · Vector Engine'),('平台与模型适配','用户服务 · 单包升级 · 模型连接')]):node(s,t,b,.8+i*4.02,5.44,3.68,.91)
-# Bottom row is a foundation inventory, not a one-to-one dependency mapping.
-
+s=page('从采购任务，到可复用的结果','01 / 任务执行',['s06'],'giant-number-ledger')
+txt(s,'从采购任务，\n到可复用的结果',.7,1.08,5.4,1.6,34,I,True)
+txt(s,'496',.76,2.96,4.4,1.23,74,B,True);txt(s,'元',4.87,3.6,.8,.5,26,M)
+for j,(a,b) in enumerate([('12套书籍 × 38.50','462.00'),('5包标签纸 × 6.80','34.00')]):
+ y=4.5+j*.62;txt(s,a,.82,y,3.8,.36,20,I);txt(s,b,4.4,y,1.37,.36,20,B,True,PP_ALIGN.RIGHT)
+line(s,.8,5.8,5.77,5.8,L,1);txt(s,'核算明细 → 写入文件 → 保存记忆',.84,6.1,5.25,.5,20,B,True)
+pic(s,'agent-tools-completed',6.36,1.62,6.12,2.29,'真实任务结果：计算、文件与记忆');pic(s,'agent-task-recall',6.36,4.47,6.12,1.86,'打开新会话，继续查询数量和金额')
 # 07
-s=base('四项亮点，形成经验复用的持续循环','每一轮使用都连接资料、可信答案、当前版本与下一次任务；积累价值来自可复用的有效内容。','03 / 功能亮点')
-for i,(t,b,x,y) in enumerate([('自动积累','授权目录与多源接入',1.0,2.46),('有据可查','回答可回到记忆来源',8.75,2.46),('保持有效','偏好版本与更正审批',8.75,4.76),('可信协作','跨会话、跨设备复用',1.0,4.76)]):node(s,t,b,x,y,3.53,1.22,number=i+1)
-circle(s,5.04,2.76,3.2,None,LINE);circle(s,5.31,3.03,2.66,None,BLUE);shape(s,S.HEXAGON,5.64,3.43,2.0,1.78,BLUE,None);text(s,'可持续\n使用的经验',5.88,3.83,1.54,.9,21,WHITE,True,PP_ALIGN.CENTER)
-for coords in [(4.55,3.05,8.57,3.05),(10.45,3.73,10.45,4.62),(8.54,5.38,4.65,5.38),(2.75,4.61,2.75,3.81)]:line(s,*coords,CYAN,2.2,True)
-takeaway(s,'功能的共同目标：降低反复说明和核对成本，让经验在用户控制下持续可用。')
-
+s=page('保存一份资料，后台自动整理','01 / 目录整理',['s11'],'vertical-journey');heading(s,'保存一份资料，后台自动整理','社区筹备星河观测活动：资料进入授权目录，下一次直接询问安排。')
+for j,(t,b) in enumerate([('授权目录','开启目录采集并保存'),('放入资料','后台整理，显示处理进度'),('新会话查询','找回集合时间、地点与预算'),('点击来源','阅读活动原文')]):
+ y=2.9+j*.84;num(s,j+1,.86,y);txt(s,t,1.63,y,3.42,.39,23,B,True);txt(s,b,1.65,y+.44,3.6,.33,16,M)
+ if j<3:line(s,1.11,y+.52,1.11,y+.79,L,1.5)
+pic(s,'directory-recall',5.66,2.89,3.52,3.35);pic(s,'directory-source',9.56,2.89,2.88,3.35)
+txt(s,'找到安排',6.11,6.38,2.6,.4,19,B,True);txt(s,'核对原文',9.86,6.38,2.4,.4,19,B,True)
 # 08
-s=base('亮点一：照常保存文件，后台接续整理','活动安排或会议资料进入授权目录后，后台读取文档、联系既有知识，并报告处理进度。','03 / 自动积累','0.1.12目录场景：保存1条记忆，新会话查回成功。授权非递归目录；新增和更新等待文件稳定。')
-shot(s,'directory-folder.png',.85,2.44,6.25,1.55,'实拍：用户选择要整理的目录；采集需先授权')
-for i,(t,b) in enumerate([('保存资料','文件进入目录'),('稳定后读取','分块提取内容'),('形成知识','保留文档出处')]):
- node(s,t,b,.87+i*2.13,4.78,1.92,1.02)
- if i<2:line(s,2.82+i*2.13,5.28,2.98+i*2.13,5.28,CYAN,1.4,True)
-for i,(t,b) in enumerate([('先授权','选择目录并保存采集设置'),('再读取','等待文件稳定，按内容块处理'),('后复用','知识与来源进入个人记忆')]):node(s,t,b,7.59,2.45+i*1.19,4.79,1.0,number=i+1)
-takeaway(s,'用户维护熟悉的文件，PIXIU 接续知识整理；关闭采集不会自动删除已有记忆。')
-
+s=page('资料更新，先对照，再保存','01 / Dreaming 更正',['s11b'],'dark-before-after',True);heading(s,'资料更新，先对照，再保存',dark=True)
+pic(s,'dreaming-review',.75,2.3,6.42,4.26)
+txt(s,'后台阅读通知，提出更正建议',7.66,2.31,4.91,.57,23,'C9E4F8',True)
+txt(s,'原安排',7.68,3.26,4.5,.33,16,'B9D5EF');txt(s,'11月8日 19:00 · 三层',7.68,3.75,4.74,.46,25,F)
+line(s,9.93,4.41,9.93,4.8,C,2.4,True)
+txt(s,'核对并批准后',7.68,4.99,4.5,.33,16,'B9D5EF');txt(s,'11月15日 19:30\n社区天文台二层',7.68,5.47,4.98,1.03,29,F,True)
+badge(s,'预算保持 2680元',7.67,6.56,3.15,True)
 # 09
-s=base('亮点二：新通知到来，先对照再更正','“记住了”还不够：当活动时间发生变化，用户需要看见修改依据，掌握最终保存决定。','03 / 更新可控')
-shot(s,'dreaming-review.png',.85,2.35,7.35,3.92,'真实审批窗口：原内容、整理后内容与“批准更正”')
-node(s,'提出方案','新资料触发 Dreaming\n冻结待更正的目标版本',8.68,2.48,3.7,1.48)
-node(s,'用户核对','批准后保存；版本变化\n则重新读取，避免误覆盖',8.68,4.27,3.7,1.48)
-line(s,10.52,3.98,10.52,4.23,BLUE,1.6,True)
-takeaway(s,'自动化负责提出更正，用户负责确认实质变化。')
-
+s=page('新会话查账，沿来源复核','01 / 跨会话与来源',['s07','s08'],'bill-evidence-spread')
+txt(s,'新会话查账，\n沿来源复核',.71,1.08,5.15,1.55,35,I,True)
+txt(s,'434.50',.77,3.05,5.4,1.1,60,B,True);txt(s,'元 · 九月水电燃气合计',.84,4.29,4.9,.45,22,M)
+for j,(a,b) in enumerate([('电费','210.00'),('水费','68.50'),('燃气费','156.00')]):
+ y=5.1+j*.48;txt(s,a,.84,y,2.1,.35,19,I);txt(s,b,3.45,y,1.85,.35,19,B,True,PP_ALIGN.RIGHT)
+pic(s,'bill-recall',6.3,1.32,3.83,4.23);pic(s,'bill-source',9.44,3.66,3.05,2.65)
+txt(s,'提出问题 → 找到账单 → 点击来源',6.45,6.59,6.0,.39,20,B,True)
 # 10
-s=base('亮点三：得到答案，也能找到依据','模糊记忆常常只剩“水电燃气花了多少”；需要定位正确月份、明细与可核对的来源。','03 / 追溯检索','当前实拍为2026年9月公开合成账单；与赛题附录4月样例不是同一笔真实家庭消费。')
-shot(s,'bill-recall.png',.85,2.4,7.5,3.88,'实拍：新会话找回九月账单，回答附来源入口')
-text(s,'434.50',8.9,2.65,3.3,.86,43,BLUE,True);text(s,'元 · 本例水电燃气合计',8.9,3.52,3.4,.4,16,MUTED)
-for i,(t,v) in enumerate([('电费','210.00'),('水费','68.50'),('燃气费','156.00')]):
- line(s,8.87,4.17+i*.54,12.38,4.17+i*.54,LINE,.8);text(s,t,8.93,4.3+i*.54,1.5,.35,18,INK);text(s,v,10.58,4.3+i*.54,1.7,.35,18,BLUE,True,PP_ALIGN.RIGHT)
-takeaway(s,'检索找到相关知识，结构化数据支持核算；来源帮助用户判断答案是否可用。')
-
+chapter(2,'让经验\n留下来','对话、工具、记录与习惯，逐步成为可以重复使用的知识。',['s09'],'orbit')
 # 11
-s=base('亮点四：理解现在的偏好，保留变化的来路','从“请简洁回答”到“这次需要详细步骤”，偏好应能更新，并在后续会话按范围使用。','03 / 个性化')
-shot(s,'preference-history.png',.85,2.42,7.1,3.8,'实拍：当前输出风格与三次版本历史')
-for i,(t,b) in enumerate([('捕捉','从用户原话提取偏好'),('版本化','稳定标识、当前值与历史快照'),('适配','注入当前有效偏好和授权范围')]):node(s,t,b,8.5,2.44+i*1.21,3.88,1.03,number=i+1)
-takeaway(s,'偏好需要可追溯的更新规则；安全设置由明确授权管理，不能由模型随意放宽。')
-
+s=page('多种来源，进入统一记忆','02 / 多源接入',['s09'],'radial-ingest');heading(s,'多种来源，进入统一记忆')
+for j,(t,x,y) in enumerate([('日常对话',1,2.53),('工具结果',1,4.93),('应用使用',9.65,2.53),('手动录入',9.65,4.93)]):
+ circle(s,x,y,2.13,P,B,1.2);txt(s,t,x+.15,y+.79,1.83,.45,23,B,True,PP_ALIGN.CENTER)
+ line(s,x+(2.18 if x<5 else -.08),y+1.06,5.09 if x<5 else 8.23,4.22,C,2,True)
+circle(s,4.99,2.56,3.35,None,L,1.6);circle(s,5.21,2.78,2.91,B);txt(s,'统一整理\n保留来源',5.58,3.7,2.2,1.02,29,F,True,PP_ALIGN.CENTER)
+for j,t in enumerate(['格式检查','质量检查','敏感检查']):badge(s,t,4.54+j*1.48,6.35,1.36)
 # 12
-s=base('可信设备，接着使用同一份经验','书房记下整理书籍的约定，客厅的新会话查回时间、步骤与来源。','03 / 跨端协作','0.1.12实拍：同宿主独立V11虚拟机；两端公共API核对知识ID、正文、版本与证据ID一致。')
-shot(s,'shared-workspace.png',.85,2.38,7.66,3.81,'接收端实拍：每周六 9:00，按主题分类并更新借阅登记')
-device(s,9.24,2.55,'发送端 → 接收端',2.5)
-text(s,'配对建立信任\n选择共享空间\n新会话继续使用',9.23,4.74,3.07,1.37,19,INK)
-takeaway(s,'共享的是授权记忆与来源；各设备独立保存副本，连接恢复后补齐差异。')
-
+s=page('明确的约定，手动记下来','02 / 手动记录',['s10'],'form-with-annotations');heading(s,'明确的约定，手动记下来','填写标题和正文，决定保留范围；保存后立即查询核对。')
+pic(s,'manual-entry',.78,2.74,7.48,3.87)
+for j,(t,b) in enumerate([('写清内容','标题 + 正文'),('选择范围','个人或共享'),('保存后核对','查询刚录入的事项')]):
+ y=2.9+j*1.17;num(s,j+1,8.77,y);txt(s,t,9.52,y-.02,2.87,.42,23,B,True);txt(s,b,9.54,y+.53,2.88,.44,19,M)
 # 13
-s=base('多源接入：把杂乱输入变成带出处的知识','内容先经过授权、格式与质量处理，再进入统一证据模型；写入与后续检索共用范围和版本信息。','04 / 接入实现','据公共API与现有接入服务。图片知识为当前多模态模型理解和用户确认；不宣称自动截图/剪贴板已实现。')
-for i,(t,b) in enumerate([('对话与工具','原话 / 执行结果'),('文档与图片','附件 / 授权目录'),('行为与配置','授权统计 / 手动记录')]):node(s,t,b,.82,2.45+i*1.12,3.1,.95)
-for yy in [2.9,4.02,5.14]:line(s,3.96,yy,4.57,4.06,BLUE,1.25,True)
-node(s,'统一接入门','格式清洗与标准化\n质量校验 / 敏感识别\n来源、幂等键和范围',4.65,3.02,3.48,2.2)
-line(s,8.17,4.08,8.5,4.08,BLUE,1.5)
-line(s,8.5,2.925,8.5,5.165,BLUE,1.5)
-for yy in [2.925,4.045,5.165]:line(s,8.5,yy,8.83,yy,BLUE,1.5,True)
-for i,(t,b) in enumerate([('Evidence','内容、原始依据、发生位置'),('Knowledge','结构化正文、状态、版本'),('Preference','类别、当前值、历史快照')]):node(s,t,b,8.9,2.45+i*1.12,3.62,.95)
-takeaway(s,'同一套数据约束贯穿接入、检索、更新与同步，避免“不同入口、不同规则”。')
-
+s=page('使用习惯，按授权记录','02 / 行为采集',['s12'],'behavior-collage')
+txt(s,'使用习惯，\n按授权记录',.74,1.1,5.2,1.6,35,I,True)
+pic(s,'behavior-demo-window',.8,3.04,5.08,2.65);pic(s,'behavior-source-body',6.31,2.26,6.07,3.23)
+badge(s,'应用窗口标题',6.36,1.51,2.34);badge(s,'使用时长',8.94,1.51,1.85)
+txt(s,'28',6.4,5.75,1.8,.85,52,B,True);txt(s,'秒 · 片中这次使用记录',8.05,6.12,4.4,.4,20,M)
+txt(s,'先开启授权，再查看对应来源。\n采集权限由设置页统一管理。',.88,6.0,5.15,.79,18,B,True)
 # 14
-s=base('混合检索：语义找到，结构算清，来源可追','把关键词、向量相似与实体关系组合起来，再按范围和时间过滤、融合排序。','04 / 检索实现','当前实现为FTS5、VectorStore和Graph并行；RRF融合、词法/年月重排，未加载神经网络reranker。')
-node(s,'用户问题','“九月水电燃气花了多少？”',.85,2.39,4.1,1.0)
-node(s,'上下文边界','授权范围 / 时间 / 当前有效状态',7.38,2.39,5.03,1.0)
-for i,(t,b) in enumerate([('关键词 · FTS5','精确标题与词面匹配'),('向量 · 系统 SDK','找回语义相近的记忆'),('实体关系 · Graph','沿类目关联商户与事实')]):
- x=.85+i*4.2;node(s,t,b,x,3.94,3.63,1.0);line(s,x+1.81,3.64,x+1.81,3.9,BLUE,1.3,True)
-line(s,2.9,3.4,2.9,3.64,BLUE,1.3);line(s,9.81,3.4,9.81,3.64,BLUE,1.3);line(s,2.66,3.64,11.06,3.64,BLUE,1.3)
-for x in [2.68,6.88,11.08]:line(s,x,4.96,x,5.3,BLUE,1.3,True)
-box(s,.84,5.34,11.72,.83,BLUE,None);text(s,'RRF 融合 → 词法与年月重排 → 明细过滤 / 聚合 → 附知识与证据引用',1.04,5.59,11.3,.37,20,WHITE,True,PP_ALIGN.CENTER)
-takeaway(s,'检索子路径不额外调用生成式 LLM；完整助手的规划与回答生成仍可使用模型。')
-
+s=page('习惯变化，记忆跟着更新','02 / 偏好记忆',['s15'],'preference-timeline');heading(s,'习惯变化，记忆跟着更新','从“回答简洁”到“解释充分”，保存当前偏好，也保留变化历史。')
+pic(s,'preference-history',.79,2.72,6.98,3.84)
+line(s,8.77,3.12,8.77,6.29,L,3)
+for j,(v,t,b) in enumerate([('v1','简洁回答','日常问答'),('v2','仍然简洁','历史更新保留'),('v3','详细说明','后续会话使用新偏好')]):
+ y=2.9+j*1.21;num(s,v,8.5,y,.55);txt(s,t,9.37,y,2.99,.42,24,B,True);txt(s,b,9.4,y+.55,3,.42,17,M)
 # 15
-s=base('知识组织：一条事实，连着来源与可复用经验','区分知识的用途与证据的出处，让查询结果能够解释，也能在未来任务中复用。','04 / 知识结构')
-for i,(t,b) in enumerate([('事实 FACT','时间、地点、金额'),('流程 WORKFLOW','先做什么、后做什么'),('案例 CASE','问题、处理与结果'),('模板 TEMPLATE','反复使用的结构')]):node(s,t,b,.84+i*3.14,2.39,2.86,1.05)
-shape(s,S.CAN,.92,4.3,2.85,1.55,PALE,BLUE);text(s,'Evidence\n原文 / 原图 / 文档块',1.14,4.78,2.4,.86,17,BLUE,True,PP_ALIGN.CENTER)
-shape(s,S.HEXAGON,5.02,3.85,3.28,2.12,BLUE,BLUE);text(s,'Knowledge\n状态 · 范围 · 版本',5.5,4.48,2.33,.85,17,WHITE,True,PP_ALIGN.CENTER)
-line(s,3.8,5.03,5.0,5.03,BLUE,1.8,True);text(s,'依据',4.04,4.57,.84,.3,13,MUTED)
-for i,(t,x,y) in enumerate([('实体',9.1,4.04),('关系',10.9,4.6),('检索索引',9.2,5.28)]):
- circle(s,x,y,1.05,PALE,BLUE);text(s,t,x+.04,y+.38,.98,.35,14,BLUE,True,PP_ALIGN.CENTER);line(s,8.28,4.9,x,y+.5,CYAN,1.1,True)
-takeaway(s,'来源与知识分离保存，通过关联保持追溯；更新知识时同步维护索引。')
-
+s=page('把工作经验，整理成四类知识','02 / 知识复用',['s14'],'knowledge-books');heading(s,'把工作经验，整理成四类知识','社区图书角：从书架位置到归还流程，为下一次相似任务留下经验。')
+for j,(t,b) in enumerate([('事实','书架位置'),('流程','图书归还'),('案例','分类调整'),('模板','阅读计划')]):
+ x=.81+j*3.14;rect(s,x,2.8,2.81,1.8,[P,'DDEBF9','D3E4F6','C7DEF4'][j],L);shape(s,S.FOLDED_CORNER,x+2.18,3.02,.34,.4,F,None);txt(s,t,x+.22,3.07,2.2,.48,27,B,True);txt(s,b,x+.23,3.8,2.2,.42,20,I)
+pic(s,'knowledge-workflow-body',.91,5.07,6.39,1.51);txt(s,'① 核对书名\n② 按主题分类、上架\n③ 更新借阅登记',7.7,5.0,4.74,1.63,22,B,True)
 # 16
-s=base('偏好版本：把“现在怎么做”与历史分开','偏好从用户表达中提取，稳定标识记录同一偏好的变化；当前值用于适配，旧值用于回溯。','04 / 偏好实现')
-for i,(t,b) in enumerate([('操作习惯','常用工具与处理方式'),('输出风格','简洁程度、表达形式'),('安全策略','用户明确配置的边界')]):pill(s,t+' / '+b,.83+i*4.22,2.36,3.91)
-line(s,1.37,4.06,11.85,4.06,BLUE,2.7,True)
-for i,(v,t,b) in enumerate([('v1','简洁回答','初始表达被提取'),('v2','仍然简洁','保留更新历史'),('v3','详细说明','当前值用于后续会话')]):
- x=1.1+i*4.08;circle(s,x,3.7,.74,BLUE,None);text(s,v,x+.08,3.9,.59,.34,19,WHITE,True,PP_ALIGN.CENTER);node(s,t,b,x-.25,4.72,3.24,1.13);line(s,x+.36,4.45,x+.36,4.7,BLUE,1.2)
-text(s,'从用户原话提取，避免用助手自身的回答反向猜测用户偏好',1,3.05,11.3,.43,20,INK,True,PP_ALIGN.CENTER)
-takeaway(s,'按作用域读取偏好；记忆读取设置与共享写入设置分别保存，不自动迁移旧数据。')
-
+s=page('更新有版本，冲突有记录','02 / 维护知识',['s16'],'version-comparison');heading(s,'更新有版本，冲突有记录')
+txt(s,'周五 16:00',1.06,2.19,4.57,.73,40,M,True);line(s,5.74,2.63,7.25,2.63,C,2.5,True);txt(s,'周五 17:00',7.7,2.19,4.66,.73,40,B,True)
+pic(s,'edit-version-one',.91,3.47,5.45,2.53,'原记录');pic(s,'edit-version-two',7.02,3.47,5.45,2.53,'保存后重新读取：版本二')
+txt(s,'需要人工选择时，到冲突页对照候选内容与来源。',1.0,6.57,11.6,.39,22,B,True)
 # 17
-s=base('短、中、长期记忆，接住不同时间尺度的任务','本轮上下文服务当下，阶段状态接续项目，有价值的内容通过明确晋升进入长期知识。','04 / 记忆流转','生命周期API：TURN事件短期；压缩/切换/结束/委派事件中期。桌面可选长期保留；TTL清理；并非全部会话永久化。')
-for i,(t,b) in enumerate([('短期 · 当前任务','轮次开始 / 结束\n保留当前任务上下文'),('中期 · 阶段状态','压缩前 / 切换 / 结束\n保存阶段内容与到期时间'),('长期 · 持久知识','选择长期保留\n复用统一接入与知识管线')]):node(s,t,b,.87+i*4.18,2.82,3.58,1.8,number=i+1)
-line(s,4.48,3.71,5.01,3.71,BLUE,2,True);line(s,8.66,3.71,9.19,3.71,BLUE,2,True)
-line(s,11.03,4.66,11.03,5.57,CYAN,1.8);line(s,11.03,5.57,2.63,5.57,CYAN,1.8);line(s,2.63,5.57,2.63,4.67,CYAN,1.8,True)
-text(s,'长期记忆按新问题召回，再注入当前会话',3.53,5.14,6.5,.39,20,BLUE,True,PP_ALIGN.CENTER)
-takeaway(s,'阶段记忆有到期与清理规则；长期知识仍受当前授权、状态及遗忘控制。')
-
+s=page('短期关注，中期整理，长期复用','02 / 记忆流转',['s17'],'tier-staircase');heading(s,'短期关注，中期整理，长期复用')
+for j,(t,b) in enumerate([('短期','当前对话中的要点'),('中期','跨会话的阶段进展'),('长期','反复使用的知识')]):
+ x=.83+j*2.58;y=4.8-j*.8;rect(s,x,y,2.32,1.51,[P,'D7E8F9',B][j]);txt(s,t,x+.22,y+.24,1.88,.48,28,F if j==2 else B,True);txt(s,b,x+.22,y+.94,1.9,.38,15,F if j==2 else I)
+ if j<2:line(s,x+2.33,y+.38,x+2.57,y-.38,C,2,True)
+film(s,'s17',8.53,2.63,3.96,3.4);txt(s,'打开阶段记录\n选择长期保留\n后续检索与引用',8.65,5.76,3.87,1.06,19,B,True)
 # 18
-s=base('两类冲突，两层处理，避免把“收敛”当成“正确”','同一条记忆的并发副本需要确定性合并；不同记录的业务矛盾需要语义规则与人工核对。','04 / 更正与冲突')
-node(s,'副本层：同一知识 ID','版本向量判断因果\nLWW 提供确定性的并发胜者',.86,2.45,5.53,1.59)
-node(s,'业务层：不同记录相互矛盾','实体 / 字段比较\nNEW_WINS · MERGE · MANUAL',6.94,2.45,5.53,1.59)
-for x in [3.61,9.69]:line(s,x,4.08,x,4.52,BLUE,1.7,True)
-node(s,'物化业务状态','把胜出正文、版本和来源落库\n重建图与向量索引',.86,4.58,5.53,1.45)
-node(s,'保留审计与审批','更正方案先冻结目标版本\n用户批准后再写入',6.94,4.58,5.53,1.45)
-takeaway(s,'确定性协议解决副本一致；业务规则和审批帮助判断内容应如何变化。')
-
+chapter(3,'可信设备，\n共同记忆','换一台电脑，接着使用已经保存的安排与经验。',['s18'],'devices')
 # 19
-s=base('对等同步：在线扩散，离线累积，重连对账','每个可信节点独立工作；操作日志、签名传输和反熵共同推进最终一致。','04 / 同步时序','三设备现有实测为同一宿主上的独立V11虚拟机。30.5秒来自一次0.1.12断连并发恢复。')
-xs=[1.47,5.36,9.58]
-for x,t in zip(xs,['设备 A · 本地写入','设备 B · 在线','设备 C · 暂时离线']):
- pill(s,t,x-.48,2.37,3.2);line(s,x+.97,2.87,x+.97,6.1,LINE,1.3,False,True)
-for y,x1,x2,t in [(3.16,2.44,6.33,'追加签名操作 → Gossip 推送'),(3.85,6.33,2.44,'确认收到 / 本地物化'),(4.62,2.44,10.55,'C 重连：交换摘要，发现缺失'),(5.42,6.33,10.55,'补齐操作 → CRDT 合并 → 重建索引')]:
- line(s,x1,y,x2,y,BLUE,1.8,True);text(s,t,min(x1,x2)+.1,y-.44,abs(x2-x1)-.15,.34,15,BLUE,True,PP_ALIGN.CENTER)
-text(s,'私人范围不入同步队列；仅授权 shared 范围传播',.99,6.15,11.4,.29,14,MUTED,align=PP_ALIGN.CENTER)
-takeaway(s,'配对身份 + TLS 1.3 双向认证 + 操作签名；设备断连期间不承诺即时一致。')
-
+s=page('先建立信任，再共享记忆','03 / 设备配对',['s19'],'pairing-cinema');heading(s,'先建立信任，再共享记忆')
+film(s,'s19',.8,2.29,8.22,4.36)
+for j,(t,b) in enumerate([('打开配对','确认协作电脑'),('交换信息','建立设备信任'),('查看列表','检查连接和同步状态')]):
+ y=2.64+j*1.3;num(s,j+1,9.46,y);txt(s,t,10.14,y,2.33,.44,23,B,True);txt(s,b,9.5,y+.59,3.06,.57,18,M)
 # 20
-s=base('安全边界贯穿采集、使用、共享与遗忘','资料能否进入、被谁使用、如何退出，需要分别受控，而不是用一个总开关代替。','04 / 隐私与遗忘')
-for i,(t,b) in enumerate([('采集授权','未授权不采集\n只读已选目录与来源'),('敏感过滤','规则识别与敏感标记\n敏感共享写入拒绝'),('范围控制','个人 / 共享分别管理\n召回再次检查范围'),('精准遗忘','目标与范围预览\n确认后失效并删除向量')]):node(s,t,b,.84+i*3.14,2.55,2.86,1.8,number=i+1)
-for i in range(3):line(s,3.72+i*3.14,3.48,3.91+i*3.14,3.48,BLUE,1.5,True)
-box(s,.85,4.88,11.7,1.14,PALE,LINE);text(s,'共享遗忘 → 传播墓碑 → 远端隐藏并删除向量',1.12,5.04,11.13,.42,22,BLUE,True,PP_ALIGN.CENTER)
-text(s,'当前保留部分证据、关系及全文载荷；不等同于对所有介质进行物理擦除。',1.15,5.63,11.05,.3,14,MUTED,align=PP_ALIGN.CENTER)
-takeaway(s,'本地记忆存储与检索可离线；选择云模型理解内容时，推理链路仍涉及外部模型服务。')
-
+s=page('这里记住，那里接着使用','03 / 跨端使用',['s20'],'two-device-bridge');heading(s,'这里记住，那里接着使用','家庭共享空间中的同一份约定，从书房接续到客厅。')
+monitor(s,.88,2.98,3.58,'书房工作站');monitor(s,8.88,2.98,3.58,'客厅一体机');line(s,4.71,3.84,8.58,3.84,C,3,True)
+txt(s,'周六 9:00',4.83,2.73,3.56,.66,34,B,True,PP_ALIGN.CENTER);txt(s,'整理书房\n按主题分类书籍\n更新借阅登记',4.95,4.28,3.3,1.27,21,I,align=PP_ALIGN.CENTER)
+txt(s,'选择家庭共享空间，保存安排',.89,6.15,4.03,.7,20,B,True);txt(s,'新会话查询，并核对同一来源',8.59,6.15,4.0,.7,20,B,True)
+pic(s,'shared-recall',8.97,3.09,3.38,1.41);txt(s,'客厅一体机',9.11,4.71,3.1,.39,18,B,True,PP_ALIGN.CENTER)
 # 21
-s=base('Agent 生命周期：让记忆真正进入任务执行','Provider 连接上游运行时与公共 API，把召回、工具结果和阶段状态接到同一个任务循环。','04 / Agent 接入','不能把检索API当作聊天API；上游负责通用规划和工具循环。Module E通过公共HTTP契约访问PIXIU。')
-for i,(t,b) in enumerate([('任务开始','按问题召回有效记忆'),('上下文注入','范围 / 来源 / 字符预算'),('规划与工具','执行工具与审批'),('结果沉淀','对话、工具与阶段内容')]):node(s,t,b,.85+i*3.14,2.62,2.86,1.26,number=i+1)
-for i in range(3):line(s,3.74+i*3.14,3.26,3.94+i*3.14,3.26,BLUE,1.5,True)
-shot(s,'agent-tools-completed.png',.91,4.37,5.4,1.5,'实拍：同一助手中可观察工具执行过程')
-node(s,'记忆是带边界的外部内容','保留来源与消费记录；按预算注入\n记忆文本不升级为系统指令',6.87,4.32,5.48,1.47)
-takeaway(s,'PIXIU 创新集中在持续记忆与对等协作；通用会话、规划和工具能力复用上游。')
-
+s=page('离线仍可用，重连再对账','03 / 离线协作',['s21'],'offline-swimlane');heading(s,'离线仍可用，重连再对账','资料移交约定：暂停同步期间使用本地记忆；恢复连接后交换更新。')
+for j,(t,b) in enumerate([('连接时','三端保存同一份约定'),('暂时离线','本地使用，并保存修改'),('恢复连接','交换更新，补齐差异')]):
+ x=2.54+j*3.34;badge(s,t,x,2.77,2.76);txt(s,b,x,3.39,2.9,.53,17,M)
+for j,t in enumerate(['设备 A','设备 B','设备 C']):
+ y=4.25+j*.8;txt(s,t,.8,y-.14,1.45,.42,20,B,True);line(s,2.4,y+.12,12.43,y+.12,L,2)
+ for k in range(3):circle(s,3.6+k*3.34,y-.06,.35,B if k!=1 or j!=2 else F,B,1.5)
+line(s,7.12,4.37,10.17,5.97,C,2,True);line(s,7.12,5.17,10.17,5.97,C,2,True)
+txt(s,'每台电脑保留本地副本；重连后继续协作。',2.69,6.67,9.43,.35,20,B,True)
 # 22
-s=base('端侧部署：麒麟原生优先，兼容路径清晰','桌面、记忆服务、Provider 和运行时随单一安装包部署；系统专有能力通过适配层接入。','04 / 平台与维护','0.1.12正式包为amd64；不能声称ARM已完成相同验收。部署实测见TEST_REPORT。')
-shot(s,'sdk-version.png',.85,2.4,7.3,1.59,'实拍：0.1.12 与系统 Embedding / Vector Engine 能力')
-node(s,'银河麒麟 V11 · 原生路径','实际调用系统双 SDK\n严格画像缺失能力即失败',8.62,2.42,3.82,1.49)
-node(s,'Debian · 兼容路径','软件适配保证基本读写检索\n质量、时延结果独立报告',8.62,4.2,3.82,1.49)
-flow(s,[('安装','用户服务与依赖'),('升级','签名与版本校验'),('恢复','健康失败时恢复')],y=4.65,x=.88,w=2.12,gap=.37,h=1.32)
-takeaway(s,'0.1.12 升级与故障恢复实测：47 条记忆摘要保持一致；常驻资源仍需专项测量。')
-
+s=page('同时修改，也能收敛','03 / 并发更正',['s22'],'branch-convergence',True);heading(s,'同时修改，也能收敛','记录修改关系 → 按统一规则选择 → 同步到各台设备',True)
+for t,b,x in [('设备 A · v2','11/9 10:00\n二楼档案室',.88),('设备 B · v2','11/10 15:00\n三楼档案室',5.08)]:
+ rect(s,x,2.91,3.65,1.79,'244F7F','6B9FCC');txt(s,t,x+.25,3.17,3.15,.47,24,F,True);txt(s,b,x+.25,3.85,3.14,.7,21,'D5E8F8')
+line(s,2.72,4.81,6.58,5.42,C,2,True);line(s,6.92,4.81,6.58,5.42,C,2,True)
+rect(s,3.0,5.56,7.4,1.02,F);txt(s,'三端一致：正文、版本与来源',3.3,5.86,6.8,.49,27,B,True,PP_ALIGN.CENTER)
+txt(s,'统一规则',9.3,3.48,3.11,.64,30,F,True);txt(s,'最终：v2\n11/10 15:00\n三楼档案室',9.4,4.29,3.02,1.13,20,'CAE2F6')
 # 23
-s=base('四项量化结果：说明样本，也说明适用环境','历史开发评测：Debian portable · pixiu-family-expense-v1 · 团队合成资料。','04 / 量化评测','数值来源 docs/acceptance/acceptance-baseline-2026-08-24.json；日期2026-08-24。50组检索、15组偏好、25组冲突、1000次检索。不是0.1.12最终V11双SDK性能报告。')
-metrics=[('偏好准确率','100%','15 / 15','目标 ≥85%',1,.85),('知识召回率','100%','50组检索均值','目标 ≥85%',1,.85),('冲突正确率','96%','24 / 25','目标 ≥88%',.96,.88)]
-for i,(t,v,b,g,val,target) in enumerate(metrics):
- x=.85+i*3.16;node(s,t,'',x,2.47,2.88,2.86);text(s,v,x+.18,3.18,2.5,.7,37,BLUE,True);text(s,b,x+.19,4.07,2.5,.33,16,MUTED);box(s,x+.2,4.68,2.43,.13,'D6E4F7',None);box(s,x+.2,4.68,2.43*val,.13,BLUE,None);line(s,x+.2+2.43*target,4.59,x+.2+2.43*target,4.9,CYAN,2);text(s,g,x+.19,5.05,2.5,.31,15,BLUE,True)
-x=10.33;node(s,'检索 P95','',x,2.47,2.17,2.86);text(s,'115',x+.17,3.18,1.8,.7,37,BLUE,True);text(s,'ms / 1000次',x+.17,4.07,1.8,.34,16,MUTED);text(s,'目标 ≤500ms',x+.17,5.05,1.8,.31,14,BLUE,True)
-text(s,'统计口径：偏好与冲突按预期结果核对；召回按每例指定 top-k；P95 为第950个排序耗时。',.91,5.72,11.57,.4,14,MUTED)
-takeaway(s,'上述结果证明该合成集上的开发基线；最终 V11 双 SDK 质量、时延及泛化能力仍需同版验证。')
-
+chapter(4,'每份记忆，\n都有边界','决定助手能读什么、记到哪里，也决定何时停止使用。',['s23'],'scope')
 # 24
-s=base('原生实测与未覆盖项，分别呈现','功能真实性由安装版、真实模型操作和记录核对支撑；局部测试通过不能推出全部赛题验收通过。','04 / 证据边界')
-for i,t in enumerate(['双 SDK 增删查','目录与审批','安装与签名升级','47条恢复一致']):pill(s,t,.88+i*3.15,2.37,2.89)
-text(s,'三端断连并发实测 · 云杉资料移交',.9,2.98,8.0,.4,21,BLUE,True)
-for i,(t,b) in enumerate([('设备 A · v2','11/9 10:00\n二楼档案室'),('设备 B · v2','11/10 15:00\n三楼档案室'),('设备 C · v1','11/8 09:00\n一楼档案室')]):
- x=.9+i*2.63;node(s,t,b,x,3.58,2.35,1.46)
- line(s,x+1.17,5.09,x+1.17,5.45,CYAN,1.4,True)
-box(s,.9,5.49,7.61,.62,BLUE,None);text(s,'重连后均为 v2 · 11/10 15:00 · 三楼档案室',1.08,5.65,7.23,.34,19,WHITE,True)
-node(s,'仍需专项验证','同版四项量化指标\n更多真实业务数据\n常驻资源与索引增长\n物理设备与复杂网络',9.0,3.0,3.42,2.95)
-text(s,'同宿主独立V11虚拟机；约30.5秒为本次恢复观测值。',.96,6.18,11.6,.23,12,MUTED)
-takeaway(s,'证据来源：0.1.12 测试报告、真实操作截图和三端检查点；不同版本记录不合并冒充同版结果。')
-
+s=page('读取、保存与信任，分别管理','04 / 范围控制',['s23'],'scope-settings');heading(s,'读取、保存与信任，分别管理')
+pic(s,'shared-settings',.85,2.49,7.31,3.77)
+for j,(t,b) in enumerate([('个人记忆','保存在本机'),('共享内容','用户选择协作设备'),('设置核对','读取范围与新记忆保存位置')]):
+ y=2.5+j*1.3;circle(s,8.8,y,.36,B);txt(s,t,9.46,y-.07,2.91,.49,25,B,True);txt(s,b,8.8,y+.57,3.78,.56,18,M)
+txt(s,'到设备页管理信任关系，敏感检查保护资料使用范围。',.95,6.6,11.4,.45,21,B,True)
 # 25
-s=base('完整案例：社区活动资料，怎样变成可靠行动依据','一位活动组织者需要安排集合、器材与预算。资料会更新，沟通跨会话，旧通知容易被继续使用。','05 / 完整用户案例','人物为场景化叙事；活动资料是公开合成演示数据。后续三页使用同一0.1.12 V11真实录制链路，不宣称真实客户试点。')
-shot(s,'directory-source.png',.9,2.43,5.05,3.62,'实拍原文：星河观测活动安排与器材流程')
-node(s,'初始任务','11月8日 19:00 / 社区天文台三层\n器材预算 2680元\n领手册、检查支架、分组、归还器材',6.54,2.45,5.85,1.95)
-node(s,'用户真正担心的事','换会话还能查到吗？\n通知更新后，会不会仍然照旧执行？',6.54,4.64,5.85,1.4)
-takeaway(s,'案例目标：把“散落的活动通知”转为“有来源、可更正、后续可用的行动依据”。')
-
+s=page('先看影响，再确认遗忘','04 / 精准遗忘',['s24'],'forget-sequence');heading(s,'先看影响，再确认遗忘','临时事项结束后，先核对目标和范围，再执行确认。')
+for j,(t,b) in enumerate([('提出指令','忘记已完成的演示事项'),('查看预览','核对目标和影响范围'),('点击确认','更新状态，清理检索向量')]):
+ x=.87+j*4.16;num(s,j+1,x,2.92);txt(s,t,x+.74,2.91,3.0,.43,25,B,True);txt(s,b,x,3.65,3.8,.54,19,M)
+ if j<2:line(s,x+3.64,3.15,x+4.01,3.15,C,2,True)
+film(s,'s24',.91,4.52,5.35,2.0);txt(s,'共享记忆的遗忘状态\n也会到达其他设备',7.0,4.77,5.32,1.03,29,B,True);txt(s,'离线设备在重连后补齐。',7.04,6.08,5.1,.43,21,M)
 # 26
-s=base('第一段：保存资料 → 自动整理 → 新会话找回','组织者授权目录并放入活动文档；后台保存知识，下一次直接询问集合时间、地点和预算。','05 / 案例 · 积累与复用')
-shot(s,'directory-recall.png',.86,2.4,7.4,3.81,'真实新会话：11月8日 19:00、社区天文台三层、2680元')
-for i,(t,b) in enumerate([('保存','文件进入已授权的目录'),('沉淀','整理完成，保存1条记忆'),('核对','从回答来源打开对应原文')]):node(s,t,b,8.77,2.43+i*1.2,3.61,1.03,number=i+1)
-takeaway(s,'直接价值：不必重新粘贴整份通知，仍能查回安排并核对依据。')
-
+chapter(5,'体验背后，\n如何协同','宿主、运行时、记忆适配与系统能力，通过明确接口完成协作。',['s05'],'layers')
 # 27
-s=base('第二段：通知更正 → 用户审批 → 新答案生效','活动改到11月15日19:30、社区天文台二层。Dreaming 提出对照方案，批准后新会话使用更新结果。','05 / 案例 · 更新闭环')
-shot(s,'dreaming-review.png',.85,2.43,5.65,3.35,'① 对照原安排与更正内容，点击“批准更正”')
-shot(s,'updated-recall.png',7.02,2.43,5.44,3.35,'② 新会话返回新时间、新地点和原有预算')
-line(s,6.53,4.01,6.92,4.01,CYAN,2,True)
-text(s,'日期与地点变化',1.06,6.13,4.74,.29,16,BLUE,True,PP_ALIGN.CENTER);text(s,'预算 2680元保持，回答附更新依据',7.09,6.13,5.31,.29,16,BLUE,True,PP_ALIGN.CENTER)
-takeaway(s,'直接价值：让更新到达实际回答，同时保留人工核对环节，降低继续使用旧安排的风险。')
-
+s=page('记忆能力，接入完整智能体','05 / 系统分工',['s05'],'layered-architecture');heading(s,'记忆能力，接入完整智能体')
+rect(s,.85,2.4,11.64,.91,P);txt(s,'openKylin 宿主与运行时',1.13,2.62,5.75,.43,25,B,True);txt(s,'会话 · 任务规划 · 工具',7.1,2.65,4.97,.41,21,I)
+line(s,6.65,3.38,6.65,3.84,C,2.4,True);rect(s,4.76,3.93,3.82,.7,B);txt(s,'PIXIU 记忆适配层',5.03,4.1,3.29,.4,24,F,True,PP_ALIGN.CENTER)
+line(s,6.65,4.69,6.65,4.9,C,2);line(s,2.29,4.9,11.71,4.9,C,2)
+for xx in [2.29,5.43,8.57,11.71]:line(s,xx,4.9,xx,5.15,C,2,True)
+for j,t in enumerate(['资料接入','知识检索','偏好与安全','设备同步']):
+ x=.88+j*3.14;rect(s,x,5.22,2.82,1.03,P,L);txt(s,t,x+.12,5.55,2.57,.46,23,B,True,PP_ALIGN.CENTER)
+txt(s,'PIXIU 引擎连接记忆业务；系统能力通过接口协作。',1.0,6.64,11.45,.45,22,I,True)
 # 28
-s=base('从一份通知，看到可重复使用的服务价值','同一案例覆盖积累、召回、来源、更正、审批与跨会话复用；价值来自行动依据的连续维护。','05 / 价值分析','下面为基于已展示功能的定性价值分析，未测量节省时间比例、用户留存或实际活动差错率。')
-rows=[('保存资料','需要再次说明文档背景','目录资料进入记忆，后续按需提问'),('核对安排','在多个文件和对话间查找','回答与来源相连，能核对原文'),('接收变更','新旧通知混用，内容容易遗漏','先对照审批，再在新会话使用'),('延续经验','任务完成后，流程继续散落','知识与阶段保留支持后续复用')]
-for i,(t,b,c) in enumerate(rows):
- y=2.48+i*.86;circle(s,.9,y,.48,BLUE,None);text(s,str(i+1),.97,y+.105,.34,.28,15,WHITE,True,PP_ALIGN.CENTER);text(s,t,1.64,y+.055,1.69,.34,18,BLUE,True);text(s,b,3.57,y+.055,3.93,.42,17,MUTED);line(s,7.55,y+.24,8.03,y+.24,CYAN,1.6,True);text(s,c,8.23,y+.055,4.1,.55,17,INK)
-text(s,'改善方向：少重复说明 · 更便于核对 · 更正更有序 · 经验可接续',1.01,6.06,11.45,.35,19,BLUE,True,PP_ALIGN.CENTER)
-takeaway(s,'以上是功能支持的定性价值；尚未用真实用户对照实验量化节省时间或错误减少比例。')
-
+s=page('关键词、语义、关系，联合找回','05 / 联合检索',['s13'],'query-lens');heading(s,'关键词、语义、关系，联合找回')
+txt(s,'“望远镜”\n“器材预算”',.79,2.56,5.33,1.56,39,B,True)
+for j,t in enumerate(['关键词','意思相近的表达','关联信息']):badge(s,t,.91,4.58+j*.6,3.96)
+pic(s,'keyword-result',6.35,2.52,6.02,1.55);pic(s,'keyword-source-body',6.35,4.62,6.02,1.64)
+line(s,5.1,5.51,6.06,5.51,C,2.4,True);txt(s,'找到观测活动 → 打开来源 → 阅读安排与步骤',6.38,6.54,6.03,.47,18,B,True)
 # 29
-s=base('商业探索：围绕部署与持续服务验证付费价值','商业模式为待验证设想。优先面向已有麒麟桌面环境、存在重复资料整理与协作需求的小型组织。','06 / 商业模式探索','不是既有客户、订单或营收。生态渠道事实来自麒麟软件伙伴指南和适配申请页面，2026-09-14访问；不代表PIXIU已获认证或已成为伙伴。')
-for i,(t,b,c) in enumerate([('组织部署服务','需求访谈 / 环境适配\n资料范围与使用培训','按项目实施工作量讨论服务费'),('持续维护服务','兼容更新 / 故障处理\n资料流程与使用支持','按约定支持范围讨论年度服务'),('生态集成服务','与应用或解决方案方\n共同适配真实业务流程','按集成与维护范围评估报价')]):
- x=.86+i*4.19;node(s,t,b,x,2.55,3.65,2.2,number=i+1);text(s,c,x+.16,5.15,3.33,.82,17,BLUE,True)
-takeaway(s,'收费假设围绕交付和维护；尚无付费客户、定价或盈利数据，不推算市场份额与营收。')
-
+s=page('一个安装包，统一管理','05 / 部署维护',['s27'],'package-and-maintenance');heading(s,'一个安装包，统一管理')
+shape(s,S.CUBE,.99,2.52,3.35,2.96,P,B,1.5);txt(s,'PIXIU',1.62,3.63,2.33,.62,35,B,True)
+for j,t in enumerate(['桌面应用','助手运行环境','记忆服务']):badge(s,t,4.79,2.92+j*.85,2.43);line(s,4.31,3.96,4.7,3.12+j*.85,C,1.7,True)
+pic(s,V/'raw/current-0.1.12/model-options.png',8.0,2.23,4.36,1.92);pic(s,V/'raw/current-0.1.12/update-panel.png',8.0,4.64,4.36,1.54)
+txt(s,'选择模型 / 配置连接 / 查看版本与更新',.9,6.12,6.74,.57,21,I,True);txt(s,'签名校验 → 服务检查 → 自动恢复',.91,6.69,8.78,.33,19,B)
 # 30
-s=base('先验证客户价值，再讨论规模化运营','用小范围试点检验是否值得持续采购，同时记录真实成本与使用结果。','06 / 运营验证','外部依据仅证明麒麟生态存在适配与伙伴申请渠道；试点流程和商业判断为团队推演。https://www.kylinos.cn/eco/vipPartner/partnerGuide/index.html ; https://www.kylinos.cn/eco/ecoPartner/partnerApply/')
-flow(s,[('需求确认','访谈角色与高频任务'),('有限试点','约定资料与支持范围'),('效果复核','成功率 / 耗时 / 差错'),('续用判断','成本 / 使用意愿 / 续费')],y=2.56,x=.87,w=2.66,gap=.39,h=1.58)
-node(s,'必须记录的成本','部署与培训人时、兼容维护、问题支持\n模型推理费用与承担方单独说明',.87,4.65,5.55,1.35)
-node(s,'可考虑的合作入口','麒麟公开提供适配与伙伴申请渠道\nPIXIU 尚未据此取得认证或合作',6.92,4.65,5.54,1.35)
-text(s,'来源：麒麟软件《伙伴指南》《适配申请》公开页面；完整链接见本页备注。',.98,6.33,11.7,.31,12,MUTED)
-
+chapter(6,'用结果，\n检验价值','检查记忆效果，也把积累的资料转化为下一次任务的线索。',['s28'],'metrics')
 # 31
-s=base('','','07 / SLOGAN',dark=True)
-text(s,'让每一台设备的记忆，\n彼此相通。',1.12,2.55,11.08,1.93,43,WHITE,True,PP_ALIGN.CENTER)
-text(s,'PIXIU · 貔貅',4.8,5.35,3.7,.58,25,'BED8F7',True,PP_ALIGN.CENTER)
-for x,y in [(1.5,1.87),(10.95,1.97),(2.85,5.6),(10.72,5.78)]:circle(s,x,y,.17,'69B6DE',None)
-line(s,1.65,1.94,10.93,2.04,'38628E',1);line(s,3.04,5.69,10.69,5.87,'38628E',1)
-
-# Manifest includes every external input; generation does not write delivery artifacts.
-for p in [ROOT/'README.md',ROOT/'docs/delivery/TEST_REPORT.md',ROOT/'docs/delivery/APPLICATION_CASES.md',ROOT/'docs/API.md',ROOT/'docs/ARCHITECTURE.md',ROOT/'docs/DELIVERY_PLAN.md',ROOT/'docs/acceptance/acceptance-baseline-2026-08-24.json',ROOT/'submission/video-production/src/sync-trace.json']:
- inputs.add(p)
-output=WORK/'render/项目报告.pptx';output.parent.mkdir(parents=True,exist_ok=True);prs.save(output)
-manifest={'schema':2,'version':'0.1.12','slides':records,'inputs':[{'path':p.relative_to(ROOT).as_posix(),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(inputs)],'output':{'path':output.relative_to(ROOT).as_posix(),'sha256':hashlib.sha256(output.read_bytes()).hexdigest()}}
-(WORK/'review/build-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
-print(f'Built {len(prs.slides)} editable slides: {output.relative_to(ROOT)}')
+s=page('用数据，检验记忆优化','06 / 效果验证',['s28'],'metric-dashboard',True);heading(s,'用数据，检验记忆优化','历史 Debian 兼容环境 · 团队合成数据集',True)
+for j,(v,t,b) in enumerate([('50/50','知识检索召回','50组检索全部召回'),('15/15','偏好提取准确','15组偏好全部正确'),('24/25','冲突处理正确','25组中正确处理24组')]):
+ x=.83+j*4.18;txt(s,v,x,2.88,3.71,.98,55,F,True);txt(s,t,x+.04,4.13,3.58,.54,25,'C6E6FA',True);txt(s,b,x+.04,4.86,3.58,.46,19,'BED6ED')
+rect(s,.86,5.7,3.34,.89,'244F7F');txt(s,'检索 P95  115ms',1.09,5.86,2.95,.42,23,F,True);txt(s,'1000次检索',1.1,6.32,2.9,.24,11,'C6E6FA')
+txt(s,'当前麒麟原生版本：\n已完成安装、升级与三端协作验证。',4.68,5.7,7.66,.94,23,F,True)
+s.notes_slide.notes_text_frame.text+='\n画面补充：P95 115ms为影片指标画面值，历史原始值115.151ms、1000次检索；历史数据与当前原生功能验证分开。'
+# 32
+s=page('从记住，到主动提供线索','06 / 洞察与简报',['s26'],'insight-editorial')
+txt(s,'从记住，\n到主动提供线索',.74,1.1,6.54,1.61,36,I,True)
+film(s,'s26',6.71,1.3,5.69,3.22)
+pic(s,'brief',.82,3.36,5.52,3.19)
+txt(s,'近期知识',7.09,4.94,4.86,.53,27,B,True);txt(s,'查看线索，回到对应记录。',7.13,5.62,5.12,.46,21,M);txt(s,'按日期回顾采集汇总。',7.13,6.25,5.12,.46,21,M)
+# 33
+s=page('把个人经验，变成可信协作能力','06 / 应用价值',['s29'],'value-triptych');heading(s,'把个人经验，变成可信协作能力')
+for j,(t,b,a) in enumerate([('一次任务','结果留下来','agent-tools-completed'),('一份资料','回答带着来源','directory-source'),('多台电脑','经验接续使用','shared-workspace')]):
+ x=.88+j*4.17;txt(s,f'0{j+1}',x,2.23,1.16,.71,43,'82A9D4',True);txt(s,t,x,3.16,3.67,.57,29,B,True);pic(s,a,x,4.13,3.66,1.93);txt(s,b,x,6.38,3.65,.45,23,I,True)
+ if j<2:line(s,x+3.69,3.45,x+4.02,3.45,C,2,True)
+# 34
+s=page('让每一台设备的记忆，彼此相通','结束语',['s30'],'brand-close',True)
+for x,y,d in [(1,2.4,.17),(11.8,2.9,.21),(2.3,5.7,.13),(10.3,6.1,.17)]:circle(s,x,y,d,C)
+line(s,1.19,2.49,11.77,3.0,'467BA7',1);line(s,2.45,5.77,10.26,6.18,'467BA7',1)
+txt(s,'让每一台设备的记忆，\n彼此相通。',1.1,3.01,11.15,1.58,44,F,True,PP_ALIGN.CENTER);txt(s,'PIXIU · 貔貅',4.85,5.46,3.9,.56,27,'C7E3F7',True,PP_ALIGN.CENTER)
+# TOC destinations are actual slides; body navigation returns to contents.
+for a,p in toc_links:a.click_action.target_slide=prs.slides[p-1]
+for n,s in enumerate(list(prs.slides)[2:],3):
+ a=txt(s,'目录',11.05,7.1,.61,.27,10,'B6CEE8' if n in [3,8,10,18,22,23,26,30,31,34] else M);a.click_action.target_slide=prs.slides[1]
+output=W/'render/项目报告.pptx';prs.save(output)
+manifest={'schema':3,'version':'0.1.12','content_authority':'正式宣传片演示增强版','video_sha256':'8e870f0f53af841c67926ae3120cb101564aca438c23d81214c65ffee228a89f','slides':records,'inputs':[{'path':p.relative_to(R).as_posix(),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(inputs)],'output':{'path':output.relative_to(R).as_posix(),'sha256':hashlib.sha256(output.read_bytes()).hexdigest()}}
+(W/'review/build-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');print('Built',len(records),'slides aligned to',len(shots),'video shots')

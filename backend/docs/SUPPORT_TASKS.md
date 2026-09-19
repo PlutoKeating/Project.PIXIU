@@ -28,4 +28,4 @@
 
 文档导出会把 Word 表格限制在 A4 正文宽度内。交付物统一修订与新版界面采集见 `docs/delivery/MATERIAL_ALIGNMENT.md`；图文与视频采用同一组场景事实，逐页检查导出实物。
 
-项目报告由 `build/release/scripts/build-presentation.py` 调用 `submission/presentation-production/scripts/build_deck.py` 生成31页可编辑路演稿；当前实拍、故事板与事实来源均记录输入摘要。`export-documentation.py --check` 核对源与交付文件。制作依赖见 `build/release/requirements-docs.txt`；本次用 WPS 导出 PDF、Poppler 渲染全部页面并人工复核。过程文件与独立虚拟环境只在该制作子目录内；重建候选须重新渲染复核后再替换正式材料。
+项目报告由 `build/release/scripts/build-presentation.py` 调用 `submission/presentation-production/scripts/build_deck.py` 生成34页宣传片对齐路演稿；当前实拍、逐镜内容及成片摘要均记录在制作清单中。校验还覆盖30镜顺序、原口白备注、六章目录与返回链接。`export-documentation.py --check` 核对源与交付文件。生成依赖见 `build/release/requirements-docs.txt`，完整抽帧/校验依赖见 `submission/presentation-production/requirements.txt` 与该目录README；本次用 WPS 导出 PDF、Poppler 渲染全部页面并人工复核。过程文件与独立虚拟环境只在该制作子目录内；重建候选须重新渲染复核后再替换正式材料。

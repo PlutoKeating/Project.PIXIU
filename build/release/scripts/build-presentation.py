@@ -19,7 +19,7 @@ def build():
                           'sha256': hashlib.sha256(target.read_bytes()).hexdigest()}
     (target.parent / 'presentation-manifest.json').write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
-    print('31页路演稿已生成；替换正式提交材料前须完成整页渲染复核。')
+    print('34页宣传片对齐路演稿已生成；替换正式提交材料前须完成整页渲染复核。')
 
 if __name__ == '__main__':
     build()
